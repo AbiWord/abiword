@@ -145,7 +145,7 @@ void ap_usb_TextListener::notify()
 	UT_return_if_fail (m_hWnd && m_pSB);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
 	UT_Win32LocaleString str;	
-	str.fromUTF8 (textInfo->getBuf().utf8_str());	
+	str.fromUTF8 (textInfo->getBuf().c_str());	
 
 	SendMessageW(m_hWnd, SB_SETTEXTW, m_nID | m_pSB->getDir(), (LPARAM)  str.c_str());
 	

@@ -25,6 +25,7 @@
 #include "ut_std_string.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "ut_iconv.h"
 
 #include <iostream>
 #include <sstream>
@@ -33,7 +34,7 @@
 std::string UT_escapeXML(const std::string &s)
 {
   gsize incr = 0;
-  
+
   const char * ptr = s.c_str();
   while (*ptr) {
     if ((*ptr == '<') || (*ptr == '>')) {
@@ -129,6 +130,7 @@ std::string UT_std_string_sprintf(const char * inFormat, ...)
     return outStr;
 }
 
+
 std::string UT_std_string_unicode(const UT_UCS4Char * unicode,
                                   UT_uint32 len)
 {
@@ -148,11 +150,32 @@ std::string UT_std_string_unicode(const UT_UCS4Char * unicode,
     return s;
 }
 
+std::string UT_std_stringFromEncoding(const char* bytes,
+                                      const char *encoding)
+{
+    UT_ASSERT(bytes);
+    UT_ASSERT(encoding);
+    std::string output;
+
+	UT_uint32 iRead, iWritten;
+	char *pUTF8Buf = UT_convert(bytes, strlen(bytes),
+                                encoding, "UTF-8",
+                                &iRead, &iWritten);
+
+    UT_ASSERT(pUTF8Buf);
+    if (pUTF8Buf) {
+        output = pUTF8Buf;
+    }
+	FREEP(pUTF8Buf);
+
+    return output;
+}
+
 bool ends_with( const std::string& s, const std::string& ending )
 {
     if( ending.length() > s.length() )
         return false;
-    
+
     return s.rfind(ending) == (s.length() - ending.length());
 }
 

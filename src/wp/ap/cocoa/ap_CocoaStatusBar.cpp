@@ -56,7 +56,7 @@ void ap_csb_TextListener::notify()
 
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
 
-	NSString* str = [[NSString alloc] initWithUTF8String:textInfo->getBuf().utf8_str()];
+	NSString* str = [[NSString alloc] initWithUTF8String:textInfo->getBuf().c_str()];
 	[m_pLabel setStringValue:str];
 	[str release];
 

@@ -56,6 +56,15 @@ ABI_EXPORT std::string UT_std_string_sprintf(const char * inFormat, ...)
 ABI_EXPORT std::string UT_std_string_unicode(const UT_UCS4Char * unicode,
                                              UT_uint32 len);
 /**
+ * Returns a std::string (UTF-8) converted from an encoding.
+ * \param bytes the input bytes (not NULL)
+ * \param encoding the encoding (not NULL)
+ * \return an UTF-8 enconded std::string
+ */
+ABI_EXPORT std::string UT_std_stringFromEncoding(const char* bytes,
+                                                 const char* encoding);
+
+/**
  * true if fullstring starts with exactly prefix.
  */
 ABI_EXPORT bool starts_with( const std::string& fullstring, const std::string& prefix );

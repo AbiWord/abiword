@@ -23,10 +23,13 @@
 #include <stdio.h>
 #include <limits.h>
 
+#include <string>
+
 #include "ap_Features.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_std_string.h"
 #include "ap_StatusBar.h"
 #include "ap_FrameData.h"
 #include "gr_Graphics.h"
@@ -98,8 +101,9 @@ ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
     m_szFormat = g_strdup(s.c_str());
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = LEFT;
-    UT_UTF8String_sprintf(m_sRepresentativeString, m_szFormat,
-                          AP_STATUSBAR_MAX_PAGES, AP_STATUSBAR_MAX_PAGES);
+    m_sRepresentativeString = UT_std_string_sprintf(m_szFormat,
+                                                    AP_STATUSBAR_MAX_PAGES,
+                                                    AP_STATUSBAR_MAX_PAGES);
 }
 
 void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
@@ -123,7 +127,7 @@ void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 
     if (bNeedNewString)
     {
-		UT_UTF8String_sprintf(m_sBuf, m_szFormat, m_pageNr, m_nrPages);
+		m_sBuf = UT_std_string_sprintf(m_szFormat, m_pageNr, m_nrPages);
 
 		if (getListener()) {
 			getListener()->notify();
@@ -148,7 +152,7 @@ public:
     ap_sbf_StatusMessage(AP_StatusBar * pSB);
 
     virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
-    void update(const UT_UTF8String &sMessage); // for receiving messages from the status bar itself
+    void update(const std::string &sMessage); // for receiving messages from the status bar itself
 };
 
 ap_sbf_StatusMessage::ap_sbf_StatusMessage(AP_StatusBar * pSB)
@@ -164,7 +168,7 @@ void ap_sbf_StatusMessage::notify(AV_View * /*pView*/, const AV_ChangeMask /*mas
     update(m_pSB->getStatusMessage());
 }
 
-void ap_sbf_StatusMessage::update(const UT_UTF8String &sMessage)
+void ap_sbf_StatusMessage::update(const std::string &sMessage)
 {
     if (m_sBuf != sMessage) {
         m_sBuf = sMessage;
@@ -189,8 +193,8 @@ public:
 ap_sbf_InputMode::ap_sbf_InputMode(AP_StatusBar * pSB)
     : AP_StatusBarField_TextInfo(pSB)
 {
-    UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), XAP_App::getApp()->getDefaultEncoding());
-    m_sBuf = sInputMode;
+    m_sBuf = UT_std_stringFromEncoding(XAP_App::getApp()->getInputMode(),
+                                       XAP_App::getApp()->getDefaultEncoding());
 
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = LEFT;
@@ -201,7 +205,8 @@ void ap_sbf_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 {
     if (mask & (AV_CHG_INPUTMODE))
     {
-        UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), XAP_App::getApp()->getDefaultEncoding());
+        std::string sInputMode = UT_std_stringFromEncoding(XAP_App::getApp()->getInputMode(),
+                                                           XAP_App::getApp()->getDefaultEncoding());
         if (m_sBuf != sInputMode) {
             m_sBuf = sInputMode;
 
@@ -220,7 +225,7 @@ class ABI_EXPORT ap_sbf_InsertMode : public AP_StatusBarField_TextInfo
 {
 public:
     ap_sbf_InsertMode(AP_StatusBar * pSB);
-	
+
     virtual void        notify(AV_View * pView, const AV_ChangeMask mask);
 
 private:
@@ -230,11 +235,9 @@ private:
 
 ap_sbf_InsertMode::ap_sbf_InsertMode(AP_StatusBar * pSB)
     : AP_StatusBarField_TextInfo(pSB)
-      
-
 {
     m_bInsertMode = true;
-    
+
     const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
     std::string s1, s2;
@@ -475,10 +478,9 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 	{
 		return true;
 	}
-    setStatusMessage(static_cast<UT_UCSChar *>(NULL));
+    setStatusMessage(NULL);
 
     // Let each field on the status bar update itself accordingly.
-
     UT_ASSERT_HARMLESS(pView==m_pView);
     UT_uint32 kLimit = m_vecFields.getItemCount();
     UT_uint32 k;
@@ -493,22 +495,6 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
     return true;
 }
 
-void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int /*redraw*/)
-{
-    if(getFrame()->getFrameMode() != XAP_NormalFrame) {
-        return;
-    }
-    m_sStatusMessage.clear();
-
-    if (pBufUCS && *pBufUCS)
-	m_sStatusMessage.appendUCS4(pBufUCS);
-
-    ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
-    if(pf) {
-        pf->update(m_sStatusMessage);
-    }
-}
-
 void AP_StatusBar::setStatusMessage(const char * pBuf, int /*redraw*/)
 {
     if(getFrame()->getFrameMode() != XAP_NormalFrame) {
@@ -516,8 +502,8 @@ void AP_StatusBar::setStatusMessage(const char * pBuf, int /*redraw*/)
     }
 
     if (pBuf && *pBuf) {
-        UT_UTF8String sBuf(pBuf, XAP_App::getApp()->getDefaultEncoding());
-        m_sStatusMessage = sBuf;
+        m_sStatusMessage = UT_std_stringFromEncoding(pBuf,
+                                                      XAP_App::getApp()->getDefaultEncoding());
     }
     else {
         m_sStatusMessage.clear();
@@ -529,7 +515,7 @@ void AP_StatusBar::setStatusMessage(const char * pBuf, int /*redraw*/)
     }
 }
 
-const UT_UTF8String & AP_StatusBar::getStatusMessage(void) const
+const std::string & AP_StatusBar::getStatusMessage(void) const
 {
     return m_sStatusMessage;
 }
@@ -540,7 +526,7 @@ void AP_StatusBar::setStatusProgressType(int start, int end, int flags)
     {
         m_pStatusProgressField = new AP_StatusBarField_ProgressBar(this);
     }
-    if(m_pStatusProgressField)
+    else
     {
         m_pStatusProgressField->setStatusProgressType(start, end, flags);
     }

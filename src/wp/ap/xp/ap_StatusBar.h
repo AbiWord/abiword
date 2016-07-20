@@ -74,9 +74,8 @@ public:
 
     XAP_Frame *			getFrame(void) const;
     virtual void		setView(AV_View * pView);
-    void			setStatusMessage(UT_UCSChar * pbufUCS, int redraw = true);
     void			setStatusMessage(const char * pbuf, int redraw = true);
-    const UT_UTF8String & 	getStatusMessage(void) const;
+    const std::string & 	getStatusMessage(void) const;
 
     void			setStatusProgressType(int start, int end, int flags);
     void 			setStatusProgressValue(int value);
@@ -103,7 +102,7 @@ protected:
     UT_GenericVector<AP_StatusBarField*> m_vecFields;			/* vector of 'ap_sb_Field *' */
     void *			m_pStatusMessageField;	/* actually 'AP_StatusBarField_StatusMessage *' */
     AP_StatusBarField_ProgressBar * m_pStatusProgressField;
-    UT_UTF8String		m_sStatusMessage;
+    std::string		m_sStatusMessage;
 };
 
 // abstract class which "listens" for changes in the status bar fields in the base classes
@@ -157,16 +156,17 @@ class ABI_EXPORT AP_StatusBarField_TextInfo : public AP_StatusBarField
 public:
     AP_StatusBarField_TextInfo(AP_StatusBar * pSB);
     //virtual ~AP_StatusBarField_TextInfo(void) {}
-    const UT_UTF8String & getBuf() { return m_sBuf; }
+    const std::string & getBuf() { return m_sBuf; }
     // getRepresentativeString: give a "guess" as to how long the string will be. it's not a big deal
     // if it's wrong; we should resize fixed-length status bar elements in platform specific code
     // if they're not big enough to show the string correctly
-    const char * getRepresentativeString(void) { return m_sRepresentativeString.utf8_str(); }
+    const char * getRepresentativeString(void)
+        { return m_sRepresentativeString.c_str(); }
     _statusbar_textelement_alignment_method getAlignmentMethod() { return m_alignmentMethod; }
 
 protected:
-    UT_UTF8String m_sBuf;
-    UT_UTF8String m_sRepresentativeString;
+    std::string m_sBuf;
+    std::string m_sRepresentativeString;
     _statusbar_textelement_alignment_method m_alignmentMethod;
 };
 
