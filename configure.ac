@@ -9,7 +9,7 @@ AC_INIT([abiword],[abi_version],[http://www.abisource.com/])
 AC_CANONICAL_HOST
 AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE([1.9 tar-ustar])
+AM_INIT_AUTOMAKE([1.9 tar-ustar dist-bzip2 subdir-objects])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 dnl we use AM_MAINTAINER_MODE and enable it to allow to disable it.

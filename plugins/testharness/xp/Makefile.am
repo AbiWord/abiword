@@ -9,20 +9,20 @@ AM_CPPFLAGS = \
 libxp_la_SOURCES = \
 	AbiTest.cpp \
 	AbiTest.h \
-	$(top_srcdir)/src/af/util/xp/t/ut_bytebuf.t.cpp \
-	$(top_srcdir)/src/af/util/xp/t/ut_misc.t.cpp \
-	$(top_srcdir)/src/af/util/xp/t/ut_string_class.t.cpp \
-	$(top_srcdir)/src/af/util/xp/t/ut_std_string.t.cpp \
-	$(top_srcdir)/src/af/util/xp/t/ut_types.t.cpp \
-	$(top_srcdir)/src/af/util/xp/t/ut_vector.t.cpp \
-	$(top_srcdir)/src/af/util/xp/t/ut_string.t.cpp \
-	$(top_srcdir)/src/af/util/xp/t/ut_uuid.t.cpp \
-	$(top_srcdir)/src/af/util/xp/t/ut_locale.t.cpp \
-	$(top_srcdir)/src/text/ptbl/xp/t/pt_PieceTable.t.cpp \
-	$(top_srcdir)/src/text/ptbl/xp/t/pp_PropertyMap.t.cpp \
-	$(top_srcdir)/src/text/ptbl/xp/t/pp_AttrProp.t.cpp \
-	$(top_srcdir)/src/text/ptbl/xp/t/pf_Fragments.t.cpp \
-	$(top_srcdir)/src/wp/impexp/xp/t/ie_mailmerge.t.cpp \
-	$(top_srcdir)/src/wp/impexp/xp/t/ie_Table.t.cpp \
+	../../../src/af/util/xp/t/ut_bytebuf.t.cpp \
+	../../../src/af/util/xp/t/ut_misc.t.cpp \
+	../../../src/af/util/xp/t/ut_string_class.t.cpp \
+	../../../src/af/util/xp/t/ut_std_string.t.cpp \
+	../../../src/af/util/xp/t/ut_types.t.cpp \
+	../../../src/af/util/xp/t/ut_vector.t.cpp \
+	../../../src/af/util/xp/t/ut_string.t.cpp \
+	../../../src/af/util/xp/t/ut_uuid.t.cpp \
+	../../../src/af/util/xp/t/ut_locale.t.cpp \
+	../../../src/text/ptbl/xp/t/pt_PieceTable.t.cpp \
+	../../../src/text/ptbl/xp/t/pp_PropertyMap.t.cpp \
+	../../../src/text/ptbl/xp/t/pp_AttrProp.t.cpp \
+	../../../src/text/ptbl/xp/t/pf_Fragments.t.cpp \
+	../../../src/wp/impexp/xp/t/ie_mailmerge.t.cpp \
+	../../../src/wp/impexp/xp/t/ie_Table.t.cpp \
 	$(NULL)
 
