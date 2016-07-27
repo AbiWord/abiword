@@ -68,7 +68,7 @@ void AP_CocoaDialog_PageSetup::runModal(XAP_Frame * pFrame)
 
 	NSPrintInfo * printInfo = [NSPrintInfo sharedPrintInfo];
 
-	[printInfo setOrientation:NSPortraitOrientation];
+	[printInfo setOrientation:NSPaperOrientationPortrait];
 
 	fp_PageSize fp = getPageSize();
 
@@ -80,7 +80,7 @@ void AP_CocoaDialog_PageSetup::runModal(XAP_Frame * pFrame)
 
 	bool bPortrait = (getPageOrientation() == PORTRAIT);
 
-	[printInfo setOrientation:(bPortrait ? NSPortraitOrientation : NSLandscapeOrientation)];
+	[printInfo setOrientation:(bPortrait ? NSPaperOrientationPortrait : NSPaperOrientationLandscape)];
 
 	NSPageLayout * pageLayout = [NSPageLayout pageLayout];
 
@@ -143,7 +143,7 @@ bool AP_CocoaDialog_PageSetup::_validate(AP_CocoaDialog_PageSetup_Controller * /
 
 	/* Update base class with other settings
 	 */
-	bool bPortrait = ([printInfo orientation] == NSPortraitOrientation);
+	bool bPortrait = ([printInfo orientation] == NSPaperOrientationPortrait);
 
 	setPageOrientation(bPortrait ? PORTRAIT : LANDSCAPE);
 
