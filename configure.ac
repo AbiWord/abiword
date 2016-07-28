@@ -574,15 +574,29 @@ AC_SUBST(ABIWORD_ICONDIR, "$abi_cv_icondir")
 #
 # Compiler settings (from gnumeric's configure.in)
 #
-# TODO enable -Wshadow
 AC_LANG_PUSH(C++)
 if test "$GCC" = "yes"; then
+	uwoption="-Werror=unknown-warning-option"
+
+	dnl Clang needs this option, or else it will appear to support any
+	dnl warning option, only to spew warnings about them later.
+	uwoption="-Werror=unknown-warning-option"
+	SAVE_CPPFLAGS="$CPPFLAGS"
+	CPPFLAGS="$CPPFLAGS $uwoption"
+	AC_MSG_CHECKING([whether gcc understands $uwoption])
+	AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([], [])],
+		[has_unknown_warning_option=yes],
+		[has_unknown_warning_option=no; uwoption=""])
+	AC_MSG_RESULT($has_unknown_warning_option)
+	CPPFLAGS="$SAVE_CPPFLAGS"
+
 	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
 		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
                       -Wunreachable-code -Wmisleading-indentation \
 		      -Wunused -Wpointer-arith -Wshadow; do
 		SAVE_CPPFLAGS="$CPPFLAGS"
-		CPPFLAGS="$CPPFLAGS $option"
+		CPPFLAGS="$CPPFLAGS $uwoption $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
 		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])],
 			has_option=yes,
@@ -598,7 +612,7 @@ if test "$GCC" = "yes"; then
 
 	for option in -Wno-overloaded-virtual; do
 		SAVE_CXXFLAGS="$CXXFLAGS"
-		CXXFLAGS="$CXXFLAGS $option"
+		CXXFLAGS="$CXXFLAGS $uwoption $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
 		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])],
 			has_option=yes,
