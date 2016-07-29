@@ -35,8 +35,7 @@ IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(IE_Exp_HTML_StyleTree * parent, con
         m_bInUse(false),
         m_style_name(_style_name),
         m_class_name(_style_name),
-        m_class_list(_style_name),
-        m_style(style)
+        m_class_list(_style_name)
 {
     UT_LocaleTransactor t(LC_NUMERIC, "C");
 
@@ -150,8 +149,7 @@ IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(PD_Document * pDocument) :
         m_bInUse(false),
         m_style_name("None"),
         m_class_name(""),
-        m_class_list(""),
-        m_style(0)
+        m_class_list("")
 {
     const gchar ** ptr = s_prop_list;
     while (*ptr)

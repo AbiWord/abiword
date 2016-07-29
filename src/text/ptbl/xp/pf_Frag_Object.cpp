@@ -395,13 +395,13 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 			// see bug 6489...
 			UT_ASSERT_NOT_REACHED();
 			BT = po_Bookmark::POBOOKMARK_END;
-		} else if(0 == strcmp(pszType, "end"))
+		} else if(0 == strcmp(pszType, "end")) {
 			BT = po_Bookmark::POBOOKMARK_END;
-		else
+		} else {
 			BT = po_Bookmark::POBOOKMARK_START;
-			
+		}
 		UT_return_if_fail (pszName && *pszName);
-		m_pObjectSubclass = static_cast<void *>(new po_Bookmark(*this,pPT,BT, pszName));
+		m_pObjectSubclass = static_cast<void *>(new po_Bookmark(BT, pszName));
     }
 
 }

@@ -69,7 +69,6 @@ public:
 	GR_Graphics *   getGraphics(void) const { return m_gc;}
 
 private:
-	AP_Border_Shading_preview_drawer	m_previewDrawer;
 	AP_Dialog_Border_Shading *  m_pBorderShading;
 protected:
 

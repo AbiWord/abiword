@@ -66,7 +66,7 @@ TOCEntry::TOCEntry(fl_BlockLayout * pBlock,
 				   UT_UTF8String & sBefore,
 				   UT_UTF8String sAfter, 
 				   bool bInherit,
-				   UT_sint32 iStartAt):
+				   UT_sint32 /*iStartAt*/):
 	m_pBlock(pBlock),
 	m_iLevel(iLevel),
 	m_sDispStyle(sDispStyle),
@@ -74,8 +74,7 @@ TOCEntry::TOCEntry(fl_BlockLayout * pBlock,
 	m_iFType(iFType),
 	m_sBefore(sBefore),
 	m_sAfter(sAfter),
-	m_bInherit(bInherit),
-	m_iStartAt(iStartAt)
+	m_bInherit(bInherit)
 {
 }
 

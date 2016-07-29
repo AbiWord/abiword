@@ -56,7 +56,6 @@ public:
 
 private:
     bool m_bInTOCBlock;
-    UT_sint32 m_iCurrentTOC;
     ODe_AuxiliaryData& m_rAuxiliaryData;
 };
 

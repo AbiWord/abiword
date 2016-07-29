@@ -273,7 +273,6 @@ private:
 	bool m_bInPara;
 	bool m_bLTRCharContext;
 	bool m_bLTRParaContext;
-	UT_BidiCharType  m_iOverrideIssued;
 	bool m_bBidiMode;
 	bool m_bInLink;
 	bookmark * m_pBookmarks;

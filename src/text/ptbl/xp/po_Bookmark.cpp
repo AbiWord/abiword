@@ -25,9 +25,8 @@
 #include "ut_types.h"
 #include "po_Bookmark.h"
 
-po_Bookmark::po_Bookmark(pf_Frag_Object& fO, pt_PieceTable * pt,
-                   BookmarkType bookmarkType, const gchar* name)
-    : m_fragObject(fO),m_pPieceTable(pt),m_iBookmarkType(bookmarkType)
+po_Bookmark::po_Bookmark(BookmarkType bookmarkType, const gchar* name)
+    : m_iBookmarkType(bookmarkType)
 {
 	m_pBlock = NULL;
 	m_pName = NULL;

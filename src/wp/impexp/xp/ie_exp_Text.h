@@ -156,7 +156,6 @@ protected:
 	char				m_mbLineBreak[MY_MB_LEN_MAX*2];
 	int					m_iLineBreakLen;
 	bool				m_bInBlock;
-	bool				m_bToClipboard;
 	bool				m_bFirstWrite;
 	const char *		m_szEncoding;
 	bool				m_bIs16Bit;

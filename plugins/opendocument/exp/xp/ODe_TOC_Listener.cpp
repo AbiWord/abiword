@@ -39,7 +39,6 @@ ODe_TOC_Listener::ODe_TOC_Listener(
                                     )
                                     :
                                     m_bInTOCBlock(false),
-                                    m_iCurrentTOC(1),
                                     m_rAuxiliaryData(rAuxiliaryData) {
 }
 

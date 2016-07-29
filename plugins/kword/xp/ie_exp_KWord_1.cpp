@@ -190,7 +190,7 @@ s_KWord_1_Listener::s_KWord_1_Listener(PD_Document * pDocument,
 	: m_pDocument (pDocument), m_pie (pie), 
 	m_bInSection(false), m_bInBlock(false), 
 	m_bInSpan(false), m_bFirstWrite(true),
-	m_sFormats(""), m_sLayout(""), m_iImgCnt(0)
+	m_sFormats(""), m_sLayout("")
 {
   m_pie->write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 

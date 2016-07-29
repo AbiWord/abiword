@@ -111,8 +111,6 @@ public:
 
 private:
 
-	int			m_iSpaceCountLeft;
-	int			m_iSpaceCount;
 	int			m_iExtraWidth;
 	UT_sint32	m_iStartPosition;
 

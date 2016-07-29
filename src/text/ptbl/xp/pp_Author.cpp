@@ -20,13 +20,10 @@
 
 #include "pp_Author.h"
 #include "pp_AttrProp.h"
-#include "pd_Style.h"
-#include "pd_Document.h"
-#include "ut_debugmsg.h"
 #include "ut_misc.h"
 
-pp_Author::pp_Author(PD_Document * pDoc, UT_sint32 iID):
-  m_pDoc(pDoc), m_iAuthorInt(iID) 
+pp_Author::pp_Author(UT_sint32 iID)
+	: m_iAuthorInt(iID)
 {
 }
 
@@ -35,7 +32,7 @@ pp_Author::~pp_Author(void)
 }
 
 PP_AttrProp *      pp_Author::getAttrProp(void)
-{ 
+{
     return & m_AP;
 }
 
@@ -43,13 +40,13 @@ const PP_AttrProp * pp_Author::getAttrProp(void) const
 {
   return & m_AP;
 }
-  
+
 bool pp_Author::getProperty(const gchar * szName, const gchar *& szValue) const
-{ 
+{
   return  m_AP.getProperty(szName,szValue);
 }
 
 UT_sint32 pp_Author::getAuthorInt(void) const
-{ 
+{
   return m_iAuthorInt;
 }

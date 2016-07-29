@@ -55,14 +55,12 @@ public:
 
  private:
 
-	enum
-	  {
+	enum ResponseId
+        {
 	    BUTTON_OK = GTK_RESPONSE_OK,
 	    BUTTON_CANCEL = GTK_RESPONSE_CANCEL
-	  } ResponseId ;
+        };
 
-	//GtkWidget * m_comboEntry;
-	//GtkWidget * m_comboHyperlink;
 	GtkWidget * m_clist;
 	GtkWidget * m_swindow;
 	GtkWidget * m_titleEntry;

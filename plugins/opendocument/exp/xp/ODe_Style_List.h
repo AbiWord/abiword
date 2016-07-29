@@ -61,7 +61,7 @@ private:
     UT_UTF8String m_name;
 
     // text:consecutive-numbering attribute
-    bool m_bConsecutiveNumbering;
+    //bool m_bConsecutiveNumbering;
 
     UT_GenericStringMap<ODe_ListLevelStyle*> m_levelStyles;
 };

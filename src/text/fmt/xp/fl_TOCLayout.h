@@ -79,7 +79,6 @@ private:
 	bool              m_bInherit;
 	UT_sint32         m_iPosInList;
 	UT_UTF8String     m_sLabel;
-	UT_sint32         m_iStartAt;
 };
 
 // We have one fl_TOCLayout for each Table of Contents.

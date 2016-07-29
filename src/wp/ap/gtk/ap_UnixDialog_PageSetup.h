@@ -87,7 +87,6 @@ public:
 	guint m_iEntryPageWidthID;
 	guint m_iEntryPageHeightID;
 	guint m_iComboPageSizeListID;
-	guint m_iOptionPageUnitsListID;
 
     XAP_Frame * m_pFrame;
 

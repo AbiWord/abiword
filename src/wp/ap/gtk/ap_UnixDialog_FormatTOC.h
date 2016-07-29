@@ -75,8 +75,6 @@ private:
 	UT_Vector   m_vecTextTypes;
 	UT_sint32   m_iIndentValue;
 	UT_sint32   m_iStartValue;
-	guint       m_iStartID;
-	guint       m_iIndentID;
 	static void s_NumType_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me );
 
 };

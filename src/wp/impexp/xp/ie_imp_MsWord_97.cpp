@@ -874,7 +874,6 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bInPara(false),
 	m_bLTRCharContext(true),
 	m_bLTRParaContext(true),
-	m_iOverrideIssued(UT_BIDI_UNSET),
 	m_bBidiMode(false),
 	m_bInLink(false),
 	m_pBookmarks(NULL),

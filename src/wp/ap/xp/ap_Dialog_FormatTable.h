@@ -61,7 +61,6 @@ public:
 	void			draw(const UT_Rect *clip=NULL);
 	GR_Graphics *   getGraphics(void) const { return m_gc;}
 private:
-	AP_FormatTable_preview_drawer	m_previewDrawer;
 	AP_Dialog_FormatTable *  m_pFormatTable;
 protected:
 

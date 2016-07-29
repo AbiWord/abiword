@@ -65,8 +65,7 @@
 class AbiGrammar : public AV_ListenerExtra
 {
 public:
-AbiGrammar(XAP_App * pApp):
-	m_pApp(pApp),
+AbiGrammar():
 	m_pView(NULL),
 	m_pDoc(NULL),
 	m_pBlock(NULL)
@@ -112,7 +111,6 @@ virtual bool notify(AV_View * pAView, const AV_ChangeMask mask, void * pPrivateD
 		}
 
 private:
-	XAP_App *        m_pApp;
 	FV_View *        m_pView;
 	PD_Document *    m_pDoc;
 	fl_BlockLayout * m_pBlock;
@@ -154,7 +152,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
     }
 #endif
 
-    pAbiGrammar = new AbiGrammar(pApp);
+    pAbiGrammar = new AbiGrammar();
     pApp->addListener(pAbiGrammar, &listenerID);
     pAbiGrammar->setID(listenerID);
     UT_DEBUGMSG(("Class AbiGrammar %p created! Listener Id %d \n",pAbiGrammar,listenerID));

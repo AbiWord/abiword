@@ -21,8 +21,6 @@
 #define PT_AUTHOR_H
 
 #include "ut_types.h"
-#include "ut_string_class.h"
-#include "ut_vector.h"
 #include "pp_AttrProp.h"
 
 class PD_Document;
@@ -30,7 +28,7 @@ class PD_Document;
 class ABI_EXPORT pp_Author
 {
 public:
-  pp_Author(PD_Document * pDoc, UT_sint32 iID);
+  pp_Author(UT_sint32 iID);
   virtual ~pp_Author();
 
   PP_AttrProp *      getAttrProp(void);
@@ -40,7 +38,6 @@ public:
   UT_sint32          getAuthorInt(void) const;
 
 private:
-  PD_Document *     m_pDoc;
   UT_sint32         m_iAuthorInt;
   PP_AttrProp       m_AP;
 };

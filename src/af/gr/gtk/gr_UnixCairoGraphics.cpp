@@ -72,10 +72,9 @@ GR_UnixCairoGraphicsBase::GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDevic
 {
 }
 
-GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkWindow * win, bool double_buffered)
+GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkWindow * win, bool /*double_buffered*/)
 	: GR_UnixCairoGraphicsBase(),
 	  m_pWin(win),
-	  m_double_buffered(double_buffered),
 	  m_CairoCreated(false),
 	  m_Painting(false),
 	  m_Signal(0),
@@ -470,26 +469,6 @@ void GR_UnixCairoGraphics::_beginPaint()
 		m_cr = gdk_cairo_create (m_pWin);
 		m_CairoCreated = true;
 	}
-
-#if 0 /* ndef NDEBUG */  // XXX figure why this is needed in debug
-	/* should only be called inside an expose event, messes up
-	 * double-buffering and all sorts of other GTK assumptions otherwise
-	 * we make this extra effort here to track down old wrong code
-	 */
-	/* for the time being, ignore it for non-double-buffered widgets that
-	 * might be very hard to migrate */
-	if (m_double_buffered)
-	{
-		GdkEvent *ev = gtk_get_current_event();
-		UT_ASSERT(ev);
-		if (ev)
-		{
-			UT_ASSERT(ev->type == GDK_EXPOSE || ev->type == GDK_DAMAGE);
-			if (ev->type == GDK_EXPOSE || ev->type == GDK_DAMAGE)
-				UT_ASSERT(ev->expose.window == m_pWin || ev->expose.window == gdk_window_get_effective_parent (m_pWin));
-		}
-	}
-#endif
 
 	UT_ASSERT(m_cr);
 	m_Painting = true;

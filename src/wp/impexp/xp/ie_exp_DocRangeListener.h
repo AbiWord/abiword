@@ -82,7 +82,6 @@ private:
 	bool              m_bFirstSection;
 	bool              m_bFirstBlock;
 	PD_Document *     m_pSourceDoc;
-	PD_DocumentRange * m_pDocRange;
 	PT_AttrPropIndex   m_iLastAP;
 };
 #endif  /* IE_EXP_PDOCRANGELISTENER_H */

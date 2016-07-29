@@ -228,8 +228,6 @@ IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
 #endif
 	m_listType(L_NONE),
     m_iListID(0),
-	m_bFirstDiv(true),
-	m_bUseTidy(false),
 	m_iNewListID(0),
 	m_iNewImage(0),
 	m_szBookMarkName(NULL),

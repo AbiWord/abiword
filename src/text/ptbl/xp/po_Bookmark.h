@@ -37,14 +37,14 @@ class ABI_EXPORT po_Bookmark
 {
  public:
     // TBD: convention for naming
-    typedef enum _bookmarkType
+    typedef enum
 	{
 		POBOOKMARK_START,
 		POBOOKMARK_END,
 		__last_field_dont_use__
 	} BookmarkType;
 
-    po_Bookmark(pf_Frag_Object& fO, pt_PieceTable * pt, BookmarkType type, const gchar* name);
+    po_Bookmark(BookmarkType type, const gchar* name);
     virtual							~po_Bookmark(void);
     void							setBlock(fl_BlockLayout * pBlock);
     fl_BlockLayout *				getBlock( void) const;
@@ -60,10 +60,8 @@ class ABI_EXPORT po_Bookmark
     fl_BlockLayout * m_pBlock;
     // will need some more helper functions in here eg. to test
     // whether text has changed to avoid unnecessary updates
-    pf_Frag_Object& m_fragObject;
-    pt_PieceTable *	m_pPieceTable;
     BookmarkType m_iBookmarkType;
-	gchar * m_pName;
+    gchar * m_pName;
 };
 
 #endif

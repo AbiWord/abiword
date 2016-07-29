@@ -115,8 +115,6 @@ private:
 
 	enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
 	UT_uint16	m_iListID;
-	bool        m_bFirstDiv;
-	bool		m_bUseTidy;
 	UT_uint16	m_iNewListID;
 	UT_uint16	m_iNewImage;
 

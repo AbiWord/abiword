@@ -66,8 +66,6 @@ private:
     UT_UTF8String m_class_name;
     UT_UTF8String m_class_list;
 
-    PD_Style * m_style;
-
     typedef std::map<std::string, std::string> map_type;
     map_type m_map;
 

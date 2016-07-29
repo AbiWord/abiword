@@ -409,7 +409,7 @@ pp_Author *  PD_Document::getNthAuthor(UT_sint32 i) const
 pp_Author *  PD_Document::addAuthor(UT_sint32 iAuthor)
 {
 	UT_DEBUGMSG(("creating author with int %d \n",iAuthor));
-	m_vecAuthors.addItem(new pp_Author(this, iAuthor));
+	m_vecAuthors.addItem(new pp_Author(iAuthor));
 	return 	m_vecAuthors.getNthItem(m_vecAuthors.getItemCount()-1);
 }
 

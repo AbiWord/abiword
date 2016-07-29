@@ -96,7 +96,6 @@ protected:
 	bool				m_bInBlock;
 	bool				m_inFont;
 	bool				m_inParagraph;
-	bool				m_bBreakExtra;
         bool                 m_bWasSpace;
 };
 
@@ -458,7 +457,6 @@ Passepartout_Listener::Passepartout_Listener(PD_Document * pDocument,
 	: m_pDocument(pDocument),
 	  m_pie(pie),
 	  m_bInBlock(false),
-	  m_bBreakExtra(false),
 	  m_bWasSpace(false)
 {
 	PT_AttrPropIndex api = m_pDocument->getAttrPropIndex();

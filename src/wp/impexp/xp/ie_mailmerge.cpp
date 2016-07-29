@@ -582,7 +582,7 @@ class ABI_EXPORT IE_MailMerge_Delimiter_Listener : public IE_MailMerge
 public:
 	
 	explicit IE_MailMerge_Delimiter_Listener (char delim)
-		: IE_MailMerge(), m_delim(delim), mLooping(true)
+		: IE_MailMerge(), m_delim(delim)
 		{
 		}
 	
@@ -720,7 +720,6 @@ private:
 	std::vector<std::string> m_items;
 
 	char m_delim;
-	bool mLooping;
 };
 
 class ABI_EXPORT IE_Delimiter_Sniffer : public IE_MergeSniffer

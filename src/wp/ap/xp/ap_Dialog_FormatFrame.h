@@ -70,7 +70,6 @@ public:
 						draw();
 					}*/
 private:
-	AP_FormatFrame_preview_drawer	m_previewDrawer;
 	AP_Dialog_FormatFrame *  m_pFormatFrame;
 protected:
 

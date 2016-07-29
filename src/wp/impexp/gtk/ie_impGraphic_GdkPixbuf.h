@@ -68,7 +68,6 @@ private:
 	png_structp m_pPNG;				// libpng structure for the PNG Object
 	png_infop   m_pPNGInfo;			// libpng structure for info on the PNG Object
 	UT_ByteBuf*  m_pPngBB;			// pBB Converted to PNG File
-	bool m_bIsXPM;
 };
 
 class ABI_EXPORT IE_ImpGraphicGdkPixbuf_Sniffer : public IE_ImpGraphicSniffer

@@ -78,7 +78,6 @@ public:
 
 
  private:
-	UT_uint32         m_iDeviceResolution;
 	double            m_dResRatio;
 };
 

@@ -973,9 +973,8 @@ UT_Error IE_Imp_OpenWriter::_handleMetaStream ()
 class OpenWriter_SettingsStream_Listener : public OpenWriter_Stream_Listener
 {
 public:
-  OpenWriter_SettingsStream_Listener ( IE_Imp_OpenWriter * importer, bool bOpenDocument )
-    : OpenWriter_Stream_Listener ( importer ), 
-      m_bOpenDocument ( bOpenDocument )
+  OpenWriter_SettingsStream_Listener (IE_Imp_OpenWriter * importer)
+    : OpenWriter_Stream_Listener ( importer )
   {
   }
 
@@ -994,9 +993,8 @@ public:
   virtual void charData (const gchar * /*buffer*/, int /*length*/)
   {
   }
-  
+
 private:
-  const bool m_bOpenDocument;
 };
 
 /*!
@@ -1004,7 +1002,7 @@ private:
  */
 UT_Error IE_Imp_OpenWriter::_handleSettingsStream ()
 {
-  OpenWriter_SettingsStream_Listener listener ( this, m_bOpenDocument );
+  OpenWriter_SettingsStream_Listener listener ( this );
   return handleStream (m_oo, "settings.xml", listener);
 }
 

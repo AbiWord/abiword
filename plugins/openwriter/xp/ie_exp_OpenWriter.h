@@ -77,7 +77,7 @@ public:
 class OO_Listener : public PL_Listener
 {
 public:
-   OO_Listener(PD_Document * pDocument, IE_Exp_OpenWriter * pie, OO_ListenerImpl *pListenerImpl);
+   OO_Listener(PD_Document * pDocument, OO_ListenerImpl *pListenerImpl);
 
    virtual bool populate(fl_ContainerLayout* sfh, const PX_ChangeRecord * pcr);
    virtual bool populateStrux(pf_Frag_Strux* sdh, const PX_ChangeRecord * pcr, fl_ContainerLayout* * psfh);
@@ -102,7 +102,6 @@ private:
    void _closeHyperlink();
 
    PD_Document * m_pDocument;
-   IE_Exp_OpenWriter * m_pie;
    OO_ListenerImpl * m_pListenerImpl;
 
    bool m_bInBlock;

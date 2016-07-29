@@ -50,7 +50,6 @@ IE_Exp_DocRangeListener::IE_Exp_DocRangeListener(PD_DocumentRange * pDocRange, P
   m_bFirstSection(false),
   m_bFirstBlock(false),
   m_pSourceDoc(pDocRange->m_pDoc),
-  m_pDocRange(pDocRange),
   m_iLastAP(0)
 {
   //

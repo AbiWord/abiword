@@ -462,8 +462,8 @@ void OO_AccumulatorImpl::openBlock(const std::string & styleAtts, const std::str
 }
 
 
-OO_Listener::OO_Listener (PD_Document * pDocument, IE_Exp_OpenWriter * pie, OO_ListenerImpl *pListenerImpl)
-   : PL_Listener (), m_pDocument(pDocument), m_pie(pie), m_pListenerImpl(pListenerImpl), m_bInBlock(false), m_bInSpan(false), m_bInHyperlink(false)
+OO_Listener::OO_Listener (PD_Document * pDocument, OO_ListenerImpl *pListenerImpl)
+   : PL_Listener (), m_pDocument(pDocument), m_pListenerImpl(pListenerImpl), m_bInBlock(false), m_bInSpan(false), m_bInHyperlink(false)
 {
 }
 
@@ -1234,7 +1234,7 @@ UT_Error IE_Exp_OpenWriter::_writeDocument(void)
 
   OO_StylesContainer stylesContainer;
   OO_AccumulatorImpl accumulatorImpl(&stylesContainer);
-  OO_Listener listener1(getDoc(), this, &accumulatorImpl);
+  OO_Listener listener1(getDoc(), &accumulatorImpl);
   if (!getDoc()->tellListener(static_cast<PL_Listener *>(&listener1)))
     {
       oo_gsf_output_close(GSF_OUTPUT(m_oo));
@@ -1249,7 +1249,7 @@ UT_Error IE_Exp_OpenWriter::_writeDocument(void)
 
   {
     OO_WriterImpl writerImpl(m_oo, &stylesContainer);
-    OO_Listener listener2(getDoc(), this, &writerImpl);
+    OO_Listener listener2(getDoc(), &writerImpl);
     if (!getDoc()->tellListener(static_cast<PL_Listener *>(&listener2)))
       {
 	oo_gsf_output_close(GSF_OUTPUT(m_oo));

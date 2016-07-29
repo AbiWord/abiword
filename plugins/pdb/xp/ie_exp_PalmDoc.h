@@ -76,8 +76,6 @@ private:
         UT_uint32			m_numRecords;
 	DWord				m_fileSize;
 	buffer *			m_buf;
-	UT_uint32			m_bufLen;
-        UT_uint32			m_bufPosition;
 	bool				m_littlendian;
 
 };

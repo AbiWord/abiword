@@ -25,17 +25,14 @@
 #include "ap_RDFSemanticItemGTKInjected.h"
 
 class ABI_EXPORT AP_RDFEventGTK
-    :
-    public AP_RDFSemanticItemGTKInjected< AP_RDFEvent >
+    : public AP_RDFSemanticItemGTKInjected< AP_RDFEvent >
 {
     GtkWidget* m_mainWidget;
-    GtkEntry* w_name;
     GtkEntry* w_summary;
     GtkEntry* w_location;
     GtkEntry* w_desc;
     GtkEntry* w_dtstart;
     GtkEntry* w_dtend;
-    GtkEntry* w_uid;
 
   public:
     AP_RDFEventGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it );

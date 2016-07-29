@@ -180,7 +180,6 @@ public:
 
 private:
   XAP_Frame   * m_pFrame;
-  GR_Graphics * m_pGraphics;
 };
 
 

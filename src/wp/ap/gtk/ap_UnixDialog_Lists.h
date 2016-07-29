@@ -104,7 +104,6 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	bool					m_bManualListStyle;
 	bool					m_bDestroy_says_stopupdating;
 	bool					m_bAutoUpdate_happening_now;
-	bool					m_bisCustomFrameHidden;
 	bool                                    m_bDontUpdate;
 	UT_Timer *				m_pAutoUpdateLists;
 
@@ -124,7 +123,6 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GtkWidget * m_wAlignListSpin;
 	GtkAdjustment * m_oIndentAlign_adj;
 	GtkWidget * m_wIndentAlignSpin;
-	GtkAdjustment * m_oLevelSpin_adj;
 	GtkComboBox * m_wFontOptions;
 	GtkListStore * m_wFontOptions_menu;
 	GtkWidget * m_wCustomFrame;
@@ -146,7 +144,6 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	gint m_iStyleBoxID;
 	gint m_iAlignListSpinID;
 	gint m_iIndentAlignSpinID;
-	gint m_iFontOptionsID;
 	UT_sint32  m_iPageLists;
 	UT_sint32  m_iPageFold;
 	UT_GenericVector<GtkWidget*>  m_vecFoldCheck;
