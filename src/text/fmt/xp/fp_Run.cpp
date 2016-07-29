@@ -2859,7 +2859,7 @@ fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 
 bool fp_BookmarkRun::isComrade(fp_BookmarkRun *pBR) const
 {
-	UT_ASSERT(m_pName && *m_pName && pBR->m_pName && *pBR->m_pName);
+	UT_ASSERT(*m_pName && *pBR->m_pName);
 	return (0 == strcmp(m_pName, pBR->m_pName));
 }
 

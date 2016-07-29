@@ -221,30 +221,28 @@ static EV_EditBits MakeKeyPressEditBits( UT_uint32 mod, UT_uint32 key )
 	return EV_EMS_FromNumberNoShift(mod) | key | EV_EKP_PRESS;
 }
 
-void EV_EditBindingMap::getAll( std::map<EV_EditBits,const char*>& map ) 
-{	
+void EV_EditBindingMap::getAll( std::map<EV_EditBits,const char*>& map )
+{
 	// loop through mouse contexts
-	if (m_pebMT) {
-		for (UT_uint32 button=0; button<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++button) {
-			if (m_pebMT[button]) {
-				for (UT_uint32 op=0; op<sizeof(m_pebMT[0]->m_peb)/sizeof(m_pebMT[0]->m_peb[0]); ++op) {
-					for (UT_uint32 mod=0; mod<sizeof(m_pebMT[0]->m_peb[0])/sizeof(m_pebMT[0]->m_peb[0][0]); ++mod) {
-						for (UT_uint32 context=0; context<sizeof(m_pebMT[0]->m_peb[0][0])/sizeof(m_pebMT[0]->m_peb[0][0][0]); ++context) {
-							EV_EditBinding* binding = m_pebMT[button]->m_peb[op][mod][context];
-							if (binding && binding->getType()==EV_EBT_METHOD) {
-								map.insert( 
-									std::map<EV_EditBits,const char*>::value_type( 
-										MakeMouseEditBits( button, op, mod, context ),
-										binding->getMethod()->getName() )
+    for (UT_uint32 button=0; button<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++button) {
+        if (m_pebMT[button]) {
+            for (UT_uint32 op=0; op<sizeof(m_pebMT[0]->m_peb)/sizeof(m_pebMT[0]->m_peb[0]); ++op) {
+                for (UT_uint32 mod=0; mod<sizeof(m_pebMT[0]->m_peb[0])/sizeof(m_pebMT[0]->m_peb[0][0]); ++mod) {
+                    for (UT_uint32 context=0; context<sizeof(m_pebMT[0]->m_peb[0][0])/sizeof(m_pebMT[0]->m_peb[0][0][0]); ++context) {
+                        EV_EditBinding* binding = m_pebMT[button]->m_peb[op][mod][context];
+                        if (binding && binding->getType()==EV_EBT_METHOD) {
+                            map.insert(
+                                std::map<EV_EditBits,const char*>::value_type(
+                                    MakeMouseEditBits( button, op, mod, context ),
+                                    binding->getMethod()->getName() )
 								);
-							}
-						}
-					}
-				}
-			}
-		}
+                        }
+                    }
+                }
+            }
+        }
 	}
-	
+
 	// loop through NVK's
 	if (m_pebNVK) {
 		for (UT_uint32 nvk=0; nvk<sizeof(m_pebNVK->m_peb)/sizeof(m_pebNVK->m_peb[0]); ++nvk) {
@@ -285,21 +283,19 @@ void EV_EditBindingMap::findEditBits( const char* szMethodName, std::vector<EV_E
 	if (method) {
 		
 		// search in mouse contexts
-		if (m_pebMT) {
-			for (UT_uint32 button=0; button<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++button) {
-				if (m_pebMT[button]) {
-					for (UT_uint32 op=0; op<sizeof(m_pebMT[0]->m_peb)/sizeof(m_pebMT[0]->m_peb[0]); ++op) {
-						for (UT_uint32 mod=0; mod<sizeof(m_pebMT[0]->m_peb[0])/sizeof(m_pebMT[0]->m_peb[0][0]); ++mod) {
-							for (UT_uint32 context=0; context<sizeof(m_pebMT[0]->m_peb[0][0])/sizeof(m_pebMT[0]->m_peb[0][0][0]); ++context) {
-								if (bindingUsesMethod( m_pebMT[button]->m_peb[op][mod][context], method )) {
-									list.push_back( MakeMouseEditBits( button, op, mod, context ) );
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+        for (UT_uint32 button=0; button<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++button) {
+            if (m_pebMT[button]) {
+                for (UT_uint32 op=0; op<sizeof(m_pebMT[0]->m_peb)/sizeof(m_pebMT[0]->m_peb[0]); ++op) {
+                    for (UT_uint32 mod=0; mod<sizeof(m_pebMT[0]->m_peb[0])/sizeof(m_pebMT[0]->m_peb[0][0]); ++mod) {
+                        for (UT_uint32 context=0; context<sizeof(m_pebMT[0]->m_peb[0][0])/sizeof(m_pebMT[0]->m_peb[0][0][0]); ++context) {
+                            if (bindingUsesMethod( m_pebMT[button]->m_peb[op][mod][context], method )) {
+                                list.push_back( MakeMouseEditBits( button, op, mod, context ) );
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
 		// search in NVK's
 		if (m_pebNVK) {

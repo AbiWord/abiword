@@ -594,6 +594,7 @@ if test "$GCC" = "yes"; then
 	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
 		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
                       -Wunreachable-code -Wmisleading-indentation \
+                      -Wpointer-bool-conversion \
 		      -Wunused -Wpointer-arith -Wshadow; do
 		SAVE_CPPFLAGS="$CPPFLAGS"
 		CPPFLAGS="$CPPFLAGS $uwoption $option"
