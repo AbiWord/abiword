@@ -967,11 +967,12 @@ public:
         POCol           m_pocol;
         POCol::iterator m_pocoliter;
         PD_RDFStatement m_current;
-        
+
     public:
         typedef StatementIterator& self_reference;
+        typedef const StatementIterator& const_self_reference;
         typedef StatementIterator  self_type;
-        
+
         StatementIterator()
             : m_end( true )
             , m_apPropertyNumber( 0 )
@@ -1000,7 +1001,7 @@ public:
         }
         void setup_pocol()
         {
-            UT_DEBUGMSG(("SI... statement iter++/setup_pocol(top)\n" ));            
+            UT_DEBUGMSG(("SI... statement iter++/setup_pocol(top)\n" ));
             const gchar * szName  = 0;
             const gchar * szValue = 0;
             const PP_AttrProp* AP = *m_apiter;
@@ -1081,7 +1082,7 @@ public:
             return result;
         }
 
-        bool operator==( const self_reference other )
+        bool operator==( const_self_reference other )
         {
             if( m_end && other.m_end )
                 return true;
@@ -1094,7 +1095,7 @@ public:
                 && m_pocoliter == other.m_pocoliter
                 && m_apiter == other.m_apiter;
         }
-        bool operator!=( const self_reference other )
+        bool operator!=( const_self_reference other )
         {
             return !operator==(other);
         }
