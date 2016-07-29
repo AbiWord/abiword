@@ -228,9 +228,9 @@ g_cclosure_user_marshal_VOID__INT_INT_INT (GClosure     *closure,
 	                                                gint         arg_2,
 	                                                gint         arg_3,
 	                                                gpointer     data2);
-	register GMarshalFunc_VOID__INT_INT_INT callback;
-	register GCClosure *cc = (GCClosure*) closure;
-	register gpointer data1, data2;
+	GMarshalFunc_VOID__INT_INT_INT callback;
+	GCClosure *cc = (GCClosure*) closure;
+	gpointer data1, data2;
 
 	UT_return_if_fail (n_param_values == 4);
 

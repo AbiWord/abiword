@@ -50,9 +50,9 @@ g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
                                                 guint        arg_1,
                                                 guint        arg_2,
                                                 gpointer     data2);
-  register GMarshalFunc_VOID__UINT_UINT callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_UINT callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
 
   UT_return_if_fail (n_param_values == 3);
   UT_DEBUGMSG(("IN AbiTable g_cclose_.. \n"));
