@@ -4290,6 +4290,7 @@ void PD_DocumentRDF::runMilestone2Test()
 #endif
 }
 
+#if 0
 #ifdef DEBUG
 static void dump( const std::string& msg, PD_RDFModelIterator iter, PD_RDFModelIterator e )
 {
@@ -4303,6 +4304,7 @@ static void dump( const std::string& msg, PD_RDFModelIterator iter, PD_RDFModelI
     }
     UT_DEBUGMSG(("dump(end) count:%d msg::%s\n", count, msg.c_str() ));
 }
+#endif
 #endif
 
 
