@@ -362,16 +362,6 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			m_finalPathnameCandidate = finalPathname;
 			goto ReturnTrue;
 
-			// complain about write permission on the directory.
-			// lop off ugly trailing slash only if we don't have
-			// the root dir ('/') for a path
-	
-			if (lastSlash > 0 && lastSlash < finalPathnameCopy.size()) {
-				finalPathnameCopy.resize(lastSlash);
-			}
-	
-			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotWriteable,
-								finalPathname.c_str());
 		ContinueLoop:
 			finalPathnameCopy.clear();
 		}

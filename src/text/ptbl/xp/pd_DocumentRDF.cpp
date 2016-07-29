@@ -4367,16 +4367,6 @@ void PD_DocumentRDF::runPlay()
 
 
     return;
-
-
-    UT_DebugOnly<int> count = 0;
-    dump( "whole model", begin(), end() );
-
-    UT_DEBUGMSG(("runPlay() triple count:%d\n", (int)count ));
-    UT_DEBUGMSG(("runPlay()\n\n"));
-
-    PD_RDFModelHandle m = getRDFForID( "wingb" );
-    dump( "wingb", m->begin(), m->end() );
 #endif
 }
 
