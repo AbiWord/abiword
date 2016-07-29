@@ -494,7 +494,7 @@ const IE_MimeConfidence * IE_Imp_StarOffice_Sniffer::getMimeConfidence ()
 	return IE_Imp_StarOffice_Sniffer__MimeConfidence;
 }
 
-static const UT_Byte sdwSignature[] = {0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1};
+//static const UT_Byte sdwSignature[] = {0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1};
 
 UT_Confidence_t IE_Imp_StarOffice_Sniffer::recognizeContents(GsfInput * input) {
 	GsfInfile * ole;

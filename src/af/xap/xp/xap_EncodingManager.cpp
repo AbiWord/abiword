@@ -619,6 +619,7 @@ static const _rmap langcode_to_wincharsetcode[]=
 	{NULL, NULL}
 };
 
+#if 0
 static const UT_Bijection::pair_data zh_TW_big5[]=
 {
 /*
@@ -641,6 +642,7 @@ static const _rmap cjk_word_fontname_mapping_data[]=
     {reinterpret_cast<const char*>(zh_TW_big5),zh_TW_big5_keys},
     {NULL, NULL}
 };
+#endif
 
 
 /*all CJK language codes should be listed here to be marked as CJK*/

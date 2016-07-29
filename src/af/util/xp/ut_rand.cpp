@@ -366,11 +366,13 @@ struct random_poly_info
   int degrees[MAX_TYPES];
 };
 
+#if 0
 static const struct random_poly_info random_poly_info =
 {
   { SEP_0, SEP_1, SEP_2, SEP_3, SEP_4 },
   { DEG_0, DEG_1, DEG_2, DEG_3, DEG_4 }
 };
+#endif
 
 
 

@@ -71,7 +71,6 @@
 
 static const char pszEmpty[] = { 0 };
 
-static const UT_UCS2Char ucs2Empty[] = { 0 };
 static const UT_UCS4Char ucs4Empty[] = { 0 };
 
 
