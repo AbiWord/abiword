@@ -39,14 +39,12 @@ ODi_ContentStreamAnnotationMatcher_ListenerState::ODi_ContentStreamAnnotationMat
     PD_Document* pDocument,
     GsfInfile* pGsfInfile,
     ODi_Office_Styles* pStyles,
-    ODi_FontFaceDecls& rFontFaceDecls,
     ODi_ElementStack& rElementStack,
     ODi_Abi_Data& rAbiData  )
     : ODi_ListenerState("ContentStreamAnnotationMatcher", rElementStack),
       m_pAbiDocument (pDocument),
       m_pGsfInfile(pGsfInfile),
       m_pStyles(pStyles),
-      m_rFontFaceDecls(rFontFaceDecls),
       m_rAbiData(rAbiData)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);

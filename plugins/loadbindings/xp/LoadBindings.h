@@ -19,7 +19,7 @@
  */
 
 #ifndef PLUGIN_LOADBINDINGS_H
-#define PLUGIN_LOADBINGINGS_H
+#define PLUGIN_LOADBINDINGS_H
 #include "ut_string_class.h"
 #include "ev_EditEventMapper.h"
 #include "ev_EditEventMapper.h"

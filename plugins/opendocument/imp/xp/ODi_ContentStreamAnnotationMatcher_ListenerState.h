@@ -47,7 +47,6 @@ public:
     ODi_ContentStreamAnnotationMatcher_ListenerState ( PD_Document* pDocument,
                                                        GsfInfile* pGsfInfile,
                                                        ODi_Office_Styles* pStyles,
-                                                       ODi_FontFaceDecls& rFontFaceDecls,
                                                        ODi_ElementStack& rElementStack,
                                                        ODi_Abi_Data & rAbiData );
 
@@ -65,7 +64,6 @@ private:
     PD_Document* m_pAbiDocument;
     GsfInfile* m_pGsfInfile;
     ODi_Office_Styles* m_pStyles;
-    ODi_FontFaceDecls& m_rFontFaceDecls;
     ODi_Abi_Data& m_rAbiData;
 
 

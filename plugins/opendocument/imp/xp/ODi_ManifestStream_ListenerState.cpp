@@ -33,11 +33,9 @@
  * Constructor
  */
 ODi_ManifestStream_ListenerState::ODi_ManifestStream_ListenerState(
-                                                PD_Document* pDocument,
                                                 ODi_ElementStack& rElementStack,
                                                 std::map<std::string, ODc_CryptoInfo>& cryptoInfo)
         : ODi_ListenerState("ManifestStream", rElementStack),
-          m_pDocument(pDocument),
           m_sFullPath(""),
           m_iSize(-1),
           m_pCryptoInfo(NULL),

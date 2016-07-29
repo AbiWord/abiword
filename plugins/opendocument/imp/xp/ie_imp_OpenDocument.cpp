@@ -251,8 +251,7 @@ UT_Error IE_Imp_OpenDocument::_handleManifestStream() {
     m_sPassword = "";
 
 	GsfInput* pMetaInf = gsf_infile_child_by_name(m_pGsfInfile, "META-INF");
-    ODi_ManifestStream_ListenerState manifestListener(getDoc(),
-                                          *(m_pStreamListener->getElementStack()),
+    ODi_ManifestStream_ListenerState manifestListener(*(m_pStreamListener->getElementStack()),
                                            m_cryptoInfo);
 
 	m_pStreamListener->setState(&manifestListener, false);

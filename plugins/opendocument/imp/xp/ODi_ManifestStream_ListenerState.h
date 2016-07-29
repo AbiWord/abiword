@@ -39,8 +39,7 @@ class PD_Document;
 class ODi_ManifestStream_ListenerState : public ODi_ListenerState {
 public:
 
-    ODi_ManifestStream_ListenerState(PD_Document* pDocument,
-                                ODi_ElementStack& rElementStack,
+    ODi_ManifestStream_ListenerState(ODi_ElementStack& rElementStack,
                                 std::map<std::string, ODc_CryptoInfo>& cryptoInfo);
 
     virtual ~ODi_ManifestStream_ListenerState();
@@ -53,8 +52,6 @@ public:
     void charData (const gchar* /*pBuffer*/, int /*length*/) {}
 
 private:
-
-    PD_Document* m_pDocument;
 
     std::string m_sFullPath;
 	UT_sint64 m_iSize;

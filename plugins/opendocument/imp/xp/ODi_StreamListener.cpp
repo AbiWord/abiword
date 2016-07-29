@@ -467,7 +467,6 @@ ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
         
         pState = new ODi_ContentStreamAnnotationMatcher_ListenerState(m_pAbiDocument, m_pGsfInfile,
                                                                       m_pStyles,
-                                                                      m_fontFaceDecls,
                                                                       *m_pElementStack,
                                                                       m_rAbiData);
         

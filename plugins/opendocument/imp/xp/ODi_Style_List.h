@@ -88,7 +88,7 @@ private:
     std::string m_displayName;
 
     // text:consecutive-numbering attribute
-    bool m_bConsecutiveNumbering;
+    //bool m_bConsecutiveNumbering;
 
     std::vector<ODi_ListLevelStyle*> m_levelStyles;
     bool m_bListStyle;

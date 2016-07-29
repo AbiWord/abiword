@@ -106,8 +106,6 @@ private:
 
 	UT_String			m_sFormats;
 	UT_String			m_sLayout;
-
-	int                 m_iImgCnt;
 };
 
 // KWord version 1 width/height are in mm

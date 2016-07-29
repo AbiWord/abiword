@@ -19,7 +19,7 @@
  */
 
 #ifndef __TELEPATHY_ACCOUNT_HANDLER__
-#define __TELEPATHY_ACCOUNT_HANDLERr__
+#define __TELEPATHY_ACCOUNT_HANDLER__
 
 #include <vector>
 
