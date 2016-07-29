@@ -597,7 +597,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	/* end translation req */
 
 	/* setup page width and height */
-	if (!getPageOrientation () == PORTRAIT)
+	if (getPageOrientation() != PORTRAIT)
 	{
 		m_PageSize.setLandscape();
 	}

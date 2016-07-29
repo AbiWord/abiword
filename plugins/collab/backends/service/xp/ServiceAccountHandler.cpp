@@ -1868,7 +1868,7 @@ bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, uint
 std::string ServiceAccountHandler::_getDomain(const std::string& protocol)
 {
 	std::string uri = getProperty("uri");
-	if (!uri.compare(0, protocol.size(), protocol) == 0)
+	if (uri.compare(0, protocol.size(), protocol) != 0)
 		return "";
 
 	size_t slash_pos = uri.find_first_of("/", protocol.size());
