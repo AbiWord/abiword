@@ -571,63 +571,35 @@ fi
 AC_SUBST(ABIWORD_ICONDIR, "$abi_cv_icondir")
 
 
-#
-# Compiler settings (from gnumeric's configure.in)
-#
+dnl ***************************************************************
+dnl Excessive warnings
+dnl ***************************************************************
 AC_LANG_PUSH(C++)
-if test "$GCC" = "yes"; then
-	uwoption="-Werror=unknown-warning-option"
-
-	dnl Clang needs this option, or else it will appear to support any
-	dnl warning option, only to spew warnings about them later.
-	uwoption="-Werror=unknown-warning-option"
-	SAVE_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$CPPFLAGS $uwoption"
-	AC_MSG_CHECKING([whether gcc understands $uwoption])
-	AC_COMPILE_IFELSE(
-		[AC_LANG_PROGRAM([], [])],
-		[has_unknown_warning_option=yes],
-		[has_unknown_warning_option=no; uwoption=""])
-	AC_MSG_RESULT($has_unknown_warning_option)
-	CPPFLAGS="$SAVE_CPPFLAGS"
-
-	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
-		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
-                      -Wunreachable-code -Wmisleading-indentation \
-                      -Wpointer-bool-conversion -Wheader-guard \
-                      -Wlogical-not-parentheses \
-		      -Wunused -Wpointer-arith -Wshadow; do
-		SAVE_CPPFLAGS="$CPPFLAGS"
-		CPPFLAGS="$CPPFLAGS $uwoption $option"
-		AC_MSG_CHECKING([whether gcc understands $option])
-		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])],
-			has_option=yes,
-			has_option=no)
-		if test $has_option = no; then
-		  CPPFLAGS="$SAVE_CPPFLAGS"
-		fi
-		AC_MSG_RESULT($has_option)
-		unset has_option
-		unset SAVE_CPPFLAGS
-	done
-	unset option
-
-	for option in -Wno-overloaded-virtual; do
-		SAVE_CXXFLAGS="$CXXFLAGS"
-		CXXFLAGS="$CXXFLAGS $uwoption $option"
-		AC_MSG_CHECKING([whether gcc understands $option])
-		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])],
-			has_option=yes,
-			has_option=no)
-		if test $has_option = no; then
-		  CXXFLAGS="$SAVE_CXXFLAGS"
-		fi
-		AC_MSG_RESULT($has_option)
-		unset has_option
-		unset SAVE_CXXFLAGS
-	done
-	unset option
-fi
+AX_CHECK_COMPILE_FLAG([-Werror=unknown-warning-option], [
+	ax_compiler_flags_test="-Werror=unknown-warning-option"
+], [
+	ax_compiler_flags_test=""
+])
+AX_APPEND_COMPILE_FLAGS([ \
+   -Wcast-align \
+   -Wchar-subscripts \
+   -Wextra \
+   -Wformat-nonliteral \
+   -Wformat-security \
+   -Wheader-guard \
+   -Wlogical-not-parentheses \
+   -Wmisleading-indentation \
+   -Wmissing-noreturn \
+   -Wno-overloaded-virtual \
+   -Wpointer-arith \
+   -Wpointer-bool-conversion \
+   -Wredundant-decls \
+   -Wshadow \
+   -Wsign-compare \
+   -Wunreachable-code \
+   -Wunused \
+   -Wwrite-strings \
+], [], [$ax_compiler_flags_test])
 AC_LANG_POP
 
 #
