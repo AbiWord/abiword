@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libxp.la
 
 AM_CPPFLAGS = \
-	$(COMMAND_CFLAGS) \
+	$(TESTHARNESS_CFLAGS) \
 	-I$(top_srcdir)/src/af/tf/xp/ \
 	-DABI_BUILD_VERSION=\"$(VERSION)\"
 
