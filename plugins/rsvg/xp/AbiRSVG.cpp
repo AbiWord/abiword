@@ -124,19 +124,19 @@ private:
 			{
 				UT_DEBUGMSG(("DOM: couldn't write to loader: %s\n", err->message));
 				g_error_free(err);
-				rsvg_handle_free ( rsvg ) ;
+				g_object_unref(G_OBJECT(rsvg));
 				return UT_ERROR ;
 			}
 		
 		pixbuf = rsvg_handle_get_pixbuf ( rsvg ) ;
-		rsvg_handle_free ( rsvg ) ;
+		g_object_unref(G_OBJECT(rsvg));
 		
 		if (!pixbuf)
 			{
 				return UT_ERROR;
 			}
 		
-		gdk_pixbuf_ref (pixbuf);
+		g_object_ref (pixbuf);
 		
 		// Initialize stuff to create our PNG.
 		UT_Error error = Initialize_PNG();
