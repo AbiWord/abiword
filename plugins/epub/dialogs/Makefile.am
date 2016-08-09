@@ -1,4 +1,4 @@
-DIST_SUBDIRS = gtk win xp
+DIST_SUBDIRS = qt gtk win xp
 
 noinst_LTLIBRARIES = libdialogs.la
 
