@@ -171,7 +171,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 
 	const char * szAppName = pApp->getApplicationName();
 
-	sprintf(buf,szFormat,szAppName);
+	snprintf(buf, 128, szFormat, szAppName);
 	return buf;
 }
 
@@ -190,7 +190,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents)
 
 	const char * szAppName = pApp->getApplicationName();
 
-	sprintf(buf,szFormat,szAppName);
+	snprintf(buf, 128, szFormat, szAppName);
 	return buf;
 }
 
@@ -209,7 +209,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Intro)
 
 	const char * szAppName = pApp->getApplicationName();
 
-	sprintf(buf,szFormat,szAppName);
+	snprintf(buf, 128, szFormat, szAppName);
 	return buf;
 }
 
@@ -229,7 +229,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search)
 
 	const char * szAppName = pApp->getApplicationName();
 
-	sprintf(buf,szFormat,szAppName);
+	snprintf(buf, 128, szFormat, szAppName);
 	return buf;
 }
 
@@ -248,7 +248,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Checkver)
 
 	const char * szAppName = pApp->getApplicationName();
 
-	sprintf(buf,szFormat,szAppName);
+	snprintf(buf, 128, szFormat, szAppName);
 	return buf;
 }
 /*****************************************************************/
@@ -762,7 +762,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 		const char * szFormat = pLabel->getMenuLabel();
 		static char buf[128];	// BUGBUG: possible buffer overflow
 
-		sprintf(buf,szFormat,c);
+		snprintf(buf, 128, szFormat, c);
 		g_free (c); c = NULL;
 		return buf;
 	}

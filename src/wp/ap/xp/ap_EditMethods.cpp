@@ -7821,8 +7821,8 @@ UT_return_val_if_fail(pDialog, false);
 //
 		gchar  background[8];
 		const UT_RGBColor * bgCol = pView->getCurrentPage()->getFillType().getColor();
-		sprintf(background, "%02x%02x%02x",bgCol->m_red,
-				bgCol->m_grn,bgCol->m_blu);
+		snprintf(background, 8, "%02x%02x%02x", bgCol->m_red,
+				bgCol->m_grn, bgCol->m_blu);
 		pDialog->setBackGroundColor( static_cast<const gchar *>(background));
 
 		// these behave a little differently since they are
@@ -8669,7 +8669,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 						{
 							i++;
 							k = *page;
-							sprintf (msgBuf, msgTmpl, i, pages.size());
+							snprintf (msgBuf, 1024, msgTmpl, i, pages.size());
 							
 							if(pFrame) {
 								pFrame->setStatusMessage ( msgBuf );
@@ -8697,7 +8697,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 
 					for (j=1; (j <= nCopies); j++)
 						{
-							sprintf (msgBuf, msgTmpl, i, pages.size());
+							snprintf (msgBuf, 1024, msgTmpl, i, pages.size());
 							
 							if(pFrame) {
 								pFrame->setStatusMessage ( msgBuf );
