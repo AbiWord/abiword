@@ -1,4 +1,4 @@
-if test "$enable_goffice" != ""; then
+if test "$TOOLKIT" == "gtk" && test "$enable_goffice" != ""; then
 
 test "$enable_goffice" = "auto" && PLUGINS="$PLUGINS goffice"
 
