@@ -8,6 +8,7 @@ m4_define([abi_version], [abi_version_major.abi_version_minor.abi_version_micro]
 AC_INIT([abiword],[abi_version],[http://www.abisource.com/])
 AC_CANONICAL_HOST
 AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([1.9 tar-ustar dist-bzip2 subdir-objects])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
@@ -222,7 +223,7 @@ AC_ARG_ENABLE([default-plugins],
 	fi
 ])
 
-m4_define([plugin_list], m4_include([plugin-list.m4]))
+m4_define([plugin_list], m4_include([m4/plugin-list.m4]))
 
 AC_ARG_ENABLE([plugins], 
 	[AS_HELP_STRING([--enable-plugins], [="foo bar baz", list of plugins to build. Use --disable-plugins to disable plugin loading support, resulting in a smaller binary size. The list of plugins : ]m4_n([plugin_list]))], 
@@ -985,9 +986,9 @@ for plugin in `echo $BUILTIN_PLUGINS`; do
 	BUILTIN_PLUGINS_LA="$BUILTIN_PLUGINS_LA ../../plugins/$plugin/$plugin.la"
 done
 
-m4_include([plugin-builtin.m4])
+m4_include([m4/plugin-builtin.m4])
 
-m4_include([plugin-configure.m4])
+m4_include([m4/plugin-configure.m4])
 
 AC_SUBST([PLUGINS])
 AC_SUBST([BUILTIN_PLUGINS])
@@ -1187,7 +1188,7 @@ AC_OUTPUT(
 )
 
 AC_OUTPUT(
-  m4_include([plugin-makefiles.m4])
+  m4_include([m4/plugin-makefiles.m4])
 )
 
 echo "
