@@ -585,6 +585,7 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wcast-align \
    -Wchar-subscripts \
    -Wextra \
+   -Wformat \
    -Wformat-nonliteral \
    -Wformat-security \
    -Wheader-guard \
