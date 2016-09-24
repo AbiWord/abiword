@@ -28,15 +28,6 @@ AM_MAINTAINER_MODE([enable])
 GTK_VERSION_REQ=3.12.0
 GTK_ENCODED_VERSION="GDK_VERSION_3_12"
 
-dnl GTK2_VERSION_REQ=2.12.0
-dnl
-dnl AC_ARG_WITH([gtk2],
-dnl 	[AS_HELP_STRING([--with-gtk2], [use Gtk library version 2.x])],
-dnl [
-dnl 	abi_cv_gtk2="$withval"
-dnl ])
-
-
 # This check MUST be done early.
 #
 # We define EMBEDDED_TARGET to a numerical value so that we can do like
@@ -111,11 +102,7 @@ opt_pkgs=''
 # gtk deps
 cairo_req='cairo-pdf cairo-ps pangocairo'
 #
-if test "x$abi_cv_gtk2" = "xyes"; then
-gtk_req="gtk+-2.0 >= $GTK2_VERSION_REQ gtk+-unix-print-2.0 librsvg-2.0 >= 2.16.0"
-else
 gtk_req="gtk+-3.0 >= $GTK_VERSION_REQ gtk+-unix-print-3.0 librsvg-2.0 >= 2.16.0"
-fi
 dnl cairo-fc is needed but only available on cairo > 1.10
 dnl http://bugzilla.abisource.com/show_bug.cgi?id=13265
 PKG_CHECK_EXISTS(cairo >= 1.10, [gtk_req="$gtk_req cairo-fc"],[])
@@ -154,7 +141,6 @@ if test "x$HAVE_PERL" = "xno"; then
 fi
 
 
-TOOLKIT_IS_GTK2="no"
 AC_MSG_CHECKING([for platform and toolkit])
 case ${host_os} in
   *darwin*)
@@ -171,9 +157,6 @@ case ${host_os} in
     if test "x$abi_cv_qt" = "xyes"; then
       TOOLKIT="qt"
     else
-      if test "x$abi_cv_gtk2" = "xyes"; then
-        TOOLKIT_IS_GTK2="yes"
-      fi
       TOOLKIT="gtk"
     fi
     ;;
@@ -788,7 +771,6 @@ fi
 # maybe just switch on TOOLKIT instead of the fancy TARGET defines
 AM_CONDITIONAL([TOOLKIT_COCOA], test "$TOOLKIT" = "cocoa")
 AM_CONDITIONAL([TOOLKIT_GTK], test "$TOOLKIT" = "gtk")
-AM_CONDITIONAL([TOOLKIT_GTK2], test "$TOOLKIT_IS_GTK2" = "yes")
 AM_CONDITIONAL([TOOLKIT_QT], test "$TOOLKIT" = "qt")
 AM_CONDITIONAL([TOOLKIT_WIN], test "$TOOLKIT" = "win")
 
@@ -818,10 +800,6 @@ elif test "$TOOLKIT" = "cocoa"; then
 	enable_shared="yes"
 	enable_static="no"
 elif test "$TOOLKIT" = "gtk"; then
-     if test "$TOOLKIT_IS_GTK2" = "yes"; then
-	AC_DEFINE([TOOLKIT_GTK2], [1], [Build gtk+ user interface])
-	AC_DEFINE([TOOLKIT_GTK_ALL], [1], [Build gtk+ user interface])
-     else
 	AC_DEFINE([TOOLKIT_GTK], [1], [Build gtk+ user interface])
 	AC_DEFINE([TOOLKIT_GTK_ALL], [1], [Build gtk+ user interface])
 dnl We have no reason to mess with that.
@@ -831,7 +809,6 @@ dnl	   test "$enable_static" = "no"; then
 dnl		enable_shared="no"
 dnl		enable_static="yes"
 dnl	fi
-     fi
 elif test "$TOOLKIT" = "qt"; then
      AC_DEFINE([TOOLKIT_QT], [1], [Build using Qt4])
 fi

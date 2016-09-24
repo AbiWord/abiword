@@ -20,13 +20,5 @@ libgtk_la_SOURCES = \
 	fv_UnixInlineImage.h \
 	fv_UnixVisualDrag.cpp \
 	fv_UnixVisualDrag.h \
-	$(NULL)
-
-if TOOLKIT_GTK2
-else
-libgtk_la_SOURCES += $(touch_support)
-endif
-
-EXTRA_DIST = \
 	$(touch_support) \
 	$(NULL)
