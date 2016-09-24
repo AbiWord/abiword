@@ -111,8 +111,8 @@ gtk_pkgs="
   ${gtk_req}
 "
 
-# qt4 deps
-qt_pkgs="QtGui   ${cairo_req}"
+# qt5 deps
+qt_pkgs="Qt5Gui Qt5Widgets   ${cairo_req}"
 
 # cocoa deps
 cocoa_pkgs="$enchant_req $cairo_req"
@@ -667,7 +667,7 @@ AM_CONDITIONAL([WITH_CAIRO], test "$WITH_CAIRO" = "1")
 
 MOC=moc
 if test "$TOOLKIT" = qt; then
-   MOC=`pkg-config Qt --variable=moc`
+   MOC=`pkg-config Qt5 --variable=moc`
 fi
 AC_SUBST([MOC])
 
@@ -810,7 +810,7 @@ dnl		enable_shared="no"
 dnl		enable_static="yes"
 dnl	fi
 elif test "$TOOLKIT" = "qt"; then
-     AC_DEFINE([TOOLKIT_QT], [1], [Build using Qt4])
+     AC_DEFINE([TOOLKIT_QT], [1], [Build using Qt5])
 fi
 AM_CONDITIONAL([ENABLE_DYNAMIC], test "$enable_shared" = "yes")
 AM_CONDITIONAL([ENABLE_STATIC], test "$enable_static" = "yes")
