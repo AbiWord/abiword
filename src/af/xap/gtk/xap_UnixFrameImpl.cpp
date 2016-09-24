@@ -1182,7 +1182,7 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 	return TRUE;
 }
 
-gint XAP_UnixFrameImpl::_fe::draw(GtkWidget * w, cairo_t * cr)
+gboolean XAP_UnixFrameImpl::_fe::draw(GtkWidget *w, cairo_t *cr, gpointer)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	FV_View * pView = static_cast<FV_View *>(pUnixFrameImpl->getFrame()->getCurrentView());

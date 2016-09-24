@@ -147,7 +147,7 @@ protected:
 			static gint key_press_event(GtkWidget* w, GdkEventKey* e);
 			static gint key_release_event(GtkWidget* w, GdkEventKey* e);
 			static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-			static gint draw(GtkWidget * w, cairo_t * cr);
+			static gboolean draw(GtkWidget *w, cairo_t *cr, gpointer);
 			static gint do_ZoomUpdate( gpointer /* xap_UnixFrame * */ p);
 			static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/);
 			static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/);
