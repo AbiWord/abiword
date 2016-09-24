@@ -282,7 +282,7 @@ void IE_Imp::unregisterAllImporters ()
 /*!
  * Get supported mimetypes by builtin- and plugin-filters.
  */
-std::vector<std::string> & IE_Imp::getSupportedMimeTypes ()
+const std::vector<std::string> & IE_Imp::getSupportedMimeTypes ()
 {
 	if (IE_IMP_MimeTypes.size() > 0) {
 		return IE_IMP_MimeTypes;
@@ -306,7 +306,7 @@ std::vector<std::string> & IE_Imp::getSupportedMimeTypes ()
 /*!
  * Get supported mime classes by builtin- and plugin-filters.
  */
-std::vector<std::string> & IE_Imp::getSupportedMimeClasses ()
+const std::vector<std::string> & IE_Imp::getSupportedMimeClasses ()
 {
 	if (IE_IMP_MimeClasses.size() > 0) {
 		return IE_IMP_MimeClasses;
@@ -330,7 +330,7 @@ std::vector<std::string> & IE_Imp::getSupportedMimeClasses ()
 /*!
  * Get supported suffixes by builtin- and plugin-filters.
  */
-std::vector<std::string> & IE_Imp::getSupportedSuffixes()
+const std::vector<std::string> & IE_Imp::getSupportedSuffixes()
 {
 	if (IE_IMP_Suffixes.size() > 0) {
 		return IE_IMP_Suffixes;

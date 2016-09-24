@@ -101,9 +101,9 @@ public:
   static void registerImporter (IE_ImpGraphicSniffer * sniffer);
   static void unregisterImporter (IE_ImpGraphicSniffer * sniffer);
   static void unregisterAllImporters ();
-  static std::vector<std::string> & getSupportedMimeTypes ();
-  static std::vector<std::string> & getSupportedMimeClasses ();
-  static std::vector<std::string> & getSupportedSuffixes ();
+  static const std::vector<std::string> & getSupportedMimeTypes();
+  static const std::vector<std::string> & getSupportedMimeClasses();
+  static const std::vector<std::string> & getSupportedSuffixes();
   static const char * getMimeTypeForSuffix (const char * suffix);
 
   static UT_Error               constructImporterWithDescription(const char * szDesc, IE_ImpGraphic ** ppieg);

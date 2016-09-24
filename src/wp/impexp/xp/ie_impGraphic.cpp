@@ -92,7 +92,7 @@ void IE_ImpGraphic::unregisterAllImporters ()
 /*!
  * Get supported mimetypes by builtin- and plugin-filters.
  */
-std::vector<std::string> & IE_ImpGraphic::getSupportedMimeTypes ()
+const std::vector<std::string> & IE_ImpGraphic::getSupportedMimeTypes()
 {
 	if (IE_IMP_GraphicMimeTypes.size() > 0) {
 		return IE_IMP_GraphicMimeTypes;
@@ -116,7 +116,7 @@ std::vector<std::string> & IE_ImpGraphic::getSupportedMimeTypes ()
 /*!
  * Get supported mime classes by builtin- and plugin-filters.
  */
-std::vector<std::string> & IE_ImpGraphic::getSupportedMimeClasses ()
+const std::vector<std::string> & IE_ImpGraphic::getSupportedMimeClasses()
 {
 	if (IE_IMP_GraphicMimeClasses.size() > 0) {
 		return IE_IMP_GraphicMimeClasses;
@@ -140,7 +140,7 @@ std::vector<std::string> & IE_ImpGraphic::getSupportedMimeClasses ()
 /*!
  * Get supported suffixes by builtin- and plugin-filters.
  */
-std::vector<std::string> & IE_ImpGraphic::getSupportedSuffixes()
+const std::vector<std::string> & IE_ImpGraphic::getSupportedSuffixes()
 {
 	if (IE_IMP_GraphicSuffixes.size() > 0) {
 		return IE_IMP_GraphicSuffixes;

@@ -155,22 +155,26 @@ static DragInfo * s_getDragInfo ()
 	}
 
 	// document types
-	std::vector<std::string> &mimeTypes = IE_Imp::getSupportedMimeTypes();
-	iter = mimeTypes.begin();
-	end = mimeTypes.end();
-	while (iter != end) {
-		dragInfo.addEntry((*iter).c_str(), 0, TARGET_DOCUMENT);
-		iter++;
-	}
+    {
+        const std::vector<std::string> &mimeTypes = IE_Imp::getSupportedMimeTypes();
+        iter = mimeTypes.begin();
+        end = mimeTypes.end();
+        while (iter != end) {
+            dragInfo.addEntry((*iter).c_str(), 0, TARGET_DOCUMENT);
+            iter++;
+        }
+    }
 
 	// image types
-	mimeTypes = IE_ImpGraphic::getSupportedMimeTypes();
-	iter = mimeTypes.begin();
-	end = mimeTypes.end();
-	while (iter != end) {
-		dragInfo.addEntry((*iter).c_str(), 0, TARGET_IMAGE);
-		iter++;
-	}
+    {
+        const std::vector<std::string> &mimeTypes = IE_ImpGraphic::getSupportedMimeTypes();
+        iter = mimeTypes.begin();
+        end = mimeTypes.end();
+        while (iter != end) {
+            dragInfo.addEntry((*iter).c_str(), 0, TARGET_IMAGE);
+            iter++;
+        }
+    }
 
 	isInitialized = TRUE;
 
