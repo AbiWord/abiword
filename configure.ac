@@ -80,7 +80,14 @@ fribidi_req='fribidi >= 0.10.4'
 glib_req='glib-2.0 >= 2.6.0 gthread-2.0 >= 2.6.0 gobject-2.0 >= 2.6.0'
 gsf_req='libgsf-1 >= 1.14.18'
 wv_req='wv-1.0 >= 1.2.0'
+
+dnl Do NOT get goffice on Qt
+dnl It will link Gtk+ 3 but Qt will dlopen Gtk+ 2
+dnl This cause kaboom.
+if test "x$abi_cv_qt" = "xno"; then
 goffice_req='libgoffice-0.10 >= 0.10.0'
+fi
+
 xslt_req='libxslt'
 xp_pkgs="
   ${fribidi_req}
