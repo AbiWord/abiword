@@ -1235,8 +1235,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	 * do not outlive the application object by giving them a lower scope
 	 */
 	{
-		XAP_Args XArgs = XAP_Args(argc, argv);
-		AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 #ifdef LOGFILE
 		UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
 		sLogFile += "abiLogFile";
@@ -1252,6 +1250,9 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		fprintf(logfile,"Got display %d \n",have_display);
 		fprintf(logfile,"Really display %d \n",have_display);
 #endif
+		// gtk_init_check() modifies argv/argc if --display is specified
+		XAP_Args XArgs = XAP_Args(argc, argv);
+		AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 		if (have_display > 0) {
 			Args.addOptions(gtk_get_option_group(TRUE));
 			Args.parseOptions();
