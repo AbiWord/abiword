@@ -6827,9 +6827,9 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 			attribsB.push_back(m_paraStyle.c_str());
 		}
 
-		PP_PropertyVector attribsC = {NULL, NULL,
-									   NULL, NULL,
-									   NULL};
+		PP_PropertyVector attribsC = {"", "",
+									   "", "",
+									   ""};
 		if(m_charProps.size())
 		{
 			attribsC.push_back("props");
