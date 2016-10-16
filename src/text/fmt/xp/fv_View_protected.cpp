@@ -4487,8 +4487,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					UT_sint32 width, UT_sint32 height,
 					bool bDirtyRunsOnly, bool bClip)
 {
-	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
-					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
+	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %d][y %d][w %d][h %d][bClip %d]\n"
+					 "\t\twith [yScrollOffset %d][windowHeight %d][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,getWindowHeight(),bDirtyRunsOnly));
 
@@ -4776,7 +4776,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	{
 		m_pG->setClipRect(NULL);
 	}
-	
+
 	xxx_UT_DEBUGMSG(("End _draw\n"));
 }
 

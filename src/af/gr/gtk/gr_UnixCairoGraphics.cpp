@@ -487,6 +487,13 @@ void GR_UnixCairoGraphics::_endPaint()
 	GR_CairoGraphics::_endPaint();
 }
 
+void GR_UnixCairoGraphics::flush(void)
+{
+	if (m_Widget) {
+		gtk_widget_queue_draw(m_Widget);
+	}
+}
+
 bool GR_UnixCairoGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
