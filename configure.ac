@@ -561,6 +561,20 @@ if test "$abi_cv_icondir" = "" -o \
 fi
 AC_SUBST(ABIWORD_ICONDIR, "$abi_cv_icondir")
 
+dnl ***********************************************************************
+dnl GCC/Clang sanitizer support
+dnl ***********************************************************************
+AC_ARG_WITH([sanitizer],
+            [AS_HELP_STRING([--with-sanitizer=@<:@address/undefined/no@:>@],
+                            [Use specific GCC/Clang analyzer])],
+            [with_sanitizer=$withval],
+            [with_sanitizer=no])
+AS_IF([test "x$with_sanitizer" != "xno"],[
+	AX_CHECK_COMPILE_FLAG([-fsanitize=$withval],
+	                      [CFLAGS="$CFLAGS -fsanitize=$withval"
+			       CXXFLAGS="$CXXFLAGS -fsanitize=$withval"],
+	                      [AC_MSG_ERROR([-fsanitize=$withval is not supported])])
+])
 
 dnl ***************************************************************
 dnl Excessive warnings
