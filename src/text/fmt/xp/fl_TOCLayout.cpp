@@ -2326,7 +2326,7 @@ bool fl_TOCListener::populate(fl_ContainerLayout* sfh,
 		goto finish_up;
 	}
 	default:
-		UT_DEBUGMSG(("Unknown Change record = %d \n",pcr->getType()));
+		UT_DEBUGMSG(("TOCLayout: Unknown Change record = %d \n",pcr->getType()));
 		return true;
 	}
 

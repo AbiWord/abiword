@@ -1133,7 +1133,7 @@ void fl_AutoNum::_setParentID(UT_uint32 iParentID)
 
 void fl_AutoNum::update(UT_uint32 start)
 {
-	UT_DEBUGMSG(("Updating List %d  There are %d items here \n",m_iID,m_pItems.getItemCount()));
+	xxx_UT_DEBUGMSG(("Updating List %d  There are %d items here \n",m_iID,m_pItems.getItemCount()));
 	if (isUpdating())
 		return;
 	//_calculateLabelStr(0);

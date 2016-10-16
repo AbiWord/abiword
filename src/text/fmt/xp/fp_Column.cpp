@@ -127,7 +127,7 @@ void fp_VerticalContainer::setHeight(UT_sint32 iHeight)
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(this);
 		if(!pTab->isThisBroken())
 		{
-			UT_DEBUGMSG(("Unbroken Table container set to %d from %d \n",iHeight,pTab->getHeight()));
+			xxx_UT_DEBUGMSG(("Unbroken Table container set to %d from %d \n",iHeight,pTab->getHeight()));
 		}
 	}
 	if(getContainerType() == FP_CONTAINER_TOC)

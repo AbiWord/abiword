@@ -1399,7 +1399,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 //
 	if(bHdrFtr)
 	{
-	        UT_DEBUGMSG(("newHeight %d  m_iNewHdrHeight %d \n",newHeight,m_iNewHdrHeight));
+	        xxx_UT_DEBUGMSG(("newHeight %d  m_iNewHdrHeight %d \n",newHeight,m_iNewHdrHeight));
 		if(newHeight <= m_iNewHdrHeight)
 		{
 			return false;
@@ -1932,7 +1932,7 @@ void fl_DocSectionLayout::setNeedsSectionBreak(bool bSet, fp_Page * pPage)
 	UT_sint32 iOldP = 999999999;
 	if(pPage == NULL)
 	{
-	  UT_DEBUGMSG(("SectionBreak from start \n"));
+		xxx_UT_DEBUGMSG(("SectionBreak from start \n"));
 		m_ColumnBreaker.setStartPage(pPage);
 		return;
 	}	
@@ -3616,10 +3616,10 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	fl_ShadowListener* pShadowListener = new fl_ShadowListener(this, pPair->getShadow());
 	UT_return_if_fail( pShadowListener );
 	if(m_iHFType < FL_HDRFTR_FOOTER) {
-	  UT_DEBUGMSG(("shadow listener %p created For Header \n",pShadowListener));
+	  xxx_UT_DEBUGMSG(("shadow listener %p created For Header \n",pShadowListener));
 	}
 	else {
-	  UT_DEBUGMSG(("shadow listener %p created For Footer \n",pShadowListener));
+	  xxx_UT_DEBUGMSG(("shadow listener %p created For Footer \n",pShadowListener));
 	}
 
 //
@@ -5436,7 +5436,7 @@ bool fl_ShadowListener::populate(fl_ContainerLayout* sfh,
 	}
 
 	default:
-		UT_DEBUGMSG(("Unknown Change record = %d \n",pcr->getType()));
+		UT_DEBUGMSG(("SectionLayout: Unknown Change record = %d \n",pcr->getType()));
 		UT_ASSERT(0);
 		//
 		// We're not printing

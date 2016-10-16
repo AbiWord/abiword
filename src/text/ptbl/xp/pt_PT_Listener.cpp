@@ -309,7 +309,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
     m_fragtypecol_t& fragmentTypesToVisit = _getTellListenerSubsetWalkRangeVisitAllFragments(),
     bool walkForwards = true )
 {
-    UT_DEBUGMSG(("_tellListenerSubsetWalkRange(top) listener %p startpos %d endpos %d\n",
+    xxx_UT_DEBUGMSG(("_tellListenerSubsetWalkRange(top) listener %p startpos %d endpos %d\n",
                  pListener, rangeStartPos, rangeEndPos ));
 	fl_ContainerLayout* sfh = 0;
 	UT_uint32 blockOffset = 0;
@@ -323,7 +323,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
     
     if (!pt->getFragFromPosition( pfPos, &pf1, &fragOffset1 ))
     {
-        UT_DEBUGMSG(("_tellListenerSubsetWalkRange(no frag!) listener %p startpos %d endpos %d\n",
+        xxx_UT_DEBUGMSG(("_tellListenerSubsetWalkRange(no frag!) listener %p startpos %d endpos %d\n",
                      pListener, rangeStartPos, rangeEndPos ));
         return true;
     }
@@ -425,7 +425,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
             }
         }
         
-        UT_DEBUGMSG(("_tellListenerSubsetWalkRange(loop) listener %p sum %d startpos %d endpos %d\n",
+        xxx_UT_DEBUGMSG(("_tellListenerSubsetWalkRange(loop) listener %p sum %d startpos %d endpos %d\n",
                      pListener, sum, rangeStartPos, rangeEndPos ));
         
 		sum += pf->getLength();
@@ -442,7 +442,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
         }
 	}
 
-    UT_DEBUGMSG(("_tellListenerSubsetWalkRange(done) listener %p startpos %d endpos %d\n",
+    xxx_UT_DEBUGMSG(("_tellListenerSubsetWalkRange(done) listener %p startpos %d endpos %d\n",
                  pListener, rangeStartPos, rangeEndPos ));
     return sum;
 }

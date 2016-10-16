@@ -2162,7 +2162,7 @@ void fp_Line::draw(GR_Graphics* pG)
 
 	if(((my_yoff < -128000) || (my_yoff > 128000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		UT_DEBUGMSG(("FREM: Not drawing line in line pG, my_yoff=%d  my_xoff %d \n",my_yoff,my_xoff));
+		xxx_UT_DEBUGMSG(("FREM: Not drawing line in line pG, my_yoff=%d  my_xoff %d \n",my_yoff,my_xoff));
 //
 // offscreen don't bother.
 //

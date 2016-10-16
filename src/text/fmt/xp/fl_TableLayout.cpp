@@ -1365,7 +1365,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 // Anyway column positioning being horizontal is layout units.
 //
 		m_iLeftColPos = UT_convertToLogicalUnits(pszLeftColPos);
-		UT_DEBUGMSG(("Left colpos is %s \n",pszLeftColPos));
+		xxx_UT_DEBUGMSG(("Left colpos is %s \n",pszLeftColPos));
 
 		FV_View * pView = m_pLayout->getView();
 		GR_Graphics * pG = getDocLayout()->getGraphics();
@@ -1420,7 +1420,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 				pColP->m_iColWidth = UT_convertToLogicalUnits(sSub.c_str());
 				pColP->m_dColRelWidth = 0.0;
 				m_vecColProps.addItem(pColP);
-				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pColP->m_iColWidth));
+				xxx_UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pColP->m_iColWidth));
 			}
 			else
 			{
@@ -1481,7 +1481,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 				pColP->m_iColWidth = 0;
 				pColP->m_dColRelWidth = UT_convertDimensionless(sSub.c_str());
 				m_vecColProps.addItem(pColP);
-				UT_DEBUGMSG(("SEVIOR: width char %s width layout %f \n",sSub.c_str(),pColP->m_dColRelWidth));
+				xxx_UT_DEBUGMSG(("SEVIOR: width char %s width layout %f \n",sSub.c_str(),pColP->m_dColRelWidth));
 				tot += pColP->m_dColRelWidth;
 			}
 			else
@@ -1595,7 +1595,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 				{
 					m_vecRowProps.addItem(pRowP);
 				}
-				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pRowP->m_iRowHeight));
+				xxx_UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pRowP->m_iRowHeight));
 				iProp++;
 			}
 			else
@@ -1763,7 +1763,7 @@ void fl_TableLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
 	if(pszLeftColPos && *pszLeftColPos)
 	{
 		m_iLeftColPos = UT_convertToLogicalUnits(pszLeftColPos);
-		UT_DEBUGMSG(("Left colpos is %s \n",pszLeftColPos));
+		xxx_UT_DEBUGMSG(("Left colpos is %s \n",pszLeftColPos));
 
 		FV_View * pView = m_pLayout->getView();
 		GR_Graphics * pG = getDocLayout()->getGraphics();
