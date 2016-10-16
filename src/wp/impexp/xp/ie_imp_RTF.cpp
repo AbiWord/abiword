@@ -11417,13 +11417,16 @@ bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 	}
 	if(pszAttribs == NULL)
 	{
-		propsArray.resize(6);
+		propsArray.resize(pStyle ? 6 : 4);
 		propsArray [0] = "type";
 		propsArray [1] = xmlField;
 		propsArray [2] = "props";
 		propsArray [3] = propBuffer;
-		propsArray [4] = pStyle;
-		propsArray [5] = styleName;
+		if(pStyle)
+		{
+			propsArray [4] = pStyle;
+			propsArray [5] = styleName;
+		}
 	}
 	else
 	{
