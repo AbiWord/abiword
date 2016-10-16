@@ -29,11 +29,11 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	m_pFrame = static_cast<XAP_Frame *>(pFrame);
 	m_left = left;
 	m_top = top;
-	
-	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);   
+
+	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);
 	gtk_widget_set_size_request(m_pPreviewWindow, m_width, m_height);
-	
-	m_pDrawingArea = createDrawingArea ();
+
+	m_pDrawingArea = gtk_drawing_area_new ();
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
 	g_object_set(G_OBJECT(m_pDrawingArea), "expand", TRUE, NULL);
 

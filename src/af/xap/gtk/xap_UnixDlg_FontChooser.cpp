@@ -738,7 +738,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
 	gtk_widget_set_size_request (frame4, -1, PREVIEW_BOX_HEIGHT_PIXELS + (PREVIEW_BOX_BORDER_WIDTH_PIXELS * 2));
 	gtk_container_set_border_width (GTK_CONTAINER (frame4), PREVIEW_BOX_BORDER_WIDTH_PIXELS);
 
-	entryArea = createDrawingArea ();
+	entryArea = gtk_drawing_area_new();
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
 	g_signal_connect(G_OBJECT(entryArea), "draw",
 					   G_CALLBACK(s_drawing_area_draw), NULL);

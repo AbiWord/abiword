@@ -507,14 +507,14 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbParagraph")), pSS, AP_STRING_ID_DLG_Styles_ParaPrev);
 	GtkWidget *frameParaPrev = GTK_WIDGET(gtk_builder_get_object(builder, "frameParagraph"));
-	m_wParaPreviewArea = createDrawingArea();
+	m_wParaPreviewArea = gtk_drawing_area_new();
 	gtk_widget_set_size_request(m_wParaPreviewArea, 300, 70);
 	gtk_container_add(GTK_CONTAINER(frameParaPrev), m_wParaPreviewArea);
 	gtk_widget_show(m_wParaPreviewArea);
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbCharacter")), pSS, AP_STRING_ID_DLG_Styles_CharPrev);
 	GtkWidget *frameCharPrev = GTK_WIDGET(gtk_builder_get_object(builder, "frameCharacter"));
-	m_wCharPreviewArea = createDrawingArea();
+	m_wCharPreviewArea = gtk_drawing_area_new();
 	gtk_widget_set_size_request(m_wCharPreviewArea, 300, 50);
 	gtk_container_add(GTK_CONTAINER(frameCharPrev), m_wCharPreviewArea);
 	gtk_widget_show(m_wCharPreviewArea);
@@ -877,7 +877,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_container_add(GTK_CONTAINER(previewFrame), wDrawFrame);
 	gtk_container_set_border_width(GTK_CONTAINER(wDrawFrame), 6);
 
-	modifyDrawingArea = createDrawingArea();
+	modifyDrawingArea = gtk_drawing_area_new();
 	gtk_widget_set_size_request (modifyDrawingArea, -1, 85);
 	gtk_container_add (GTK_CONTAINER (wDrawFrame), modifyDrawingArea);
 	gtk_widget_show (modifyDrawingArea);

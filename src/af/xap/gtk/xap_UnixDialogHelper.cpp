@@ -744,21 +744,6 @@ void setLabelMarkup(GtkWidget * widget, const gchar * str)
 }
 
 /*!
- * Creates a new GdkDrawingArea with the proper colormap and visual
- * This returns a single-buffered widget.
- * DEPRECATED: please use gtk_drawing_area_new() directly and make your
- * implementation work with double-buffering in new code!
- */
-GtkWidget *createDrawingArea ()
-{
-  GtkWidget *area;
-  
-  area = gtk_drawing_area_new ();
-
-  return area;
-}
-
-/*!
  * This is a small message box for startup warnings and/or
  * errors.  Please do NOT use this for normal system execution
  * user messages; use the XAP_UnixDialog_MessageBox class for that.

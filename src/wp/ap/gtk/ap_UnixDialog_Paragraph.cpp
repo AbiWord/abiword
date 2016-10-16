@@ -792,7 +792,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_set_size_request (framePreview, 400, 150);
 	gtk_frame_set_shadow_type (GTK_FRAME (framePreview), GTK_SHADOW_NONE);
 
-	drawingareaPreview = createDrawingArea ();
+	drawingareaPreview = gtk_drawing_area_new();
 	gtk_widget_show (drawingareaPreview);
 	gtk_container_add (GTK_CONTAINER (framePreview), drawingareaPreview);
 

@@ -602,16 +602,16 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
     std::string s;
 	
 	/*
-	  Add a drop-down list of known types to facilitate a file-types selection. 
-	  We store an indexer in the user data for each menu item in the popup, so 
+	  Add a drop-down list of known types to facilitate a file-types selection.
+	  We store an indexer in the user data for each menu item in the popup, so
 	  we can read the type we need to return.
 	*/
 
 	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
 	{
-		GtkWidget * preview = createDrawingArea ();
+		GtkWidget * preview = gtk_drawing_area_new();
 		gtk_widget_show (preview);
-		m_preview = preview;			  
+		m_preview = preview;
 		gtk_widget_set_size_request (preview, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 		
 		// place the preview area inside a container to get a nice border
@@ -626,7 +626,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		// connect some signals
 		g_signal_connect (m_FC, "update_preview",
 								G_CALLBACK (file_selection_changed), static_cast<gpointer>(this));
-		
 		g_signal_connect (preview, "draw",
 								G_CALLBACK (s_preview_draw), static_cast<gpointer>(this));
 	}

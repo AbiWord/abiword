@@ -598,7 +598,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	double width = getPageWidth();
 	double height = getPageHeight();
 	gint rat = 0;
-	wPreviewArea = createDrawingArea ();
+	wPreviewArea = gtk_drawing_area_new();
 	if( height > 0.000001)
 	{
 		if(height > width)

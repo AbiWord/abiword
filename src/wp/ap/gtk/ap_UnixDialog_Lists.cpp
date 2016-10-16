@@ -962,7 +962,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_widget_show(preview_lb);
 	gtk_grid_attach(GTK_GRID(grid3), preview_lb, 0, 0, 1, 1);
 
-	preview_area = createDrawingArea ();
+	preview_area = gtk_drawing_area_new();
 	gtk_widget_set_size_request (preview_area, 180, 225);
 	gtk_widget_set_margin_start (preview_area, 18);
 	gtk_widget_show (preview_area);

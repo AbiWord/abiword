@@ -538,10 +538,10 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
 
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_previewNew (int w, int h)
 {
-	GtkWidget *pre = createDrawingArea ();
+	GtkWidget *pre = gtk_drawing_area_new();
 	gtk_widget_show (pre);
 	gtk_widget_set_size_request (pre, w, h);
-	
+
 	// Enable button press events
 	gtk_widget_add_events(pre, GDK_BUTTON_PRESS_MASK);
 	gtk_widget_add_events(pre, GDK_BUTTON_RELEASE_MASK);

@@ -29,12 +29,11 @@
 class ABI_EXPORT GR_UnixCairoAllocInfo : public GR_CairoAllocInfo
 {
 public:
-	GR_UnixCairoAllocInfo(GdkWindow * win, bool double_buffered=false)
+	GR_UnixCairoAllocInfo(GdkWindow * win, bool double_buffered=true)
 		: GR_CairoAllocInfo(false, false, double_buffered),
 		m_win(win)
 		{}
 	GR_UnixCairoAllocInfo(GtkWidget *widget)
-        // double buffering is default in Gtk
 		: GR_CairoAllocInfo(false, false, true),
 		  m_win(gtk_widget_get_window(GTK_WIDGET(widget)))
 	{}
@@ -105,7 +104,7 @@ protected:
 									  GR_UnixCairoGraphics *me);
 	static void		widget_destroy (GtkWidget        *widget,
 									  GR_UnixCairoGraphics *me);
-	GR_UnixCairoGraphics(GdkWindow * win = NULL, bool double_buffered=false);
+	GR_UnixCairoGraphics(GdkWindow * win = NULL, bool double_buffered=true);
 	virtual GdkWindow * _getWindow(void)
 	{  return m_pWin;}
 
