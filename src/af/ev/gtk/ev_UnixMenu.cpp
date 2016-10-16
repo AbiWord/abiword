@@ -518,18 +518,13 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				guint keyCode;
 				keyCode = _ev_get_underlined_char(buf);
 
-				// GTK triggers the menu accelerators off of MOD1 ***without
-				// regard to what XK_ keysym is bound to it.  therefore, if
-				// MOD1 is bound to XK_Alt_{L,R}, we do the following.
-
-				bool bAltOnMod1 = (ev_UnixKeyboard::getAltModifierMask() == GDK_MOD1_MASK);
 				bool bConflict = false;
 				
 				// Lookup any bindings cooresponding to MOD1-key and the lower-case
 				// version of the underlined char, since all the menus ignore upper
 				// case (SHIFT-MOD1-[char]) invokations of accelerators.
 
-				if (keyCode != GDK_KEY_VoidSymbol && bAltOnMod1)
+				if (keyCode != GDK_KEY_VoidSymbol)
 				{
 					EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 					UT_ASSERT(pEEM);

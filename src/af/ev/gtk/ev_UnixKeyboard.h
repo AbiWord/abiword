@@ -36,7 +36,6 @@ public:
 
 	bool keyPressEvent(AV_View * pView, GdkEventKey* e);
 	bool charDataEvent (AV_View * pView, EV_EditBits state, const char * txt, size_t len);
-	static GdkModifierType getAltModifierMask(void);
 };
 
 #endif // EV_UNIXKEYBOARD_H
