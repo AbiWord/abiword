@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* An autonomous caret class.
  *
  * Authors: Patrick Lam
@@ -351,12 +352,12 @@ void GR_Caret::_erase()
 
 void GR_Caret::_blink(bool bExplicit)
 {
-        if(m_bRecursiveDraw)
+	if(m_bRecursiveDraw)
 	{
 	    xxx_UT_DEBUGMSG(("Doing recursive blink! - abort \n"));
 	    return;
 	}
-        if (!m_bPositionSet)
+	if (!m_bPositionSet)
 		return;
 
 	m_bRecursiveDraw = true;
@@ -366,8 +367,9 @@ void GR_Caret::_blink(bool bExplicit)
 	// After any autoblink, we want there to be BLINK_TIME 
 	// until next autoblink.
 	if (!bExplicit)
-	{ 
-		m_worker->stop(); m_worker->start();
+	{
+		m_worker->stop();
+		m_worker->start();
 	}
 
 	// Blink if: (a) _blink explicitly called (not autoblink); or
@@ -376,7 +378,8 @@ void GR_Caret::_blink(bool bExplicit)
 	if (bExplicit || _getCanCursorBlink () || !m_bCursorIsOn)
 	{
 		m_bRecursiveDraw = true;
-		UT_RGBColor oldColor; m_pG->getColor(oldColor);
+		UT_RGBColor oldColor;
+		m_pG->getColor(oldColor);
 
 		if (m_bCursorIsOn)
 		{
