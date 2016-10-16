@@ -98,6 +98,7 @@ bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
 	bResult = _fmtChangeStrux(pfs,indexNewAP);
 	UT_return_val_if_fail (bResult,false);
 	m_pDocument->notifyListeners(pfs,pcr);
+	delete pcr;
 
 	return true;
 }
