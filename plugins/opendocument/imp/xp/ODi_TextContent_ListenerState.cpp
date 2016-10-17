@@ -1361,14 +1361,14 @@ void ODi_TextContent_ListenerState::charData (
     } 
     else if (m_bPendingAnnotationAuthor) 
     {
-        m_sAnnotationAuthor = pBuffer;
+        m_sAnnotationAuthor = std::string(pBuffer, length);
     } 
     else if (m_bPendingAnnotationDate) 
     {
-        m_sAnnotationDate = pBuffer;
+        m_sAnnotationDate = std::string(pBuffer, length);
     }
     else if (m_bPendingNoteCitation) {  
-        m_noteCitation = pBuffer;
+        m_noteCitation = std::string(pBuffer, length);
     } 
 }
 
