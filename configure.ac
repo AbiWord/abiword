@@ -574,6 +574,10 @@ AS_IF([test "x$with_sanitizer" != "xno"],[
 	                      [CFLAGS="$CFLAGS -fsanitize=$withval"
 			       CXXFLAGS="$CXXFLAGS -fsanitize=$withval"],
 	                      [AC_MSG_ERROR([-fsanitize=$withval is not supported])])
+        AX_APPEND_COMPILE_FLAGS([-fno-omit-frame-pointer])
+        AC_LANG_PUSH(C++)
+        AX_APPEND_COMPILE_FLAGS([-fno-omit-frame-pointer])
+        AC_LANG_POP
 ])
 
 dnl ***************************************************************
