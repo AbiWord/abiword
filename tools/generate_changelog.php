@@ -89,7 +89,7 @@ function strip_backports($msg) {
 }
 
 function add_bugzilla_links($msg) {
-	if (preg_match('/(.*?)((Bug\s|Fix\s)?(\d\d\d+))(.*)/', $msg, $matches)) {
+	if (preg_match('/(.*?)((Bug\s|Fix\s)?(\d\d\d*))(.*)/', $msg, $matches)) {
 		$msg = $matches[1] . '<a href="http://bugzilla.abisource.com/show_bug.cgi?id=' . $matches[4] . '">' . $matches[2] . '</a>' . $matches[5];
 	}
 	return $msg;
@@ -102,6 +102,11 @@ function classify_topic($paths, $msg) {
 	// path based classification
 	foreach ($paths as $path) {
 		// Feel free to expand this list to reduce the manual work
+
+		if (preg_match('/.*\/po\/.*\.po/', $path)) {
+			$topic = 'Internationalization';
+			break;
+		}
 
 		if (preg_match('/.*\/opendocument\/.*/', $path)) {
 			$topic = 'Import/Export';
@@ -156,6 +161,18 @@ function classify_topic($paths, $msg) {
 	return array($topic, $sub_topic);
 }
 
+function parse_cherry_pick($msg) {
+	$re = '/(Backported|Cherry[- ]pick(ed)?) from trunk@[0-9]*[.]*[0-9]*\.?( [Bb]y ([a-z]*)\.?)?/';
+	if (preg_match($re, $msg, $matches) == 1) {
+		$msg = preg_replace($re, '', $msg);
+		if (count($matches) == 5) {
+			return array($msg, $matches[4]);
+		}
+		return array($msg);
+	}
+	return FALSE;
+}
+
 function parse_logentries($xml) {
 	$result = array();
 	foreach ($xml->logentry as $logentry) {
@@ -176,6 +193,14 @@ function parse_logentries($xml) {
 		$paths = array();
 		foreach ($logentry->paths->path as $path) {
 			$paths[] = (string)$path;
+		}
+
+	        $cherrypick = parse_cherry_pick($msg);
+		if ($cherrypick != FALSE) {
+			$msg = $cherrypick[0];
+			if (count($cherrypick) > 1) {
+				$author = $cherrypick[1];
+			}
 		}
 
 		// convert the svn usernames into real-life names
