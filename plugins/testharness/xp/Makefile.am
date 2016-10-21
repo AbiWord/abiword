@@ -1,3 +1,4 @@
+if !TOOLKIT_WIN
 
 noinst_LTLIBRARIES = libxp.la
 
@@ -26,3 +27,4 @@ libxp_la_SOURCES = \
 	../../../src/wp/impexp/xp/t/ie_Table.t.cpp \
 	$(NULL)
 
+endif

@@ -1,5 +1,7 @@
 SUBDIRS = xp
 
+if !TOOLKIT_WIN
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = testharness.la
 
@@ -15,3 +17,4 @@ testharness_la_LDFLAGS = \
 
 testharness_la_SOURCES =
 
+endif
