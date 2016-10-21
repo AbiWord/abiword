@@ -185,7 +185,7 @@ std::string PP_makePropString(const PP_PropertyVector & props);
 PP_PropertyVector PP_std_setPropsToNothing(const PP_PropertyVector & props);
 // just copy to a std. Long term, remove this
 // XXX remove this
-PP_PropertyVector PP_std_copyProps(const gchar ** props);
+ABI_EXPORT PP_PropertyVector PP_std_copyProps(const gchar ** props);
 // safe version of UT_setPropsToValue.
 PP_PropertyVector PP_std_setPropsToValue(const PP_PropertyVector & props,
 										 const gchar * value);
@@ -195,10 +195,10 @@ PP_PropertyVector PP_cloneAndDecodeAttributes (const gchar ** attrs);
 
 // XXX ineficient
 /// Tell if the attribute name is in the vector.
-bool PP_hasAttribute(const char* name, const PP_PropertyVector & atts);
+ABI_EXPORT bool PP_hasAttribute(const char* name, const PP_PropertyVector & atts);
 
 // XXX ineficient
-const std::string & PP_getAttribute(const char* name, const PP_PropertyVector & atts);
+ABI_EXPORT const std::string & PP_getAttribute(const char* name, const PP_PropertyVector & atts);
 
 // XXX ineficient
 /// Set the attribute %name to %value if it exists
