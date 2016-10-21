@@ -1,7 +1,7 @@
 
 m4_define([abi_version_major], [3])
-m4_define([abi_version_minor], [0])
-m4_define([abi_version_micro], [99])
+m4_define([abi_version_minor], [1])
+m4_define([abi_version_micro], [0])
 m4_define([abi_series], [abi_version_major.abi_version_minor])
 m4_define([abi_version], [abi_version_major.abi_version_minor.abi_version_micro])
 

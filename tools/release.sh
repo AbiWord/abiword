@@ -1,7 +1,7 @@
 #!/bin/bash
 
-BRANCH="branches/ABI-3-0-0-STABLE"
-RELEASE="3.0.1"
+BRANCH="branches/ABI-3-1-0-STABLE"
+RELEASE="3.1.0"
 RELEASE_DIR="abiword-release-dir-$RELEASE"
 
 # check for a svn checkout
