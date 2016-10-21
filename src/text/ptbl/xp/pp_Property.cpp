@@ -35,8 +35,6 @@
 #include "pd_Style.h"
 
 
-const PP_PropertyVector PP_NOPROPS;
-
 /*****************************************************************/
 
 /*

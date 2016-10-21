@@ -44,9 +44,9 @@ class PD_Document;
 /// This replaces the gchar**
 typedef std::vector<std::string> PP_PropertyVector;
 
-/// An empty immutable poperty vector
-/// NOT to be used for comparison.
-extern const PP_PropertyVector PP_NOPROPS;
+namespace {
+const PP_PropertyVector PP_NOPROPS;
+}
 
 #define ASSERT_PV_SIZE(x) \
 	UT_ASSERT(x.size() % 2 == 0)

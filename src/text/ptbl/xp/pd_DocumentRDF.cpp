@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
+#include "pp_Property.h"
 #include "ut_std_string.h"
 #include "ut_conversion.h"
 #include "xap_App.h"
