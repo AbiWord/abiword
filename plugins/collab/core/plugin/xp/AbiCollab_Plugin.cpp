@@ -83,7 +83,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	s_abicollab_add_menus();
 	
 	// On Windows, we must share our HMODULE/HINSTANCE so we can do gui
-	#ifdef WIN32
+	#ifdef _WIN32
 	AbiCollabSessionManager::getManager()->setInstance((HINSTANCE)s_hModule);
 	#endif
 	
@@ -807,7 +807,7 @@ bool s_abicollab_command_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 
 #if defined(ABICOLLAB_RECORD_ALWAYS) && defined(DEBUG)
 
-#ifndef WIN32
+#ifndef _WIN32
 
 #include <time.h>
 #include <dirent.h>

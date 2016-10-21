@@ -26,7 +26,7 @@
 
 class Synchronizer;
 
-#ifdef WIN32
+#ifdef _WIN32
 // Windows implementation requirements
 #define WM_ABI_SYNCHRONIZER WM_USER+15
 #include <windows.h>
@@ -40,7 +40,7 @@ class Synchronizer;
 class Synchronizer
 {
 public:
-#ifdef WIN32
+#ifdef _WIN32
 	// Windows-only static stuff
 	static bool sm_bClassRegistered;
 	static int sm_iMessageWindows;
@@ -71,7 +71,7 @@ private:
 // XP members
 	boost::function<void ()> m_signalhandler;
 
-#ifdef WIN32
+#ifdef _WIN32
 	HWND m_hWnd;
 	bool m_bIsProcessing;
 	int m_iDeferredMessages;

@@ -1,3 +1,4 @@
+if WITH_CAIRO
 
 SUBDIRS = xp
 
@@ -19,3 +20,4 @@ mathview_la_SOURCES =
 EXTRA_DIST = \
 	plugin.m4
 
+endif

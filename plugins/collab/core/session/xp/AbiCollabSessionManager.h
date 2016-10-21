@@ -34,7 +34,7 @@
 #include <account/xp/AccountHandler.h>
 #include <libxml/tree.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
@@ -70,7 +70,7 @@ public:
 	XAP_Dialog_Id								getDialogAddBuddyId()
 		{ return m_iDialogAddBuddy; }
 
-	#ifdef WIN32
+	#ifdef _WIN32
 	// On Windows, we must share our HMODULE/HINSTANCE so we can do gui
 	void										setInstance(HINSTANCE hModule)
 		{ m_hModule = hModule; }
@@ -165,7 +165,7 @@ private:
 	XAP_Dialog_Id								m_iDialogEditAccount;
 	XAP_Dialog_Id								m_iDialogAddBuddy;
 
-	#ifdef WIN32
+	#ifdef _WIN32
 	HINSTANCE 									m_hModule;
 	#endif
 

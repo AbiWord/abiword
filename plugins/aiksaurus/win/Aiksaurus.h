@@ -22,7 +22,7 @@
 #ifndef INCLUDED_AIKSAURUS_H
 #define INCLUDED_AIKSAURUS_H
 
-#if defined WIN32
+#if defined _WIN32
 	#if defined _STATIC_BUILD
 		#define AIKEXPORT
 	#else

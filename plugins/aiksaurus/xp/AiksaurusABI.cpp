@@ -24,7 +24,7 @@
 #define abi_plugin_supports_version abipgn_aiksaurus_supports_version
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 	#include "../win/AiksaurusApp.h"
 #else
 	#include <../aiksaurusgtk3/AiksaurusGTK.h>
@@ -324,7 +324,7 @@ AiksaurusABI_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
     // Now we will run the thesaurus dialog and get a response.
     // We will automatically do a search for the selected/current word. 
 
-#ifdef WIN32
+#ifdef _WIN32
 	AiksaurusApp thesaurus;
 	thesaurus.setInstance( (HINSTANCE)s_hModule );
 #else

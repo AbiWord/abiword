@@ -24,7 +24,7 @@
 #include <ut_assert.h>
 #include <ie_exp.h>
 
-#ifndef WIN32
+#ifndef _WIN32
 // FIXME: this breaks OSX
 #include "ap_UnixFrame.h"
 #else
@@ -237,7 +237,7 @@ bool FakeAccountHandler::_loadDocument(UT_UTF8String* pForceSessionId)
 	{	
 		GR_Graphics* pG = NULL;
 	
-#ifndef WIN32
+#ifndef _WIN32
 		// FIXME: this breaks on OSX
 		
 		// create a new frame, view and layout for the document

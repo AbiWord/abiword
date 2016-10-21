@@ -22,7 +22,7 @@
 #else
 #include <strings.h>
 #endif
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <string>
@@ -153,7 +153,7 @@ ServiceAccountHandler::ServiceAccountHandler()
 	  m_pExport(NULL)
 {
 	m_ssl_ca_file = XAP_App::getApp()->getAbiSuiteLibDir();
-#if defined(WIN32)
+#if defined(_WIN32)
 	m_ssl_ca_file += "\\certs\\cacert.pem";
 #else
 	m_ssl_ca_file += "/certs/cacert.pem";

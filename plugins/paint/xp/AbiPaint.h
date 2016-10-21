@@ -54,7 +54,7 @@
 
 #include "AbiGeneric.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define ENABLE_BMP
 const char *szProgramsDesc = "Image Editing Programs (*.exe,*.com)";
 const char *szProgramSuffix= "*.exe; *.com";

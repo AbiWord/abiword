@@ -51,7 +51,7 @@
 #define ABI_PLUGIN_NAME AbiPaint	/* Very important, do this before including AbiGeneric */
 #include "AbiPaint.h"			/* includes "AbiGeneric.h" */
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <io.h>
 #endif
 
@@ -598,7 +598,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 
 static void getDefaultApp(std::string &imageApp, bool &bLeaveImageAsPNG)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	bLeaveImageAsPNG = false;
 	imageApp.clear();
 

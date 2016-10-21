@@ -246,7 +246,7 @@ void s_HRText_Listener::_closeTag(void)
 		return;
 	}
 
-#ifndef WIN32
+#ifndef _WIN32
 	m_pie->write("\n\n");
 #else
 	m_pie->write("\r\n\r\n");
@@ -327,7 +327,7 @@ void s_HRText_Listener::_openTag(PT_AttrPropIndex api)
 
 void s_HRText_Listener::_openSection(PT_AttrPropIndex /* api*/)
 {
-#ifndef WIN32
+#ifndef _WIN32
 	m_pie->write("\n");
 #else
 	m_pie->write("\r\n");

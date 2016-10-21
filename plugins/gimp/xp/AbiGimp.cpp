@@ -44,7 +44,7 @@
 #include <sys/types.h>  
 #include <sys/stat.h>
 #include <unistd.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <sys/wait.h>
@@ -68,7 +68,7 @@ static bool AbiGimp_invoke(AV_View* v, EV_EditMethodCallData *d);
 static const char* AbiGimp_MenuLabel = "&Edit Image via GIMP";
 static const char* AbiGimp_MenuTooltip = "Opens the selected image in the GIMP for editing.";
 
-#ifdef WIN32
+#ifdef _WIN32
 static BOOL CreateChildProcess(char * appName, char *cmdline,
 				PROCESS_INFORMATION *procInfo,
 				STARTUPINFOA *startInfo);
@@ -298,7 +298,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 // Fire up the gimp...
 //
 
-#ifdef WIN32
+#ifdef _WIN32
 	UT_String cmdline = "gimp \"" + szTmp + "\"";
 
 	PROCESS_INFORMATION procInfo;
@@ -363,7 +363,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 //
 	ev_EditMethod_invoke(lockGUI,d);
 
-#ifndef WIN32
+#ifndef _WIN32
 	while (pid != waitpid (pid, &status, WNOHANG)) 
 #else
 	while ((GetExitCodeProcess(procInfo.hProcess, &status))?(status == STILL_ACTIVE):0)
@@ -458,7 +458,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 //
 // Kill the gimp.
 //
-#ifdef WIN32
+#ifdef _WIN32
 	if (procInfo.hProcess)
 		TerminateProcess(procInfo.hProcess, -1);
 #else
@@ -468,7 +468,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 }
 
 
-#ifdef WIN32
+#ifdef _WIN32
 // our equivalent of fork()
 static BOOL CreateChildProcess(char * appName, char *cmdline,
 				PROCESS_INFORMATION *procInfo,

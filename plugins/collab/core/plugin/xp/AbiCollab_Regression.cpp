@@ -35,7 +35,7 @@ bool AbiCollab_Regression::execute()
 	return true;
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 
 #include <dirent.h>
 #include <sys/types.h>

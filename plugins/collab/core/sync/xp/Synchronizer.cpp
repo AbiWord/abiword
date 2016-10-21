@@ -24,7 +24,7 @@
 
 #include <ut_debugmsg.h>
 
-#ifndef WIN32
+#ifndef _WIN32
 static gboolean s_glib_mainloop_callback(GIOChannel * /*channel*/, GIOCondition /*condition*/, Synchronizer* synchronizer)
 {
 	synchronizer->callMainloop();
@@ -36,7 +36,7 @@ static gboolean s_glib_mainloop_callback(GIOChannel * /*channel*/, GIOCondition 
 // WINDOWS STATIC MAGIC
 //////////////////
 
-#ifdef WIN32
+#ifdef _WIN32
 #ifndef HWND_MESSAGE
 #define HWND_MESSAGE ((HWND)(-3))
 #endif
@@ -166,7 +166,7 @@ void Synchronizer::_unregisterWndClass() // Win32-only
 // CONSTRUCTORS
 //////////////////
 
-#ifdef WIN32
+#ifdef _WIN32
 Synchronizer::Synchronizer(boost::function<void ()>  signalhandler) // Win32 Implementation
 	: m_signalhandler(signalhandler),
  	m_hWnd(0),
@@ -247,7 +247,7 @@ Synchronizer::Synchronizer(boost::function<void ()> signalhandler) // Unix Imple
 // DESTRUCTORS
 //////////////////
 
-#ifdef WIN32
+#ifdef _WIN32
 Synchronizer::~Synchronizer() // Win32 Implementation
 {
 	UT_DEBUGMSG(("~Synchronizer() - this: %p\n", this));
@@ -292,7 +292,7 @@ Synchronizer::~Synchronizer() // Unix Implementation
 //////////////////
 // SIGNAL
 //////////////////
-#ifdef WIN32
+#ifdef _WIN32
 void Synchronizer::signal() // Win32 Implementation
 {
 	UT_DEBUGMSG(("Synchronizer::signal()\n"));
@@ -321,7 +321,7 @@ void Synchronizer::signal() // Unix Implementation
 //////////////////
 void Synchronizer::_consume()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	// void on win32
 #else
 	// Unix Implementation

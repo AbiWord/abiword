@@ -29,7 +29,7 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 
@@ -51,7 +51,7 @@ AbiCollab_Command::AbiCollab_Command(const UT_UTF8String& argv)
 {
 	XAP_App* pApp = XAP_App::getApp ();
 	
-	#ifndef WIN32
+	#ifndef _WIN32
 	pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_NULL, true);
 	#else
 	pApp->getGraphicsFactory()->registerAsDefault(GRID_WIN32_UNISCRIBE, true);
@@ -151,7 +151,7 @@ bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, con
 	UT_return_val_if_fail(pManager, false);	
 	UT_DEBUG_ONLY_ARG(bSingleStep);
 	
-#ifndef WIN32
+#ifndef _WIN32
 		// FIXME: this breaks on OSX
 		XAP_App::getApp()->getGraphicsFactory()->registerAsDefault(GRID_UNIX_PANGO, true);
 #else

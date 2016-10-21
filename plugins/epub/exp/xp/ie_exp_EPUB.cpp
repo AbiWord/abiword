@@ -905,7 +905,7 @@ void IE_Exp_EPUB::registerDialogs()
 {
     // Because there is no implementation of export options dialog 
     // for Mac OS we just use defaults for that platform
-#ifdef WIN32
+#ifdef _WIN32
     XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 	m_iDialogExport = pFactory->registerDialog(ap_Dialog_EpubExportOptions_Constructor, XAP_DLGT_NON_PERSISTENT);
 #elif defined TOOLKIT_COCOA

@@ -31,7 +31,7 @@ DiskSessionRecorder::DiskSessionRecorder(AbiCollab* pSession)
 	UT_DEBUGMSG(("DiskSessionRecorder::DiskSessionRecorder()\n"));
 	
 	std::string pidStr;
-#ifndef WIN32
+#ifndef _WIN32
 	pidStr = str(boost::format( "%1%" ) % int(getpid()) );
 #endif
 	gchar *s = g_build_filename( getTargetDirectory(), (std::string(getPrefix())+pSession->getSessionId().utf8_str()).c_str(), NULL );
@@ -177,7 +177,7 @@ bool DiskSessionRecorder::dumpSession(const std::string& filename)
 			
 			// display packet
 			printf("--------------------------------------------------------------------------------\n");
-#ifndef WIN32
+#ifndef _WIN32
 			// could someone find the equivalent of gmtime_r on win32? (or better: an XP function) 
 			time_t t = time_t(rp->m_timestamp);
 			struct tm time;

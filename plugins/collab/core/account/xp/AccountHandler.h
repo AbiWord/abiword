@@ -30,7 +30,7 @@
 #include <packet/xp/AbiCollab_Packet.h>
 #include <account/xp/Buddy.h>
 #include <account/xp/EventListener.h>
-#ifdef WIN32
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
@@ -100,7 +100,7 @@ public:
 	virtual void							loadProperties() = 0;
 	virtual void							storeProperties() = 0;
 
-	#ifdef WIN32
+	#ifdef _WIN32
 	virtual BOOL							_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
 	virtual bool							shouldProcessFocus() = 0;
 	#endif
