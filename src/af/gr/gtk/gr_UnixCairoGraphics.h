@@ -102,8 +102,6 @@ public:
 								 UT_sint32 x, UT_sint32 y,
 								 UT_sint32 w, UT_sint32 h);
 #endif
-	virtual void      flush(void);
-
 protected:
 	virtual void		_resetClip(void);
 	static void		widget_size_allocate (GtkWidget        *widget,
