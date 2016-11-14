@@ -11971,10 +11971,13 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				if(NULL == szValue)
 				{
 					UT_sint32 istyle = FollowedBy[i];
-					// must not mix static and dynamically allocated strings in the same
-					// array, otherwise there is no way we can g_free it !!!
-					// attribs.push_back(g_strdup(static_cast<const char *>(m_styleTable[istyle]));
-					attribs.push_back(m_styleTable[istyle]);
+					if (istyle >= 0 && static_cast<UT_uint32>(istyle) < m_styleTable.size()) {
+						attribs.push_back(m_styleTable[istyle]);
+					} else {
+						UT_WARNINGMSG(("RTF: followed by style index out of bounds: %d. max %lu.\n",
+									   istyle, m_styleTable.size()));
+						attribs.push_back("");
+					}
 				}
 				else
 				{
