@@ -25,8 +25,11 @@
 #define IE_IMP_RTF_H
 
 #include <stdio.h>
+
+#include <memory>
 #include <string>
 #include <vector>
+
 #include "ie_imp.h"
 #include "ut_growbuf.h"
 #include "ut_stack.h"
@@ -37,7 +40,7 @@
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
 #include "fl_BlockLayout.h"
-#include  "ie_Table.h"
+#include "ie_Table.h"
 #include "ie_imp_RTFParse.h"
 
 class IE_Imp_RTF;
@@ -335,10 +338,10 @@ public:
 	char      m_cLevelFollow;
 	bool m_bStartNewList;
 	bool m_bRestart;
-    RTFProps_ParaProps * m_pParaProps;
-	RTFProps_CharProps *  m_pCharProps;
-    RTFProps_bParaProps * m_pbParaProps;
-	RTFProps_bCharProps *  m_pbCharProps;
+	std::unique_ptr<RTFProps_ParaProps> m_pParaProps;
+	std::unique_ptr<RTFProps_CharProps> m_pCharProps;
+	std::unique_ptr<RTFProps_bParaProps> m_pbParaProps;
+	std::unique_ptr<RTFProps_bCharProps> m_pbCharProps;
 private:
 	UT_uint32 m_localLevel;
 	RTF_msword97_list * m_pMSWord97_list ;
@@ -375,10 +378,10 @@ public:
 								 UT_uint32 iLevel);
 	UT_uint32 m_RTF_listID;
 	UT_uint32 m_OverrideCount;
-	RTFProps_ParaProps * m_pParaProps;
-	RTFProps_CharProps * m_pCharProps;
-	RTFProps_bParaProps * m_pbParaProps;
-	RTFProps_bCharProps * m_pbCharProps;
+	std::unique_ptr<RTFProps_ParaProps> m_pParaProps;
+	std::unique_ptr<RTFProps_CharProps> m_pCharProps;
+	std::unique_ptr<RTFProps_bParaProps> m_pbParaProps;
+	std::unique_ptr<RTFProps_bCharProps> m_pbCharProps;
 	bool setList(void);
 	bool isTab(UT_uint32 iLevel);
 	std::vector<UT_sint32>* getTabStopVect(UT_uint32 iLevel);
@@ -723,17 +726,18 @@ private:
 	char * getCharsInsideBrace(void);
 	bool ParseCharParaProps(unsigned char * pKeyword,
                             UT_sint32 param, bool fParam,
-                            RTFProps_CharProps * pChars,
-                            RTFProps_ParaProps * pParas,
-                            RTFProps_bCharProps * pbChars,
-                            RTFProps_bParaProps * pbParas);
+                            const std::unique_ptr<RTFProps_CharProps> & pChars,
+                            const std::unique_ptr<RTFProps_ParaProps> & pParas,
+                            const std::unique_ptr<RTFProps_bCharProps> & pbChars,
+                            const std::unique_ptr<RTFProps_bParaProps> & pbParas);
 	bool ReadListOverrideTable(void);
 	bool HandleTableListOverride(void);
 
-	bool buildAllProps( std::string & s,  RTFProps_ParaProps * pParas,
-					   RTFProps_CharProps * pChars,
-					   RTFProps_bParaProps * pbParas,
-					   RTFProps_bCharProps * pbChars);
+	bool buildAllProps(std::string & s,
+					   const std::unique_ptr<RTFProps_ParaProps> & pParas,
+					   const std::unique_ptr<RTFProps_CharProps> & pChars,
+					   const std::unique_ptr<RTFProps_bParaProps> & pbParas,
+					   const std::unique_ptr<RTFProps_bCharProps> & pbChars);
 
 
 	// Character property handlers
@@ -776,7 +780,7 @@ private:
 	bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tableader);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType,
-                    eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
+                    eTabLeader tabLeader,  const std::unique_ptr<RTFProps_ParaProps>& pParas);
 
 
 // Paste AbiWord tables

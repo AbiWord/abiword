@@ -204,11 +204,6 @@ bool	IE_Imp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
 // List class definitions
 //////////////////////////////////////////////////////////////////
 RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uint32 level)
-	: m_pParaProps(NULL)
-	, m_pCharProps(NULL)
-	, m_pbParaProps(NULL)
-	, m_pbCharProps(NULL)
-
 {
 	m_levelStartAt = 1;
 #if 0
@@ -235,10 +230,6 @@ UT_uint32 RTF_msword97_level::m_sPreviousLevel =0;
 
 RTF_msword97_level::~RTF_msword97_level(void)
 {
-	DELETEP(m_pParaProps);
-	DELETEP(m_pCharProps);
-	DELETEP(m_pbParaProps);
-	DELETEP(m_pbCharProps);
 }
 
 void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
@@ -565,27 +556,19 @@ RTF_msword97_list::~RTF_msword97_list(void)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 RTF_msword97_listOverride::RTF_msword97_listOverride(IE_Imp_RTF * pie_rtf )
-{
 	// Ideally, the default ID should be 0 which is a reserved ID in
 	// the spec, but OpenOffice uses it, so use -1 instead (which
 	// should be OK: spec sez 1-2000 is valid).
-	m_RTF_listID = (UT_uint32)-1;
+	: m_RTF_listID((UT_uint32) - 1)
+	, m_OverrideCount(0)
+	, m_pie_rtf(pie_rtf)
+	, m_pList(NULL)
 
-	m_OverrideCount = 0;
-	m_pParaProps = NULL;
-	m_pCharProps = NULL;
-	m_pbParaProps = NULL;
-	m_pbCharProps = NULL;
-	m_pie_rtf = pie_rtf;
-	m_pList = NULL;
+{
 }
 
 RTF_msword97_listOverride::~RTF_msword97_listOverride(void)
 {
-	DELETEP(m_pParaProps);
-	DELETEP(m_pCharProps);
-	DELETEP(m_pbParaProps);
-	DELETEP(m_pbCharProps);
 }
 
 /*!
@@ -8270,14 +8253,10 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 // OK define this in the data structure.
 //
 	RTF_msword97_level * pLevel = new RTF_msword97_level(pList, levelCount);
-    RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
-	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
-    RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
-	RTFProps_bCharProps *  pbChars = new	RTFProps_bCharProps();
-	pLevel->m_pParaProps = pParas;
-	pLevel->m_pCharProps = pChars;
-	pLevel->m_pbParaProps = pbParas;
-	pLevel->m_pbCharProps = pbChars;
+	pLevel->m_pParaProps = std::unique_ptr<RTFProps_ParaProps>(new RTFProps_ParaProps);
+	pLevel->m_pCharProps = std::unique_ptr<RTFProps_CharProps>(new RTFProps_CharProps);
+	pLevel->m_pbParaProps = std::unique_ptr<RTFProps_bParaProps>(new RTFProps_bParaProps);
+	pLevel->m_pbCharProps = std::unique_ptr<RTFProps_bCharProps>(new RTFProps_bCharProps);
 	delete pList->m_RTF_level[levelCount];
 	pList->m_RTF_level[levelCount] = pLevel;
 #if 0 // Sevior use this!! The other method can lead to inccorect results upon
@@ -8375,7 +8354,9 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 //
 			else
 			{
-				if(!ParseCharParaProps(static_cast<unsigned char *>(keyword), parameter, paramUsed,pChars,pParas,pbChars,pbParas))
+				if(!ParseCharParaProps(static_cast<unsigned char *>(keyword), parameter, paramUsed,
+									   pLevel->m_pCharProps, pLevel->m_pParaProps,
+									   pLevel->m_pbCharProps, pLevel->m_pbParaProps))
 					return false;
 			}
 		}
@@ -8400,17 +8381,17 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 }
 
 /*!
- * OK this method parses the RTF against all the character and 
+ * OK this method parses the RTF against all the character and
  * paragraph properties.
  * and fills the pointers to the character and paragraph classes.
  * These are used by the list table and stylesheet reader.
  */
-bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, 
-                                     UT_sint32 param, bool fParam, 
-                                     RTFProps_CharProps * pChars, 
-                                     RTFProps_ParaProps * pParas, 
-                                     RTFProps_bCharProps * pbChars, 
-                                     RTFProps_bParaProps * pbParas)
+bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword,
+                                     UT_sint32 param, bool fParam,
+                                     const std::unique_ptr<RTFProps_CharProps>& pChars,
+                                     const std::unique_ptr<RTFProps_ParaProps>& pParas,
+                                     const std::unique_ptr<RTFProps_bCharProps>& pbChars,
+                                     const std::unique_ptr<RTFProps_bParaProps>& pbParas)
 {
 	if (strcmp(reinterpret_cast<char*>(pKeyword), "b") == 0) // bold
 	{
@@ -8754,14 +8735,10 @@ bool IE_Imp_RTF::HandleTableListOverride(void)
 // Increment override counting vector
 //
 	m_vecWord97ListOverride.push_back(pLOver);
-    RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
-	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
-    RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
-	RTFProps_bCharProps *  pbChars = new	RTFProps_bCharProps();
-	pLOver->m_pParaProps = pParas;
-	pLOver->m_pCharProps = pChars;
-	pLOver->m_pbParaProps = pbParas;
-	pLOver->m_pbCharProps = pbChars;
+	pLOver->m_pParaProps = std::unique_ptr<RTFProps_ParaProps>(new RTFProps_ParaProps);
+	pLOver->m_pCharProps = std::unique_ptr<RTFProps_CharProps>(new RTFProps_CharProps);
+	pLOver->m_pbParaProps = std::unique_ptr<RTFProps_bParaProps>(new RTFProps_bParaProps);
+	pLOver->m_pbCharProps = std::unique_ptr<RTFProps_bCharProps>(new RTFProps_bCharProps);
 
 	UT_uint32 nesting = 1;
 	while (nesting >0) // Outer loop
@@ -8802,7 +8779,10 @@ bool IE_Imp_RTF::HandleTableListOverride(void)
 			}
 		    else
 			{
-				ParseCharParaProps(reinterpret_cast<unsigned char *>(keyword), parameter,paramUsed,pChars,pParas,pbChars,pbParas);
+				ParseCharParaProps(reinterpret_cast<unsigned char *>(keyword), parameter,
+								   paramUsed, pLOver->m_pCharProps,
+								   pLOver->m_pParaProps, pLOver->m_pbCharProps,
+								   pLOver->m_pbParaProps);
 			}
 		}
 	}
@@ -11017,7 +10997,7 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
 
 
 
-bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tabLeader,  RTFProps_ParaProps * pParas)
+bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tabLeader, const std::unique_ptr<RTFProps_ParaProps>& pParas)
 {
 	pParas->m_tabStops.push_back(stopDist);	// convert from twip to inch
 	if(tabType >=FL_TAB_LEFT && tabType <= FL_TAB_BAR  )
@@ -11719,12 +11699,10 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	UT_sint32 FollowedBy[2000]; // 2000 styles. I know this should be a Vector.
 	UT_sint32 styleCount = 0;
 	UT_GenericVector<UT_GenericVector<const gchar*>*> vecStyles;
-	RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
-	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
-	RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
-	RTFProps_bCharProps *  pbChars = new	RTFProps_bCharProps();
-
-	static std::string propBuffer;
+	std::unique_ptr<RTFProps_ParaProps> pParas(new RTFProps_ParaProps);
+	std::unique_ptr<RTFProps_CharProps> pChars(new RTFProps_CharProps);
+	std::unique_ptr<RTFProps_bParaProps> pbParas(new RTFProps_bParaProps);
+	std::unique_ptr<RTFProps_bCharProps> pbChars(new RTFProps_bCharProps);
 
 	PP_PropertyVector attribs;
 	UT_UCS4String styleName;// = "";
@@ -11879,6 +11857,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 			// Reached the end of a single style definition.
 			// Use it.
+			std::string propBuffer;
 			buildAllProps(propBuffer,pParas,pChars,pbParas,pbChars);
 			attribs.push_back(PT_PROPS_ATTRIBUTE_NAME);
 			attribs.push_back(propBuffer);
@@ -11912,24 +11891,13 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			styleNumber = 0;
 			styleName = "";
 			styleType = "P";
-			DELETEP(pParas);
-			DELETEP(pChars);
-			DELETEP(pbParas);
-			DELETEP(pbChars);
-			pParas =  new RTFProps_ParaProps();
-			pChars = new	RTFProps_CharProps();
-			pbParas =  new RTFProps_bParaProps();
-			pbChars = new	RTFProps_bCharProps();
-			propBuffer.clear();
+			pParas.reset(new RTFProps_ParaProps);
+			pChars.reset(new RTFProps_CharProps);
+			pbParas.reset(new RTFProps_bParaProps);
+			pbChars.reset(new RTFProps_bCharProps);
 		}
 	}
-//
-// Finished Style definitions
-//
-	DELETEP(pParas);
-	DELETEP(pChars);
-	DELETEP(pbParas);
-	DELETEP(pbChars);
+
 //
 // Now we loop through them all and write them into our document.
 //
@@ -12056,10 +12024,11 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
  * This method builds the property list from Paragraph and character classes pParas
  * and pChars
  */
-bool IE_Imp_RTF::buildAllProps(std::string &s,  RTFProps_ParaProps * pParas,
-							   RTFProps_CharProps * pChars,
-							   RTFProps_bParaProps * pbParas,
-							   RTFProps_bCharProps * pbChars)
+bool IE_Imp_RTF::buildAllProps(std::string & s,
+							   const std::unique_ptr<RTFProps_ParaProps>& pParas,
+							   const std::unique_ptr<RTFProps_CharProps>& pChars,
+							   const std::unique_ptr<RTFProps_bParaProps>& pbParas,
+							   const std::unique_ptr<RTFProps_bCharProps>& pbChars)
 {
 //
 // Tab stops.
