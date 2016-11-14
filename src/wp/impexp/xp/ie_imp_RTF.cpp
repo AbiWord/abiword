@@ -11948,6 +11948,13 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 			const char * szAtt = pCurStyleVec->getNthItem(j++);
 			const char * szValue = pCurStyleVec->getNthItem(j++);
+
+			if (!szAtt) {
+				UT_WARNINGMSG(("Attribute name is NULL. Skipping.\n"));
+				// skip the value.
+				j++;
+				continue;
+			}
 			attribs.push_back(szAtt);
 			if( strcmp(szAtt, PT_NAME_ATTRIBUTE_NAME)== 0)
 			{
