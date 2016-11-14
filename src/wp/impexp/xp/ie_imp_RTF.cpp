@@ -11959,7 +11959,13 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				if(NULL == szValue)
 				{
 					UT_sint32 istyle = BasedOn[i];
-					attribs.push_back(m_styleTable[istyle]);
+					if (istyle >= 0 && static_cast<UT_uint32>(istyle) < m_styleTable.size()) {
+						attribs.push_back(m_styleTable[istyle]);
+					} else {
+						UT_WARNINGMSG(("RTF: basedon style index out of bounds: %d. max %lu.\n",
+									   istyle, m_styleTable.size()));
+						attribs.push_back("");
+					}
 				}
 				else
 				{
