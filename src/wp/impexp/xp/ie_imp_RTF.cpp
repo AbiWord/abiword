@@ -11947,29 +11947,28 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		while(j < nAtts)
 		{
 			const char * szAtt = pCurStyleVec->getNthItem(j++);
+			const char * szValue = pCurStyleVec->getNthItem(j++);
 			attribs.push_back(szAtt);
 			if( strcmp(szAtt, PT_NAME_ATTRIBUTE_NAME)== 0)
 			{
-				szName = pCurStyleVec->getNthItem(j++);
-				attribs.push_back(szName);
+				szName = szValue;
+				attribs.push_back(szName ? szName : "");
 			}
 			else if( strcmp(szAtt, PT_BASEDON_ATTRIBUTE_NAME)== 0)
 			{
-				const char * szNext = pCurStyleVec->getNthItem(j++);
-				if(NULL == szNext)
+				if(NULL == szValue)
 				{
 					UT_sint32 istyle = BasedOn[i];
 					attribs.push_back(m_styleTable[istyle]);
 				}
 				else
 				{
-					attribs.push_back(szNext);
+					attribs.push_back(szValue);
 				}
 			}
 			else if( strcmp(szAtt, PT_FOLLOWEDBY_ATTRIBUTE_NAME)== 0)
 			{
-				const char * szNext = pCurStyleVec->getNthItem(j++);
-				if(NULL == szNext)
+				if(NULL == szValue)
 				{
 					UT_sint32 istyle = FollowedBy[i];
 					// must not mix static and dynamically allocated strings in the same
@@ -11979,13 +11978,12 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				}
 				else
 				{
-					attribs.push_back(szNext);
+					attribs.push_back(szValue);
 				}
 			}
 			else
 			{
-				szAtt = pCurStyleVec->getNthItem(j++);
-				attribs.push_back(szAtt ? szAtt : "");
+				attribs.push_back(szValue ? szValue : "");
 			}
 		}
 //
