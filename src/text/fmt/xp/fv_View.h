@@ -33,6 +33,7 @@
 #include "ut_types.h"
 #include "xav_View.h"
 #include "pt_Types.h"
+#include "pp_Property.h"
 #include "fp_types.h"
 #ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
