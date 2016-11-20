@@ -4224,7 +4224,7 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 				pContainer = static_cast<fp_VerticalContainer *>(pPrevCon->getContainer());
 				pPrevLine = static_cast<fp_Line *>(pPrevCon);
 				UT_ASSERT(pContainer);
-				UT_ASSERT(pContainer->getWidth() >0);
+				UT_ASSERT(pContainer && pContainer->getWidth() >0);
 			}
 			else
 			{
