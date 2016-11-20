@@ -1308,28 +1308,30 @@ bool fb_ColumnBreaker::_checkVBreakableContainer(fp_Container * pContainer, UT_s
 	UT_ASSERT((pContainer->getContainerType() == FP_CONTAINER_TABLE) ||
 			  (pContainer->getContainerType() == FP_CONTAINER_TOC));
 	fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer*>(pContainer);
-	UT_sint32 iBreakAt = pVCon->wantVBreakAt(iAvail-1);
+	UT_sint32 iBreakAt = 0;
 	if (!pVCon->getNext())
 	{
 		// This is the last segment of the object (possibly the only segment)
-		if (iBreakAt < 0)
+		if (pVCon->getHeight() <= iAvail)
 		{
-			return (iBreakAt == -1);
+			return true;
 		}
 		else
 		{
+			iBreakAt = pVCon->wantVBreakAt(iAvail-1);
 			pVCon->setLastWantedVBreak(iBreakAt);
 		}
 	}
 	else
 	{
+		iBreakAt = pVCon->wantVBreakAt(iAvail-1);
 		if (iBreakAt != pVCon->getLastWantedVBreak())
 		{
 			pVCon->deleteBrokenAfter(true);
 			pVCon->setLastWantedVBreak(iBreakAt);
 			if (iBreakAt < 0)
 			{
-				return (iBreakAt == -1);
+				return true;
 			}
 		}
 		else
@@ -1338,7 +1340,6 @@ bool fb_ColumnBreaker::_checkVBreakableContainer(fp_Container * pContainer, UT_s
 			{
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				pVCon->deleteBrokenAfter(true);
-				return (iBreakAt == -1);
 			}
 			return true;
 		}

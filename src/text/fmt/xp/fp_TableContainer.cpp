@@ -4186,7 +4186,7 @@ void fp_TableContainer::setYBottom(UT_sint32 i)
  * The caller to this method requests a break at the vertical height
  * given. It returns the actual break height, which will always be
  * less than or equal to the requested height. The function returns -1
- * if the table does not need to be broken and -2 if the table cannot be broken.
+ * if the table does not need to be broken.
  */
 UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 {
@@ -4236,13 +4236,7 @@ UT_sint32 fp_TableContainer::wantVBreakAtNoFootnotes(UT_sint32 vpos)
 	UT_sint32 row = getRowOrColumnAtPosition(iYBreakMax,true);
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	UT_sint32 colHeight = pTL->getDocSectionLayout()->getActualColumnHeight();
-	if ((row == 0) && (colHeight*pTL->getMaxExtraMargin() > iYBreakMax))
-	{
-		// Only a small gap is left at the bottom of the page and it is smaller than the first cell.
-		// Refuse to break the table.
-		return -2;
-	}
-	else if ((row > 0) && (colHeight*pTL->getMaxExtraMargin() > iYBreakMax - getYOfRow(row)))
+	if ((row > 0) && (colHeight*pTL->getMaxExtraMargin() > iYBreakMax - getYOfRow(row)))
 	{
 		// Check that the row is cell boundary for all columns
 		while (pCell)
