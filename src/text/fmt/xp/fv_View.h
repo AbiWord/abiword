@@ -321,9 +321,9 @@ public:
 	UT_Error		cmdDeleteHyperlink();
 	bool                    cmdInsertMathML(const char * szFileName,
 						PT_DocPosition pos);
-	bool	        cmdInsertEmbed(const UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps);
-	bool            cmdUpdateEmbed(const UT_ByteBuf * pBuf, const char * szMime, const char * szProps);
-	bool	        cmdUpdateEmbed(fp_Run * pRun, const UT_ByteBuf * pBuf, const char * szMime, const char * szProps);
+	bool	        cmdInsertEmbed(const UT_ConstByteBufPtr & pBuf,PT_DocPosition pos,const char * szMime,const char * szProps);
+	bool            cmdUpdateEmbed(const UT_ConstByteBufPtr & pBuf, const char * szMime, const char * szProps);
+	bool	        cmdUpdateEmbed(fp_Run * pRun, const UT_ConstByteBufPtr & pBuf, const char * szMime, const char * szProps);
 	bool	        cmdDeleteEmbed(fp_Run * pRun);
 
 	bool                    cmdInsertLatexMath(UT_UTF8String & sLatex,
@@ -376,7 +376,7 @@ public:
 	PT_DocPosition		mapDocPos( FV_DocPos dp );
 	PT_DocPosition		mapDocPosSimple( FV_DocPos dp );
 	PT_DocPosition saveSelectedImage (const char * toFile );
-	PT_DocPosition saveSelectedImage (const UT_ByteBuf ** outByteBuf);
+	PT_DocPosition saveSelectedImage(UT_ConstByteBufPtr & outByteBuf);
 	PT_DocPosition getSelectedImage(const char **dataId) const;
 	PT_DocPosition getSelectedImage(const char **dataId,const fp_Run **pImRun) const;
 	fp_Run *getSelectedObject(void) const;

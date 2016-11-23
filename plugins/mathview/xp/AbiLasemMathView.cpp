@@ -640,7 +640,7 @@ void GR_LasemMathManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & re
 	/* bool b = */ m_pDoc->getAttrProp(api, &pSpanAP);
 	const char * pszDataID = NULL;
 	pSpanAP->getAttribute("dataid", pszDataID);
-	UT_ByteBuf *pBuf = NULL;
+	UT_ConstByteBufPtr pBuf;
 	std::string mime_type;
 	if ((pBuf = pLasemMathView->getSnapShot()))
 	  {
@@ -648,14 +648,13 @@ void GR_LasemMathManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & re
 		sID += pszDataID;
 		if(pItem->m_bHasSnapshot)
 		  {
-			m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
+			m_pDoc->replaceDataItem(sID.utf8_str(), pBuf);
 		  }
 		else
 		  {
-			m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mime_type,NULL);
+			m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mime_type, NULL);
 			pItem->m_bHasSnapshot = true;
 		  }
-		delete pBuf;
 	  }
 }
 
@@ -678,14 +677,14 @@ void GR_LasemMathManager::loadEmbedData(UT_sint32 uid)
   UT_UTF8String sMathML;
   if (bFoundDataID && pszDataID)
   {
-       const UT_ByteBuf * pByteBuf = NULL;
-       bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID, 
-						    const_cast<const UT_ByteBuf **>(&pByteBuf),
+       UT_ConstByteBufPtr pByteBuf;
+       bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID,
+						    pByteBuf,
 						    NULL, NULL);
        if (bFoundDataID)
        {
             UT_UCS4_mbtowc myWC;
-            sMathML.appendBuf( *pByteBuf, myWC);
+            sMathML.appendBuf(pByteBuf, myWC);
        }
   }
  UT_return_if_fail(bFoundDataID);
@@ -773,7 +772,7 @@ bool GR_LasemMathManager::isEdittable(G_GNUC_UNUSED UT_sint32 uid)
         return true;
 }
 
-bool GR_LasemMathManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED UT_ByteBuf & From, G_GNUC_UNUSED UT_ByteBuf & To)
+bool GR_LasemMathManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED const UT_ConstByteBufPtr & From, G_GNUC_UNUSED const UT_ByteBufPtr & To)
 {
   	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
@@ -898,34 +897,35 @@ void LasemMathView::render(UT_Rect & rec)
 	pUGG->endPaint();
 }
 
-cairo_status_t abi_CairoWrite(UT_ByteBuf * buf, unsigned char * data, unsigned int length)
+cairo_status_t abi_CairoWrite(UT_ByteBuf* buf, unsigned char * data, unsigned int length)
 {
 	return (buf->append (static_cast<UT_Byte*>(data), static_cast<UT_uint32>(length)))?
 			CAIRO_STATUS_SUCCESS: CAIRO_STATUS_WRITE_ERROR;
 }
 
-UT_ByteBuf *LasemMathView::getSnapShot ()
+UT_ConstByteBufPtr LasemMathView::getSnapShot()
 {
 	UT_return_val_if_fail (mathml, NULL);
 	int _height = ascent + descent;
-	if (_height == 0 || (int) width == 0)
-		return NULL;
+	if (_height == 0 || (int) width == 0) {
+		return UT_ConstByteBufPtr();
+	}
 	size_t length;
 	
-	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	UT_ByteBufPtr pBuf(new UT_ByteBuf);
 	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
-										pBuf, width * 72./UT_LAYOUT_RESOLUTION, height * 72./UT_LAYOUT_RESOLUTION);
+                                                                        pBuf.get(), width * 72./UT_LAYOUT_RESOLUTION, height * 72./UT_LAYOUT_RESOLUTION);
 	cairo_t *cr = cairo_create (surface);
 	cairo_surface_destroy (surface);
 	lsm_dom_view_render (view, cr, 0., m_y * 72. / UT_LAYOUT_RESOLUTION);
 	cairo_destroy (cr);
 	length = (size_t)pBuf->getLength();
-	
-	const UT_Byte *buf = reinterpret_cast <const UT_Byte*> (pBuf);
-	if (!buf || !length)
-		return NULL;
-	UT_ByteBuf *pSVGBuf = new UT_ByteBuf ();
-	pSVGBuf->append (buf, (int)length);
+
+	if (!length) {
+		return UT_ConstByteBufPtr();
+	}
+	UT_ByteBufPtr pSVGBuf(new UT_ByteBuf);
+	pSVGBuf->append(pBuf->getPointer(0), (UT_uint32)length);
 	return pSVGBuf;
 }
 

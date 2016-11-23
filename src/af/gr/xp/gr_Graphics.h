@@ -22,10 +22,13 @@
 #ifndef GR_GRAPHICS_H
 #define GR_GRAPHICS_H
 
+#include <memory>
+
 #include "xap_Features.h"
 
 #include "ut_types.h"
 #include "ut_units.h"
+#include "ut_bytebuf.h"
 #include "ut_growbuf.h"
 #include "ut_misc.h"
 #include "gr_Image.h"
@@ -482,7 +485,7 @@ class ABI_EXPORT GR_Graphics
 									  UT_uint32 * piWidth) const;
 
    	virtual GR_Image* createNewImage(const char* pszName,
-									 const UT_ByteBuf* pBB,
+									 const UT_ConstByteBufPtr & pBB,
 									 const std::string& mimetype,
 									 UT_sint32 iWidth,
 									 UT_sint32 iHeight,

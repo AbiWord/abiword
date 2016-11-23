@@ -63,10 +63,10 @@ static void _jpeg_term_destination( j_compress_ptr cinfo )
 bool abiword_document::garble_jpeg( void*& data, size_t& length ) {
 
 	// get dimensions
-	UT_ByteBuf bb;
-	bb.append( static_cast<UT_Byte*>( data), length );
+	UT_ByteBufPtr bb(new UT_ByteBuf);
+	bb->append( static_cast<UT_Byte*>( data), length );
 	UT_sint32 w, h;
-	UT_JPEG_getDimensions( &bb, w, h );
+	UT_JPEG_getDimensions(bb, w, h);
 
 	// create garbled image with given dimensions
 	size_t rowbytes = w * 3;

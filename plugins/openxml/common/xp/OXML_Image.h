@@ -48,8 +48,7 @@ public:
 
 	void setId(const std::string & id);
 	void setMimeType(const std::string & mimeType);
-    // DOES NOT take ownership of the buffer
-	void setData(const UT_ByteBuf* data);
+	void setData(const UT_ConstByteBufPtr & data);
 	void setGraphic(FG_ConstGraphicPtr && fg);
 
 	const std::string & getId() const
@@ -63,7 +62,7 @@ public:
 private:
 	std::string  m_id;
 	std::string m_mimeType;
-	const UT_ByteBuf* m_data;
+	UT_ConstByteBufPtr m_data;
 	FG_ConstGraphicPtr m_graphic;
 };
 

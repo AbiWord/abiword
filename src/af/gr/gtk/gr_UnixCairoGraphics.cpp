@@ -41,7 +41,7 @@ GR_UnixCairoGraphicsBase::~GR_UnixCairoGraphicsBase()
  * a new image.
  */
 GR_Image* GR_UnixCairoGraphicsBase::createNewImage (const char* pszName,
-													const UT_ByteBuf* pBB,
+													const UT_ConstByteBufPtr & pBB,
                                                     const std::string& mimetype,
 													UT_sint32 iWidth,
 													UT_sint32 iHeight,

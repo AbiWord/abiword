@@ -75,23 +75,23 @@ UT_Error OXML_Element_Math::addToPT(PD_Document * pDocument)
     std::string mID = UT_std_string_sprintf("MathLatex%d", id);
     std::string lID = UT_std_string_sprintf("LatexMath%d", id);
 
-    UT_ByteBuf mathBuf;
-    UT_ByteBuf latexBuf;
-    mathBuf.ins(0,reinterpret_cast<const UT_Byte *>(m_MathML.c_str()),static_cast<UT_uint32>(m_MathML.length()));
+    UT_ByteBufPtr mathBuf(new UT_ByteBuf);
+    UT_ByteBufPtr latexBuf(new UT_ByteBuf);
+    mathBuf->ins(0, reinterpret_cast<const UT_Byte *>(m_MathML.c_str()), static_cast<UT_uint32>(m_MathML.length()));
 
     UT_UTF8String sMathml; // TO DO : use std::string after enabling it in ie_math_convert
     UT_UTF8String sLatex,sitex;
     sMathml.assign(m_MathML.c_str());
-    
-    pDocument->createDataItem(mID.c_str(),false,&mathBuf, "", NULL);   
-  
+
+    pDocument->createDataItem(mID.c_str(), false, mathBuf, "", NULL);
+
     if(convertMathMLtoLaTeX(sMathml, sLatex) && convertLaTeXtoEqn(sLatex,sitex))
-    {    
+    {
         // Conversion of MathML to LaTeX and the Equation Form suceeds
-        latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(sitex.utf8_str()),static_cast<UT_uint32>(sitex.size()));
-        pDocument->createDataItem(lID.c_str(), false, &latexBuf, "", NULL);
+        latexBuf->ins(0, reinterpret_cast<const UT_Byte *>(sitex.utf8_str()), static_cast<UT_uint32>(sitex.size()));
+        pDocument->createDataItem(lID.c_str(), false, latexBuf, "", NULL);
     }
-   
+
     const PP_PropertyVector atts = {
       PT_IMAGE_DATAID, mID,
       "latexid", lID

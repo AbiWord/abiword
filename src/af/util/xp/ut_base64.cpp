@@ -72,7 +72,7 @@ static UT_Byte s_inverse[256] =
 /*****************************************************************/
 /*****************************************************************/
 
-bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
+bool UT_Base64Encode(const UT_ByteBufPtr & pDest, const UT_ConstByteBufPtr & pSrc)
 {
 	// Base64 encode the raw (presumed binary) data in pSrc into pDest.
 	// return false if error.
@@ -115,7 +115,7 @@ bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 	return true;
 }
 
-bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
+bool UT_Base64Decode(const UT_ByteBufPtr & pDest, const UT_ConstByteBufPtr & pSrc)
 {
 	// decode the Base64 data in pSrc into pDest.
 	// return false if error.

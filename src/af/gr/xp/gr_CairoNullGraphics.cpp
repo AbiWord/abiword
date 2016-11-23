@@ -44,7 +44,7 @@ CairoNull_Graphics::~CairoNull_Graphics()
 }
 
 GR_Image* CairoNull_Graphics::createNewImage(const char* /*pszName*/, 
-					     const UT_ByteBuf* /*pBB*/, 
+					     const UT_ConstByteBufPtr & /*pBB*/,
 					     const std::string& /*mimetype*/,
 					     UT_sint32 /*iDisplayWidth*/, 
 					     UT_sint32 /*iDisplayHeight*/,

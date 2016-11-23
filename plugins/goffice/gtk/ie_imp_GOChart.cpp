@@ -151,15 +151,13 @@ Cleanup:
  Uses current document's encoding if it is set
 */
 IE_Imp_Object::IE_Imp_Object(PD_Document * pDocument)
-	: IE_Imp(pDocument),m_pByteBuf(NULL)
+	: IE_Imp(pDocument)
+	, m_pByteBuf(new UT_ByteBuf)
 {
-	m_pByteBuf = new UT_ByteBuf;
-
 }
 
 IE_Imp_Object::~IE_Imp_Object(void)
 {
-	DELETEP(m_pByteBuf);
 }
 
 /*****************************************************************/

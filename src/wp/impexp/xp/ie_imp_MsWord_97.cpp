@@ -4246,7 +4246,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 {
 	FG_ConstGraphicPtr pFG;
 	UT_Error error		= UT_OK;
-	const UT_ByteBuf * buf		= 0;
+	UT_ConstByteBufPtr buf;
 
 	std::string propBuffer;
 	std::string propsName;
@@ -4280,7 +4280,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	wvStream_rewind(pwv);
 	wvStream_read(data,size,sizeof(char),pwv);
 
-	UT_ByteBuf pictData;
+	UT_ByteBufPtr pictData(new UT_ByteBuf);
 	if (decompress)
 	{
 
@@ -4295,17 +4295,17 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 			DELETEPV(uncompr);
 			goto Cleanup;
 		}
-		pictData.append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
+		pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
 		DELETEPV(uncompr);
 	}
 	else
 	{
-		pictData.append(reinterpret_cast<const UT_Byte*>(data), size);
+		pictData->append(reinterpret_cast<const UT_Byte*>(data), size);
 	}
 
 	delete [] data;
 
-	if(!pictData.getPointer(0))
+	if(!pictData->getPointer(0))
 		error =  UT_ERROR;
 	else
 		error = IE_ImpGraphic::loadGraphic (pictData, iegft, pFG);
@@ -4385,7 +4385,7 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 {
 	FG_ConstGraphicPtr pFG;
 	UT_Error error		= UT_OK;
-	const UT_ByteBuf * buf		= 0;
+	UT_ConstByteBufPtr buf;
 
   // suck the data into the ByteBuffer
 
@@ -4415,7 +4415,7 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   wvStream_rewind(pwv);
   wvStream_read(data,size,sizeof(char),pwv);
 
-  UT_ByteBuf pictData;
+  UT_ByteBufPtr pictData(new UT_ByteBuf);
 
   if (decompress)
   {
@@ -4431,17 +4431,17 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
         DELETEPV(uncompr);
         goto Cleanup;
     }
-    pictData.append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
+    pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
     DELETEPV(uncompr);
   }
   else
   {
-    pictData.append(reinterpret_cast<const UT_Byte*>(data), size);
+    pictData->append(reinterpret_cast<const UT_Byte*>(data), size);
   }
 
   delete [] data;
 
-  if(!pictData.getPointer(0))
+  if(!pictData->getPointer(0))
 	  error =  UT_ERROR;
   else
 	  error = IE_ImpGraphic::loadGraphic (pictData, IEGFT_Unknown, pFG);

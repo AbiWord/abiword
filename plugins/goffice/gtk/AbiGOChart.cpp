@@ -345,8 +345,8 @@ cb_update_graph (GogGraph *graph, gpointer data)
 	GsfXMLOut* xml = gsf_xml_out_new (output);
 	gog_object_write_xml_sax(GOG_OBJECT (graph), xml, NULL);
 	UT_Byte const *bytes = gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (output));
-	UT_ByteBuf myByteBuf;
-	myByteBuf.append(bytes, gsf_output_size (output));
+	UT_ByteBufPtr myByteBuf(new UT_ByteBuf);
+	myByteBuf->append(bytes, gsf_output_size (output));
 	const char* mimetypeGOChart = "application/x-goffice-graph";
 	const char * szProps="embed-type: GOChart";
 	if (acg->pView)
@@ -354,13 +354,13 @@ cb_update_graph (GogGraph *graph, gpointer data)
 		acg->pView->SetGuru (NULL);
 		FV_View* pView = acg->pView->getRun ()->getBlock ()->getView ();
 		UT_DEBUGMSG(("Doing Embed Update from GOG callback \n"));
-		pView->cmdUpdateEmbed(acg->pView->getRun (), &myByteBuf,mimetypeGOChart,szProps);
+		pView->cmdUpdateEmbed(acg->pView->getRun (), myByteBuf, mimetypeGOChart, szProps);
 	}
 	else
 	{
 		XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 		FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
-		pView->cmdInsertEmbed(&myByteBuf,pView->getPoint(),mimetypeGOChart,szProps);
+		pView->cmdInsertEmbed(myByteBuf, pView->getPoint(), mimetypeGOChart, szProps);
 	}
 	g_object_unref (xml);
 	g_object_unref (output);
@@ -384,7 +384,7 @@ AbiGOChart_Create(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCallData 
 {
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
-	UT_ByteBuf myByteBuf;
+	UT_ByteBufPtr myByteBuf(new UT_ByteBuf);
 
 	AbiControlGUI *acg = ABI_CONTROL_GUI(g_object_new (ABI_TYPE_CONTROL_GUI, NULL));
 
@@ -505,22 +505,21 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
   UT_return_if_fail(bHaveProp);
   const char * pszDataID = NULL;
   pSpanAP->getAttribute("dataid", pszDataID);
-  UT_ByteBuf *pBuf;
+  UT_ByteBufPtr pBuf;
   if ((pBuf = pGOChartView->exportToSVG ()))
     {
       UT_UTF8String sID = "snapshot-svg-";
       sID += pszDataID;
       if(pItem->m_bHasSnapshot)
         {
-          m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
+          m_pDoc->replaceDataItem(sID.utf8_str(), pBuf);
         }
       else
         {
           const std::string mimetypeSVG = "image/svg";
-          m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypeSVG,NULL);
+          m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mimetypeSVG, NULL);
           pItem->m_bHasSnapshot = true;
         }
-      delete pBuf;
     }
   else
   if ((pBuf = pGOChartView->exportToPNG ()))
@@ -529,15 +528,14 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
       sID += pszDataID;
       if(pItem->m_bHasSnapshot)
         {
-          m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
+          m_pDoc->replaceDataItem(sID.utf8_str(), pBuf);
         }
       else
         {
           const std::string mimetypePNG = "image/png";
-          m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypePNG,NULL);
+          m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mimetypePNG, NULL);
           pItem->m_bHasSnapshot = true;
         }
-      delete pBuf;
     }
 }
 
@@ -578,14 +576,13 @@ void GR_GOChartManager::loadEmbedData(UT_sint32 uid)
   UT_UTF8String sGOChartXML;
   if (bFoundDataID && pszDataID)
   {
-       const UT_ByteBuf * pByteBuf = NULL;
-       bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID, 
-						    const_cast<const UT_ByteBuf **>(&pByteBuf),
+       UT_ConstByteBufPtr pByteBuf;
+       bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID, pByteBuf,
 						    NULL, NULL);
        if (bFoundDataID)
        {
             UT_UCS4_mbtowc myWC;
-            sGOChartXML.appendBuf( *pByteBuf, myWC);
+            sGOChartXML.appendBuf(pByteBuf, myWC);
        }
   }
  UT_return_if_fail(bFoundDataID);
@@ -639,7 +636,7 @@ void GR_GOChartManager::releaseEmbedView(UT_sint32 uid)
   m_vecGOChartView.setNthItem(uid,NULL,NULL); //NULL it out so we don't affect the other uid's
 }
 
-bool GR_GOChartManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED UT_ByteBuf & From, G_GNUC_UNUSED UT_ByteBuf & To)
+bool GR_GOChartManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED const UT_ConstByteBufPtr & From, G_GNUC_UNUSED const UT_ByteBufPtr & To)
 {
   return false;
 }
@@ -745,28 +742,29 @@ void GOChartView::render(UT_Rect & rec)
 	pUGG->endPaint();
 }
 
-UT_ByteBuf *GOChartView::exportToPNG ()
+UT_ByteBufPtr GOChartView::exportToPNG ()
 {
 	UT_return_val_if_fail (m_Graph, NULL);
-	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	UT_ByteBufPtr pBuf(new UT_ByteBuf);
 	int w = width * 300 / UT_LAYOUT_RESOLUTION, h = height * 300 / UT_LAYOUT_RESOLUTION;
 	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
 	cairo_t *cr = cairo_create (surface);
 	gog_renderer_render_to_cairo (m_Renderer, cr, w, h);
 	cairo_destroy (cr);
 	cairo_surface_write_to_png_stream (surface,
-	    reinterpret_cast<cairo_write_func_t>(abi_CairoWrite), pBuf);
+                                           reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
+                                           pBuf.get());
 	cairo_surface_destroy (surface);
 	return pBuf;
 }
 
-UT_ByteBuf *GOChartView::exportToSVG ()
+UT_ByteBufPtr GOChartView::exportToSVG ()
 {
 	UT_return_val_if_fail (m_Graph, NULL);
-	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	UT_ByteBufPtr pBuf(new UT_ByteBuf);
 	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (
-										reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
-										pBuf, width, height);
+          reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
+          pBuf.get(), width, height);
 	cairo_t *cr = cairo_create (surface);
 	cairo_surface_destroy (surface);
 	gog_renderer_render_to_cairo (m_Renderer, cr, width, height);

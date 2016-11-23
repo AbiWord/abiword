@@ -69,9 +69,9 @@ void FV_UnixFrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
      }
      if(!m_bDragOut)
      {
-	 const UT_ByteBuf * pBuf = NULL;
-	 const char * pszData = getPNGImage(&pBuf);
-	 UT_DEBUGMSG(("Got image buffer %p pszData %p \n",pBuf,pszData));
+	 UT_ConstByteBufPtr pBuf;
+	 const char * pszData = getPNGImage(pBuf);
+	 UT_DEBUGMSG(("Got image buffer %p pszData %p \n", pBuf.get(), pszData));
 	 if(pBuf)
 	 {
        //

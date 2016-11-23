@@ -52,7 +52,6 @@ ODi_Frame_ListenerState::ODi_Frame_ListenerState(PD_Document* pDocument,
         m_parsedFrameStartTag(false),
         m_inlinedImage(false),
         m_iFrameDepth(0),
-        m_pMathBB(NULL),
         m_bInMath(false),
 		m_bInlineImagePending(false),
 		m_bPositionedImagePending(false),
@@ -113,9 +112,8 @@ void ODi_Frame_ListenerState::startElement (const gchar* pName,
       _drawObject(ppAtts, rAction);
 
     } else if (!strcmp(pName, "math:math")) {
-        
-        DELETEP(m_pMathBB);
-        m_pMathBB = new UT_ByteBuf;
+
+        m_pMathBB.reset(new UT_ByteBuf);
         m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>"), 65);
 
         m_bInMath = true;
@@ -211,7 +209,7 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
 			lID.assign("LatexMath");
      	    lID.append((sID.substr(9,sID.size()-8)).c_str());
 			
-      	    UT_ByteBuf latexBuf;
+      	    UT_ByteBufPtr latexBuf(new UT_ByteBuf);
    	    UT_UTF8String PMathml = (const char*)(m_pMathBB->getPointer(0));
 	    UT_UTF8String PLatex,Pitex;
 
@@ -220,8 +218,8 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
 	    if(convertMathMLtoLaTeX(PMathml, PLatex) && convertLaTeXtoEqn(PLatex,Pitex))
  	    {
 		// Conversion of MathML to LaTeX and the Equation Form suceeds
-		latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(Pitex.utf8_str()),static_cast<UT_uint32>(Pitex.size()));
-		m_pAbiDocument->createDataItem(lID.c_str(), false,&latexBuf,"", NULL);
+		latexBuf->ins(0, reinterpret_cast<const UT_Byte *>(Pitex.utf8_str()), static_cast<UT_uint32>(Pitex.size()));
+		m_pAbiDocument->createDataItem(lID.c_str(), false, latexBuf, "", NULL);
     	    }
 
             const PP_PropertyVector atts = {
@@ -230,7 +228,7 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
 			};
             m_pAbiDocument->appendObject(PTO_Math, atts);
 
-            DELETEP(m_pMathBB);
+            m_pMathBB.reset();
         }
 
         m_bInMath = false;

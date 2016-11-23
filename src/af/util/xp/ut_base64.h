@@ -28,10 +28,10 @@
 #include "ut_types.h"
 #endif
 
-class UT_ByteBuf;
+#include "ut_bytebuf.h"
 
-ABI_EXPORT bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
-ABI_EXPORT bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
+ABI_EXPORT bool UT_Base64Encode(const UT_ByteBufPtr & pDest, const UT_ConstByteBufPtr & pSrc);
+ABI_EXPORT bool UT_Base64Decode(const UT_ByteBufPtr & pDest, const UT_ConstByteBufPtr & pSrc);
 
 ABI_EXPORT bool UT_UTF8_Base64Encode(char *& b64ptr, size_t & b64len, const char *& binptr, size_t & binlen);
 ABI_EXPORT bool UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char *& b64ptr, size_t & b64len);

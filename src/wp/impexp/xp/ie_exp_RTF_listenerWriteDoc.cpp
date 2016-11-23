@@ -1219,11 +1219,9 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 		if(pszDataID != NULL)
 		{
 			std::string mimetype;
-			const UT_ByteBuf * pbb = NULL;
-			bool bFoundDataItem = m_pDocument->getDataItemDataByName(pszDataID, 
-                                                                     &pbb,
-                                                                     &mimetype, 
-                                                                     NULL);
+			UT_ConstByteBufPtr pbb;
+			bool bFoundDataItem = m_pDocument->getDataItemDataByName(pszDataID, pbb,
+                                                                     &mimetype, NULL);
 			if (!bFoundDataItem)
 			{
 				UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
@@ -2503,7 +2501,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 //
 		 // Export the MathML associated with this
 		 //
-		 const UT_ByteBuf * pbb = NULL;
+		 UT_ConstByteBufPtr pbb;
 		 bool bFoundDataItem = false;
 		 UT_uint32 lenData = 0;
 		 const UT_Byte * pData = NULL;
@@ -2511,10 +2509,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 UT_String buf;
 		 if(pszDataId)
 		 {
-			bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataId),
-                                                                &pbb,
-                                                                NULL,
-                                                                NULL);
+			bFoundDataItem = m_pDocument->getDataItemDataByName(pszDataId,
+                                                                pbb, NULL, NULL);
 			if (!bFoundDataItem)
 			{
 
@@ -2545,8 +2541,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 //
 		 if(pszLatexId)
 		 {
-             bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszLatexId),
-                                                                 &pbb, NULL, 
+             bFoundDataItem = m_pDocument->getDataItemDataByName(pszLatexId,
+                                                                 pbb, NULL,
                                                                  NULL);
 			if (!bFoundDataItem)
 			{
@@ -2577,12 +2573,12 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 //
 		 std::string sMime, sSnapshot = std::string("snapshot-svg-") + pszDataId;
          bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
-                                                             &pbb, &sMime, NULL);
+                                                             pbb, &sMime, NULL);
 		 if (!bFoundDataItem)
 		 {
 			 sSnapshot = std::string("snapshot-png-") + pszDataId;
-    		 bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
-	          	                                                 &pbb, &sMime, NULL);
+			 bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
+																 pbb, &sMime, NULL);
 		 }
 		 if (bFoundDataItem)
 			_writeEmbedData (sSnapshot, pbb, sMime);
@@ -2640,14 +2636,13 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 //
 		 // Export the data associated with this
 		 //
-		 const UT_ByteBuf * pbb = NULL;
+		 UT_ConstByteBufPtr pbb;
 		 bool bFoundDataItem = false;
 		 UT_String buf;
 		 UT_UTF8String sUID;
 		 std::string mime_type;
-		bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataId),
-                                                            &pbb,
-                                                            &mime_type,
+		 bFoundDataItem = m_pDocument->getDataItemDataByName(pszDataId,
+                                                            pbb, &mime_type,
                                                             NULL);
 		if (!bFoundDataItem)
 		{
@@ -2673,12 +2668,12 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 //
 		 std::string sMime, sSnapshot = std::string("snapshot-svg-") + pszOrigDataId;
          bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
-                                                             &pbb, &sMime, NULL);
+                                                             pbb, &sMime, NULL);
 		 if (!bFoundDataItem)
 		 {
 			 sSnapshot = std::string("snapshot-png-") + pszOrigDataId;
-    		 bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
-	          	                                                 &pbb, &sMime, NULL);
+			 bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
+																 pbb, &sMime, NULL);
 			 sSnapshot = std::string("snapshot-png-") + pszDataId;
 		 }
 		 else
@@ -2721,7 +2716,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 
 }
 
-void s_RTF_ListenerWriteDoc::_writeEmbedData (const std::string & Name, const UT_ByteBuf * pbb, const std::string & mime_type)
+void s_RTF_ListenerWriteDoc::_writeEmbedData(const std::string & Name, const UT_ConstByteBufPtr & pbb, const std::string & mime_type)
 {
     m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("*");
@@ -5266,10 +5261,10 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 		UT_DEBUGMSG(("RTF_Export: cannot get dataid for image\n"));
 		return;
 	}
-	const UT_ByteBuf * pbb = NULL;
+	UT_ConstByteBufPtr pbb;
 	std::string mimetype;
 	bool bFoundDataItem = m_pDocument->getDataItemDataByName(szDataID,
-                                                             &pbb, &mimetype, 
+                                                             pbb, &mimetype,
 															 NULL);
 	if (!bFoundDataItem)
 	{

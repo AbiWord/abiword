@@ -61,9 +61,9 @@ public:
 									  PTStruxType iStruxType,
 									  const char* szName) const;
 
-	bool				setRaster_PNG(const UT_ByteBuf* pBB);
-    bool                setRaster_JPEG(const UT_ByteBuf* pBB);
-	virtual const UT_ByteBuf*	getBuffer() const;
+	bool			setRaster_PNG(const UT_ConstByteBufPtr & pBB);
+	bool                    setRaster_JPEG(const UT_ConstByteBufPtr & pBB);
+	virtual const UT_ConstByteBufPtr &	getBuffer() const;
     Format              getFormat() const
     {
         return m_format;
@@ -74,8 +74,7 @@ public:
 
 protected:
     Format            m_format;
-	const UT_ByteBuf* m_pbb;
-	bool              m_bOwnBuffer;
+	UT_ConstByteBufPtr m_pbb;
 
 	UT_sint32 m_iWidth, m_iHeight;
 	UT_sint32 m_iMaxW;

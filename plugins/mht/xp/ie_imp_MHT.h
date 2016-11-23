@@ -36,7 +36,6 @@ extern "C" {
 
 #define IE_MIMETYPE_RELATED			"multipart/related"
 
-//class UT_ByteBuf;
 //class UT_StringPtrMap;
 //class UT_Vector;
 
@@ -66,8 +65,8 @@ public:
 
 	bool				append (const char * buffer, UT_uint32 length);
 
-	const UT_ByteBuf *	getBuffer () const { return m_buf; }
-	UT_ByteBuf *		detachBuffer ();
+	const UT_ConstByteBufPtr & getBuffer() const { return m_buf; }
+	UT_ByteBufPtr && detachBuffer();
 
 	void				clear ();
 
@@ -88,7 +87,7 @@ private:
 	bool				append_Quoted (const char * buffer, UT_uint32 length);
 
 	UT_StringPtrMap *	m_map;
-	UT_ByteBuf *		m_buf;
+	UT_ByteBufPtr		m_buf;
 
 	const char *		m_location;
 	const char *		m_id;

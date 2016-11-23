@@ -3038,8 +3038,8 @@ Defun1(fileSaveEmbed)
 	{
 		const std::string & resultPathname = pDialog->getPathname();
 		if (!resultPathname.empty()) {
-			const UT_ByteBuf *Buf;
-			pView->getDocument()->getDataItemDataByName(pRun->getDataID(), &Buf, NULL, NULL);
+			UT_ConstByteBufPtr Buf;
+			pView->getDocument()->getDataItemDataByName(pRun->getDataID(), Buf, NULL, NULL);
 			if (Buf)
 				Buf->writeToURI(resultPathname.c_str());
 		}
@@ -4719,11 +4719,11 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 	{
 		return false;
 	}
-	const UT_ByteBuf * pByteBuf = NULL;
+	UT_ConstByteBufPtr pByteBuf;
 	UT_UTF8String sLatex;
 	PD_Document * pDoc= pView->getDocument();
 	bool bFoundLatexID = pDoc->getDataItemDataByName(pszLatexID, 
-													 &pByteBuf,
+													 pByteBuf,
 													 NULL, NULL);
 
 	if(!bFoundLatexID)
@@ -4731,7 +4731,7 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 		return true;
 	}
 	UT_UCS4_mbtowc myWC;
-	sLatex.appendBuf( *pByteBuf, myWC);
+	sLatex.appendBuf(pByteBuf, myWC);
 	UT_DEBUGMSG(("Loaded Latex %s from PT \n",sLatex.utf8_str()));
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	pFrame->raise();

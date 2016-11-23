@@ -77,14 +77,14 @@ public:
 
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
-	UT_ByteBuf *        getByteBuf(void) const {return m_pByteBuf;}
+	const UT_ByteBufPtr &     getByteBuf(void) const {return m_pByteBuf;}
 
 protected:
 	virtual UT_Error	_loadFile(GsfInput * input);
 	UT_Error			_parseStream(ImportStream * pStream);
 
  private:
-	UT_ByteBuf *        m_pByteBuf;
+	UT_ByteBufPtr       m_pByteBuf;
 	std::string			m_MimeType;
 };
 

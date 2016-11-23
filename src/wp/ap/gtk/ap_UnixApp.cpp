@@ -654,10 +654,9 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 
 		if (pView && !pView->isSelectionEmpty())
 			{
-				// don't own, don't g_free
-				const UT_ByteBuf * png = 0;
+				UT_ConstByteBufPtr png;
 	  
-				pView->saveSelectedImage (&png);
+				pView->saveSelectedImage(png);
 				if (png && png->getLength() > 0)
 					{
 						m_pClipboard->addPNGData(target, static_cast<const UT_Byte*>(png->getPointer(0)), png->getLength());
@@ -780,9 +779,9 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		  IEGraphicFileType iegft = IEGFT_Unknown;
 		  UT_Error error = UT_OK;
 		  
-		  UT_ByteBuf bytes( iLen );
+		  UT_ByteBufPtr bytes(new UT_ByteBuf(iLen));
 		  
-		  bytes.append (pData, iLen);
+		  bytes->append(pData, iLen);
 		  
 		  error = IE_ImpGraphic::loadGraphic(bytes, iegft, pFG);
 		  if(!pFG || error)
@@ -1112,10 +1111,9 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 
 			if (pView && !pView->isSelectionEmpty())
 				{
-					// don't own, don't g_free
-					const UT_ByteBuf * png = 0;
-	  
-					pView->saveSelectedImage (&png);
+					UT_ConstByteBufPtr png;
+
+					pView->saveSelectedImage(png);
 					if (png && png->getLength() > 0)
 						{
 							m_selectionByteBuf.ins (0, png->getPointer (0), png->getLength ());

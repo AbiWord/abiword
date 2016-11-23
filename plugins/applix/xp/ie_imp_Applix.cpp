@@ -419,23 +419,23 @@ short IE_Imp_Applix::s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
 
 UT_Error IE_Imp_Applix::_parseFile(GsfInput * fp)
 {
-    UT_ByteBuf buf (APPLIX_LINE_LENGTH + 1);
+    UT_ByteBufPtr buf(new UT_ByteBuf(APPLIX_LINE_LENGTH + 1));
     size_t len = 0;
     Applix_tag_t tag;
 	bool ok = true;
     
     while (!gsf_input_eof (fp))
     {
-	    ok  = _applixGetLine (&buf, fp);
+	    ok  = _applixGetLine (buf, fp);
 		if (ok)
 		{
-			len = strlen(reinterpret_cast<const char *>(buf.getPointer (0)));
+			len = strlen(reinterpret_cast<const char *>(buf->getPointer (0)));
 			// todo: make me more robust
 			// grammars? we don't need no stinkin' grammars! ;-(
-			tag = s_getTagName(reinterpret_cast<const char *>(buf.getPointer(0)), len);
+			tag = s_getTagName(reinterpret_cast<const char *>(buf->getPointer(0)), len);
 			if (tag != NOT_A_TAG) 
 			{
-				_dispatchTag (tag, reinterpret_cast<const char *>(buf.getPointer(0)), len);
+				_dispatchTag (tag, reinterpret_cast<const char *>(buf->getPointer(0)), len);
 			}
 		}
     }
@@ -484,7 +484,7 @@ static char * fgets(char *s, int count, GsfInput * stream)
   that the line is wrapped.
  */
 bool
-IE_Imp_Applix::_applixGetLine (UT_ByteBuf* pBuf, GsfInput *fp)
+IE_Imp_Applix::_applixGetLine (const UT_ByteBufPtr & pBuf, GsfInput *fp)
 {
 	UT_ASSERT (pBuf);
 	char temp [APPLIX_MAX_LINE_LENGTH];

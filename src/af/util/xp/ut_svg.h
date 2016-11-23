@@ -35,7 +35,7 @@
 #include "gr_Graphics.h"
 
 bool UT_SVG_recognizeContent(const char* szBuf,UT_uint32 iNumbytes);
-bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG,
+bool UT_SVG_getDimensions(const UT_ConstByteBufPtr & pBB, GR_Graphics* pG,
 			  UT_sint32 & iDisplayWidth, UT_sint32 & iDisplayHeight,
 			  UT_sint32 & iLayoutWidth,  UT_sint32 & iLayoutHeight);
 
@@ -70,20 +70,20 @@ public:
 	UT_svg(GR_Graphics * pG,ParseMode ePM = pm_parse);
 	~UT_svg();
 
-	bool parse (const UT_ByteBuf * pBB);
+	bool parse (const UT_ConstByteBufPtr & pBB);
 
 	bool m_bIsText;   // whether the current element is, or is a tspan-child of, a text element
 	bool m_bIsTSpan;  // whether the current element is a tspan
 	bool m_bHasTSpan; // whether the current text-element has any tspan-children
 
-	UT_ByteBuf *m_pBB;
+	UT_ByteBufPtr m_pBB;
 
 	/* caller-definable call-back data-handle & functions
 	 */
 	void  *cb_userdata;
 	void (*cb_start) (void * userdata,const char * name,const char** atts);
 	void (*cb_end)   (void * userdata,const char * name);
-	void (*cb_text)  (void * userdata,UT_ByteBuf * text); // caller's responsibility to g_free this.
+	void (*cb_text)  (void * userdata, const UT_ConstByteBufPtr & text);
 
 	const char *getAttribute (const char * name,const char ** atts);
 };

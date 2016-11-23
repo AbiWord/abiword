@@ -1340,14 +1340,14 @@ void ODe_AbiDocListener::_insertMath(PT_AttrPropIndex api) {
 
     UT_return_if_fail(szMath);
 
-    const UT_ByteBuf * pByteBuf = NULL;
-    bool bOK = m_pDocument->getDataItemDataByName(szMath, const_cast<const UT_ByteBuf **>(&pByteBuf), NULL, NULL);
+    UT_ConstByteBufPtr pByteBuf;
+    bool bOK = m_pDocument->getDataItemDataByName(szMath, pByteBuf, NULL, NULL);
 
     UT_return_if_fail(bOK);
 
     UT_UCS4_mbtowc myWC;
     UT_UTF8String sMathML;
-    sMathML.appendBuf(*pByteBuf, myWC);
+    sMathML.appendBuf(pByteBuf, myWC);
 
     UT_return_if_fail(!sMathML.empty());
 

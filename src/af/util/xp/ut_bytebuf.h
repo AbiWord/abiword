@@ -27,6 +27,7 @@
 *****************************************************************/
 
 #include <stdio.h>
+#include <memory>
 #include <gsf/gsf-input.h>
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
@@ -79,5 +80,8 @@ private:
 	UT_uint32			m_iSpace;			/* space currently allocated */
 	UT_uint32			m_iChunk;			/* unit for g_try_realloc */
 };
+
+typedef std::shared_ptr<UT_ByteBuf> UT_ByteBufPtr;
+typedef std::shared_ptr<const UT_ByteBuf> UT_ConstByteBufPtr;
 
 #endif /* UT_BYTEBUF_H */

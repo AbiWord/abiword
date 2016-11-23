@@ -44,8 +44,9 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
       
 		if (bFoundDataID && pszDataID)
 		{
-            std::string mimeType;
-			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, NULL,
+			std::string mimeType;
+			UT_ConstByteBufPtr bb;
+			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, bb,
 																	 &mimeType,
                                                                      NULL);
 	   
@@ -76,7 +77,8 @@ FG_Graphic* FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
 		if (bFoundDataID && pszDataID)
 		{
             std::string mimeType;
-			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, NULL,
+			UT_ConstByteBufPtr bb;
+			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, bb,
 																	 &mimeType,
                                                                      NULL);
 	   

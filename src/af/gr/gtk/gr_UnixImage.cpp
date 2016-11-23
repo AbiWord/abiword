@@ -206,35 +206,33 @@ static gboolean convCallback(const gchar *buf,
  * ppBB is a pointer to a pointer of a byte buffer. It's the callers
  * job to delete it.
  */
-bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
+bool  GR_UnixImage::convertToBuffer(UT_ConstByteBufPtr & pBB) const
 {
+  pBB.reset();
   if (!m_image)
   {
     UT_ASSERT(m_image);
-    *ppBB = 0;
     return false;
   }
-  
-  
-  UT_ByteBuf * pBB = 0;
+
   const guchar * pixels = gdk_pixbuf_get_pixels(m_image);
 
   if (pixels)
   {
     GError    * error =NULL;
-    pBB = new UT_ByteBuf();		
+    UT_ByteBufPtr bb(new UT_ByteBuf);
     gdk_pixbuf_save_to_callback(m_image,
 				convCallback,
-				reinterpret_cast<gpointer>(pBB),
+				reinterpret_cast<gpointer>(bb.get()),
 				"png",
 				&error,NULL,NULL);
     if(error != NULL)
       {
 	g_error_free (error);
       }
+    pBB = bb;
   }
-  
-  *ppBB = pBB;
+
   // UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
   return true;
 }
@@ -322,7 +320,7 @@ are in device units. Setting this to -1 will cause the image not to be scaled.
 are in device units. Setting this to -1 will cause the image not to be scaled.
 @return true if successful, false otherwise
 */
-bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, 
+bool GR_UnixImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
                                      const std::string & /*mimetype */,
                                      UT_sint32 iDisplayWidth,
                                      UT_sint32 iDisplayHeight)

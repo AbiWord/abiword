@@ -70,7 +70,7 @@
  */
 struct _bb
 {
-    const UT_ByteBuf* pBB;
+    UT_ConstByteBufPtr pBB;
     UT_uint32 iCurPos;
 };
 
@@ -1314,8 +1314,8 @@ bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 		goto ERROR2;
 	
 	// Retrieve the image
-	if (!m_pDocument->getDataItemDataByName(szValue,&(image_data.pBB),
-                                            &mimeType,NULL))
+	if (!m_pDocument->getDataItemDataByName(szValue, image_data.pBB,
+                                                &mimeType, NULL))
 		goto ERROR2;
 	image_data.iCurPos = 0;
 	

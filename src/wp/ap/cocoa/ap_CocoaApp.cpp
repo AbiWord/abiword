@@ -618,16 +618,15 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
 		  
 		  XAP_Frame * pFrame = getLastFocussedFrame ();
 		  
-		  UT_ByteBuf * bytes = new UT_ByteBuf( iLen );
+		  UT_ByteBufPtr bytes(new UT_ByteBuf(iLen));
 		  
 		  bytes->append (pData, iLen);
 		  
-		  error = IE_ImpGraphic::constructImporter(*bytes, iegft, &pIEG);
+		  error = IE_ImpGraphic::constructImporter(bytes, iegft, &pIEG);
 		  if(error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
 						   error));
-			  DELETEP(bytes);
 			  return;
 		  }
 		  
@@ -635,12 +634,10 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
 		  if(!pFG || error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
-			  DELETEP(bytes);
 			  DELETEP(pIEG);
 			  return;
 		  }
 		  
-		  // at this point, 'bytes' is owned by pFG
 		  bytes = NULL;
 		  FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 		  

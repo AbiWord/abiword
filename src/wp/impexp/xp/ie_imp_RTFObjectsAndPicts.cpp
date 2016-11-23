@@ -90,7 +90,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	const UT_uint16 BITS_PER_BYTE = 8;
 	const UT_uint16 bits_per_char = BITS_PER_BYTE / chars_per_byte;
 
-	UT_ByteBuf pictData;
+	UT_ByteBufPtr pictData(new UT_ByteBuf);
 	UT_uint16 chLeft = chars_per_byte;
 	UT_Byte pic_byte = 0;
 	FG_ConstGraphicPtr pFG;
@@ -117,7 +117,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 			// if we have a complete byte, we put it in the buffer
 			if (--chLeft == 0)
 			{
-				pictData.append(&pic_byte, 1);
+				pictData->append(&pic_byte, 1);
 				chLeft = chars_per_byte;
 				pic_byte = 0;
 			}
@@ -135,7 +135,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 				retval = false;
 				goto cleanup;
 			}
-			pictData.append(&ch, 1);
+			pictData->append(&ch, 1);
 		}
 	}
 

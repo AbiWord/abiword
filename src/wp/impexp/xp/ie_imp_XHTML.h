@@ -130,7 +130,7 @@ private:
 	bool        bInTable(void);
 	bool        m_bFirstBlock;
 	bool		m_bInMath;
-	UT_ByteBuf* m_pMathBB;
+	UT_ByteBufPtr m_pMathBB;
 	std::string m_Title;
 };
 

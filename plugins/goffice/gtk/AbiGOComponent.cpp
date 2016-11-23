@@ -386,7 +386,7 @@ void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & 
 	/* bool b = */ m_pDoc->getAttrProp(api, &pSpanAP);
 	const char * pszDataID = NULL;
 	pSpanAP->getAttribute("dataid", pszDataID);
-	UT_ByteBuf *pBuf = NULL;
+	UT_ConstByteBufPtr pBuf;
 	std::string mime_type;
 	if ((pBuf = pGOComponentView->getSnapShot (mime_type)))
 	  {
@@ -394,14 +394,13 @@ void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & 
 		sID += pszDataID;
 		if(pItem->m_bHasSnapshot)
 		  {
-			m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
+			m_pDoc->replaceDataItem(sID.utf8_str(), pBuf);
 		  }
 		else
 		  {
-			m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mime_type,NULL);
+			m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mime_type, NULL);
 			pItem->m_bHasSnapshot = true;
 		  }
-		delete pBuf;
 	  }
 }
 
@@ -437,9 +436,9 @@ void GR_GOComponentManager::loadEmbedData(G_GNUC_UNUSED UT_sint32 uid)
 
 	if (bFoundDataID && pszDataID)
 	{
-		const UT_ByteBuf * pByteBuf = NULL;
-		bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID, 
-							const_cast<const UT_ByteBuf **>(&pByteBuf),
+		UT_ConstByteBufPtr pByteBuf;
+		bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID,
+							pByteBuf,
 							&mime_type, NULL);
 		UT_return_if_fail(bFoundDataID);
 		UT_return_if_fail(pszDataID);
@@ -500,7 +499,7 @@ void GR_GOComponentManager::releaseEmbedView(UT_sint32 uid)
   m_vecGOComponentView.setNthItem(uid,NULL,NULL); //NULL it out so we don't affect the other uid's
 }
 
-bool GR_GOComponentManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED UT_ByteBuf & From, G_GNUC_UNUSED UT_ByteBuf & To)
+bool GR_GOComponentManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED const UT_ConstByteBufPtr & From, G_GNUC_UNUSED const UT_ByteBufPtr & To)
 {
   return false;
 }
@@ -600,8 +599,8 @@ changed_cb (GOComponent *component, gpointer data)
 		gpointer user_data = NULL;
 		if (go_component_get_data (component, (void**) &buf, &length, &clearfunc, &user_data)) {
 			if (buf && length) {
-				UT_ByteBuf myByteBuf;
-				myByteBuf.append (buf, length);
+				UT_ByteBufPtr myByteBuf(new UT_ByteBuf);
+				myByteBuf->append(buf, length);
 				UT_String Props="embed-type: GOComponent";
 				guint i, nbprops;
 				GType    prop_type;
@@ -653,7 +652,7 @@ changed_cb (GOComponent *component, gpointer data)
 					}
 				}
 				PT_DocPosition pos = pView->getPoint();
-				pView->cmdInsertEmbed(&myByteBuf,pView->getPoint(),component->mime_type,Props.c_str ());
+				pView->cmdInsertEmbed(myByteBuf, pView->getPoint(), component->mime_type, Props.c_str ());
 				pView->cmdSelect(pos,pos+1);
 			}
 			if (clearfunc)
@@ -663,7 +662,7 @@ changed_cb (GOComponent *component, gpointer data)
 	}
 }
 
-void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, const char *_mime_type)
+void GOComponentView::loadBuffer(const UT_ConstByteBufPtr & sGOComponentData, const char *_mime_type)
 {
 	if (!component) {
 		mime_type = _mime_type;
@@ -739,8 +738,8 @@ void GOComponentView::update ()
 	FV_View *pView = m_pRun->getBlock ()->getView ();
 	if (go_component_get_data (component, (void**) &buf, &length, &clearfunc, &user_data)) {
 		if (buf && length) {
-		UT_ByteBuf myByteBuf;
-		myByteBuf.append (buf, length);
+		UT_ByteBufPtr myByteBuf(new UT_ByteBuf);
+		myByteBuf->append(buf, length);
 		mime_type = component->mime_type;
 		UT_String Props="embed-type: GOComponent";
 		guint i, nbprops;
@@ -790,7 +789,7 @@ void GOComponentView::update ()
 				}
 			}
 		}
-		pView->cmdUpdateEmbed(m_pRun, &myByteBuf,mime_type.c_str(), Props.c_str());
+		pView->cmdUpdateEmbed(m_pRun, myByteBuf, mime_type.c_str(), Props.c_str());
 		} else
 			pView->cmdDeleteEmbed(m_pRun);
 		if (clearfunc)
@@ -798,7 +797,7 @@ void GOComponentView::update ()
 	}
 }
 
-UT_ByteBuf *GOComponentView::getSnapShot (std::string &snap_mime_type)
+UT_ConstByteBufPtr GOComponentView::getSnapShot(std::string &snap_mime_type)
 {
 	UT_return_val_if_fail (component, NULL);
 	int height = ascent + descent;
@@ -819,7 +818,7 @@ UT_ByteBuf *GOComponentView::getSnapShot (std::string &snap_mime_type)
 		default:
 			return NULL;
 	}
-	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	UT_ByteBufPtr pBuf(new UT_ByteBuf);
 	pBuf->append (buf, length);
 	return pBuf;
 }

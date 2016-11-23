@@ -32,7 +32,7 @@
 
 struct _bb
 {
-	const UT_ByteBuf* pBB;
+	UT_ConstByteBufPtr pBB;
 	UT_uint32 iCurPos;
 };
 
@@ -58,7 +58,7 @@ static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 	p->iCurPos += length;
 }
 
-bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_sint32& iImageHeight)
+bool UT_PNG_getDimensions(const UT_ConstByteBufPtr & pBB, UT_sint32& iImageWidth, UT_sint32& iImageHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;

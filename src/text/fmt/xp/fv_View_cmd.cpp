@@ -5436,12 +5436,12 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	//
 	// Insert these into the Piece Table
 	//
-	UT_ByteBuf mathBuf;
-	UT_ByteBuf latexBuf;
-	mathBuf.ins(0,reinterpret_cast<const UT_Byte *>(sMath.utf8_str()),static_cast<UT_uint32>(sMath.size()));
-	latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(sLatex.utf8_str()),static_cast<UT_uint32>(sLatex.size()));
-	m_pDoc->createDataItem(sMathName.utf8_str(),false,&mathBuf,"",NULL);
-	m_pDoc->createDataItem(sLatexName.utf8_str(),false,&latexBuf,"",NULL);
+	UT_ByteBufPtr mathBuf(new UT_ByteBuf);
+	UT_ByteBufPtr latexBuf(new UT_ByteBuf);
+	mathBuf->ins(0, reinterpret_cast<const UT_Byte *>(sMath.utf8_str()), static_cast<UT_uint32>(sMath.size()));
+	latexBuf->ins(0, reinterpret_cast<const UT_Byte *>(sLatex.utf8_str()), static_cast<UT_uint32>(sLatex.size()));
+	m_pDoc->createDataItem(sMathName.utf8_str(), false, mathBuf, "", NULL);
+	m_pDoc->createDataItem(sLatexName.utf8_str(), false, latexBuf, "", NULL);
 
 	// OK Insert the MathML Object
 	PP_PropertyVector atts = {
@@ -5552,7 +5552,7 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
  * eg for a GNOME-Office chart we'll have MIME-TYPE "application/chart+xml"
  * and sProps="embed-type: GOChart";
  */
-bool FV_View::cmdInsertEmbed(const UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps)
+bool FV_View::cmdInsertEmbed(const UT_ConstByteBufPtr & pBuf, PT_DocPosition pos, const char * szMime, const char * szProps)
 {
 	std::string sUID = "obj-", s;
 	UT_UUID *uuid = m_pDoc->getNewUUID();
@@ -5623,7 +5623,7 @@ bool FV_View::cmdInsertEmbed(const UT_ByteBuf * pBuf,PT_DocPosition pos,const ch
  * eg for a GNOME-Office chart we'll have MIME-TYPE "application/chart+xml"
  * and sProps="embed-type: GOChart";
  */
-bool FV_View::cmdUpdateEmbed(const UT_ByteBuf * pBuf, const char * szMime, const char * szProps)
+bool FV_View::cmdUpdateEmbed(const UT_ConstByteBufPtr & pBuf, const char * szMime, const char * szProps)
 {
 	if (isSelectionEmpty())
 	{
@@ -5721,7 +5721,7 @@ bool FV_View::cmdUpdateEmbed(const UT_ByteBuf * pBuf, const char * szMime, const
  * eg for a GNOME-Office chart we'll have MIME-TYPE "application/chart+xml"
  * and sProps="embed-type: GOChart";
  */
-bool FV_View::cmdUpdateEmbed(fp_Run * pRun, const UT_ByteBuf * pBuf, const char * szMime, const char * szProps)
+bool FV_View::cmdUpdateEmbed(fp_Run * pRun, const UT_ConstByteBufPtr & pBuf, const char * szMime, const char * szProps)
 {
 	if(pRun == NULL || pRun->getType() != FPRUN_EMBED)
 	{

@@ -178,16 +178,14 @@ Cleanup:
  Uses current document's encoding if it is set
 */
 IE_Imp_Component::IE_Imp_Component(PD_Document * pDocument, char *mime_type)
-	: IE_Imp(pDocument),m_pByteBuf(NULL),
-	m_MimeType (mime_type != NULL? mime_type: "")
+	: IE_Imp(pDocument)
+	, m_pByteBuf(new UT_ByteBuf)
+	, m_MimeType(mime_type ? mime_type : "")
 {
-	m_pByteBuf = new UT_ByteBuf;
-
 }
 
 IE_Imp_Component::~IE_Imp_Component(void)
 {
-	DELETEP(m_pByteBuf);
 }
 
 /*****************************************************************/
@@ -227,7 +225,7 @@ UT_Error IE_Imp_Component::_parseStream(ImportStream * pStream)
 	}
 	UT_String Props=UT_String("embed-type: GOComponent");
 	PT_DocPosition pos = pView->getPoint();
-	pView->cmdInsertEmbed(m_pByteBuf,pos,m_MimeType.c_str(),Props.c_str());
+	pView->cmdInsertEmbed(m_pByteBuf, pos, m_MimeType.c_str(), Props.c_str());
 	pView->cmdSelect(pos,pos+1);
 
 	return UT_OK;

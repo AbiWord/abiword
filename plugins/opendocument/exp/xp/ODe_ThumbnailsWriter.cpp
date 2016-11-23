@@ -79,13 +79,12 @@ bool ODe_ThumbnailsWriter::writeThumbnails(PD_Document* /*pDoc*/, GsfOutfile* oo
 		return false;
 	}
 
-	UT_ByteBuf * pBuf = NULL;
-	pImage->convertToBuffer(&pBuf);
+	UT_ConstByteBufPtr pBuf;
+	pImage->convertToBuffer(pBuf);
 
 	gsf_output_write(thumbnail, pBuf->getLength(),
 			pBuf->getPointer(0));
 
-	DELETEP(pBuf);
 	DELETEP(pImage);
 
 	gsf_output_close(thumbnail);

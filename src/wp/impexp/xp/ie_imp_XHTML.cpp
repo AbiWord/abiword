@@ -235,7 +235,7 @@ IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
 	m_iPreCount(0),
 	m_bFirstBlock(false),
 	m_bInMath(false),
-	m_pMathBB(NULL)
+	m_pMathBB(new UT_ByteBuf)
 {
 }
 
@@ -245,12 +245,6 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 	DELETEP(m_TableHelperStack);
 #endif
 	UT_VECTOR_PURGEALL(UT_UTF8String *,m_divStyles);
-
-	if(m_pMathBB)  //this should've been deleted
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		DELETEP(m_pMathBB);
-	}
 }
 
 // to get lists to work:
@@ -1213,7 +1207,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
             break;
 		}
 
-		const UT_ByteBuf * pBB = pfg->getBuffer();
+		const UT_ConstByteBufPtr & pBB = pfg->getBuffer();
 		X_CheckError(pBB);
 
 		if(!szWidth.empty())
@@ -1487,13 +1481,9 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 	case TT_MATH:
 		X_VerifyParseState(_PS_Block);
 
-		if(m_pMathBB) //this should've been deleted
-		{
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			DELETEP(m_pMathBB);
-		}
+		m_pMathBB.reset();
 		m_bInMath = true;
-		m_pMathBB = new UT_ByteBuf;
+		m_pMathBB = UT_ByteBufPtr(new UT_ByteBuf);
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>"), 65);
 		return;
 
@@ -1765,7 +1755,6 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 
 		X_CheckError(appendObject(PTO_Math, new_atts));
 
-		DELETEP(m_pMathBB);
 		m_bInMath = false;
 
 		return;
@@ -1877,9 +1866,9 @@ FG_ConstGraphicPtr IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 		}
 	binlength = binmaxlen - binlength;
 
-	UT_ByteBuf pBB;
+	UT_ByteBufPtr pBB(new UT_ByteBuf);
 
-	pBB.ins (0, reinterpret_cast<const UT_Byte *>(binbuffer), binlength);
+	pBB->ins(0, reinterpret_cast<const UT_Byte *>(binbuffer), binlength);
 	FREEP(binbuffer);
 
 	FG_ConstGraphicPtr pfg;

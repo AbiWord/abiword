@@ -60,8 +60,6 @@ GR_EmbedView::GR_EmbedView(AD_Document * pDoc, UT_uint32 api )
 
 GR_EmbedView::~GR_EmbedView(void)
 {
-  DELETEP(m_SVGBuf);
-  DELETEP(m_PNGBuf);
   DELETEP(m_pPreview);
 }
 
@@ -72,31 +70,33 @@ bool GR_EmbedView::getSnapShots(void)
   sName += m_sDataID;
   bool bFound = false;
   PD_DataItemHandle pHandle = NULL;
-  const UT_ByteBuf * pPNG = NULL;
-  const UT_ByteBuf * pSVG = NULL;
-  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pPNG,NULL,&pHandle);
+  UT_ConstByteBufPtr pPNG;
+  UT_ConstByteBufPtr pSVG;
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(), pPNG, NULL, &pHandle);
   if(!bFound)
   {
-    m_bHasPNGSnapshot = false;    
+    m_bHasPNGSnapshot = false;
   }
   else
   {
-    m_PNGBuf = new UT_ByteBuf();
-    m_PNGBuf->ins(0,pPNG->getPointer(0),pPNG->getLength());
-    m_bHasPNGSnapshot = true;    
+    auto buf = UT_ByteBufPtr(new UT_ByteBuf);
+    buf->ins(0, pPNG->getPointer(0), pPNG->getLength());
+    m_PNGBuf = buf;
+    m_bHasPNGSnapshot = true;
   }
   sName = "snapshot-svg-";
   sName += m_sDataID;
-  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pSVG,NULL,&pHandle);
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(), pSVG, NULL, &pHandle);
   if(!bFound)
   {
-    m_bHasSVGSnapshot = false;    
+    m_bHasSVGSnapshot = false;
   }
   else
   {
-    m_SVGBuf = new UT_ByteBuf();
-    m_SVGBuf->ins(0,pSVG->getPointer(0),pSVG->getLength());
-    m_bHasSVGSnapshot = true;    
+    auto buf = UT_ByteBufPtr(new UT_ByteBuf);
+    buf->ins(0, pSVG->getPointer(0), pSVG->getLength());
+    m_SVGBuf = buf;
+    m_bHasSVGSnapshot = true;
   }
   return true;
  }
@@ -197,7 +197,8 @@ void GR_EmbedManager::initialize(void)
  * transfrom Latex to MathML. This method enables this. Returns true if the
  * conversion was successful.
  */
-bool GR_EmbedManager::convert(UT_uint32 /*iConv*/, UT_ByteBuf & /*From*/, UT_ByteBuf & /*To*/)
+bool GR_EmbedManager::convert(UT_uint32 /*iConv*/, const UT_ConstByteBufPtr & /*From*/,
+                              const UT_ByteBufPtr & /*To*/)
 {
   return false;
 }

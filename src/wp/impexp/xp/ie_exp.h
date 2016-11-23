@@ -159,7 +159,7 @@ public:
 
 
     // UTILS
-    static UT_Error writeBufferToFile(const UT_ByteBuf * pByteBuf,
+    static UT_Error writeBufferToFile(const UT_ConstByteBufPtr & pByteBuf,
                              const std::string & imagedir,
                              const std::string & filename);
 

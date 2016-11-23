@@ -39,7 +39,6 @@
 
 
 OXML_Image::OXML_Image()
-	: m_data(NULL)
 {
 
 }
@@ -59,7 +58,7 @@ void OXML_Image::setMimeType(const std::string & imageMimeType)
 }
 
 
-void OXML_Image::setData(const UT_ByteBuf* imageData)
+void OXML_Image::setData(const UT_ConstByteBufPtr & imageData)
 {
 	m_graphic.reset();
 	m_data = imageData;
@@ -67,7 +66,7 @@ void OXML_Image::setData(const UT_ByteBuf* imageData)
 
 void OXML_Image::setGraphic(FG_ConstGraphicPtr && graphic)
 {
-	m_data = NULL;
+	m_data.reset();
 	m_graphic = std::move(graphic);
 }
 

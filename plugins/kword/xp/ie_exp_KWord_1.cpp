@@ -570,9 +570,9 @@ void s_KWord_1_Listener::_handleDataItems(void)
 {
 	const char * szName;
 	std::string mimeType;
-	const UT_ByteBuf * pByteBuf;
+	UT_ConstByteBufPtr pByteBuf;
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf,
                                                     &mimeType)); k++)
 	{	  	  
         std::string fname;	  

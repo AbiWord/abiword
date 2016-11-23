@@ -139,13 +139,15 @@ UT_Error IE_ImpGraphicBMP_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 	return UT_OK;
 }
 
-UT_Error IE_ImpGraphic_BMP::_convertGraphic(UT_ByteBuf * pBB)
+UT_Error IE_ImpGraphic_BMP::_convertGraphic(const UT_ConstByteBufPtr & pBB)
 {
    	UT_Error err;
 	InitializePrivateClassData();
 
 	/* Read Header Data */
-	if ((err = Read_BMP_Header(pBB))) return err;
+	if ((err = Read_BMP_Header(pBB))) {
+		return err;
+	}
 	if ((err = Initialize_PNG()))     return err;
 
 	/* Read Palette, if no palette set Header accordingly */
@@ -192,7 +194,6 @@ UT_Error IE_ImpGraphic_BMP::_convertGraphic(UT_ByteBuf * pBB)
 	/* Clean Up Memory Used */
 		
 	// FREEP(m_pPNGInfo->palette);
-	DELETEP(pBB);
 	png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
    
    	return UT_OK;
@@ -200,12 +201,14 @@ UT_Error IE_ImpGraphic_BMP::_convertGraphic(UT_ByteBuf * pBB)
 
 
 //  This actually creates our FG_Graphic object for a PNG
-UT_Error IE_ImpGraphic_BMP::importGraphic(UT_ByteBuf* pBB, 
+UT_Error IE_ImpGraphic_BMP::importGraphic(const UT_ConstByteBufPtr & pBB,
                                           FG_ConstGraphicPtr& pfg)
 {
-	UT_Error err = _convertGraphic(pBB); 
-   	if (err != UT_OK) return err;
-   
+	UT_Error err = _convertGraphic(pBB);
+	if (err != UT_OK) {
+		return err;
+	}
+
    	/* Send Data back to AbiWord as PNG */
 	FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
 
@@ -221,7 +224,7 @@ UT_Error IE_ImpGraphic_BMP::importGraphic(UT_ByteBuf* pBB,
 	return UT_OK;
 }
 
-UT_Error IE_ImpGraphic_BMP::Read_BMP_Header(UT_ByteBuf* pBB)
+UT_Error IE_ImpGraphic_BMP::Read_BMP_Header(const UT_ConstByteBufPtr & pBB)
 {
 	/* Stepping Through the Header Data first all the File Info
 	 * Then the Image Info until reached the end of the image Header Size
@@ -319,15 +322,15 @@ UT_Error IE_ImpGraphic_BMP::Initialize_PNG()
 		/* If we get here, we had a problem reading the file */
 		return UT_ERROR;
 	}
-	m_pBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */
+	m_pBB.reset(new UT_ByteBuf);  /* Byte Buffer for Converted Data */
 
 	/* Setting up the Data Writing Function */
-		png_set_write_fn(m_pPNG, static_cast<void *>(m_pBB), static_cast<png_rw_ptr>(_write_png), static_cast<png_flush_ptr>(_write_flush));
+	png_set_write_fn(m_pPNG, const_cast<void *>(static_cast<const void*>(m_pBB.get())), static_cast<png_rw_ptr>(_write_png), static_cast<png_flush_ptr>(_write_flush));
 
-		return UT_OK;
-	}
+	return UT_OK;
+}
 
-	UT_Error IE_ImpGraphic_BMP::Convert_BMP_Pallet(UT_ByteBuf* pBB)
+	UT_Error IE_ImpGraphic_BMP::Convert_BMP_Pallet(const UT_ConstByteBufPtr & pBB)
 	{
 		/* Reset error handling for libpng */
 		if (setjmp(png_jmpbuf(m_pPNG)))
@@ -367,7 +370,7 @@ UT_Error IE_ImpGraphic_BMP::Initialize_PNG()
 	return UT_OK;
 }
 
-UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
+UT_Error IE_ImpGraphic_BMP::Convert_BMP(const UT_ConstByteBufPtr & pBB)
 {
 	/* Reset error handling for libpng */
 	if (setjmp(png_jmpbuf(m_pPNG)))
@@ -441,27 +444,27 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
 	return UT_OK;
 }
 
-UT_Byte IE_ImpGraphic_BMP::ReadByte  (UT_ByteBuf* pBB, 
+UT_Byte IE_ImpGraphic_BMP::ReadByte  (const UT_ConstByteBufPtr & pBB,
 									    UT_uint32 offset)
 {
 	return ( static_cast<const UT_Byte>(ReadBytes(pBB,offset,1) ));
 }
 
-UT_uint16 IE_ImpGraphic_BMP::Read2Bytes(UT_ByteBuf* pBB, 
+UT_uint16 IE_ImpGraphic_BMP::Read2Bytes(const UT_ConstByteBufPtr & pBB,
 									    UT_uint32 offset)
 {
 	return ( static_cast<const UT_uint16>(ReadBytes(pBB,offset,2) ));
 }
 
 
-UT_uint32 IE_ImpGraphic_BMP::Read4Bytes(UT_ByteBuf* pBB, 
+UT_uint32 IE_ImpGraphic_BMP::Read4Bytes(const UT_ConstByteBufPtr & pBB,
 									    UT_uint32 offset)
 {
 	return ( ReadBytes(pBB,offset,4) );
 }
 
 
-UT_uint32 IE_ImpGraphic_BMP::ReadBytes(UT_ByteBuf* pBB, 
+UT_uint32 IE_ImpGraphic_BMP::ReadBytes(const UT_ConstByteBufPtr & pBB,
 									   UT_uint32 offset,
 									   UT_uint32 num_bytes)
 {

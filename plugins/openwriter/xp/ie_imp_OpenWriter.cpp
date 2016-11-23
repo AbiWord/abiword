@@ -786,12 +786,12 @@ static const size_t BUF_SZ = 4096;
 
 static UT_Error loadStream ( GsfInfile * oo,
 			     const char * stream,
-			     UT_ByteBuf & buf )
+			     const UT_ByteBufPtr & buf )
 {
   guint8 const *data = NULL;
   size_t len = 0;
   
-  buf.truncate (0);
+  buf->truncate(0);
   GsfInput * input = gsf_infile_child_by_name(oo, stream);
 
   if (!input)
@@ -804,7 +804,7 @@ static UT_Error loadStream ( GsfInfile * oo,
 	g_object_unref (G_OBJECT (input));
 	return UT_ERROR;
       }
-      buf.append ((const UT_Byte *)data, len);
+      buf->append((const UT_Byte *)data, len);
     }
   }
   
@@ -1572,7 +1572,7 @@ private:
 
     m_imgCnt++;
 
-    UT_ByteBuf img_buf;
+    UT_ByteBufPtr img_buf(new UT_ByteBuf);
 
     GsfInfile * pictures_dir = GSF_INFILE(gsf_infile_child_by_name(getImporter()->getOO(), "Pictures"));
 
@@ -1591,7 +1591,7 @@ private:
       return;
 
     FG_ConstGraphicPtr pFG;
-    const UT_ByteBuf * pictData       = 0;
+    UT_ConstByteBufPtr pictData;
     
     UT_String propBuffer;
     UT_String propsName;

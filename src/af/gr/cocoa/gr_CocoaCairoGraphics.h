@@ -53,7 +53,7 @@ class ABI_EXPORT GR_CocoaCairoGraphicsBase
 	~GR_CocoaCairoGraphicsBase();
 
 	virtual GR_Image*	createNewImage(const char* pszName,
-									   const UT_ByteBuf* pBB,
+									   const UT_ConstByteBufPtr & pBB,
 	                                   const std::string & mimeType,
 									   UT_sint32 iDisplayWidth,
 									   UT_sint32 iDisplayHeight,

@@ -1078,13 +1078,13 @@ void IE_Imp_XSL_FO::createImage(const char *name, const gchar **atts)
 	if (IE_ImpGraphic::loadGraphic (filename.utf8_str(), IEGFT_Unknown, pfg) != UT_OK)
 		return;
 
-	const UT_ByteBuf * pBB = pfg->getBuffer();
+	const UT_ConstByteBufPtr & pBB = pfg->getBuffer();
 	X_CheckError(pBB);
 
 	UT_UTF8String dataid;
 	UT_UTF8String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iImages++));
 
-	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, 
+	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB,
                                             pfg->getMimeType(), NULL));
 
 	UT_UTF8String props, dim;

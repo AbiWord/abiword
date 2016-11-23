@@ -66,7 +66,7 @@ private:
 	enum hdrftr_t {headerfirst, header, footerfirst, footer};
 
 	GsfInput *mFile;
-	UT_ByteBuf mData;      // complete data buffer as extracted out of the file
+	UT_ByteBufPtr mData;      // complete data buffer as extracted out of the file
 	UT_UCS4String mText;   // text buffer
 
 	wri_struct *wri_file_header;

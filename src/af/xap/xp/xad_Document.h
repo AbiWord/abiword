@@ -24,11 +24,13 @@
 #ifndef AD_DOCUMENT_H
 #define AD_DOCUMENT_H
 
+#include <memory>
 #include <string>
 
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
+#include "ut_bytebuf.h"
 #include "ut_string_class.h"
 #include "ut_vector.h"
 #include "time.h"
@@ -157,13 +159,13 @@ public:
 	UT_Error		        save(void);
 	virtual bool			createDataItem(const char * szName,
 										   bool bBase64,
-										   const UT_ByteBuf * pByteBuf,
+										   const UT_ConstByteBufPtr & pByteBuf,
 										   const std::string & mime_type,
 										   PD_DataItemHandle* ppHandle) = 0;
 	virtual bool            replaceDataItem(const char * szName,
-											const UT_ByteBuf * pByteBuf) = 0;
+											const UT_ConstByteBufPtr & pByteBuf) = 0;
 	virtual bool			getDataItemDataByName(const char * szName,
-												  const UT_ByteBuf ** ppByteBuf,
+												  UT_ConstByteBufPtr& pByteBuf,
 												  std::string * mime_type,
 												  PD_DataItemHandle* ppHandle) const = 0;
 public:

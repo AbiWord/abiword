@@ -20,14 +20,15 @@
 #ifndef GR_IMAGE_H
 #define GR_IMAGE_H
 
+#include <memory>
 #include <string>
 #include "ut_types.h"
+#include "ut_bytebuf.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
 #include "ut_vector.h"
 
 class GR_Graphics;
-class UT_ByteBuf;
 
 class ABI_EXPORT GR_Image_Point
 {
@@ -47,8 +48,8 @@ public:
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;
 
-   	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const = 0;
-	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) = 0;
+   	virtual bool		convertToBuffer(UT_ConstByteBufPtr & ppBB) const = 0;
+	virtual bool		convertFromBuffer(const UT_ConstByteBufPtr & pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) = 0;
 	/*!
 	 * This should be overridden by platform code. The idea is to create a
 	 * new image from the rectangular segment in device units defined by
@@ -80,7 +81,7 @@ public:
 	   GRT_Vector
 	};
 
-	static GRType		getBufferType(const UT_ByteBuf* pBB);
+	static GRType		getBufferType(const UT_ConstByteBufPtr & pBB);
    	virtual GRType		getType() const;
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 

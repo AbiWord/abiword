@@ -83,7 +83,7 @@ UT_Error IE_ImpGraphicSVG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 }
 
 //  This actually creates our FG_Graphic object for a SVG
-UT_Error IE_ImpGraphic_SVG::importGraphic(UT_ByteBuf* pBB, 
+UT_Error IE_ImpGraphic_SVG::importGraphic(const UT_ConstByteBufPtr & pBB,
                                           FG_ConstGraphicPtr& pfg)
 {
 	FG_GraphicVectorPtr pFGR(new FG_GraphicVector);

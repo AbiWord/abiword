@@ -1462,11 +1462,10 @@ void s_DocBook_Listener::_handleImage(PT_AttrPropIndex api)
 		char * fstripped = _stripSuffix(temp, '.');
 
         std::string mimeType;
-        const UT_ByteBuf * pByteBuf = 0;
+        UT_ConstByteBufPtr pByteBuf;
         const char * extension = "png";
         const char * format = "PNG";
-        m_pDocument->getDataItemDataByName(szValue, &pByteBuf, 
-                                           &mimeType, NULL);
+        m_pDocument->getDataItemDataByName(szValue, pByteBuf, &mimeType, NULL);
         if(mimeType == "image/jpeg") {
             extension = "jpg";
             format = "JPEG";
@@ -1557,10 +1556,10 @@ void s_DocBook_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 		char * fstripped = _stripSuffix(temp, '.');
 
         std::string mimeType;
-        const UT_ByteBuf * pByteBuf = 0;
+        UT_ConstByteBufPtr pByteBuf;
         const char * extension = "png";
         const char * format = "PNG";
-        m_pDocument->getDataItemDataByName(szValue, &pByteBuf, 
+        m_pDocument->getDataItemDataByName(szValue, pByteBuf,
                                            &mimeType, NULL);
         if(mimeType == "image/jpeg") {
             extension = "jpg";
@@ -2245,9 +2244,9 @@ void s_DocBook_Listener::_handleDataItems(void)
 	// Lifted from HTML listener
  	const char * szName = 0;
     std::string mimeType;
-	const UT_ByteBuf * pByteBuf;
-	
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,
+	UT_ConstByteBufPtr pByteBuf;
+
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf,
                                                     &mimeType)); k++)
 	{
 		UT_sint32 loc = -1;

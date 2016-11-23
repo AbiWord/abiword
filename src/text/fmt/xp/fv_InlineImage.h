@@ -70,7 +70,7 @@ public:
 	void                  clearCursor(void);
 	void                  cleanUP(void);
 	void                  abortDrag(void);
-	const char *          getPNGImage(const UT_ByteBuf ** pBuf) const;
+	const char *          getPNGImage(UT_ConstByteBufPtr & pBuf) const;
 	UT_sint32             getImageSelBoxSize() const; // in device units!
 	void                  setSelectionDrawn(bool bSelectionDrawn);
 protected:

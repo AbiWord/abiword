@@ -872,11 +872,10 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						const char * szNameV = g_strdup(dp->getAttribute(PT_DATAITEM_ATTRIBUTE_NAME));
 						PD_DataItemHandle pHandle = NULL;
 						std::string sToken = dp->m_bTokenSet ? dp->m_sToken : "";
-						UT_ByteBuf * pBuf= new UT_ByteBuf();
+						UT_ByteBufPtr pBuf(new UT_ByteBuf);
 						UT_DEBUGMSG(("PXT_CreateDataItem: append image buffer @ 0x%p, %lu bytes, sToken %s\n", &dp->m_vecData[0], (long unsigned)dp->m_vecData.size(), sToken.c_str()));
 						pBuf->append(reinterpret_cast<const UT_Byte *>( &dp->m_vecData[0] ), dp->m_vecData.size() );
-						bool res = m_pDoc->createDataItem(szNameV,false,pBuf,sToken,&pHandle);
-						delete pBuf;
+						bool res = m_pDoc->createDataItem(szNameV, false, pBuf, sToken, &pHandle);
 						return res;
 					}
 					case PX_ChangeRecord::PXT_ChangeDocProp:

@@ -100,7 +100,7 @@ UT_Error IE_ImpGraphicCocoa_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 }
 
 //  This actually creates our FG_Graphic object for a PNG
-UT_Error IE_ImpGraphic_Cocoa::importGraphic(UT_ByteBuf* pBB, 
+UT_Error IE_ImpGraphic_Cocoa::importGraphic(const UT_ConstByteBufPtr & pBB,
 											FG_ConstGraphicPtr & pfg)
 {
 	UT_Error err = _convertGraphic(pBB); 
@@ -119,16 +119,20 @@ UT_Error IE_ImpGraphic_Cocoa::importGraphic(UT_ByteBuf* pBB,
 	return UT_OK;
 }
 
-UT_Error IE_ImpGraphic_Cocoa::convertGraphic(UT_ByteBuf* pBB,
-					   UT_ByteBuf** ppBB)
+UT_Error IE_ImpGraphic_Cocoa::convertGraphic(const UT_ConstByteBufPtr & pBB,
+					   UT_ConstByteBufPtr & ppBB)
 {
-   	if (!ppBB) return UT_ERROR;
+	if (!ppBB) {
+		return UT_ERROR;
+	}
 
-   	UT_Error err = _convertGraphic(pBB);
-   	if (err != UT_OK) return err;
-   
-	*ppBB = m_pPngBB;
-   	return UT_OK;
+	UT_Error err = _convertGraphic(pBB);
+	if (err != UT_OK) {
+		return err;
+	}
+
+	ppBB = m_pPngBB;
+	return UT_OK;
 }
 
 static NSData* convertImageToPNG(NSImage* image)
@@ -148,7 +152,7 @@ static NSData* convertImageDataToPNG(NSData* data)
 	return returned;
 }
 
-UT_Error IE_ImpGraphic_Cocoa::_convertGraphic (UT_ByteBuf* pBB)
+UT_Error IE_ImpGraphic_Cocoa::_convertGraphic(const UT_ConstByteBufPtr & pBB)
 {
 	NSData* converted;
 	UT_uint32 length;
@@ -156,8 +160,9 @@ UT_Error IE_ImpGraphic_Cocoa::_convertGraphic (UT_ByteBuf* pBB)
 	converted = convertImageDataToPNG(data);
 	[data release];
 	length = [converted length];
-	m_pPngBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */	
-	m_pPngBB->append((UT_Byte*)[converted bytes], length);
+	UT_ByteBufPtr bb(new UT_ByteBuf); /* Byte Buffer for Converted Data */	
+	bb->append((UT_Byte*)[converted bytes], length);
+	m_pPngBB = bb;
 	return (length != 0 ? UT_OK : UT_ERROR);
 }
 

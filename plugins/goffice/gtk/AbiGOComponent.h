@@ -62,7 +62,8 @@ public:
     virtual void           makeSnapShot(UT_sint32 uid, UT_Rect & rec);
     virtual bool           isDefault(void);
     virtual bool           modify(UT_sint32 uid);
-    virtual bool           convert(UT_uint32 iConv, UT_ByteBuf & From, UT_ByteBuf & To);
+    virtual bool           convert(UT_uint32 iConv, const UT_ConstByteBufPtr & From,
+                                   const UT_ByteBufPtr & To);
     virtual bool           isEdittable(UT_sint32 uid);
     virtual bool           isResizeable(UT_sint32 uid);
 	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
@@ -86,14 +87,14 @@ public:
 	GOComponentView(GR_GOComponentManager  * pGOMan);
 	virtual ~GOComponentView(void);
 	void render(UT_Rect & rec);
-	void loadBuffer(UT_ByteBuf const *sGOComponentData, const char *_mime_type);
+	void loadBuffer(const UT_ConstByteBufPtr & sGOComponentData, const char *_mime_type);
 	void setDefaultFontSize(UT_sint32 iSize);
 	void modify(void);
 	void update (void);
 	GOComponent *getComponent (void) {return component;}
 	bool IsEdittable () {return go_component_is_editable (component);}
 	bool IsResizable () {return go_component_is_resizable (component);}
-	UT_ByteBuf *getSnapShot (std::string &mime_type);
+	UT_ConstByteBufPtr getSnapShot(std::string &mime_type);
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
 	bool setFont(const GR_Font * pFont);
 

@@ -28,8 +28,9 @@
 #include <stdlib.h>
 
 GR_RSVGVectorImage::GR_RSVGVectorImage(const char* name) 
-	: GR_CairoVectorImage(), 
-	  m_graphics(0), 
+	: GR_CairoVectorImage(),
+	  m_data(new UT_ByteBuf),
+	  m_graphics(0),
 	  m_surface(0), 
 	  m_image_surface(0), 
 	  m_svg(0), 
@@ -53,26 +54,26 @@ GR_RSVGVectorImage::~GR_RSVGVectorImage()
 	reset();
 }
 
-bool GR_RSVGVectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
+bool GR_RSVGVectorImage::convertToBuffer(UT_ConstByteBufPtr & pBB) const
 {
-	UT_ByteBuf* pBB = new UT_ByteBuf;
-	
-	bool bCopied = pBB->append(m_data.getPointer(0), m_data.getLength());
-	
-	if (!bCopied) DELETEP(pBB);
-	
-	*ppBB = pBB;
-	
+	UT_ByteBufPtr bb(new UT_ByteBuf);
+
+	bool bCopied = bb->append(m_data->getPointer(0), m_data->getLength());
+
+	if (bCopied) {
+		pBB = bb;
+	}
+
 	return bCopied;
 }
 
-bool GR_RSVGVectorImage::convertFromBuffer(const UT_ByteBuf* pBB,
+bool GR_RSVGVectorImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
                                            const std::string& /*mimetype*/,
 										   UT_sint32 iDisplayWidth, 
 										   UT_sint32 iDisplayHeight) {
 	reset();
 	
-	m_data.append(pBB->getPointer(0), pBB->getLength());
+	m_data->append(pBB->getPointer(0), pBB->getLength());
 	
 	bool forceScale = (iDisplayWidth != -1 && iDisplayHeight != -1);
 	
@@ -126,7 +127,7 @@ void GR_RSVGVectorImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 
 void GR_RSVGVectorImage::reset() 
 {
-	m_data.truncate(0);
+	m_data->truncate(0);
 	if (m_svg) 
 	{
 		g_object_unref(G_OBJECT(m_svg));

@@ -92,7 +92,7 @@ IE_Imp_MathML_EntityTable::~IE_Imp_MathML_EntityTable ()
 
 /* caller's responsibility to free returned bytebuf
  */
-bool IE_Imp_MathML_EntityTable::convert(const char * buffer, unsigned long length, UT_ByteBuf & To) const
+bool IE_Imp_MathML_EntityTable::convert(const char * buffer, unsigned long length, const UT_ByteBufPtr & To) const
 {
 	if (!buffer || !length)
 	{
@@ -138,7 +138,7 @@ bool IE_Imp_MathML_EntityTable::convert(const char * buffer, unsigned long lengt
 		}
 		if (ptr1 != start)
 		{
-			To.append(reinterpret_cast<const UT_Byte *>(start), ptr1 - start);
+			To->append(reinterpret_cast<const UT_Byte *>(start), ptr1 - start);
 		}
 
 		bool bEntity = true;
@@ -174,7 +174,7 @@ bool IE_Imp_MathML_EntityTable::convert(const char * buffer, unsigned long lengt
 			if (*(ptr1 + 1) == '#') // unicode value; just leave alone...
 			{
 				++ptr2;
-				To.append(reinterpret_cast<const UT_Byte *>(ptr1), ptr2 - ptr1);
+				To->append(reinterpret_cast<const UT_Byte *>(ptr1), ptr2 - ptr1);
 				ptr1 = ptr2;
 			}
 			else
@@ -201,7 +201,7 @@ bool IE_Imp_MathML_EntityTable::convert(const char * buffer, unsigned long lengt
 
 					UT_DEBUGMSG(("Replacing entity \"&%s;\" with \"%s\".\n", pszNew, szEntVal));
 
-					To.append(reinterpret_cast<const UT_Byte *>(szEntVal), strlen(szEntVal));
+					To->append(reinterpret_cast<const UT_Byte *>(szEntVal), strlen(szEntVal));
 					ptr1 = ptr2 + 1;
 				}
 				else
@@ -209,7 +209,7 @@ bool IE_Imp_MathML_EntityTable::convert(const char * buffer, unsigned long lengt
 					UT_DEBUGMSG(("Entity \"&%s;\" unmatched; leaving alone...\n", pszNew));
 
 					++ptr2;
-					To.append(reinterpret_cast<const UT_Byte *>(ptr1), ptr2 - ptr1);
+					To->append(reinterpret_cast<const UT_Byte *>(ptr1), ptr2 - ptr1);
 					ptr1 = ptr2;
 				}
 				DELETEPV(pszNew);
@@ -220,12 +220,12 @@ bool IE_Imp_MathML_EntityTable::convert(const char * buffer, unsigned long lengt
 			UT_DEBUGMSG(("Found unmatched \"&\" - replacing with \"&amp;\"!\n"));
 
 			const char * amp = "&amp;";
-			To.append(reinterpret_cast<const UT_Byte *>(amp), 5);
+			To->append(reinterpret_cast<const UT_Byte *>(amp), 5);
 			++ptr1;
 		}
 		start = ptr1;
 	}
-	To.append(reinterpret_cast<const UT_Byte *>(start), end - start);
+	To->append(reinterpret_cast<const UT_Byte *>(start), end - start);
 
 	return true; 
 }
@@ -348,7 +348,6 @@ IE_Imp_MathML::IE_Imp_MathML(PD_Document * pDocument, const IE_Imp_MathML_Entity
 
 IE_Imp_MathML::~IE_Imp_MathML(void)
 {
-	DELETEP(m_pByteBuf);
 }
 
 /*****************************************************************/
@@ -367,7 +366,7 @@ UT_Error IE_Imp_MathML::_parseStream(ImportStream * pStream)
 {
 	UT_return_val_if_fail(pStream, UT_ERROR);
 
-	UT_ByteBuf BB;
+	UT_ByteBufPtr BB(new UT_ByteBuf);
 	UT_UCSChar c;
 	unsigned char uc;
 	while (pStream->getChar(c))
@@ -376,10 +375,10 @@ UT_Error IE_Imp_MathML::_parseStream(ImportStream * pStream)
 		if(c!=((UT_UCSChar)0x00EF) && c!=((UT_UCSChar)0x00BB) && c!=((UT_UCSChar)0x00BF))
 		{
 			uc = static_cast<unsigned char>(c);
-			BB.append(&uc,1);
+			BB->append(&uc,1);
 		}
 	}
-	return m_EntityTable->convert(reinterpret_cast<const char *>(BB.getPointer(0)), BB.getLength(), *m_pByteBuf) ? UT_OK : UT_ERROR;
+	return m_EntityTable->convert(reinterpret_cast<const char *>(BB->getPointer(0)), BB->getLength(), m_pByteBuf) ? UT_OK : UT_ERROR;
 }
 
 bool IE_Imp_MathML::pasteFromBuffer(PD_DocumentRange * pDocRange,

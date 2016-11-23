@@ -481,22 +481,23 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	// data items
 
 	virtual bool			createDataItem(const char * szName, bool bBase64,
-                                           const UT_ByteBuf * pByteBuf,
+                                           const UT_ConstByteBufPtr & pByteBuf,
 										   const std::string & mime_type,
                                            PD_DataItemHandle* ppHandle);
-	virtual bool            replaceDataItem(const char * szName, const UT_ByteBuf * pByteBuf);
+	virtual bool            replaceDataItem(const char * szName,
+											const UT_ConstByteBufPtr & pByteBuf);
 	virtual bool			getDataItemDataByName(const char * szName,
-												  const UT_ByteBuf ** ppByteBuf,
+												  UT_ConstByteBufPtr & pByteBuf,
                                                   std::string* pMimeType,
                                                   PD_DataItemHandle* ppHandle) const;
 	bool					setDataItemToken(PD_DataItemHandle pHandle, void* pToken) const;
 	bool					getDataItemData(PD_DataItemHandle pHandle,
-											const char ** pszName, const UT_ByteBuf ** ppByteBuf,
+											const char ** pszName, UT_ConstByteBufPtr & pByteBuf,
 											const void** ppToken) const;
 	bool					getDataItemFileExtension(const char *szDataID, std::string &sExt, bool bDot = true) const;
 	bool					enumDataItems(UT_uint32 k,
 										  PD_DataItemHandle* ppHandle, const char ** pszName,
-										  const UT_ByteBuf ** ppByteBuf, std::string * pMimeType) const;
+										  UT_ConstByteBufPtr & pByteBuf, std::string * pMimeType) const;
 
     pf_Frag_Strux*       findHdrFtrStrux(const gchar * pszHdtFtr,
 											const gchar * pszHdrFtrID);

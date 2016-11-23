@@ -41,7 +41,7 @@ class ABI_EXPORT IE_ImpGraphicSVG_Sniffer : public IE_ImpGraphicSniffer
 class ABI_EXPORT IE_ImpGraphic_SVG : public IE_ImpGraphic
 {
 public:
-        virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
+        virtual UT_Error	importGraphic(const UT_ConstByteBufPtr & pBB,
                                           FG_ConstGraphicPtr& pfg);
 };
 

@@ -249,7 +249,7 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 	m_sImagePath.clear();
 	UT_String_sprintf(m_sImagePath,"%d",uid);
 
-    const UT_ByteBuf * pBB = m_pGraphic->getBuffer();
+	const UT_ConstByteBufPtr & pBB = m_pGraphic->getBuffer();
 	if(m_pGraphic->getType() == FGT_Raster)
 	{
 		m_pImage = static_cast<GR_Image *>(
@@ -428,7 +428,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 						m_pGraphic = pFG;
 						m_sImagePath = pFG->getDataId();
 						GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
-                        const UT_ByteBuf * pBB = pFG->getBuffer();
+						const UT_ConstByteBufPtr & pBB = pFG->getBuffer();
 						if(m_pGraphic->getType() == FGT_Raster)
 						{
 							m_pImage = static_cast<GR_Image *>(
@@ -708,7 +708,7 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 		GR_Image * pImg = m_pFormatTable->getImage();
 		FG_Graphic * pFG = m_pFormatTable->getGraphic();
 		const char * szName = pFG->getDataId();
-        const UT_ByteBuf * pBB = pFG->getBuffer();
+		const UT_ConstByteBufPtr & pBB = pFG->getBuffer();
 		if(pFG->getType() == FGT_Raster) {
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,

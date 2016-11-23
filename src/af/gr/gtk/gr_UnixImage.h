@@ -32,8 +32,8 @@ public:
 	GR_UnixImage(const char* pszName, GRType imageType);
 	virtual ~GR_UnixImage();
 
-	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB,
+	virtual bool		convertToBuffer(UT_ConstByteBufPtr & ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ConstByteBufPtr& pBB,
                                           const std::string & mimetype,
                                           UT_sint32 iDisplayWidth,
                                           UT_sint32 iDisplayHeight);

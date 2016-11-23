@@ -295,7 +295,7 @@ public:
 
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 //	virtual GR_Image*	createNewImage(const char* pszName,
-//									   const UT_ByteBuf* pBB,
+//									   const UT_ConstByteBufPtr & pBB,
 //									   UT_sint32 iDisplayWidth,
 //									   UT_sint32 iDisplayHeight,
 //									   GR_Image::GRType =GR_Image::GRT_Raster);

@@ -687,7 +687,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 #ifdef ENABLE_RESOURCE_MANAGER
 		_handleResource (atts, false);
 #else
-		m_currentDataItem.truncate(0);
+		m_currentDataItem->truncate(0);
 		m_currentDataItemName = _getDataItemName(atts);
 		X_CheckError((!m_currentDataItemName.empty()));
 		m_currentDataItemMimeType = _getDataItemMimeType(atts);
@@ -1194,24 +1194,24 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 #ifndef ENABLE_RESOURCEMANAGER
 #define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
 		trim = 0;
-		len = m_currentDataItem.getLength();
-		buffer = m_currentDataItem.getPointer(0);
+		len = m_currentDataItem->getLength();
+		buffer = m_currentDataItem->getPointer(0);
 		while (trim < len && MyIsWhite(buffer[trim])) {
 			trim++;
 		}
 		if (trim) {
-			m_currentDataItem.del(0, trim);
+			m_currentDataItem->del(0, trim);
 		}
-		trim = m_currentDataItem.getLength();
-		buffer = m_currentDataItem.getPointer(0);
+		trim = m_currentDataItem->getLength();
+		buffer = m_currentDataItem->getPointer(0);
 		while (trim > 0 && MyIsWhite(buffer[trim])) {
 			trim--;
 		}
-		m_currentDataItem.truncate(trim+1);
+		m_currentDataItem->truncate(trim+1);
 #undef MyIsWhite
 		X_CheckError(getDoc()->createDataItem(m_currentDataItemName.c_str(),
                                               m_currentDataItemEncoded,
-                                              &m_currentDataItem,
+                                              m_currentDataItem,
                                               m_currentDataItemMimeType, NULL));
 		m_currentDataItemName.clear();
 		m_currentDataItemMimeType.clear();

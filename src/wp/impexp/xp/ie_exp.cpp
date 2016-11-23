@@ -761,7 +761,7 @@ UT_uint32 IE_Exp::getExporterCount(void)
 }
 
 
-UT_Error IE_Exp::writeBufferToFile(const UT_ByteBuf * pByteBuf,
+UT_Error IE_Exp::writeBufferToFile(const UT_ConstByteBufPtr & pByteBuf,
                                    const std::string & imagedir,
                                    const std::string & filename)
 {

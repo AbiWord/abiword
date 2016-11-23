@@ -62,7 +62,7 @@ public:
 	virtual void           initializeEmbedView(UT_sint32 uid);
 	virtual void           makeSnapShot(UT_sint32 uid, UT_Rect & rec);
 	virtual bool           isDefault(void);
-	virtual bool           convert(UT_uint32 iConv, UT_ByteBuf & From, UT_ByteBuf & To);
+	virtual bool           convert(UT_uint32 iConv, const UT_ConstByteBufPtr & From, const UT_ByteBufPtr & To);
 	virtual void           updateData(UT_sint32 uid, UT_sint32 api);
 	virtual bool           isEdittable(UT_sint32 uid);
 	virtual void		   setRun(UT_sint32 uid, fp_Run * run);
@@ -95,8 +95,8 @@ public:
 	void SetRun(fp_Run *pRun) {m_pRun = pRun;}
 	fp_Run *getRun() {return m_pRun;}
 	void SetGuru(GtkWidget *guru) {m_Guru = guru;}
-	UT_ByteBuf *exportToSVG(); //
-	UT_ByteBuf *getSnapShot();
+	UT_ConstByteBufPtr exportToSVG();
+	UT_ConstByteBufPtr getSnapShot();
 	UT_sint32 getWidth() {return width;}
 	UT_sint32 getHeight() {return height;}
 	UT_sint32 getAscent() {return ascent;}

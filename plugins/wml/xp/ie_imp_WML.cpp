@@ -776,7 +776,7 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 	if (IE_ImpGraphic::loadGraphic (filename.utf8_str(), IEGFT_Unknown, pfg) != UT_OK)
 		return;
 
-	const UT_ByteBuf * pBB = pfg->getBuffer();
+	const UT_ConstByteBufPtr & pBB = pfg->getBuffer();
 	X_CheckError(pBB);
 
 	UT_UTF8String dataid;

@@ -43,7 +43,6 @@ UT_svg::UT_svg(GR_Graphics* pG,ParseMode ePM) :
 	m_bIsText(false),
 	m_bIsTSpan(false),
 	m_bHasTSpan(false),
-	m_pBB(0),
 	cb_userdata(0),
 	cb_start(0),
 	cb_end(0),
@@ -54,10 +53,9 @@ UT_svg::UT_svg(GR_Graphics* pG,ParseMode ePM) :
 
 UT_svg::~UT_svg()
 {
-	if (m_pBB) delete m_pBB;
 }
 
-bool UT_svg::parse (const UT_ByteBuf* pBB)
+bool UT_svg::parse(const UT_ConstByteBufPtr & pBB)
 {
 	const char *buffer = reinterpret_cast<const char *>(pBB->getPointer(0));
 	UT_uint32 buflen = pBB->getLength();
@@ -97,7 +95,7 @@ const char * UT_svg::getAttribute (const char * name,const char ** atts)
   return (attr_value);
 }
 
-bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG,
+bool UT_SVG_getDimensions(const UT_ConstByteBufPtr & pBB, GR_Graphics* pG,
 			  UT_sint32 & iDisplayWidth, UT_sint32 & iDisplayHeight,
 			  UT_sint32 & iLayoutWidth,  UT_sint32 & iLayoutHeight)
 {
@@ -226,7 +224,7 @@ void UT_svg::startElement (const gchar * name, const gchar ** atts)
 			m_bIsText = true;
 			m_bIsTSpan = false;
 			m_bHasTSpan = false;
-			m_pBB = 0;
+			m_pBB = UT_ByteBufPtr();
 		}
 	}
 	if (strcmp(static_cast<const char*>(name),"tspan")==0
@@ -243,11 +241,7 @@ void UT_svg::startElement (const gchar * name, const gchar ** atts)
 		{
 			m_bIsTSpan = true;
 			m_bHasTSpan = true;
-			if (m_pBB)
-			{
-				delete m_pBB;
-				m_pBB = 0;
-			}
+			m_pBB.reset();
 		}
 	}
 }
@@ -271,9 +265,10 @@ void UT_svg::endElement (const gchar * name)
 				}
 				else
 				{
-					delete m_pBB;
+					m_pBB.reset();
 				}
-				m_pBB = 0;
+                                // creating a new empty pointer.
+				m_pBB = UT_ByteBufPtr();
 			}
 		}
 		else
@@ -294,7 +289,8 @@ void UT_svg::endElement (const gchar * name)
 			{
 				if ((m_ePM==pm_parse) && cb_text)
 					cb_text(cb_userdata, m_pBB);
-				m_pBB = 0;
+                                // creating a new empty pointer.
+				m_pBB = UT_ByteBufPtr();
 			}
 		}
 		else
@@ -318,8 +314,9 @@ void UT_svg::charData (const gchar * str, int len) // non-terminated string
 
 	if ((m_bIsText && (m_bHasTSpan==false)) || m_bIsTSpan)
 	{
-		if (m_pBB == 0) m_pBB = new UT_ByteBuf;
-
+		if (!m_pBB) {
+			m_pBB = UT_ByteBufPtr(new UT_ByteBuf);
+		}
 		if (!(m_pBB->append(reinterpret_cast<const UT_Byte *>(str), static_cast<UT_uint32>(len))))
 		{
 			UT_DEBUGMSG(("SVG: parse error: insufficient memory?\n"));

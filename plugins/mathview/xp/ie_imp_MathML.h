@@ -28,9 +28,9 @@
 #include "ie_imp.h"
 #include "ut_mbtowc.h"
 #include "ut_vector.h"
+#include "ut_bytebuf.h"
 #include "pd_Document.h"
 
-class  UT_ByteBuf;
 class  ImportStream;
 
 typedef struct {
@@ -45,7 +45,7 @@ public:
 
 	~IE_Imp_MathML_EntityTable ();
 
-	bool convert(const char * buffer, unsigned long length, UT_ByteBuf & To) const;
+	bool convert(const char * buffer, unsigned long length, const UT_ByteBufPtr & To) const;
 
 private:
     mutable UT_GenericVector<AbiMathViewEntityMapItem *> m_vecEntityMap;
@@ -96,14 +96,14 @@ public:
 
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
-	UT_ByteBuf *        getByteBuf(void) const {return m_pByteBuf;}
+	const UT_ByteBufPtr &     getByteBuf(void) const {return m_pByteBuf;}
 
 protected:
 	virtual UT_Error	_loadFile(GsfInput * input);
 	UT_Error			_parseStream(ImportStream * pStream);
 
  private:
-	UT_ByteBuf *        m_pByteBuf;
+	UT_ByteBufPtr        m_pByteBuf;
 
 	const IE_Imp_MathML_EntityTable *	m_EntityTable;
 };

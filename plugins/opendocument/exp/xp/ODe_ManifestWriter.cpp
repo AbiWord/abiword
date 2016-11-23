@@ -120,14 +120,14 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
 
     const char* szName;
     std::string mimeType;
-    const UT_ByteBuf* pByteBuf;
+    UT_ConstByteBufPtr pByteBuf;
     std::set< std::string > pathsAlreadyWritten;
     
     for (UT_uint32 k = 0;
          (pDoc->enumDataItems(k,
                               NULL,
                               &szName,
-                              &pByteBuf,
+                              pByteBuf,
                               &mimeType)); k++) {
                                 
         if (!mimeType.empty()) {

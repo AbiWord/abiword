@@ -64,14 +64,14 @@ void GR_CocoaImage::cairoSetSource(cairo_t *cr)
 }
 
 
-bool		GR_CocoaImage::convertToBuffer(UT_ByteBuf** ppBB) const
+bool GR_CocoaImage::convertToBuffer(UT_ConstByteBufPtr & pBB) const
 {
-	UT_ByteBuf* pBB = new UT_ByteBuf();
+	UT_ByteBufPtr bb(new UT_ByteBuf);
 
 	UT_ASSERT(0);
 //	[m_pngData convertToAbiByteBuf:pBB];
 	
-	*ppBB = pBB;
+	pBB = bb;
 	
 	return true;
 }
@@ -162,7 +162,7 @@ cairo_status_t _UT_ByteBuf_PNG_read(void *closure, unsigned char *data,  unsigne
 }
 
 
-bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, const std::string & mimetype, 
+bool	GR_CocoaImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB, const std::string & mimetype,
                                          UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	const char *buffer = (const char *) pBB->getPointer(0);
@@ -192,7 +192,7 @@ bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, const std::string &
 				cairo_surface_destroy(m_surface);
 			}
 			
-			_PNG_read_state closure(pBB);
+			_PNG_read_state closure(pBB.get());
 			m_surface = cairo_image_surface_create_from_png_stream (&_UT_ByteBuf_PNG_read, &closure);
 		}
 	} else {

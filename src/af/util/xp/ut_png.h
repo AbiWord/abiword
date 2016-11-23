@@ -30,8 +30,8 @@
 #include "ut_types.h"
 #endif
 
-class UT_ByteBuf;
+#include "ut_bytebuf.h"
 
-ABI_EXPORT bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_sint32& iImageHeight);
+ABI_EXPORT bool UT_PNG_getDimensions(const UT_ConstByteBufPtr& pBB, UT_sint32& iImageWidth, UT_sint32& iImageHeight);
 
 #endif /* UT_PNG_H */

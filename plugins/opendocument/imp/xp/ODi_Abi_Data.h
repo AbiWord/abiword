@@ -30,10 +30,10 @@
 #include <gsf/gsf.h>
 
 #include "ut_types.h"
+#include "ut_bytebuf.h"
 // AbiWord classes
 class PD_Document;
 class UT_String;
-class UT_ByteBuf;
 
 /**
  * Represents the <data> section of the resulting AbiWord document from an
@@ -57,7 +57,7 @@ public:
 
 private:
 
-    UT_Error _loadStream (GsfInfile* oo, const char* stream, UT_ByteBuf& buf);
+    UT_Error _loadStream(GsfInfile* oo, const char* stream, const UT_ByteBufPtr& buf);
     void _splitDirectoryAndFileName(const gchar* pHRef, UT_String& dirName, UT_String& fileName) const;
 
     PD_Document* m_pAbiDocument;

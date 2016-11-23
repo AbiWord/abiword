@@ -60,8 +60,7 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
           return error;
         }
    
-   	const UT_ByteBuf * buf;
-   	buf = pFG->getBuffer();
+   	const UT_ConstByteBufPtr & buf = pFG->getBuffer();
 
    	const PP_PropertyVector propsArray = {
           "dataid", "image_0"

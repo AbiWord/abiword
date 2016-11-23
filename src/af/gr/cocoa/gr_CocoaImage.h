@@ -36,8 +36,8 @@ public:
 	GR_CocoaImage(const char * pszName);
 	virtual ~GR_CocoaImage();
 
-	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, const std::string & mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool		convertToBuffer(UT_ConstByteBufPtr & ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ConstByteBufPtr & pBB, const std::string & mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
 	virtual bool hasAlpha (void) const;
 	virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);

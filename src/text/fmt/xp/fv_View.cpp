@@ -2854,9 +2854,9 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 
 PT_DocPosition FV_View::saveSelectedImage (const char * toFile)
 {
-  const UT_ByteBuf * pBytes = NULL ;
+  UT_ConstByteBufPtr pBytes;
 
-  PT_DocPosition dPos = saveSelectedImage ( &pBytes ) ;
+  PT_DocPosition dPos = saveSelectedImage(pBytes);
 
   if ( pBytes )
 	{
@@ -2874,7 +2874,7 @@ PT_DocPosition FV_View::mapDocPosSimple( FV_DocPos dp ) {
 	return ( _getDocPos( dp, false ));
 	}
 
-PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
+PT_DocPosition FV_View::saveSelectedImage(UT_ConstByteBufPtr & pBytes)
 {
 	const char * dataId;
 	PT_DocPosition pos = 0;

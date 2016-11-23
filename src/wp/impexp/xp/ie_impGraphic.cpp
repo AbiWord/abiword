@@ -384,7 +384,7 @@ UT_Error IE_ImpGraphic::constructImporterWithDescription(const char * szDesc, IE
 	return err;
 }
 
-UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf & bytes,
+UT_Error IE_ImpGraphic::constructImporter(const UT_ConstByteBufPtr & bytes,
 					   IEGraphicFileType ft,
 					   IE_ImpGraphic **ppieg)
 {
@@ -398,8 +398,8 @@ UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf & bytes,
         // importer to use and assign that back to ieft.
 	if (ft == IEGFT_Unknown)
 	{
-	  ft = IE_ImpGraphic::fileTypeForContents( reinterpret_cast<const char *>(bytes.getPointer(0)),
-						   bytes.getLength() );
+	  ft = IE_ImpGraphic::fileTypeForContents(reinterpret_cast<const char *>(bytes->getPointer(0)),
+						   bytes->getLength());
 	}
 
 	// use the importer for the specified file type
@@ -517,15 +517,12 @@ UT_Error IE_ImpGraphic::constructImporter(GsfInput * input,
 //  the other importGraphic function.  Used as a convenience for importing
 //  graphics from a file on disk.
 
-UT_Error IE_ImpGraphic::importGraphic(UT_ByteBuf * byteBuf,
+UT_Error IE_ImpGraphic::importGraphic(const UT_ConstByteBufPtr & byteBuf,
 									  FG_ConstGraphicPtr& pfg)
 {
 	UT_return_val_if_fail (byteBuf != NULL, UT_IE_FILENOTFOUND);
 
 	GsfInput * input = gsf_input_memory_new_clone (byteBuf->getPointer(0), byteBuf->getLength());
-
-	// method assumes that we take ownership of the byteBuf
-	DELETEP(byteBuf);
 
 	if (!input)
 		return UT_IE_NOMEMORY;
@@ -542,14 +539,13 @@ UT_Error IE_ImpGraphic::importGraphic(GsfInput * input,
 {
 	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
 
-	UT_ByteBuf* pBB = new UT_ByteBuf;
+	UT_ByteBufPtr pBB(new UT_ByteBuf);
 
 	if (pBB == NULL)
 		return UT_IE_NOMEMORY;
 
 	if (!pBB->insertFromInput(0, input))
 		{
-			DELETEP(pBB);
 			return UT_IE_FILENOTFOUND;
 		}
 
@@ -611,13 +607,13 @@ UT_Error IE_ImpGraphic::loadGraphic(GsfInput * input,
 	return result;
 }
 
-UT_Error IE_ImpGraphic::loadGraphic(const UT_ByteBuf &pBB,
+UT_Error IE_ImpGraphic::loadGraphic(const UT_ConstByteBufPtr &pBB,
 									IEGraphicFileType iegft,
 									FG_ConstGraphicPtr& pfg)
 {
 	GsfInput * input;
 
-	input = gsf_input_memory_new (pBB.getPointer (0), pBB.getLength(), FALSE);
+	input = gsf_input_memory_new(pBB->getPointer (0), pBB->getLength(), FALSE);
 	if (!input)
 		return UT_IE_NOMEMORY;
 

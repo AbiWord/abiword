@@ -1661,21 +1661,21 @@ bool s_LaTeX_Listener::populate(fl_ContainerLayout* /*sfh*/,
 				if(bHaveProp && pAP)
 				{
 					UT_UTF8String sLatex;
-					const UT_ByteBuf * pByteBuf = NULL;
+					UT_ConstByteBufPtr pByteBuf;
 					UT_UCS4_mbtowc myWC;
 					
 					if(pAP->getAttribute("latexid", szValue) &&	szValue 
 							&& *szValue)
 					{					
 						bool bFoundLatex = m_pDocument->getDataItemDataByName(szValue, 
-						    &pByteBuf,
+						    pByteBuf,
 						    NULL, NULL);
 						if(!bFoundLatex)
 						{
 							UT_DEBUGMSG(("Equation %s not found in document \n", szValue));
 							return true;
 						}
-						sLatex.appendBuf(*pByteBuf, myWC);
+						sLatex.appendBuf(pByteBuf, myWC);
 						
 						m_pie->write("$");
 						m_pie->write(sLatex.utf8_str());
@@ -1687,7 +1687,7 @@ bool s_LaTeX_Listener::populate(fl_ContainerLayout* /*sfh*/,
 					{
 						UT_UTF8String sMathML;
 						bool bFoundMathML = m_pDocument->getDataItemDataByName(szValue, 
-						    &pByteBuf,
+						    pByteBuf,
 						    NULL, NULL);
 						if(!bFoundMathML)
 						{
@@ -1695,7 +1695,7 @@ bool s_LaTeX_Listener::populate(fl_ContainerLayout* /*sfh*/,
 							return true;
 						}
 						
-						sMathML.appendBuf(*pByteBuf, myWC);
+						sMathML.appendBuf(pByteBuf, myWC);
 
 						if(!convertMathMLtoLaTeX(sMathML, sLatex))
 							return true;		
@@ -1937,8 +1937,7 @@ void s_LaTeX_Listener::_handleDataItems(void)
 void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
 {	
 	/* Part of code taken from the HTML exporter */
-	const UT_ByteBuf * pByteBuf;
-	UT_ByteBuf decodedByteBuf;				
+	UT_ConstByteBufPtr pByteBuf;
 	const gchar *szHeight = NULL, *szWidth = NULL, *szDataID = NULL;
     std::string mimeType;
 	
@@ -1947,7 +1946,7 @@ void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
 	if (! pAP->getAttribute("dataid", szDataID))
 		return;
 
-	if (! m_pDocument->getDataItemDataByName(szDataID, &pByteBuf,
+	if(!m_pDocument->getDataItemDataByName(szDataID, pByteBuf,
                                              &mimeType, NULL))
 		return;
 	if ((pByteBuf == 0) || (mimeType.empty())) 

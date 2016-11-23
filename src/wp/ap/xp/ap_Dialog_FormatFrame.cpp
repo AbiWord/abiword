@@ -60,7 +60,7 @@ GR_Image * AP_Dialog_FormatFrame::_makeImageForRaster(const std::string & name,
                               const FG_Graphic * pG)
 {
     GR_Image* pImage;
-    const UT_ByteBuf * pBB = pG->getBuffer();
+    const UT_ConstByteBufPtr & pBB = pG->getBuffer();
 	if(pG->getType() == FGT_Raster)
 	{
 		pImage = pGraphics->createNewImage( name.c_str(),
@@ -1114,7 +1114,7 @@ void AP_FormatFrame_preview::draw(const UT_Rect *clip)
 		GR_Image * pImg = m_pFormatFrame->getImage();
 		FG_Graphic * pFG = m_pFormatFrame->getGraphic();
 		const char * szName = pFG->getDataId();
-        const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getBuffer();
+		const UT_ConstByteBufPtr & pBB = pFG->getBuffer();
 		if(pFG->getType() == FGT_Raster)
 		{
 			pImg = static_cast<GR_Image *>(

@@ -1298,7 +1298,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 /*
  * Return the bytebuf of the image for this.
  */
-const char * FV_FrameEdit::getPNGImage(const UT_ByteBuf ** ppByteBuf )
+const char * FV_FrameEdit::getPNGImage(UT_ConstByteBufPtr & pByteBuf)
 {
 
 //  Frame Image
@@ -1309,10 +1309,10 @@ const char * FV_FrameEdit::getPNGImage(const UT_ByteBuf ** ppByteBuf )
       pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
       if(!pszDataID)
       {
-	  *ppByteBuf = NULL;
-	  return NULL;
+		pByteBuf.reset();
+		return NULL;
       }
-      m_pView->getDocument()->getDataItemDataByName(pszDataID,ppByteBuf,NULL,NULL);
+      m_pView->getDocument()->getDataItemDataByName(pszDataID, pByteBuf, NULL, NULL);
       return pszDataID;
 }
 

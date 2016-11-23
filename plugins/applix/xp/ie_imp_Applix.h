@@ -28,9 +28,9 @@
 #include "ie_imp.h"
 #include "ut_mbtowc.h"
 #include "ut_growbuf.h"
+#include "ut_bytebuf.h"
 
 class PD_Document;
-class UT_ByteBuf;
 
 // The importer/reader for Applix Word files
 
@@ -131,7 +131,7 @@ protected:
 	static short            s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c);
 	static short            s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c);
 	static short            s_decodeToUCS (const char *str, size_t len, UT_UCSChar * c);
-	bool                    _applixGetLine (UT_ByteBuf* pBuf, GsfInput *fp);
+	bool                    _applixGetLine (const UT_ByteBufPtr & pBuf, GsfInput *fp);
 	void                    _applixDecodeText (const char * buf, size_t len);
 	void                    _applixNewPara (const char * buf, size_t len);
 	void                    _applixPageBreak (const char * buf, size_t len);

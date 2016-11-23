@@ -35,14 +35,14 @@ extern "C" {
 
 typedef struct {
     struct jpeg_source_mgr pub;	/* public fields */
-	    
-    const UT_ByteBuf* sourceBuf;
+
+    UT_ConstByteBufPtr sourceBuf;
     UT_uint32 pos;
 } bytebuf_jpeg_source_mgr;
 
 typedef bytebuf_jpeg_source_mgr * bytebuf_jpeg_source_ptr;
 
-static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ByteBuf* sourceBuf);
+static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ConstByteBufPtr & sourceBuf);
 
 
 /*
@@ -149,7 +149,7 @@ static void _jpegTermSource (j_decompress_ptr /*cinfo*/)
 }
 
 
-bool UT_JPEG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, 
+bool UT_JPEG_getDimensions(const UT_ConstByteBufPtr & pBB, UT_sint32& iImageWidth,
                                       UT_sint32& iImageHeight)
 {
     struct jpeg_decompress_struct cinfo;
@@ -175,7 +175,7 @@ bool UT_JPEG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth,
 // Converts the JPEG image data in pBB into raw RGB data,
 // and writes it to pDest. pDest must be large enough to
 // hold width * height * 3 bytes of data.
-bool UT_JPEG_getRGBData(const UT_ByteBuf* pBB, UT_Byte* pDest, UT_sint32 iDestRowSize, bool bBGR, bool bFlipHoriz)
+bool UT_JPEG_getRGBData(const UT_ConstByteBufPtr & pBB, UT_Byte* pDest, UT_sint32 iDestRowSize, bool bBGR, bool bFlipHoriz)
 {
 	UT_return_val_if_fail(pBB, false);
 	UT_return_val_if_fail(pDest, false);
@@ -270,7 +270,7 @@ bool UT_JPEG_getRGBData(const UT_ByteBuf* pBB, UT_Byte* pDest, UT_sint32 iDestRo
     return true;
 }
 
-static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ByteBuf* sourceBuf)
+static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ConstByteBufPtr & sourceBuf)
 {
 	bytebuf_jpeg_source_ptr src;
 	

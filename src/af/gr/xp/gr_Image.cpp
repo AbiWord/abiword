@@ -308,7 +308,7 @@ void GR_Image::setName ( const UT_String & name )
   m_szName = name.c_str();
 }
 
-GR_Image::GRType GR_Image::getBufferType(const UT_ByteBuf * pBB)
+GR_Image::GRType GR_Image::getBufferType(const UT_ConstByteBufPtr & pBB)
 {
    const char * buf = reinterpret_cast<const char*>(pBB->getPointer(0));
    UT_uint32 len = pBB->getLength();

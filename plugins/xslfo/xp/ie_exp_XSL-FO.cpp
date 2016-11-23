@@ -1381,9 +1381,9 @@ void s_XSL_FO_Listener::_handleDataItems(void)
 {
 	const char * szName = NULL;
     std::string mimeType;
-	const UT_ByteBuf * pByteBuf;
+	UT_ConstByteBufPtr pByteBuf;
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, &pByteBuf, &mimeType)); k++)
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf, &mimeType)); k++)
 	{	  	  
 		UT_sint32 loc = -1;
 		for (UT_sint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)

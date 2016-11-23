@@ -1162,7 +1162,7 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	UT_ASSERT_HARMLESS(res != ERROR);
 }
 
-GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, const std::string& mimetype,
+GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ConstByteBufPtr & pBB, const std::string& mimetype,
 					   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 					   GR_Image::GRType iType)
 {

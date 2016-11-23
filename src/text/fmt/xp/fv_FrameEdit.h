@@ -76,7 +76,7 @@ public:
 					      fp_Page ** pPage);
 	fl_FrameLayout *      getFrameLayout(void) const
 		{ return m_pFrameLayout;}
-	const char *          getPNGImage(const UT_ByteBuf ** ppByteBuf);
+	const char *          getPNGImage(UT_ConstByteBufPtr & ppByteBuf);
 	void                  setPointInside(void);
 	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}
 	static void 		  _actuallyScroll(UT_Worker * pTimer);

@@ -680,7 +680,7 @@ void GR_Graphics::drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
  * doesn't scale if the resolution or zoom changes. Instead you must create
  * a new image.
  */
-GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, const std::string& mimetype,
+GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ConstByteBufPtr & pBB, const std::string& mimetype,
 									  UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
    GR_VectorImage * vectorImage = NULL;

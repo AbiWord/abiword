@@ -2973,7 +2973,7 @@ UT_Error IE_Exp_OpenXML::finishParagraphDefaultProperties()
 	return writeTargetStream(TARGET_STYLES, "</w:pPrDefault>");
 }
 
-UT_Error IE_Exp_OpenXML::writeImage(const char* filename, const UT_ByteBuf* data)
+UT_Error IE_Exp_OpenXML::writeImage(const char* filename, const UT_ConstByteBufPtr & data)
 {
 	GsfOutput* imageStream = gsf_output_memory_new();
 

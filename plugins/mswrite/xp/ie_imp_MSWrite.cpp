@@ -285,6 +285,7 @@ static const wri_struct WRI_OLE_HEADER[] =
 
 IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 	: IE_Imp(pDocument),
+	  mData(new UT_ByteBuf),
 	  mDefaultCodepage("CP1252"),
 	  hasHeader(false),
 	  hasFooter(false),
@@ -389,8 +390,8 @@ UT_Error IE_Imp_MSWrite::parse_file ()
 		return UT_ERROR;
 	}
 
-	mData.truncate(0);
-	mData.append(thetext, size);
+	mData->truncate(0);
+	mData->append(thetext, size);
 	free(thetext);
 
 	read_sep();
@@ -880,7 +881,7 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 	int fcMac, pnChar, fcFirst, cfod, fc, fcLim;
 	unsigned char page[0x80];
 	UT_String properties, tmp;
-	int dataLen = static_cast<UT_sint32>(mData.getLength());
+	int dataLen = static_cast<UT_sint32>(mData->getLength());
 
 	UT_DEBUGMSG(("    TXT:\n"));
 	UT_DEBUGMSG(("     from = %d\n", from));
@@ -988,7 +989,7 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 				UT_DEBUGMSG(("         Text: "));
 
 				while (fcFirst <= from && from < fcLim && from <= to && from - 0x80 < dataLen)
-					translate_char(*mData.getPointer(from++ - 0x80), mText);
+					translate_char(*mData->getPointer(from++ - 0x80), mText);
 
 				UT_DEBUGMSG(("\n"));
 
@@ -1425,7 +1426,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 	int colorPaletteLen = 0, bmW = 0, bmH = 0;
 	int chunk, filler, written, ole_offset, formatID, objLen, bhSize, bppOff;
 	wri_struct *write_pic = NULL;
-	UT_ByteBuf pic;
+	UT_ByteBufPtr pic(new UT_ByteBuf);
 	IEGraphicFileType iegft = IEGFT_Unknown;
 	const char *msg = NULL, *className = "";
 
@@ -1481,7 +1482,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 				WRITE_DWORD(bmpheader.bfOffBits, sizeof(bmpheader) + sizeof(bmpinfo) + colorPaletteLen);
 
-				pic.append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
+				pic->append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
 
 				bmW = wri_struct_value(write_pic, "bmWidth");
 				bmH = wri_struct_value(write_pic, "bmHeight");
@@ -1494,11 +1495,11 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 				WRITE_WORD(bmpinfo.nplanes, wri_struct_value(write_pic, "bmPlanes"));
 				WRITE_WORD(bmpinfo.bitspp, bmBitsPixel);
 
-				pic.append(reinterpret_cast<UT_Byte *>(&bmpinfo), sizeof(bmpinfo));
+				pic->append(reinterpret_cast<UT_Byte *>(&bmpinfo), sizeof(bmpinfo));
 
 				// add monochrome colormap
-				pic.append(bgr_palette[0], colorPaletteLen >> 1);
-				pic.append(bgr_palette[255], colorPaletteLen >> 1);
+				pic->append(bgr_palette[0], colorPaletteLen >> 1);
+				pic->append(bgr_palette[255], colorPaletteLen >> 1);
 
 				chunk = wri_struct_value(write_pic, "bmWidthBytes");
 				filler = (4 - (chunk & 3)) & 3;
@@ -1515,10 +1516,10 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 			while (written < cbSize)
 			{
 				// append data
-				pic.append(mData.getPointer(from - 0x80 + cbHeader + written), chunk);
+				pic->append(mData->getPointer(from - 0x80 + cbHeader + written), chunk);
 
 				for (int i = 0; i < filler; i++)
-					pic.append(reinterpret_cast<const UT_Byte *>("\x00"), 1);
+					pic->append(reinterpret_cast<const UT_Byte *>("\x00"), 1);
 
 				written += chunk;
 			}
@@ -1591,7 +1592,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 					// make a bitmap file header
 					WRITE_DWORD(bmpheader.bfOffBits, sizeof(bmpheader) + bhSize + colorPaletteLen);
 
-					pic.append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
+					pic->append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
 
 					objectType = 2;   // we can go embedded now
 				}
@@ -1605,7 +1606,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 					WRITE_DWORD(bmpheader.bfOffBits, sizeof(bmpheader) + sizeof(bmpinfo) + colorPaletteLen);
 
-					pic.append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
+					pic->append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
 
 					bmH = READ_WORD(page + cbHeader + OLE_Object + ole_offset + BM16_Height);
 
@@ -1617,22 +1618,24 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 					WRITE_WORD(bmpinfo.nplanes, *(page + cbHeader + OLE_Object + ole_offset + BM16_Planes));
 					WRITE_WORD(bmpinfo.bitspp, bmBitsPixel);
 
-					pic.append(reinterpret_cast<UT_Byte *>(&bmpinfo), sizeof(bmpinfo));
+					pic->append(reinterpret_cast<UT_Byte *>(&bmpinfo), sizeof(bmpinfo));
 
 					// add corresponding colormap
 					switch (bmBitsPixel)
 					{
 						case 1:
-							pic.append(bgr_palette[0], colorPaletteLen >> 1);
-							pic.append(bgr_palette[255], colorPaletteLen >> 1);
+							pic->append(bgr_palette[0], colorPaletteLen >> 1);
+							pic->append(bgr_palette[255], colorPaletteLen >> 1);
 							break;
 
 						case 4:
-							for (int i = 0; i < 16; i++) pic.append(bgr_palette[c16idx[i]], 4);
+							for (int i = 0; i < 16; i++) {
+								pic->append(bgr_palette[c16idx[i]], 4);
+							}
 							break;
 
 						case 8:
-							pic.append(bgr_palette[0], colorPaletteLen);
+							pic->append(bgr_palette[0], colorPaletteLen);
 							break;
 					}
 
@@ -1643,13 +1646,13 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 			// embedded
 			if (objectType == 2)
-				pic.append(mData.getPointer(from - 0x80 + cbHeader + OLE_Object + ole_offset), objLen);
+				pic->append(mData->getPointer(from - 0x80 + cbHeader + OLE_Object + ole_offset), objLen);
 
 			break;
 	}
 
 	// let's see...
-	if (pic.getLength())
+	if (pic->getLength())
 	{
 		// ...whether it's a picture
 		FG_ConstGraphicPtr graphic;

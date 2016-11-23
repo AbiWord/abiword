@@ -8925,7 +8925,11 @@ bool IE_Imp_RTF::ReadFontTable()
 	int charSet = -1;                    // -1 indicates "none defined".
 	int codepage = 0;
 	UT_UTF8String sFontNamesAndPanose[3];// The font names and panose data in UTF-8.
-	UT_ByteBuf RawDataBuf[3];           // The Font names and panose data in orig. enc. 
+	UT_ByteBufPtr RawDataBuf[3] = {           // The Font names and panose data in orig. enc.
+		UT_ByteBufPtr(new UT_ByteBuf),
+		UT_ByteBufPtr(new UT_ByteBuf),
+		UT_ByteBufPtr(new UT_ByteBuf)
+	};
 	/* Variables needed to process the entry. */
 	bool bGotFontIndex = false;          // Did the entry specify a font index?
 	bool bSeenNonWhiteSpaceData = false; // Have we seen non-ws data in the current entry
@@ -9017,7 +9021,7 @@ bool IE_Imp_RTF::ReadFontTable()
 				for (i=SFontTableState::MainFontName; i<=SFontTableState::Panose; i++) 
 				{
 					sFontNamesAndPanose[i].appendBuf(RawDataBuf[i], m_mbtowc);
-					RawDataBuf[i].truncate(0);
+					RawDataBuf[i]->truncate(0);
 				}
 				// It's possible that the font name will be empty. This might happend 
 				// because the font table didn't specify a name, or because the \ansicpgN
@@ -9053,7 +9057,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			{
 				// Other data must be one of the font names, so write it to the
 				// current font name pointer.
-				RawDataBuf[currentState->iCurrentInputData].append(keyword, 1);	
+				RawDataBuf[currentState->iCurrentInputData]->append(keyword, 1);
 				bSeenNonWhiteSpaceData = true;
 			}
 			break;
@@ -9097,7 +9101,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			// Handle hex escaped data.
 			case RTF_KW_QUOTE:
 				ch = static_cast<UT_Byte>(ReadHexChar());
-				RawDataBuf[currentState->iCurrentInputData].append(&ch, 1);	
+				RawDataBuf[currentState->iCurrentInputData]->append(&ch, 1);
 				break;
 			// Handle the "*" keyword.
 			case RTF_KW_STAR:
@@ -9147,7 +9151,7 @@ bool IE_Imp_RTF::ReadFontTable()
 				// First flush any data in the buffer to the font name
 				// string, converting to UTF8.
 				sFontNamesAndPanose[currentState->iCurrentInputData].appendBuf(RawDataBuf[currentState->iCurrentInputData], m_mbtowc);
-				RawDataBuf[currentState->iCurrentInputData].truncate(0);
+				RawDataBuf[currentState->iCurrentInputData]->truncate(0);
 				// Then append the UCS2 char.
 				// TODO Since we process one character at a time, this code 
 				// will not handle surrogate pairs.
@@ -9920,10 +9924,9 @@ bool IE_Imp_RTF::CreateDataItemfromStream(void)
 	bool retval = true;
 	bool bFound = true;
 
-	UT_ByteBuf BinData;
+	UT_ByteBufPtr BinData(new UT_ByteBuf);
 	UT_uint16 chLeft = chars_per_byte;
 	UT_Byte bin_byte = 0;
-	const UT_ByteBuf * pDum = NULL;
 	while (ch != '}')
 	{
 		int digit;
@@ -9937,7 +9940,7 @@ bool IE_Imp_RTF::CreateDataItemfromStream(void)
 		// if we have a complete byte, we put it in the buffer
 		if (--chLeft == 0)
 		{
-			BinData.append(&bin_byte, 1);
+			BinData->append(&bin_byte, 1);
 			chLeft = chars_per_byte;
 			bin_byte = 0;
 		}
@@ -9950,7 +9953,8 @@ bool IE_Imp_RTF::CreateDataItemfromStream(void)
 	// Put the '}' back into the input stream
 	SkipBackChar(ch);
 	
-	bFound = getDoc()->getDataItemDataByName(sName.utf8_str(),&pDum, NULL, NULL);
+	UT_ConstByteBufPtr bb;
+	bFound = getDoc()->getDataItemDataByName(sName.utf8_str(), bb, NULL, NULL);
 	if(bFound)
 	{
 		return true;
@@ -9959,7 +9963,7 @@ bool IE_Imp_RTF::CreateDataItemfromStream(void)
 	// Now create the data item from the RTF data stream
 	//
 	
-	retval = getDoc()->createDataItem(sName.utf8_str(),false,&BinData,mime,NULL);
+	retval = getDoc()->createDataItem(sName.utf8_str(), false, BinData, mime, NULL);
 	return retval;
 
 }
@@ -12453,7 +12457,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 	UT_sint32 parameter = 0;
 	bool paramUsed = false;	
 	bool bStop = false;
-	UT_ByteBuf buf;
+	UT_ByteBufPtr buf(new UT_ByteBuf);
 	UT_sint32 iUniCharsLeftToSkip = 0;
 	
 	do {
@@ -12470,7 +12474,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 				wc = ReadHexChar();
 				// here we assume that the read char fit on ONE byte. Should be correct.
 				ch = static_cast<UT_Byte>(wc);
-				buf.append(&ch, 1);
+				buf->append(&ch, 1);
 				break;
 			}
 			case RTF_KW_u:
@@ -12490,7 +12494,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 				// First flush any data in the byte buffer to str. Then append
 				// the unicode char.
 				str.appendBuf(buf, m_mbtowc);
-				buf.truncate(0);
+				buf->truncate(0);
 				str.appendUCS2(&ch, 1);
 
 				// Make sure we skip alternative chars.
@@ -12510,7 +12514,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			if (iUniCharsLeftToSkip > 0)
 				iUniCharsLeftToSkip--;
 			else
-				buf.append(keyword, 1);
+				buf->append(keyword, 1);
 			break;
 		case RTF_TOKEN_ERROR:
 			// force close brace to exit loop

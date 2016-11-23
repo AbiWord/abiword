@@ -115,7 +115,7 @@ NSCursor *	GR_CocoaCairoGraphics::m_Cursor_Crosshair = nil;
 NSCursor *	GR_CocoaCairoGraphics::m_Cursor_HandPointer = nil;
 NSCursor *	GR_CocoaCairoGraphics::m_Cursor_DownArrow = nil;
 
-GR_Image* GR_CocoaCairoGraphicsBase::createNewImage(const char* pszName, const UT_ByteBuf* pBB,
+GR_Image* GR_CocoaCairoGraphicsBase::createNewImage(const char* pszName, const UT_ConstByteBufPtr & pBB,
 	const std::string & mimeType, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 	GR_Image::GRType iType)
 {

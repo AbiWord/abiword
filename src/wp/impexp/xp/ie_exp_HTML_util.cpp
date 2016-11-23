@@ -369,8 +369,8 @@ UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const gchar *szDataId,
         filename += extension;
     }
     
-    const UT_ByteBuf * pByteBuf = 0;
-    if (!m_pDocument->getDataItemDataByName(szDataId, &pByteBuf, 
+    UT_ConstByteBufPtr pByteBuf;
+    if (!m_pDocument->getDataItemDataByName(szDataId, pByteBuf,
                                             NULL, NULL))
     {
         UT_ASSERT("No data item with specified dataid found\n");
@@ -431,7 +431,8 @@ UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const gchar *szDataId,
     }
         
     std::string mime;
-    m_pDocument->getDataItemDataByName(szDataId, NULL, &mime, NULL);
+    UT_ConstByteBufPtr bb;
+    m_pDocument->getDataItemDataByName(szDataId, bb, &mime, NULL);
     m_buffer += MULTIPART_FIELD("Content-Type",
                               (mime).c_str());
     m_buffer += MULTIPART_FIELD("Content-Transfer-Encoding", "base64");
@@ -525,8 +526,8 @@ void IE_Exp_HTML_DataExporter::encodeDataBase64(const gchar* szDataId,
                                                 bool bAddInfo)
 {
     std::string mimeType;
-    const UT_ByteBuf * pByteBuf = 0;
-    if (!m_pDocument->getDataItemDataByName(szDataId, &pByteBuf, 
+    UT_ConstByteBufPtr pByteBuf;
+    if (!m_pDocument->getDataItemDataByName(szDataId, pByteBuf,
                                             &mimeType, NULL))
     {
         UT_ASSERT("No data item with specified dataid found\n");

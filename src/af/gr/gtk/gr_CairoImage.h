@@ -39,8 +39,8 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
   GR_RSVGVectorImage(const char* name);
   virtual ~GR_RSVGVectorImage();
 
-  virtual bool convertToBuffer(UT_ByteBuf** ppBB) const;
-  virtual bool convertFromBuffer(const UT_ByteBuf* pBB,
+  virtual bool convertToBuffer(UT_ConstByteBufPtr & ppBB) const;
+  virtual bool convertFromBuffer(const UT_ConstByteBufPtr & pBB,
                  const std::string& mimetype,
 				 UT_sint32 iDisplayWidth,
 				 UT_sint32 iDisplayHeight);
@@ -59,7 +59,7 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
   void renderToSurface(cairo_surface_t* surf);
   void renderToCairo(cairo_t *cr);
 
-  UT_ByteBuf m_data;
+  UT_ByteBufPtr m_data;
   RsvgDimensionData m_size;
   cairo_t* m_graphics;
   cairo_surface_t* m_surface;

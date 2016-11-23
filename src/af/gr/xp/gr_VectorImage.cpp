@@ -18,6 +18,7 @@
  */
 
 #include <string.h>
+#include <memory>
 
 #include "gr_VectorImage.h"
 #include "ut_bytebuf.h"
@@ -26,12 +27,10 @@
 #include "ut_debugmsg.h"
 
 GR_VectorImage::GR_VectorImage()
-	: m_pBB_Image(0)
 {
 }
 
 GR_VectorImage::GR_VectorImage(const char* szName)
-	: m_pBB_Image(0)
 {
    if (szName)
      {
@@ -45,18 +44,16 @@ GR_VectorImage::GR_VectorImage(const char* szName)
 
 GR_VectorImage::~GR_VectorImage()
 {
-  DELETEP(m_pBB_Image);
 }
 
-bool GR_VectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
+bool GR_VectorImage::convertToBuffer(UT_ConstByteBufPtr & pBB) const
 {
-  UT_ByteBuf* pBB = new UT_ByteBuf;
+  UT_ByteBufPtr bb(new UT_ByteBuf);
 
-  bool bCopied = pBB->append(m_pBB_Image->getPointer(0), m_pBB_Image->getLength());
-
-  if (!bCopied) DELETEP(pBB);
-
-  *ppBB = pBB;
+  bool bCopied = bb->append(m_pBB_Image->getPointer(0), m_pBB_Image->getLength());
+  if (bCopied) {
+    pBB = std::move(bb);
+  }
 
   return bCopied;
 }
@@ -73,19 +70,20 @@ bool   GR_VectorImage::isTransparentAt(UT_sint32 /*x*/, UT_sint32 /*y*/)
   return false;
 }
 
-bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, 
+bool GR_VectorImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
                                        const std::string& /*mimetype*/,
-									   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+                                       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
   setDisplaySize ( iDisplayWidth, iDisplayHeight );
 
-  DELETEP(m_pBB_Image);
+  m_pBB_Image.reset();
+  auto bb = UT_ByteBufPtr(new UT_ByteBuf);
 
-  m_pBB_Image = new UT_ByteBuf;
+  bool bCopied = bb->append(pBB->getPointer(0), pBB->getLength());
 
-  bool bCopied = m_pBB_Image->append(pBB->getPointer(0), pBB->getLength());
-
-  if (!bCopied) DELETEP(m_pBB_Image);
+  if (bCopied) {
+    m_pBB_Image = std::move(bb);
+  }
 
   return bCopied;
 }

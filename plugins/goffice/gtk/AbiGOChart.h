@@ -64,7 +64,8 @@ public:
     virtual void           makeSnapShot(UT_sint32 uid, UT_Rect & rec);
     virtual bool           isDefault(void);
     virtual bool           modify(UT_sint32 uid);
-    virtual bool           convert(UT_uint32 iConv, UT_ByteBuf & From, UT_ByteBuf & To);
+    virtual bool           convert(UT_uint32 iConv, const UT_ConstByteBufPtr & From,
+                                   const UT_ByteBufPtr & To);
 	virtual void		   updateData(UT_sint32 uid, UT_sint32 api);
 
     virtual bool           isEdittable(UT_sint32 uid);
@@ -100,8 +101,8 @@ public:
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
 	fp_Run *getRun () {return m_pRun;}
 	void SetGuru (GtkWidget *guru) {m_Guru = guru;}
-	UT_ByteBuf *exportToPNG ();
-	UT_ByteBuf *exportToSVG ();
+	UT_ByteBufPtr exportToPNG();
+	UT_ByteBufPtr exportToSVG();
 	UT_sint32 getWidth() {return width;}
 	UT_sint32 getHeight() {return height;}
 private:

@@ -56,7 +56,7 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_ContainerLayout* p
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), &pFG->m_pbbSVG, NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), pFG->m_pbbSVG, NULL, NULL);
 		}
 	}
 
@@ -85,7 +85,7 @@ FG_Graphic* FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute(PT_STRUX_IMAGE_DATAID, pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), &pFG->m_pbbSVG, NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, pFG->m_pbbSVG, NULL, NULL);
 		}
 		pFG->m_iWidth = UT_convertToPoints(pFG->getWidthProp());
 		pFG->m_iHeight = UT_convertToPoints(pFG->getHeightProp());
@@ -99,19 +99,13 @@ FG_Graphic* FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 
 
 FG_GraphicVector::FG_GraphicVector()
+	: m_pSpanAP(NULL)
+	, m_pszDataID(NULL)
 {
-	m_pbbSVG = NULL;
-	m_bOwnSVG = false;
-	m_pSpanAP = NULL;
-	m_pszDataID = NULL;
 }
 
 FG_GraphicVector::~FG_GraphicVector()
 {
-	if (m_bOwnSVG)
-		DELETEP(m_pbbSVG);
-	else
-		m_pbbSVG = NULL;
 }
 
 FG_Graphic * FG_GraphicVector::clone(void) const
@@ -343,13 +337,9 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 }
 
 
-bool FG_GraphicVector::setVector_SVG(const UT_ByteBuf* pBB)
+bool FG_GraphicVector::setVector_SVG(const UT_ConstByteBufPtr & pBB)
 {
-	if (m_bOwnSVG)
-		DELETEP(m_pbbSVG);
-
 	m_pbbSVG = pBB;
-	m_bOwnSVG = true;
 
 	UT_sint32 layoutWidth;
 	UT_sint32 layoutHeight;
@@ -357,7 +347,7 @@ bool FG_GraphicVector::setVector_SVG(const UT_ByteBuf* pBB)
 	return UT_SVG_getDimensions(pBB, 0, m_iWidth, m_iHeight, layoutWidth, layoutHeight);
 }
 
-const UT_ByteBuf* FG_GraphicVector::getBuffer(void) const
+const UT_ConstByteBufPtr& FG_GraphicVector::getBuffer(void) const
 {
 	UT_ASSERT(m_pbbSVG);
 

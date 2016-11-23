@@ -48,9 +48,9 @@
 #endif
 #include "ut_string.h"
 #include "ut_stringbuf.h"
+#include "ut_bytebuf.h"
 
 // Forward declarations
-class UT_ByteBuf;
 class UT_UCS4_mbtowc;
 class UT_String;
 class UT_UTF8String;
@@ -215,7 +215,7 @@ public:
 
 	void		assign (const char * sz, size_t n = 0 /* 0 == null-termination */);
 	void		append (const char * sz, size_t n = 0 /* 0 == null-termination */);
-	void        appendBuf (const UT_ByteBuf & buf, UT_UCS4_mbtowc & converter);
+	void        appendBuf(const UT_ConstByteBufPtr & buf, UT_UCS4_mbtowc & converter);
 
 	void		appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == null-termination */);
 	void		appendUCS2 (const UT_UCS2Char * sz, size_t n = 0 /* 0 == null-termination */);

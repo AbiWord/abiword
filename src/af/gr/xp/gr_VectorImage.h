@@ -32,8 +32,8 @@ public:
 	GR_VectorImage();
 	virtual ~GR_VectorImage();
 
-   	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype,
+   	virtual bool		convertToBuffer(UT_ConstByteBufPtr & ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ConstByteBufPtr & pBB, const std::string& mimetype,
 										  UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
     virtual GR_Image *  createImageSegment(GR_Graphics * /*pG*/,
@@ -48,7 +48,7 @@ public:
 	virtual bool            isTransparentAt(UT_sint32 x, UT_sint32 y);
 
 private:
-	UT_ByteBuf *m_pBB_Image;
+	UT_ConstByteBufPtr m_pBB_Image;
 };
 
 #endif /* GR_VECTORIMAGE */

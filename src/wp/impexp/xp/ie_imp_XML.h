@@ -158,7 +158,7 @@ protected:
     PP_PropertyVector m_vecInlineFmt;
     UT_NumberStack		m_nstackFmtStartIndex;
 
-    UT_ByteBuf		m_currentDataItem;
+    UT_ByteBufPtr	m_currentDataItem;
     std::string		m_currentDataItemName;
     std::string		m_currentDataItemMimeType;
     bool			m_currentDataItemEncoded;

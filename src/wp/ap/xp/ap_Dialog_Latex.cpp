@@ -59,9 +59,10 @@ AP_Dialog_Latex::tAnswer AP_Dialog_Latex::getAnswer(void) const
  */
 bool AP_Dialog_Latex::convertLatexToMathML(void)
 {
-	UT_ByteBuf From,To;
+	UT_ByteBufPtr From(new UT_ByteBuf);
+	UT_ByteBufPtr To(new UT_ByteBuf);
 
-	From.ins(0,reinterpret_cast<const UT_Byte *>(m_sLatex.utf8_str()),static_cast<UT_uint32>(m_sLatex.size()));
+	From->ins(0, reinterpret_cast<const UT_Byte *>(m_sLatex.utf8_str()), static_cast<UT_uint32>(m_sLatex.size()));
 	XAP_Frame * pFrame = getActiveFrame();
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	FL_DocLayout * pLayout = pView->getLayout();

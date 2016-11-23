@@ -449,19 +449,17 @@ bool OXMLi_ListenerState_Image::addImage(const std::string & id)
 	FG_ConstGraphicPtr pFG;
 		
 	OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
-	const UT_ByteBuf* imageData = mgr->parseImageStream(id.c_str());
+	UT_ConstByteBufPtr imageData = mgr->parseImageStream(id.c_str());
 
 	if (!imageData)
 		return false;
 
-	err = IE_ImpGraphic::loadGraphic (*imageData, IEGFT_Unknown, pFG);
+	err = IE_ImpGraphic::loadGraphic(imageData, IEGFT_Unknown, pFG);
 	if ((err != UT_OK) || !pFG)
 	{
-		DELETEP(imageData);
 		UT_DEBUGMSG(("FRT:OpenXML importer can't import the picture with id:%s\n", id.c_str()));
 		return false;
 	}
-	DELETEP(imageData);
 
 	OXML_Document * doc = OXML_Document::getInstance();
 	if(!doc)

@@ -145,9 +145,9 @@ bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* sdh,
 			PD_DataItemHandle pHandle = NULL;
 			std::string mimeType;
 			const char * szName= NULL;
-			const UT_ByteBuf * pBuf = NULL;
+			UT_ConstByteBufPtr pBuf;
 			UT_sint32 k = 0;
-			while(m_pSourceDoc->enumDataItems(k,&pHandle,&szName,&pBuf,&mimeType))
+			while (m_pSourceDoc->enumDataItems(k, &pHandle, &szName, pBuf, &mimeType))
 			{
 				m_pPasteDocument->createDataItem(szName,false,pBuf,mimeType,&pHandle);
 				k++;

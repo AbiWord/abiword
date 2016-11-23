@@ -346,8 +346,8 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 							return true;
 						}
 
-						const UT_ByteBuf * pByteBuf = NULL;
-						bool bOK = pdoc->getDataItemDataByName(szValue, const_cast<const UT_ByteBuf **>(&pByteBuf), NULL, NULL);
+						UT_ConstByteBufPtr pByteBuf;
+						bool bOK = pdoc->getDataItemDataByName(szValue, pByteBuf, NULL, NULL);
 						if(!bOK) return bOK;
                                             
 						std::string mathml;
@@ -1236,10 +1236,10 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 
 	const char* szName = NULL;
     std::string mimeType;
-	const UT_ByteBuf* pByteBuf = NULL;
+	UT_ConstByteBufPtr pByteBuf;
 
 	UT_uint32 k = 0;
-	while (pdoc->enumDataItems (k, 0, &szName, &pByteBuf, &mimeType))
+	while (pdoc->enumDataItems (k, 0, &szName, pByteBuf, &mimeType))
 	{
 		k++;
 
@@ -1247,7 +1247,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 		{
 			szName = NULL;
 			mimeType.clear();
-			pByteBuf = NULL;
+			pByteBuf.reset();
 			continue;
 		}
 
@@ -1260,7 +1260,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 
 			szName = NULL;
 			mimeType.clear();
-			pByteBuf = NULL;
+			pByteBuf.reset();
 			continue;
 		}
 
@@ -1277,7 +1277,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 		
 		szName = NULL;
 		mimeType.clear();
-		pByteBuf = NULL;
+		pByteBuf.reset();
 	}
 
 	return UT_OK;

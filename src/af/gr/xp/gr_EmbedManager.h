@@ -50,8 +50,8 @@ public:
   UT_uint32                   m_iAPI;
   bool                        m_bHasSVGSnapshot;
   bool                        m_bHasPNGSnapshot;
-  UT_ByteBuf *                m_SVGBuf;
-  UT_ByteBuf *                m_PNGBuf;
+  UT_ByteBufPtr               m_SVGBuf;
+  UT_ByteBufPtr               m_PNGBuf;
   GR_Image *                  m_pPreview;
   UT_UTF8String               m_sDataID;
   UT_uint32                   m_iZoom;
@@ -85,7 +85,8 @@ public:
     virtual bool           isDefault(void);
     virtual bool           modify(UT_sint32 uid);
     virtual bool           changeAPI(UT_sint32 uid, UT_uint32 api);
-    virtual bool           convert(UT_uint32 iConvType, UT_ByteBuf & pFrom, UT_ByteBuf & pTo);
+    virtual bool           convert(UT_uint32 iConvType, const UT_ConstByteBufPtr & pFrom,
+                                   const UT_ByteBufPtr & pTo);
     virtual bool           isEdittable(UT_sint32 uid);
     virtual bool           isResizeable(UT_sint32 uid);
 	virtual void		   setRun (UT_sint32 uid, fp_Run * run);

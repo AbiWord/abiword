@@ -46,13 +46,13 @@ class IE_ImpGraphicCocoa_Sniffer : public IE_ImpGraphicSniffer
 class IE_ImpGraphic_Cocoa : public IE_ImpGraphic
 {
 public:
-        virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
+	virtual UT_Error    importGraphic(const UT_ConstByteBufPtr & pBB,
                                           FG_ConstGraphicPtr & pfg);
-        virtual UT_Error	convertGraphic(UT_ByteBuf* pBB,
-					       UT_ByteBuf** ppBB);
+	virtual UT_Error    convertGraphic(const UT_ConstByteBufPtr & pBB,
+                                       UT_ConstByteBufPtr & ppBB);
  private:
-	UT_Error _convertGraphic (UT_ByteBuf* pBB);
-	UT_ByteBuf*  m_pPngBB; 		// pBB Converted to PNG
+	UT_Error _convertGraphic(const UT_ConstByteBufPtr & pBB);
+	UT_ConstByteBufPtr  m_pPngBB; 		// pBB Converted to PNG
 };
 
 #endif

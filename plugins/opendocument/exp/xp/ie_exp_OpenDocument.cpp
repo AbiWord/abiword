@@ -113,7 +113,7 @@ void IE_Exp_OpenDocument::setGSFOutput(GsfOutput * pBuf)
  * This method copies the selection defined by pDocRange to ODT format
  * placed in the ByteBuf bufODT
  */
-UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bufODT)
+UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange, const UT_ByteBufPtr & bufODT)
 {
     //
     // First export selected range to a tempory document

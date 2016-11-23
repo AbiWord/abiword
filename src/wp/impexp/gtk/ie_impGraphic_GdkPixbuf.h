@@ -36,6 +36,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_types.h"
+#include "ut_bytebuf.h"
 #include "ut_vector.h"
 #include "ut_string.h"
 #include "xap_Module.h"
@@ -53,21 +54,21 @@ public:
 	IE_ImpGraphic_GdkPixbuf();
 	virtual ~IE_ImpGraphic_GdkPixbuf();
 
-	virtual UT_Error importGraphic(UT_ByteBuf * pBB, FG_ConstGraphicPtr & pfg);
+	virtual UT_Error importGraphic(const UT_ConstByteBufPtr & pBB, FG_ConstGraphicPtr & pfg);
 
 private:
 
-	GdkPixbuf * pixbufForByteBuf (UT_ByteBuf * pBB, std::string & mimetype);
+	GdkPixbuf * pixbufForByteBuf(const UT_ConstByteBufPtr & pBB, std::string & mimetype);
 	void _createPNGFromPixbuf(GdkPixbuf * pixbuf);
 	UT_Error _png_write(GdkPixbuf * pixbuf);
 
-	GdkPixbuf * _loadXPM(UT_ByteBuf * pBB);
+	GdkPixbuf * _loadXPM(const UT_ConstByteBufPtr & pBB);
 	UT_Error Initialize_PNG(void);
 
 	// PNG structures used
 	png_structp m_pPNG;				// libpng structure for the PNG Object
 	png_infop   m_pPNGInfo;			// libpng structure for info on the PNG Object
-	UT_ByteBuf*  m_pPngBB;			// pBB Converted to PNG File
+	UT_ConstByteBufPtr  m_pPngBB;			// pBB Converted to PNG File
 };
 
 class ABI_EXPORT IE_ImpGraphicGdkPixbuf_Sniffer : public IE_ImpGraphicSniffer

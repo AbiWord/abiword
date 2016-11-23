@@ -58,8 +58,8 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_ContainerLayout* p
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
 			std::string mime_type;
-			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, 
-                                                         &pFG->m_pbb, 
+			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID,
+                                                         pFG->m_pbb,
                                                          &mime_type, NULL);
             if(bFoundDataItem) 
             {
@@ -98,7 +98,7 @@ FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
 		{
 			std::string mime_type;
 			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, 
-                                                         &pFG->m_pbb, 
+                                                         pFG->m_pbb,
                                                          &mime_type, NULL);
             if(bFoundDataItem) 
             {
@@ -123,7 +123,6 @@ FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
 FG_GraphicRaster::FG_GraphicRaster()
     : m_format(PNG_FORMAT)
     , m_pbb(NULL)
-	, m_bOwnBuffer(false)
 	, m_iWidth(0)
 	, m_iHeight(0)
 	, m_iMaxW(0)
@@ -136,11 +135,6 @@ FG_GraphicRaster::FG_GraphicRaster()
 
 FG_GraphicRaster::~FG_GraphicRaster()
 {
-	if (m_bOwnBuffer)
-		DELETEP(m_pbb);
-	else
-		m_pbb = NULL;
-
 	xxx_UT_DEBUGMSG(("GraphRaster Deleted %x \n",this));
 	
 }
@@ -150,7 +144,6 @@ FG_Graphic * FG_GraphicRaster::clone(void) const
 	FG_GraphicRaster * pClone = new FG_GraphicRaster();
     pClone->m_format = m_format;
 	pClone->m_pbb = m_pbb;
-    pClone->m_bOwnBuffer = false;
 	pClone->m_pSpanAP = m_pSpanAP;
 	pClone->m_pszDataID = m_pszDataID;
 	pClone->m_iWidth = m_iWidth; 
@@ -165,7 +158,7 @@ FGType FG_GraphicRaster::getType(void) const
 	return FGT_Raster;
 }
 
-const UT_ByteBuf* FG_GraphicRaster::getBuffer() const
+const UT_ConstByteBufPtr& FG_GraphicRaster::getBuffer() const
 {
     return m_pbb;
 }
@@ -409,28 +402,20 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 	return UT_OK;
 }
 
-bool FG_GraphicRaster::setRaster_PNG(const UT_ByteBuf* pBB)
+bool FG_GraphicRaster::setRaster_PNG(const UT_ConstByteBufPtr & pBB)
 {
-	if (m_bOwnBuffer)
-		DELETEP(m_pbb);
-
 	m_pbb = pBB;
     m_format = PNG_FORMAT;
-	m_bOwnBuffer = true;
 
 	//  We want to calculate the dimensions of the image here.
 	return UT_PNG_getDimensions(pBB, m_iWidth, m_iHeight);
 }
 
 
-bool FG_GraphicRaster::setRaster_JPEG(const UT_ByteBuf* pBB)
+bool FG_GraphicRaster::setRaster_JPEG(const UT_ConstByteBufPtr & pBB)
 {
-	if (m_bOwnBuffer)
-		DELETEP(m_pbb);
-
 	m_pbb = pBB;
     m_format = JPEG_FORMAT;
-	m_bOwnBuffer = true;
 
 	//  We want to calculate the dimensions of the image here.
 	return UT_JPEG_getDimensions(pBB, m_iWidth, m_iHeight);

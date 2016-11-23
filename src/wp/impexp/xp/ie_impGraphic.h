@@ -110,7 +110,7 @@ public:
 
   static UT_Error               constructImporterWithDescription(const char * szDesc, IE_ImpGraphic ** ppieg);
 
-  static UT_Error               constructImporter(const UT_ByteBuf & bytes,
+  static UT_Error       constructImporter(const UT_ConstByteBufPtr & bytes,
 						  IEGraphicFileType ft,
 						  IE_ImpGraphic **ppieg);
   static UT_Error		constructImporter(const char * szFilename,
@@ -128,7 +128,7 @@ public:
   static UT_Error loadGraphic(GsfInput * input,
 							  IEGraphicFileType iegft,
 							  FG_ConstGraphicPtr& pfg);
-  static UT_Error loadGraphic(const UT_ByteBuf &pBB,
+  static UT_Error loadGraphic(const UT_ConstByteBufPtr &pBB,
 							  IEGraphicFileType iegft,
 							  FG_ConstGraphicPtr& pfg);
 
@@ -136,7 +136,7 @@ public:
   //  free pBB if you don't need it.
 
   // you must override at least one of the importGraphic calls
-  virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
+  virtual UT_Error	importGraphic(const UT_ConstByteBufPtr & pBB,
 								  FG_ConstGraphicPtr& pfg);
   virtual UT_Error  importGraphic(GsfInput * input,
 								  FG_ConstGraphicPtr& pfg);

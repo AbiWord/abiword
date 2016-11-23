@@ -31,7 +31,8 @@
 #include <gsf/gsf-output.h>
 
 // AbiWord includes
-#include <ie_exp.h>
+#include "ie_exp.h"
+#include "ut_bytebuf.h"
 
 class IE_Exp_OpenDocument : public IE_Exp
 {
@@ -42,7 +43,7 @@ public:
 protected:
     virtual GsfOutput* _openFile(const char *szFilename);
     virtual UT_Error  _writeDocument(void);
-    virtual UT_Error copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bufODT);
+    virtual UT_Error copyToBuffer(PD_DocumentRange * pDocRange, const UT_ByteBufPtr & bufODT);
 
 private:
     // The OpenDocument Text file.

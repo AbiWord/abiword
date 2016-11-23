@@ -113,7 +113,7 @@ s_getSuffixInfo (void)
 //------------------------------------------------------------------------------------
 
 IE_ImpGraphic_GdkPixbuf::IE_ImpGraphic_GdkPixbuf()
-	: IE_ImpGraphic(), m_pPngBB(NULL)
+	: IE_ImpGraphic()
 {
 }
 
@@ -125,7 +125,7 @@ IE_ImpGraphic_GdkPixbuf::~IE_ImpGraphic_GdkPixbuf()
 /*!
  * Convert an image data buffer into PNG image buffer.
  */
-UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_ConstGraphicPtr & pfg)
+UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(const UT_ConstByteBufPtr & pBB, FG_ConstGraphicPtr & pfg)
 {
 	std::string mimetype;
 	GdkPixbuf * pixbuf = pixbufForByteBuf ( pBB, mimetype );
@@ -140,17 +140,16 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_ConstGraphi
 	if(pFGR == NULL)
 	{
 		g_object_unref(G_OBJECT(pixbuf));
-		DELETEP(m_pPngBB);
+		m_pPngBB.reset();
 		return UT_IE_NOMEMORY;
 	}
 
 	if(mimetype == "image/jpeg") 
 	{
 		m_pPngBB = pBB;
-		pBB = NULL;
 		if(!pFGR->setRaster_JPEG(m_pPngBB)) 
 		{
-			DELETEP(m_pPngBB);
+			m_pPngBB.reset();
 			return UT_IE_FAKETYPE;
 		}
 	}
@@ -169,7 +168,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_ConstGraphi
 		
 			if(!pFGR->setRaster_PNG(m_pPngBB)) 
 			{
-				DELETEP(m_pPngBB);
+				m_pPngBB.reset();
 				return UT_IE_FAKETYPE;
 			}
 		
@@ -185,7 +184,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::_png_write(GdkPixbuf * pixbuf)
 {
 	if (setjmp(png_jmpbuf(m_pPNG)))
 	{
-		DELETEP(m_pPngBB);
+		m_pPngBB.reset();
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 		g_object_unref(G_OBJECT(pixbuf));
 		return UT_ERROR;
@@ -256,7 +255,7 @@ void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
  * Massage the byte buffer into an array of strings that can be loaded by 
  * gdk-pixbuf
  */
-GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(UT_ByteBuf * pBB)
+GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(const UT_ConstByteBufPtr & pBB)
 {
 	GdkPixbuf * pixbuf = NULL;
 	const char * pBC = reinterpret_cast<const char *>(pBB->getPointer(0));
@@ -352,7 +351,7 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(UT_ByteBuf * pBB)
 	return pixbuf;
 }
 
-GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf (UT_ByteBuf * pBB, 
+GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf(const UT_ConstByteBufPtr & pBB,
 													   std::string & mimetype)
 {
 	if ( !pBB || !pBB->getLength() )
@@ -454,10 +453,11 @@ UT_Error IE_ImpGraphic_GdkPixbuf::Initialize_PNG(void)
 		/* If we get here, we had a problem reading the file */
 		return UT_ERROR;
 	}
-	m_pPngBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */
+	m_pPngBB = UT_ByteBufPtr(new UT_ByteBuf);  /* Byte Buffer for Converted Data */
 	
 	/* Setting up the Data Writing Function */
-	png_set_write_fn(m_pPNG, static_cast<void *>(m_pPngBB), reinterpret_cast<png_rw_ptr>(_write_png), NULL);
+	png_set_write_fn(m_pPNG, const_cast<void *>(reinterpret_cast<const void *>(m_pPngBB.get())),
+					 reinterpret_cast<png_rw_ptr>(_write_png), NULL);
 	
 	return UT_OK;
 }

@@ -43,16 +43,16 @@ class IE_ImpGraphicWMF_Sniffer : public IE_ImpGraphicSniffer
 class IE_ImpGraphic_WMF : public IE_ImpGraphic
 {
 public:
-    virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
+    virtual UT_Error	importGraphic(const UT_ConstByteBufPtr & pBB,
                                       FG_ConstGraphicPtr &pfg);
 private:
     // that on is used internally. But we removed it
     // from the API.
     // Convert to a PNG.
-    	UT_Error	convertGraphic(UT_ByteBuf* pBB,
-					       UT_ByteBuf** ppBB);
+    	UT_Error	convertGraphic(const UT_ConstByteBufPtr & pBB,
+					       UT_ConstByteBufPtr & ppBB);
 
-	UT_Error convertGraphicToSVG(UT_ByteBuf* pBB, UT_ByteBuf** ppBB);
+	UT_Error convertGraphicToSVG(const UT_ConstByteBufPtr & pBB, UT_ConstByteBufPtr & ppBB);
 };
 
 #endif /* IE_IMPGRAPHIC_WMF_H */

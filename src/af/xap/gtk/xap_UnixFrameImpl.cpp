@@ -257,7 +257,7 @@ s_loadImage (const UT_UTF8String & file, FV_View * pView, XAP_Frame * pF, gint x
 }
 
 static void
-s_loadImage (const UT_ByteBuf & bytes, FV_View * pView, XAP_Frame * pF, gint x, gint y)
+s_loadImage (const UT_ConstByteBufPtr & bytes, FV_View * pView, XAP_Frame * pF, gint x, gint y)
 {
 	FG_ConstGraphicPtr pFG;
 	UT_Error error = IE_ImpGraphic::loadGraphic(bytes, 0, pFG);
@@ -477,9 +477,9 @@ s_drag_data_get_cb (GtkWidget        * /*widget*/,
 	if(emc == EV_EMC_POSOBJECT)
 	{
 		UT_DEBUGMSG(("Dragging positioned object \n"));
-		FV_FrameEdit * fvFrame  = pView->getFrameEdit();
-		const UT_ByteBuf * pBuf = NULL;
-		fvFrame->getPNGImage(&pBuf);
+		FV_FrameEdit * fvFrame	= pView->getFrameEdit();
+		UT_ConstByteBufPtr pBuf;
+		fvFrame->getPNGImage(pBuf);
 		if(pBuf)
 		{
 			UT_DEBUGMSG(("Got data of length %d \n",pBuf->getLength()));
@@ -550,10 +550,10 @@ s_dndDropEvent(GtkWidget        *widget,
 	}
 	else if (info == TARGET_IMAGE)
 	{
-		UT_ByteBuf bytes(gtk_selection_data_get_length(selection_data));
+		UT_ByteBufPtr bytes(new UT_ByteBuf(gtk_selection_data_get_length(selection_data)));
 
 		UT_DEBUGMSG(("JK: Image target\n"));
-		bytes.append (gtk_selection_data_get_data(selection_data),
+		bytes->append (gtk_selection_data_get_data(selection_data),
 		              gtk_selection_data_get_length(selection_data));
 		s_loadImage (bytes, pView,pFrame,x,y);
 	}

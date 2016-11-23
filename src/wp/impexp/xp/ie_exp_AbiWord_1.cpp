@@ -459,7 +459,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, bool bHasContent,
 		{
 			m_pie->startElement("image");
 			std::string tag = std::string("snapshot-svg-") + szPropVal;
-			if (!m_pDocument->getDataItemDataByName(tag.c_str (), NULL, NULL, NULL))
+			UT_ConstByteBufPtr bb;
+			if (!m_pDocument->getDataItemDataByName(tag.c_str (), bb, NULL, NULL))
 				tag = std::string("snapshot-png-") + szPropVal;
 			m_pie->addString("dataid", tag);
 			bool bFound = pAP->getProperty("height", szPropVal);
@@ -666,7 +667,8 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
 						UT_UTF8String * sPNGname = new UT_UTF8String("snapshot-svg-");
 						m_vecSnapNames.addItem(sPNGname);
 						*sPNGname += image_name;
-						if (!m_pDocument->getDataItemDataByName(sPNGname->utf8_str(), NULL, NULL, NULL))
+						UT_ConstByteBufPtr bb;
+						if (!m_pDocument->getDataItemDataByName(sPNGname->utf8_str(), bb, NULL, NULL))
 							*sPNGname = UT_UTF8String("snapshot-png-") + image_name;
 						UT_DEBUGMSG(("resource name #%s# recorded \n",sPNGname->utf8_str()));
 						m_pUsedImages.insert(sPNGname->utf8_str());
@@ -1287,14 +1289,14 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 
 	const char * szName;
     std::string mimeType;
-	const UT_ByteBuf * pByteBuf;
+	UT_ConstByteBufPtr pByteBuf;
 
-	UT_ByteBuf bbEncoded(1024);
+	UT_ByteBufPtr bbEncoded(new UT_ByteBuf(1024));
 	string_set::iterator end(m_pUsedImages.end());
 	UT_DEBUGMSG(("Used images are... \n"));
 	for (UT_uint32 k=0;
 		 
-		 (m_pDocument->enumDataItems(k, NULL, &szName, &pByteBuf, &mimeType));
+		 (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf, &mimeType));
 		 k++)
 	{
 		string_set::iterator it(m_pUsedImages.find(szName));
@@ -1323,15 +1325,15 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
             && ((mimeType ==  "image/svg+xml") 
                 || (mimeType == "application/mathml+xml")))
 	    {
-		   bbEncoded.truncate(0);
-		   bbEncoded.append(reinterpret_cast<const UT_Byte*>("<![CDATA["), 9);
+		   bbEncoded->truncate(0);
+		   bbEncoded->append(reinterpret_cast<const UT_Byte*>("<![CDATA["), 9);
 		   UT_uint32 off = 0;
 		   UT_uint32 len = pByteBuf->getLength();
 		   const UT_Byte * buf = pByteBuf->getPointer(0);
 		   while (off < len) {
 		      if (buf[off] == ']' && buf[off+1] == ']' && buf[off+2] == '>') {
-			 bbEncoded.append(buf, off-1);
-			 bbEncoded.append(reinterpret_cast<const UT_Byte*>("]]&gt;"), 6);
+			 bbEncoded->append(buf, off-1);
+			 bbEncoded->append(reinterpret_cast<const UT_Byte*>("]]&gt;"), 6);
 			 off += 3;
 			 len -= off;
 			 buf = pByteBuf->getPointer(off);
@@ -1340,14 +1342,14 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		      }
 		      off++;
 		   }
-		   bbEncoded.append(buf, len);
-		   bbEncoded.append(reinterpret_cast<const UT_Byte*>("]]>\n"), 4);
+		   bbEncoded->append(buf, len);
+		   bbEncoded->append(reinterpret_cast<const UT_Byte*>("]]>\n"), 4);
 		   status = true;
 		   encoded = false;
 		}
 	   	else
 		{
-		   status = UT_Base64Encode(&bbEncoded, pByteBuf);
+		   status = UT_Base64Encode(bbEncoded, pByteBuf);
 		   encoded = true;
 		}
 
@@ -1367,13 +1369,13 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 				   // break up the Base64 blob as a series lines
 				// like MIME does.
 
-				UT_uint32 jLimit = bbEncoded.getLength();
+				UT_uint32 jLimit = bbEncoded->getLength();
 				UT_uint32 jSize;
 				UT_uint32 j;
 				for (j=0; j<jLimit; j+=72)
 				{
 					jSize = UT_MIN(72,(jLimit-j));
-					buf.write(reinterpret_cast<const char *>(bbEncoded.getPointer(j)),jSize);
+					buf.write(reinterpret_cast<const char *>(bbEncoded->getPointer(j)),jSize);
 					buf << std::endl;
 				}
 			}
@@ -1381,7 +1383,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		    {
 			   	m_pie->addString("base64", "no");
 			}
-			m_pie->addStringUnchecked(NULL, reinterpret_cast<const char*>(bbEncoded.getPointer(0)));
+			m_pie->addStringUnchecked(NULL, reinterpret_cast<const char*>(bbEncoded->getPointer(0)));
 			m_pie->endElement();
 			m_pie->setPrettyPrint(true);
 

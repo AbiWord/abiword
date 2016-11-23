@@ -204,6 +204,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
+	  m_currentDataItem(new UT_ByteBuf),
 	  m_currentRevisionId(0), m_currentRevisionTime(0), m_currentRevisionVersion(0), m_tokens()
 {
 	_data_NewBlock ();
@@ -387,8 +388,8 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 						
 						UT_return_if_fail ((sizeof(gchar) == sizeof(UT_Byte)));
 						
-						UT_uint32 actualLen = m_currentDataItem.getLength();
-						m_currentDataItem.ins(actualLen, len); // allocate all the possibly needed memory at once
+						UT_uint32 actualLen = m_currentDataItem->getLength();
+						m_currentDataItem->ins(actualLen, len); // allocate all the possibly needed memory at once
 						const UT_Byte * ss = reinterpret_cast<const UT_Byte *>(s);
 						const UT_Byte * ssEnd = ss + len;
 						while (ss < ssEnd)
@@ -400,18 +401,18 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 									k++;
 								if (k > 0)
 								{
-									m_currentDataItem.overwrite(actualLen, ss, k);
+									m_currentDataItem->overwrite(actualLen, ss, k);
 									actualLen += k;
 								}
 								
 								ss += k;
 							}
 						
-							m_currentDataItem.truncate(actualLen); // chop off the mem we don't need after all
+							m_currentDataItem->truncate(actualLen); // chop off the mem we don't need after all
 						return;
 					}
 				else
-						m_currentDataItem.append(reinterpret_cast<const UT_Byte*>(s), len);
+						m_currentDataItem->append(reinterpret_cast<const UT_Byte*>(s), len);
 #undef MyIsWhite
 #endif /* ENABLE_RESOURCE_MANAGER */
 			}

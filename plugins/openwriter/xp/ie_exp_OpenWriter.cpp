@@ -785,12 +785,12 @@ public:
   {
     const char * szName;
     std::string mimeType;
-    const UT_ByteBuf * pByteBuf;
+    UT_ConstByteBufPtr pByteBuf;
 
     // create Pictures directory
     GsfOutput * pictures = gsf_outfile_new_child(oo, "Pictures", TRUE);
     
-    for (UT_uint32 k=0; (pDoc->enumDataItems(k,NULL,&szName,&pByteBuf,&mimeType)); k++)
+    for (UT_uint32 k=0; (pDoc->enumDataItems(k, NULL, &szName, pByteBuf, &mimeType)); k++)
     {
         const char * extension = "png";
         // create individual pictures
@@ -854,8 +854,8 @@ public:
 
     const char * szName;
     std::string mimeType;
-    const UT_ByteBuf * pByteBuf;
-    for (UT_uint32 k = 0; (pDoc->enumDataItems(k,NULL,&szName,&pByteBuf, &mimeType)); k++)
+    UT_ConstByteBufPtr pByteBuf;
+    for (UT_uint32 k = 0; (pDoc->enumDataItems(k, NULL, &szName, pByteBuf, &mimeType)); k++)
     {
         const char *extension = "png";
         if (mimeType == "image/jpeg") {

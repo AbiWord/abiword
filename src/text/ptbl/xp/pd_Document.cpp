@@ -163,7 +163,7 @@ const UT_UTF8String * TextboxPage::getProps(void) const
 
 struct _dataItemPair
 {
-	UT_ByteBuf* pBuf;
+	UT_ByteBufPtr pBuf;
 	const void*	pToken;
 };
 
@@ -5020,8 +5020,8 @@ bool  PD_Document::isDoingTheDo(void) const
 // to store the actual data of an image.  The inline image tag has
 // a reference to a DataItem.
 // mime_type is the associated mime type for the blob.
-bool PD_Document::createDataItem(const char * szName, bool bBase64, 
-                                 const UT_ByteBuf * pByteBuf,
+bool PD_Document::createDataItem(const char * szName, bool bBase64,
+                                 const UT_ConstByteBufPtr & pByteBuf,
                                  const std::string & mime_type,
                                  PD_DataItemHandle* ppHandle)
 {
@@ -5031,7 +5031,8 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
 
 	// verify unique name
 	UT_DEBUGMSG(("Create data item name %s \n",szName));
-	if (getDataItemDataByName(szName,NULL,NULL,NULL) == true)
+	UT_ConstByteBufPtr bb;
+	if (getDataItemDataByName(szName, bb, NULL, NULL) == true)
     {
         UT_DEBUGMSG(("Data item %s already exists! \n",szName));
 		return false;
@@ -5040,11 +5041,11 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
 	// we must copy it if we want to keep it.  bBase64 is TRUE if the
 	// data is Base64 encoded.
 
-	std::unique_ptr<UT_ByteBuf> pNew(new UT_ByteBuf());
+	UT_ByteBufPtr pNew(new UT_ByteBuf);
 
 	if (bBase64)
 	{
-		if (!UT_Base64Decode(pNew.get(), pByteBuf)) {
+		if (!UT_Base64Decode(pNew, pByteBuf)) {
 			return false;
 		}
 	}
@@ -5060,7 +5061,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
 		return false;
 	}
 
-	pPair->pBuf = pNew.release();
+	pPair->pBuf = pNew;
 	pPair->pToken = g_strdup(mime_type.c_str());
 	m_hashDataItems.insert(std::make_pair(szName, pPair));
 
@@ -5090,7 +5091,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
  * Replace the contents of the pre-existing data item with this new
  * data item (pByteBuf). Used when updating a preview of an embedded object.
  */
-bool PD_Document::replaceDataItem(const char * szName, const UT_ByteBuf * pByteBuf)
+bool PD_Document::replaceDataItem(const char * szName, const UT_ConstByteBufPtr & pByteBuf)
 {
 	// verify data item exists
 
@@ -5104,7 +5105,7 @@ bool PD_Document::replaceDataItem(const char * szName, const UT_ByteBuf * pByteB
 
 	UT_return_val_if_fail (pByteBuf, false);
 
-	UT_ByteBuf * pOldBuf =  pPair->pBuf;
+	UT_ByteBufPtr pOldBuf = pPair->pBuf;
 	pOldBuf->truncate(0);
 	if (!pOldBuf->ins(0,pByteBuf->getPointer(0),pByteBuf->getLength()))
 		return false;
@@ -5113,14 +5114,13 @@ bool PD_Document::replaceDataItem(const char * szName, const UT_ByteBuf * pByteB
 }
 
 bool PD_Document::getDataItemDataByName(const char * szName,
-										   const UT_ByteBuf ** ppByteBuf,
+										UT_ConstByteBufPtr & pByteBuf,
                                         std::string * pMimeType,
-										   PD_DataItemHandle* ppHandle) const
+										PD_DataItemHandle* ppHandle) const
 {
 	UT_DEBUGMSG(("Look for %s \n",szName));
 	UT_return_val_if_fail (szName && *szName, false);
 
-	
 	hash_data_items_t::const_iterator iter = m_hashDataItems.find(szName);
 	if (iter == m_hashDataItems.end()) {
 		return false;
@@ -5129,10 +5129,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 	_dataItemPair* pPair = iter->second;
 	UT_DEBUGMSG(("Found data item name %s buf %p \n",szName,pPair->pBuf));
 
-	if (ppByteBuf)
-	{
-		*ppByteBuf = pPair->pBuf;
-	}
+	pByteBuf = pPair->pBuf;
 
 	if (pMimeType)
 	{
@@ -5160,8 +5157,9 @@ bool PD_Document::getDataItemFileExtension(const char *szDataID, std::string &sE
 	UT_return_val_if_fail(szDataID && *szDataID, false);
 
     std::string mimeType;
- 
-	if(getDataItemDataByName(szDataID, NULL, &mimeType, NULL))
+	UT_ConstByteBufPtr bb;
+
+	if(getDataItemDataByName(szDataID, bb, &mimeType, NULL))
 	{
 		if(mimeType.empty())
 			return false;
@@ -5209,17 +5207,14 @@ bool PD_Document::setDataItemToken(PD_DataItemHandle pHandle,
 
 bool PD_Document::getDataItemData(PD_DataItemHandle pHandle,
 									 const char ** pszName,
-									 const UT_ByteBuf ** ppByteBuf,
+									 UT_ConstByteBufPtr & pByteBuf,
 									 const void** ppToken) const
 {
 	UT_return_val_if_fail (pHandle,false);
 
 	_dataItemPair* pPair = pHandle;
 
-	if (ppByteBuf)
-	{
-		*ppByteBuf = pPair->pBuf;
-	}
+	pByteBuf = pPair->pBuf;
 
 	if (ppToken)
 	{
@@ -5237,8 +5232,8 @@ bool PD_Document::getDataItemData(PD_DataItemHandle pHandle,
 }
 
 bool PD_Document::enumDataItems(UT_uint32 k,
-                                PD_DataItemHandle* ppHandle, const char ** pszName, 
-								const UT_ByteBuf ** ppByteBuf, std::string * pMimeType) const
+                                PD_DataItemHandle* ppHandle, const char ** pszName,
+								UT_ConstByteBufPtr & pByteBuf, std::string * pMimeType) const
 {
 	// return the kth data item.
 
@@ -5261,10 +5256,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	const struct _dataItemPair* pPair = iter->second;
 	UT_return_val_if_fail (pPair, false);
 
-	if (ppByteBuf)
-	{
-		*ppByteBuf = pPair->pBuf;
-	}
+	pByteBuf = pPair->pBuf;
 
 	if (pMimeType)
 	{
@@ -5290,7 +5282,6 @@ void PD_Document::_destroyDataItemData(void)
 		xxx_UT_DEBUGMSG(("DOM: destroying data item\n"));
 		_dataItemPair* pPair = iter->second;
 		UT_return_if_fail (pPair);
-		delete pPair->pBuf;
 		FREEP(pPair->pToken);
 		delete pPair;
 	}

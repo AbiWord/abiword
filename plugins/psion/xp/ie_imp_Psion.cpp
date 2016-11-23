@@ -912,7 +912,6 @@ UT_Error IE_Imp_Psion::insertImage(const psiconv_in_line_layout in_line)
 {
 	psiconv_sketch_f sketch_file;
 	psiconv_paint_data_section paint_data;
-	UT_ByteBuf image_buffer;
 	png_byte *row;
 	UT_UTF8String props,iname,buffer;
 	int x,y,xsize,ysize;
@@ -948,7 +947,8 @@ UT_Error IE_Imp_Psion::insertImage(const psiconv_in_line_layout in_line)
     }
 	
 	// Use our own functions for writing the PNG data stream
-	png_set_write_fn(png_ptr,(void *) &image_buffer,write_png_data,
+	UT_ByteBufPtr image_buffer(new UT_ByteBuf);
+	png_set_write_fn(png_ptr, (void *)image_buffer.get(), write_png_data,
 	                 write_png_flush);
 	
 	// Set picture data
@@ -1005,7 +1005,7 @@ UT_Error IE_Imp_Psion::insertImage(const psiconv_in_line_layout in_line)
 	};
 	if (!(getDoc()->appendObject(PTO_Image,propsArray)))
 		return UT_IE_IMPORTERROR;
-	if (!(getDoc()->createDataItem(iname.utf8_str(),false,&image_buffer,
+	if (!(getDoc()->createDataItem(iname.utf8_str(), false, image_buffer,
 								   "image/png",NULL)))
 		return UT_IE_IMPORTERROR;
 	return UT_OK;

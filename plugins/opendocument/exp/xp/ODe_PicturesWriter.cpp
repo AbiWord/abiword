@@ -43,7 +43,7 @@ bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT)
     std::string mimeType;
 	std::string extension;
 	std::string fullName;
-    const UT_ByteBuf * pByteBuf;
+    UT_ConstByteBufPtr pByteBuf;
     GsfOutput* pImg;
     GsfOutput* pPicsDir = NULL;
     
@@ -51,7 +51,7 @@ bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT)
          (pDoc->enumDataItems(k,
                               NULL,
                               &szName,
-                              &pByteBuf,
+                              pByteBuf,
                               &mimeType));
          k++) {
             		

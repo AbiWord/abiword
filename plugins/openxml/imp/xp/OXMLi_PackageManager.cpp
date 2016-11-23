@@ -309,7 +309,7 @@ UT_Error OXMLi_PackageManager::_parseStream( GsfInput * stream, OXMLi_StreamList
 /**
  * Parses the image stream and returns the image data
  */
-UT_ByteBuf* OXMLi_PackageManager::parseImageStream(const char * id)
+UT_ConstByteBufPtr OXMLi_PackageManager::parseImageStream(const char * id)
 {
 	GsfInput * parent = _getDocumentStream();
 	GsfInput * stream = getChildById(parent, id);
@@ -323,7 +323,7 @@ UT_ByteBuf* OXMLi_PackageManager::parseImageStream(const char * id)
 		return NULL;
 	}
 
-	UT_ByteBuf* buffer = new UT_ByteBuf();
+	UT_ByteBufPtr buffer(new UT_ByteBuf);
 	buffer->insertFromInput(0, stream);
 	g_object_unref (G_OBJECT (stream));
 

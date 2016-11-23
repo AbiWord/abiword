@@ -279,8 +279,8 @@ FG_ConstGraphicPtr IE_Imp_MHT::importImage(const gchar * szSrc)
 			return 0;
 		}
 
-	const UT_ByteBuf * pBB = part->getBuffer ();
-	if (pBB == 0)
+	const UT_ConstByteBufPtr & pBB = part->getBuffer();
+	if (!pBB)
 		{
 			UT_DEBUGMSG(("Multipart HTML: importImage: `%s' - image in archive but not (or no longer?) loaded!\n",szSrc));
 			return 0;
@@ -406,7 +406,6 @@ UT_Multipart::~UT_Multipart ()
 	clear ();
 
 	DELETEP(m_map);
-	DELETEP(m_buf);
 }
 
 bool UT_Multipart::insert (const char * name, const char * value)
@@ -576,11 +575,9 @@ bool UT_Multipart::append_Quoted (const char * buffer, UT_uint32 length)
 	return success;
 }
 
-UT_ByteBuf * UT_Multipart::detachBuffer ()
+UT_ByteBufPtr && UT_Multipart::detachBuffer ()
 {
-	UT_ByteBuf * bufret = m_buf;
-	m_buf = 0;
-	return bufret;
+    return std::move(m_buf);
 }
 
 void UT_Multipart::clear ()

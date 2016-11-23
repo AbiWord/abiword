@@ -79,7 +79,7 @@ UT_Error IE_ImpGraphicPNG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 }
 
 //  This actually creates our FG_Graphic object for a PNG
-UT_Error IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB, 
+UT_Error IE_ImpGraphic_PNG::importGraphic(const UT_ConstByteBufPtr & pBB,
 										  FG_ConstGraphicPtr &pfg)
 {
 	FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);

@@ -567,9 +567,9 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_Att
 	}
 }
 
-const char * FV_VisualInlineImage::getPNGImage(const UT_ByteBuf ** pBuf) const
+const char * FV_VisualInlineImage::getPNGImage(UT_ConstByteBufPtr & pBuf) const
 {
-        m_pView->getDocument()->getDataItemDataByName(m_sDataId.utf8_str(),pBuf,NULL,NULL);
+        m_pView->getDocument()->getDataItemDataByName(m_sDataId.utf8_str(), pBuf, NULL, NULL);
 	return m_sDataId.utf8_str();
 }
 
@@ -937,7 +937,7 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	//
 	// Get a copy of the image data
 	//
-	const UT_ByteBuf * pBytes = NULL;
+	UT_ConstByteBufPtr pBytes;
 	const char * dataId = NULL;
 	m_pView->getSelectedImage(&dataId);
 	if(dataId == NULL)
@@ -947,7 +947,7 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	  return;
 	}
 	std::string sMimeType;
-	getDoc()->getDataItemDataByName ( dataId, &pBytes, &sMimeType, NULL );
+	getDoc()->getDataItemDataByName(dataId, pBytes, &sMimeType, NULL);
 	//
 	// Save it in the document under a new name
 	//

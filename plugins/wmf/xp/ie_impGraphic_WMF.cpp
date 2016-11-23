@@ -47,20 +47,17 @@ static int  AbiWord_WMF_seek (void * context,long pos);
 static long AbiWord_WMF_tell (void * context);
 static int  AbiWord_WMF_function (void * context,char * buffer,int length);
 
-typedef struct _bbuf_read_info  bbuf_read_info;
-typedef struct _bbuf_write_info bbuf_write_info;
-
-struct _bbuf_read_info
+struct bbuf_read_info
 {
-	UT_ByteBuf* pByteBuf;
+	UT_ConstByteBufPtr pByteBuf;
 
 	UT_uint32 len;
 	UT_uint32 pos;
 };
 
-struct _bbuf_write_info
+struct bbuf_write_info
 {
-	UT_ByteBuf* pByteBuf;
+	UT_ByteBufPtr pByteBuf;
 };
 
 #define WMF2SVG_MAXPECT (1 << 0)
@@ -102,7 +99,7 @@ UT_Error IE_ImpGraphicWMF_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 }
 
 // This creates our FG_Graphic object for a PNG
-UT_Error IE_ImpGraphic_WMF::importGraphic(UT_ByteBuf* pBBwmf,
+UT_Error IE_ImpGraphic_WMF::importGraphic(const UT_ConstByteBufPtr & pBBwmf,
                                           FG_ConstGraphicPtr &pfg)
 {
 	UT_Error err = UT_OK;
@@ -118,9 +115,9 @@ UT_Error IE_ImpGraphic_WMF::importGraphic(UT_ByteBuf* pBBwmf,
 
 	if (importAsPNG) {
 
-		UT_ByteBuf * pBBpng = 0;
+		UT_ConstByteBufPtr pBBpng;
 
-		err = convertGraphic(pBBwmf,&pBBpng);
+		err = convertGraphic(pBBwmf, pBBpng);
 		if (err != UT_OK) {
 			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Conversion failed...\n"));
 			return err;
@@ -139,8 +136,8 @@ UT_Error IE_ImpGraphic_WMF::importGraphic(UT_ByteBuf* pBBwmf,
 			pfg = std::move(pFGR);
 		}
 	} else {
-		UT_ByteBuf *svg = 0;
-		err = convertGraphicToSVG(pBBwmf, &svg);
+		UT_ConstByteBufPtr svg;
+		err = convertGraphicToSVG(pBBwmf, svg);
 		if (err != UT_OK) {
 			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Conversion failed...\n"));
 			return err;
@@ -177,7 +174,7 @@ static int explicit_wmf_error (const char* str, wmf_error_t err)
 	}
 }
 
-UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf** ppBB)
+UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(const UT_ConstByteBufPtr & pBBwmf, UT_ConstByteBufPtr & pBB)
 {
 	int status = 0;
 
@@ -211,7 +208,7 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf**
 	char *stream = NULL;
 	unsigned long stream_len = 0;
 
-	*ppBB = 0;
+	pBB.reset();
 
 	flags = 0;
 
@@ -309,17 +306,15 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf**
 
 	if (status == 0) 
 	{
-		UT_ByteBuf* pBB = new UT_ByteBuf;
-		pBB->append((const UT_Byte*)stream, (UT_uint32)stream_len);
-		*ppBB = pBB;
-		DELETEP(pBBwmf);
+		UT_ByteBufPtr bb(new UT_ByteBuf);
+		bb->append((const UT_Byte*)stream, (UT_uint32)stream_len);
+		pBB = std::move(bb);
 		wmf_free(API, stream);
 		wmf_api_destroy (API);
 		return UT_OK;
 	}
 
 ErrorHandler:
-	DELETEP(pBBwmf);
 	if(API) 
 	{
 		if(stream) 
@@ -331,11 +326,9 @@ ErrorHandler:
 	return UT_ERROR;
 }
 
-UT_Error IE_ImpGraphic_WMF::convertGraphic(UT_ByteBuf* pBBwmf,
-					   UT_ByteBuf** ppBBpng)
+UT_Error IE_ImpGraphic_WMF::convertGraphic(const UT_ConstByteBufPtr & pBBwmf,
+					   UT_ConstByteBufPtr & pBBpng)
 {
-	UT_ByteBuf * pBBpng = 0;
-
 	wmf_error_t err;
 
 	wmf_gd_t * ddata = 0;
@@ -361,12 +354,8 @@ UT_Error IE_ImpGraphic_WMF::convertGraphic(UT_ByteBuf* pBBwmf,
 		UT_DEBUGMSG(("IE_ImpGraphic_WMF::convertGraphic Bad Arg (1)\n"));
 		return UT_ERROR;
 	}
-   	if (!ppBBpng) {
-		UT_DEBUGMSG(("IE_ImpGraphic_WMF::convertGraphic Bad Arg (2)\n"));
-		return UT_ERROR;
-	}
 
-	*ppBBpng = 0;
+	pBBpng.reset();
 
 	flags = WMF_OPT_IGNORE_NONFATAL | WMF_OPT_FUNCTION;
 
@@ -454,14 +443,14 @@ UT_Error IE_ImpGraphic_WMF::convertGraphic(UT_ByteBuf* pBBwmf,
 
 	ddata->type = wmf_gd_png;
 
-	pBBpng = new UT_ByteBuf;
-	if (pBBpng == 0) {
+	UT_ByteBufPtr bb(new UT_ByteBuf);
+	if (!bb) {
 		UT_DEBUGMSG(("IE_ImpGraphic_WMF::convertGraphic Ins. Mem.\n"));
 		wmf_api_destroy(API);
 		return UT_IE_NOMEMORY;
 	}
 
-	write_info.pByteBuf = pBBpng;
+	write_info.pByteBuf = bb;
 
 	ddata->flags |= WMF_GD_OUTPUT_MEMORY | WMF_GD_OWN_BUFFER;
 
@@ -476,13 +465,11 @@ UT_Error IE_ImpGraphic_WMF::convertGraphic(UT_ByteBuf* pBBwmf,
 	err = wmf_api_destroy(API);
 
 	if (err == wmf_E_None) {
-		*ppBBpng = pBBpng;
+		pBBpng = std::move(bb);
 		return UT_OK;
 	}
 
 	UT_DEBUGMSG(("IE_ImpGraphic_WMF::convertGraphic Err. on destroy\n"));
-
-	DELETEP(pBBpng);
 
 	return UT_ERROR;
 }

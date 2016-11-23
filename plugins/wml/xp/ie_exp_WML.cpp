@@ -1106,9 +1106,9 @@ void s_WML_Listener::_handleDataItems(void)
 {
  	const char * szName;
     std::string mimeType;
-	const UT_ByteBuf * pByteBuf;
+	UT_ConstByteBufPtr pByteBuf;
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf,
                                                     &mimeType)); k++)
 	{
 		UT_sint32 loc = -1;

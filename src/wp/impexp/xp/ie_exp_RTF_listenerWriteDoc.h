@@ -95,7 +95,9 @@ protected:
 	void                _writeHyperlink(const PX_ChangeRecord_Object * pcro);
     void                _writeAnnotation(const PX_ChangeRecord_Object * pcro);
     void                _writeFieldPreamble(const PP_AttrProp * pSpanAP);
-	void				_writeEmbedData (const std::string & Name, const UT_ByteBuf * pbb, const std::string & mime_type);
+	void				_writeEmbedData(const std::string & Name,
+                                                         const UT_ConstByteBufPtr & pbb,
+                                                         const std::string & mime_type);
 	const UT_UCSChar *  _getFieldValue(void);
 	void                _writeFieldTrailer(void);
 	void                _close_cell(void);
