@@ -29,11 +29,11 @@
 #include "gr_Image.h"
 #include "fl_ContainerLayout.h"
 
-FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
+FG_GraphicPtr FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
 											   const PX_ChangeRecord_Object* pcro)
 {
 	PT_BlockOffset blockOffset = pcro->getBlockOffset();
-   
+
 	// Get the attribute list for this offset.
 	const PP_AttrProp* pSpanAP = NULL;
 	pFL->getSpanAP(blockOffset, false, pSpanAP);
@@ -41,29 +41,29 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
 	{
 		const gchar *pszDataID;
 		bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
-      
+
 		if (bFoundDataID && pszDataID)
 		{
 			std::string mimeType;
 			UT_ConstByteBufPtr bb;
 			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, bb,
-																	 &mimeType,
-                                                                     NULL);
-	   
+                                                                                 &mimeType,
+                                                                                 NULL);
+
 			// figure out what type to create
-	   
-			if (!bFoundDataID || mimeType.empty() 
-                || (mimeType != "image/svg+xml")) {
+
+			if (!bFoundDataID || mimeType.empty()
+				|| (mimeType != "image/svg+xml")) {
 				return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
 			} else {
 				return FG_GraphicVector::createFromChangeRecord(pFL, pcro);
 			}
 		}
 	}
-	return NULL;
+	return FG_GraphicPtr();
 }
 
-FG_Graphic* FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
+FG_GraphicPtr FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
 {
    
 	// Get the attribute list for this offset.
@@ -76,24 +76,24 @@ FG_Graphic* FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
       
 		if (bFoundDataID && pszDataID)
 		{
-            std::string mimeType;
+			std::string mimeType;
 			UT_ConstByteBufPtr bb;
 			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, bb,
-																	 &mimeType,
-                                                                     NULL);
+                                                                                 &mimeType,
+                                                                                 NULL);
 	   
 			// figure out what type to create
 	   
-			if (!bFoundDataID || mimeType.empty() || 
-                (mimeType != "image/svg+xml")) 
-            {
+			if (!bFoundDataID || mimeType.empty() ||
+				(mimeType != "image/svg+xml"))
+			{
 				return FG_GraphicRaster::createFromStrux(pFL);
 			} else {
 				return FG_GraphicVector::createFromStrux(pFL);
 			}
 		}
 	}
-	return NULL;
+	return FG_GraphicPtr();
 }
 
 FG_Graphic::~FG_Graphic() {

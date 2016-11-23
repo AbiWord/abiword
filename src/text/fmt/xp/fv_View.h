@@ -568,7 +568,7 @@ public:
 	void            setFrameFormat(const PP_PropertyVector & props);
 	void            setFrameFormat(const PP_PropertyVector & attribs, const PP_PropertyVector & props,
 								   fl_BlockLayout * pNewBL = NULL);
-	void            setFrameFormat(const PP_PropertyVector & props, FG_Graphic * pFG, const std::string & dataID,
+	void            setFrameFormat(const PP_PropertyVector & props, const FG_ConstGraphicPtr & pFG, const std::string & dataID,
 								   fl_BlockLayout * pNewBL = NULL);
 	bool            getFrameStrings_view(UT_sint32 x, UT_sint32 y,fv_FrameStrings & FrameStrings,
 										 fl_BlockLayout ** pCloseBL,fp_Page ** ppPage);
@@ -838,7 +838,7 @@ public:
 									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot) const;
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot) const;
-	bool				setCellFormat(const PP_PropertyVector & properties, FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
+	bool				setCellFormat(const PP_PropertyVector & properties, FormatTable applyTo, const FG_ConstGraphicPtr & pFG, UT_String & sDataID);
 	bool				getCellProperty(PT_DocPosition pos, const gchar * szPropName, gchar * &szPropValue) const;
 	bool	            setTableFormat(const PP_PropertyVector & properties);
 	bool	            setTableFormat(PT_DocPosition pos,const PP_PropertyVector & properties);

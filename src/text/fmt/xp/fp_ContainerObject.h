@@ -56,6 +56,7 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 #include "gr_Image.h"
+#include "fg_Graphic.h"
 #include "pp_PropertyMap.h"
 
 class fp_ContainerObject;
@@ -95,7 +96,6 @@ struct _fp_Allocation
 };
 
 class GR_Graphics;
-class FG_Graphic;
 class fl_SectionLayout;
 class fl_DocSectionLayout;
 class FL_DocLayout;
@@ -147,7 +147,7 @@ public:
 	FG_Fill_Type   getFillType(void) const;
 	const FL_DocLayout * getDocLayout(void) const;
 	const UT_RGBColor *  getColor(void) const;
-	void           setImagePointer(FG_Graphic ** pDocGraphic, GR_Image ** pDocImage);
+	void           setImagePointer(const FG_SharedGraphicPtr & pDocGraphic, GR_Image ** pDocImage);
 	void           setIgnoreLineLevel(bool b);
 private:
     void        	     _regenerateImage(GR_Graphics * pG);
@@ -166,7 +166,7 @@ private:
 	UT_sint32            m_iWidth;
 	UT_sint32            m_iHeight;
 	GR_Image **          m_pDocImage;
-	FG_Graphic **        m_pDocGraphic;
+	FG_SharedGraphicPtr  m_pDocGraphic;
 	bool                 m_bIgnoreLineLevel;
 };
 

@@ -36,10 +36,10 @@
 
 #include "fg_GraphicVector.h"
 
-FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_ContainerLayout* pFL,
+FG_GraphicPtr FG_GraphicVector::createFromChangeRecord(const fl_ContainerLayout* pFL,
 													 const PX_ChangeRecord_Object* pcro)
 {
-	FG_GraphicVector* pFG = new FG_GraphicVector();
+	FG_GraphicVectorPtr pFG(new FG_GraphicVector);
 
 	bool bFoundDataItem = false;
 	const PD_Document* pDoc = pFL->getDocument();
@@ -60,16 +60,17 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_ContainerLayout* p
 		}
 	}
 
-	if (!bFoundDataItem)
-		DELETEP(pFG);
+	if (!bFoundDataItem) {
+		pFG.reset();
+	}
 
 	return pFG;
 }
 
 
-FG_Graphic* FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
+FG_GraphicPtr FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 {
-	FG_GraphicVector* pFG = new FG_GraphicVector();
+	FG_GraphicVectorPtr pFG(new FG_GraphicVector);
 
 	bool bFoundDataItem = false;
 	const PD_Document* pDoc = pFL->getDocument();
@@ -91,8 +92,9 @@ FG_Graphic* FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 		pFG->m_iHeight = UT_convertToPoints(pFG->getHeightProp());
 	}
 
-	if (!bFoundDataItem)
-		DELETEP(pFG);
+	if (!bFoundDataItem) {
+		pFG.reset();
+	}
 
 	return pFG;
 }
@@ -108,9 +110,9 @@ FG_GraphicVector::~FG_GraphicVector()
 {
 }
 
-FG_Graphic * FG_GraphicVector::clone(void) const
+FG_ConstGraphicPtr FG_GraphicVector::clone(void) const
 {
-	FG_GraphicVector * pClone = new FG_GraphicVector();
+	FG_GraphicVectorPtr pClone(new FG_GraphicVector);
 	pClone->m_pbbSVG = m_pbbSVG;
 	pClone->m_pSpanAP = m_pSpanAP;
 	pClone->m_pszDataID = m_pszDataID;
@@ -118,7 +120,7 @@ FG_Graphic * FG_GraphicVector::clone(void) const
 	pClone->m_iHeight = m_iHeight;
 	pClone->m_iMaxW = m_iMaxW;
 	pClone->m_iMaxH = m_iMaxH;
-	return static_cast<FG_Graphic *>(pClone);
+	return std::move(pClone);
 }
 
 FGType FG_GraphicVector::getType(void) const

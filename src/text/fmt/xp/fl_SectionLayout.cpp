@@ -77,8 +77,7 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh, PT
 	  m_pLayout(pLayout),
 	  m_bIsCollapsed(false), // collapsed layouts cannot contain point, and this value never changes
 	  m_bNeedsReformat(true),
-	  m_bNeedsRedraw(true),	
-	  m_pGraphicImage(NULL),
+	  m_bNeedsRedraw(true),
 	  m_pImageImage(NULL),
 	  m_iGraphicTick(0),
 	  m_iDocImageWidth(0),
@@ -91,7 +90,6 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh, PT
 
 fl_SectionLayout::~fl_SectionLayout()
 {
-	DELETEP(m_pGraphicImage);
 	DELETEP(m_pImageImage);
 }
 
@@ -2372,7 +2370,6 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	const gchar * pszDataID = NULL;
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
-	DELETEP(m_pGraphicImage);
 	DELETEP(m_pImageImage);
 	if(pszDataID && *pszDataID)
 	{
@@ -2810,7 +2807,7 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 			pImage->scaleImageTo(getDocLayout()->getGraphics(),rec);
 			m_pImageImage = pImage;
 		}
-		pPage->getFillType().setImagePointer(&m_pGraphicImage,&m_pImageImage);
+		pPage->getFillType().setImagePointer(m_pGraphicImage, &m_pImageImage);
 	}
 	else if(m_sPaperColor.size() > 0)
 	{

@@ -69,8 +69,7 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	  m_iOldPos(0),
 	  m_sImagePath(""),
 	  m_iGraphicType(0),
-	  m_pImage(NULL),
-	  m_pGraphic(NULL)
+	  m_pImage(NULL)
 {
 	//
 	// These are hardwired into the GUI.
@@ -90,7 +89,6 @@ AP_Dialog_FormatTable::~AP_Dialog_FormatTable(void)
 {
 	stopUpdater();
 	DELETEP(m_pFormatTablePreview);
-	DELETEP(m_pGraphic);
 	DELETEP(m_pImage);
 }
 
@@ -237,7 +235,6 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 		return;
 	}
 
-	DELETEP(m_pGraphic);
 	DELETEP(m_pImage);
 	m_pGraphic = pFG->clone();
 	GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
@@ -413,36 +410,35 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 				if(pCell->getContainerType() != FL_CONTAINER_CELL)
 				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-					DELETEP(m_pGraphic);
+					m_pGraphic.reset();
 					DELETEP(m_pImage);
 					m_sImagePath.clear();
 				}
 				else
 				{
-					FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pCell);
+					auto pFG = FG_GraphicRaster::createFromStrux(pCell);
 					if(pFG)
 					{
-						DELETEP(m_pGraphic);
+						m_pGraphic = std::move(pFG);
 						DELETEP(m_pImage);
 						m_sImagePath.clear();
-						m_pGraphic = pFG;
-						m_sImagePath = pFG->getDataId();
+						m_sImagePath = m_pGraphic->getDataId();
 						GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
-						const UT_ConstByteBufPtr & pBB = pFG->getBuffer();
+						const UT_ConstByteBufPtr & pBB = m_pGraphic->getBuffer();
 						if(m_pGraphic->getType() == FGT_Raster)
 						{
 							m_pImage = static_cast<GR_Image *>(
 								pG->createNewImage( m_sImagePath.c_str(),
-													pBB, pFG->getMimeType(),
-													pFG->getWidth(),
-													pFG->getHeight(),
+													pBB, m_pGraphic->getMimeType(),
+													m_pGraphic->getWidth(),
+													m_pGraphic->getHeight(),
 													GR_Image::GRT_Raster));
 						}
 						else
 						{
 							m_pImage = static_cast<GR_Image *>(
 								pG->createNewImage( m_sImagePath.c_str(),
-													pBB, pFG->getMimeType(),
+													pBB, m_pGraphic->getMimeType(),
 													m_pFormatTablePreview->getWindowWidth()-2,
 													m_pFormatTablePreview->getWindowHeight()-2,
 													GR_Image::GRT_Vector));
@@ -452,14 +448,14 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 			}
 			else
 			{
-				DELETEP(m_pGraphic);
+				m_pGraphic.reset();
 				DELETEP(m_pImage);
 				m_sImagePath.clear();
 			}
 		}
 		else
 		{
-			DELETEP(m_pGraphic);
+			m_pGraphic.reset();
 			DELETEP(m_pImage);
 			m_sImagePath.clear();
 		}
@@ -569,7 +565,7 @@ void AP_Dialog_FormatTable::setBorderColor(const UT_RGBColor & clr)
 
 void AP_Dialog_FormatTable::clearImage(void)
 {
-	DELETEP(m_pGraphic);
+	m_pGraphic.reset();
 	DELETEP(m_pImage);
 	m_sImagePath.clear();
 	// draw the preview with the changed properties
@@ -706,7 +702,7 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 	if(m_pFormatTable->getImage())
 	{
 		GR_Image * pImg = m_pFormatTable->getImage();
-		FG_Graphic * pFG = m_pFormatTable->getGraphic();
+		auto & pFG = m_pFormatTable->getGraphic();
 		const char * szName = pFG->getDataId();
 		const UT_ConstByteBufPtr & pBB = pFG->getBuffer();
 		if(pFG->getType() == FGT_Raster) {

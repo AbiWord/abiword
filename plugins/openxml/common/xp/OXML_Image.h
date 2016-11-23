@@ -36,7 +36,6 @@
 
 
 class IE_Exp_OpenXML;
-class FG_Graphic;
 
 class OXML_Image
     : public OXML_ObjectWithAttrProp

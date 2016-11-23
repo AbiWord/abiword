@@ -63,6 +63,7 @@ typedef enum _HdrFtrType
 #include "pl_Listener.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h" // for UT_RGBColor
+#include "fg_Graphic.h"
 #include "fb_ColumnBreaker.h"
 
 class fp_Page;
@@ -81,7 +82,6 @@ class fp_Run;
 class fp_Line;
 class fp_Container;
 class fp_HdrFtrContainer;
-class FG_Graphic;
 class PD_Document;
 class PP_AttrProp;
 class pf_Frag_Strux;
@@ -201,7 +201,7 @@ protected:
 	bool                m_bIsCollapsed;
 	bool                m_bNeedsReformat;
 	bool                m_bNeedsRedraw;
-	FG_Graphic *        m_pGraphicImage;
+	FG_SharedGraphicPtr m_pGraphicImage;
 	GR_Image *          m_pImageImage;
 	UT_uint32           m_iGraphicTick;
 	UT_sint32           m_iDocImageWidth;

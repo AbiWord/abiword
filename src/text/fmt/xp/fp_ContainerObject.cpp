@@ -672,7 +672,7 @@ void fg_FillType::setColor(const char * pszColor)
  * enables many pages to share the same image without having to generate
  * a new image for every page.
  */
-void fg_FillType::setImagePointer(FG_Graphic ** pDocGraphic,GR_Image ** pDocImage)
+void fg_FillType::setImagePointer(const FG_SharedGraphicPtr & pDocGraphic, GR_Image ** pDocImage)
 {
 	if(pDocImage != NULL)
 	{
@@ -851,7 +851,7 @@ void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 i
 	if(m_pDocImage && *m_pDocImage && bDoImage)
 	{
 		DELETEP(*m_pDocImage);
-		*m_pDocImage = (*m_pDocGraphic)->regenerateImage(pG);
+		*m_pDocImage = m_pDocGraphic->regenerateImage(pG);
 		UT_Rect rec(0,0,m_iWidth,m_iHeight);
 		(*m_pDocImage)->scaleImageTo(pG,rec);
 	}
@@ -879,7 +879,7 @@ void fg_FillType::setWidth(GR_Graphics * pG, UT_sint32 iWidth)
 	if(m_pDocImage && *m_pDocImage)
 	{
 		DELETEP(*m_pDocImage);
-		*m_pDocImage = (*m_pDocGraphic)->regenerateImage(pG);
+		*m_pDocImage = m_pDocGraphic->regenerateImage(pG);
 		UT_Rect rec(0,0,m_iWidth,m_iHeight);
 		(*m_pDocImage)->scaleImageTo(pG,rec);
 	}
@@ -906,7 +906,7 @@ void fg_FillType::setHeight(GR_Graphics * pG, UT_sint32 iHeight)
 	if(m_pDocImage && *m_pDocImage)
 	{
 		DELETEP(*m_pDocImage);
-		*m_pDocImage = (*m_pDocGraphic)->regenerateImage(pG);
+		*m_pDocImage = m_pDocGraphic->regenerateImage(pG);
 		UT_Rect rec(0,0,m_iWidth,m_iHeight);
 		(*m_pDocImage)->scaleImageTo(pG,rec);
 	}

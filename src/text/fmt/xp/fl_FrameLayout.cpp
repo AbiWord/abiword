@@ -211,7 +211,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 			}
 			m_pImageImage = pImage;
 		}
-		pFrame->getFillType().setImagePointer(&m_pGraphicImage,&m_pImageImage);
+		pFrame->getFillType().setImagePointer(m_pGraphicImage, &m_pImageImage);
 	}
 	if(m_iFrameWrapMode >= FL_FRAME_WRAPPED_TO_RIGHT)
 	{ 
@@ -569,7 +569,6 @@ void fl_FrameLayout::_createFrameContainer(void)
 	
 	const gchar * pszDataID = NULL;
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
-	DELETEP(m_pGraphicImage);
 	DELETEP(m_pImageImage);
 	//
 	// Set the image size from the full width

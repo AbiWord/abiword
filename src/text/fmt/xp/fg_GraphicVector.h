@@ -31,16 +31,16 @@ class UT_ByteBuf;
 class ABI_EXPORT FG_GraphicVector : public FG_Graphic
 {
 public:
-	static FG_Graphic*	createFromChangeRecord(const fl_ContainerLayout *pFL,
+	static FG_GraphicPtr createFromChangeRecord(const fl_ContainerLayout *pFL,
 											   const PX_ChangeRecord_Object* pcro);
-	static FG_Graphic*	createFromStrux(const fl_ContainerLayout *pFL);
+	static FG_GraphicPtr createFromStrux(const fl_ContainerLayout *pFL);
 
 	FG_GraphicVector();
 	virtual ~FG_GraphicVector();
 
 	virtual FGType		getType(void) const;
     virtual const std::string & getMimeType(void) const;
-	virtual FG_Graphic * clone(void) const;
+	virtual FG_ConstGraphicPtr clone(void) const;
 	virtual double		getWidth(void) const;
 	virtual double		getHeight(void) const;
 	virtual const char * getDataId(void) const { return m_pszDataID;}

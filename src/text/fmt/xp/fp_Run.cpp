@@ -3503,10 +3503,10 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
 						 UT_uint32 iOffsetFirst,
-						 UT_uint32 iLen, FG_Graphic * pFG,
+						 UT_uint32 iLen, FG_GraphicPtr && pFG,
 						 pf_Frag_Object* oh) :
 	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_IMAGE),
-	m_pFGraphic(pFG),
+	m_pFGraphic(std::move(pFG)),
 	m_iPointHeight(0),
 	m_pSpanAP(NULL),
 	m_bImageForPrinter (false),
@@ -3516,9 +3516,9 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
 	UT_ASSERT(pImage);
 #endif
 
-	m_pImage = pFG->generateImage(getGraphics(), NULL, 0, 0);
-	m_sCachedWidthProp = pFG->getWidthProp();
-	m_sCachedHeightProp = pFG->getHeightProp();
+	m_pImage = m_pFGraphic->generateImage(getGraphics(), NULL, 0, 0);
+	m_sCachedWidthProp = m_pFGraphic->getWidthProp();
+	m_sCachedHeightProp = m_pFGraphic->getHeightProp();
 	m_iGraphicTick = pBL->getDocLayout()->getGraphicTick();
 	lookupProperties();
 }
@@ -3526,7 +3526,6 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
 fp_ImageRun::~fp_ImageRun()
 {
 	DELETEP(m_pImage);
-	DELETEP(m_pFGraphic);
 }
 
 void fp_ImageRun::regenerateImage(GR_Graphics * pG)

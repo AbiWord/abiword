@@ -34,24 +34,24 @@ public:
         PNG_FORMAT = 0,
         JPEG_FORMAT
     };
-	static FG_Graphic*	createFromChangeRecord(const fl_ContainerLayout *pFL,
+	static FG_GraphicPtr	createFromChangeRecord(const fl_ContainerLayout *pFL,
 											   const PX_ChangeRecord_Object* pcro);
-	static FG_Graphic*	createFromStrux(const fl_ContainerLayout *pFL);
+	static FG_GraphicPtr createFromStrux(const fl_ContainerLayout *pFL);
 
 	FG_GraphicRaster();
 	virtual ~FG_GraphicRaster();
 
 	virtual FGType		getType(void) const;
     virtual const std::string & getMimeType() const;
-	virtual FG_Graphic * clone(void) const;
+	virtual FG_ConstGraphicPtr clone(void) const;
 	virtual double		getWidth(void) const;
 	virtual double		getHeight(void) const;
 	virtual const char * getDataId(void) const;
 	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) const;
 	virtual GR_Image*	regenerateImage(GR_Graphics* pG);
 	virtual GR_Image*	generateImage(GR_Graphics* pG,
-									  const PP_AttrProp * pSpanAP,
-									  UT_sint32 maxW, UT_sint32 maxH);
+					      const PP_AttrProp * pSpanAP,
+					      UT_sint32 maxW, UT_sint32 maxH);
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 										   UT_uint32 iPos, const char* szName) const;

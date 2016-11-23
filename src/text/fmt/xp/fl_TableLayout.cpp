@@ -2012,7 +2012,6 @@ fl_CellLayout::~fl_CellLayout()
 		pTC = pNext;
 	}
 	DELETEP(m_pImageImage);
-	DELETEP(m_pGraphicImage);
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 }
@@ -2059,7 +2058,7 @@ void fl_CellLayout::createCellContainer(void)
 
 	const gchar * pszDataID = NULL;
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
-	DELETEP(m_pGraphicImage);
+	m_pGraphicImage.reset();
 	DELETEP(m_pImageImage);
 	if(pszDataID && *pszDataID)
 	{
@@ -2135,7 +2134,7 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 			pImage->scaleImageTo(pG,rec);
 			m_pImageImage = pImage;
 		}
-		pCell->getFillType().setImagePointer(&m_pGraphicImage,&m_pImageImage);
+		pCell->getFillType().setImagePointer(m_pGraphicImage, &m_pImageImage);
 	}
 }
 

@@ -863,7 +863,7 @@ public:
 class ABI_EXPORT fp_ImageRun : public fp_Run
 {
 public:
-	fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pGraphic,  pf_Frag_Object* oh);
+	fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_GraphicPtr && pGraphic,  pf_Frag_Object* oh);
 	virtual ~fp_ImageRun();
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
@@ -887,7 +887,7 @@ protected:
 	virtual bool			_letPointPass(void) const;
 
 private:
-	FG_Graphic *             m_pFGraphic;
+	FG_GraphicPtr           m_pFGraphic;
 	GR_Image*				m_pImage;
 	UT_sint32               m_iImageWidth;
 	UT_sint32               m_iImageHeight;

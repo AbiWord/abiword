@@ -44,6 +44,13 @@ enum FGType {
 	FGT_Vector
 };
 
+class FG_Graphic;
+
+typedef std::unique_ptr<FG_Graphic> FG_GraphicPtr;
+typedef std::unique_ptr<const FG_Graphic> FG_ConstGraphicPtr;
+// Use this one is only to be used as needed: sparsely.
+typedef std::shared_ptr<FG_Graphic> FG_SharedGraphicPtr;
+
 //  FG_Graphic is used throughout the fmt code where we want the same code
 //  to handle various types of graphics interchangably.  FG_Graphic objects
 //  aren't persistent in the formatting, but are constructed when needed
@@ -52,9 +59,10 @@ enum FGType {
 class ABI_EXPORT FG_Graphic
 {
 public:
-	static FG_Graphic*	createFromChangeRecord(const fl_ContainerLayout *pFL,
+	static FG_GraphicPtr createFromChangeRecord(const fl_ContainerLayout *pFL,
 											   const PX_ChangeRecord_Object* pcro);
-	static FG_Graphic*	createFromStrux(const fl_ContainerLayout *pFL);
+        // layout objects need a mutable FG_Graphic
+	static FG_GraphicPtr createFromStrux(const fl_ContainerLayout *pFL);
 
 	virtual ~FG_Graphic();
 
@@ -73,11 +81,12 @@ public:
 	virtual const char * getWidthProp(void) = 0;
 	virtual const char * getHeightProp(void) = 0;
 	virtual GR_Image *     regenerateImage(GR_Graphics * pG) = 0;
-	virtual FG_Graphic *   clone(void) const = 0;
+	virtual FG_ConstGraphicPtr   clone(void) const = 0;
     // return the buffer behind the image
 	virtual const UT_ConstByteBufPtr & getBuffer() const = 0;
 	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) const = 0;
-	//  generate an image for display in the specified graphics object
+	// Generate an image for display in the specified graphics object
+        // Needs to be mutable.
 	virtual GR_Image* generateImage(GR_Graphics* pG,
 								   const PP_AttrProp * pSpanAP,
 								   UT_sint32 maxW, UT_sint32 maxH) = 0;
@@ -93,8 +102,5 @@ public:
 									  PTStruxType iStruxType,
 									  const char* szName) const = 0;
 };
-
-typedef std::unique_ptr<FG_Graphic> FG_GraphicPtr;
-typedef std::unique_ptr<const FG_Graphic> FG_ConstGraphicPtr;
 
 #endif /* FG_GRAPHIC_H */

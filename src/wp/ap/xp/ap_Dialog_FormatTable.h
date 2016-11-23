@@ -121,7 +121,7 @@ public:
 	bool								getRightToggled() const;
 	bool								getLeftToggled() const;
 	GR_Image *                          getImage(void) const { return m_pImage;}
-	FG_Graphic *                        getGraphic(void) const { return m_pGraphic;}
+	const FG_ConstGraphicPtr &          getGraphic(void) const { return m_pGraphic;}
 
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
@@ -158,7 +158,7 @@ private:
 	UT_String                           m_sImagePath;
 	IEGraphicFileType                   m_iGraphicType;
 	GR_Image *                          m_pImage;
-	FG_Graphic *                        m_pGraphic;
+	FG_ConstGraphicPtr                  m_pGraphic;
 };
 
 #endif /* AP_DIALOG_FORMATTABLE_H */

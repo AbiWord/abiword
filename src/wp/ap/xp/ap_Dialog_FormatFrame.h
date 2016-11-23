@@ -114,7 +114,7 @@ public:
 	PP_PropertyVector &					getPropVector() { return m_vecProps; }
 
 	GR_Image *                          getImage(void) { return m_pImage;}
-	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
+	const FG_ConstGraphicPtr &          getGraphic(void) const { return m_pGraphic;}
 
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
@@ -194,7 +194,7 @@ protected:
 private:
     GR_Image * _makeImageForRaster(const std::string & name,
                                    GR_Graphics * pGraphics,
-                                   const FG_Graphic * pG);
+                                   const FG_ConstGraphicPtr & pG);
 	bool					_getToggleButtonStatus(const char * lineStyle);
 
 	bool					m_bSettingsChanged;
@@ -233,7 +233,7 @@ private:
     std::string                         m_sImagePath;
 	IEGraphicFileType                   m_iGraphicType;
 	GR_Image *                          m_pImage;
-	FG_Graphic *                        m_pGraphic;
+	FG_ConstGraphicPtr                  m_pGraphic;
 
 	bool					m_bSensitive;
     bool					m_bSetWrapping;

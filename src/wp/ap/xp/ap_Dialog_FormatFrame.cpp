@@ -55,9 +55,9 @@
 #include "gr_Painter.h"
 
 
-GR_Image * AP_Dialog_FormatFrame::_makeImageForRaster(const std::string & name, 
-                              GR_Graphics * pGraphics,
-                              const FG_Graphic * pG)
+GR_Image * AP_Dialog_FormatFrame::_makeImageForRaster(const std::string & name,
+													  GR_Graphics * pGraphics,
+													  const FG_ConstGraphicPtr& pG)
 {
     GR_Image* pImage;
     const UT_ConstByteBufPtr & pBB = pG->getBuffer();
@@ -119,7 +119,6 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
 	  m_sImagePath(""),
 	  m_iGraphicType(0),
 	  m_pImage(NULL),
-	  m_pGraphic(NULL),
 	  m_bSensitive(false),
 	  m_bSetWrapping(false),
 	  m_bLineToggled(false),
@@ -131,7 +130,6 @@ AP_Dialog_FormatFrame::~AP_Dialog_FormatFrame(void)
 {
 	stopUpdater();
 	DELETEP(m_pFormatFramePreview);
-	DELETEP(m_pGraphic);
 	DELETEP(m_pImage);
 }
 
@@ -278,7 +276,6 @@ void AP_Dialog_FormatFrame::askForGraphicPathName(void)
 		return;
 	}
 
-	DELETEP(m_pGraphic);
 	DELETEP(m_pImage);
 	m_pGraphic = pFG->clone();
 	GR_Graphics * pG = m_pFormatFramePreview->getGraphics();
@@ -498,20 +495,19 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 			if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
 			{
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-				DELETEP(m_pGraphic);
+				m_pGraphic.reset();
 				DELETEP(m_pImage);
 				m_sImagePath.clear();
 			}
 			else
 			{
-				FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pFrame);
+				auto pFG = FG_GraphicRaster::createFromStrux(pFrame);
 				if(pFG)
 				{
-					DELETEP(m_pGraphic);
+					m_pGraphic = std::move(pFG);
 					DELETEP(m_pImage);
 					m_sImagePath.clear();
-					m_pGraphic = pFG;
-					m_sImagePath = pFG->getDataId();
+					m_sImagePath = m_pGraphic->getDataId();
 
 					GR_Graphics * pG = m_pFormatFramePreview->getGraphics();
                     m_pImage = _makeImageForRaster(m_sImagePath, pG, m_pGraphic);
@@ -520,14 +516,14 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 		}
 		else
 		{
-			DELETEP(m_pGraphic);
+			m_pGraphic.reset();
 			DELETEP(m_pImage);
 			m_sImagePath.clear();
 		}
 	}
 	else
 	{
-		DELETEP(m_pGraphic);
+		m_pGraphic.reset();
 		DELETEP(m_pImage);
 		m_sImagePath.clear();
 	}
@@ -1019,7 +1015,7 @@ void AP_Dialog_FormatFrame::setBorderColorBottom (const UT_RGBColor & clr)
 
 void AP_Dialog_FormatFrame::clearImage(void)
 {
-	DELETEP(m_pGraphic);
+	m_pGraphic.reset();
 	DELETEP(m_pImage);
 	m_sImagePath.clear();
 	// draw the preview with the changed properties
@@ -1112,7 +1108,7 @@ void AP_FormatFrame_preview::draw(const UT_Rect *clip)
 	if(m_pFormatFrame->getImage())
 	{
 		GR_Image * pImg = m_pFormatFrame->getImage();
-		FG_Graphic * pFG = m_pFormatFrame->getGraphic();
+		auto & pFG = m_pFormatFrame->getGraphic();
 		const char * szName = pFG->getDataId();
 		const UT_ConstByteBufPtr & pBB = pFG->getBuffer();
 		if(pFG->getType() == FGT_Raster)

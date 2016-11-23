@@ -482,7 +482,7 @@ protected:
 	bool					_doInsertTOCListLabelRun(PT_BlockOffset blockOffset);
 	bool					_doInsertTOCHeadingRun(PT_BlockOffset blockOffset);
 	bool                    _doInsertTOCListTabRun(PT_BlockOffset blockOffset);
-	bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG, pf_Frag_Object* oh);
+	bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_GraphicPtr && pFG, pf_Frag_Object* oh);
 	bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	bool					_doInsertFieldTOCRun(PT_BlockOffset blockOffset);
 	bool                    _doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, UT_UCS4Char iM);

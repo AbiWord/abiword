@@ -5936,7 +5936,7 @@ bool	fl_BlockLayout::_doInsertTOCListTabRun(PT_BlockOffset blockOffset)
 	return true;
 }
 
-bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG, pf_Frag_Object* oh)
+bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_GraphicPtr && pFG, pf_Frag_Object* oh)
 {
 	if(isContainedByTOC())
 	{
@@ -5945,7 +5945,7 @@ bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* p
 		return _doInsertRun(pDumRun);
 	}
 
-	fp_ImageRun* pNewRun = new fp_ImageRun(this, blockOffset, 1, pFG,oh);
+	fp_ImageRun* pNewRun = new fp_ImageRun(this, blockOffset, 1, std::move(pFG), oh);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
@@ -8953,12 +8953,13 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 	{
 	case PTO_Image:
 	{
-		FG_Graphic* pFG = FG_Graphic::createFromChangeRecord(this, pcro);
-		if (pFG == NULL)
+		auto pFG = FG_Graphic::createFromChangeRecord(this, pcro);
+		if (!pFG) {
 			return false;
+		}
 
 		xxx_UT_DEBUGMSG(("Populate:InsertObject:Image:\n"));
-		_doInsertImageRun(blockOffset, pFG,pcro->getObjectHandle());
+		_doInsertImageRun(blockOffset, std::move(pFG), pcro->getObjectHandle());
 		return true;
 	}
 
@@ -9024,11 +9025,12 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		UT_DEBUGMSG(("Edit:InsertObject:Image:\n"));
 		blockOffset = pcro->getBlockOffset();
 
-		FG_Graphic* pFG = FG_Graphic::createFromChangeRecord(this, pcro);
-		if (pFG == NULL)
+		auto pFG = FG_Graphic::createFromChangeRecord(this, pcro);
+		if (!pFG) {
 			return false;
+		}
 
-		_doInsertImageRun(blockOffset, pFG,pcro->getObjectHandle());
+		_doInsertImageRun(blockOffset, std::move(pFG), pcro->getObjectHandle());
 		break;
 	}
 

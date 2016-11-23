@@ -36,10 +36,10 @@
 #include "fg_GraphicRaster.h"
 
 
-FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_ContainerLayout* pFL,
+FG_GraphicPtr FG_GraphicRaster::createFromChangeRecord(const fl_ContainerLayout* pFL,
 													 const PX_ChangeRecord_Object* pcro)
 {
-	FG_GraphicRaster* pFG = new FG_GraphicRaster();
+	FG_GraphicRasterPtr pFG(new FG_GraphicRaster);
 
 	bool bFoundDataItem = false;
 	const PD_Document* pDoc = pFL->getDocument();
@@ -71,16 +71,17 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_ContainerLayout* p
 		}
 	}
 
-	if (!bFoundDataItem)
-		DELETEP(pFG);
+	if (!bFoundDataItem) {
+		pFG.reset();
+	}
 
 	return pFG;
 }
 
 
-FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
+FG_GraphicPtr FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
 {
-	FG_GraphicRaster* pFG = new FG_GraphicRaster();
+	FG_GraphicRasterPtr pFG(new FG_GraphicRaster());
 
 	bool bFoundDataItem = false;
 	const PD_Document* pDoc = pFL->getDocument();
@@ -113,8 +114,9 @@ FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
 		pFG->m_iHeight = UT_convertToPoints(pFG->getHeightProp());
 	}
 
-	if (!bFoundDataItem)
-		DELETEP(pFG);
+	if (!bFoundDataItem) {
+		pFG.reset();
+	}
 
 	return pFG;
 }
@@ -139,18 +141,18 @@ FG_GraphicRaster::~FG_GraphicRaster()
 	
 }
 
-FG_Graphic * FG_GraphicRaster::clone(void) const
+FG_ConstGraphicPtr FG_GraphicRaster::clone(void) const
 {
-	FG_GraphicRaster * pClone = new FG_GraphicRaster();
+	FG_GraphicRasterPtr pClone(new FG_GraphicRaster);
     pClone->m_format = m_format;
 	pClone->m_pbb = m_pbb;
 	pClone->m_pSpanAP = m_pSpanAP;
 	pClone->m_pszDataID = m_pszDataID;
-	pClone->m_iWidth = m_iWidth; 
+	pClone->m_iWidth = m_iWidth;
 	pClone->m_iHeight = m_iHeight;
 	pClone->m_iMaxW = m_iMaxW;
 	pClone->m_iMaxH = m_iMaxH;
-	return pClone;
+	return std::move(pClone);
 }
 
 FGType FG_GraphicRaster::getType(void) const
