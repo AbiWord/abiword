@@ -1342,10 +1342,10 @@ void ODi_TextContent_ListenerState::charData (
     {
 #ifdef DEBUG
         {
-            UT_DEBUGMSG(("charData() cw:%d length:%d\n", m_bContentWritten, length ));
+            xxx_UT_DEBUGMSG(("charData() cw:%d length:%d\n", m_bContentWritten, length ));
             UT_UCS4String t;
             t += UT_UCS4String (pBuffer, length, false);
-            UT_DEBUGMSG(("charData() pBuffer:%s\n", t.utf8_str() ));
+            xxx_UT_DEBUGMSG(("charData() pBuffer:%s\n", t.utf8_str() ));
         }
 #endif
 
@@ -1357,7 +1357,7 @@ void ODi_TextContent_ListenerState::charData (
         }
         m_charData += s;
 
-        UT_DEBUGMSG(("charData() content written s:%s\n", s.utf8_str() ));
+        xxx_UT_DEBUGMSG(("charData() content written s:%s\n", s.utf8_str() ));
     } 
     else if (m_bPendingAnnotationAuthor) 
     {

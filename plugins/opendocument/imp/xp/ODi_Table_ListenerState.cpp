@@ -399,7 +399,7 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
     } else {    
 
         const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
-        UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() xmlid:%s\n",
+        xxx_UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() xmlid:%s\n",
                      xmlid ? xmlid : "_undefined_" ));
         
         std::string props;
@@ -558,11 +558,11 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
             cell_props.push_back(xmlid);
             props += "; xmlid:";
             props += xmlid;
-            UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() adding xmlid:%s\n", xmlid ));
+            xxx_UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() adding xmlid:%s\n", xmlid ));
         }
         cell_props.push_back("props");
         cell_props.push_back(props);
-        UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() props:%s\n", props.c_str() ));
+        xxx_UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() props:%s\n", props.c_str() ));
         if(dataID.length() > 0)
         {
             cell_props.push_back("strux-image-dataid");
