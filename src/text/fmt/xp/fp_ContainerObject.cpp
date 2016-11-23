@@ -580,8 +580,6 @@ fg_FillType::fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, 
 	m_pContainer(pContainer),
 	m_pDocLayout(NULL),
 	m_FillType(iType),
-	m_pImage(NULL),
-	m_pGraphic(NULL),
 	m_iGraphicTick(0),
 	m_bTransparentForPrint(false),
 	m_color(255,255,255),
@@ -591,15 +589,12 @@ fg_FillType::fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, 
 	m_iWidth(0),
 	m_iHeight(0),
 	m_pDocImage(NULL),
-	m_pDocGraphic(NULL),
 	m_bIgnoreLineLevel(false)
 {
 }
 
 fg_FillType::~fg_FillType(void)
 {
-	DELETEP(m_pImage);
-	DELETEP(m_pGraphic);
 }
 
 /*!
@@ -627,8 +622,6 @@ void fg_FillType::setColor(UT_RGBColor & color)
 	m_color = color;
 	m_bColorSet = true;
 	m_bTransparentForPrint = false;
-	DELETEP(m_pImage);
-	DELETEP(m_pGraphic);
 }
 
 /*!
@@ -651,8 +644,6 @@ void fg_FillType::setColor(const char * pszColor)
 		{
 			m_FillType = FG_FILL_COLOR;
 			m_bColorSet = true;
-			DELETEP(m_pImage);
-			DELETEP(m_pGraphic);
 		}
 		m_color.setColor(pszColor);
 		m_bTransparentForPrint = false;
@@ -674,11 +665,6 @@ void fg_FillType::setColor(const char * pszColor)
  */
 void fg_FillType::setImagePointer(const FG_SharedGraphicPtr & pDocGraphic, GR_Image ** pDocImage)
 {
-	if(pDocImage != NULL)
-	{
-		DELETEP(m_pImage);
-		DELETEP(m_pGraphic);
-	}
 	m_pDocImage = pDocImage;
 	m_pDocGraphic = pDocGraphic;
 	m_FillType = FG_FILL_IMAGE;
@@ -692,8 +678,6 @@ void fg_FillType::setTransColor(UT_RGBColor & color)
 	UT_DEBUGMSG(("Fill type set to color class \n"));
 	m_FillType = FG_FILL_COLOR;
 	m_TransColor = color;
-	DELETEP(m_pImage);
-	DELETEP(m_pGraphic);
 	m_bTransColorSet = true;
 }
 
@@ -731,8 +715,6 @@ void fg_FillType::setTransColor(const char * pszColor)
 		}
 		m_bTransparentForPrint = false;
 	}
-	DELETEP(m_pImage);
-	DELETEP(m_pGraphic);
 }
 
 /*!
@@ -741,24 +723,7 @@ void fg_FillType::setTransColor(const char * pszColor)
 void fg_FillType::setTransparent(void)
 {
 	m_FillType = FG_FILL_TRANSPARENT;
-	DELETEP(m_pImage);
-	DELETEP(m_pGraphic);	
 	m_bTransparentForPrint = false;
-}
-
-/*!
- * set this class to have an image background for fills.
- */
-void fg_FillType::setImage(FG_Graphic * pGraphic, GR_Image * pImage, GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 iHeight)
-{
-	m_FillType = FG_FILL_IMAGE;
-	DELETEP(m_pImage);
-	DELETEP(m_pGraphic);	
-	m_pImage = pImage;
-	m_pGraphic = pGraphic;
-	m_bTransparentForPrint = false;
-	setWidthHeight(pG,iWidth,iHeight);
-	m_pDocImage = NULL;
 }
 
 /*!
@@ -797,18 +762,6 @@ FG_Fill_Type fg_FillType::getFillType(void) const
 	return m_FillType;
 }
 
-void fg_FillType::_regenerateImage(GR_Graphics * pG)
-{
-	UT_return_if_fail(m_pGraphic);
-	UT_return_if_fail(m_pDocLayout);
-	DELETEP(m_pImage);
-	m_pImage = m_pGraphic->regenerateImage(pG);
-	setWidthHeight(pG,m_iWidth,m_iHeight);
-	UT_Rect rec(0,0,m_iWidth,m_iHeight);
-	m_pImage->scaleImageTo(pG,rec);
-	m_iGraphicTick = m_pDocLayout->getGraphicTick();
-}
-
 /*!
  * Return the most appropriate color.
  */
@@ -841,13 +794,6 @@ void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 i
 	{
 		return;
 	}
-	if(m_pImage && bDoImage)
-	{
-		DELETEP(m_pImage);
-		m_pImage = m_pGraphic->regenerateImage(pG);
-		UT_Rect rec(0,0,iWidth,iHeight);
-		m_pImage->scaleImageTo(pG,rec);
-	}
 	if(m_pDocImage && *m_pDocImage && bDoImage)
 	{
 		DELETEP(*m_pDocImage);
@@ -869,13 +815,6 @@ void fg_FillType::setWidth(GR_Graphics * pG, UT_sint32 iWidth)
 	{
 		return;
 	}
-	if(m_pImage)
-	{
-		DELETEP(m_pImage);
-		m_pImage = m_pGraphic->regenerateImage(pG);
-		UT_Rect rec(0,0,m_iWidth,m_iHeight);
-		m_pImage->scaleImageTo(pG,rec);
-	}
 	if(m_pDocImage && *m_pDocImage)
 	{
 		DELETEP(*m_pDocImage);
@@ -895,13 +834,6 @@ void fg_FillType::setHeight(GR_Graphics * pG, UT_sint32 iHeight)
 	if((m_iHeight <= 0) || (m_iWidth <= 0))
 	{
 		return;
-	}
-	if(m_pImage)
-	{
-		DELETEP(m_pImage);
-		m_pImage = m_pGraphic->regenerateImage(pG);
-		UT_Rect rec(0,0,m_iWidth,m_iHeight);
-		m_pImage->scaleImageTo(pG,rec);
 	}
 	if(m_pDocImage && *m_pDocImage)
 	{
@@ -1020,10 +952,6 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			fp_Run * pRun = static_cast<fp_Run *>(m_pContainer);
 			pRun->_setFont(NULL);
 			pRun->lookupProperties(pG);
-			if((m_FillType == FG_FILL_IMAGE) && (m_pDocImage == NULL))
-			{
-				_regenerateImage(pG);
-			}
 		}
 	}
 	
@@ -1049,10 +977,6 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 }
 		 if(m_FillType == FG_FILL_IMAGE)
 		 {
-			 if(m_pDocImage == NULL)
-			 {
-				 _regenerateImage(pG);
-			 }
 			 src.left = srcX;
 			 src.top = srcY;
 			 src.width = width;
@@ -1067,10 +991,6 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
 			 {
 			         painter.fillRect(white,dest);
-			 }
-			 if(m_pDocImage == NULL)
-			 {
-				 painter.fillRect(m_pImage,src,dest);
 			 }
 			 else if(*m_pDocImage)
 			 {
@@ -1116,10 +1036,6 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	if(m_FillType == FG_FILL_IMAGE)
 	{
 		 xxx_UT_DEBUGMSG(("Fill type Image ! srcX %d srcY %d x  %d y %d width %d height %d \n",srcX,srcY,x,y,width,height));
-		 if((m_pDocImage == NULL) && (m_pDocLayout->getGraphicTick() != m_iGraphicTick))
-		 {
-		         _regenerateImage(pG);
-		 }
 		 if(srcX < 0)
 		 {
 			 UT_sint32 iX = -srcX;
@@ -1205,23 +1121,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			}
 		}
 
-		if(m_pDocImage == NULL)
-		{
-		        if(m_bTransColorSet)
-			{
-			    painter.fillRect(m_TransColor,x,y,width,height);
-			}
-			else if(m_bColorSet)
-			{
-			    painter.fillRect(m_color,x,y,width,height);
-			}
-			else
-			{
-			    painter.fillRect(white,x,y,width,height);
-			}
-			painter.fillRect(m_pImage,src,dest);
-		}
-		else if(*m_pDocImage)
+		if(*m_pDocImage)
 		{
 		        if(m_bTransColorSet)
 			{

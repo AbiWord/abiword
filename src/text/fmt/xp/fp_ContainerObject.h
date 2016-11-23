@@ -135,7 +135,6 @@ public:
 	void           setColor(const char * pszColor);
 	void           setTransColor(UT_RGBColor & color);
 	void           setTransColor(const char * pszColor);
-	void           setImage(FG_Graphic * pGraphic, GR_Image * pImage,GR_Graphics * pG, UT_sint32 width, UT_sint32 height);
 	void           setTransparent(void);
 	void           setWidthHeight(GR_Graphics * pG, UT_sint32 width, UT_sint32 height, bool doImage = false);
 	void           setWidth(GR_Graphics * pG, UT_sint32 width);
@@ -156,7 +155,6 @@ private:
 	FL_DocLayout *       m_pDocLayout;
 	FG_Fill_Type         m_FillType;
 	GR_Image *           m_pImage;
-	FG_Graphic *         m_pGraphic;
 	UT_uint32            m_iGraphicTick;
 	bool                 m_bTransparentForPrint;
 	UT_RGBColor          m_color;
