@@ -58,12 +58,11 @@ void AP_Dialog_MailMerge::init ()
 
 	if (link.size()) {
 		
-		IE_MailMerge * pie = NULL;
-		UT_Error errorCode = IE_MailMerge::constructMerger(link.c_str(), IEMT_Unknown, &pie);
+		IE_MailMergePtr pie;
+		UT_Error errorCode = IE_MailMerge::constructMerger(link.c_str(), IEMT_Unknown, pie);
 		if (!errorCode && pie)
 		{
 			pie->getHeaders (link.c_str(), m_vecFields);
-			DELETEP(pie);
 			setFieldList();
 		}
 	}
@@ -110,12 +109,11 @@ void AP_Dialog_MailMerge::eventOpen ()
 		UT_UTF8String filename (pDialog->getPathname());
 		UT_sint32 type = pDialog->getFileType();
 		
-		IE_MailMerge * pie = NULL;
-		UT_Error errorCode = IE_MailMerge::constructMerger(filename.utf8_str(), static_cast<IEMergeType>(type), &pie);
+		IE_MailMergePtr pie;
+		UT_Error errorCode = IE_MailMerge::constructMerger(filename.utf8_str(), static_cast<IEMergeType>(type), pie);
 		if (!errorCode && pie)
 		{
 			pie->getHeaders (filename.utf8_str(), m_vecFields);
-			DELETEP(pie);
 		}
 	}
 	

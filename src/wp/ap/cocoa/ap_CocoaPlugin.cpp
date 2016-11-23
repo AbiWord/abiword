@@ -607,8 +607,8 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 	std::vector<std::string> vecFields;
 
-	IE_MailMerge * pie = 0;
-	UT_Error errorCode = IE_MailMerge::constructMerger([path UTF8String], IEMT_Unknown, &pie);
+	IE_MailMergePtr pie;
+	UT_Error errorCode = IE_MailMerge::constructMerger([path UTF8String], IEMT_Unknown, pie);
 	if (!errorCode && pie)
 		{
 			pie->getHeaders([path UTF8String], vecFields);
@@ -633,7 +633,6 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 				{
 					dataset = 0;
 				}
-			DELETEP(pie);
 		}
 	else
 		{

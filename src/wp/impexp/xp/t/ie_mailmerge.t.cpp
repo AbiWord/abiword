@@ -44,12 +44,12 @@ TFTEST_MAIN("IE Mail merger")
   std::string data_file;
   TFPASS(TF_Test::ensure_test_data(DATA_FILE, data_file));
 
-  IE_MailMerge *pie = 0;
+  IE_MailMergePtr pie;
   UT_Error err = IE_MailMerge::constructMerger(data_file.c_str(),
-                                               IEMT_Unknown, &pie);
+                                               IEMT_Unknown, pie);
 
   TFPASSEQ(err, UT_OK);
-  TFPASS(pie);
+  TFPASS(pie != nullptr);
 
   std::vector<std::string> headers;
   err = pie->getHeaders(data_file.c_str(), headers);

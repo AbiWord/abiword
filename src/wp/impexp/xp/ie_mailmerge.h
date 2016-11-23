@@ -22,6 +22,7 @@
 #define IE_MAILMERGE_H
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -32,6 +33,8 @@ typedef UT_sint32 IEMergeType;
 
 class IE_MailMerge;
 class PD_Document;
+
+typedef std::unique_ptr<IE_MailMerge> IE_MailMergePtr;
 
 class ABI_EXPORT IE_MergeSniffer
 {
@@ -65,7 +68,7 @@ public:
 	                           const char ** szSuffixList,
 	                           IEMergeType * ft) = 0;
 
-	virtual UT_Error constructMerger (IE_MailMerge ** ppie) = 0;
+	virtual UT_Error constructMerger (IE_MailMergePtr & pie) = 0;
 
 	// test helper.
 	friend class IE_MergeSniffer_TH;
@@ -111,7 +114,7 @@ public:
 
 	static UT_Error	constructMerger(const char * szFilename,
 	                                IEMergeType ieft,
-	                                IE_MailMerge ** ppie,
+	                                IE_MailMergePtr & pie,
 	                                IEMergeType * pieft = NULL);
 
 	static bool	    enumerateDlgLabels(UT_uint32 ndx,

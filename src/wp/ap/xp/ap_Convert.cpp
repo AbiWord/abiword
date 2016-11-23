@@ -177,13 +177,12 @@ private:
 
 static UT_Error handleMerge(const char * szMailMergeFile,
 			    IE_MailMerge::IE_MailMerge_Listener & listener){
-	IE_MailMerge * pie = NULL;
-	UT_Error errorCode = IE_MailMerge::constructMerger(szMailMergeFile, IEMT_Unknown, &pie);
+	IE_MailMergePtr pie;
+	UT_Error errorCode = IE_MailMerge::constructMerger(szMailMergeFile, IEMT_Unknown, pie);
 	if (!errorCode)
 	{
 		pie->setListener (&listener);
 		errorCode = pie->mergeFile (szMailMergeFile);
-		DELETEP(pie);
 	}
 
 	return errorCode;

@@ -13605,14 +13605,13 @@ Defun1(mailMerge)
 		UT_String filename (pDialog->getPathname());
 		UT_sint32 type = pDialog->getFileType();
 		
-		IE_MailMerge * pie = NULL;
-		UT_Error errorCode = IE_MailMerge::constructMerger(filename.c_str(), static_cast<IEMergeType>(type), &pie);
+		IE_MailMergePtr pie;
+		UT_Error errorCode = IE_MailMerge::constructMerger(filename.c_str(), static_cast<IEMergeType>(type), pie);
 		if (!errorCode)
 		{
 			OneShot_MailMerge_Listener listener (pDoc);
 			pie->setListener (&listener);
 			pie->mergeFile (filename.c_str());
-			DELETEP(pie);
 		}
 	}
 

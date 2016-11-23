@@ -299,12 +299,11 @@ static UT_Confidence_t s_confidence_heuristic ( UT_Confidence_t content_confiden
 
 UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 									   IEMergeType ieft,
-									   IE_MailMerge ** ppie, 
+									   IE_MailMergePtr & pie,
 									   IEMergeType * pieft)
 {
 	UT_return_val_if_fail(ieft != IEMT_Unknown || (szFilename && *szFilename), UT_ERROR);
-	UT_return_val_if_fail(ppie, UT_ERROR);
-	
+
 	UT_uint32 nrElements = getMergerCount();
 	
 	// no filter will support IEMT_Unknown, so we try to detect
@@ -360,8 +359,10 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 		}
 		if (best_sniffer)
 		{
-			if (pieft != NULL) *pieft = ieft;
-			return best_sniffer->constructMerger (ppie);
+			if (pieft != NULL) {
+				*pieft = ieft;
+			}
+			return best_sniffer->constructMerger (pie);
 		}
 	}
 	
@@ -375,7 +376,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 	{
 		IE_MergeSniffer * s = s_sniffers.at(k);
 		if (s->supportsFileType(ieft))
-			return s->constructMerger(ppie);
+			return s->constructMerger(pie);
 	}
 	
 	return UT_ERROR;
@@ -566,8 +567,8 @@ public:
 		return true;
 	}
 	
-	virtual UT_Error constructMerger (IE_MailMerge ** ppie) {
-		*ppie = new IE_MailMerge_XML_Listener ();
+	virtual UT_Error constructMerger (IE_MailMergePtr & pie) {
+		pie = IE_MailMergePtr(new IE_MailMerge_XML_Listener());
 		return UT_OK;
 	}
 	
@@ -761,8 +762,8 @@ public:
 		return true;
 	}
 	
-	virtual UT_Error constructMerger (IE_MailMerge ** ppie) {
-		*ppie = new IE_MailMerge_Delimiter_Listener(m_delim);
+	virtual UT_Error constructMerger (IE_MailMergePtr & pie) {
+		pie = IE_MailMergePtr(new IE_MailMerge_Delimiter_Listener(m_delim));
 		return UT_OK;
 	}
 	
