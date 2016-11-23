@@ -43,8 +43,8 @@ class IE_ImpGraphicWMF_Sniffer : public IE_ImpGraphicSniffer
 class IE_ImpGraphic_WMF : public IE_ImpGraphic
 {
 public:
-    	virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
-					      FG_Graphic ** ppfg);
+    virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
+                                      FG_ConstGraphicPtr &pfg);
 private:
     // that on is used internally. But we removed it
     // from the API.

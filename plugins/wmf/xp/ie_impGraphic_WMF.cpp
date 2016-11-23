@@ -102,12 +102,12 @@ UT_Error IE_ImpGraphicWMF_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 }
 
 // This creates our FG_Graphic object for a PNG
-UT_Error IE_ImpGraphic_WMF::importGraphic(UT_ByteBuf* pBBwmf, 
-					  FG_Graphic ** ppfg)
+UT_Error IE_ImpGraphic_WMF::importGraphic(UT_ByteBuf* pBBwmf,
+                                          FG_ConstGraphicPtr &pfg)
 {
 	UT_Error err = UT_OK;
 
-	*ppfg = 0;
+	pfg.reset();
 	UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Begin -\n"));
 
 	bool importAsPNG = true;
@@ -120,26 +120,23 @@ UT_Error IE_ImpGraphic_WMF::importGraphic(UT_ByteBuf* pBBwmf,
 
 		UT_ByteBuf * pBBpng = 0;
 
-		FG_GraphicRaster * pFGR = 0;
-
 		err = convertGraphic(pBBwmf,&pBBpng);
 		if (err != UT_OK) {
 			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Conversion failed...\n"));
 			return err;
 		}
 
-		pFGR = new FG_GraphicRaster();
-		if(pFGR == 0) {
+		FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
+		if(!pFGR) {
 			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Ins. Mem.\n"));
 			err = UT_IE_NOMEMORY;
 		}
 		else if(!pFGR->setRaster_PNG(pBBpng)) {
 			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Fake type?\n"));
-			DELETEP(pFGR);
 			err = UT_IE_FAKETYPE;
 		}
 		else {
-			*ppfg = (FG_Graphic *) pFGR;
+			pfg = std::move(pFGR);
 		}
 	} else {
 		UT_ByteBuf *svg = 0;
@@ -149,19 +146,17 @@ UT_Error IE_ImpGraphic_WMF::importGraphic(UT_ByteBuf* pBBwmf,
 			return err;
 		}
 
-		FG_GraphicVector * pFGR = 0;
-		pFGR = new FG_GraphicVector();
-		if(pFGR == 0) {
+		FG_GraphicVectorPtr pFGR(new FG_GraphicVector);
+		if(!pFGR) {
 			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Ins. Mem.\n"));
 			err = UT_IE_NOMEMORY;
 		}
 		else if(!pFGR->setVector_SVG(svg)) {
 			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Fake type?\n"));
-			DELETEP(pFGR);
 			err = UT_IE_FAKETYPE;
 		}
 		else {
-			*ppfg = (FG_Graphic *) pFGR;
+			pfg = std::move(pFGR);
 		}
 	}
 

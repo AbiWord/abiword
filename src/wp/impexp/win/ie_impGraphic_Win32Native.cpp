@@ -176,15 +176,14 @@ static PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 
 //  This actually creates our FG_Graphic object for a PNG
 UT_Error IE_ImpGraphic_Win32Native::importGraphic(UT_ByteBuf* pBB, 
-												  FG_Graphic ** ppfg)
+												  FG_ConstGraphicPtr & pfg)
 {
 	std::string mimetype;
     UT_Error err = _convertGraphic(pBB, mimetype); 
     if (err != UT_OK) return err;
     
     /* Send Data back to AbiWord as PNG */
-    FG_GraphicRaster *pFGR;
-    pFGR = new FG_GraphicRaster();
+    FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
     
     if(pFGR == NULL)
 		return UT_IE_NOMEMORY;
@@ -193,7 +192,6 @@ UT_Error IE_ImpGraphic_Win32Native::importGraphic(UT_ByteBuf* pBB,
 	{
 		if(!pFGR->setRaster_JPEG(m_pBB))
 		{
-			DELETEP(pFGR);
 			return UT_IE_FAKETYPE;
 		}
 	}
@@ -201,13 +199,10 @@ UT_Error IE_ImpGraphic_Win32Native::importGraphic(UT_ByteBuf* pBB,
 	{
 		if(!pFGR->setRaster_PNG(m_pBB))
 		{
-			DELETEP(pFGR);	
 			return UT_IE_FAKETYPE;
 		}
 	}
-    
-    *ppfg = static_cast<FG_Graphic *>(pFGR);
-    
+    pfg = std::move(pFGR);
     return UT_OK;
 }
   

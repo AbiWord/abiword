@@ -3942,11 +3942,11 @@ UT_return_val_if_fail(pDialog, false);
 	if (bOK && pNewFile)
 	{
 		IEGraphicFileType iegft = IEGFT_Unknown;
-		FG_Graphic* pFG;
+		FG_ConstGraphicPtr pFG;
 
 		UT_Error errorCode;
 
-		errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, &pFG);
+		errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, pFG);
 		if(errorCode)
 		{
 			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
@@ -3957,11 +3957,9 @@ UT_return_val_if_fail(pDialog, false);
 		if (errorCode)
 		{
 			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
-			DELETEP(pFG);
 			goto Cleanup;
 		}
 
-		DELETEP(pFG);
 		ret = true; // goes to Cleanup
 	}
 
@@ -3991,11 +3989,11 @@ Defun1(fileInsertGraphic)
 	// we own storage for pNewFile and must g_free it.
 	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
 
-	FG_Graphic* pFG;
+	FG_ConstGraphicPtr pFG;
 
 	UT_Error errorCode;
 
-	errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, &pFG);
+	errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, pFG);
 	if(errorCode != UT_OK || !pFG)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
@@ -4011,12 +4009,10 @@ Defun1(fileInsertGraphic)
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 
 		FREEP(pNewFile);
-		DELETEP(pFG);
 		return false;
 	}
 
 	FREEP(pNewFile);
-	DELETEP(pFG);
 
 	return true;
 }
@@ -4040,11 +4036,11 @@ Defun1(fileInsertPositionedGraphic)
 	// we own storage for pNewFile and must g_free it.
 	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
 
-	FG_Graphic* pFG;
+	FG_ConstGraphicPtr pFG;
 
 	UT_Error errorCode;
 
-	errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, &pFG);
+	errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, pFG);
 	if(errorCode != UT_OK || !pFG)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
@@ -4059,12 +4055,10 @@ Defun1(fileInsertPositionedGraphic)
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 
 		FREEP(pNewFile);
-		DELETEP(pFG);
 		return false;
 	}
 
 	FREEP(pNewFile);
-	DELETEP(pFG);
 
 	return true;
 }
@@ -4089,11 +4083,11 @@ Defun1(fileInsertPageBackgroundGraphic)
 	// we own storage for pNewFile and must g_free it.
 	UT_DEBUGMSG(("fileInsertBackgroundGraphic: loading [%s]\n",pNewFile));
 
-	FG_Graphic* pFG;
+	FG_ConstGraphicPtr pFG;
 
 	UT_Error errorCode;
 
-	errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, &pFG);
+	errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, pFG);
 	if(errorCode != UT_OK || !pFG)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
@@ -4114,12 +4108,10 @@ Defun1(fileInsertPageBackgroundGraphic)
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 
 		FREEP(pNewFile);
-		DELETEP(pFG);
 		return false;
 	}
 
 	FREEP(pNewFile);
-	DELETEP(pFG);
 
 	return true;
 }

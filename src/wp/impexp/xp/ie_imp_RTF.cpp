@@ -4118,8 +4118,8 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 				{
 					// insert the image in the piece table AFTER flushing
 					// current output
-					FG_Graphic* pFG;
-					UT_Error error = IE_ImpGraphic::loadGraphic(fileName, IEGFT_JPEG, &pFG);
+					FG_ConstGraphicPtr pFG;
+					UT_Error error = IE_ImpGraphic::loadGraphic(fileName, IEGFT_JPEG, pFG);
 
 					// load file to buffer
 					if (error == UT_OK && pFG)

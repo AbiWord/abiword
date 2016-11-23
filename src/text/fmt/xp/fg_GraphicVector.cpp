@@ -258,7 +258,7 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 }
 
 
-const char *  FG_GraphicVector::createDataItem(PD_Document *pDoc, const char * szName)
+const char *  FG_GraphicVector::createDataItem(PD_Document *pDoc, const char * szName) const
 {
 	UT_return_val_if_fail(pDoc,NULL);
 	UT_ASSERT(szName);
@@ -273,7 +273,7 @@ const char *  FG_GraphicVector::createDataItem(PD_Document *pDoc, const char * s
 //  is discarded.
 //
 UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
-											  UT_uint32 iPos, const char* szName)
+											  UT_uint32 iPos, const char* szName) const
 {
 	UT_return_val_if_fail(pDoc, UT_ERROR);
 	UT_ASSERT(szName);
@@ -308,7 +308,7 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 										 UT_uint32 res,
 										 UT_uint32 iPos,
 										 PTStruxType iStruxType,
-										 const char* szName)
+										 const char* szName) const
 {
 	UT_return_val_if_fail(pDoc, UT_ERROR);
 	UT_ASSERT(szName);

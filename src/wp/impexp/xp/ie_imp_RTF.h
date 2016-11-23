@@ -712,7 +712,7 @@ private:
 	bool LoadPictData(PictFormat format, const char * image_name,
 					  struct RTFProps_ImageProps & imgProps,
 					  bool isBinary = false, long binaryLen = 0);
-	bool InsertImage (const FG_Graphic *, const char * image_name,
+	bool InsertImage (const FG_ConstGraphicPtr&, const char * image_name,
 					  const struct RTFProps_ImageProps & imgProps);
 
 	RTFFontTableItem* GetNthTableFont(UT_sint32 fontNum);

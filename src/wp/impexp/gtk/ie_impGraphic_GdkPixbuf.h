@@ -53,7 +53,7 @@ public:
 	IE_ImpGraphic_GdkPixbuf();
 	virtual ~IE_ImpGraphic_GdkPixbuf();
 
-	virtual UT_Error importGraphic(UT_ByteBuf * pBB, FG_Graphic ** ppfg);
+	virtual UT_Error importGraphic(UT_ByteBuf * pBB, FG_ConstGraphicPtr & pfg);
 
 private:
 

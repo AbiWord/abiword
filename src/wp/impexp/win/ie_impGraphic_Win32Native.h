@@ -36,7 +36,7 @@ class ABI_EXPORT IE_ImpGraphic_Win32Native : public IE_ImpGraphic
 {
 public:
   virtual UT_Error importGraphic(UT_ByteBuf* pBB,
-                                 FG_Graphic ** ppfg);
+                                 FG_ConstGraphicPtr &pfg);
 private:
   UT_Error _convertGraphic(UT_ByteBuf * pBB, std::string& mimetype);
   UT_Error Read_BMP_Header(UT_ByteBuf* pBB);

@@ -694,10 +694,10 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 
 	// Build an Import Graphic based on file type
 	UT_Error errorCode = UT_ERROR;
-    FG_Graphic *pfg = NULL;
+	FG_ConstGraphicPtr pfg;
 	char *uri = UT_go_filename_to_uri(str.utf8_str().utf8_str());
 	if(uri)
-		errorCode = IE_ImpGraphic::loadGraphic(uri, IEGFT_Unknown, &pfg);
+		errorCode = IE_ImpGraphic::loadGraphic(uri, IEGFT_Unknown, pfg);
 
 	if (errorCode)
 	{
@@ -760,7 +760,6 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 				   pGr->tlu((r.bottom - scaled_height) / 2));
 	EndPaint(hThumbnail,&ps);
 
-    DELETEP(pfg);
 	DELETEP(pImage);
 	DELETEP(pGr);
 

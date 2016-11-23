@@ -24,6 +24,7 @@
 
 #include "ie_imp_XML.h"
 #include "ut_stack.h"
+#include "fg_Graphic.h"
 
 /* NOTE: I'm trying to keep the code similar across versions,
  *       and therefore features are enabled/disabled here:
@@ -50,7 +51,6 @@
 #define XHTML_RUBY_SUPPORTED
 
 class PD_Document;
-class FG_Graphic;
 class IE_Imp_TableHelperStack;
 
 // The importer/reader for XHTML 1.0
@@ -100,10 +100,10 @@ public:
 
 protected:
 	virtual UT_Error        _loadFile (GsfInput * input);
-	virtual FG_Graphic *	importImage (const gchar * szSrc);
+	virtual FG_ConstGraphicPtr	importImage(const gchar * szSrc);
 
 private:
-	FG_Graphic *			importDataURLImage (const gchar * szData);
+	FG_ConstGraphicPtr	importDataURLImage(const gchar * szData);
 
 	bool					pushInline (const char * props);
 	bool					newBlock (const char * style, const char * css, const char * align);

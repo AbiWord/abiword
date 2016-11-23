@@ -612,7 +612,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
     }
 	else if (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_IMAGE) == 0) {
 		  IE_ImpGraphic * pIEG = NULL;
-		  FG_Graphic * pFG = NULL;
+		  FG_ConstGraphicPtr pFG;
 		  IEGraphicFileType iegft = IEGFT_Unknown;
 		  UT_Error error = UT_OK;
 		  
@@ -631,7 +631,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
 			  return;
 		  }
 		  
-		  error = pIEG->importGraphic(bytes, &pFG);
+		  error = pIEG->importGraphic(bytes, pFG);
 		  if(!pFG || error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
@@ -652,11 +652,8 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
 		  if (error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not insert graphic (%d)\n", error));
-			  DELETEP(pFG);
 			  return;
 		  }
-		  
-		  DELETEP(pFG);	
 	}
 
 	FREEP(pData);

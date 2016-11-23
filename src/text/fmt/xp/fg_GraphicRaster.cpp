@@ -329,7 +329,7 @@ const std::string & FG_GraphicRaster::getMimeType() const
 //  is discarded.
 //
 UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
-											  UT_uint32 iPos, const char* szName)
+											  UT_uint32 iPos, const char* szName) const
 {
 	UT_return_val_if_fail(pDoc, UT_ERROR);
 	UT_ASSERT(szName);
@@ -359,7 +359,7 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	return UT_OK;
 }
 
-const char *  FG_GraphicRaster::createDataItem(PD_Document *pDoc, const char * szName)
+const char *  FG_GraphicRaster::createDataItem(PD_Document *pDoc, const char * szName) const
 {
 	UT_return_val_if_fail(pDoc,NULL);
 	UT_ASSERT(szName);
@@ -376,7 +376,7 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 										 UT_uint32 res,
 										 UT_uint32 iPos,
 										 PTStruxType iStruxType,
-										 const char* szName)
+										 const char* szName) const
 {
 	UT_return_val_if_fail(pDoc, UT_ERROR);
 	UT_ASSERT(szName);

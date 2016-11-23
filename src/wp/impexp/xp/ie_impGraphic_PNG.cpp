@@ -80,21 +80,17 @@ UT_Error IE_ImpGraphicPNG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 
 //  This actually creates our FG_Graphic object for a PNG
 UT_Error IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB, 
-										  FG_Graphic ** ppfg)
+										  FG_ConstGraphicPtr &pfg)
 {
-	FG_GraphicRaster *pFGR;
-
-	pFGR = new FG_GraphicRaster();
+	FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
 	if(pFGR == NULL)
 		return UT_IE_NOMEMORY;
 
 	if(!pFGR->setRaster_PNG(pBB)) {
-		DELETEP(pFGR);
-		
 		return UT_IE_FAKETYPE;
 	}
 
-	*ppfg = static_cast<FG_Graphic *>(pFGR);
+	pfg = std::move(pFGR);
 	return UT_OK;
 }
 

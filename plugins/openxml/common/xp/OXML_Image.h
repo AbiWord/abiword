@@ -28,6 +28,7 @@
 #include <string>
 
 #include "ut_types.h"
+#include "fg_Graphic.h"
 #include "pd_Document.h"
 
 #include "OXML_Types.h"
@@ -49,7 +50,7 @@ public:
 	void setMimeType(const std::string & mimeType);
     // DOES NOT take ownership of the buffer
 	void setData(const UT_ByteBuf* data);
-	void setGraphic(const FG_Graphic * fg);
+	void setGraphic(FG_ConstGraphicPtr && fg);
 
 	const std::string & getId() const
         {
@@ -63,7 +64,7 @@ private:
 	std::string  m_id;
 	std::string m_mimeType;
 	const UT_ByteBuf* m_data;
-	const FG_Graphic * m_graphic;
+	FG_ConstGraphicPtr m_graphic;
 };
 
 typedef std::shared_ptr<OXML_Image> OXML_SharedImage;

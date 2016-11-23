@@ -226,11 +226,11 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 		return;
 	}
 
-	FG_Graphic* pFG = NULL;
+	FG_ConstGraphicPtr pFG;
 
 	UT_Error errorCode;
 
-	errorCode = IE_ImpGraphic::loadGraphic(m_sImagePath.c_str(), m_iGraphicType, &pFG);
+	errorCode = IE_ImpGraphic::loadGraphic(m_sImagePath.c_str(), m_iGraphicType, pFG);
 	if(errorCode != UT_OK || !pFG)
 	{
 		ShowErrorBox(m_sImagePath, errorCode);

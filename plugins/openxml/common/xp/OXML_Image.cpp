@@ -40,14 +40,12 @@
 
 OXML_Image::OXML_Image()
 	: m_data(NULL)
-	, m_graphic(NULL)
 {
 
 }
 
 OXML_Image::~OXML_Image()
 {
-	DELETEP(m_graphic);
 }
 
 void OXML_Image::setId(const std::string & imageId)
@@ -63,15 +61,14 @@ void OXML_Image::setMimeType(const std::string & imageMimeType)
 
 void OXML_Image::setData(const UT_ByteBuf* imageData)
 {
-	DELETEP(m_graphic);
+	m_graphic.reset();
 	m_data = imageData;
 }
 
-void OXML_Image::setGraphic(const FG_Graphic * graphic)
+void OXML_Image::setGraphic(FG_ConstGraphicPtr && graphic)
 {
-	DELETEP(m_graphic);
 	m_data = NULL;
-	m_graphic = graphic;
+	m_graphic = std::move(graphic);
 }
 
 

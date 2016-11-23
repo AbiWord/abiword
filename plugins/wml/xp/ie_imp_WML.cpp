@@ -772,8 +772,8 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 	UT_UTF8String filename(relative_file);
 	g_free(relative_file);
 
-	FG_Graphic * pfg = 0;
-	if (IE_ImpGraphic::loadGraphic (filename.utf8_str(), IEGFT_Unknown, &pfg) != UT_OK)
+	FG_ConstGraphicPtr pfg;
+	if (IE_ImpGraphic::loadGraphic (filename.utf8_str(), IEGFT_Unknown, pfg) != UT_OK)
 		return;
 
 	const UT_ByteBuf * pBB = pfg->getBuffer();
@@ -833,7 +833,6 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 	}
 
 	X_CheckError(appendObject(PTO_Image, attr));
-	DELETEP(pfg);
 }
 
 void IE_Imp_WML::charData(const gchar *s, int len)

@@ -242,7 +242,7 @@ UT_Error IE_Imp_MHT::importFile (const char * szFilename)
 	return import_status;
 }
 
-FG_Graphic * IE_Imp_MHT::importImage (const gchar * szSrc)
+FG_ConstGraphicPtr IE_Imp_MHT::importImage(const gchar * szSrc)
 {
 	bool bContentID = (strncmp ((const char *) szSrc, "cid:", 4) == 0);
 
@@ -301,8 +301,8 @@ FG_Graphic * IE_Imp_MHT::importImage (const gchar * szSrc)
 
 	UT_Multipart * vol_part = const_cast<UT_Multipart *>(part);
 
-	FG_Graphic * pfg = 0;
-	UT_Error import_status = pieg->importGraphic (vol_part->detachBuffer (), &pfg);
+	FG_ConstGraphicPtr pfg;
+	UT_Error import_status = pieg->importGraphic (vol_part->detachBuffer (), pfg);
 	delete pieg;
 	if (import_status != UT_OK)
 		{

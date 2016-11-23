@@ -42,7 +42,7 @@ class ABI_EXPORT IE_ImpGraphic_SVG : public IE_ImpGraphic
 {
 public:
         virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
-					      FG_Graphic ** ppfg);
+                                          FG_ConstGraphicPtr& pfg);
 };
 
 #endif /* IE_IMPGRAPHIC_SVG_H */

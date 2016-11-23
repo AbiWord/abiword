@@ -5663,7 +5663,7 @@ UT_Error FV_View::_deleteXMLID( const std::string& xmlid, bool bSignal )
 
 
 
-UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
+UT_Error FV_View::_insertGraphic(const FG_ConstGraphicPtr& pFG, const char* szName)
 {
 	UT_return_val_if_fail(pFG,UT_ERROR);
 	UT_ASSERT(szName);
@@ -5676,7 +5676,7 @@ UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 }
 
 
-UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName,PT_DocPosition pos)
+UT_Error FV_View::_insertGraphic(const FG_ConstGraphicPtr& pFG, const char* szName, PT_DocPosition pos)
 {
 	UT_return_val_if_fail(pFG,UT_ERROR);
 	UT_ASSERT(szName);

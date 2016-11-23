@@ -518,7 +518,7 @@ UT_Error IE_ImpGraphic::constructImporter(GsfInput * input,
 //  graphics from a file on disk.
 
 UT_Error IE_ImpGraphic::importGraphic(UT_ByteBuf * byteBuf,
-									  FG_Graphic ** ppfg)
+									  FG_ConstGraphicPtr& pfg)
 {
 	UT_return_val_if_fail (byteBuf != NULL, UT_IE_FILENOTFOUND);
 
@@ -530,7 +530,7 @@ UT_Error IE_ImpGraphic::importGraphic(UT_ByteBuf * byteBuf,
 	if (!input)
 		return UT_IE_NOMEMORY;
 
-	UT_Error result = importGraphic(input, ppfg);
+	UT_Error result = importGraphic(input, pfg);
 
 	g_object_unref (G_OBJECT (input));
 
@@ -538,11 +538,11 @@ UT_Error IE_ImpGraphic::importGraphic(UT_ByteBuf * byteBuf,
 }
 
 UT_Error IE_ImpGraphic::importGraphic(GsfInput * input,
-									  FG_Graphic ** ppfg)
+									  FG_ConstGraphicPtr& pfg)
 {
 	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
 
-	UT_ByteBuf* pBB = new UT_ByteBuf();
+	UT_ByteBuf* pBB = new UT_ByteBuf;
 
 	if (pBB == NULL)
 		return UT_IE_NOMEMORY;
@@ -556,11 +556,11 @@ UT_Error IE_ImpGraphic::importGraphic(GsfInput * input,
 	//  The ownership of pBB changes here.  The subclass of IE_ImpGraphic
 	//  should either delete pBB when it is done importing, or give it
 	//  to the FG_Graphic object which is eventually constructed.
-	return importGraphic(pBB, ppfg);
+	return importGraphic(pBB, pfg);
 }
 
 UT_Error IE_ImpGraphic::importGraphic(const char * szFilename,
-									  FG_Graphic ** ppfg)
+									  FG_ConstGraphicPtr& pfg)
 {
 	GsfInput * input;
 
@@ -568,7 +568,7 @@ UT_Error IE_ImpGraphic::importGraphic(const char * szFilename,
 	if (!input)
 		return UT_IE_FILENOTFOUND;
 
-	UT_Error res = importGraphic(input, ppfg);
+	UT_Error res = importGraphic(input, pfg);
 
 	g_object_unref (G_OBJECT (input));
 	return res;
@@ -577,7 +577,7 @@ UT_Error IE_ImpGraphic::importGraphic(const char * szFilename,
 
 UT_Error IE_ImpGraphic::loadGraphic(const char * szFilename,
 									IEGraphicFileType iegft,
-									FG_Graphic ** ppfg)
+									FG_ConstGraphicPtr& pfg)
 {
 	GsfInput *input;
 	
@@ -585,7 +585,7 @@ UT_Error IE_ImpGraphic::loadGraphic(const char * szFilename,
 	if (!input)
 		return UT_IE_FILENOTFOUND;
 
-	UT_Error result = loadGraphic (input, iegft, ppfg);
+	UT_Error result = loadGraphic (input, iegft, pfg);
 
 	g_object_unref (G_OBJECT (input));
 
@@ -594,7 +594,7 @@ UT_Error IE_ImpGraphic::loadGraphic(const char * szFilename,
 
 UT_Error IE_ImpGraphic::loadGraphic(GsfInput * input,
 									IEGraphicFileType iegft,
-									FG_Graphic ** ppfg)
+									FG_ConstGraphicPtr& pfg)
 {
 	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
 
@@ -604,7 +604,7 @@ UT_Error IE_ImpGraphic::loadGraphic(GsfInput * input,
 	if (result != UT_OK || !importer)
 		return UT_ERROR;
 
-	result = importer->importGraphic (input, ppfg);
+	result = importer->importGraphic (input, pfg);
 
 	delete importer;
 
@@ -613,7 +613,7 @@ UT_Error IE_ImpGraphic::loadGraphic(GsfInput * input,
 
 UT_Error IE_ImpGraphic::loadGraphic(const UT_ByteBuf &pBB,
 									IEGraphicFileType iegft,
-									FG_Graphic ** ppfg)
+									FG_ConstGraphicPtr& pfg)
 {
 	GsfInput * input;
 
@@ -621,7 +621,7 @@ UT_Error IE_ImpGraphic::loadGraphic(const UT_ByteBuf &pBB,
 	if (!input)
 		return UT_IE_NOMEMORY;
 
-	UT_Error result = loadGraphic (input, iegft, ppfg);
+	UT_Error result = loadGraphic (input, iegft, pfg);
 
 	g_object_unref (G_OBJECT (input));
 

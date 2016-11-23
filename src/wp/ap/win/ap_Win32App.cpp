@@ -931,7 +931,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		HWND		 			hWnd;
  		HDC 					hdc;
  		IE_ImpGraphic*			pIEG = NULL;
- 		FG_Graphic* 			pFG = NULL;	
+ 		FG_ConstGraphicPtr pFG;
  		UT_Error 				errorCode;		
  		UT_ByteBuf 				byteBuf;				
  		IEGraphicFileType		iegft = IEGFT_BMP;	
@@ -955,7 +955,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		if(errorCode != UT_OK)		
 			return false;				  	
 		 				 			
- 		errorCode = pIEG->importGraphic(bBufBMP, &pFG); 		
+ 		errorCode = pIEG->importGraphic(bBufBMP, pFG); 		
  		
  		if(errorCode != UT_OK || !pFG)
 		{
@@ -975,7 +975,6 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		errorCode = pView->cmdInsertGraphic(pFG);	  		  		
  	
 		DELETEP(pIEG);
- 		//DELETEP(pFG);		
  		
  		bSuccess = true;
  	}

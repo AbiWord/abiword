@@ -1428,7 +1428,6 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 	UT_ByteBuf pic;
 	IEGraphicFileType iegft = IEGFT_Unknown;
 	const char *msg = NULL, *className = "";
-	FG_Graphic *graphic = NULL;
 
 	if (size < PIC_OR_OLE_HEADER_SIZE + OLE_ClassNameString)
 	{
@@ -1653,8 +1652,11 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 	if (pic.getLength())
 	{
 		// ...whether it's a picture
-		if (IE_ImpGraphic::loadGraphic(pic, iegft, &graphic) != UT_OK || !graphic)
+		FG_ConstGraphicPtr graphic;
+
+		if (IE_ImpGraphic::loadGraphic(pic, iegft, graphic) != UT_OK || !graphic) {
 			msg = "Picture load error or no picture";
+		}
 		else
 		{
 			int dxaOffset, dxaSize, dyaSize, mx, my;
@@ -1714,7 +1716,6 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 		}
 	}
 
-	DELETEP(graphic);
 
 	if (write_pic) free_wri_struct(write_pic);
 

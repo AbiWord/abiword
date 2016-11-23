@@ -394,11 +394,11 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 // OK replace the current image with this.
 //
 					IEGraphicFileType iegft = IEGFT_Unknown;
-					FG_Graphic* pFG;
-		
+					FG_ConstGraphicPtr pFG;
+
 					UT_Error errorCode;
-					
-					errorCode = IE_ImpGraphic::loadGraphic(szTmp.c_str(),iegft, &pFG);
+
+					errorCode = IE_ImpGraphic::loadGraphic(szTmp.c_str(),iegft, pFG);
 					if(errorCode)
 					{
 						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -417,10 +417,8 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 					{
 						pFrame->showMessageBox("Could not put image back into Abiword", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-						DELETEP(pFG);
 						goto Cleanup;
 					}
-					DELETEP(pFG);
 //
 // Reselect the image
 //

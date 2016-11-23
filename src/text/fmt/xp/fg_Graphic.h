@@ -21,6 +21,7 @@
 #ifndef FG_GRAPHIC_H
 #define FG_GRAPHIC_H
 
+#include <memory>
 #include <string>
 
 #include "ut_types.h"
@@ -74,7 +75,7 @@ public:
 	virtual FG_Graphic *   clone(void) const = 0;
     // return the buffer behind the image
     virtual const UT_ByteBuf * getBuffer() const = 0;
-	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) = 0;
+	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) const = 0;
 	//  generate an image for display in the specified graphics object
 	virtual GR_Image* generateImage(GR_Graphics* pG,
 								   const PP_AttrProp * pSpanAP,
@@ -83,13 +84,16 @@ public:
 	//  Insert the object at the specified point in a document
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 
-										   UT_uint32 iPos, const char* szName) = 0;
+										   UT_uint32 iPos, const char* szName) const = 0;
 	//  Attach the object to a strux for a background image for the strux
 	virtual UT_Error   	insertAtStrux(PD_Document* pDoc,
 									  UT_uint32 res,
 									  UT_uint32 iPos,
 									  PTStruxType iStruxType,
-									  const char* szName) = 0;
+									  const char* szName) const = 0;
 };
+
+typedef std::unique_ptr<FG_Graphic> FG_GraphicPtr;
+typedef std::unique_ptr<const FG_Graphic> FG_ConstGraphicPtr;
 
 #endif /* FG_GRAPHIC_H */

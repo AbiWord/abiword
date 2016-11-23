@@ -63,7 +63,7 @@ bool ODi_Abi_Data::addImageDataItem(UT_String& rDataId, const gchar** ppAtts) {
     UT_Error error = UT_OK;
     UT_ByteBuf img_buf;
     GsfInfile* pPictures_dir;
-    FG_Graphic* pFG = NULL;
+    FG_ConstGraphicPtr pFG;
     const UT_ByteBuf* pPictData = NULL;
     UT_uint32 imageID;
     
@@ -110,7 +110,7 @@ bool ODi_Abi_Data::addImageDataItem(UT_String& rDataId, const gchar** ppAtts) {
 
 
     // Builds pImporter from img_buf
-    error = IE_ImpGraphic::loadGraphic (img_buf, IEGFT_Unknown, &pFG);
+    error = IE_ImpGraphic::loadGraphic (img_buf, IEGFT_Unknown, pFG);
     if ((error != UT_OK) || !pFG) {
         // pictData is already freed in ~FG_Graphic
       return false;

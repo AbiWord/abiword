@@ -46,7 +46,7 @@ class IE_ImpGraphic_BMP : public IE_ImpGraphic
 {
 public:
     	virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
-					      FG_Graphic ** ppfg);
+                                          FG_ConstGraphicPtr & pfg);
 
 private:
 	// PNG structures used

@@ -229,8 +229,8 @@ static int s_mapMimeToUriType (const char * uri)
 static void
 s_loadImage (const UT_UTF8String & file, FV_View * pView, XAP_Frame * pF, gint x, gint y)
 {
-	FG_Graphic    * pFG  = 0;
-	UT_Error error = IE_ImpGraphic::loadGraphic (file.utf8_str(), 0, &pFG);
+	FG_ConstGraphicPtr pFG;
+	UT_Error error = IE_ImpGraphic::loadGraphic(file.utf8_str(), 0, pFG);
 	if (error != UT_OK || !pFG)
 		{
 			UT_DEBUGMSG(("Dom: could not import graphic (%s)\n", file.utf8_str()));
@@ -254,14 +254,13 @@ s_loadImage (const UT_UTF8String & file, FV_View * pView, XAP_Frame * pF, gint x
 
 	UT_DEBUGMSG(("Insert Image at x %f in y %f in \n",xInch,yInch));
 	pView->cmdInsertPositionedGraphic(pFG,mouseX,mouseY);
-	DELETEP(pFG);
 }
 
 static void
 s_loadImage (const UT_ByteBuf & bytes, FV_View * pView, XAP_Frame * pF, gint x, gint y)
 {
-	FG_Graphic    * pFG  = 0;
-	UT_Error error = IE_ImpGraphic::loadGraphic(bytes, 0, &pFG);
+	FG_ConstGraphicPtr pFG;
+	UT_Error error = IE_ImpGraphic::loadGraphic(bytes, 0, pFG);
 	if (error != UT_OK || !pFG)
 		{
 			UT_DEBUGMSG(("JK: could not import graphic from data buffer\n"));
@@ -278,7 +277,6 @@ s_loadImage (const UT_ByteBuf & bytes, FV_View * pView, XAP_Frame * pF, gint x, 
 		mouseY = pView->getGraphics()->tlu(mouseY);
 
 	pView->cmdInsertPositionedGraphic(pFG,mouseX,mouseY);
-	DELETEP(pFG);
 }
 
 static void

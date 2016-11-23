@@ -340,7 +340,7 @@ UT_Error IE_Imp_WordPerfectGraphics_Sniffer::constructImporter(IE_ImpGraphic **p
 }
 
 
-UT_Error IE_Imp_WordPerfectGraphics::importGraphic(GsfInput *input, FG_Graphic **ppfg)
+UT_Error IE_Imp_WordPerfectGraphics::importGraphic(GsfInput *input, FG_ConstGraphicPtr& pfg)
 {
 	AbiWordPerfectGraphicsInputStream gsfInput(input);
 	librevenge::RVNGString svgOutput;
@@ -359,7 +359,7 @@ UT_Error IE_Imp_WordPerfectGraphics::importGraphic(GsfInput *input, FG_Graphic *
 	svgOutput.append("\n");
 
 	GsfInput * svgInput = gsf_input_memory_new((const guint8*)svgOutput.cstr(), svgOutput.len(), false);
-	UT_Error result = IE_ImpGraphic::loadGraphic(svgInput, IE_ImpGraphic::fileTypeForSuffix(".svg"), ppfg);
+	UT_Error result = IE_ImpGraphic::loadGraphic(svgInput, IE_ImpGraphic::fileTypeForSuffix(".svg"), pfg);
 	g_object_unref(svgInput);
 	return result;
 }

@@ -23,13 +23,15 @@
 #ifndef IE_IMPGRAPHIC_H
 #define IE_IMPGRAPHIC_H
 
-#include "ut_types.h"
-#include "ie_types.h"
-#include "ie_imp.h"
+#include <memory>
 #include <string>
 #include <vector>
 
-class FG_Graphic;
+#include "ut_types.h"
+#include "fg_Graphic.h"
+#include "ie_types.h"
+#include "ie_imp.h"
+
 class UT_ByteBuf;
 class IE_ImpGraphic;
 
@@ -122,25 +124,25 @@ public:
 
   static UT_Error loadGraphic(const char * szFilename,
 							  IEGraphicFileType iegft,
-							  FG_Graphic ** ppfg);
+							  FG_ConstGraphicPtr& pfg);
   static UT_Error loadGraphic(GsfInput * input,
 							  IEGraphicFileType iegft,
-							  FG_Graphic ** ppfg);
+							  FG_ConstGraphicPtr& pfg);
   static UT_Error loadGraphic(const UT_ByteBuf &pBB,
 							  IEGraphicFileType iegft,
-							  FG_Graphic ** ppfg);
+							  FG_ConstGraphicPtr& pfg);
 
   //  Note subclassers:  ownership of pBB is passed here, so
   //  free pBB if you don't need it.
 
   // you must override at least one of the importGraphic calls
   virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
-								  FG_Graphic ** ppfg);
+								  FG_ConstGraphicPtr& pfg);
   virtual UT_Error  importGraphic(GsfInput * input,
-								  FG_Graphic ** ppfg);
+								  FG_ConstGraphicPtr& pfg);
 
   UT_Error	importGraphic(const char * szFilename,
-						  FG_Graphic ** ppfg);
+						  FG_ConstGraphicPtr& pfg);
 
 
 

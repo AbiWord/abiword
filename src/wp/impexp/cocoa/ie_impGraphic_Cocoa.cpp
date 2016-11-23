@@ -101,25 +101,21 @@ UT_Error IE_ImpGraphicCocoa_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 
 //  This actually creates our FG_Graphic object for a PNG
 UT_Error IE_ImpGraphic_Cocoa::importGraphic(UT_ByteBuf* pBB, 
-										  FG_Graphic ** ppfg)
+											FG_ConstGraphicPtr & pfg)
 {
 	UT_Error err = _convertGraphic(pBB); 
    	if (err != UT_OK) 
 		return err;
 
-	FG_GraphicRaster *pFGR;
-
-	pFGR = new FG_GraphicRaster();
+	FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
 	if(pFGR == NULL)
 		return UT_IE_NOMEMORY;
 
 	if(!pFGR->setRaster_PNG(m_pPngBB)) {
-		DELETEP(pFGR);
-		
 		return UT_IE_FAKETYPE;
 	}
 
-	*ppfg = static_cast<FG_Graphic *>(pFGR);
+	pfg = std::move(pFGR);
 	return UT_OK;
 }
 

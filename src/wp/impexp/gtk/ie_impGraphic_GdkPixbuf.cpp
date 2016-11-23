@@ -125,7 +125,7 @@ IE_ImpGraphic_GdkPixbuf::~IE_ImpGraphic_GdkPixbuf()
 /*!
  * Convert an image data buffer into PNG image buffer.
  */
-UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** ppfg)
+UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_ConstGraphicPtr & pfg)
 {
 	std::string mimetype;
 	GdkPixbuf * pixbuf = pixbufForByteBuf ( pBB, mimetype );
@@ -136,7 +136,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 		UT_DEBUGMSG (("GdkPixbuf: couldn't get image from loader!\n"));
 		return UT_ERROR;
 	}
-	FG_GraphicRaster * pFGR = new FG_GraphicRaster();
+	FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
 	if(pFGR == NULL)
 	{
 		g_object_unref(G_OBJECT(pixbuf));
@@ -150,7 +150,6 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 		pBB = NULL;
 		if(!pFGR->setRaster_JPEG(m_pPngBB)) 
 		{
-			DELETEP(pFGR);
 			DELETEP(m_pPngBB);
 			return UT_IE_FAKETYPE;
 		}
@@ -170,14 +169,13 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 		
 			if(!pFGR->setRaster_PNG(m_pPngBB)) 
 			{
-				DELETEP(pFGR);
 				DELETEP(m_pPngBB);
 				return UT_IE_FAKETYPE;
 			}
 		
 		}
 	}
-	*ppfg = static_cast<FG_Graphic *>(pFGR);
+	pfg = std::move(pFGR);
 	return err;
 }
 

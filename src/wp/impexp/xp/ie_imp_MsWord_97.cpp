@@ -4244,7 +4244,7 @@ static IEGraphicFileType s_determineIEGFT ( Blip * b )
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long cropt, long cropb, long cropl, long cropr)
 {
-	FG_Graphic* pFG		= 0;
+	FG_ConstGraphicPtr pFG;
 	UT_Error error		= UT_OK;
 	const UT_ByteBuf * buf		= 0;
 
@@ -4308,12 +4308,12 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	if(!pictData.getPointer(0))
 		error =  UT_ERROR;
 	else
-		error = IE_ImpGraphic::loadGraphic (pictData, iegft, &pFG);
+		error = IE_ImpGraphic::loadGraphic (pictData, iegft, pFG);
 
 	if ((error != UT_OK) || !pFG)
 	{
 		UT_DEBUGMSG(("Could not import graphic\n"));
-		goto Cleanup;
+		return error;
 	}
 
 	buf = pFG->getBuffer();
@@ -4322,8 +4322,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	{
 		// i don't think that this could ever happen, but...
 		UT_DEBUGMSG(("Could not convert to PNG\n"));
-		error = UT_ERROR;
-		goto Cleanup;
+		return UT_ERROR;
 	}
 
 	//
@@ -4346,8 +4345,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	if (!_ensureInBlock())
 	{
 		UT_DEBUGMSG (("_ensureInBlock() failed\n"));
-		error = UT_ERROR;
-		goto Cleanup;
+		return UT_ERROR;
 	}
 
 	{
@@ -4358,8 +4356,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 
 		if (!_appendObject (PTO_Image, propsArray)) {
 			UT_DEBUGMSG (("Could not create append object\n"));
-			error = UT_ERROR;
-			goto Cleanup;
+			return UT_ERROR;
 		}
 	}
 	if (!getDoc()->createDataItem(propsName.c_str(), false,
@@ -4367,12 +4364,10 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	{
 		UT_DEBUGMSG (("Could not create data item\n"));
 		// the mimetype is sunk anyway
-		error = UT_ERROR;
-		goto Cleanup;
+		return UT_ERROR;
 	}
 
 Cleanup:
-	DELETEP(pFG);
 
 	return error;
 }
@@ -4388,7 +4383,7 @@ Cleanup:
  */
 UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageName)
 {
-	FG_Graphic* pFG		= 0;
+	FG_ConstGraphicPtr pFG;
 	UT_Error error		= UT_OK;
 	const UT_ByteBuf * buf		= 0;
 
@@ -4449,12 +4444,12 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   if(!pictData.getPointer(0))
 	  error =  UT_ERROR;
   else
-	  error = IE_ImpGraphic::loadGraphic (pictData, IEGFT_Unknown, &pFG);
+	  error = IE_ImpGraphic::loadGraphic (pictData, IEGFT_Unknown, pFG);
 
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
-	  goto Cleanup;
+	  return UT_ERROR;
 	}
 
   // TODO: can we get back a vector graphic?
@@ -4464,8 +4459,7 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 	{
 	  // i don't think that this could ever happen, but...
 	  UT_DEBUGMSG(("Could not convert to PNG\n"));
-	  error = UT_ERROR;
-	  goto Cleanup;
+	  return UT_ERROR;
 	}
 
   UT_String_sprintf(sImageName, "%d", getDoc()->getUID(UT_UniqueId::Image));
@@ -4474,12 +4468,10 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
                                 buf, pFG->getMimeType(), NULL))
 	{
 	  UT_DEBUGMSG (("Could not create data item\n"));
-	  error = UT_ERROR;
-	  goto Cleanup;
+	  return UT_ERROR;
 	}
 
- Cleanup:  
-  DELETEP(pFG);
+ Cleanup:
 
   return error;
 }

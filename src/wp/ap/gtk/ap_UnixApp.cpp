@@ -776,7 +776,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 			  return;
 		  }
 
-		  FG_Graphic * pFG = NULL;
+		  FG_ConstGraphicPtr pFG;
 		  IEGraphicFileType iegft = IEGFT_Unknown;
 		  UT_Error error = UT_OK;
 		  
@@ -784,7 +784,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		  
 		  bytes.append (pData, iLen);
 		  
-		  error = IE_ImpGraphic::loadGraphic(bytes, iegft, &pFG);
+		  error = IE_ImpGraphic::loadGraphic(bytes, iegft, pFG);
 		  if(!pFG || error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
@@ -795,7 +795,6 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		  FV_View * pView = static_cast<FV_View*>(getLastFocussedFrame ()->getCurrentView());
 		  
 		  error = pView->cmdInsertGraphic(pFG);
-		  DELETEP(pFG);
 		  if (!error)
 			  bSuccess = true;
       }

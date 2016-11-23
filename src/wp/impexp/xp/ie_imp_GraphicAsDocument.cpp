@@ -53,31 +53,29 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
 	    !getDoc()->appendStrux(PTX_Block, PP_NOPROPS))
      		return UT_IE_NOMEMORY;
    
-   	FG_Graphic* pFG;
-   	error = m_pGraphicImporter->importGraphic(input, &pFG);
-   	DELETEP(m_pGraphicImporter);
+   	FG_ConstGraphicPtr pFG;
+   	error = m_pGraphicImporter->importGraphic(input, pFG);
 
-   	if (error != UT_OK) return error;
+   	if (error != UT_OK) {
+          return error;
+        }
    
    	const UT_ByteBuf * buf;
-    buf = pFG->getBuffer();
+   	buf = pFG->getBuffer();
 
    	const PP_PropertyVector propsArray = {
           "dataid", "image_0"
         };
    
    	if (!getDoc()->appendObject(PTO_Image, propsArray)) {
-	   delete pFG;
 	   return UT_IE_NOMEMORY;
 	}
 
    	if (!getDoc()->createDataItem("image_0", false,
 					buf, pFG->getMimeType(), NULL)) {
-	   delete pFG;
 	   return UT_IE_NOMEMORY;
 	}
 
-   	delete pFG;
 
 	return UT_OK;
 }

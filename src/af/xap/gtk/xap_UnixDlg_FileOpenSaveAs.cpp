@@ -880,7 +880,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	int answer = 0;
 
-	FG_Graphic * pGraphic = 0;
+	FG_ConstGraphicPtr pGraphic;
 	GR_Image *pImage = NULL;
 
 	double		scale_factor = 0.0;
@@ -983,7 +983,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	FREEP(file_name);
 	DELETEP(pImage);
 	DELETEP(pGr);
-	DELETEP(pGraphic);
 
 	return answer;
 }

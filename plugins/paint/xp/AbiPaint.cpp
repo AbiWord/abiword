@@ -520,7 +520,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 // OK replace the current image with this.
 //
 				IEGraphicFileType iegft = IEGFT_Unknown;
-				FG_Graphic* pFG;
+				FG_ConstGraphicPtr pFG;
 		
 				UT_Error errorCode;
 		
@@ -540,7 +540,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 				}
 #endif
 
-				errorCode = IE_ImpGraphic::loadGraphic(szTmpPng.c_str(), iegft, &pFG);
+				errorCode = IE_ImpGraphic::loadGraphic(szTmpPng.c_str(), iegft, pFG);
 				if(errorCode)
 				{
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -558,10 +558,8 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 				{
 					pFrame->showMessageBox("Could not put image back into Abiword", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-					DELETEP(pFG);
 					goto Cleanup;
 				}
-				DELETEP(pFG);
 //
 // Reselect the image
 //

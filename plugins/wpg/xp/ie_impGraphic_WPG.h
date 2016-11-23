@@ -44,7 +44,7 @@ public:
 class IE_Imp_WordPerfectGraphics : public IE_ImpGraphic
 {
 public:
-	virtual UT_Error	importGraphic(GsfInput *input, FG_Graphic **ppfg);
+  virtual UT_Error	importGraphic(GsfInput *input, FG_ConstGraphicPtr& pfg);
 };
 
 #endif /* IE_IMP_WPG_H */

@@ -44,20 +44,20 @@ public:
 	virtual double		getWidth(void) const;
 	virtual double		getHeight(void) const;
 	virtual const char * getDataId(void) const { return m_pszDataID;}
-	virtual const char * createDataItem(PD_Document *pDoc, const char * szName);
+	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) const;
 	virtual GR_Image*	generateImage(GR_Graphics* pG,
 									  const PP_AttrProp * pSpanAP,
 									  UT_sint32 maxW, UT_sint32 maxH);
 	virtual GR_Image*	regenerateImage(GR_Graphics* pG);
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
-										   UT_uint32 iPos, const char* szName);
+										   UT_uint32 iPos, const char* szName) const;
 
 	virtual UT_Error   	insertAtStrux(PD_Document* pDoc,
 									  UT_uint32 res,
 									  UT_uint32 iPos,
 									  PTStruxType iStruxType,
-									  const char* szName);
+									  const char* szName) const;
 
 	bool				setVector_SVG(const UT_ByteBuf* pBB);
 	const UT_ByteBuf*		getBuffer(void) const;
@@ -75,5 +75,8 @@ protected:
 	const PP_AttrProp* m_pSpanAP;
 	const gchar* m_pszDataID;
 };
+
+typedef std::unique_ptr<FG_GraphicVector> FG_GraphicVectorPtr;
+// no Const since we use FG_ConstGraphicPtr.
 
 #endif /* FG_GRAPHICVECTOR_H */

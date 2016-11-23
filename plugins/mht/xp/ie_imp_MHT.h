@@ -131,7 +131,7 @@ public:
 	UT_Error		importFile (const char * szFilename);
 
 private:
-	FG_Graphic *	importImage (const gchar * szSrc);
+	FG_ConstGraphicPtr	importImage(const gchar * szSrc);
 
 	UT_Error		importXHTML (const char * szFilename);
 	UT_Error		importHTML4 (const char * szFilename);

@@ -83,13 +83,13 @@ public:
 	/*!
 	 * Convert an image data buffer into PNG image buffer.
 	 */
-	virtual UT_Error importGraphic(UT_ByteBuf * pBB, FG_Graphic ** ppfg)
+	virtual UT_Error importGraphic(UT_ByteBuf * pBB, FG_ConstGraphicPtr & pfg)
 	{
 		UT_Error err = _importGraphic(pBB);
 		if ( err != UT_OK )
 			return err ;
 
-		FG_GraphicRaster * pFGR = new FG_GraphicRaster();
+		FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
 		if(pFGR == NULL)
 			{
 				return UT_IE_NOMEMORY;
@@ -100,7 +100,7 @@ public:
 				return UT_IE_FAKETYPE;
 			}
 		
-		*ppfg = static_cast<FG_Graphic *>(pFGR);
+		pfg = std::move(pFGR);
 		return UT_OK;
 	}
   

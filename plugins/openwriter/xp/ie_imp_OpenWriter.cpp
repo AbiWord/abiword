@@ -1590,13 +1590,13 @@ private:
     if (error != UT_OK)
       return;
 
-    FG_Graphic* pFG		= 0;
+    FG_ConstGraphicPtr pFG;
     const UT_ByteBuf * pictData       = 0;
     
     UT_String propBuffer;
     UT_String propsName;
     
-    error = IE_ImpGraphic::loadGraphic (img_buf, IEGFT_Unknown, &pFG);
+    error = IE_ImpGraphic::loadGraphic (img_buf, IEGFT_Unknown, pFG);
 	if ((error != UT_OK) || !pFG)
       {
 		  // pictData is already freed in ~FG_Graphic

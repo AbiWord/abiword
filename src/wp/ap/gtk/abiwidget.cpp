@@ -1590,19 +1590,17 @@ abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned)
 	// we own storage for pNewFile and must g_free it.
 	UT_DEBUGMSG(("abi_widget_insert_image: loading [%s]\n", szFile));
 
-	FG_Graphic* pFG = NULL;
+	FG_ConstGraphicPtr pFG;
 	UT_Error errorCode;
-	errorCode = IE_ImpGraphic::loadGraphic(szFile, iegft, &pFG);
+	errorCode = IE_ImpGraphic::loadGraphic(szFile, iegft, pFG);
 	if (errorCode != UT_OK || !pFG)
 		return false;
 
 	errorCode = (positioned ? pView->cmdInsertPositionedGraphic(pFG) : pView->cmdInsertGraphic(pFG));
 	if (errorCode != UT_OK)
 	{
-		DELETEP(pFG);
 		return false;
 	}
-	DELETEP(pFG);
 	return true;
 }
 	

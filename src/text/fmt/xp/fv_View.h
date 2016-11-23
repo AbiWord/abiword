@@ -26,6 +26,7 @@
 #include "config.h"
 #endif
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -331,8 +332,8 @@ public:
 	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
 
-	UT_Error		cmdInsertGraphic(FG_Graphic*);
-	UT_Error        cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, PTStruxType iStruxType);
+	UT_Error		cmdInsertGraphic(const FG_ConstGraphicPtr&);
+	UT_Error        cmdInsertGraphicAtStrux(const FG_ConstGraphicPtr& pFG, PT_DocPosition iPos, PTStruxType iStruxType);
 	virtual void	toggleCase(ToggleCase c);
 	virtual void	setPaperColor(const gchar * clr);
 
@@ -575,8 +576,8 @@ public:
 											const PP_PropertyVector & attribs);
 
 	bool            convertPositionedToInLine(fl_FrameLayout * pFrame);
-	UT_Error        cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, UT_sint32 mouseY);
-	UT_Error        cmdInsertPositionedGraphic(FG_Graphic* pFG);
+	UT_Error        cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_sint32 mouseX, UT_sint32 mouseY);
+	UT_Error        cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG);
 
 // ----------------------
 
@@ -973,8 +974,8 @@ protected:
 	void				_drawSelection();
 	void				_extSel(UT_uint32 iOldPoint);
 	void				_extSelToPos(PT_DocPosition pos);
-	UT_Error			_insertGraphic(FG_Graphic*, const char*);
-	UT_Error			_insertGraphic(FG_Graphic*, const char*,PT_DocPosition pos);
+	UT_Error			_insertGraphic(const FG_ConstGraphicPtr&, const char*);
+	UT_Error			_insertGraphic(const FG_ConstGraphicPtr&, const char*, PT_DocPosition pos);
 
 	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_sint32 ndx);
 

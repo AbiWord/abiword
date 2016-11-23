@@ -1067,7 +1067,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 					XAP_Frame * pNewFrame = 0;
 					IEGraphicFileType iegft = IEGFT_Unknown;					
 					IE_ImpGraphic *pIEG;
-					FG_Graphic* pFG;
+					FG_ConstGraphicPtr pFG;
 					UT_Error errorCode = UT_ERROR;
 
 					/*
@@ -1083,13 +1083,12 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 					if(errorCode == UT_OK)
 					{						
-						errorCode = pIEG->importGraphic(uri, &pFG);
+						errorCode = pIEG->importGraphic(uri, pFG);
 
 						DELETEP(pIEG);
 						if(errorCode == UT_OK && pFG)
 						{
 						  errorCode = pCurrentView->cmdInsertGraphic(pFG);
-						  DELETEP(pFG);
 						}
 					  }
 

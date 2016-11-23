@@ -5138,7 +5138,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const PP_PropertyVector & e
 	return bResult;
 }
 
-UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
+UT_Error FV_View::cmdInsertGraphic(const FG_ConstGraphicPtr& pFG)
 {
 	bool bDidGlob = false;
 
@@ -5180,7 +5180,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 	return errorCode;
 }
 
-UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG)
+UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG)
 {
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run * pRun = NULL;
@@ -5196,7 +5196,7 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG)
 }
 
 
-UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, UT_sint32 mouseY)
+UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_sint32 mouseX, UT_sint32 mouseY)
 {
 	m_pDoc->beginUserAtomicGlob();
 
@@ -5816,7 +5816,7 @@ bool FV_View::cmdDeleteEmbed(fp_Run * pRun)
  * point given by ipos.
  * This is useful for speficifying images as backgrounds to pages and cells.
  */
-UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, PTStruxType iStruxType)
+UT_Error FV_View::cmdInsertGraphicAtStrux(const FG_ConstGraphicPtr& pFG, PT_DocPosition iPos, PTStruxType iStruxType)
 {
 	bool bDidGlob = false;
 

@@ -1201,7 +1201,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		UT_UTF8String sWidth;
 		UT_UTF8String sHeight;
 
-		FG_Graphic * pfg = 0;
+		FG_ConstGraphicPtr pfg;
 
 		if (szSrc.compare(0, 5, "data:") == 0) { // data-URL - special case
 			pfg = importDataURLImage (szSrc.c_str() + 5);
@@ -1842,7 +1842,7 @@ X_Fail:
 	return;
 }
 
-FG_Graphic * IE_Imp_XHTML::importDataURLImage (const gchar * szData)
+FG_ConstGraphicPtr IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 {
 	if (strncmp (szData, "image/", 6))
 		{
@@ -1882,8 +1882,8 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 	pBB.ins (0, reinterpret_cast<const UT_Byte *>(binbuffer), binlength);
 	FREEP(binbuffer);
 
-	FG_Graphic * pfg = 0;
-	if (IE_ImpGraphic::loadGraphic (pBB, IEGFT_Unknown, &pfg) != UT_OK || !pfg)
+	FG_ConstGraphicPtr pfg;
+	if (IE_ImpGraphic::loadGraphic (pBB, IEGFT_Unknown, pfg) != UT_OK || !pfg)
 		{
 			UT_DEBUGMSG(("unable to construct image importer!\n"));
 			return 0;
@@ -1893,7 +1893,7 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 	return pfg;
 }
 
-FG_Graphic * IE_Imp_XHTML::importImage (const gchar * szSrc)
+FG_ConstGraphicPtr IE_Imp_XHTML::importImage (const gchar * szSrc)
 {
 	const char * szFile = static_cast<const char *>(szSrc);
 
@@ -1903,8 +1903,8 @@ FG_Graphic * IE_Imp_XHTML::importImage (const gchar * szSrc)
 
 	UT_DEBUGMSG(("found image reference (%s) - loading... \n", relative_file));
 
-	FG_Graphic * pfg = 0;
-	UT_Error err = IE_ImpGraphic::loadGraphic (relative_file, IEGFT_Unknown, &pfg);
+	FG_ConstGraphicPtr pfg;
+	UT_Error err = IE_ImpGraphic::loadGraphic (relative_file, IEGFT_Unknown, pfg);
 
 	if (err != UT_OK || !pfg)
 		{

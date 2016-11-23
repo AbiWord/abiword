@@ -93,7 +93,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	UT_ByteBuf pictData;
 	UT_uint16 chLeft = chars_per_byte;
 	UT_Byte pic_byte = 0;
-	FG_Graphic* pFG = NULL;
+	FG_ConstGraphicPtr pFG;
 	UT_Error error = UT_OK;
 	unsigned char ch;
 
@@ -142,7 +142,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	// We let the caller handle this
 	SkipBackChar(ch);
 
-	error = IE_ImpGraphic::loadGraphic(pictData, iegftForRTF(format), &pFG);
+	error = IE_ImpGraphic::loadGraphic(pictData, iegftForRTF(format), pFG);
 
 	if ((error == UT_OK) && pFG)
 	{
@@ -153,12 +153,10 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 		if (!FlushStoredChars(true))
 		{
 			UT_DEBUGMSG(("Error flushing stored chars just before inserting a picture\n"));
-			DELETEP(pFG);
 			return false;
 		}
 
 		ok = InsertImage (pFG, image_name, imgProps);
-		DELETEP(pFG);
 		if (!ok)
 		{
 			return false;
@@ -183,7 +181,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
   Insert and image at the current position.
   Check whether we are pasting or importing
 */
-bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
+bool IE_Imp_RTF::InsertImage (const FG_ConstGraphicPtr& pFG, const char * image_name,
 							  const struct RTFProps_ImageProps & imgProps)
 {
 	std::string propBuffer;

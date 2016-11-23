@@ -446,7 +446,7 @@ void OXMLi_ListenerState_Image::charData (OXMLi_CharDataRequest * rqst)
 bool OXMLi_ListenerState_Image::addImage(const std::string & id)
 {
 	UT_Error err = UT_OK;
-	FG_Graphic* pFG = NULL;
+	FG_ConstGraphicPtr pFG;
 		
 	OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
 	const UT_ByteBuf* imageData = mgr->parseImageStream(id.c_str());
@@ -454,8 +454,8 @@ bool OXMLi_ListenerState_Image::addImage(const std::string & id)
 	if (!imageData)
 		return false;
 
-	err = IE_ImpGraphic::loadGraphic (*imageData, IEGFT_Unknown, &pFG);
-	if ((err != UT_OK) || !pFG) 
+	err = IE_ImpGraphic::loadGraphic (*imageData, IEGFT_Unknown, pFG);
+	if ((err != UT_OK) || !pFG)
 	{
 		DELETEP(imageData);
 		UT_DEBUGMSG(("FRT:OpenXML importer can't import the picture with id:%s\n", id.c_str()));
@@ -466,10 +466,10 @@ bool OXMLi_ListenerState_Image::addImage(const std::string & id)
 	OXML_Document * doc = OXML_Document::getInstance();
 	if(!doc)
 		return false;
-				
+
 	OXML_Image* img = new OXML_Image();
 	img->setId(id.c_str());
-	img->setGraphic(pFG);
+	img->setGraphic(std::move(pFG));
 
 	OXML_SharedImage shrImg(img);
 

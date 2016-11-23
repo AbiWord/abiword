@@ -84,21 +84,18 @@ UT_Error IE_ImpGraphicSVG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 
 //  This actually creates our FG_Graphic object for a SVG
 UT_Error IE_ImpGraphic_SVG::importGraphic(UT_ByteBuf* pBB, 
-					  FG_Graphic ** ppfg)
+                                          FG_ConstGraphicPtr& pfg)
 {
-	FG_GraphicVector *pFGR;
-
-	pFGR = new FG_GraphicVector();
+	FG_GraphicVectorPtr pFGR(new FG_GraphicVector);
 	if(pFGR == NULL)
 		return UT_IE_NOMEMORY;
 
 	if(!pFGR->setVector_SVG(pBB)) {
-		DELETEP(pFGR);
-		
+
 		return UT_IE_FAKETYPE;
 	}
 
-	*ppfg = static_cast<FG_Graphic *>(pFGR);
+	pfg = std::move(pFGR);
 	return UT_OK;
 }
 
