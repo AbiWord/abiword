@@ -1124,10 +1124,11 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     
     if (!m_fontName.empty()) {
         const std::string & fontFamily = rFontFaceDecls.getFontFamily(m_fontName.c_str());
-        
-        UT_ASSERT_HARMLESS(!fontFamily.empty());
+
         if (!fontFamily.empty()) {
             APPEND_STYLE("font-family: ", fontFamily);
+        } else {
+            UT_WARNINGMSG(("ODT: style font family is empty"));
         }
     }
     
