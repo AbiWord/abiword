@@ -6051,8 +6051,8 @@ void PD_Document::updateDirtyLists(void)
 		pAutoNum = m_vecLists.getNthItem(i);
 		if(pAutoNum->isEmpty() || (pAutoNum->getDoc() != this))
 		{
-			delete pAutoNum;
 			m_vecLists.deleteNthItem(i);
+			delete pAutoNum;
 			iNumLists--;
 			i--;
 		}
@@ -6100,7 +6100,7 @@ bool PD_Document::fixListHierarchy(void)
                     if (pAutoNum->getFirstItem() == NULL)
                     {
                         itemsToRemove.push_back(i);
-                    } 
+                    }
                     else
                     {
                         pAutoNum->fixHierarchy();
@@ -6108,10 +6108,13 @@ bool PD_Document::fixListHierarchy(void)
             }
             while(!itemsToRemove.empty())
             {
-                m_vecLists.deleteNthItem(itemsToRemove.back());
+                UT_uint32 i = itemsToRemove.back();
+                fl_AutoNum* pList = m_vecLists.getNthItem(i);
+                m_vecLists.deleteNthItem(i);
                 itemsToRemove.pop_back();
+                delete pList;
             }
-	    
+
             return true;
 	}
 }
