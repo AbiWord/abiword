@@ -51,9 +51,7 @@
 #include "fv_UnixVisualDrag.h"
 #include "fv_UnixFrameEdit.h"
 #include "fv_UnixInlineImage.h"
-#if !defined(TOOLKIT_GTK2)
 #include "fv_UnixSelectionHandles.h"
-#endif
 #else
 #include "fv_VisualDragText.h"
 #endif
@@ -1187,7 +1185,7 @@ private:
     int                 m_bubbleBlockerCount;
 	UT_sint32           m_iOldPageCount;
 
-#if defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_GTK2)
+#if defined(TOOLKIT_GTK_ALL)
 	FV_UnixSelectionHandles m_SelectionHandles;
 #else
 	FV_SelectionHandles m_SelectionHandles;
