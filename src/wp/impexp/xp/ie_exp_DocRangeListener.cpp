@@ -166,7 +166,7 @@ void  IE_Exp_DocRangeListener::freeAtts(const char *** allAtts)
   UT_sint32 i=0;
   while(sAtts[i])
   {
-      delete [] (sAtts[i]);
+      g_free(const_cast<char*>(sAtts[i]));
       i++;
   }
   delete [] sAtts;
