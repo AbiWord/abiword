@@ -1213,7 +1213,7 @@ gboolean XAP_UnixFrameImpl::_fe::draw(GtkWidget *w, cairo_t *cr, gpointer)
 		pView->draw(&rClip);
 		static_cast<GR_CairoGraphics *>(pGr)->setCairo(NULL);
 	}
-	return FALSE;
+	return TRUE;
 }
 
 static bool bScrollWait = false;
