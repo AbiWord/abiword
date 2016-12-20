@@ -26,6 +26,8 @@
 #include "config.h"
 #endif
 
+#include "ut_debugmsg.h"
+
 // TODO move these declarations into platform directories.
 
 #if (defined (WIN32) || defined (_WIN32) || defined (_WIN64))
@@ -154,10 +156,14 @@ extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * 
 #		include /**/ "ut_unixAssert.h"
 #		define UT_ASSERT(expr)								\
 		{										\
-			static bool __bOnceOnly = false;					\
-			if (!__bOnceOnly && !(expr))						\
-				if (UT_UnixAssertMsg(#expr, __FILE__, __LINE__) == -1)		\
-					__bOnceOnly = true;					\
+	        if (!ut_g_silent) { \
+                static bool __bOnceOnly = false;                \
+                if (!__bOnceOnly && !(expr)) {                        \
+                    if (UT_UnixAssertMsg(#expr, __FILE__, __LINE__) == -1) { \
+                        __bOnceOnly = true;                             \
+                    } \
+                }     \
+            } \
 		}
 #	endif
 

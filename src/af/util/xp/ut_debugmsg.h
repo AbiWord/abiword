@@ -98,6 +98,8 @@ public:
   }
 };
 
+extern bool ut_g_silent;
+ABI_EXPORT void UT_Debug_Init();
 
 ABI_EXPORT void _UT_OutputMessage(const char *s, ...) ABI_PRINTF_FORMAT(1,2);
 

@@ -23,10 +23,12 @@
 #include "config.h"
 #endif
 
+#include "ut_debugmsg.h"
 #include "ap_UnixApp.h"
 
 int main(int argc, char ** argv)
 {
+	UT_Debug_Init();
 	return AP_UnixApp::main(PACKAGE_NAME, argc, argv);
 }
 

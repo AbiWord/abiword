@@ -52,3 +52,13 @@ Like:
     $ abiword --plugin=AbiTest -E core.wp.impexp.table
 
 This will only the test(s) in that suite.
+
+Debugging
+=========
+
+You can set these env variable to assist in test and debugging:
+
+* ABI_TEST_SRC_DIR : set the top srcdir for the test harness. (see
+  above)
+* ABI_DEBUG_SILENT : set to 1 to silence UT_DEBUGMSG() and
+  ignore UT_ASSERT() in a debug build.

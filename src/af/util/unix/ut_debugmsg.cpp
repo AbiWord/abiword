@@ -27,8 +27,23 @@
 
 #include "ut_debugmsg.h"
 
+bool ut_g_silent = false;
+
+void UT_Debug_Init()
+{
+#if DEBUG
+    const char* silent = getenv("ABI_DEBUG_SILENT");
+    if (silent) {
+        ut_g_silent = (strcmp(silent, "1") == 0);
+    }
+#endif
+}
+
 void _UT_OutputMessage(const char *s, ...)
 {
+    if (ut_g_silent) {
+        return;
+    }
 #ifdef DEBUG
 #define DEBUG_MSG "DEBUG: "
 	static bool debug_msg = true;
