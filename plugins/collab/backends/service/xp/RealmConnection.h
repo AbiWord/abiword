@@ -21,7 +21,11 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include <asio.hpp>
+#if defined(HAVE_BOOST_ASIO_HPP)
+# include <boost/asio.hpp>
+#else
+# include <asio.hpp>
+#endif
 #include <vector>
 #include <string>
 #include "ut_types.h"

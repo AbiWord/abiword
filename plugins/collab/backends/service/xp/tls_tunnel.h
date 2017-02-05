@@ -33,7 +33,11 @@
 #include <boost/function.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include <asio.hpp>
+#if defined(HAVE_BOOST_ASIO_HPP)
+# include <boost/asio.hpp>
+#else
+# include <asio.hpp>
+#endif
 #include <string>
 #include <vector>
 #ifdef _MSC_VER

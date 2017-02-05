@@ -19,7 +19,12 @@
 #ifndef __ASYNC_WORKER__
 #define __ASYNC_WORKER__
 
-#include <asio.hpp>
+#if defined(HAVE_BOOST_ASIO_HPP)
+# include <boost/asio.hpp>
+#else
+# include <asio.hpp>
+#endif
+
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>

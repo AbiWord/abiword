@@ -23,7 +23,11 @@
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include <asio.hpp>
+#if defined(HAVE_BOOST_ASIO_HPP)
+# include <boost/asio.hpp>
+#else
+# include <asio.hpp>
+#endif
 
 #include <sync/xp/Synchronizer.h>
 #include "Session.h"

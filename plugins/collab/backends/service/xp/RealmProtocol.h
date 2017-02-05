@@ -9,7 +9,11 @@
 #include <stdint.h>
 #endif
 #include <boost/shared_ptr.hpp>
-#include <asio.hpp>
+#if defined(HAVE_BOOST_ASIO_HPP)
+# include <boost/asio.hpp>
+#else
+# include <asio.hpp>
+#endif
 
 namespace realm {
 

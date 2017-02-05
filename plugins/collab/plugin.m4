@@ -70,20 +70,22 @@ AC_ARG_ENABLE([collab-backend-tcp],
 	enable_collab_backend_tcp=$enableval
 	if test "$enable_collab_backend_tcp" != "no"; then
 		AC_LANG_PUSH(C++)
-		AC_CHECK_HEADERS([asio.hpp], [], 
+		AC_CHECK_HEADERS([asio.hpp], [],
+			[AC_CHECK_HEADERS([boost/asio.hpp], [AC_DEFINE([HAVE_BOOST_ASIO_HPP])],
 		[
 			AC_MSG_ERROR([collab plugin: asio is required for the collab plugin TCP backend, see http://think-async.com/])
-		])
+		])])
 		AC_LANG_POP
 		collab_deps="yes"
 	fi
 ], [
 	AC_LANG_PUSH(C++)
-	AC_CHECK_HEADERS([asio.hpp], 
+	AC_CHECK_HEADERS([asio.hpp],
+		[AC_CHECK_HEADERS([boost/asio.hpp], [AC_DEFINE([HAVE_BOOST_ASIO_HPP])],
 	[
 		enable_collab_backend_tcp="yes"
 		collab_deps="yes"
-	])
+	])])
 	AC_LANG_POP
 ])
 AC_MSG_CHECKING([for collab tcp backend])
@@ -112,10 +114,11 @@ AC_ARG_ENABLE([collab-backend-service],
 	enable_collab_backend_service=$enableval
 	if test "$enable_collab_backend_service" != "no"; then
 		AC_LANG_PUSH(C++)
-		AC_CHECK_HEADERS([asio.hpp], [], 
+		AC_CHECK_HEADERS([asio.hpp], [],
+		[AC_CHECK_HEADERS([boost/asio.hpp], [AC_DEFINE([HAVE_BOOST_ASIO_HPP])],	
 		[
 			AC_MSG_ERROR([collab plugin: asio is required for the the abicollab.net backend, see http://think-async.com/])
-		])
+		])])
 		AC_LANG_POP
 		PKG_CHECK_EXISTS([ $collab_service_req ], [], [
 			AC_MSG_ERROR([collab plugin: missing dependencies])
@@ -125,13 +128,14 @@ AC_ARG_ENABLE([collab-backend-service],
 ], [
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp],
+		[AC_CHECK_HEADERS([boost/asio.hpp], [AC_DEFINE([HAVE_BOOST_ASIO_HPP])],
 	[
 		PKG_CHECK_EXISTS([ $collab_service_req ], [
 			enable_collab_backend_service="yes"
 			collab_deps="yes"
 		], [
 			enable_collab_backend_service="no"
-		])
+		])])
 	], [
 		enable_collab_backend_service="no"
         ])
