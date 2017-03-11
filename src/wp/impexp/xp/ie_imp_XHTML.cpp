@@ -230,7 +230,7 @@ IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
     m_iListID(0),
 	m_iNewListID(0),
 	m_iNewImage(0),
-	m_szBookMarkName(NULL),
+	m_szBookMarkName(""),
 	m_addedPTXSection(false),
 	m_iPreCount(0),
 	m_bFirstBlock(false),
@@ -1034,8 +1034,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 		std::string szListID, szParentID;
 		szListID = UT_std_string_sprintf("%u", m_iNewListID);
-		// XXX is this right? should be szParentID IMHO
-		szListID = UT_std_string_sprintf("%u", *parentID);
+		szParentID = UT_std_string_sprintf("%u", *parentID);
 
 		const int IDpos = 1;
 		const int parentIDpos = 3;
