@@ -762,7 +762,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	                                                // this just avoids all the processing if there is an error
 
-	UT_uint16 *parentID;
+	UT_uint16 parentID;
 
 	UT_uint32 tokenIndex;
 	tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
@@ -1022,7 +1022,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			m_bWasSpace = false;
 		}
 
-		parentID = new UT_uint16(m_iListID);
+		parentID = m_iListID;
 		m_utsParents.push(parentID);
 
 		/* new list, increment list depth */
@@ -1034,7 +1034,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 		std::string szListID, szParentID;
 		szListID = UT_std_string_sprintf("%u", m_iNewListID);
-		szParentID = UT_std_string_sprintf("%u", *parentID);
+		szParentID = UT_std_string_sprintf("%u", parentID);
 
 		const int IDpos = 1;
 		const int parentIDpos = 3;
@@ -1057,7 +1057,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		if (m_listType != L_NONE)
 		{
 			UT_uint16 thisID = m_iListID;
-			m_utsParents.viewTop(reinterpret_cast<void**>(&parentID));
+			parentID = m_utsParents.top();
 
 			const gchar** listAtts;
 			listAtts = (m_listType == L_OL ? ol_p_atts : ul_p_atts);
@@ -1067,13 +1067,13 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 			std::string szListID, szParentID, szLevel, szMarginLeft;
 			szListID = UT_std_string_sprintf("%u", thisID);
-			szParentID = UT_std_string_sprintf("%u", *parentID);
-			szLevel = UT_std_string_sprintf("%u", m_utsParents.getDepth());
+			szParentID = UT_std_string_sprintf("%u", parentID);
+			szLevel = UT_std_string_sprintf("%lu", m_utsParents.size());
 
 			{
 				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				szMarginLeft = UT_std_string_sprintf(" margin-left: %.2fin",
-								  m_utsParents.getDepth() * 0.5);
+								  m_utsParents.size() * 0.5);
 			}
 
 			const int LevelPos = 1;
@@ -1559,17 +1559,13 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 	case TT_OL:
 	case TT_UL:
 	case TT_DL:
-		UT_uint16 *temp;
+		m_iListID = m_utsParents.top();
+		m_utsParents.pop();
 
-		if(m_utsParents.pop(reinterpret_cast<void**>(&temp)))
-		{
-			m_iListID = *temp;
-			DELETEP(temp);
+		if(m_utsParents.empty()) {
+			m_listType = L_NONE;
 		}
 
-		if(m_utsParents.getDepth() == 0)
-			m_listType = L_NONE; 
-			
 		return;
 
 	case TT_LI:

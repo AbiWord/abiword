@@ -22,8 +22,9 @@
 #ifndef IE_IMP_XHTML_1_H
 #define IE_IMP_XHTML_1_H
 
+#include <stack>
+
 #include "ie_imp_XML.h"
-#include "ut_stack.h"
 #include "fg_Graphic.h"
 
 /* NOTE: I'm trying to keep the code similar across versions,
@@ -118,7 +119,7 @@ private:
 	UT_uint16	m_iNewListID;
 	UT_uint16	m_iNewImage;
 
-	UT_Stack	m_utsParents;
+	std::stack<UT_uint16>	m_utsParents;
 	std::string m_szBookMarkName;
 
 	bool        m_addedPTXSection;
