@@ -128,8 +128,9 @@ AiksaurusGTK_history::move_back()
 	// make current element become first element of forward.
 	d_forward.push_front(d_current_ptr);
 
-    while (d_forward.size() > 200)
-        d_forward.pop_back();
+	while (d_forward.size() > 200) {
+		d_forward.pop_back();
+	}
 
 	// make first element of back become current.
 	delete[] d_current_ptr;
@@ -150,8 +151,9 @@ AiksaurusGTK_history::move_forward()
 	// make current element become first element of back.
 	d_back.push_front(d_current_ptr);
 
-    while (d_back.size() > 200)
-        d_back.pop_back();
+	while (d_back.size() > 200) {
+		d_back.pop_back();
+	}
 
 	// make first element of forward become current.
 	delete[] d_current_ptr;
