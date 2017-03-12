@@ -36,6 +36,7 @@
 #include "pt_Types.h"
 #include "pp_Property.h"
 #include "fp_types.h"
+#include "fl_PartOfBlock.h"
 #ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
 #endif
@@ -67,7 +68,6 @@ class fl_DocSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_DocListener;
 class fl_BlockLayout;
-class fl_PartOfBlock;
 class fl_AutoNum;
 class fl_EndnoteLayout;
 
@@ -591,7 +591,7 @@ public:
 // Stuff for spellcheck context menu
 //
 	UT_UCSChar *	getContextSuggest(UT_uint32 ndx);
-	void			cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL = NULL, fl_PartOfBlock * ppPOB = NULL);
+	void			cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL = NULL, const fl_PartOfBlockPtr& ppPOB = fl_PartOfBlockPtr());
 	void			cmdContextIgnoreAll(void);
 	void			cmdContextAdd(void);
 #endif
@@ -975,7 +975,7 @@ protected:
 	UT_Error			_insertGraphic(const FG_ConstGraphicPtr&, const char*);
 	UT_Error			_insertGraphic(const FG_ConstGraphicPtr&, const char*, PT_DocPosition pos);
 
-	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_sint32 ndx);
+	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, const fl_PartOfBlockPtr& pPOB, UT_sint32 ndx);
 
 	static void 		_autoScroll(UT_Worker * pTimer);
 	static void 		_actuallyScroll(UT_Worker * pTimer);

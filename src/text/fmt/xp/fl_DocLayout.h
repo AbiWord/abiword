@@ -31,6 +31,7 @@
 #include "pt_Types.h"
 #include "fp_PageSize.h"
 #include "fl_Layout.h"
+#include "fl_PartOfBlock.h"
 #include "ut_units.h"
 #include "xav_Listener.h"
 
@@ -76,7 +77,6 @@ class GR_Graphics;
 class GR_Font;
 class UT_Timer;
 class UT_Worker;
-class fl_PartOfBlock;
 class fl_AutoNum;
 class PX_ChangeRecord_StruxChange;
 class fl_FootnoteLayout;
@@ -123,7 +123,7 @@ public:
 	inline PD_Document*	getDocument(void) const { return m_pDoc; }
 #ifdef ENABLE_SPELL
 	inline const fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
-	inline fl_PartOfBlock* getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };
+	inline const fl_PartOfBlockPtr& getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };
 #endif
 
 	// The smart quote stuff works by listening for insertions (typing
@@ -197,7 +197,8 @@ public:
 	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock,
 										   UT_sint32 iOffset,
 										   UT_sint32 chg) const;
-	void		setPendingWordForSpell(const fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
+	void		setPendingWordForSpell(const fl_BlockLayout *pBlock,
+					       const fl_PartOfBlockPtr& pWord);
 	bool		checkPendingWordForSpell(void);
 	void        dequeueAll(void);
 	void        queueAll(UT_uint32 iReason);
@@ -417,7 +418,7 @@ private:
 	fl_BlockLayout      *m_toSpellCheckHead;
 	fl_BlockLayout      *m_toSpellCheckTail;
 	const fl_BlockLayout*		m_pPendingBlockForSpell;	// if NULL, then ignore m_pPendingWordForSpell
-	fl_PartOfBlock*		m_pPendingWordForSpell;
+	fl_PartOfBlockPtr		m_pPendingWordForSpell;
 	bool				m_bSpellCheckCaps;
 	bool				m_bSpellCheckNumbers;
 	bool				m_bSpellCheckInternet;

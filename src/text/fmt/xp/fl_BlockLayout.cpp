@@ -4840,77 +4840,6 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine) const
 }
 
 /*****************************************************************/
-/*****************************************************************/
-
-fl_PartOfBlock::fl_PartOfBlock(void)
-{
-	m_iOffset = 0;
-	m_iPTLength = 0;
-	m_bIsIgnored = false;
-	m_bIsInvisible = false;
-}
-
-fl_PartOfBlock::fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iPTLength,
-							   bool bIsIgnored /* = false */):
-	m_iOffset(iOffset),
-	m_iPTLength(iPTLength),
-	m_bIsIgnored(bIsIgnored),
-	m_bIsInvisible(false)
-{
-}
-
-void fl_PartOfBlock::setGrammarMessage(UT_UTF8String & sMsg)
-{
-	m_sGrammarMessage = sMsg;
-}
-
-void fl_PartOfBlock::getGrammarMessage(UT_UTF8String & sMsg) const
-{
-	sMsg = m_sGrammarMessage;
-}
-
-/*!
-  Does POB touch region
-  \param iOffset Offset of region
-  \param iLength Length of region
-  \return True if the region touches the POB
-*/
-bool
-fl_PartOfBlock::doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const
-{
-	UT_sint32 start1, end1, start2, end2;
-
-	xxx_UT_DEBUGMSG(("fl_PartOfBlock::doesTouch(%d, %d)\n", iOffset, iLength));
-
-	start1 = m_iOffset;
-	end1 = m_iOffset + m_iPTLength;
-
-	start2 = iOffset;
-	end2 =	 iOffset + iLength;
-
-	if (end1 == start2)
-	{
-		return true;
-	}
-	if (end2 == start1)
-	{
-		return true;
-	}
-
-	/* they overlap */
-	if ((start1 <= start2) && (start2 <= end1))
-	{
-		return true;
-	}
-	if ((start2 <= start1) && (start1 <= end2))
-	{
-		return true;
-	}
-
-	return false;
-}
-
-
 
 
 #ifdef ENABLE_SPELL
@@ -5031,7 +4960,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg) const
 	// Is there a pending word left? If so, record the details.
 	if (iLen)
 	{
-		fl_PartOfBlock* pPending = NULL;
+		fl_PartOfBlockPtr pPending;
 
 		if (m_pLayout->isPendingWordForSpell())
 		{
@@ -5041,7 +4970,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg) const
 
 		if (!pPending)
 		{
-			pPending = new fl_PartOfBlock();
+			pPending = fl_PartOfBlockPtr(new fl_PartOfBlock());
 			UT_ASSERT(pPending);
 		}
 
@@ -5141,7 +5070,7 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 		// When past the provided end position, break out
 		if (eor > 0 && iBlockPos > eor) break;
 
-		fl_PartOfBlock* pPOB = new fl_PartOfBlock(iBlockPos, iPTLength);
+		fl_PartOfBlockPtr pPOB(new fl_PartOfBlock(iBlockPos, iPTLength));
 		UT_ASSERT(pPOB);
 
 #if 0 // TODO: turn this code on someday
@@ -5198,7 +5127,7 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
  */
 
 bool
-fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
+fl_BlockLayout::_doCheckWord(const fl_PartOfBlockPtr& pPOB,
 							 const UT_UCSChar* pWord,
 							 UT_sint32 iLength,
 							 bool bAddSquiggle /* = true */,
@@ -5231,9 +5160,6 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 
 	} while (0);
 
-	// Delete the POB which is not longer needed
-	delete pPOB;
-	
 	return false;
 }
 
@@ -5248,7 +5174,7 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
  check validity? Should just be provided the starting offset...
 */
 bool
-fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB) const
+fl_BlockLayout::checkWord(const fl_PartOfBlockPtr & pPOB) const
 {
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::checkWord\n"));
 
@@ -5271,16 +5197,12 @@ fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB) const
                                               iLength, iBlockPos, iPTLength)
         && (iBlockPos+iLength <= pPOB->getOffset()+pPOB->getPTLength()))
     {
-        delete pPOB;
-
-        fl_PartOfBlock* pNewPOB = new fl_PartOfBlock(iBlockPos, iPTLength);
+        fl_PartOfBlockPtr pNewPOB(new fl_PartOfBlock(iBlockPos, iPTLength));
         UT_ASSERT(pNewPOB);
-            
+
         return _doCheckWord(pNewPOB, pWord, iLength );
     }
 
-	// Delete the POB which is not longer needed
-	delete pPOB;
 	return false;
 }
 #endif
@@ -8808,7 +8730,7 @@ fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun) const
 	if (m_pSpellSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast))
 	{
 		UT_sint32 iStart = 0, iEnd;
-		fl_PartOfBlock* pPOB;
+		fl_PartOfBlockPtr pPOB;
 		UT_sint32 i = iFirst;
 
 		// The first POB may only be partially within the region. Clip
@@ -8891,7 +8813,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun) const
 	if (m_pGrammarSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast,true))
 	{
 		UT_sint32 iStart = 0, iEnd;
-		fl_PartOfBlock* pPOB;
+		fl_PartOfBlockPtr pPOB;
 		UT_sint32 i = iFirst;
 
 		// The first POB may only be partially within the region. Clip

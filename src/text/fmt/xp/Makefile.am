@@ -47,6 +47,8 @@ libxp_la_SOURCES = \
 	fl_FrameLayout.h \
 	fl_Layout.cpp \
 	fl_Layout.h \
+	fl_PartOfBlock.cpp \
+	fl_PartOfBlock.h \
 	fl_SectionLayout.cpp \
 	fl_SectionLayout.h \
 	fl_SelectionPreserver.cpp \

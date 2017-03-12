@@ -10988,16 +10988,15 @@ UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 	// locate the squiggle
 	PT_DocPosition pos = 0 ;
 	fl_BlockLayout* pBL = NULL ;
-	fl_PartOfBlock* pPOB = NULL ;
 
 	pos = getPoint();
 	pBL = _findBlockAtPosition(pos);
 	UT_return_val_if_fail(pBL,NULL);
-	
+
 	PT_DocPosition epos = 0;
 	getDocument()->getBounds(true, epos);
 	UT_DEBUGMSG(("end bound is %d\n", epos));
-	pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
+	const fl_PartOfBlockPtr& pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
 	UT_return_val_if_fail(pPOB, NULL);
 
 	// grab the suggestion

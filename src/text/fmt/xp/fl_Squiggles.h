@@ -20,6 +20,8 @@
 #ifndef FL_SQUIGGLES_H
 #define FL_SQUIGGLES_H
 
+#include <vector>
+
 #include "fl_BlockLayout.h"
 
 typedef enum
@@ -34,16 +36,16 @@ public:
 	fl_Squiggles(fl_BlockLayout* pOwner, FL_SQUIGGLE_TYPE iType);
 virtual	~fl_Squiggles(void);
 
-	void					add(fl_PartOfBlock* pPOB);
-	void					markForRedraw(fl_PartOfBlock* pPOB);
+	void					add(const fl_PartOfBlockPtr& pPOB);
+	void					markForRedraw(const fl_PartOfBlockPtr& pPOB);
 
 	bool					deleteAll(void);
 
-	fl_PartOfBlock*			get(UT_sint32 iOffset) const;
-	inline fl_PartOfBlock*	getNth(UT_sint32 n) const
-		{ return m_vecSquiggles.getNthItem(n); }
+	fl_PartOfBlockPtr		get(UT_sint32 iOffset) const;
+	inline const fl_PartOfBlockPtr&	getNth(UT_sint32 n) const
+		{ return m_vecSquiggles.at(n); }
 
-	void					clear(fl_PartOfBlock* pPOB);
+	void					clear(const fl_PartOfBlockPtr& pPOB);
 
 	void					textInserted(UT_sint32 iOffset,
 										 UT_sint32 iLength);
@@ -86,9 +88,9 @@ private:
 								  fl_BlockLayout* pBlock=NULL);
 
 	inline UT_sint32		_getCount(void) const
-		{ return m_vecSquiggles.getItemCount(); }
+		{ return m_vecSquiggles.size(); }
 
-	UT_GenericVector<fl_PartOfBlock*>	m_vecSquiggles;
+	std::vector<fl_PartOfBlockPtr>	m_vecSquiggles;
 	fl_BlockLayout*			m_pOwner;
 	FL_SQUIGGLE_TYPE                m_iSquiggleType;
 };
@@ -104,7 +106,6 @@ class ABI_EXPORT fl_GrammarSquiggles : public fl_Squiggles
  public:
   fl_GrammarSquiggles(fl_BlockLayout* pOwner);
 };
-
 
 #endif /* FL_SQUIGGLES_H */
 

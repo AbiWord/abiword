@@ -5731,7 +5731,7 @@ void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 #ifdef ENABLE_SPELL
 // NB: returns a UCS string that the caller needs to FREEP
 UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
-										fl_PartOfBlock* pPOB, UT_sint32 ndx)
+										const fl_PartOfBlockPtr& pPOB, UT_sint32 ndx)
 {
 	// mega caching - are these assumptions valid?
 	UT_UCSChar * szSuggest = NULL;
@@ -5739,7 +5739,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	// TODO these should really be static members, so we can properly
 	// clean up
 	static fl_BlockLayout * s_pLastBL = 0;
-	static fl_PartOfBlock * s_pLastPOB = 0;
+	static fl_PartOfBlockPtr s_pLastPOB;
 	static const UT_GenericVector<UT_UCSChar*>* s_pvCachedSuggestions = 0;
 
 	// can we use the cached suggestions?
@@ -5756,7 +5756,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 			}
 
 			s_pLastBL = 0;
-			s_pLastPOB = 0;
+			s_pLastPOB.reset();
 			DELETEP(s_pvCachedSuggestions);
 		}
 

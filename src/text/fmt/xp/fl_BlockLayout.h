@@ -44,6 +44,7 @@
 #include "pp_Property.h"
 #include "fl_ContainerLayout.h"
 #include "fl_SectionLayout.h"
+#include "fl_PartOfBlock.h"
 #include "fb_LineBreaker.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
@@ -362,7 +363,7 @@ public:
 	bool                    isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Char prev, UT_uint32 iBlockPos) const;
 	bool                    isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos) const;
 #ifdef ENABLE_SPELL
-	bool					checkWord(fl_PartOfBlock* pPOB) const;
+	bool					checkWord(const fl_PartOfBlockPtr& pPOB) const;
 	void					recheckIgnoredWords();
 #endif
 	void                    setStyleInTOC(bool b)
@@ -441,7 +442,7 @@ private:
 protected:
 
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg) const;
-	bool					_doCheckWord(fl_PartOfBlock* pPOB,
+	bool					_doCheckWord(const fl_PartOfBlockPtr& pPOB,
 										 const UT_UCSChar* pBlockText,
 										 UT_sint32 iLength,
 										 bool bAddSquiggle = true,
@@ -577,42 +578,6 @@ protected:
 	PP_PropertyMap::Line    m_lineTop;
 	bool                    m_bCanMergeBordersWithNext;
 	bool                    m_bHasBorders;
-};
-
-/*
-	This class is used to represent a part of the block.  Pointers
-	to this class are the things contained in m_vecSquiggles and in
-	FL_DocLayout::m_pPendingWordForSpell
-*/
-class ABI_EXPORT fl_PartOfBlock
-{
-public:
-	fl_PartOfBlock();
-	fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iPTLength,
-				   bool bIsIgnored = false);
-
-	bool             doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const;
-	inline UT_sint32 getOffset(void) const { return m_iOffset; }
-	inline UT_sint32 getPTLength(void)const{ return m_iPTLength; }
-	inline bool 	 getIsIgnored(void) const { return m_bIsIgnored; }
-
-	inline void 	 setOffset(UT_sint32 iOffset) { m_iOffset = iOffset; }
-	inline void 	 setPTLength(UT_sint32 iLength) { m_iPTLength = iLength; }
-	inline void 	 setIsIgnored(bool bIsIgnored) { m_bIsIgnored = bIsIgnored; }
-	void             setInvisible(void)
-	{m_bIsInvisible = true;}
-	bool             isInvisible(void)
-	{ return m_bIsInvisible;}
-	void             setGrammarMessage(UT_UTF8String & sMsg);
-	void             getGrammarMessage(UT_UTF8String & sMsg) const;
-
-private:
-	UT_sint32	m_iOffset;
-	UT_sint32   m_iPTLength;
-
-	bool		m_bIsIgnored;
-	bool        m_bIsInvisible;
-	UT_UTF8String  m_sGrammarMessage;
 };
 
 class ABI_EXPORT fl_TabStop
