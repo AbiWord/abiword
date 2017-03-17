@@ -83,7 +83,7 @@ public:
 	fp_Line(fl_SectionLayout * pSectionLayout);
 	~fp_Line();
 
-	inline fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
+	fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
 	//! Return height of line as it will appear on screen
 	virtual UT_sint32	getHeight(void) const;
 
@@ -94,7 +94,7 @@ public:
 	UT_sint32		getAscent(void) const;
 	UT_sint32		getDescent(void) const;
 	UT_sint32               getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
-	UT_sint32			        getColumnGap(void);
+	UT_sint32		getColumnGap(void) const;
 	void				        setAssignedScreenHeight(UT_sint32);
 	bool                        assertLineListIntegrity(void);
 	void				        setMaxWidth(UT_sint32);
@@ -104,15 +104,15 @@ public:
 	virtual void				setContainer(fp_Container*);
 	void		        setBlock(fl_BlockLayout * pBlock);
 
-	fp_Container *              getColumn(void); // FIXME see if we can make it const
-	fp_Page *                   getPage(void);  // FIXME see if we can make it const
+	fp_Container *              getColumn(void) const;
+	fp_Page *                   getPage(void) const;
 
 	virtual void        setWidth(UT_sint32 ){}
 	virtual void        setHeight(UT_sint32 i);
 	virtual UT_sint32   getWidth(void) const { return m_iWidth;}
 	virtual UT_sint32   getDrawingWidth(void) const;
 	UT_sint32           getWidthToRun(fp_Run * pLastRun);
-	UT_sint32           getFilledWidth(void);
+	UT_sint32           getFilledWidth(void) const;
     virtual bool        isVBreakable(void) { return false;}
     virtual bool        isHBreakable(void) {return true;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32) { return 0;}
@@ -142,9 +142,9 @@ public:
 	fp_Run*     getLastTextRun(void) const ;
 
 	fp_Run*	calculateWidthOfRun(UT_sint32 &iX,
-								UT_uint32 iIndxVisual,
-								FL_WORKING_DIRECTION eWorkingDirection,
-								FL_WHICH_TABSTOP eUseTabStop);
+				    UT_uint32 iIndxVisual,
+				    FL_WORKING_DIRECTION eWorkingDirection,
+				    FL_WHICH_TABSTOP eUseTabStop);
 
 	void		getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirection, FL_WHICH_TABSTOP &eUseTabStop) const;
 
@@ -158,8 +158,8 @@ public:
 	UT_sint32	getMarginBefore(void) const;
 	UT_sint32	getMarginAfter(void) const;
 	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& isTOC);
-	void		getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
-	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
+	void		getOffsets(const fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff) const;
+	void		getScreenOffsets(const fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff) const;
 	virtual void  clearScreen(void);
 	void		clearScreenFromRunToEnd(UT_uint32 runIndex);
 	void		clearScreenFromRunToEnd(fp_Run * pRun);

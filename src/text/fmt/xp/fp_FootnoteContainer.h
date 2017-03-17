@@ -52,7 +52,7 @@ public:
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
-	virtual fp_Page *   getPage(void) { return m_pPage;}
+	virtual fp_Page *   getPage(void) const { return m_pPage;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
 private:
@@ -75,7 +75,7 @@ public:
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
-	virtual fp_Page *   getPage(void) { return m_pPage;}
+	virtual fp_Page *   getPage(void) const { return m_pPage;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
 	UT_uint32           getPID(void);
@@ -101,7 +101,7 @@ public:
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
-	virtual fp_Page *   getPage(void) { return fp_Container::getPage();}
+	virtual fp_Page *   getPage(void) const { return fp_Container::getPage();}
 	fp_EndnoteContainer * getLocalNext(void);
 	fp_EndnoteContainer * getLocalPrev(void);
 	fl_DocSectionLayout * getDocSectionLayout(void);

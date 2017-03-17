@@ -167,7 +167,7 @@ public:
 	fp_Page*	getLastPage() const;
 	fp_Page*	getNthPage(int n) const;
 	UT_sint32	countPages() const;
-	UT_sint32   findPage(fp_Page * pPage) const; // FIXME figure out how to pass a const fp_Page *
+	UT_sint32	findPage(const fp_Page * pPage) const;
 	void            setFramePageNumbers(UT_sint32 iStartPage);
 	fl_FrameLayout* relocateFrame(fl_FrameLayout * pFL, fl_BlockLayout * newBlock,
 				      const PP_PropertyVector & attributes = PP_NOPROPS, const PP_PropertyVector & properties = PP_NOPROPS);

@@ -74,7 +74,7 @@ public:
 		{ return m_bIsBroken;}
 	void                setYBreakHere(UT_sint32 iBreakHere);
 	void                setYBottom(UT_sint32 iBotContainer);
-	bool                isInBrokenTOC(fp_Container * pCon);
+	bool                isInBrokenTOC(const fp_Container * pCon);
 //
 // This is the smallest Y value of the TOC allowed in this
 // broken TOC

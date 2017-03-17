@@ -4591,7 +4591,7 @@ fp_Line * fp_TableContainer::getLastLineInColumn(fp_Column * pCol) const
 }
 
 
-fp_Page * fp_TableContainer::getPage(void)
+fp_Page * fp_TableContainer::getPage(void) const
 {
 	if(getContainer() && getContainer()->getContainerType() == FP_CONTAINER_CELL)
 	{
@@ -5223,7 +5223,7 @@ bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCo
  * Return true if the supplied Cell and its container are within this
  * broken container.
  */
-bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Container * pCon) const
+bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, const fp_Container * pCon) const
 {
 	xxx_UT_DEBUGMSG(("isInBrokenTable %p pcell %p container %p\n",this,pCell,pCon));
 	UT_sint32 iTop = pCell->getY() + pCon->getY();

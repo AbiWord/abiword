@@ -89,11 +89,11 @@ public:
 	PT_DocPosition		getFirstLastPos(bool bFirst) const;
 	void				mapXYToPosition(bool bNotFrames,UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool & isTOC, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL) const;
 	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC,bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL) const;
-	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff) const;
+	void				getScreenOffsets(const fp_Container*, UT_sint32& xoff, UT_sint32& yoff) const;
 
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
-    UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
+	UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
 	UT_sint32           getAvailableHeight(void) const;
 	UT_sint32           getAvailableHeightForColumn(const fp_Column * pColumn) const;
 	fp_TableContainer * getContainingTable(PT_DocPosition pos);
@@ -149,14 +149,14 @@ public:
 	UT_sint32           findFrameContainer(fp_FrameContainer * pFC) const;
 	void                clearScreenFrames(void);
 	void                markDirtyOverlappingRuns(fp_FrameContainer * pFC);
-    void                expandDamageRect(UT_sint32 x, UT_sint32 y,
-										 UT_sint32 width, UT_sint32 height);
+	void                expandDamageRect(UT_sint32 x, UT_sint32 y,
+						UT_sint32 width, UT_sint32 height);
         bool                intersectsDamagedRect(fp_ContainerObject * pObj) const;
 	void                redrawDamagedFrames(dg_DrawArgs* pDA);
 	bool                overlapsWrappedFrame(fp_Line * pLine) const;
 	bool                overlapsWrappedFrame(const UT_Rect & rec) const;
 	void                setPageNumberInFrames(void);
-	UT_sint32           getPageNumber(void); // TODO make const
+	UT_sint32           getPageNumber(void) const;
 	UT_sint32           getFieldPageNumber(void) const;
 	void                setFieldPageNumber(UT_sint32 iPageNum);
 	void                resetFieldPageNumber(void);

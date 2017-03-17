@@ -864,7 +864,7 @@ bool fp_Page::containsPageBreak(void) const
 /*!
  * Returns the physical page number (the numbering starts from 0)
  */
-UT_sint32 fp_Page::getPageNumber(void)
+UT_sint32 fp_Page::getPageNumber(void) const
 {
 	return m_pLayout->findPage(this);
 }
@@ -1074,15 +1074,14 @@ UT_sint32 fp_Page::getBottom(void) const
 	return getHeight() - iBottomMargin;
 }
 
-void fp_Page::getScreenOffsets(fp_Container* pContainer, UT_sint32& xoff, UT_sint32& yoff) const
+void fp_Page::getScreenOffsets(const fp_Container* pContainer, UT_sint32& xoff, UT_sint32& yoff) const
 {
 	if(!m_pView)
 	{
 	    return;
 	}
 	m_pView->getPageScreenOffsets(this, xoff, yoff);
-	if(pContainer)
-        {
+	if (pContainer) {
 	    xoff += pContainer->getX();
 	    yoff += pContainer->getY();
 	}

@@ -103,9 +103,9 @@ public:
 
 	fp_Container*			getFirstContainer(void) const;
 	fp_Container*			getLastContainer(void) const;
-	UT_sint32               getYoffsetFromTable(fp_Container * pT,
-												fp_Container* pCell,
-												fp_ContainerObject * pCon);
+	UT_sint32               getYoffsetFromTable(const fp_Container* pT,
+                                                    const fp_Container* pCell,
+                                                    const fp_ContainerObject* pCon) const;
 	bool				insertContainerAfter(fp_Container* pNewContainer, fp_Container*	pAfterContainer);
 	bool				insertContainer(fp_Container*);
 	bool				addContainer(fp_Container*);
@@ -118,14 +118,14 @@ public:
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool &isTOC);
 
-	void		 		getOffsets(fp_ContainerObject* pContainer,
+	void		 		getOffsets(const fp_ContainerObject* pContainer,
 								   UT_sint32& xoff,
-								   UT_sint32& yoff);
-	fp_TableContainer * getCorrectBrokenTable(fp_Container * pLine);
-	fp_TOCContainer *   getCorrectBrokenTOC(fp_Container * pLine);
-	void		    getScreenOffsets(fp_ContainerObject* pContainer,
-										 UT_sint32& xoff,
-										 UT_sint32& yoff);
+								   UT_sint32& yoff) const;
+	fp_TableContainer * getCorrectBrokenTable(const fp_Container * pLine) const;
+	fp_TOCContainer *   getCorrectBrokenTOC(const fp_Container * pLine) const;
+	void		    getScreenOffsets(const fp_ContainerObject* pContainer,
+                                             UT_sint32& xoff,
+                                             UT_sint32& yoff) const;
 
 	virtual UT_Rect     getScreenRect();
 	virtual void        markDirtyOverlappingRuns(const UT_Rect & recScreen);

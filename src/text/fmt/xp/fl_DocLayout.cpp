@@ -2379,14 +2379,16 @@ UT_sint32 FL_DocLayout::countPages() const
 	return m_vecPages.getItemCount();
 }
 
-UT_sint32 FL_DocLayout::findPage(fp_Page * pPage) const
+UT_sint32 FL_DocLayout::findPage(const fp_Page * pPage) const
 {
 	UT_sint32 count = m_vecPages.getItemCount();
 	if(count < 1)
 	{
 		return -1;
 	}
-	return m_vecPages.findItem(pPage);
+	// Ugly. Problem: findItem expect a non-const
+	// maybe when we use std::vector instead.
+	return m_vecPages.findItem(const_cast<fp_Page*>(pPage));
 }
 
 fp_Page* FL_DocLayout::getNthPage(int n) const

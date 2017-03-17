@@ -325,7 +325,7 @@ bool fp_TOCContainer::isVBreakable(void)
 	return true;
 }
 
-bool fp_TOCContainer::isInBrokenTOC(fp_Container * pCon)
+bool fp_TOCContainer::isInBrokenTOC(const fp_Container * pCon)
 {
 //
 // OK A container is allowed in this broken TOC if it's

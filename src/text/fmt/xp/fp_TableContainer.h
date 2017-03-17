@@ -365,7 +365,7 @@ public:
     virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y,
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool &isTOC);
-	virtual fp_Page *   getPage(void);
+	virtual fp_Page *   getPage(void) const;
 	fp_Line *           getFirstLineInColumn(fp_Column * pCol) const;
 	fp_Line *           getLastLineInColumn(fp_Column * pCol) const;
 	void				layout(void);
@@ -422,7 +422,7 @@ public:
 	void                setYBreakHere(UT_sint32 iBreakHere);
 	void                setYBottom(UT_sint32 iBotContainer);
 	bool                isInBrokenTable(const fp_CellContainer * pCell,
-										fp_Container * pCon) const;
+										const fp_Container * pCon) const;
 
 //
 // This is the smallest Y value of the Table allowed in this

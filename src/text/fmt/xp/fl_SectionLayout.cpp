@@ -1011,16 +1011,14 @@ void fl_DocSectionLayout::setLastEndnoteContainer(fp_EndnoteContainer * pECon)
 }
 
 
-fp_Container * fl_DocSectionLayout::getFirstEndnoteContainer(void)
+fp_Container * fl_DocSectionLayout::getFirstEndnoteContainer(void) const
 {
-	fp_Container * pCon = static_cast<fp_Container *>(m_pFirstEndnoteContainer);
-	return pCon;
+	return static_cast<fp_Container *>(m_pFirstEndnoteContainer);
 }
 
-fp_Container * fl_DocSectionLayout::getLastEndnoteContainer(void)
+fp_Container * fl_DocSectionLayout::getLastEndnoteContainer(void) const
 {
-	fp_Container * pCon = static_cast<fp_Container *>(m_pLastEndnoteContainer);
-	return pCon;
+	return static_cast<fp_Container *>(m_pLastEndnoteContainer);
 }
 
 
@@ -1078,8 +1076,8 @@ fl_AnnotationLayout * fl_DocSectionLayout::getAnnotationLayout(UT_uint32 pid)
 /*!
  * Returns the usuable height of the Column in logical units (after subtracting
  * top and bottom margins)
- */ 
-UT_sint32 fl_DocSectionLayout::getActualColumnHeight(void)
+ */
+UT_sint32 fl_DocSectionLayout::getActualColumnHeight(void) const
 {
 	UT_sint32 Height = static_cast<UT_sint32>(m_pLayout->m_docViewPageSize.Height(DIM_IN) * UT_LAYOUT_RESOLUTION /m_pLayout->m_docViewPageSize.getScale());
 	Height -= (getTopMargin() + getBottomMargin());
@@ -1094,9 +1092,8 @@ UT_sint32 fl_DocSectionLayout::getActualColumnHeight(void)
 /*!
  * Returns the usuable width of the Column in logical units (after subtracting
  * left and right margins)
- */ 
-
-UT_sint32 fl_DocSectionLayout::getActualColumnWidth(void)
+ */
+UT_sint32 fl_DocSectionLayout::getActualColumnWidth(void) const
 {
 	UT_sint32 width = static_cast<UT_sint32>(m_pLayout->m_docViewPageSize.Width(DIM_IN) * UT_LAYOUT_RESOLUTION /m_pLayout->m_docViewPageSize.getScale());
 	width -= (getLeftMargin() + getRightMargin());
@@ -1107,8 +1104,8 @@ UT_sint32 fl_DocSectionLayout::getActualColumnWidth(void)
 	}
 	return width;
 }
-			
-UT_sint32 fl_DocSectionLayout::getWidth(void)
+
+UT_sint32 fl_DocSectionLayout::getWidth(void) const
 {
 	UT_sint32 ires = m_pLayout->getGraphics()->getResolution();
 	UT_sint32 width = static_cast<UT_sint32>(ires * m_pLayout->m_docViewPageSize.Width(DIM_IN));
@@ -2915,7 +2912,7 @@ void fl_DocSectionLayout::prependOwnedFooterPage(fp_Page* pPage)
 /*!
  * This fills a vector with all the valid header/footers.
  */
-void fl_DocSectionLayout::getVecOfHdrFtrs(UT_GenericVector<fl_HdrFtrSectionLayout *> * vecHdrFtr)
+void fl_DocSectionLayout::getVecOfHdrFtrs(UT_GenericVector<fl_HdrFtrSectionLayout *> * vecHdrFtr) const
 {
 	vecHdrFtr->clear();
 	if (m_pHeaderFirstSL != NULL)
@@ -3094,7 +3091,7 @@ bool fl_DocSectionLayout::isFirstPageValid(void) const
 \param hfType The type of the header/Footer
 \param fp_Page * pThisPage pointer to the page queried.
  */
-bool fl_DocSectionLayout::isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage)
+bool fl_DocSectionLayout::isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage) const
 {
 	if (!m_pFirstOwnedPage)
 		return false;

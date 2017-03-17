@@ -713,7 +713,7 @@ bool fp_Line::assertLineListIntegrity(void)
 /*!
  * Return the gap between columns.
  */
-UT_sint32  fp_Line::getColumnGap(void)
+UT_sint32  fp_Line::getColumnGap(void) const
 {
 	return (static_cast<fp_Column *>(getColumn()))->getColumnGap();
 }
@@ -847,7 +847,7 @@ void fp_Line::markDirtyOverlappingRuns(const UT_Rect & recScreen)
 /*!
  * Returns the column containing this line. This takes account of broken tables.
  */
-fp_Container * fp_Line::getColumn(void)
+fp_Container * fp_Line::getColumn(void) const
 {
 	fp_Container * pCon = getContainer();
 	if(pCon == NULL)
@@ -875,7 +875,7 @@ fp_Container * fp_Line::getColumn(void)
 /*!
  * Returns the page containing this line. Takes account of broken tables.
  */
-fp_Page * fp_Line::getPage(void)
+fp_Page * fp_Line::getPage(void) const
 {
 	fp_Container * pCon = getColumn();
 	if(pCon)
@@ -1029,7 +1029,7 @@ UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)
 	return getLeftThick();
 }
 
-UT_sint32 fp_Line::getFilledWidth(void)
+UT_sint32 fp_Line::getFilledWidth(void) const
 {
 	UT_sint32 width = getLeftThick();
 	UT_sint32 count = m_vecRuns.getItemCount();
@@ -1336,21 +1336,21 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 	}
 }
 
-void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
+void fp_Line::getOffsets(const fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff) const
 {
 	// This returns the baseline of run. ie the bottom of the line of text
 	 //
 	UT_sint32 my_xoff = -31999;
 	UT_sint32 my_yoff = -31999;
-	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
+	auto pVCon = static_cast<const fp_VerticalContainer *>(getContainer());
 	pVCon->getOffsets(this, my_xoff, my_yoff);
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY() + getAscent() - pRun->getAscent();
 }
 
-void fp_Line::getScreenOffsets(fp_Run* pRun,
+void fp_Line::getScreenOffsets(const fp_Run* pRun,
 							   UT_sint32& xoff,
-							   UT_sint32& yoff)
+							   UT_sint32& yoff) const
 {
 	UT_sint32 my_xoff = -31999;
 	UT_sint32 my_yoff = -31999;
@@ -1359,10 +1359,9 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 		This method returns the screen offsets of the given
 		run, referring to the UPPER-LEFT corner of the run.
 	*/
-	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
+	auto pVCon = static_cast<const fp_VerticalContainer *>(getContainer());
 	pVCon->getScreenOffsets(this, my_xoff, my_yoff);
-	if(pRun)
-        {
+	if(pRun) {
 	  xoff = my_xoff + pRun->getX();
 	  yoff = my_yoff + pRun->getY();
 	}

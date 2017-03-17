@@ -305,24 +305,24 @@ public:
 	void				checkAndAdjustColumnGap(UT_sint32 iLayoutWidth);
     void                markForReformat(void) { m_bNeedsFormat = true;}
     bool                needsReFormat(void) const { return m_bNeedsFormat;}
-	bool                isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage);
-	bool                isFirstPageValid(void) const; 
-    void                getVecOfHdrFtrs(UT_GenericVector<fl_HdrFtrSectionLayout *> * vecHdrFtr);
+	bool                isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage) const;
+	bool                isFirstPageValid(void) const;
+	void                getVecOfHdrFtrs(UT_GenericVector<fl_HdrFtrSectionLayout *> * vecHdrFtr) const;
 	void                formatAllHdrFtr(void);
 	void                doMarginChangeOnly(void);
 	void                checkAndRemovePages(void);
 	void                addValidPages(void);
-	UT_sint32           getPageCount(void) {return m_iPageCount;}
+	UT_sint32           getPageCount(void) const {return m_iPageCount;}
 	void                setNeedsSectionBreak(bool bSet, fp_Page * pPage );
 	bool                needsSectionBreak(void) const { return m_bNeedsSectionBreak;}
 	void                setFirstEndnoteContainer(fp_EndnoteContainer * pECon);
 	void                setLastEndnoteContainer(fp_EndnoteContainer * pECon);
-	fp_Container *      getFirstEndnoteContainer(void);
-	fp_Container *      getLastEndnoteContainer(void);
+	fp_Container *      getFirstEndnoteContainer(void) const;
+	fp_Container *      getLastEndnoteContainer(void) const;
 	void                deleteBrokenTablesFromHere(fl_ContainerLayout * pTL);
-	UT_sint32           getWidth(void);
-	UT_sint32           getActualColumnHeight(void);
-	UT_sint32           getActualColumnWidth(void);
+	UT_sint32           getWidth(void) const;
+	UT_sint32           getActualColumnHeight(void) const;
+	UT_sint32           getActualColumnWidth(void) const;
 	bool                isCollapsing(void) const
 		{ return m_bDoingCollapse;}
 private:

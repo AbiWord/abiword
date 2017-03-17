@@ -57,7 +57,7 @@ public:
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
-	virtual fp_Page *   getPage(void) { return m_pPage;}
+	virtual fp_Page *   getPage(void) const { return m_pPage;}
 	virtual UT_sint32   getX() const;
 	virtual UT_sint32   getY() const;
 	virtual UT_sint32   getWidth() const;
