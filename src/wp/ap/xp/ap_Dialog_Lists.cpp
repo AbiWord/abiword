@@ -690,8 +690,8 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	m_pFakeDoc = new PD_Document();
 	m_pFakeAuto = std::make_shared<fl_AutoNum>(m_iID, 0, m_NewListType, m_newStartValue,
 											   m_pszDelim.c_str(), m_pszDecimal.c_str(),
-											   (PD_Document *) m_pFakeDoc, nullptr);
-	m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1,false);
+											   m_pFakeDoc, nullptr);
+	m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], nullptr, false);
 	m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);
 	for(i=1; i<4; i++)
 	{

@@ -63,7 +63,7 @@ private:
 
         void addItem(pf_Frag_Strux* pItem);
         void deleteNthItem(size_type n);
-        UT_sint32 findItem(pf_Frag_Strux* pItem) const {
+        UT_sint32 findItem(const pf_Frag_Strux* pItem) const {
             auto iter = std::find(m_vec.cbegin(), m_vec.cend(), pItem);
             if (iter == m_vec.cend()) {
                 return -1;
@@ -86,14 +86,14 @@ private:
             return m_vec.at(n);
         }
 
-        bool hasItem(pf_Frag_Strux* pItem) const;
+        bool hasItem(const pf_Frag_Strux* pItem) const;
         void insertItemAt(pf_Frag_Strux* pItem, size_type idx);
         void sort(const std::function<bool(const value_type &, const value_type &)> & compar) {
             std::sort(m_vec.begin(), m_vec.end(), compar);
         }
     private:
         std::vector<pf_Frag_Strux*> m_vec;
-        std::unordered_set<pf_Frag_Strux*> m_set;
+        std::unordered_set<const pf_Frag_Strux*> m_set;
     };
 public:
 	fl_AutoNum(	UT_uint32 id,
@@ -109,16 +109,16 @@ public:
 
 	void						fixHierarchy(void);
 
-	const UT_UCSChar *			getLabel(pf_Frag_Strux*) const;
+	const UT_UCSChar *			getLabel(const pf_Frag_Strux*) const;
 	void						addItem(pf_Frag_Strux* pItem);
 	FL_ListType					getType() const;
-	UT_uint32					getValue(pf_Frag_Strux*) const;
+	UT_uint32					getValue(const pf_Frag_Strux*) const;
 	UT_uint32					getLevel() const { return m_iLevel; }
 	UT_uint32					getNumLabels() const;
 	bool                        checkReference(const fl_AutoNum & pAuto) const;
 
 	void						setLevel(UT_uint32 level) { m_iLevel = level; }
-	UT_sint32					getPositionInList( pf_Frag_Strux* pItem, UT_uint32 depth) const;
+	UT_sint32					getPositionInList(const pf_Frag_Strux* pItem) const;
 	void						setListType(FL_ListType lType);
 	void						setDelim(const gchar * pszDelim);
 	void						setDelim(const std::string & delim)
@@ -140,27 +140,26 @@ public:
 
 	void						insertFirstItem(pf_Frag_Strux* pItem,
 												pf_Frag_Strux* pLast,
-												UT_uint32 depth,
 												bool bDoFix=true);
-	void						insertItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pBefore, bool bDoFix = true);
-	void						prependItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pAfter, bool bDoFix = true);
-	void						removeItem(pf_Frag_Strux* pItem);
+	void						insertItem(pf_Frag_Strux* pItem, const pf_Frag_Strux* pBefore, bool bDoFix = true);
+	void						prependItem(pf_Frag_Strux* pItem, const pf_Frag_Strux* pAfter, bool bDoFix = true);
+	void						removeItem(const pf_Frag_Strux* pItem);
 	pf_Frag_Strux*			getParentItem() const;
 	void						setParentItem(pf_Frag_Strux* pItem);
 	bool                                 isContainedByList(pf_Frag_Strux* pItem) const;
 	pf_Frag_Strux*			getNthBlock(UT_sint32 i) const;
-	pf_Frag_Strux*			getPrevInList(pf_Frag_Strux* pItem) const;
+	pf_Frag_Strux*			getPrevInList(const pf_Frag_Strux* pItem) const;
 
-	bool					isItem(pf_Frag_Strux* pItem) const;
-	bool						doesItemHaveLabel(fl_BlockLayout * pItem) const;
+	bool					isItem(const pf_Frag_Strux* pItem) const;
+	bool						doesItemHaveLabel(const fl_BlockLayout * pItem) const;
 	bool					isEmpty(void) const;
 	pf_Frag_Strux*			getFirstItem(void) const;
 	pf_Frag_Strux*			getLastItem(void) const;
-	bool						isLastOnLevel(pf_Frag_Strux* pItem) const;
+	bool						isLastOnLevel(const pf_Frag_Strux* pItem) const;
 
 	fl_AutoNumPtr				getParent(void) const { return m_pParent; }
 	fl_AutoNumPtr				getActiveParent(void) const;
-	fl_AutoNumConstPtr			getAutoNumFromSdh(pf_Frag_Strux* sdh) const;
+	fl_AutoNumConstPtr			getAutoNumFromSdh(const pf_Frag_Strux* sdh) const;
 	void						fixListOrder(void);
 	void						markAsDirty(void);
 	void						findAndSetParentItem(void);
@@ -186,8 +185,8 @@ protected:
 	void						_getLabelstr(	UT_UCSChar labelStr[],
 												UT_uint32 * insPoint,
 												UT_uint32 depth,
-												pf_Frag_Strux* pLayout) const;
-	bool						_updateItems(UT_sint32 start, pf_Frag_Strux* notMe );
+												const pf_Frag_Strux* pLayout) const;
+	bool						_updateItems(UT_sint32 start, const pf_Frag_Strux* notMe );
 	UT_uint32					_getLevelValue(const fl_AutoNumConstPtr & pAutoNum) const;
 
 	fl_AutoNumPtr				m_pParent;
