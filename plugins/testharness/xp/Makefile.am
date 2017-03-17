@@ -24,6 +24,7 @@ libxp_la_SOURCES = \
 	../../../src/text/ptbl/xp/t/pp_PropertyMap.t.cpp \
 	../../../src/text/ptbl/xp/t/pp_AttrProp.t.cpp \
 	../../../src/text/ptbl/xp/t/pf_Fragments.t.cpp \
+	../../../src/text/fmt/xp/t/fl_AutoNum.t.cpp \
 	../../../src/wp/impexp/xp/t/ie_mailmerge.t.cpp \
 	../../../src/wp/impexp/xp/t/ie_Table.t.cpp \
 	$(NULL)
