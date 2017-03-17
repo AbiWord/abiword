@@ -170,19 +170,8 @@ GtkBuilder * newDialogBuilder(const char * name)
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/" + name;
 
 	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-    GError * error = NULL;
-	guint result = gtk_builder_add_from_file(builder, ui_path.c_str(), &error);
-    if(result == 0) {
-        if(error) {
-            UT_DEBUGMSG(("gtk_builder_add() for %s failed with '%s'.", 
-                         ui_path.c_str(), error->message));
-            g_error_free(error);
-        }
-        g_object_unref((GObject*)builder);
-        return NULL;
-    }
-    return builder;
+	GtkBuilder* builder = gtk_builder_new_from_file(ui_path.c_str());
+	return builder;
 }
 
 
