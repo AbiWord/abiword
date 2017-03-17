@@ -1411,7 +1411,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 		listid = atoi(szListid);
 		if(listid != 0)
 		{
-			fl_AutoNum * pAuto = getDoc()->getListByID(listid);
+			fl_AutoNumConstPtr pAuto = getDoc()->getListByID(listid);
 			if(pAuto)
 			{
 				szAbiListDelim = pAuto->getDelim();
@@ -1459,7 +1459,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 		_rtf_keyword_ifnotdefault_twips("sb",static_cast<const char*>(szTopMargin),0);
 		_rtf_keyword_ifnotdefault_twips("sa",static_cast<const char*>(szBottomMargin),0);
 
-		fl_AutoNum * pAuto = getDoc()->getListByID(id);
+		fl_AutoNumConstPtr pAuto = getDoc()->getListByID(id);
 		UT_return_if_fail(pAuto);
 		if(pAuto->getType()==BULLETED_LIST)
 		{
@@ -1618,7 +1618,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 		_rtf_open_brace();
 		_rtf_keyword("*");
 		_rtf_keyword("pn");
-		fl_AutoNum * pAuto = getDoc()->getListByID(id);
+		fl_AutoNumConstPtr pAuto = getDoc()->getListByID(id);
 		UT_return_if_fail(pAuto);
 		_rtf_keyword("pnql");
 		_rtf_keyword("pnstart",pAuto->getStartValue32());
@@ -1648,7 +1648,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 		}
 		rightDelim[i - rTmp] = '\0';
 
-		fl_AutoNum * pParent = pAuto->getParent();
+		fl_AutoNumConstPtr pParent = pAuto->getParent();
 		if(pParent == NULL && (lType < BULLETED_LIST))
 		{
 			_rtf_keyword("pnlvlbody");
@@ -1720,7 +1720,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 	{
 		UT_uint32 iOver = getMatchingOverideNum(id);
 		UT_uint32 iLevel = 0;
-		fl_AutoNum * pAuto = getDoc()->getListByID(id);
+		fl_AutoNumConstPtr pAuto = getDoc()->getListByID(id);
 
 //		if(id != m_currID)
 		{
@@ -2516,13 +2516,13 @@ void IE_Exp_RTF::_write_listtable(void)
 //
 	UT_sint32 i,j =0;
 	bool bFoundChild = false;
-	fl_AutoNum * pAuto = NULL;
-	fl_AutoNum * pInner = NULL;
+	fl_AutoNumConstPtr pAuto;
+	fl_AutoNumConstPtr pInner;
 	ie_exp_RTF_MsWord97ListMulti * pList97 = NULL;
 	for(i=0; i< iCount; i++)
 	{
 		pAuto = getDoc()->getNthList(i);
-		if(pAuto->getParent() == NULL)
+		if (!pAuto->getParent())
 		{
 			bFoundChild = false;
 			for(j =0; (j< iCount) && !bFoundChild; j++)
@@ -2579,9 +2579,9 @@ void IE_Exp_RTF::_write_listtable(void)
 				bFoundAtPrevLevel = false;
 				for(i=0; i < iCount; i++)
 				{
-					pAuto = (fl_AutoNum *) getDoc()->getNthList(i);
+					pAuto = getDoc()->getNthList(i);
 					pInner = pAuto->getParent();
-					fl_AutoNum * pAutoLevel = pList97->getListAtLevel(depth-1,0)->getAuto();
+					fl_AutoNumConstPtr pAutoLevel = pList97->getListAtLevel(depth-1,0)->getAuto();
 //
 // OK got it! pAuto is the one we want.
 //
@@ -2741,7 +2741,7 @@ void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
 	
 	_rtf_keyword("listtemplateid",tempID);
 	UT_uint32 i = 0;
-	fl_AutoNum * pAuto = NULL;
+	fl_AutoNumConstPtr pAuto;
 	ie_exp_RTF_MsWord97List * pList97 = NULL;
 	for(i=0; i < 9 ; i++)
 	{
@@ -2775,7 +2775,7 @@ void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
 /*!
  * This method outputs the RTF defintion of the list pointed to by pAuto
  */
-void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSChar bulletsym)
+void IE_Exp_RTF::_output_LevelText(const fl_AutoNumConstPtr & pAuto, UT_uint32 iLevel, UT_UCSChar bulletsym)
 {
 	UT_String LevelText;
 	UT_String LevelNumbers;
@@ -2820,7 +2820,7 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
  * not generate the leading text string which is the length of the string. It
  * is the responsibility of the calling routine to this.
  */
-void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,UT_String &LevelNumbers, UT_uint32 & lenText, UT_uint32 & ifoundLevel)
+void IE_Exp_RTF::_generate_level_Text(const fl_AutoNumConstPtr & pAuto, UT_String & LevelText, UT_String &LevelNumbers, UT_uint32 & lenText, UT_uint32 & ifoundLevel)
 {
 	xxx_UT_DEBUGMSG(("SEVIOR: pAuto %x \n",pAuto));
 	if(pAuto)
@@ -2963,7 +2963,7 @@ void IE_Exp_RTF::_get_LeftRight_Side(UT_String & LeftSide, UT_String & RightSide
 /*!
  * This method outputs the RTF defintion of the list pointed to by pAuto
  */
-void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
+void IE_Exp_RTF::_output_ListRTF(const fl_AutoNumConstPtr & pAuto, UT_uint32 iLevel)
 {
 // List Type
 	UT_sint32 Param = 0;
@@ -3124,7 +3124,7 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
 #endif
 	_rtf_keyword("listtemplateid",tempID);
 	_rtf_keyword("listsimple");
-	fl_AutoNum * pAuto = pSimple->getAuto();
+	fl_AutoNumConstPtr pAuto = pSimple->getAuto();
 	_rtf_open_brace();
 	_rtf_keyword("listlevel");
 //
@@ -3145,8 +3145,8 @@ void IE_Exp_RTF::_output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 /
 	_rtf_open_brace();
 	_rtf_keyword("listoverride");
 	_rtf_keyword("listoverridecount",0);
-	fl_AutoNum * pAuto = pOver->getAutoNum();
-	fl_AutoNum * pTop = pAuto;
+	fl_AutoNumConstPtr pAuto = pOver->getAutoNum();
+	fl_AutoNumConstPtr pTop = pAuto;
 	while(pTop->getParent())
 	{
 		pTop = pTop->getParent();
@@ -3427,17 +3427,17 @@ bool _rtf_font_info::_is_same(const _rtf_font_info & fi) const
 	&& fTrueType == fi.fTrueType;
 }
 
-ie_exp_RTF_MsWord97List::ie_exp_RTF_MsWord97List(fl_AutoNum * pAuto)
+ie_exp_RTF_MsWord97List::ie_exp_RTF_MsWord97List(const fl_AutoNumConstPtr & pAuto)
+    : m_pAutoNum(pAuto)
+    , m_Id(pAuto->getID())
 {
-	m_pAutoNum = pAuto;
-	m_Id = pAuto->getID();
 }
 
 ie_exp_RTF_MsWord97List::~ie_exp_RTF_MsWord97List(void)
 {
 }
 
-ie_exp_RTF_MsWord97ListSimple::ie_exp_RTF_MsWord97ListSimple(fl_AutoNum * pAuto)
+ie_exp_RTF_MsWord97ListSimple::ie_exp_RTF_MsWord97ListSimple(const fl_AutoNumConstPtr & pAuto)
 	: ie_exp_RTF_MsWord97List( pAuto)
 {
 }
@@ -3448,7 +3448,7 @@ ie_exp_RTF_MsWord97ListSimple::~ie_exp_RTF_MsWord97ListSimple(void)
 }
 
 
-ie_exp_RTF_MsWord97ListMulti::ie_exp_RTF_MsWord97ListMulti(fl_AutoNum * pAuto)
+ie_exp_RTF_MsWord97ListMulti::ie_exp_RTF_MsWord97ListMulti(const fl_AutoNumConstPtr & pAuto)
 	: ie_exp_RTF_MsWord97List( pAuto)
 {
 	UT_uint32 i = 0;
@@ -3562,20 +3562,13 @@ UT_uint32 ie_exp_RTF_MsWord97ListMulti::getMatchingID(UT_uint32 listID)
 	return foundID;
 }
 
-ie_exp_RTF_ListOveride::ie_exp_RTF_ListOveride(fl_AutoNum * pAuto)
+ie_exp_RTF_ListOveride::ie_exp_RTF_ListOveride(const fl_AutoNumConstPtr & pAuto)
+    : m_pAutoNum(pAuto)
+    , m_AbiListID(pAuto->getID())
 {
-	m_pAutoNum = pAuto;
-	m_AbiListID = pAuto->getID();
 }
 
 
 ie_exp_RTF_ListOveride::~ie_exp_RTF_ListOveride(void)
 {
 }
-
-
-
-
-
-
-

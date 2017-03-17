@@ -304,7 +304,7 @@ UT_sint32 fl_ContainerLayout::getLevelInList(void)
 	        break;
 	  }
 	  PD_Document * pDoc = getDocLayout()->getDocument();
-	  fl_AutoNum * pAuto = pDoc->getListByID( id);
+	  fl_AutoNumPtr pAuto = pDoc->getListByID( id);
 	  if(pAuto->getLastItem() == pBList->getStruxDocHandle())
 	  {
 	        if(pAuto->getLastItem() == getStruxDocHandle())

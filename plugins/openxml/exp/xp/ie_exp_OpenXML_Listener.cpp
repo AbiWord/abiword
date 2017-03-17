@@ -1199,13 +1199,13 @@ UT_Error IE_Exp_OpenXML_Listener::addLists()
 	if(!bHaveProp || !pAP)
 		return UT_OK;
 
-	fl_AutoNum* pList = NULL;
+	fl_AutoNumConstPtr pList;
 
 	size_t listCount = pdoc->getListsCount();
 	size_t k;
 	for(k=0; k<listCount; k++)
 	{
-		if(!pdoc->enumLists(k, &pList))
+		if(!pdoc->enumLists(k, pList))
 			continue;
 
 		if(!pList)

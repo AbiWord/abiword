@@ -3582,8 +3582,8 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			m_pDoc->disableListUpdates();
 
 			nBlock = _findBlockAtPosition(getPoint());
-			fl_AutoNum * pAuto2 = nBlock->getAutoNum();
-			if(pAuto2 != NULL )
+			fl_AutoNumPtr pAuto2 = nBlock->getAutoNum();
+			if (pAuto2)
 			{
 				pf_Frag_Strux* sdh = nBlock->getStruxDocHandle();
 				if((bisList == true) && (pAuto2->getFirstItem() == sdh || pAuto2->getLastItem() == sdh))
@@ -3592,8 +3592,8 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 					PT_DocPosition listPoint,posEOD;
 					getEditableBounds(true, posEOD);
 					listPoint = getPoint();
-					fl_AutoNum * pAuto = nBlock->getAutoNum();
-					if(pAuto != NULL)
+					fl_AutoNumPtr pAuto = nBlock->getAutoNum();
+					if (pAuto)
 					{
 						if(listPoint + 2 <= posEOD)
 							_setPoint(listPoint+2);

@@ -69,42 +69,6 @@ void fl_AutoNum::ItemStorage::insertItemAt(pf_Frag_Strux* pItem, size_type idx)
 	m_set.insert(pItem);
 }
 
-fl_AutoNum::fl_AutoNum(	UT_uint32 id,
-						UT_uint32 start,
-						pf_Frag_Strux* pFirst,
-						fl_AutoNum * pParent,
-						const gchar * lDelim,
-						const gchar * lDecimal,
-						FL_ListType lType,
-						PD_Document * pDoc,
-						FV_View * pView)
-	:	m_pParent(pParent),
-		m_pDoc(pDoc),
-		m_pView(pView),
-		m_List_Type(lType),
-		m_iID(id),
-		m_iParentID(0),
-		m_iLevel(pParent ? pParent->getLevel() + 1 : 1),
-		m_iStartValue(start),
-		m_iAsciiOffset(0),
-		m_bUpdatingItems(false),
-		m_bDirty(false),
-		m_ioffset(0),
-		m_bWordMultiStyle(true),
-		m_pParentItem(0)
-{
-	_setParent(pParent);
-	UT_ASSERT(m_pDoc);
-	memset(m_pszDelim, 0, 80);
-	memset(m_pszDecimal, 0, 80);
-	strncpy( m_pszDelim, lDelim, 80);
-	strncpy( m_pszDecimal, lDecimal, 80);
- 	addItem(pFirst);
-
-	m_pDoc->addList(this);
-	// New 6/11/2000. m_pParentItem is the item in the parent list
-	// that the new list points
-}
 
 fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						UT_uint32 parent_id,
@@ -145,14 +109,14 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	}
 }
 
-bool fl_AutoNum::checkReference(fl_AutoNum * pAuto)
+// Because this is called indirectly from the constructor and
+// all we need is a const ref, we don't use a fl_AutoNumConstPtr
+bool fl_AutoNum::checkReference(const fl_AutoNum & pAuto) const
 {
-	if(pAuto == m_pParent)
-	{
+	if (&pAuto == m_pParent.get()) {
 		return false;
 	}
-	if(m_pParent)
-	{
+	if (m_pParent) {
 		return m_pParent->checkReference(pAuto);
 	}
 	return true;
@@ -172,7 +136,7 @@ void fl_AutoNum::addItem(pf_Frag_Strux* pItem)
  */
 void fl_AutoNum::fixHierarchy(void)
 {
-	fl_AutoNum * pParent;
+	fl_AutoNumPtr pParent;
 	const char * pszParentID =NULL;
 #if 1
 	UT_uint32 docParentID = 0;
@@ -196,21 +160,19 @@ void fl_AutoNum::fixHierarchy(void)
 	if((m_iID != 0) && (docParentID != 0) &&  (docParentID != m_iParentID) && (docParentID != m_iID))
 	{
 		pParent = m_pDoc->getListByID(docParentID);
-		UT_ASSERT(this != pParent);
-		if(pParent != NULL)
-		{
+		UT_ASSERT(this != pParent.get());
+		if (pParent)	{
 			m_iParentID = docParentID;
 			m_bDirty = true;
 		}
 	}
 #endif
-	if (m_iParentID != 0)
-	{
+	if (m_iParentID != 0) {
 		pParent = m_pDoc->getListByID(m_iParentID);
+	} else {
+		// TODO Add error checking?
+		pParent.reset();
 	}
-	// TODO Add error checking?
-	else
-		pParent = NULL;
 
 	if(pParent != m_pParent)
 	{
@@ -257,16 +219,15 @@ void    fl_AutoNum::findAndSetParentItem(void)
 	{
 		return;
 	}
-	else if( m_pParent == NULL)
+	else if (!m_pParent)
 	{
 		_setParent(m_pDoc->getListByID(m_iParentID));
 	}
 	else
 	{
-		fl_AutoNum * pParent = m_pDoc->getListByID(m_iParentID);
-		if(pParent == NULL)
-		{
-			_setParent(NULL);
+		fl_AutoNumPtr pParent = m_pDoc->getListByID(m_iParentID);
+		if (!pParent) {
+			_setParent(fl_AutoNumPtr());
 		}
 	}
 
@@ -287,7 +248,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 	UT_uint32 cnt = m_pDoc->getListsCount();
 	UT_ASSERT(cnt!=0);
 	UT_uint32 iList;
-	fl_AutoNum * pClosestAuto = NULL;
+	fl_AutoNumPtr pClosestAuto;
 	PT_DocPosition posClosest = 0;
 	pf_Frag_Strux* pClosestItem = NULL;
 	bool bReparent = false;
@@ -318,7 +279,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 	{
 		for(iList = 0; iList < cnt; iList++)
 		{
-			fl_AutoNum * pParent = m_pDoc->getNthList(iList);
+			fl_AutoNumPtr pParent = m_pDoc->getNthList(iList);
 			UT_uint32 i=0;
 			pf_Frag_Strux* pParentItem = pParent->getNthBlock(i);
 			posParent=0;
@@ -722,8 +683,9 @@ void fl_AutoNum::insertFirstItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pLast, UT_
 	}
 	if(m_pDoc->areListUpdatesAllowed() == false)
 		return;
-	if ( getAutoNumFromSdh(pItem) == this)
+	if (getAutoNumFromSdh(pItem).get() == this) {
 		_updateItems(0,NULL);
+	}
 }
 
 pf_Frag_Strux* fl_AutoNum::getParentItem() const
@@ -760,7 +722,7 @@ void fl_AutoNum::insertItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pPrev, bool bDo
 	UT_sint32 numlists = m_pDoc->getListsCount();
 	for(i=0; i<numlists; i++)
 	{
-		fl_AutoNum * pAuto = m_pDoc->getNthList(i);
+		fl_AutoNumPtr pAuto = m_pDoc->getNthList(i);
 		if( pPrev == pAuto->getParentItem())
 		{
 			pAuto->setParentItem(pItem);
@@ -801,7 +763,7 @@ void fl_AutoNum::prependItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pNext, bool bD
 		UT_sint32 numlists = m_pDoc->getListsCount();
 		for(i=0; i<numlists; i++)
 		{
-			fl_AutoNum * pAuto = m_pDoc->getNthList(i);
+			fl_AutoNumPtr pAuto = m_pDoc->getNthList(i);
 			if( pPrev == pAuto->getParentItem())
 			{
 				pAuto->setParentItem(pItem);
@@ -843,7 +805,7 @@ void fl_AutoNum::removeItem(pf_Frag_Strux* pItem)
 	UT_sint32 numlists = m_pDoc->getListsCount();
 	for(i=0; i<numlists; i++)
 	{
-		fl_AutoNum * pAuto = m_pDoc->getNthList(i);
+		fl_AutoNumPtr pAuto = m_pDoc->getNthList(i);
 		if( pItem == pAuto->getParentItem())
 		{
 			pAuto->setParentItem(ppItem);
@@ -888,8 +850,8 @@ UT_sint32 fl_AutoNum::getPositionInList(pf_Frag_Strux* pItem, UT_uint32 /*depth*
 	{
 		pTmp = m_items.at(i);
 		//		bOnLevel = (depth == 0);
-		const fl_AutoNum* pAuto = getAutoNumFromSdh(pItem);
-		bOnLevel = static_cast<bool>( pAuto == this);
+		fl_AutoNumConstPtr pAuto = getAutoNumFromSdh(pItem);
+		bOnLevel = (pAuto.get() == this);
 		bFirstItem = (pTmp == m_items.front());
 		if (pTmp == pItem)
 		{
@@ -907,43 +869,18 @@ UT_sint32 fl_AutoNum::getPositionInList(pf_Frag_Strux* pItem, UT_uint32 /*depth*
 	// return m_items.findItem(pItem);
 }
 
-fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(pf_Frag_Strux* sdh)
+fl_AutoNumConstPtr fl_AutoNum::getAutoNumFromSdh(pf_Frag_Strux* sdh) const
 {
 	UT_sint32 i;
-	fl_AutoNum * pAuto = NULL;
-	if(m_pDoc->areListUpdatesAllowed() == false)
-	{
-		if(isItem(sdh) == false)
-		{
-			return static_cast<fl_AutoNum *>(NULL);
-		}
-		return this;
-	}
-	UT_sint32 numLists = m_pDoc->getListsCount();
-	for(i=0; i<numLists; i++)
-	{
-		pAuto = m_pDoc->getNthList(i);
-		if(pAuto->isItem(sdh))
-			break;
-	}
-	if(i>= numLists)
-	{
-		return static_cast<fl_AutoNum *>(NULL);
-	}
-	return pAuto;
-}
-
-const fl_AutoNum* fl_AutoNum::getAutoNumFromSdh(pf_Frag_Strux* sdh) const
-{
-	UT_sint32 i;
-	const fl_AutoNum* pAuto = 0;
+	fl_AutoNumConstPtr pAuto;
 
 	if (m_pDoc->areListUpdatesAllowed() == false)
 	{
-		if (isItem(sdh) == false)
-			return 0;
+		if (!isItem(sdh)) {
+			return fl_AutoNumConstPtr();
+		}
 
-		return this;
+		return shared_from_this();
 	}
 
 	UT_sint32 numLists = m_pDoc->getListsCount();
@@ -955,17 +892,17 @@ const fl_AutoNum* fl_AutoNum::getAutoNumFromSdh(pf_Frag_Strux* sdh) const
 	}
 
 	if (i >= numLists)
-		return 0;
+		return fl_AutoNumConstPtr();
 
 	return pAuto;
 }
 
 pf_Frag_Strux* fl_AutoNum::getLastItemInHeiracy(void) const
 {
-       const fl_AutoNum * pAuto = this;
+       fl_AutoNumConstPtr pAuto = shared_from_this();
        pf_Frag_Strux*  pLastItem = NULL;
        bool bLoop = true;
-       fl_AutoNum * pNext = NULL;
+       fl_AutoNumPtr pNext;
        UT_uint32 numLists = m_pDoc->getListsCount();
        UT_uint32 i=0;
        while(bLoop)
@@ -1046,9 +983,9 @@ bool fl_AutoNum::isLastOnLevel(pf_Frag_Strux* pItem) const
 	return m_items.back() == pItem;
 }
 
-fl_AutoNum * fl_AutoNum::getActiveParent(void) const
+fl_AutoNumPtr fl_AutoNum::getActiveParent(void) const
 {
-	fl_AutoNum * pAutoNum = m_pParent;
+	fl_AutoNumPtr pAutoNum = m_pParent;
 
 	while (pAutoNum && pAutoNum->isEmpty())
 		pAutoNum = pAutoNum->getParent();
@@ -1062,9 +999,8 @@ fl_AutoNum * fl_AutoNum::getActiveParent(void) const
  */
 bool fl_AutoNum::isIDSomeWhere(UT_uint32 ID) const
 {
-	const fl_AutoNum * pAuto = this;
-	while(pAuto != NULL)
-	{
+	fl_AutoNumConstPtr pAuto = shared_from_this();
+	while (pAuto) {
 		if(pAuto->getID() == ID)
 		{
 			return true;
@@ -1074,9 +1010,9 @@ bool fl_AutoNum::isIDSomeWhere(UT_uint32 ID) const
 	return false;
 }
 
-void fl_AutoNum::_setParent(fl_AutoNum * pParent)
+void fl_AutoNum::_setParent(const fl_AutoNumPtr & pParent)
 {
-	if(pParent == this)
+	if (pParent.get() == this)
 	{
 		m_pParent = NULL;
 		m_iParentID = 0;
@@ -1087,11 +1023,9 @@ void fl_AutoNum::_setParent(fl_AutoNum * pParent)
 	{
 		char szParent[13];
 		m_pParent = pParent;
-		if(m_pParent != NULL)
-		{
-			if(!pParent->checkReference(this))
-			{
-				m_pParent = NULL;
+		if (m_pParent) {
+			if (!pParent->checkReference(*this)) {
+				m_pParent = nullptr;
 				m_iParentID = 0;
 				m_bDirty = true;
 				return;
@@ -1163,7 +1097,7 @@ bool fl_AutoNum::_updateItems(UT_sint32 start, pf_Frag_Strux* notMe)
 			pf_Frag_Strux* pItem = m_items.at(i);
 			for(j=0; j<numlists; j++)
 			{
-				fl_AutoNum * pAuto = m_pDoc->getNthList(j);
+				fl_AutoNumPtr pAuto = m_pDoc->getNthList(j);
 				UT_ASSERT_HARMLESS(pAuto);
 				if( pAuto && (pItem == pAuto->getParentItem()) && (pItem != notMe))
 				{
@@ -1222,10 +1156,10 @@ pf_Frag_Strux* fl_AutoNum::getPrevInList( pf_Frag_Strux* pItem) const
 	return m_items.at(static_cast<UT_uint32>(itemloc) - 1);
 }
 
-inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum) const
+inline UT_uint32 fl_AutoNum::_getLevelValue(const fl_AutoNumConstPtr & pAutoNum) const
 {
 	pf_Frag_Strux* pBlock = getFirstItem();
-	const fl_AutoNum * pCurr = this;
+	fl_AutoNumConstPtr pCurr = shared_from_this();
 
 	while (1)
 	{

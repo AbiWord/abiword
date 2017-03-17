@@ -611,10 +611,9 @@ s_XSL_FO_Listener::~s_XSL_FO_Listener()
 
 void s_XSL_FO_Listener::_handleLists(void)
 {
-	fl_AutoNum* pAutoNum;
+	fl_AutoNumConstPtr pAutoNum;
 
-	for (UT_uint32 k = 0; m_pDocument->enumLists(k, &pAutoNum); ++k)
-	{
+	for (UT_uint32 k = 0; m_pDocument->enumLists(k, pAutoNum); ++k)	{
 		if (pAutoNum->isEmpty() == true)
 			continue;
 

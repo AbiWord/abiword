@@ -84,7 +84,7 @@ protected:
 	int m_iSectionDepth;
 	int m_iTitleDepth;
 	UT_sint32 m_iNoteID;
-	UT_GenericVector<fl_AutoNum *> m_utvTitles;
+	std::vector<fl_AutoNumPtr> m_utvTitles;
 	bool m_bMustAddTitle;
 	bool m_bRequiredBlock;
 	bool m_bTitleAdded;

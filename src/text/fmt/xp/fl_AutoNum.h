@@ -24,6 +24,7 @@
 #define FL_AUTONUM_H
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <unordered_set>
 
@@ -46,7 +47,13 @@ class pf_Frag_Strux;
 class PD_Document;
 class FV_View;
 
+class fl_AutoNum;
+
+typedef std::shared_ptr<fl_AutoNum> fl_AutoNumPtr;
+typedef std::shared_ptr<const fl_AutoNum> fl_AutoNumConstPtr;
+
 class ABI_EXPORT fl_AutoNum
+    : public std::enable_shared_from_this<fl_AutoNum>
 {
 private:
     class ItemStorage {
@@ -90,16 +97,6 @@ private:
     };
 public:
 	fl_AutoNum(	UT_uint32 id,
-				UT_uint32 start,
-				pf_Frag_Strux* pItem,
-				fl_AutoNum * pParent,
-				const gchar * lDelim,
-				const gchar * lDecimal,
-				FL_ListType lType,
-				PD_Document * pDoc,
-				FV_View * pView);
-
-	fl_AutoNum(	UT_uint32 id,
 				UT_uint32 parent_id,
 				FL_ListType lType,
 				UT_uint32 start,
@@ -118,7 +115,7 @@ public:
 	UT_uint32					getValue(pf_Frag_Strux*) const;
 	UT_uint32					getLevel() const { return m_iLevel; }
 	UT_uint32					getNumLabels() const;
-	bool                        checkReference(fl_AutoNum * pAuto);
+	bool                        checkReference(const fl_AutoNum & pAuto) const;
 
 	void						setLevel(UT_uint32 level) { m_iLevel = level; }
 	UT_sint32					getPositionInList( pf_Frag_Strux* pItem, UT_uint32 depth) const;
@@ -161,10 +158,9 @@ public:
 	pf_Frag_Strux*			getLastItem(void) const;
 	bool						isLastOnLevel(pf_Frag_Strux* pItem) const;
 
-	fl_AutoNum *				getParent(void) const { return m_pParent; }
-	fl_AutoNum *				getActiveParent(void) const;
-	fl_AutoNum *				getAutoNumFromSdh(pf_Frag_Strux* sdh);
-	const fl_AutoNum *			getAutoNumFromSdh(pf_Frag_Strux* sdh) const;
+	fl_AutoNumPtr				getParent(void) const { return m_pParent; }
+	fl_AutoNumPtr				getActiveParent(void) const;
+	fl_AutoNumConstPtr			getAutoNumFromSdh(pf_Frag_Strux* sdh) const;
 	void						fixListOrder(void);
 	void						markAsDirty(void);
 	void						findAndSetParentItem(void);
@@ -184,7 +180,7 @@ public:
 	{return m_pDoc;}
 	pf_Frag_Strux*           getLastItemInHeiracy(void) const;
 protected:
-	void                        _setParent(fl_AutoNum * pParent);
+	void                        _setParent(const fl_AutoNumPtr & pParent);
 	void                        _setParentID(UT_uint32 iParentID);
 	void						_calculateLabelStr(UT_uint32 depth);
 	void						_getLabelstr(	UT_UCSChar labelStr[],
@@ -192,9 +188,9 @@ protected:
 												UT_uint32 depth,
 												pf_Frag_Strux* pLayout) const;
 	bool						_updateItems(UT_sint32 start, pf_Frag_Strux* notMe );
-	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum) const;
+	UT_uint32					_getLevelValue(const fl_AutoNumConstPtr & pAutoNum) const;
 
-	fl_AutoNum *				m_pParent;
+	fl_AutoNumPtr				m_pParent;
 
 private:
 	ItemStorage                 m_items;

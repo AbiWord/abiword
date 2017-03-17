@@ -33,7 +33,6 @@
 #include "xap_Preview.h"
 
 class FV_View;
-class fl_AutoNum;
 class fl_BlockLayout;
 class AP_Preview_Paragraph;
 class AP_Dialog_Lists;
@@ -102,7 +101,7 @@ public:
 	void						fillUncustomizedValues(void);
 	UT_uint32					getID(void);
 	UT_uint32					getStoredID(void) { return m_iID;}
-	fl_AutoNum *				getAutoNum(void) const;
+	fl_AutoNumPtr				getAutoNum(void) const;
 	fl_BlockLayout *			getBlock(void) const;
 	UT_uint32					getTick(void);
 	const UT_Vector *			getOutProps(void) const { return &m_OutProps;}
@@ -230,7 +229,7 @@ private:
 
 	fl_Layout*				m_pFakeLayout[4];
 	pf_Frag_Strux*		m_pFakeSdh[4];
-	fl_AutoNum*				m_pFakeAuto;
+	fl_AutoNumPtr				m_pFakeAuto;
 	PD_Document *			m_pFakeDoc;
 	bool					m_bDirty;
 	bool					m_bIsModal;

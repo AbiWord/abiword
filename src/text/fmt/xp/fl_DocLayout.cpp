@@ -790,7 +790,7 @@ void FL_DocLayout::fillLayouts(void)
 	getDocument()->enableListUpdates();
 	for(UT_uint32 j =0; j<getDocument()->getListsCount();j++)
 	{
-	    fl_AutoNum * pAuto = getDocument()->getNthList(j);
+	    fl_AutoNumPtr pAuto = getDocument()->getNthList(j);
 	    pAuto->markAsDirty();
 	}
 	getDocument()->updateDirtyLists();
@@ -4758,12 +4758,12 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 #endif
 }
 
-inline fl_AutoNum * FL_DocLayout::getListByID(UT_uint32 id) const
+inline fl_AutoNumPtr FL_DocLayout::getListByID(UT_uint32 id) const
 {
 	return m_pDoc->getListByID(id);
 }
 
-inline fl_AutoNum * FL_DocLayout::getNthList(UT_uint32 i) const
+inline fl_AutoNumPtr FL_DocLayout::getNthList(UT_uint32 i) const
 {
 	return m_pDoc->getNthList(i);
 }
@@ -4773,7 +4773,7 @@ inline UT_uint32 FL_DocLayout::getListsCount(void) const
 	return m_pDoc->getListsCount();
 }
 
-inline void FL_DocLayout::addList(fl_AutoNum * pAutoNum)
+inline void FL_DocLayout::addList(const fl_AutoNumPtr & pAutoNum)
 {
 	m_pDoc->addList(pAutoNum);
 }

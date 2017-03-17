@@ -75,9 +75,6 @@
 
 #include <sstream>
 
-class fl_AutoNum;
-
-
 /** Ensure on input from RTF the list level is 0-8 */
 inline UT_sint32 _sanitizeListLevel(UT_sint32 level)
 {
@@ -6905,7 +6902,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 //
 // Handle case of no id in any lists. If this is the case no need to remap
 //
-	fl_AutoNum * pAuto1 = getDoc()->getListByID(id);
+	fl_AutoNumConstPtr pAuto1 = getDoc()->getListByID(id);
 	if(pAuto1 == NULL)
 	{
 	        return id;
@@ -6927,7 +6924,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 			    /// Do the remapping!
 			    ///
 			{
-				fl_AutoNum * pMapAuto = NULL;
+				fl_AutoNumConstPtr pMapAuto;
 				UT_uint32 nLists = getDoc()->getListsCount();
 				UT_uint32 highestLevel = 0;
 				pf_Frag_Strux* sdh;
@@ -6948,7 +6945,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 				getDoc()->getStruxOfTypeFromPosition(m_dposPaste, PTX_Block,&sdh);
 				for(j=0; j< nLists; j++)
 				{
-					fl_AutoNum * pAuto = getDoc()->getNthList(j);
+					fl_AutoNumConstPtr pAuto = getDoc()->getNthList(j);
 					if(pAuto->isContainedByList(sdh) == true)
 					{
 						if(highestLevel < pAuto->getLevel())
@@ -7664,8 +7661,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 				m_posSavedDocPosition++;
 			pf_Frag_Strux* sdh_cur;
 			UT_uint32 j;
-			fl_AutoNum * pAuto = getDoc()->getListByID(id);
-			if(pAuto == NULL)
+			fl_AutoNumPtr pAuto = getDoc()->getListByID(id);
+			if (!pAuto)
 			/*
 			* Got to create a new list here.
 			* Old one may have been cut out or ID may have
@@ -7686,7 +7683,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 					lType = static_cast<FL_ListType>(j);
 				else
 					lType = static_cast<FL_ListType>(0);
-				pAuto = new fl_AutoNum(id, parentID, lType, startValue,static_cast<gchar *>(m_currentRTFState.m_paraProps.m_pszListDelim),static_cast<gchar *>(m_currentRTFState.m_paraProps.m_pszListDecimal), getDoc(), NULL);
+				pAuto.reset(new fl_AutoNum(id, parentID, lType, startValue, m_currentRTFState.m_paraProps.m_pszListDelim, m_currentRTFState.m_paraProps.m_pszListDecimal, getDoc(), nullptr));
 				getDoc()->addList(pAuto);
 				pAuto->fixHierarchy();
 			}
@@ -7739,7 +7736,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			UT_sint32 iLoop = 20;
 			do
 			{
-				fl_AutoNum * pAuto = NULL;
+				fl_AutoNumConstPtr pAuto;
 				bisListItem = false;
 				for(UT_uint32 i=0; (i< getDoc()->getListsCount() && !bisListItem); i++)
 				{

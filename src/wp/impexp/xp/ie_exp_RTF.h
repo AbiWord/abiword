@@ -181,10 +181,10 @@ protected:
     void                            _output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti);
     void                            _output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple);
     void                            _output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 i);
-	void                            _output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel);
-	void                            _output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel,UT_UCSChar bulletsym);
+	void                            _output_ListRTF(const fl_AutoNumConstPtr & pAuto, UT_uint32 iLevel);
+	void                            _output_LevelText(const fl_AutoNumConstPtr & pAuto, UT_uint32 iLevel,UT_UCSChar bulletsym);
 	void                            _get_LeftRight_Side(UT_String & LeftSide, UT_String & RightSide);
-	void                            _generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,UT_String &LevelNumbers, UT_uint32 & lenText, UT_uint32 & ifoundLevel);
+	void                            _generate_level_Text(const fl_AutoNumConstPtr & pAuto,UT_String & LevelText,UT_String &LevelNumbers, UT_uint32 & lenText, UT_uint32 & ifoundLevel);
 
 	void                            _output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,pf_Frag_Strux* sdh,
 													 UT_sint32 iNestLevel, bool & bStartedList,  bool &bIsListBlock,
@@ -252,19 +252,19 @@ private:
 class ABI_EXPORT ie_exp_RTF_MsWord97List
 {
  public:
-	ie_exp_RTF_MsWord97List(fl_AutoNum * pAuto);
+	ie_exp_RTF_MsWord97List(const fl_AutoNumConstPtr & pAuto);
 	virtual ~ie_exp_RTF_MsWord97List(void);
-	fl_AutoNum * getAuto(void) const { return m_pAutoNum;}
+	const fl_AutoNumConstPtr & getAuto(void) const { return m_pAutoNum;}
 	UT_uint32 getID(void) const {return m_Id;}
  private:
-	fl_AutoNum * m_pAutoNum;
+	fl_AutoNumConstPtr m_pAutoNum;
 	UT_uint32 m_Id;
 };
 
 class ABI_EXPORT ie_exp_RTF_MsWord97ListSimple : public ie_exp_RTF_MsWord97List
 {
  public:
-	ie_exp_RTF_MsWord97ListSimple(fl_AutoNum * pAuto);
+	ie_exp_RTF_MsWord97ListSimple(const fl_AutoNumConstPtr & pAuto);
 	~ie_exp_RTF_MsWord97ListSimple(void);
 	bool isSimple(void) const { return true;}
 	bool isMulti(void) const { return false;}
@@ -274,7 +274,7 @@ class ABI_EXPORT ie_exp_RTF_MsWord97ListSimple : public ie_exp_RTF_MsWord97List
 class ABI_EXPORT ie_exp_RTF_MsWord97ListMulti : public ie_exp_RTF_MsWord97List
 {
  public:
-	ie_exp_RTF_MsWord97ListMulti(fl_AutoNum * pAuto);
+	ie_exp_RTF_MsWord97ListMulti(const fl_AutoNumConstPtr & pAuto);
 	~ie_exp_RTF_MsWord97ListMulti(void);
 	bool isSimple(void) const { return false;}
 	bool isMulti(void) const { return true;}
@@ -288,17 +288,17 @@ class ABI_EXPORT ie_exp_RTF_MsWord97ListMulti : public ie_exp_RTF_MsWord97List
 class ABI_EXPORT ie_exp_RTF_ListOveride
 {
 public:
-	ie_exp_RTF_ListOveride(fl_AutoNum * pAuto);
+	ie_exp_RTF_ListOveride(const fl_AutoNumConstPtr & pAuto);
 	~ie_exp_RTF_ListOveride(void);
 	void setOverideID(UT_uint32 ID) {m_OverideID = ID;}
 	UT_uint32 getOverideID(void) const { return m_OverideID;}
-	fl_AutoNum * getAutoNum(void) const { return m_pAutoNum;}
+	const fl_AutoNumConstPtr & getAutoNum(void) const { return m_pAutoNum;}
 	bool doesOverideMatch(UT_uint32 ID) const { return (ID == m_AbiListID);}
 	UT_uint32 getAbiListID(void) const { return m_AbiListID;}
 private:
 	UT_uint32 m_AbiListID;
 	UT_uint32 m_OverideID;
-	fl_AutoNum * m_pAutoNum;
+	fl_AutoNumConstPtr m_pAutoNum;
 };
 #endif /* IE_EXP_RTF_H */
 

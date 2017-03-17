@@ -83,7 +83,6 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_bguiChanged(false),
 	m_paragraphPreview(0),
 	m_pListsPreview(0),
-	m_pFakeAuto(0),
 	m_pFakeDoc(0),
 	m_bDirty(false),
 	m_bIsModal(false),
@@ -116,8 +115,6 @@ AP_Dialog_Lists::~AP_Dialog_Lists(void)
 	}
 	// What do we do about the fakeAutoNum in the Document pDoc?
 	// Maybe we need another constrcutor
-
-	DELETEP(m_pFakeAuto);
 
 	UNREFP(m_pFakeDoc);
 }
@@ -209,7 +206,7 @@ void AP_Dialog_Lists::StopList(void)
 	getView()->cmdStopList();
 }
 
-fl_AutoNum * AP_Dialog_Lists::getAutoNum(void) const
+fl_AutoNumPtr AP_Dialog_Lists::getAutoNum(void) const
 {
 	return getBlock()->getAutoNum();
 }
@@ -254,7 +251,7 @@ void AP_Dialog_Lists::Apply(void)
 // OK fold up the text according the level specified.
 //
 	        m_bFoldingLevelChanged = false;
-		fl_AutoNum * pAuto = getBlock()->getAutoNum();
+		fl_AutoNumPtr pAuto = getBlock()->getAutoNum();
 		UT_uint32 ID = 0;
 		if(!pAuto)
 		{
@@ -689,12 +686,11 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	//
 	// Now generate the AutoNum
 	//
-	DELETEP(m_pFakeAuto);
 	UNREFP(m_pFakeDoc);
 	m_pFakeDoc = new PD_Document();
-	m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_NewListType, m_newStartValue, 
-                                 m_pszDelim.c_str(), m_pszDecimal.c_str(),
-								 (PD_Document *) m_pFakeDoc,NULL);
+	m_pFakeAuto = std::make_shared<fl_AutoNum>(m_iID, 0, m_NewListType, m_newStartValue,
+											   m_pszDelim.c_str(), m_pszDecimal.c_str(),
+											   (PD_Document *) m_pFakeDoc, nullptr);
 	m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1,false);
 	m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);
 	for(i=1; i<4; i++)

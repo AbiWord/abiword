@@ -1111,7 +1111,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 	fl_BlockLayout * prevBlockInList = NULL;
 	fl_BlockLayout * nextBlockInList = NULL;
-	fl_AutoNum * pAutoNum;
+	fl_AutoNumPtr pAutoNum;
 
 	if ((m_pAutoNum) && (id) && (m_pAutoNum->getID() != id))
 	{
@@ -1140,14 +1140,14 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		if (m_pAutoNum->isEmpty())
 		{
 			m_pDoc->removeList(m_pAutoNum,getStruxDocHandle());
-			DELETEP(m_pAutoNum);
+			m_pAutoNum.reset();
 		}
 		else
 		{
 			m_pAutoNum->update(0);
 		}
 		m_bStopList = false;
-		m_pAutoNum = NULL;
+		m_pAutoNum.reset();
 		UT_DEBUGMSG(("Stopped List\n"));
 	}
 
@@ -1171,7 +1171,8 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 			}
 			UT_ASSERT(style);
 			FL_ListType lType = getListTypeFromStyle( style);
-			pAutoNum = new fl_AutoNum(id, parent_id, lType, start, lDelim, lDecimal, m_pDoc, getView());
+			pAutoNum = std::make_shared<fl_AutoNum>(id, parent_id, lType, start,
+													lDelim, lDecimal, m_pDoc, getView());
 			UT_DEBUGMSG(("SEVIOR: Created new list id = %d\n",id));
 			m_pDoc->addList(pAutoNum);
 		}
@@ -1377,7 +1378,7 @@ fl_BlockLayout::~fl_BlockLayout()
 //		{
 //			m_pAutoNum->removeItem(getStruxDocHandle());
 //			if (m_pAutoNum->isEmpty())
-//				DELETEP(m_pAutoNum);
+//				m_pAutoNum.reset();
 //		}
 	if(!m_bIsTOC)
 	{
@@ -7261,10 +7262,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
 	// First see if the block in a list. If so remove it!
-	if(m_pAutoNum != NULL)
-	{
-		if( m_pAutoNum->isItem(getStruxDocHandle()) == true)
-		{
+	if (m_pAutoNum)	{
+		if(m_pAutoNum->isItem(getStruxDocHandle()))	{
 			// This nifty method handles all the details
 			m_pAutoNum->removeItem(getStruxDocHandle());
 		}
@@ -10158,7 +10157,7 @@ void	fl_BlockLayout::StartList( const gchar * style, pf_Frag_Strux* prevSDH)
 	UT_uint32 count = m_pDoc->getListsCount();
 	UT_uint32 j = 0;
 	bool bFound = false;
-	fl_AutoNum * pPrev  = NULL;
+	fl_AutoNumPtr pPrev;
 	if(prevSDH)
 	{
 		for(j=0; j< count && !bFound; j++)
@@ -10305,7 +10304,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	UT_DebugOnly<bool> bRet;
 	UT_uint32 id=0;
 
-	fl_AutoNum * pAutoNum;
+	fl_AutoNumPtr pAutoNum;
 	const PP_AttrProp * pBlockAP = NULL;
 	const gchar * szLid=NULL;
 	getAP(pBlockAP);
@@ -10365,7 +10364,8 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	};
 	xxx_UT_DEBUGMSG(("SEVIOR: Starting List with font %s \n",fFont));
 
-	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, lDecimal, m_pDoc, getView());
+	pAutoNum = std::make_shared<fl_AutoNum>(id, iParentID, lType, start, lDelim, lDecimal,
+											m_pDoc, getView());
 	if (!pAutoNum)
 	{
 		// TODO Out of Mem.
@@ -10623,7 +10623,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id) const
 	UT_ASSERT(m_pAutoNum);
 	fl_BlockLayout * pPrev = getPrevBlockInDocument();
 	bool bmatchid =  false;
-	fl_AutoNum * pAutoNum = NULL;
+	fl_AutoNumPtr pAutoNum;
 
 	if (pPrev != NULL && (pPrev->getAutoNum() != NULL) && pPrev->isListItem())
 	{
@@ -10764,7 +10764,7 @@ fl_BlockLayout * fl_BlockLayout::getParentItem(void) const
 	// TODO Again, more firendly.
 	UT_return_val_if_fail(m_pAutoNum, NULL);
 
-	fl_AutoNum * pParent = m_pAutoNum->getActiveParent();
+	fl_AutoNumPtr pParent = m_pAutoNum->getActiveParent();
 	if (pParent)
 		return getPreviousList(pParent->getID());
 	else
@@ -10824,13 +10824,13 @@ void fl_BlockLayout::listUpdate(void)
 	//
 	// Update the list on the screen to reflect changes made.
 	//
-	if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
-	{
-		m_pAutoNum = NULL;
+	if (getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR)) {
+		m_pAutoNum.reset();
 		return;
 	}
-	if (m_pAutoNum == NULL)
+	if (!m_pAutoNum) {
 		return;
+	}
 
 	if (m_bStartList == true)
 		m_pAutoNum->update(1);
@@ -11057,16 +11057,16 @@ void fl_BlockLayout::_deleteListLabel(void)
 	}
 }
 
-UT_UCSChar * fl_BlockLayout::getListLabel(void) const
+const UT_UCSChar * fl_BlockLayout::getListLabel(void) const
 {
 	//	UT_ASSERT(m_pAutoNum);
 	//
 	// Return the calculated list label for the block
 	//
-	if(m_pAutoNum != NULL)
-		return const_cast<UT_UCSChar *>(m_pAutoNum->getLabel(getStruxDocHandle()));
-	else
-		return NULL;
+	if (m_pAutoNum) {
+		return m_pAutoNum->getLabel(getStruxDocHandle());
+	}
+	return nullptr;
 }
 
 inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level)
@@ -11074,7 +11074,7 @@ inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInLis
 	//
 	// Insert the current block to the list at the point after prevBlockInList
 	//
-	fl_AutoNum * pAutoNum;
+	fl_AutoNumPtr pAutoNum;
 	bool bMatchList = false;
 
 	UT_return_if_fail(prevBlockInList);
@@ -11111,9 +11111,11 @@ inline void fl_BlockLayout::_prependBlockToPrevList( fl_BlockLayout * nextBlockI
 
 UT_uint32 fl_BlockLayout::getLevel(void) const
 {
-	if (!m_pAutoNum)
+	if (!m_pAutoNum) {
 		return 0;
-	else return m_pAutoNum->getLevel();
+	} else {
+		return m_pAutoNum->getLevel();
+	}
 }
 
 void fl_BlockLayout::setStarting( bool bValue )

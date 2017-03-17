@@ -241,8 +241,6 @@ PD_Document::~PD_Document()
 
 	_destroyDataItemData();
 
-	UT_std_vector_purgeall(m_vecLists);
-
 	UT_VECTOR_PURGEALL(pp_Author *, m_vecAuthors);
 	UT_VECTOR_PURGEALL(ImagePage *, m_pPendingImagePage);
 	UT_VECTOR_PURGEALL(TextboxPage *, m_pPendingTextboxPage);
@@ -5872,41 +5870,41 @@ void PD_Document::invalidateCache(void)
 
 
 
-fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
+fl_AutoNumPtr PD_Document::getListByID(UT_uint32 id) const
 {
 	UT_uint16 i = 0;
 	UT_sint32 cnt = 0;
-	fl_AutoNum * pAutoNum;
 
 	cnt = m_vecLists.size();
-	if ( cnt <= 0)
-		return static_cast<fl_AutoNum *>(NULL);
-	UT_return_val_if_fail (m_vecLists.front(), NULL);
+	if (cnt <= 0) {
+		return fl_AutoNumPtr();
+	}
+	UT_return_val_if_fail (m_vecLists.front(), fl_AutoNumPtr());
 
 	while (i<cnt)
 	{
+		fl_AutoNumPtr pAutoNum;
 		pAutoNum = m_vecLists[i];
 		if (pAutoNum->getID() == id)
 			return pAutoNum;
 		i++;
 	}
 
-	return static_cast<fl_AutoNum *>(NULL);
+	return fl_AutoNumPtr();
 }
 
-bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum)
+bool PD_Document::enumLists(UT_uint32 k, fl_AutoNumConstPtr & pAutoNum)
 {
 	UT_uint32 kLimit = m_vecLists.size();
 	if (k >= kLimit)
 		return false;
 
-	if (pAutoNum)
-		*pAutoNum = m_vecLists[k];
+	pAutoNum = m_vecLists[k];
 
 	return true;
 }
 
-fl_AutoNum * PD_Document::getNthList(UT_uint32 i) const
+fl_AutoNumPtr PD_Document::getNthList(UT_uint32 i) const
 {
 	return m_vecLists[i];
 }
@@ -5916,14 +5914,14 @@ UT_uint32 PD_Document::getListsCount(void) const
 	return m_vecLists.size();
 }
 
-void PD_Document::addList(fl_AutoNum * pAutoNum)
+void PD_Document::addList(const fl_AutoNumPtr & pAutoNum)
 {
 	UT_uint32 id = pAutoNum->getID();
 	UT_uint32 i;
 	UT_uint32 numlists = m_vecLists.size();
 	for(i=0; i < numlists; i++)
 	{
-		fl_AutoNum * pAuto = m_vecLists.at(i);
+		fl_AutoNumPtr pAuto = m_vecLists.at(i);
 		if(pAuto->getID() == id)
 			break;
 	}
@@ -6007,7 +6005,7 @@ bool PD_Document::appendList(const PP_PropertyVector & attributes)
 	UT_uint32 numlists = m_vecLists.size();
 	for(i=0; i < numlists; i++)
 	{
-		fl_AutoNum * pAuto = m_vecLists.at(i);
+		fl_AutoNumPtr pAuto = m_vecLists.at(i);
 		if(pAuto->getID() == id)
 			break;
 	}
@@ -6019,7 +6017,9 @@ bool PD_Document::appendList(const PP_PropertyVector & attributes)
 
 	// this is bad design -- layout items should not be created by the document, only by the view
 	// (the props and attrs of layout items are view-specific due to possible revisions settings !!!)
-	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim->c_str(), szDec.c_str(), this, NULL);
+	fl_AutoNumPtr pAutoNum = std::make_shared<fl_AutoNum>(id, parent_id, type, start,
+														  szDelim->c_str(), szDec.c_str(),
+														  this, nullptr);
 	addList(pAutoNum);
 
 	return true;
@@ -6045,22 +6045,20 @@ void PD_Document::updateDirtyLists(void)
 {
 	UT_uint32 iNumLists = m_vecLists.size();
 	UT_uint32 i;
-	fl_AutoNum * pAutoNum;
 	bool bDirtyList = false;
 	for(i=0; i< iNumLists; i++)
 	{
-		pAutoNum = m_vecLists.at(i);
+		fl_AutoNumPtr pAutoNum = m_vecLists.at(i);
 		if(pAutoNum->isEmpty() || (pAutoNum->getDoc() != this))
 		{
 			m_vecLists.erase(m_vecLists.begin() + i);
-			delete pAutoNum;
 			iNumLists--;
 			i--;
 		}
 	}
 	for(i=0; i< iNumLists; i++)
 	{
-		pAutoNum = m_vecLists.at(i);
+		fl_AutoNumPtr pAutoNum = m_vecLists.at(i);
 		if(pAutoNum->isDirty() == true)
 		{
 			pAutoNum->update(0);
@@ -6071,7 +6069,7 @@ void PD_Document::updateDirtyLists(void)
 	{
 		for(i=0; i< iNumLists; i++)
 		{
-			pAutoNum = m_vecLists.at(i);
+			fl_AutoNumPtr pAutoNum = m_vecLists.at(i);
 			pAutoNum->fixHierarchy();
 			pAutoNum->findAndSetParentItem();
 		}
@@ -6082,7 +6080,6 @@ void PD_Document::updateDirtyLists(void)
 bool PD_Document::fixListHierarchy(void)
 {
 	UT_uint32 iNumLists = m_vecLists.size();
-	fl_AutoNum * pAutoNum;
 
 	if (iNumLists == 0)
 	{
@@ -6097,7 +6094,7 @@ bool PD_Document::fixListHierarchy(void)
             std::vector<unsigned int> itemsToRemove;
             for (UT_uint32 i = 0; i < iNumLists; i++)
             {
-                    pAutoNum = m_vecLists.at(i);
+                    fl_AutoNumPtr pAutoNum = m_vecLists.at(i);
                     if (pAutoNum->getFirstItem() == NULL)
                     {
                         itemsToRemove.push_back(i);
@@ -6110,17 +6107,15 @@ bool PD_Document::fixListHierarchy(void)
             while(!itemsToRemove.empty())
             {
                 UT_uint32 i = itemsToRemove.back();
-                fl_AutoNum* pList = m_vecLists.at(i);
                 m_vecLists.erase(m_vecLists.begin() + i);
                 itemsToRemove.pop_back();
-                delete pList;
             }
 
             return true;
 	}
 }
 
-void PD_Document::removeList(fl_AutoNum * pAutoNum, pf_Frag_Strux* sdh )
+void PD_Document::removeList(const fl_AutoNumPtr & pAutoNum, pf_Frag_Strux* sdh )
 {
 	UT_return_if_fail (pAutoNum);
 	auto iter = find(m_vecLists.begin(), m_vecLists.end(), pAutoNum);

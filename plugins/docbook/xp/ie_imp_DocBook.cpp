@@ -108,7 +108,7 @@ IE_Imp_DocBook::IE_Imp_DocBook(PD_Document * pDocument)
 	m_iSectionDepth(0),
 	m_iTitleDepth(0), // this counter doesn't include 'sections' like prefaces or dedications
 	m_iNoteID(-1),
-	m_utvTitles(7,1,false),
+	m_utvTitles(7),
 	m_bMustAddTitle(false),
 	m_bRequiredBlock(false),
 	m_bWroteBold(false),
@@ -123,10 +123,6 @@ IE_Imp_DocBook::IE_Imp_DocBook(PD_Document * pDocument)
 	m_bReadBook(false)
 {
 //	m_TableHelperStack(new IE_Imp_TableHelperStack());
-	for(int i = 0; i < 7; i++)
-	{
-		m_utvTitles.addItem((fl_AutoNum *)NULL);
-	}
 }
 
 /*****************************************************************/
@@ -2607,9 +2603,9 @@ void IE_Imp_DocBook :: createTitle (void)
 	const gchar *buf[11];
 	memset(buf, 0, sizeof(buf));
 
-	if(m_iTitleDepth > m_utvTitles.getItemCount())
+	if(m_iTitleDepth > m_utvTitles.size())
 	{
-		m_utvTitles.addItem((fl_AutoNum *)NULL);
+		m_utvTitles.push_back(fl_AutoNumPtr());
 	}
 
 	bool foundStyle = false;
@@ -2719,17 +2715,16 @@ void IE_Imp_DocBook :: createTitle (void)
 		 * it into a list
 		 */
 		/* deletes previous lists of same level and above */
-		for (UT_sint32 i = (m_iTitleDepth - 1); i < m_utvTitles.getItemCount(); i++)
+		for (UT_sint32 i = (m_iTitleDepth - 1); i < m_utvTitles.size(); i++)
 		{
 			if (i == 0) //always keep the first chapter title
 				continue;
 
-			fl_AutoNum * temp = m_utvTitles.getNthItem(i);
-			DELETEP(temp);
+			m_utvTitles[i].reset();
 		}
 		buf[8] = PT_PROPS_ATTRIBUTE_NAME;
 
-		if((m_utvTitles.getNthItem(m_iTitleDepth-1) == NULL))
+		if(!m_utvTitles.at(m_iTitleDepth-1))
 		{
 			// if a list doesn't exist at this depth, create it
 			createList();
@@ -2839,7 +2834,7 @@ void IE_Imp_DocBook :: createList (void)
 		lDelim = "%L.";
 
 	/* creates the new list */
-	fl_AutoNum *an = new fl_AutoNum (
+	fl_AutoNumPtr an(new fl_AutoNum(
 			m_iCurListID,
 			pid,
 			NUMBERED_LIST,
@@ -2848,14 +2843,11 @@ void IE_Imp_DocBook :: createList (void)
 			(const gchar *)"",
 			getDoc (),
 			NULL
-		);
+		));
 	getDoc()->addList(an);
 
 	/* register it in the vector */
-	if(m_utvTitles.setNthItem((m_iTitleDepth - 1), an, NULL) == -1)
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	}
+	m_utvTitles[(m_iTitleDepth - 1)] = an;
 
 	/* increment the id counter, so that it is unique */
 	m_iCurListID++;

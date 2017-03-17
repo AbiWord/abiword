@@ -4293,7 +4293,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 //
 					UT_sint32 count = m_pDoc->getListsCount();
 					UT_sint32 i =0;
-					const fl_AutoNum * pAuto = NULL;
+					fl_AutoNumConstPtr pAuto;
 					bool bFoundPrevList = false;
 					for(i=0; (i< count) && !bFoundPrevList; i++)
 					{
@@ -5416,8 +5416,8 @@ void FV_View::getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * v) const
 	// get all the blocks in the list
 	//
 	fl_BlockLayout * pBlock;
-	fl_AutoNum * pAuto = getCurrentBlock()->getAutoNum();
-	if(pAuto == NULL)
+	fl_AutoNumPtr pAuto = getCurrentBlock()->getAutoNum();
+	if(!pAuto)
 	{
 		pBlock = getCurrentBlock();
 		v->addItem(pBlock);
@@ -5877,7 +5877,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const PP_PropertyVector & att
 }
 
 
-void FV_View::changeListStyle(	fl_AutoNum* pAuto,
+void FV_View::changeListStyle(const fl_AutoNumPtr & pAuto,
 								FL_ListType lType,
 								UT_uint32 startv,
 								const gchar* pszDelim,

@@ -24,13 +24,13 @@
 
 #include "ut_types.h"
 #include "pt_Types.h"
+#include "fl_AutoNum.h"
 
 class PP_AttrProp;
 class PP_RevisionAttr;
 class PD_Document;
 class fd_Field;
 class po_Bookmark;
-class fl_AutoNum;
 class pf_Frag_Strux;
 
 /*!
@@ -71,15 +71,15 @@ public:
 	bool				getField(UT_uint32 offset, fd_Field * &pField);
 	po_Bookmark *		getBookmark(UT_uint32 offset);
 	virtual	void		listUpdate(void) { return; }
-	inline fl_AutoNum *	getAutoNum(void) const { return m_pAutoNum; }
-	void    			setAutoNum(fl_AutoNum * pAutoNum);
+	inline const fl_AutoNumPtr &	getAutoNum(void) const { return m_pAutoNum; }
+	void    			setAutoNum(const fl_AutoNumPtr & pAutoNum);
 
 	PD_Document *	    getDocument(void) const { return m_pDoc; };
 
 protected:
 	PTStruxType				m_type;
 	PT_AttrPropIndex		m_apIndex;
-	fl_AutoNum * 			m_pAutoNum;
+	fl_AutoNumPtr 			m_pAutoNum;
 
 	PD_Document *			m_pDoc;		// set by child
 private:

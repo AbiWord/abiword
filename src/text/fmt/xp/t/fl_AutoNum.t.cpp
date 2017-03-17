@@ -49,8 +49,8 @@ TFTEST_MAIN("fl_AutoNum")
   PD_Document* pDoc = makeDocument();
   FV_View *pView = nullptr;
 
-  fl_AutoNum* autoNum = new fl_AutoNum(2, 0, NUMBERED_LIST, 1, "*", ".",
-                                       pDoc, pView);
+  fl_AutoNumPtr autoNum = std::make_shared<fl_AutoNum>(2, 0, NUMBERED_LIST, 1, "*", ".",
+                                                       pDoc, pView);
 
   TFPASS(pDoc->getListByID(2) == autoNum);
 

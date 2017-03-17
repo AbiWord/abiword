@@ -23,6 +23,8 @@
 #ifndef IE_IMP_OPML_H
 #define IE_IMP_OPML_H
 
+#include <vector>
+
 #include "ie_imp_XML.h"
 #include "fl_AutoNum.h"
 
@@ -61,7 +63,7 @@ private:
 	UT_uint32		m_iCurListID;
 	UT_sint32		m_iOutlineDepth;
 	UT_UTF8String	m_sMetaTag;
-	UT_GenericVector<fl_AutoNum *> m_utvLists;
+	std::vector<fl_AutoNumConstPtr> m_utvLists;
 };
 
 #endif /* IE_IMP_OPML_H */

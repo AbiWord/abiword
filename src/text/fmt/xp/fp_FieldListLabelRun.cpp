@@ -35,7 +35,7 @@ bool fp_FieldListLabelRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	UT_uint32 i = 0;
-	UT_UCSChar *  listlabel = NULL;
+	const UT_UCSChar *  listlabel = nullptr;
 	if(getBlock()->isContainedByTOC())
 	{
 		xxx_UT_DEBUGMSG(("!!!!!!------!!!! ListLabel in TOC!!!! \n"));

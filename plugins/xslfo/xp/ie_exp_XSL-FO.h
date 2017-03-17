@@ -73,7 +73,7 @@ public:
 	{
 	}
 
-	void addList(fl_AutoNum* pAutoNum)
+	void addList(const fl_AutoNumConstPtr & pAutoNum)
 	{
 		UT_return_if_fail(pAutoNum);
 
@@ -230,7 +230,7 @@ protected:
 
 private:
 
-	const fl_AutoNum* m_pan;
+	fl_AutoNumConstPtr m_pan;
 	UT_UTF8String m_sPostText; //text after "%L"
 	UT_UTF8String m_sPreText; //text before "%L"
 	UT_sint32 m_iInc;

@@ -68,7 +68,6 @@ class fl_DocSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_DocListener;
 class fl_BlockLayout;
-class fl_AutoNum;
 class fl_EndnoteLayout;
 
 class fp_PageSize;
@@ -428,7 +427,7 @@ public:
 	bool	isCurrentListBlockEmpty(void) const;
 	bool	cmdStartList(const gchar * style);
 	bool	cmdStopList(void);
-	void	changeListStyle(fl_AutoNum* pAuto,
+	void	changeListStyle(const fl_AutoNumPtr & pAuto,
 							FL_ListType lType,
 							UT_uint32 startv,
 							const gchar* pszDelim,

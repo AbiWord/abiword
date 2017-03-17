@@ -34,7 +34,6 @@
 fl_Layout::fl_Layout(PTStruxType type, pf_Frag_Strux* sdh) :
 	m_type(type),
 	m_apIndex(0),
-	m_pAutoNum(NULL),
 	m_pDoc(NULL), // set by child
 	m_sdh(sdh),
 	m_endSdh(NULL)
@@ -116,7 +115,7 @@ po_Bookmark * fl_Layout::getBookmark(UT_uint32 offset)
     return m_pDoc->getBookmark(m_sdh,offset);
 }
 
-void fl_Layout::setAutoNum(fl_AutoNum * pAutoNum)
+void fl_Layout::setAutoNum(const fl_AutoNumPtr & pAutoNum)
 {
 	m_pAutoNum = pAutoNum;
 }

@@ -1132,8 +1132,8 @@ void s_AbiWord_1_Listener::_handleLists(void)
 
 #define LCheck(str) (s == str)
 
-	fl_AutoNum * pAutoNum;
-	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
+	fl_AutoNumConstPtr pAutoNum;
+	for (UT_uint32 k = 0; m_pDocument->enumLists(k, pAutoNum); k++)
 	{
 		if (pAutoNum->isEmpty() == true)
 			continue;

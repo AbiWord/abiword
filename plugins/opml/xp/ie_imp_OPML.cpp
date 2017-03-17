@@ -181,7 +181,7 @@ IE_Imp_OPML::IE_Imp_OPML(PD_Document * pDocument)
 	m_iOutlineDepth(0),
 	m_sMetaTag("")
 {
-	m_utvLists.addItem((fl_AutoNum *)NULL);
+	m_utvLists.push_back(fl_AutoNumConstPtr());
 }
 
 IE_Imp_OPML::~IE_Imp_OPML() 
@@ -432,11 +432,11 @@ void IE_Imp_OPML::_createBullet(void)
 
 	UT_return_if_fail(m_iOutlineDepth);
 
-	if(m_iOutlineDepth > m_utvLists.getItemCount())
-		m_utvLists.addItem((fl_AutoNum *)NULL);
+	if(m_iOutlineDepth > m_utvLists.size()) {
+		m_utvLists.push_back(fl_AutoNumConstPtr());
+	}
 
-	if(m_utvLists.getNthItem(m_iOutlineDepth - 1) == NULL)
-	{
+	if(!m_utvLists.at(m_iOutlineDepth - 1)) {
 		_createList();
 	}
 
@@ -512,22 +512,13 @@ void IE_Imp_OPML::_createList(void)
 	}
 
 	/* creates the new list */
-	fl_AutoNum *an = new fl_AutoNum (
-			m_iCurListID,
-			pid,
-			BULLETED_LIST,
-			0,
-			(const gchar *)"%L.",
-			(const gchar *)"",
-			getDoc(),
-			NULL
-		);
+	fl_AutoNumPtr an = std::make_shared<fl_AutoNum>(
+		m_iCurListID, pid, BULLETED_LIST, 0, "%L.", "", getDoc(), nullptr);
 	getDoc()->addList(an);
 	an->setLevel(m_iOutlineDepth);
 
 	/* register it in the vector */
-	if(m_utvLists.setNthItem((m_iOutlineDepth - 1), an, NULL) == -1)
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	m_utvLists[m_iOutlineDepth - 1] = an;
 
 	/* increment the id counter, so that it is unique */
 	m_iCurListID++;

@@ -1228,39 +1228,32 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentOrderedListDefinition(ABI_ListDefini
     }
 
 	// finally, set the document's list identification info..
-	fl_AutoNum * pAuto = getDoc()->getListByID(pListDefinition->getListID(iLevel));
+	fl_AutoNumPtr pAuto = getDoc()->getListByID(pListDefinition->getListID(iLevel));
 	// not in document yet, we should create a list for it
-	if (pAuto == NULL) 
-	{	
+	if (!pAuto) {
 		UT_DEBUGMSG(("AbiWordPerfect: pAuto is NULL: creating a list\n"));
-		if (iLevel > 1) 
-		{	
-			pAuto = new fl_AutoNum(pListDefinition->getListID(iLevel), 
-								   pListDefinition->getListID((iLevel-1)), 
-								   pListDefinition->getListType(1), 
-								   iStartingNumber, 
-								   const_cast<gchar*>(reinterpret_cast<const gchar*>("%L")), 
-								   ".", 
-								   getDoc(), 
-								   NULL);
-		}   
-		else 
-		{
+		if (iLevel > 1) {
+			pAuto = std::make_shared<fl_AutoNum>(pListDefinition->getListID(iLevel),
+												 pListDefinition->getListID((iLevel-1)),
+												 pListDefinition->getListType(1),
+												 iStartingNumber, "%L", ".",
+												 getDoc(), nullptr);
+		} else {
 			UT_UTF8String sNumberingString;
 			UT_UTF8String sNumber("%L", (size_t)0);
-			
+
 			sNumberingString += sTextBeforeNumber;
 			sNumberingString += sNumber;
 			sNumberingString += sTextAfterNumber;
-	
-			pAuto = new fl_AutoNum(pListDefinition->getListID(iLevel), 0, pListDefinition->getListType(iLevel), iStartingNumber, 
-								   const_cast<gchar*>(reinterpret_cast<const gchar*>(sNumberingString.utf8_str())), ".", getDoc(), NULL);
+
+			pAuto = std::make_shared<fl_AutoNum>(pListDefinition->getListID(iLevel), 0,
+												 pListDefinition->getListType(iLevel),
+												 iStartingNumber, sNumberingString.utf8_str(),
+												 ".", getDoc(), nullptr);
 		}
 		getDoc()->addList(pAuto);
-	}
-	// we should update what we have
-	else 
-	{
+	} else {
+		// we should update what we have
 		UT_DEBUGMSG(("AbiWordPerfect: pAuto already exists\n"));
 	}
 
@@ -1274,25 +1267,23 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentUnorderedListDefinition(ABI_ListDefi
 	UT_DEBUGMSG(("AbiWordPerfect: Updating document list definition (iLevel: %i)\n", iLevel));
 	
 	// finally, set the document's list identification info..
-	fl_AutoNum * pAuto = getDoc()->getListByID(pListDefinition->getListID(iLevel));
+	fl_AutoNumPtr pAuto = getDoc()->getListByID(pListDefinition->getListID(iLevel));
 	// not in document yet, we should create a list for it
-	if (pAuto == NULL) 
-	{	
+	if (!pAuto)	{
 		UT_DEBUGMSG(("AbiWordPerfect: pAuto is NULL: creating a list\n"));
-		if (iLevel > 1) 
-		{	
-			pAuto = new fl_AutoNum(pListDefinition->getListID(iLevel), pListDefinition->getListID((iLevel-1)), 
-								   pListDefinition->getListType(1), 0, const_cast<gchar*>(reinterpret_cast<const gchar*>("%L")), ".", getDoc(), NULL);
-		}   
-		else
-			pAuto = new fl_AutoNum(pListDefinition->getListID(iLevel), 0, pListDefinition->getListType(iLevel), 0, 
-								   const_cast<gchar*>(reinterpret_cast<const gchar*>("%L")), ".", getDoc(), NULL);
-		  
+		if (iLevel > 1) {
+			pAuto = std::make_shared<fl_AutoNum>(pListDefinition->getListID(iLevel),
+												 pListDefinition->getListID((iLevel-1)),
+												 pListDefinition->getListType(1), 0, "%L", ".",
+												 getDoc(), nullptr);
+		} else {
+			pAuto = std::make_shared<fl_AutoNum>(pListDefinition->getListID(iLevel), 0,
+												 pListDefinition->getListType(iLevel), 0,
+												 "%L", ".", getDoc(), nullptr);
+		}
 		getDoc()->addList(pAuto);
-	}
-	// we should update what we have
-	else 
-	{	
+	} else {
+		// we should update what we have
 		UT_DEBUGMSG(("AbiWordPerfect: pAuto already exists\n"));
 	}
 

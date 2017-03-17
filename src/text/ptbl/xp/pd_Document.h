@@ -40,6 +40,7 @@
 #include "pf_Frag.h"
 #include "ie_FileInfo.h"
 #include "fp_PageSize.h"
+#include "fl_AutoNum.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
 #include "px_ChangeRecord.h"
@@ -64,7 +65,6 @@ class PD_Style;
 class PD_DocIterator;
 class fd_Field;
 class po_Bookmark;
-class fl_AutoNum;
 class fl_BlockLayout;
 class fp_Run;
 class UT_UTF8String;
@@ -597,14 +597,14 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 
 
 	// List Functions
-	fl_AutoNum *			getListByID(UT_uint32 id) const;
-	fl_AutoNum *			getNthList(UT_uint32 i) const;
-	bool					enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
+	fl_AutoNumPtr			getListByID(UT_uint32 id) const;
+	fl_AutoNumPtr			getNthList(UT_uint32 i) const;
+	bool					enumLists(UT_uint32 k, fl_AutoNumConstPtr & pAutoNum);
 	UT_uint32				getListsCount(void) const;
-	void					addList(fl_AutoNum * pAutoNum);
+	void					addList(const fl_AutoNumPtr & pAutoNum);
 	bool					appendList(const PP_PropertyVector & attributes);
 	bool					fixListHierarchy(void);
-	void					removeList(fl_AutoNum * pAutoNum,pf_Frag_Strux* sdh );
+	void					removeList(const fl_AutoNumPtr & pAutoNum, pf_Frag_Strux* sdh);
 	void					listUpdate(pf_Frag_Strux* sdh);
 	void					StopList(pf_Frag_Strux* sdh);
 	void					disableListUpdates(void);
@@ -852,7 +852,7 @@ private:
 	pt_PieceTable *			m_pPieceTable;
     PD_DocumentRDFHandle    m_hDocumentRDF;
 	UT_GenericVector<PL_Listener *> m_vecListeners;
-	std::vector<fl_AutoNum *> m_vecLists;
+	std::vector<fl_AutoNumPtr> m_vecLists;
 	bool                    m_bHasListStopped;
 
 	typedef std::map<std::string, PD_DataItemHandle> hash_data_items_t;

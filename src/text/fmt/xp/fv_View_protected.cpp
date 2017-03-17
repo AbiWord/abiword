@@ -6278,7 +6278,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 					UT_uint32 curlevel = pBlock->getLevel();
 					UT_uint32 currID = pBlock->getAutoNum()->getID();
 					curlevel++;
-					fl_AutoNum * pAuto = pBlock->getAutoNum();
+					fl_AutoNumPtr pAuto = pBlock->getAutoNum();
 					const gchar * pszAlign = pBlock->getProperty("margin-left",true);
 					const gchar * pszIndent = pBlock->getProperty("text-indent",true);
 					const gchar * pszFieldF = pBlock->getProperty("field-font",true);

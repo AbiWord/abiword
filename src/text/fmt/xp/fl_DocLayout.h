@@ -77,7 +77,6 @@ class GR_Graphics;
 class GR_Font;
 class UT_Timer;
 class UT_Worker;
-class fl_AutoNum;
 class PX_ChangeRecord_StruxChange;
 class fl_FootnoteLayout;
 class fl_AnnotationLayout;
@@ -352,10 +351,10 @@ public:
 	};
 
 	// New List Guts
-	inline fl_AutoNum * 	getListByID(UT_uint32 id) const;
-	inline fl_AutoNum *	getNthList(UT_uint32 i) const; // { return m_vecLists[i]; }
+	inline fl_AutoNumPtr 	getListByID(UT_uint32 id) const;
+	inline fl_AutoNumPtr	getNthList(UT_uint32 i) const; // { return m_vecLists[i]; }
 	inline UT_uint32	getListsCount(void) const; // { return m_vecLists.getItemCount(); }
-	inline void		addList(fl_AutoNum * pAutoNum);
+	inline void		addList(const fl_AutoNumPtr & pAutoNum);
 	bool            isLayoutDeleting(void) const {return m_bDeletingLayout;}
 	UT_uint32       getRedrawCount() const {return m_iRedrawCount;}
 

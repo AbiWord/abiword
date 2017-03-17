@@ -76,7 +76,6 @@ class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class pf_Frag_Strux;
 class pf_Frag_Object;
-class fl_AutoNum;
 class fp_VerticalContainer;
 class fp_HyperlinkRun;
 
@@ -190,7 +189,6 @@ public:
 	void        clearPrint(void) const;
 	inline bool isListItem(void) const { return m_bListItem; }
 	bool isFirstInList(void) const;
-//	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
 	void	getListAttributesVector(PP_PropertyVector & va) const;
 	void  getListPropertyVector(PP_PropertyVector & vp) const;
 
@@ -215,7 +213,7 @@ public:
 
 	void StopListInBlock(void);
 	void deleteListLabel(void);
-	UT_UCSChar * getListLabel(void) const;
+	const UT_UCSChar * getListLabel(void) const;
 	void transferListFlags(void);
 	UT_uint32 getLevel(void) const;
 	void setStarting( bool bValue);
