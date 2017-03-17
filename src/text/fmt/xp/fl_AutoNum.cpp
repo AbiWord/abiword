@@ -44,6 +44,30 @@
 
 class pf_Frag;
 
+void fl_AutoNum::ItemStorage::deleteNthItem(UT_sint32 ndx)
+{
+    pf_Frag_Strux* pItem = m_pItems[ndx];
+	m_itemSet.erase(pItem);
+    m_pItems.deleteNthItem(ndx);
+}
+
+bool fl_AutoNum::ItemStorage::hasItem(pf_Frag_Strux* pItem) const
+{
+	return m_itemSet.find(pItem) != m_itemSet.end();
+}
+
+void fl_AutoNum::ItemStorage::addItem(pf_Frag_Strux* pItem)
+{
+    m_pItems.push_back(pItem);
+    m_itemSet.insert(pItem);
+}
+
+void fl_AutoNum::ItemStorage::insertItemAt(pf_Frag_Strux* pItem, UT_sint32 idx)
+{
+    m_pItems.insertItemAt(pItem, idx);
+	m_itemSet.insert(pItem);
+}
+
 fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						UT_uint32 start,
 						pf_Frag_Strux* pFirst,
@@ -135,13 +159,11 @@ bool fl_AutoNum::checkReference(fl_AutoNum * pAuto)
 
 void fl_AutoNum::addItem(pf_Frag_Strux* pItem)
 {
-    UT_sint32 i = m_pItems.findItem(pItem);
-    if(i < 0 )
-    {
-		m_pItems.addItem(pItem);
+	if(m_items.hasItem(pItem)) {
+		m_items.addItem(pItem);
 		fixListOrder();
-    }
-    m_bDirty = true;
+	}
+	m_bDirty = true;
 }
 
 /*!
@@ -153,9 +175,9 @@ void fl_AutoNum::fixHierarchy(void)
 	const char * pszParentID =NULL;
 #if 1
 	UT_uint32 docParentID = 0;
-	if(m_pItems.getItemCount() >0)
+	if(m_items.getItemCount() >0)
 	{
-		pf_Frag_Strux* sdh = m_pItems.getNthItem(0);
+		pf_Frag_Strux* sdh = m_items.getNthItem(0);
 		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 		FV_View* pView = NULL;
 		if (pFrame)
@@ -235,7 +257,7 @@ static int compareListItems(const void* p1, const void* p2)
 void    fl_AutoNum::fixListOrder(void)
 {
 	pCurDoc = m_pDoc;
-	m_pItems.qsort(compareListItems);
+	m_items.qsort(compareListItems);
 	m_bDirty = true;
 }
 
@@ -268,11 +290,11 @@ void    fl_AutoNum::findAndSetParentItem(void)
 //   	m_pParent->fixListOrder();
 //   	m_pParent->update(0);
 
-	if (m_pItems.getItemCount() == 0)
+	if (m_items.getItemCount() == 0)
 	{
 		return;
 	}
-	pf_Frag_Strux* pCurFirst =  m_pItems.getFirstItem();
+	pf_Frag_Strux* pCurFirst =  m_items.getFirstItem();
 	if(pCurFirst == NULL)
 		return;
 	PT_DocPosition posCur = m_pDoc->getStruxPosition(pCurFirst);
@@ -699,12 +721,9 @@ UT_uint32 fl_AutoNum::getStartValue32() const
 
 void fl_AutoNum::insertFirstItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pLast, UT_uint32 /*depth*/, bool bDoFix)
 {
-	UT_sint32 i = -1;
-	if(m_pItems.getItemCount() > 0)
-		i = m_pItems.findItem(pItem);
-	if(i < 0)
+	if(!m_items.hasItem(pItem))
 	{
-		m_pItems.insertItemAt(pItem, 0);
+		m_items.insertItemAt(pItem, 0);
 		m_bDirty = true;
 	}
 	if(bDoFix)
@@ -738,12 +757,12 @@ void fl_AutoNum::insertItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pPrev, bool bDo
 {
 	UT_sint32 ndx,i;
 	UT_ASSERT(pItem);
-	ndx = m_pItems.findItem(pItem);
-	if(ndx >= 0)
+	if(m_items.hasItem(pItem)) {
 		return;
+	}
 	m_bDirty = true;
-	ndx = m_pItems.findItem(pPrev) + 1;
-	m_pItems.insertItemAt(pItem, ndx);
+	ndx = m_items.findItem(pPrev) + 1;
+	m_items.insertItemAt(pItem, ndx);
 	if(bDoFix)
 	{
 		fixListOrder();
@@ -776,16 +795,16 @@ void fl_AutoNum::prependItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pNext, bool bD
 	UT_sint32 i;
 	UT_ASSERT(pItem);
 	pf_Frag_Strux* pPrev = NULL;
-	ndx = m_pItems.findItem(pItem);
-	if(ndx >= 0)
+	if(m_items.hasItem(pItem)) {
 		return;
+	}
 	m_bDirty = true;
-	ndx = m_pItems.findItem(pNext);
+	ndx = m_items.findItem(pNext);
 	if(ndx > 0)
 	{
-		pPrev = m_pItems.getNthItem(ndx-1);
+		pPrev = m_items.getNthItem(ndx-1);
 	}
-	m_pItems.insertItemAt(pItem, ndx);
+	m_items.insertItemAt(pItem, ndx);
 	if(bDoFix)
 		fixListOrder(); // safety!!
 	if(m_pDoc->areListUpdatesAllowed() == false)
@@ -812,7 +831,7 @@ void fl_AutoNum::prependItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pNext, bool bD
 
 void fl_AutoNum::removeItem(pf_Frag_Strux* pItem)
 {
-	UT_sint32 ndx = m_pItems.findItem(pItem);
+	UT_sint32 ndx = m_items.findItem(pItem);
 	UT_sint32 i;
 	//
 	// For multi-views we might have already deleted pItem from the
@@ -829,9 +848,9 @@ void fl_AutoNum::removeItem(pf_Frag_Strux* pItem)
 	pf_Frag_Strux* ppItem = NULL;
 	if(ndx > 0)
 	{
-		ppItem =  m_pItems.getNthItem(ndx - 1);
+		ppItem =  m_items.getNthItem(ndx - 1);
 	}
-	m_pItems.deleteNthItem(ndx);
+	m_items.deleteNthItem(ndx);
 	m_bDirty = true;
 
 	// scan through all the lists and update parent pointers
@@ -869,26 +888,26 @@ void fl_AutoNum::removeItem(pf_Frag_Strux* pItem)
 
 UT_uint32 fl_AutoNum::getNumLabels() const
 {
-	return m_pItems.getItemCount();
+	return m_items.getItemCount();
 }
 
 UT_sint32 fl_AutoNum::getPositionInList(pf_Frag_Strux* pItem, UT_uint32 /*depth*/) const
 {
-	UT_return_val_if_fail(m_pItems.getItemCount() >= 0, -1)
+	UT_return_val_if_fail(m_items.getItemCount() >= 0, -1)
 
 	pf_Frag_Strux* pTmp;
 	UT_uint32 ndx = 0;
-	UT_uint32 count = m_pItems.getItemCount();
+	UT_uint32 count = m_items.getItemCount();
 	bool bOnLevel = true;
 	bool bFirstItem = false;
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		pTmp = static_cast<pf_Frag_Strux*>(m_pItems.getNthItem(i));
+		pTmp = static_cast<pf_Frag_Strux*>(m_items.getNthItem(i));
 		//		bOnLevel = (depth == 0);
 		const fl_AutoNum* pAuto = getAutoNumFromSdh(pItem);
 		bOnLevel = static_cast<bool>( pAuto == this);
-		bFirstItem = static_cast<bool>(pTmp == m_pItems.getFirstItem());
+		bFirstItem = static_cast<bool>(pTmp == m_items.getFirstItem());
 		if (pTmp == pItem)
 		{
 			if (m_bWordMultiStyle && !bOnLevel && !bFirstItem)
@@ -902,7 +921,7 @@ UT_sint32 fl_AutoNum::getPositionInList(pf_Frag_Strux* pItem, UT_uint32 /*depth*
 	}
 
 	return -1;
-	// return m_pItems.findItem(pItem);
+	// return m_items.findItem(pItem);
 }
 
 fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(pf_Frag_Strux* sdh)
@@ -988,15 +1007,12 @@ pf_Frag_Strux* fl_AutoNum::getLastItemInHeiracy(void) const
 
 bool fl_AutoNum::isItem(pf_Frag_Strux* pItem) const
 {
-	if (m_pItems.findItem(pItem) == -1)
-		return false;
-	else
-		return true;
+	return m_items.hasItem(pItem);
 }
 
 bool fl_AutoNum::isEmpty() const
 {
-	if (m_pItems.getItemCount() > 0)
+	if (m_items.getItemCount() > 0)
 		return false;
 	else
 		return true;
@@ -1004,18 +1020,18 @@ bool fl_AutoNum::isEmpty() const
 
 pf_Frag_Strux* fl_AutoNum::getFirstItem() const
 {
-	return (m_pItems.getItemCount() ? m_pItems.getFirstItem() : 0);
+	return (m_items.getItemCount() ? m_items.getFirstItem() : NULL);
 }
 
 
 pf_Frag_Strux* fl_AutoNum::getLastItem() const
 {
-	UT_uint32 i = m_pItems.getItemCount();
+	UT_uint32 i = m_items.getItemCount();
 	if(i == 0 )
 		return NULL;
 	else
 	{
-		return m_pItems.getNthItem(i-1);
+		return m_items.getNthItem(i-1);
 	}
 }
 
@@ -1047,13 +1063,10 @@ bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem) const
 
 bool fl_AutoNum::isLastOnLevel(pf_Frag_Strux* pItem) const
 {
-	UT_sint32 itemloc = m_pItems.findItem(pItem);
-	if (itemloc == -1)
+	if (m_items.getItemCount() == 0) {
 		return false;
-	if(itemloc == m_pItems.getItemCount() - 1)
-		return true;
-	else
-		return false;
+	}
+	return m_items.getNthItem(m_items.getItemCount() - 1) == pItem;
 }
 
 fl_AutoNum * fl_AutoNum::getActiveParent(void) const
@@ -1116,9 +1129,9 @@ void fl_AutoNum::_setParent(fl_AutoNum * pParent)
 		sprintf(szParent,"%d",m_iParentID);
 		m_bDirty = true;
 		UT_sint32 i = 0;
-		for(i=0; i < m_pItems.getItemCount() ; i++)
+		for(i=0; i < m_items.getItemCount() ; i++)
 		{
-			pf_Frag_Strux* sdh = m_pItems.getNthItem(i);
+			pf_Frag_Strux* sdh = m_items.getNthItem(i);
 			m_pDoc->changeStruxForLists(sdh, static_cast<const char *>(szParent));
 		}
 	}
@@ -1133,7 +1146,7 @@ void fl_AutoNum::_setParentID(UT_uint32 iParentID)
 
 void fl_AutoNum::update(UT_uint32 start)
 {
-	xxx_UT_DEBUGMSG(("Updating List %d  There are %d items here \n",m_iID,m_pItems.getItemCount()));
+	xxx_UT_DEBUGMSG(("Updating List %d  There are %d items here \n",m_iID,m_items.getItemCount()));
 	if (isUpdating())
 		return;
 	//_calculateLabelStr(0);
@@ -1143,7 +1156,7 @@ void fl_AutoNum::update(UT_uint32 start)
 	UT_return_if_fail(sdh);
 	if (m_pParent && !m_pParent->isUpdating())
 	{
-		UT_uint32 ndx = m_pParent->m_pItems.findItem(sdh);
+		UT_uint32 ndx = m_pParent->m_items.findItem(sdh);
 		m_pParent->update(ndx + 1);
 	}
 }
@@ -1162,16 +1175,16 @@ bool fl_AutoNum::_updateItems(UT_sint32 start, pf_Frag_Strux* notMe)
 		//	}
 		UT_sint32 numlists = m_pDoc->getListsCount();
 		m_bUpdatingItems = true;
-		for (UT_sint32 i = start; i < m_pItems.getItemCount(); i++)
+		for (UT_sint32 i = start; i < m_items.getItemCount(); i++)
 		{
 			//       	 	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
-			pf_Frag_Strux* pTmp = m_pItems.getNthItem(i);
+			pf_Frag_Strux* pTmp = m_items.getNthItem(i);
 			UT_ASSERT(pTmp);
 			m_pDoc->listUpdate(pTmp);
 
 			// scan through all the lists and update child lists if connected to this item
 
-			pf_Frag_Strux* pItem = m_pItems.getNthItem(i);
+			pf_Frag_Strux* pItem = m_items.getNthItem(i);
 			for(j=0; j<numlists; j++)
 			{
 				fl_AutoNum * pAuto = m_pDoc->getNthList(j);
@@ -1197,15 +1210,15 @@ bool fl_AutoNum::isContainedByList(pf_Frag_Strux* pItem) const
 	pf_Frag_Strux* sdh, *sdh_prev, *sdh_next;
 	PT_DocPosition pos_prev,pos_next,pos;
 	bool bret;
-	UT_uint32 no_items = m_pItems.getItemCount();
+	UT_uint32 no_items = m_items.getItemCount();
 	if(no_items == 0)
 		return false;
-	sdh = m_pItems.getFirstItem();
+	sdh = m_items.getFirstItem();
 	bret = m_pDoc->getPrevStruxOfType(sdh,PTX_Block, &sdh_prev);
 	if(bret == false)
 		sdh_prev = sdh;
 	pos_prev = m_pDoc->getStruxPosition(sdh_prev);
-	sdh = m_pItems.getNthItem(no_items-1);
+	sdh = m_items.getNthItem(no_items-1);
 	bret = m_pDoc->getNextStruxOfType(sdh,PTX_Block, &sdh_next);
 	if(bret == false)
 		sdh_next = sdh;
@@ -1219,18 +1232,18 @@ bool fl_AutoNum::isContainedByList(pf_Frag_Strux* pItem) const
 
 pf_Frag_Strux* fl_AutoNum::getNthBlock( UT_sint32 list_num) const
 {
-	if(list_num >= m_pItems.getItemCount())
+	if(list_num >= m_items.getItemCount())
 		return NULL;
 	else
-		return m_pItems.getNthItem(list_num);
+		return m_items.getNthItem(list_num);
 }
 
 pf_Frag_Strux* fl_AutoNum::getPrevInList( pf_Frag_Strux* pItem) const
 {
-	UT_sint32 itemloc = m_pItems.findItem(pItem);
+	UT_sint32 itemloc = m_items.findItem(pItem);
 	if (itemloc == -1 || itemloc == 0)
 		return NULL;
-	return m_pItems.getNthItem( static_cast<UT_uint32>(itemloc) - 1);
+	return m_items.getNthItem( static_cast<UT_uint32>(itemloc) - 1);
 }
 
 inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum) const

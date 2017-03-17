@@ -23,6 +23,7 @@
 #define FL_AUTONUM_H
 
 #include <string>
+#include <unordered_set>
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -47,6 +48,33 @@ class UT_UTF8String;
 
 class ABI_EXPORT fl_AutoNum
 {
+private:
+    class ItemStorage {
+    public:
+        void addItem(pf_Frag_Strux* pItem);
+        void deleteNthItem(UT_sint32 n);
+        UT_sint32 findItem(pf_Frag_Strux* pItem) const {
+            return m_pItems.findItem(pItem);
+        }
+        pf_Frag_Strux* getFirstItem() const {
+            return m_pItems.getFirstItem();
+        }
+        UT_sint32 getItemCount() const {
+            return m_pItems.getItemCount();
+        }
+        pf_Frag_Strux* getNthItem(UT_sint32 n) const {
+            return m_pItems.getNthItem(n);
+        }
+
+        bool hasItem(pf_Frag_Strux* pItem) const;
+        void insertItemAt(pf_Frag_Strux* pItem, UT_sint32 idx);
+        void qsort(int (*compar)(const void *, const void *)) {
+            m_pItems.qsort(compar);
+        }
+    private:
+        UT_GenericVector<pf_Frag_Strux*> m_pItems;
+        std::unordered_set<pf_Frag_Strux*> m_itemSet;
+    };
 public:
 	fl_AutoNum(	UT_uint32 id,
 				UT_uint32 start,
@@ -155,7 +183,9 @@ protected:
 
 	fl_AutoNum *				m_pParent;
 
-	UT_GenericVector<pf_Frag_Strux*> m_pItems;
+private:
+	ItemStorage                 m_items;
+protected:
 	PD_Document *               m_pDoc;
 	FV_View *				    m_pView;
 	FL_ListType					m_List_Type;
