@@ -1,7 +1,8 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* AbiWord
  * Copyright (C) Luke Jordan, Martin Sevior.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych, Yaacov Akiba Slama
+ * © 2016 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,7 +35,7 @@
 #include "pf_Frag.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
-#include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -44,28 +45,28 @@
 
 class pf_Frag;
 
-void fl_AutoNum::ItemStorage::deleteNthItem(UT_sint32 ndx)
+void fl_AutoNum::ItemStorage::deleteNthItem(size_type ndx)
 {
-    pf_Frag_Strux* pItem = m_pItems[ndx];
-	m_itemSet.erase(pItem);
-    m_pItems.deleteNthItem(ndx);
+    pf_Frag_Strux* pItem = m_vec[ndx];
+	m_set.erase(pItem);
+    m_vec.erase(m_vec.begin() + ndx);
 }
 
 bool fl_AutoNum::ItemStorage::hasItem(pf_Frag_Strux* pItem) const
 {
-	return m_itemSet.find(pItem) != m_itemSet.end();
+	return m_set.find(pItem) != m_set.end();
 }
 
 void fl_AutoNum::ItemStorage::addItem(pf_Frag_Strux* pItem)
 {
-    m_pItems.push_back(pItem);
-    m_itemSet.insert(pItem);
+    m_vec.push_back(pItem);
+    m_set.insert(pItem);
 }
 
-void fl_AutoNum::ItemStorage::insertItemAt(pf_Frag_Strux* pItem, UT_sint32 idx)
+void fl_AutoNum::ItemStorage::insertItemAt(pf_Frag_Strux* pItem, size_type idx)
 {
-    m_pItems.insertItemAt(pItem, idx);
-	m_itemSet.insert(pItem);
+    m_vec.insert(m_vec.begin() + idx, pItem);
+	m_set.insert(pItem);
 }
 
 fl_AutoNum::fl_AutoNum(	UT_uint32 id,
@@ -175,9 +176,9 @@ void fl_AutoNum::fixHierarchy(void)
 	const char * pszParentID =NULL;
 #if 1
 	UT_uint32 docParentID = 0;
-	if(m_items.getItemCount() >0)
+	if (!m_items.empty())
 	{
-		pf_Frag_Strux* sdh = m_items.getNthItem(0);
+		pf_Frag_Strux* sdh = m_items.front();
 		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 		FV_View* pView = NULL;
 		if (pFrame)
@@ -230,34 +231,18 @@ fl_AutoNum::~fl_AutoNum()
 {
 }
 
-static PD_Document * pCurDoc;
-
-static int compareListItems(const void* p1, const void* p2)
+static bool compareListItems(pf_Frag_Strux* const & p1,  pf_Frag_Strux* const & p2,
+                             const PD_Document * pCurDoc)
 {
-	//
-	// Fun with (void *) pointers!
-	//
-	//	pf_Frag * pf1 = static_cast<pf_Frag *>(p1);
-	//	PD_Document * pDoc = pf1->getPieceTable()->getDocument();
-	pf_Frag_Strux* const * sdh1 = reinterpret_cast<pf_Frag_Strux* const *>(p1);
-	pf_Frag_Strux* const * sdh2 = reinterpret_cast<pf_Frag_Strux* const *>(p2);
-	PT_DocPosition pos1 = pCurDoc->getStruxPosition(*sdh1);
-	PT_DocPosition pos2 = pCurDoc->getStruxPosition(*sdh2);
-	if(pos1 < pos2)
-	{
-		return -1;
-	}
-	if(pos1 > pos2)
-	{
-		return 1;
-	}
-	return 0;
+	PT_DocPosition pos1 = pCurDoc->getStruxPosition(p1);
+	PT_DocPosition pos2 = pCurDoc->getStruxPosition(p2);
+	return (pos1 < pos2);
 }
 
 void    fl_AutoNum::fixListOrder(void)
 {
-	pCurDoc = m_pDoc;
-	m_items.qsort(compareListItems);
+	using namespace std::placeholders;
+	m_items.sort(std::bind(&compareListItems, _1, _2, m_pDoc));
 	m_bDirty = true;
 }
 
@@ -290,11 +275,11 @@ void    fl_AutoNum::findAndSetParentItem(void)
 //   	m_pParent->fixListOrder();
 //   	m_pParent->update(0);
 
-	if (m_items.getItemCount() == 0)
+	if (m_items.empty())
 	{
 		return;
 	}
-	pf_Frag_Strux* pCurFirst =  m_items.getFirstItem();
+	pf_Frag_Strux* pCurFirst =  m_items.front();
 	if(pCurFirst == NULL)
 		return;
 	PT_DocPosition posCur = m_pDoc->getStruxPosition(pCurFirst);
@@ -802,7 +787,7 @@ void fl_AutoNum::prependItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pNext, bool bD
 	ndx = m_items.findItem(pNext);
 	if(ndx > 0)
 	{
-		pPrev = m_items.getNthItem(ndx-1);
+		pPrev = m_items.at(ndx - 1);
 	}
 	m_items.insertItemAt(pItem, ndx);
 	if(bDoFix)
@@ -848,7 +833,7 @@ void fl_AutoNum::removeItem(pf_Frag_Strux* pItem)
 	pf_Frag_Strux* ppItem = NULL;
 	if(ndx > 0)
 	{
-		ppItem =  m_items.getNthItem(ndx - 1);
+		ppItem =  m_items.at(ndx - 1);
 	}
 	m_items.deleteNthItem(ndx);
 	m_bDirty = true;
@@ -888,26 +873,24 @@ void fl_AutoNum::removeItem(pf_Frag_Strux* pItem)
 
 UT_uint32 fl_AutoNum::getNumLabels() const
 {
-	return m_items.getItemCount();
+	return m_items.size();
 }
 
 UT_sint32 fl_AutoNum::getPositionInList(pf_Frag_Strux* pItem, UT_uint32 /*depth*/) const
 {
-	UT_return_val_if_fail(m_items.getItemCount() >= 0, -1)
-
 	pf_Frag_Strux* pTmp;
 	UT_uint32 ndx = 0;
-	UT_uint32 count = m_items.getItemCount();
+	auto count = m_items.size();
 	bool bOnLevel = true;
 	bool bFirstItem = false;
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		pTmp = static_cast<pf_Frag_Strux*>(m_items.getNthItem(i));
+		pTmp = m_items.at(i);
 		//		bOnLevel = (depth == 0);
 		const fl_AutoNum* pAuto = getAutoNumFromSdh(pItem);
 		bOnLevel = static_cast<bool>( pAuto == this);
-		bFirstItem = static_cast<bool>(pTmp == m_items.getFirstItem());
+		bFirstItem = (pTmp == m_items.front());
 		if (pTmp == pItem)
 		{
 			if (m_bWordMultiStyle && !bOnLevel && !bFirstItem)
@@ -1012,27 +995,21 @@ bool fl_AutoNum::isItem(pf_Frag_Strux* pItem) const
 
 bool fl_AutoNum::isEmpty() const
 {
-	if (m_items.getItemCount() > 0)
-		return false;
-	else
-		return true;
+	return m_items.empty();
 }
 
 pf_Frag_Strux* fl_AutoNum::getFirstItem() const
 {
-	return (m_items.getItemCount() ? m_items.getFirstItem() : NULL);
+	return (!m_items.empty() ? m_items.front() : NULL);
 }
 
 
 pf_Frag_Strux* fl_AutoNum::getLastItem() const
 {
-	UT_uint32 i = m_items.getItemCount();
-	if(i == 0 )
+	if (m_items.empty()) {
 		return NULL;
-	else
-	{
-		return m_items.getNthItem(i-1);
 	}
+	return m_items.back();
 }
 
 bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem) const
@@ -1063,10 +1040,10 @@ bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem) const
 
 bool fl_AutoNum::isLastOnLevel(pf_Frag_Strux* pItem) const
 {
-	if (m_items.getItemCount() == 0) {
+	if (m_items.empty()) {
 		return false;
 	}
-	return m_items.getNthItem(m_items.getItemCount() - 1) == pItem;
+	return m_items.back() == pItem;
 }
 
 fl_AutoNum * fl_AutoNum::getActiveParent(void) const
@@ -1128,10 +1105,9 @@ void fl_AutoNum::_setParent(fl_AutoNum * pParent)
 
 		sprintf(szParent,"%d",m_iParentID);
 		m_bDirty = true;
-		UT_sint32 i = 0;
-		for(i=0; i < m_items.getItemCount() ; i++)
+		for (ItemStorage::size_type i = 0; i < m_items.size(); i++)
 		{
-			pf_Frag_Strux* sdh = m_items.getNthItem(i);
+			pf_Frag_Strux* sdh = m_items.at(i);
 			m_pDoc->changeStruxForLists(sdh, static_cast<const char *>(szParent));
 		}
 	}
@@ -1175,16 +1151,16 @@ bool fl_AutoNum::_updateItems(UT_sint32 start, pf_Frag_Strux* notMe)
 		//	}
 		UT_sint32 numlists = m_pDoc->getListsCount();
 		m_bUpdatingItems = true;
-		for (UT_sint32 i = start; i < m_items.getItemCount(); i++)
+		for (ItemStorage::size_type i = start; i < m_items.size(); i++)
 		{
 			//       	 	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
-			pf_Frag_Strux* pTmp = m_items.getNthItem(i);
+			pf_Frag_Strux* pTmp = m_items.at(i);
 			UT_ASSERT(pTmp);
 			m_pDoc->listUpdate(pTmp);
 
 			// scan through all the lists and update child lists if connected to this item
 
-			pf_Frag_Strux* pItem = m_items.getNthItem(i);
+			pf_Frag_Strux* pItem = m_items.at(i);
 			for(j=0; j<numlists; j++)
 			{
 				fl_AutoNum * pAuto = m_pDoc->getNthList(j);
@@ -1210,15 +1186,15 @@ bool fl_AutoNum::isContainedByList(pf_Frag_Strux* pItem) const
 	pf_Frag_Strux* sdh, *sdh_prev, *sdh_next;
 	PT_DocPosition pos_prev,pos_next,pos;
 	bool bret;
-	UT_uint32 no_items = m_items.getItemCount();
-	if(no_items == 0)
+	if (m_items.empty()) {
 		return false;
-	sdh = m_items.getFirstItem();
+	}
+	sdh = m_items.front();
 	bret = m_pDoc->getPrevStruxOfType(sdh,PTX_Block, &sdh_prev);
 	if(bret == false)
 		sdh_prev = sdh;
 	pos_prev = m_pDoc->getStruxPosition(sdh_prev);
-	sdh = m_items.getNthItem(no_items-1);
+	sdh = m_items.back();
 	bret = m_pDoc->getNextStruxOfType(sdh,PTX_Block, &sdh_next);
 	if(bret == false)
 		sdh_next = sdh;
@@ -1232,10 +1208,10 @@ bool fl_AutoNum::isContainedByList(pf_Frag_Strux* pItem) const
 
 pf_Frag_Strux* fl_AutoNum::getNthBlock( UT_sint32 list_num) const
 {
-	if(list_num >= m_items.getItemCount())
+	if(static_cast<ItemStorage::size_type>(list_num) >= m_items.size()) {
 		return NULL;
-	else
-		return m_items.getNthItem(list_num);
+	}
+	return m_items.at(list_num);
 }
 
 pf_Frag_Strux* fl_AutoNum::getPrevInList( pf_Frag_Strux* pItem) const
@@ -1243,12 +1219,12 @@ pf_Frag_Strux* fl_AutoNum::getPrevInList( pf_Frag_Strux* pItem) const
 	UT_sint32 itemloc = m_items.findItem(pItem);
 	if (itemloc == -1 || itemloc == 0)
 		return NULL;
-	return m_items.getNthItem( static_cast<UT_uint32>(itemloc) - 1);
+	return m_items.at(static_cast<UT_uint32>(itemloc) - 1);
 }
 
 inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum) const
 {
-	pf_Frag_Strux* pBlock = const_cast<pf_Frag_Strux*>(getFirstItem());
+	pf_Frag_Strux* pBlock = getFirstItem();
 	const fl_AutoNum * pCurr = this;
 
 	while (1)
@@ -1437,12 +1413,7 @@ void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint
 	} while (value >= 1);
 }
 
-/* FIXME -- cannot use UT_GenericVector<> here due to the way
- *          getNthItem() is implemented -- UT_GenericVector<UT_UTF8String>
- *          cannot be constructed (see comment in ut_vector.h); do not want
- *          to mess with that class at this very moment.
- */
-void fl_AutoNum::getAttributes (std::vector<UT_UTF8String> & v,
+void fl_AutoNum::getAttributes (std::vector<std::string> & v,
 								bool bEscapeXML) const
 {
 	char szID[15], szPid[15], szType[5], szStart[5];
@@ -1467,17 +1438,19 @@ void fl_AutoNum::getAttributes (std::vector<UT_UTF8String> & v,
 	v.push_back(szStart);
 
 	v.push_back("list-delim");
-	v.push_back (m_pszDelim);
+	std::string s = m_pszDelim;
 	if (bEscapeXML)
 	{
-		v.back().escapeXML();
+		s = UT_escapeXML(s);
 	}
-	
+	v.push_back(s);
+
 	v.push_back("list-decimal");
-	v.push_back (m_pszDecimal);
+	s = m_pszDecimal;
 	if (bEscapeXML)
 	{
-		v.back().escapeXML();
+		s = UT_escapeXML(s);
 	}
+	v.push_back(s);
 }
 

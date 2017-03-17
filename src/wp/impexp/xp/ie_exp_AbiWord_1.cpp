@@ -1130,18 +1130,15 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	//const char * szPid;
 	//const char * szProps;
 
-#define LCheck(str) (0 == strcmp(s.utf8_str(), str))
-	UT_UTF8String esc;
-	
+#define LCheck(str) (s == str)
+
 	fl_AutoNum * pAutoNum;
 	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
 	{
-		const char ** attr0 = NULL;
-
 		if (pAutoNum->isEmpty() == true)
 			continue;
 
-		std::vector<UT_UTF8String> vAttrs;
+		std::vector<std::string> vAttrs;
 		pAutoNum->getAttributes (vAttrs, true);
 		
 		if (!bWroteOpenListSection)
@@ -1153,7 +1150,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 		for (UT_sint32 i = 0; i < ((UT_sint32)vAttrs.size()) - 1;
 			 i += 2)
 		{
-			const UT_UTF8String & s = vAttrs[i];
+			const std::string & s = vAttrs[i];
 			
 			if (LCheck("id")           ||
 				LCheck("parentid")     ||
@@ -1162,12 +1159,10 @@ void s_AbiWord_1_Listener::_handleLists(void)
 				LCheck("list-delim")   ||
 				LCheck("list-decimal"))
 			{
-				m_pie->addString(s.utf8_str(), vAttrs[i+1].utf8_str());
+				m_pie->addString(s.c_str(), vAttrs[i+1].c_str());
 			}
 		}
 		m_pie->endElement();
-		// No, no, you can't g_free attr and expect good things to happen.
-		FREEP(attr0);
 	}
 
 

@@ -2,6 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych, Yaacov Akiba Slama
+ * © 2016 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,12 +23,12 @@
 #ifndef FL_AUTONUM_H
 #define FL_AUTONUM_H
 
+#include <algorithm>
 #include <string>
 #include <unordered_set>
 
 #include "ut_types.h"
 #include "ut_misc.h"
-#include "ut_vector.h"
 #include "pt_Types.h"
 #include "fl_AutoLists.h"
 
@@ -44,36 +45,48 @@ class fl_Layout;
 class pf_Frag_Strux;
 class PD_Document;
 class FV_View;
-class UT_UTF8String;
 
 class ABI_EXPORT fl_AutoNum
 {
 private:
     class ItemStorage {
     public:
+        typedef std::vector<pf_Frag_Strux*>::size_type size_type;
+        typedef std::vector<pf_Frag_Strux*>::value_type value_type;
+
         void addItem(pf_Frag_Strux* pItem);
-        void deleteNthItem(UT_sint32 n);
+        void deleteNthItem(size_type n);
         UT_sint32 findItem(pf_Frag_Strux* pItem) const {
-            return m_pItems.findItem(pItem);
+            auto iter = std::find(m_vec.cbegin(), m_vec.cend(), pItem);
+            if (iter == m_vec.cend()) {
+                return -1;
+            }
+            return iter - m_vec.cbegin();
         }
-        pf_Frag_Strux* getFirstItem() const {
-            return m_pItems.getFirstItem();
+        pf_Frag_Strux* front() const {
+            return m_vec.front();
         }
-        UT_sint32 getItemCount() const {
-            return m_pItems.getItemCount();
+        pf_Frag_Strux* back() const {
+            return m_vec.back();
         }
-        pf_Frag_Strux* getNthItem(UT_sint32 n) const {
-            return m_pItems.getNthItem(n);
+        size_type size() const {
+            return m_vec.size();
+        }
+        bool empty() const {
+            return m_vec.empty();
+        }
+        pf_Frag_Strux* at(size_type n) const {
+            return m_vec.at(n);
         }
 
         bool hasItem(pf_Frag_Strux* pItem) const;
-        void insertItemAt(pf_Frag_Strux* pItem, UT_sint32 idx);
-        void qsort(int (*compar)(const void *, const void *)) {
-            m_pItems.qsort(compar);
+        void insertItemAt(pf_Frag_Strux* pItem, size_type idx);
+        void sort(const std::function<bool(const value_type &, const value_type &)> & compar) {
+            std::sort(m_vec.begin(), m_vec.end(), compar);
         }
     private:
-        UT_GenericVector<pf_Frag_Strux*> m_pItems;
-        std::unordered_set<pf_Frag_Strux*> m_itemSet;
+        std::vector<pf_Frag_Strux*> m_vec;
+        std::unordered_set<pf_Frag_Strux*> m_set;
     };
 public:
 	fl_AutoNum(	UT_uint32 id,
@@ -165,7 +178,7 @@ public:
 	static char *				dec2roman(UT_sint32 value, bool lower);
 	static char *				dec2ascii(UT_sint32 value, UT_uint32 offset);
 	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);
-	void                        getAttributes(std::vector<UT_UTF8String>&v,
+	void                        getAttributes(std::vector<std::string>&v,
 											  bool bEscapeXML) const;
 	PD_Document *               getDoc(void) const
 	{return m_pDoc;}
