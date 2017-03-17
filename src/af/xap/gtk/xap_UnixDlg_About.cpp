@@ -53,7 +53,7 @@ static void onAboutDialogActivate (GtkAboutDialog 	* /*about*/,
 	XAP_App::getApp()->openURL(link);
 }
 
-void XAP_UnixDialog_About::runModal(XAP_Frame * /*pFrame*/)
+void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 {
 	static const gchar *authors[] = {"Abi the Ant <abi@abisource.com>",
 									 NULL};
@@ -87,6 +87,12 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * /*pFrame*/)
 	gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(dlg), website);
 	gtk_window_set_icon(GTK_WINDOW(dlg), logo);
 	gtk_window_set_position(GTK_WINDOW(dlg), GTK_WIN_POS_CENTER);
+	GtkWidget* parent = pFrame ?
+		static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() :
+		NULL;
+	if (parent) {
+		gtk_window_set_transient_for(GTK_WINDOW(dlg), GTK_WINDOW(parent));
+	}
 	gtk_dialog_run(GTK_DIALOG(dlg));
 	gtk_widget_destroy(dlg);
 }
