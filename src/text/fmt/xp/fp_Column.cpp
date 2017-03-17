@@ -527,48 +527,42 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
  * return an rectangle that covers this object on the screen
  * The calling routine is resposible for deleting the returned struct
  */
-UT_Rect * fp_VerticalContainer::getScreenRect(void)
+UT_Rect fp_VerticalContainer::getScreenRect(void)
 {
 	UT_sint32 xoff = 0;
 	UT_sint32 yoff = 0;
-	UT_Rect * pRec = NULL;
+	UT_Rect pRec;
 	if(getContainerType() == FP_CONTAINER_FRAME)
 	{
 		fp_Page * pPage = getPage();
-		if(pPage == NULL)
-		{
-			return NULL;
-		}
+        if (!pPage) {
+            return pRec;
+        }
 		fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(this);
 		getView()->getPageScreenOffsets(pPage,xoff,yoff);
 		xoff += pFrameC->getFullX();
 		yoff += pFrameC->getFullY();
-		pRec= new UT_Rect(xoff,yoff,pFrameC->getFullWidth(),pFrameC->getFullHeight());
-		return pRec;
+		return UT_Rect(xoff, yoff, pFrameC->getFullWidth(), pFrameC->getFullHeight());
 	}
 	fp_Container * pCon = static_cast<fp_Container *>(fp_Container::getNthCon(0));
-	if(pCon == NULL)
-	{
-		return NULL;
-	}
-	getScreenOffsets(pCon,xoff,yoff);
+    if (!pCon) {
+        return pRec;
+    }
+	getScreenOffsets(pCon, xoff, yoff);
 	xoff -= pCon->getX();
 	yoff -= pCon->getY();
-	pRec= new UT_Rect(xoff,yoff,getWidth(),getHeight());
-	return pRec;
+	return UT_Rect(xoff, yoff, getWidth(), getHeight());
 }
 
 /*!
  * Marks Dirty any runs that overlap the supplied rectangle. This rectangle
  * is relative to the screen.
  */
-void fp_VerticalContainer::markDirtyOverlappingRuns(UT_Rect & recScreen)
+void fp_VerticalContainer::markDirtyOverlappingRuns(const UT_Rect & recScreen)
 {
-	UT_Rect * pRec = NULL;
-	pRec = getScreenRect();
-	if(pRec && recScreen.intersectsRect(pRec))
+	UT_Rect pRec = getScreenRect();
+	if(recScreen.intersectsRect(&pRec))
 	{
-		DELETEP(pRec);
 		UT_sint32 count = countCons();
 		UT_sint32 i = 0;
 		for(i = 0; i < count;i++)
@@ -578,7 +572,6 @@ void fp_VerticalContainer::markDirtyOverlappingRuns(UT_Rect & recScreen)
 		}
 		return;
 	}
-	DELETEP(pRec);
 }
 
 

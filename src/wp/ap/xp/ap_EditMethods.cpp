@@ -14939,13 +14939,9 @@ Defun(hyperlinkStatusBar)
 	fp_Line * pLine = pHRun->getLine();
 	if(pLine)
 	{
-		UT_Rect * pRect = pLine->getScreenRect();
-		if(pRect)
-		{
-			UT_sint32 ioff = pRect->top;
-		    pAnnPview->setOffset(pG->tdu(ypos - ioff));
-		}
-		delete pRect;
+		UT_Rect pRect = pLine->getScreenRect();
+		UT_sint32 ioff = pRect.top;
+		pAnnPview->setOffset(pG->tdu(ypos - ioff));
 	}
 	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
 	pAnnPview->runModeless(pFrame);

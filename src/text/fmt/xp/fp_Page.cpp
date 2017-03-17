@@ -471,20 +471,20 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 						  // Look for a gap between lines.
 						  //
 						  UT_Rect recBetween;
-						  UT_Rect * pPrevRec = pPrev->getScreenRect();
-						  UT_Rect * pCurRec = pLine->getScreenRect();
-						  recBetween.left = pPrevRec->left+pPrevRec->width;
-						  recBetween.width = pCurRec->left - recBetween.left;
-						  if(pPrevRec->height != pCurRec->height)
+						  UT_Rect pPrevRec = pPrev->getScreenRect();
+						  UT_Rect pCurRec = pLine->getScreenRect();
+						  recBetween.left = pPrevRec.left + pPrevRec.width;
+						  recBetween.width = pCurRec.left - recBetween.left;
+						  if(pPrevRec.height != pCurRec.height)
 						  {
-						         pLine = pPrev;
+							 pLine = pPrev;
 							 j--;
 							 bFoundOne = true;
 						  }
 						  else
 						  {
-						         recBetween.height = pPrevRec->height;
-							 recBetween.top = pPrevRec->top;
+							 recBetween.height = pPrevRec.height;
+							 recBetween.top = pPrevRec.top;
 							 if(!overlapsWrappedFrame(recBetween))
 							 {
 							      UT_DEBUGMSG(("Found a gap! \n"));
@@ -500,8 +500,6 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 							      bFoundOne = true;
 							 }
 						  }
-						  delete pPrevRec;
-						  delete pCurRec;
 						}
 					}
 					if(bFormatAllWrapped)
@@ -575,7 +573,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 // a wrapped object. We don't do this if we've tried more than 100
 // time to layout the page.
 //
-								
+
 								if(!overlapsWrappedFrame(recLeft) &&
 								   !overlapsWrappedFrame(recRight))
 								{
@@ -593,11 +591,11 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								  // Look for a gap between lines.
 								  //
 								  UT_Rect recBetween;
-								  UT_Rect * pPrevRec = pPrev->getScreenRect();
-								  UT_Rect * pCurRec = pLine->getScreenRect();
-								  recBetween.left = pPrevRec->left+pPrevRec->width;
-								  recBetween.width = pCurRec->left - recBetween.left;
-								  if(pPrevRec->height != pCurRec->height)
+								  UT_Rect pPrevRec = pPrev->getScreenRect();
+								  UT_Rect pCurRec = pLine->getScreenRect();
+								  recBetween.left = pPrevRec.left + pPrevRec.width;
+								  recBetween.width = pCurRec.left - recBetween.left;
+								  if(pPrevRec.height != pCurRec.height)
 								  {
 								    pLine = pPrev;
 								    j--;
@@ -605,8 +603,8 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								  }
 								  else
 								  {
-								    recBetween.height = pPrevRec->height;
-								    recBetween.top = pPrevRec->top;
+								    recBetween.height = pPrevRec.height;
+								    recBetween.top = pPrevRec.top;
 								    if(!overlapsWrappedFrame(recBetween))
 								    {
 								      pLine = pPrev;
@@ -614,10 +612,8 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								      bFoundOne = true;
 								    }
 								  }
-								  delete pPrevRec;
-								  delete pCurRec;
 								}
-								  
+
 							}
 							else
 							{
@@ -739,22 +735,15 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
  * Returns true if the supplied rectangle overlaps with one wrapped frame
  * on the page.
  */
-bool fp_Page::overlapsWrappedFrame(fp_Line * pLine)
+bool fp_Page::overlapsWrappedFrame(fp_Line* pLine) const
 {
-	UT_Rect * pRec = pLine->getScreenRect();
-	if(pRec == NULL)
-	{
-		return false;
-	}
-	bool bRes = overlapsWrappedFrame(*pRec);
-	delete pRec;
-	return bRes;
+	return overlapsWrappedFrame(pLine->getScreenRect());
 }
 /*!
  * Returns true if the supplied rectangle overlaps with one wrapped frame
  * on the page. The rectangle is relative to the screen.
  */
-bool fp_Page::overlapsWrappedFrame(UT_Rect & rec)
+bool fp_Page::overlapsWrappedFrame(const UT_Rect& rec) const
 {
 	UT_sint32 i=0;
 	for(i=0; i<static_cast<UT_sint32>(countAboveFrameContainers());i++)
@@ -1405,11 +1394,10 @@ void   fp_Page::expandDamageRect(UT_sint32 x, UT_sint32 y,
 /*!
  * Returns true if the objects intersects the damaged region
  */
-bool   fp_Page::intersectsDamagedRect(fp_ContainerObject * pObj)
+bool   fp_Page::intersectsDamagedRect(fp_ContainerObject * pObj) const
 {
-	UT_Rect * pRec = pObj->getScreenRect();
-	bool bIntersects = m_rDamageRect.intersectsRect(pRec);
-	delete pRec;
+	UT_Rect pRec = pObj->getScreenRect();
+	bool bIntersects = m_rDamageRect.intersectsRect(&pRec);
 	return bIntersects;
 }
 
@@ -2907,12 +2895,7 @@ void fp_Page::clearScreenFrames(void)
 
 void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 {
-	UT_Rect * pMyFrameRect = pFrameC->getScreenRect();
-	if(pMyFrameRect == NULL)
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return;
-	}
+	UT_Rect pMyFrameRect = pFrameC->getScreenRect();
 	// check each column for redraw
 
 	UT_sint32 count = m_vecColumnLeaders.getItemCount();
@@ -2922,7 +2905,7 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 		fp_Column* pCol = m_vecColumnLeaders.getNthItem(i);
 		while (pCol)
 		{
-			pCol->markDirtyOverlappingRuns(*pMyFrameRect);
+			pCol->markDirtyOverlappingRuns(pMyFrameRect);
 			pCol = pCol->getFollower();
 		}
 	}
@@ -2931,12 +2914,12 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 
 	if (m_pHeader)
 	{
-		m_pHeader->markDirtyOverlappingRuns(*pMyFrameRect);
+		m_pHeader->markDirtyOverlappingRuns(pMyFrameRect);
 	}
 
 	if (m_pFooter)
 	{
-		m_pFooter->markDirtyOverlappingRuns(*pMyFrameRect);
+		m_pFooter->markDirtyOverlappingRuns(pMyFrameRect);
 	}
 
 	// Now Footnotes
@@ -2945,7 +2928,7 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 	for (i=0; i<count; i++)
 	{
 		fp_FootnoteContainer* pFC = m_vecFootnotes.getNthItem(i);
-		pFC->markDirtyOverlappingRuns(*pMyFrameRect);
+		pFC->markDirtyOverlappingRuns(pMyFrameRect);
 	}
 
 
@@ -2956,7 +2939,7 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 			for (i=0; i<count; i++)
 			{
 					fp_AnnotationContainer* pAC = m_vecAnnotations.getNthItem(i);
-					pAC->markDirtyOverlappingRuns(*pMyFrameRect);
+					pAC->markDirtyOverlappingRuns(pMyFrameRect);
 			}
 	}
 
@@ -2968,7 +2951,7 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 		fp_FrameContainer* pFC = m_vecAboveFrames.getNthItem(i);
 		if(pFC != pFrameC)
 		{
-			pFC->markDirtyOverlappingRuns(*pMyFrameRect);
+			pFC->markDirtyOverlappingRuns(pMyFrameRect);
 		}
 	}
 
@@ -2979,10 +2962,9 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 		fp_FrameContainer* pFC = m_vecBelowFrames.getNthItem(i);
 		if(pFC != pFrameC)
 		{
-			pFC->markDirtyOverlappingRuns(*pMyFrameRect);
+			pFC->markDirtyOverlappingRuns(pMyFrameRect);
 		}
 	}
-	DELETEP(pMyFrameRect);
 }
 
 

@@ -117,7 +117,7 @@ public:
 	void                setRightWrapped(bool b)
 	  { m_bIsRightWrapped = b;}
 
-	bool                overlapsRect(UT_Rect & rec);
+	bool                overlapsRect(const UT_Rect & rec);
 	bool                isAbove(void);
 	void                setAbove(bool bAbove)
 	        { m_bIsAbove = bAbove;}

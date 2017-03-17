@@ -151,10 +151,10 @@ public:
 	void                markDirtyOverlappingRuns(fp_FrameContainer * pFC);
     void                expandDamageRect(UT_sint32 x, UT_sint32 y,
 										 UT_sint32 width, UT_sint32 height);
-        bool                intersectsDamagedRect(fp_ContainerObject * pObj);
+        bool                intersectsDamagedRect(fp_ContainerObject * pObj) const;
 	void                redrawDamagedFrames(dg_DrawArgs* pDA);
-	bool                overlapsWrappedFrame(fp_Line * pLine);
-	bool                overlapsWrappedFrame(UT_Rect & rec);
+	bool                overlapsWrappedFrame(fp_Line * pLine) const;
+	bool                overlapsWrappedFrame(const UT_Rect & rec) const;
 	void                setPageNumberInFrames(void);
 	UT_sint32           getPageNumber(void); // TODO make const
 	UT_sint32           getFieldPageNumber(void) const;

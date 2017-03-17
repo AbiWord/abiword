@@ -238,26 +238,13 @@ void fp_Line::drawBorders(GR_Graphics * pG)
   if(pLast->canDrawBotBorder())
       bDrawBot = true;
 
-  UT_Rect * pFirstR = pFirst->getScreenRect();
-  if(!pFirstR)
-      return;
-  UT_Rect * pLastR = pLast->getScreenRect();
-  if(!pLastR)
-  {
-      delete pFirstR;
-      return;
-  }
-  UT_Rect * pConR = static_cast<fp_VerticalContainer *>(getContainer())->getScreenRect();
-  if(!pConR)
-  {
-      delete pFirstR;
-      delete pLastR;
-      return;
-  }
-  UT_sint32 iTop = pFirstR->top;
-  UT_sint32 iBot = pLastR->top + pLastR->height;
-  UT_sint32 iLeft = pConR->left + getLeftEdge();
-  UT_sint32 iRight = pConR->left + getRightEdge();
+  UT_Rect pFirstR = pFirst->getScreenRect();
+  UT_Rect pLastR = pLast->getScreenRect();
+  UT_Rect pConR = static_cast<fp_VerticalContainer *>(getContainer())->getScreenRect();
+  UT_sint32 iTop = pFirstR.top;
+  UT_sint32 iBot = pLastR.top + pLastR.height;
+  UT_sint32 iLeft = pConR.left + getLeftEdge();
+  UT_sint32 iRight = pConR.left + getRightEdge();
   if(getBlock()->getBottom().m_t_linestyle > 1)
   {
       iBot = iBot-getBlock()->getBottom().m_thickness;
@@ -312,9 +299,6 @@ void fp_Line::drawBorders(GR_Graphics * pG)
       line = getBlock()->getBottom();
       drawLine(line,iLeft,iBot,iRight,iBot,pG);
   }
-  delete pFirstR;
-  delete pLastR;
-  delete pConR;
 }
 
 /*!
@@ -358,10 +342,9 @@ bool    fp_Line::getAbsLeftRight(UT_sint32& left,UT_sint32& right)
 	  return false;
 	if(!getBlock())
 	  return false;
-	UT_Rect * pR = pVCon->getScreenRect();
-	left = pR->left + getLeftEdge();
-	right = pR->left + pVCon->getWidth() - getBlock()->getRightMargin();
-	delete pR;
+	UT_Rect pR = pVCon->getScreenRect();
+	left = pR.left + getLeftEdge();
+	right = pR.left + pVCon->getWidth() - getBlock()->getRightMargin();
 	//
 	// Correct for printing
 	//
@@ -756,16 +739,11 @@ bool fp_Line::containsOffset(PT_DocPosition blockOffset)
  */
 void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 {
-	UT_Rect * pRec = getScreenRect();
-	UT_ASSERT(pRec);
-	if(pRec == NULL)
-	{
-		return;
-	}
-	recLeft.top = pRec->top;
-	recRight.top = pRec->top;
-	recLeft.height = pRec->height;
-	recRight.height = pRec->height;
+	UT_Rect pRec = getScreenRect();
+	recLeft.top = pRec.top;
+	recRight.top = pRec.top;
+	recLeft.height = pRec.height;
+	recRight.height = pRec.height;
 
 	UT_sint32 iLeftX = m_pBlock->getLeftMargin();
 	UT_sint32 iMaxWidth = getContainer()->getWidth();
@@ -775,7 +753,7 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 		if(iBlockDir == UT_BIDI_LTR)
 			iLeftX += m_pBlock->getTextIndent();
 	}
-	UT_sint32 xdiff = pRec->left - getX();
+	UT_sint32 xdiff = pRec.left - getX();
 	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
 	if(pPrev && isSameYAsPrevious())
 	{
@@ -789,13 +767,13 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	else
 	{
 		recLeft.left = iLeftX + xdiff;
-		recLeft.width = pRec->left - recLeft.left;
+		recLeft.width = pRec.left - recLeft.left;
 		if(recLeft.width < 0)
 		  {
 		    UT_DEBUGMSG(("RecLeft width -ve!! %d \n",recLeft.width));
 		  }
 	}
-	recRight.left = pRec->left + pRec->width;
+	recRight.left = pRec.left + pRec.width;
 	fp_Line * pNext = static_cast<fp_Line *>(getNext());
 	if(pNext && pNext->isSameYAsPrevious())
 	{
@@ -816,7 +794,6 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	}
 //	UT_ASSERT(recLeft.width >= 0);
 //	UT_ASSERT(recRight.width >= 0);
-	delete pRec;
 }
 
 void fp_Line::setSameYAsPrevious(bool bSameAsPrevious)
@@ -831,33 +808,28 @@ void fp_Line::setSameYAsPrevious(bool bSameAsPrevious)
 
 /*!
  * return an rectangle that covers this object on the screen
- * The calling routine is responsible for deleting the returned struct
  */
-UT_Rect * fp_Line::getScreenRect(void)
+UT_Rect fp_Line::getScreenRect(void)
 {
 	UT_sint32 xoff = 0;
 	UT_sint32 yoff = 0;
-	UT_Rect * pRec = NULL; 
 	getScreenOffsets(NULL,xoff,yoff);
 	if (getBlock() && getBlock()->hasBorders())
 	{
 		xoff -= getLeftThick();
 	}
-	pRec= new UT_Rect(xoff,yoff,getMaxWidth(),getHeight());
-	return pRec;
+	return UT_Rect(xoff,yoff,getMaxWidth(),getHeight());
 }
-	
+
 /*!
  * Marks Dirty any runs that overlap the supplied rectangle. This rectangle
  * is relative to the screen.
  */
-void fp_Line::markDirtyOverlappingRuns(UT_Rect & recScreen)
+void fp_Line::markDirtyOverlappingRuns(const UT_Rect & recScreen)
 {
-	UT_Rect * pRec = NULL;
-	pRec = getScreenRect();
-	if(pRec && recScreen.intersectsRect(pRec))
+	UT_Rect pRec = getScreenRect();
+	if(recScreen.intersectsRect(&pRec))
 	{
-		DELETEP(pRec);
 		fp_Run * pRun = fp_Line::getFirstRun();
 		fp_Run * pLastRun = fp_Line::getLastRun();
 		while(pRun && pRun != pLastRun)
@@ -869,10 +841,7 @@ void fp_Line::markDirtyOverlappingRuns(UT_Rect & recScreen)
 		{
 			pRun->markDirtyOverlappingRuns(recScreen);
 		}
-		return;
 	}
-	DELETEP(pRec);
-	return;
 }
 
 /*!
@@ -2177,13 +2146,13 @@ void fp_Line::draw(GR_Graphics* pG)
 	const UT_Rect* pRect = pG->getClipRect();
 	bool bDoShade = (getBlock() && (getBlock()->getPattern() > 0));
 	if(bDoShade)
-        {
+	{
 	    da.bDirtyRunsOnly = false;
 	    //
 	    // Calculate the region of the fill for a shaded paragraph.
 	    //
-	    UT_Rect * pVRec = 	pVCon->getScreenRect();
-	    UT_sint32 xs = pVRec->left + getLeftEdge();
+	    UT_Rect pVRec = pVCon->getScreenRect();
+	    UT_sint32 xs = pVRec.left + getLeftEdge();
 	    UT_sint32 width = getRightEdge() - getLeftEdge(); 
 	    UT_sint32 ys = my_yoff;
 	    getFillType().Fill(pG,xs,ys,xs,ys,width,getHeight());

@@ -656,12 +656,11 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		UT_return_if_fail(pCL->getContainerType() == FL_CONTAINER_CELL);
 		fp_CellContainer * pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
 		UT_return_if_fail(pCCon);
-		UT_Rect * pRect = pCCon->getScreenRect();
-		xLow = pRect->left;
-		yLow = pRect->top;
+		UT_Rect pRect = pCCon->getScreenRect();
+		xLow = pRect.left;
+		yLow = pRect.top;
 		m_recCurFrame.left = xLow;
 		m_recCurFrame.top = yLow;
-		delete pRect;
 //
 // Now the other end of the column
 //
@@ -678,9 +677,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
 		UT_return_if_fail(pCCon);
 		pRect = pCCon->getScreenRect();
-		xHigh = pRect->left+ pRect->width;
-		yHigh = pRect->top + pRect->height;
-		delete pRect;
+		xHigh = pRect.left + pRect.width;
+		yHigh = pRect.top + pRect.height;
 		m_recCurFrame.width = xHigh - xLow;
 		m_recCurFrame.height = yHigh - yLow;
 		m_recOrigLeft.width = 0;
@@ -861,16 +859,12 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		  {
 		      m_bSelectedRow = true;
 		  }
-		  UT_Rect * pLow = pCellConLow->getScreenRect();
-		  UT_Rect * pHigh = pCellConHigh->getScreenRect();
-		  UT_return_if_fail(pLow);
-		  UT_return_if_fail(pHigh);
-		  m_recCurFrame.left = pLow->left;
-		  m_recCurFrame.width = pHigh->left + pHigh->width - pLow->left;
-		  m_recCurFrame.top = pLow->top;
-		  m_recCurFrame.height = pHigh->top + pHigh->height - pLow->top;
-		  DELETEP(pLow);
-		  DELETEP(pHigh);
+		  UT_Rect pLow = pCellConLow->getScreenRect();
+		  UT_Rect pHigh = pCellConHigh->getScreenRect();
+		  m_recCurFrame.left = pLow.left;
+		  m_recCurFrame.width = pHigh.left + pHigh.width - pLow.left;
+		  m_recCurFrame.top = pLow.top;
+		  m_recCurFrame.height = pHigh.top + pHigh.height - pLow.top;
 		  m_recOrigLeft.width = 0;
 		  m_recOrigLeft.height = 0;
 		  m_recOrigLeft.left = 0;

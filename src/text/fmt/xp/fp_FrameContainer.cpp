@@ -118,34 +118,32 @@ bool fp_FrameContainer::isAbove(void)
  * Returns true if the supplied screen rectangle overlaps with frame
  * container. This method takes account of transparening and tight wrapping.
  */
-bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
+bool fp_FrameContainer::overlapsRect(const UT_Rect & rec)
 {
-     UT_Rect * pMyFrameRec = getScreenRect();
+     UT_Rect pMyFrameRec = getScreenRect();
      fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
      UT_sint32 iextra = pFL->getBoundingSpace() -2;
-     pMyFrameRec->left -= iextra;
-     pMyFrameRec->top -= iextra;
-     pMyFrameRec->width += 2*iextra;
-     pMyFrameRec->height += 2*iextra;
-     xxx_UT_DEBUGMSG(("look at rec.left %d top %d width %d  \n",rec.left,rec.top,rec.width));
-     if(rec.intersectsRect(pMyFrameRec))
+     pMyFrameRec.left -= iextra;
+     pMyFrameRec.top -= iextra;
+     pMyFrameRec.width += 2 * iextra;
+     pMyFrameRec.height += 2 * iextra;
+     xxx_UT_DEBUGMSG(("look at rec.left %d top %d width %d  \n", rec.left, rec.top, rec.width));
+     if(rec.intersectsRect(&pMyFrameRec))
      {
          if(!isTightWrapped())
 	 {
-	      delete pMyFrameRec;
 	      return true;
 	 }
 	 UT_sint32 iTweak = getGraphics()->tlu(2);
-	 pMyFrameRec->left += iextra + iTweak;
-	 pMyFrameRec->top += iextra + iTweak;
-	 pMyFrameRec->width -= (2*iextra + 2*iTweak);
-	 pMyFrameRec->height -= (2*iextra + 2*iTweak);
+	 pMyFrameRec.left += iextra + iTweak;
+	 pMyFrameRec.top += iextra + iTweak;
+	 pMyFrameRec.width -= (2 * iextra + 2 * iTweak);
+	 pMyFrameRec.height -= (2 * iextra + 2 * iTweak);
 
-	 UT_sint32 y = rec.top - pMyFrameRec->top;
+	 UT_sint32 y = rec.top - pMyFrameRec.top;
 	 UT_sint32 h = rec.height;
 	 if(pFL->getBackgroundImage() == NULL)
 	 {
-	      delete pMyFrameRec;
 	      return true;
 	 }
 	 UT_sint32 pad = pFL->getBoundingSpace();
@@ -157,33 +155,30 @@ bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
 	   // Pure transparent.
 	   //
 	   xxx_UT_DEBUGMSG(("Overlaps pure transparent line top %d line height %d image top %d \n",rec.top,rec.height,y));
-	      delete pMyFrameRec;
 	      return false;
 	 }
 	 xxx_UT_DEBUGMSG(("iLeft in overlapRect %d Y %d \n",iLeft,y));
-	 if(rec.left < pMyFrameRec->left)
+	 if(rec.left < pMyFrameRec.left)
 	 {
-              pMyFrameRec->left -= iLeft;
-	      xxx_UT_DEBUGMSG(("Moves Image left border by %d to %d \n",-iLeft,pMyFrameRec->left));
+              pMyFrameRec.left -= iLeft;
+	      xxx_UT_DEBUGMSG(("Moves Image left border by %d to %d \n", -iLeft, pMyFrameRec.left));
 	 }
 	 else
 	 {
 	      UT_sint32 iRight = pFL->getBackgroundImage()->GetOffsetFromRight(getGraphics(),pad,y,h);
-              pMyFrameRec->width += iRight;
-	      xxx_UT_DEBUGMSG(("Reduce Image width by %d to %d \n",iRight,pMyFrameRec->width));
+              pMyFrameRec.width += iRight;
+	      xxx_UT_DEBUGMSG(("Reduce Image width by %d to %d \n", iRight, pMyFrameRec.width));
 	 }
-	 if(rec.intersectsRect(pMyFrameRec))
+	 if(rec.intersectsRect(&pMyFrameRec))
 	 {
 	   xxx_UT_DEBUGMSG(("Frame Still overlaps \n"));
-	   delete pMyFrameRec;
 	   return true;
 	 }
 	 xxx_UT_DEBUGMSG(("Tight Frame no longer overlaps \n"));
 	 xxx_UT_DEBUGMSG(("Line Top %d Height %d left %d width %d \n",rec.top,rec.height,rec.left,rec.width));
-	 xxx_UT_DEBUGMSG(("Image Top %d Height %d left %d width %d \n",pMyFrameRec->top,pMyFrameRec->height,pMyFrameRec->left,pMyFrameRec->width));
+	 xxx_UT_DEBUGMSG(("Image Top %d Height %d left %d width %d \n", pMyFrameRec.top, pMyFrameRec.height, pMyFrameRec.left, pMyFrameRec.width));
 	 xxx_UT_DEBUGMSG(("Relative Top of line %d \n",y));
      }
-     delete pMyFrameRec;
      return false;
 }
 
@@ -239,9 +234,8 @@ UT_sint32 fp_FrameContainer::getLeftPad(UT_sint32 y, UT_sint32 height)
 {
   fl_FrameLayout *pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
   UT_sint32 pad = pFL->getBoundingSpace();	
-  UT_Rect * pRect = getScreenRect();
-  UT_sint32 yC = pRect->top;
-  delete pRect;
+  UT_Rect pRect = getScreenRect();
+  UT_sint32 yC = pRect.top;
   if(!isTightWrapped() || !isWrappingSet())
   {
     return pad;
@@ -273,8 +267,8 @@ UT_sint32 fp_FrameContainer::getRightPad(UT_sint32 y, UT_sint32 height)
 {
   fl_FrameLayout *pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
   UT_sint32 pad = pFL->getBoundingSpace();
-  UT_Rect * pRect = getScreenRect();
-  UT_sint32 yC = pRect->top;
+  UT_Rect pRect = getScreenRect();
+  UT_sint32 yC = pRect.top;
   if(!isTightWrapped() || !isWrappingSet())
   {
     return pad;
@@ -684,27 +678,27 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	UT_uint32 count = countCons();
 	xxx_UT_DEBUGMSG(("Number of containers in frame %d \n",count));
 	const UT_Rect * pPrevRect = pDA->pG->getClipRect();
-	UT_Rect * pRect = getScreenRect();
+	UT_Rect pRect = getScreenRect();
 	UT_Rect newRect;
 	bool bRemoveRectAfter = false;
 	bool bSetOrigClip = false;
 	bool bSkip = false;
 	if((pPrevRect == NULL) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		pDA->pG->setClipRect(pRect);
-		UT_DEBUGMSG(("Clip bottom is %d \n",pRect->top + pRect->height));
+		pDA->pG->setClipRect(&pRect);
+		UT_DEBUGMSG(("Clip bottom is %d \n", pRect.top + pRect.height));
 		bRemoveRectAfter = true;
 	}
-	else if(pPrevRect && !pRect->intersectsRect(pPrevRect))
+	else if(pPrevRect && !pRect.intersectsRect(pPrevRect))
 	{
 		bSkip = true;
-		xxx_UT_DEBUGMSG(("External Clip bottom is %d \n",pRect->top + pRect->height));
+		xxx_UT_DEBUGMSG(("External Clip bottom is %d \n", pRect.top + pRect.height));
 	}
 	else if(pPrevRect)
 	{
-		newRect.top = UT_MAX(pPrevRect->top,pRect->top);
+		newRect.top = UT_MAX(pPrevRect->top, pRect.top);
 		UT_sint32 iBotPrev = pPrevRect->height + pPrevRect->top;
-		UT_sint32 iBot = pRect->height + pRect->top;
+		UT_sint32 iBot = pRect.height + pRect.top;
 		newRect.height = UT_MIN(iBotPrev,iBot) - newRect.top;
 		newRect.width = pPrevRect->width;
 		newRect.left = pPrevRect->left;
@@ -738,7 +732,6 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	{
 		pDA->pG->setClipRect(pPrevRect);
 	}
-	delete pRect;
 	drawBoundaries(pDA);
 }
 

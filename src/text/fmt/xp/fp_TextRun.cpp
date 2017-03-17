@@ -1565,14 +1565,11 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 // This space is counted in the width even though the text is aligned
 // to the correct edge.
 //
-	UT_Rect * pLRec = getLine()->getScreenRect();
-	if (pLRec == NULL)
-		return;
-	if((pDA->xoff + iWidth) > (pLRec->left + pLRec->width))
+	UT_Rect pLRec = getLine()->getScreenRect();
+	if((pDA->xoff + iWidth) > (pLRec.left + pLRec.width))
 	{
-		iWidth -=  (pDA->xoff + iWidth) - (pLRec->left + pLRec->width);
+		iWidth -=  (pDA->xoff + iWidth) - (pLRec.left + pLRec.width);
 	}
-	delete pLRec;
 	Fill(pG,pDA->xoff,yTopOfSel + getAscent() - getLine()->getAscent(),
 					iWidth,
 					getLine()->getHeight());
@@ -2036,19 +2033,15 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 //
 	if(getLine())
 	{
-		UT_Rect * pLRec = getLine()->getScreenRect();
-		if(!pLRec)
-			return;
+		UT_Rect pLRec = getLine()->getScreenRect();
 		if(getLine()->getContainer() && ((getLine()->getContainer()->getContainerType() == FP_CONTAINER_CELL) ||
 										 (getLine()->getContainer()->getContainerType() == FP_CONTAINER_FRAME))) {
-			delete pLRec;
 			return;
 		}
-		if((pRect->left + pRect->width) > (pLRec->left + pLRec->width))
+		if((pRect->left + pRect->width) > (pLRec.left + pLRec.width))
 		{
-			pRect->width -= (pRect->left + pRect->width) - (pLRec->left + pLRec->width);
+			pRect->width -= (pRect->left + pRect->width) - (pLRec.left + pLRec.width);
 		}
-		delete pLRec;
 	}
 	UT_ASSERT(pRect->left < 10000000);
 	UT_ASSERT(pRect->width >= 0);

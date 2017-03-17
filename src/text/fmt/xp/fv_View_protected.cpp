@@ -1992,13 +1992,11 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	}
 	else
 	{
-		UT_Rect * pOldRec = pOldLine->getScreenRect();
-		UT_Rect * pNewRec = pNextLine->getScreenRect();
-		yPoint = pNewRec->top + pNewRec->height/2;
-		xPoint = xPoint + (pNewRec->left - pOldRec->left);
+		UT_Rect pOldRec = pOldLine->getScreenRect();
+		UT_Rect pNewRec = pNextLine->getScreenRect();
+		yPoint = pNewRec.top + pNewRec.height / 2;
+		xPoint = xPoint + (pNewRec.left - pOldRec.left);
 		pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);
-		delete pOldRec;
-		delete pNewRec;
 	}
 	PT_DocPosition iNewPoint = 0;
 	bBOL = false;

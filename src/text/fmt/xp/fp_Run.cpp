@@ -920,40 +920,29 @@ void fp_Run::markAsDirty(void)
  * return an rectangle that covers this object on the screen
  * The calling routine is resposible for deleting the returned struct
  */
-UT_Rect * fp_Run::getScreenRect(void)
+UT_Rect fp_Run::getScreenRect(void)
 {
 	UT_sint32 xoff = 0;
 	UT_sint32 yoff = 0;
-	UT_Rect * pRec = NULL; 
 	fp_Line * pLine = getLine();
 	if(pLine)
 	{
 		pLine->getScreenOffsets(this,xoff,yoff);
-		pRec= new UT_Rect(xoff,yoff,getWidth(),getHeight());
-		return pRec;
+		return UT_Rect(xoff, yoff, getWidth(), getHeight());
 	}
-	else
-	{
-		return NULL;
-	}
+	return UT_Rect();
 }
-	
+
 /*!
  * Marks Dirty any runs that overlap the supplied rectangle. This rectangle
  * is relative to the screen.
  */
-void fp_Run::markDirtyOverlappingRuns(UT_Rect & recScreen)
+void fp_Run::markDirtyOverlappingRuns(const UT_Rect & recScreen)
 {
-	UT_Rect * pRec = NULL;
-	pRec = getScreenRect();
-	if(pRec && recScreen.intersectsRect(pRec))
-	 {
-		 fp_Run::markAsDirty();
-		 delete pRec;
-		 return;
-	 }
-	DELETEP(pRec);
-	return;
+	UT_Rect pRec = getScreenRect();
+	if(recScreen.intersectsRect(&pRec)) {
+		fp_Run::markAsDirty();
+	}
 }
 
 void fp_Run::setCleared(void)

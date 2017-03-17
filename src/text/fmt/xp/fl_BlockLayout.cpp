@@ -3028,19 +3028,12 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	{
 		m_iLinePosInContainer = 0;
 	}
-	UT_Rect * pRec = pLine->getScreenRect();
-	m_iAccumulatedHeight = pRec->top;
-	UT_Rect * pVertRect = m_pVertContainer->getScreenRect();
-	UT_sint32 iYBotScreen = pVertRect->top + pVertRect->height;
+	UT_Rect rec = pLine->getScreenRect();
+	m_iAccumulatedHeight = rec.top;
+	UT_Rect vertRect = m_pVertContainer->getScreenRect();
+	UT_sint32 iYBotScreen = vertRect.top + vertRect.height;
 	xxx_UT_DEBUGMSG(("Initial m_iAccumulatedHeight %d iYBotScreen %d \n",m_iAccumulatedHeight,iYBotScreen));
-	delete pVertRect;
 	m_iAdditionalMarginAfter = 0;
-	UT_Rect rec;
-	rec.height = pRec->height;
-	rec.width = pRec->width;
-	rec.top = pRec->top;
-	rec.left = pRec->left;
-	delete pRec;
 	m_bSameYAsPrevious = pLine->isSameYAsPrevious();
 	UT_sint32 iHeight = pLine->getHeight() + pLine->getMarginAfter();
 	//
@@ -3342,22 +3335,21 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 			continue;
 		}
 		bIsTight = pFC->isTightWrapped();
-		UT_Rect * pRec = pFC->getScreenRect();
+		UT_Rect pRec = pFC->getScreenRect();
 		xxx_UT_DEBUGMSG(("Frame Left %d Line Left %d \n",pRec->left,iScreenX));
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 		iExpand = pFL->getBoundingSpace() + 2;
-		pRec->height += 2*iExpand;
-		pRec->width += 2*iExpand;
-		pRec->left -= iExpand;
-		pRec->top -= iExpand;
-		if(projRec.intersectsRect(pRec))
+		pRec.height += 2 * iExpand;
+		pRec.width += 2 * iExpand;
+		pRec.left -= iExpand;
+		pRec.top -= iExpand;
+		if(projRec.intersectsRect(&pRec))
 		{
 			if(!pFC->overlapsRect(projRec)  && bIsTight)
 			{
-				delete pRec;
 				continue;
 			}
-			if((!pFC->isLeftWrapped() && ((pRec->left - getMinWrapWidth() <= projRec.left +pG->tlu(1)) && (pRec->left + pRec->width) > projRec.left)) || pFC->isRightWrapped())
+			if((!pFC->isLeftWrapped() && ((pRec.left - getMinWrapWidth() <= projRec.left + pG->tlu(1)) && (pRec.left + pRec.width) > projRec.left)) || pFC->isRightWrapped())
 			{
 				UT_sint32 iRightP = 0;
 				if(bIsTight)
@@ -3368,14 +3360,14 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 					iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;
 					xxx_UT_DEBUGMSG(("Projecnt Right %d \n",iRightP));
 				}
-				projRec.left = pRec->left + pRec->width + iRightP + pG->tlu(1);
+				projRec.left = pRec.left + pRec.width + iRightP + pG->tlu(1);
 				if(projRec.left < iMinLeft)
 				{
 					iMinLeft = projRec.left;
 				}
 
 			}
-			else if(((pRec->left >= (projRec.left -iExpand -pG->tlu(1))) && (projRec.left + projRec.width + getMinWrapWidth() > (pRec->left -iExpand - pG->tlu(1)))) || pFC->isLeftWrapped())
+			else if(((pRec.left >= (projRec.left - iExpand -pG->tlu(1))) && (projRec.left + projRec.width + getMinWrapWidth() > (pRec.left -iExpand - pG->tlu(1)))) || pFC->isLeftWrapped())
 			{
 				UT_sint32 iLeftP = 0;
 				if(bIsTight)
@@ -3386,14 +3378,13 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 					iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) - iExpand;
 					xxx_UT_DEBUGMSG(("Project into (1) image with distance %d \n",iLeftP));
 				}
-				UT_sint32 diff = pRec->left - iLeftP -pG->tlu(1);
+				UT_sint32 diff = pRec.left - iLeftP -pG->tlu(1);
 				if(diff < iMinRight)
 				{
 					iMinRight = diff;
 				}
 			}
 		}
-		delete pRec;
 	}
 	if(iMinLeft == BIG_NUM_BLOCKBL)
 	{
@@ -3431,27 +3422,25 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 					continue;
 				}
 				bIsTight = pFC->isTightWrapped();
-				UT_Rect * pRec = pFC->getScreenRect();
+				UT_Rect pRec = pFC->getScreenRect();
 				fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 				iExpand = pFL->getBoundingSpace() + 2;
-				pRec->height += 2*iExpand;
-				pRec->width += 2*iExpand;
-				pRec->left -= iExpand;
-				pRec->top -= iExpand;
-				if(projRec.intersectsRect(pRec))
+				pRec.height += 2 * iExpand;
+				pRec.width += 2 * iExpand;
+				pRec.left -= iExpand;
+				pRec.top -= iExpand;
+				if(projRec.intersectsRect(&pRec))
 				{
 					if(!pFC->overlapsRect(projRec)  && bIsTight)
 					{
-						delete pRec;
 						continue;
 					}
-					if((pRec->left + pRec->width) > iRightEdge)
+					if((pRec.left + pRec.width) > iRightEdge)
 					{
-						iRightEdge = pRec->left + pRec->width;
+						iRightEdge = pRec.left + pRec.width;
 						pRightC = pFC;
-					} 
+					}
 				}
-				delete pRec;
 			}
 			if(pRightC != NULL)
 			{
@@ -3461,16 +3450,16 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 					//
 					// Project back into image over the transparent region
 					//
-					iRightP = pRightC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;	
+					iRightP = pRightC->getRightPad(m_iAccumulatedHeight, iHeight) - iExpand;
 					xxx_UT_DEBUGMSG(("Projecnt Right %d \n",iRightP));
 				}
-				UT_Rect * pRec = pRightC->getScreenRect();
-				iMinLeft = pRec->left + pRec->width + iRightP + pG->tlu(1);
+				UT_Rect pRec = pRightC->getScreenRect();
+				iMinLeft = pRec.left + pRec.width + iRightP + pG->tlu(1);
 				iMinRight = iMinR + xoff;
 				iMinWidth = iMinRight - iMinLeft;
 			}
 
-		} 
+		}
 	}
 }
 
@@ -3494,10 +3483,9 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	fp_Line * pLine = NULL;
 	UT_sint32 iXDiff = getLeftMargin();
 	UT_sint32 iMinR = m_pVertContainer->getWidth();
-	UT_Rect * pVertRect = m_pVertContainer->getScreenRect();
-	UT_sint32 iYBotScreen = pVertRect->top + pVertRect->height;
+	UT_Rect vertRect = m_pVertContainer->getScreenRect();
+	UT_sint32 iYBotScreen = vertRect.top + vertRect.height;
 	xxx_UT_DEBUGMSG(("Initial m_iAccumulatedHeight %d iYBotScreen %d \n",m_iAccumulatedHeight,iYBotScreen));
-	delete pVertRect;
 	if(m_iAccumulatedHeight > iYBotScreen)
 	{
 			pLine = static_cast<fp_Line *>(getNewContainer());
