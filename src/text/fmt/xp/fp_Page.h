@@ -82,7 +82,7 @@ public:
 	UT_sint32			getColumnGap(void) const;
 	FL_DocLayout*		getDocLayout() const;
 	void				setView(FV_View*);
-    bool                isOnScreen(void);
+	bool                isOnScreen(void) const;
 
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
@@ -139,7 +139,7 @@ public:
 	UT_sint32           getAnnotationPos( UT_uint32 pid) const;
 
 	// Frame functions.
-	void 				frameHeightChanged(void);
+	void 				frameHeightChanged(void) const;
 	UT_sint32			countAboveFrameContainers(void) const;
 	UT_sint32			countBelowFrameContainers(void) const;
 	fp_FrameContainer*  getNthAboveFrameContainer(UT_sint32 n) const;
@@ -182,9 +182,8 @@ protected:
 	void				_reformatAnnotations(void);
 
 private:
-	// don't allow copying
-	fp_Page(const fp_Page&);		// no impl.
-	void operator=(const fp_Page&);	// no impl.
+	fp_Page(const fp_Page&) = delete;
+	void operator=(const fp_Page&) = delete;
 
 	FL_DocLayout*		m_pLayout;
 	FV_View*			m_pView;

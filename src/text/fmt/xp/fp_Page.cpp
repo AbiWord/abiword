@@ -205,7 +205,7 @@ void fp_Page::getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts)
 	}
 }
 
-bool fp_Page::isOnScreen(void)
+bool fp_Page::isOnScreen(void) const
 {
 	if(!m_pView)
 	{
@@ -2875,7 +2875,7 @@ fp_ShadowContainer* fp_Page::getHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL)
 
 // Frame methods
 
-void fp_Page::frameHeightChanged(void)
+void fp_Page::frameHeightChanged(void) const
 {
 }
 
