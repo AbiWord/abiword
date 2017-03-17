@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <unordered_set>
 #include <map>
 
 #include "ut_types.h"
@@ -853,6 +854,7 @@ private:
     PD_DocumentRDFHandle    m_hDocumentRDF;
 	UT_GenericVector<PL_Listener *> m_vecListeners;
 	std::vector<fl_AutoNumPtr> m_vecLists;
+	std::unordered_map<UT_uint32, fl_AutoNumPtr> m_mapLists;
 	bool                    m_bHasListStopped;
 
 	typedef std::map<std::string, PD_DataItemHandle> hash_data_items_t;

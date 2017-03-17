@@ -5872,24 +5872,10 @@ void PD_Document::invalidateCache(void)
 
 fl_AutoNumPtr PD_Document::getListByID(UT_uint32 id) const
 {
-	UT_uint16 i = 0;
-	UT_sint32 cnt = 0;
-
-	cnt = m_vecLists.size();
-	if (cnt <= 0) {
-		return fl_AutoNumPtr();
+	auto iter = m_mapLists.find(id);
+	if (iter != m_mapLists.end()) {
+		return iter->second;
 	}
-	UT_return_val_if_fail (m_vecLists.front(), fl_AutoNumPtr());
-
-	while (i<cnt)
-	{
-		fl_AutoNumPtr pAutoNum;
-		pAutoNum = m_vecLists[i];
-		if (pAutoNum->getID() == id)
-			return pAutoNum;
-		i++;
-	}
-
 	return fl_AutoNumPtr();
 }
 
@@ -5917,16 +5903,11 @@ UT_uint32 PD_Document::getListsCount(void) const
 void PD_Document::addList(const fl_AutoNumPtr & pAutoNum)
 {
 	UT_uint32 id = pAutoNum->getID();
-	UT_uint32 i;
-	UT_uint32 numlists = m_vecLists.size();
-	for(i=0; i < numlists; i++)
-	{
-		fl_AutoNumPtr pAuto = m_vecLists.at(i);
-		if(pAuto->getID() == id)
-			break;
-	}
-	if(i >= numlists)
+	auto iter = m_mapLists.find(id);
+	if (iter == m_mapLists.end()) {
 		m_vecLists.push_back(pAutoNum);
+		m_mapLists.insert(std::make_pair(id, pAutoNum));
+	}
 }
 
 void PD_Document::listUpdate(pf_Frag_Strux* sdh )
@@ -6001,16 +5982,12 @@ bool PD_Document::appendList(const PP_PropertyVector & attributes)
 		szDec = ".";
 	}
 	id = stoi(*szID);
-	UT_uint32 i;
-	UT_uint32 numlists = m_vecLists.size();
-	for(i=0; i < numlists; i++)
-	{
-		fl_AutoNumPtr pAuto = m_vecLists.at(i);
-		if(pAuto->getID() == id)
-			break;
+
+	auto iter = m_mapLists.find(id);
+	if (iter != m_mapLists.end()) {
+		// already present.
+		return true;
 	}
-	if(i < numlists)
-		return true; // List is already present
 	parent_id = stoi(*szPid);
 	type = static_cast<FL_ListType>(stoi(*szType));
 	start = stoi(*szStart);
@@ -6051,6 +6028,7 @@ void PD_Document::updateDirtyLists(void)
 		fl_AutoNumPtr pAutoNum = m_vecLists.at(i);
 		if(pAutoNum->isEmpty() || (pAutoNum->getDoc() != this))
 		{
+			m_mapLists.erase(pAutoNum->getID());
 			m_vecLists.erase(m_vecLists.begin() + i);
 			iNumLists--;
 			i--;
@@ -6107,6 +6085,7 @@ bool PD_Document::fixListHierarchy(void)
             while(!itemsToRemove.empty())
             {
                 UT_uint32 i = itemsToRemove.back();
+                m_mapLists.erase(m_vecLists[i]->getID());
                 m_vecLists.erase(m_vecLists.begin() + i);
                 itemsToRemove.pop_back();
             }
@@ -6129,6 +6108,7 @@ void PD_Document::removeList(const fl_AutoNumPtr & pAutoNum, pf_Frag_Strux* sdh 
 	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex,pfs->getXID());
 	notifyListeners(pfs, pcr);
 	delete pcr;
+	m_mapLists.erase(pAutoNum->getID());
 	m_vecLists.erase(iter);
 }
 
