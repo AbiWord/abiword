@@ -220,7 +220,7 @@ public:
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& isTOC) = 0;
 	virtual fp_Container * getNextContainerInSection(void) const = 0;
 	virtual fp_Container * getPrevContainerInSection(void) const = 0;
-    virtual UT_Rect        getScreenRect() = 0;
+    virtual UT_Rect        getScreenRect() const = 0;
     virtual void           markDirtyOverlappingRuns(const UT_Rect & recScreen) = 0;
 	const char *           getContainerString(void);
 	void                   setAllowDelete(bool bDelete)

@@ -151,7 +151,7 @@ public:
 	inline	bool 	isFirstLineInBlock(void) const;
 	bool 	isLastLineInBlock(void) const;
 
-    virtual UT_Rect       getScreenRect();
+    virtual UT_Rect       getScreenRect() const;
     virtual void            markDirtyOverlappingRuns(const UT_Rect& recScreen);
 
 	void		remove(void);

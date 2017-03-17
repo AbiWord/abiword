@@ -153,7 +153,7 @@ public:
 						UT_sint32 width, UT_sint32 height);
         bool                intersectsDamagedRect(fp_ContainerObject * pObj) const;
 	void                redrawDamagedFrames(dg_DrawArgs* pDA);
-	bool                overlapsWrappedFrame(fp_Line * pLine) const;
+	bool                overlapsWrappedFrame(const fp_Line * pLine) const;
 	bool                overlapsWrappedFrame(const UT_Rect & rec) const;
 	void                setPageNumberInFrames(void);
 	UT_sint32           getPageNumber(void) const;

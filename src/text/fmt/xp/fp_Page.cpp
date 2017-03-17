@@ -735,7 +735,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
  * Returns true if the supplied rectangle overlaps with one wrapped frame
  * on the page.
  */
-bool fp_Page::overlapsWrappedFrame(fp_Line* pLine) const
+bool fp_Page::overlapsWrappedFrame(const fp_Line* pLine) const
 {
 	return overlapsWrappedFrame(pLine->getScreenRect());
 }

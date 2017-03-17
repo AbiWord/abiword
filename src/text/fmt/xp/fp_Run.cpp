@@ -920,7 +920,7 @@ void fp_Run::markAsDirty(void)
  * return an rectangle that covers this object on the screen
  * The calling routine is resposible for deleting the returned struct
  */
-UT_Rect fp_Run::getScreenRect(void)
+UT_Rect fp_Run::getScreenRect(void) const
 {
 	UT_sint32 xoff = 0;
 	UT_sint32 yoff = 0;

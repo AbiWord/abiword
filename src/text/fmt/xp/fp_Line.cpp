@@ -809,7 +809,7 @@ void fp_Line::setSameYAsPrevious(bool bSameAsPrevious)
 /*!
  * return an rectangle that covers this object on the screen
  */
-UT_Rect fp_Line::getScreenRect(void)
+UT_Rect fp_Line::getScreenRect(void) const
 {
 	UT_sint32 xoff = 0;
 	UT_sint32 yoff = 0;
