@@ -852,7 +852,7 @@ private:
 	pt_PieceTable *			m_pPieceTable;
     PD_DocumentRDFHandle    m_hDocumentRDF;
 	UT_GenericVector<PL_Listener *> m_vecListeners;
-	UT_GenericVector<fl_AutoNum *> m_vecLists;
+	std::vector<fl_AutoNum *> m_vecLists;
 	bool                    m_bHasListStopped;
 
 	typedef std::map<std::string, PD_DataItemHandle> hash_data_items_t;
