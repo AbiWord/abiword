@@ -1992,8 +1992,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	}
 	else
 	{
-		UT_Rect pOldRec = pOldLine->getScreenRect();
-		UT_Rect pNewRec = pNextLine->getScreenRect();
+		UT_Rect pOldRec = pOldLine->getScreenRect().unwrap();
+		UT_Rect pNewRec = pNextLine->getScreenRect().unwrap();
 		yPoint = pNewRec.top + pNewRec.height / 2;
 		xPoint = xPoint + (pNewRec.left - pOldRec.left);
 		pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);

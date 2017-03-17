@@ -240,7 +240,7 @@ public:
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
 	virtual void        updateVerticalMetric();
 
-    virtual UT_Rect     getScreenRect() const;
+    virtual UT_Option<UT_Rect>     getScreenRect() const;
     virtual void        markDirtyOverlappingRuns(const UT_Rect& recScreen);
 
 	virtual void		_draw(dg_DrawArgs*) = 0;

@@ -656,7 +656,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		UT_return_if_fail(pCL->getContainerType() == FL_CONTAINER_CELL);
 		fp_CellContainer * pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
 		UT_return_if_fail(pCCon);
-		UT_Rect pRect = pCCon->getScreenRect();
+		UT_Rect pRect = pCCon->getScreenRect().unwrap();
 		xLow = pRect.left;
 		yLow = pRect.top;
 		m_recCurFrame.left = xLow;
@@ -676,7 +676,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		UT_return_if_fail(pCL->getContainerType() == FL_CONTAINER_CELL);
 		pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
 		UT_return_if_fail(pCCon);
-		pRect = pCCon->getScreenRect();
+		pRect = pCCon->getScreenRect().unwrap();
 		xHigh = pRect.left + pRect.width;
 		yHigh = pRect.top + pRect.height;
 		m_recCurFrame.width = xHigh - xLow;
@@ -859,8 +859,12 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		  {
 		      m_bSelectedRow = true;
 		  }
-		  UT_Rect pLow = pCellConLow->getScreenRect();
-		  UT_Rect pHigh = pCellConHigh->getScreenRect();
+		  auto result = pCellConLow->getScreenRect();
+		  UT_return_if_fail(!result.empty());
+		  UT_Rect pLow = result.unwrap();
+		  result = pCellConHigh->getScreenRect();
+		  UT_return_if_fail(!result.empty());
+		  UT_Rect pHigh = result.unwrap();
 		  m_recCurFrame.left = pLow.left;
 		  m_recCurFrame.width = pHigh.left + pHigh.width - pLow.left;
 		  m_recCurFrame.top = pLow.top;

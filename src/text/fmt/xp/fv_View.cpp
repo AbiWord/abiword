@@ -10250,7 +10250,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		{
 			if( fp_Line * pLine = pHyperRun->getLine() )
 			{
-				UT_Rect pRec = pLine->getScreenRect();
+				UT_Rect pRec = pLine->getScreenRect().unwrap();
 				UT_sint32 xPosAdj = xPos - pRec.left;
 				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (x), xPosAdj %ld\n", xPosAdj ));
 				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (x), yPos    %ld\n", yPos ));
@@ -10286,7 +10286,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		fp_Line * pLine=  pHyperRun->getLine();
 		if(pLine)
 		{
-			UT_Rect pRec = pLine->getScreenRect();
+			UT_Rect pRec = pLine->getScreenRect().unwrap();
 			UT_DebugOnly<UT_sint32> xPosAdj = xPos - pRec.left;
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), xPosAdj %ld\n", (UT_sint32)xPosAdj ));
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), yPos    %ld\n", yPos ));

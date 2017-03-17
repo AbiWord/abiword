@@ -120,7 +120,7 @@ bool fp_FrameContainer::isAbove(void)
  */
 bool fp_FrameContainer::overlapsRect(const UT_Rect & rec)
 {
-     UT_Rect pMyFrameRec = getScreenRect();
+     UT_Rect pMyFrameRec = getScreenRect().unwrap();
      fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
      UT_sint32 iextra = pFL->getBoundingSpace() -2;
      pMyFrameRec.left -= iextra;
@@ -160,13 +160,13 @@ bool fp_FrameContainer::overlapsRect(const UT_Rect & rec)
 	 xxx_UT_DEBUGMSG(("iLeft in overlapRect %d Y %d \n",iLeft,y));
 	 if(rec.left < pMyFrameRec.left)
 	 {
-              pMyFrameRec.left -= iLeft;
+	      pMyFrameRec.left -= iLeft;
 	      xxx_UT_DEBUGMSG(("Moves Image left border by %d to %d \n", -iLeft, pMyFrameRec.left));
 	 }
 	 else
 	 {
 	      UT_sint32 iRight = pFL->getBackgroundImage()->GetOffsetFromRight(getGraphics(),pad,y,h);
-              pMyFrameRec.width += iRight;
+	      pMyFrameRec.width += iRight;
 	      xxx_UT_DEBUGMSG(("Reduce Image width by %d to %d \n", iRight, pMyFrameRec.width));
 	 }
 	 if(rec.intersectsRect(&pMyFrameRec))
@@ -234,7 +234,7 @@ UT_sint32 fp_FrameContainer::getLeftPad(UT_sint32 y, UT_sint32 height)
 {
   fl_FrameLayout *pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
   UT_sint32 pad = pFL->getBoundingSpace();	
-  UT_Rect pRect = getScreenRect();
+  UT_Rect pRect = getScreenRect().unwrap();
   UT_sint32 yC = pRect.top;
   if(!isTightWrapped() || !isWrappingSet())
   {
@@ -267,7 +267,7 @@ UT_sint32 fp_FrameContainer::getRightPad(UT_sint32 y, UT_sint32 height)
 {
   fl_FrameLayout *pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
   UT_sint32 pad = pFL->getBoundingSpace();
-  UT_Rect pRect = getScreenRect();
+  UT_Rect pRect = getScreenRect().unwrap();
   UT_sint32 yC = pRect.top;
   if(!isTightWrapped() || !isWrappingSet())
   {
@@ -678,7 +678,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	UT_uint32 count = countCons();
 	xxx_UT_DEBUGMSG(("Number of containers in frame %d \n",count));
 	const UT_Rect * pPrevRect = pDA->pG->getClipRect();
-	UT_Rect pRect = getScreenRect();
+	UT_Rect pRect = getScreenRect().unwrap();
 	UT_Rect newRect;
 	bool bRemoveRectAfter = false;
 	bool bSetOrigClip = false;

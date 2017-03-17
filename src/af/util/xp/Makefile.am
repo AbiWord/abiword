@@ -56,6 +56,7 @@ libxp_la_SOURCES = \
 	ut_misc.h \
 	ut_mutex.cpp \
 	ut_mutex.h \
+	ut_option.h \
 	ut_OverstrikingChars.cpp \
 	ut_OverstrikingChars.h \
 	ut_path.h \

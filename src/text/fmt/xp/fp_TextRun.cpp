@@ -1565,7 +1565,11 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 // This space is counted in the width even though the text is aligned
 // to the correct edge.
 //
-	UT_Rect pLRec = getLine()->getScreenRect();
+	auto result = getLine()->getScreenRect();
+	if (result.empty()) {
+		return;
+	}
+	UT_Rect pLRec = result.unwrap();
 	if((pDA->xoff + iWidth) > (pLRec.left + pLRec.width))
 	{
 		iWidth -=  (pDA->xoff + iWidth) - (pLRec.left + pLRec.width);
@@ -2033,7 +2037,11 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 //
 	if(getLine())
 	{
-		UT_Rect pLRec = getLine()->getScreenRect();
+		auto result = getLine()->getScreenRect();
+		if (result.empty()) {
+			return;
+		}
+		UT_Rect pLRec = result.unwrap();
 		if(getLine()->getContainer() && ((getLine()->getContainer()->getContainerType() == FP_CONTAINER_CELL) ||
 										 (getLine()->getContainer()->getContainerType() == FP_CONTAINER_FRAME))) {
 			return;

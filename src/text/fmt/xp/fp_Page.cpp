@@ -471,8 +471,8 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 						  // Look for a gap between lines.
 						  //
 						  UT_Rect recBetween;
-						  UT_Rect pPrevRec = pPrev->getScreenRect();
-						  UT_Rect pCurRec = pLine->getScreenRect();
+						  UT_Rect pPrevRec = pPrev->getScreenRect().unwrap();
+						  UT_Rect pCurRec = pLine->getScreenRect().unwrap();
 						  recBetween.left = pPrevRec.left + pPrevRec.width;
 						  recBetween.width = pCurRec.left - recBetween.left;
 						  if(pPrevRec.height != pCurRec.height)
@@ -591,8 +591,8 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								  // Look for a gap between lines.
 								  //
 								  UT_Rect recBetween;
-								  UT_Rect pPrevRec = pPrev->getScreenRect();
-								  UT_Rect pCurRec = pLine->getScreenRect();
+								  UT_Rect pPrevRec = pPrev->getScreenRect().unwrap();
+								  UT_Rect pCurRec = pLine->getScreenRect().unwrap();
 								  recBetween.left = pPrevRec.left + pPrevRec.width;
 								  recBetween.width = pCurRec.left - recBetween.left;
 								  if(pPrevRec.height != pCurRec.height)
@@ -737,7 +737,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
  */
 bool fp_Page::overlapsWrappedFrame(const fp_Line* pLine) const
 {
-	return overlapsWrappedFrame(pLine->getScreenRect());
+	return overlapsWrappedFrame(pLine->getScreenRect().unwrap());
 }
 /*!
  * Returns true if the supplied rectangle overlaps with one wrapped frame
@@ -1395,7 +1395,7 @@ void   fp_Page::expandDamageRect(UT_sint32 x, UT_sint32 y,
  */
 bool   fp_Page::intersectsDamagedRect(fp_ContainerObject * pObj) const
 {
-	UT_Rect pRec = pObj->getScreenRect();
+	UT_Rect pRec = pObj->getScreenRect().unwrap();
 	bool bIntersects = m_rDamageRect.intersectsRect(&pRec);
 	return bIntersects;
 }
@@ -2894,7 +2894,12 @@ void fp_Page::clearScreenFrames(void)
 
 void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 {
-	UT_Rect pMyFrameRect = pFrameC->getScreenRect();
+	auto result = pFrameC->getScreenRect();
+	if (result.empty()) {
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+	UT_Rect pMyFrameRect = result.unwrap();
 	// check each column for redraw
 
 	UT_sint32 count = m_vecColumnLeaders.getItemCount();

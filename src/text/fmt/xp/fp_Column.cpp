@@ -528,7 +528,7 @@ void fp_VerticalContainer::getOffsets(const fp_ContainerObject* pContainer, UT_s
  * return an rectangle that covers this object on the screen
  * The calling routine is resposible for deleting the returned struct
  */
-UT_Rect fp_VerticalContainer::getScreenRect(void) const
+UT_Option<UT_Rect> fp_VerticalContainer::getScreenRect(void) const
 {
 	UT_sint32 xoff = 0;
 	UT_sint32 yoff = 0;
@@ -536,23 +536,23 @@ UT_Rect fp_VerticalContainer::getScreenRect(void) const
 	if(getContainerType() == FP_CONTAINER_FRAME)
 	{
 		fp_Page * pPage = getPage();
-        if (!pPage) {
-            return pRec;
-        }
+		if (!pPage) {
+			return UT_Option<UT_Rect>();
+		}
 		auto pFrameC = static_cast<const fp_FrameContainer *>(this);
 		getView()->getPageScreenOffsets(pPage,xoff,yoff);
 		xoff += pFrameC->getFullX();
 		yoff += pFrameC->getFullY();
-		return UT_Rect(xoff, yoff, pFrameC->getFullWidth(), pFrameC->getFullHeight());
+		return UT_Option<UT_Rect>(xoff, yoff, pFrameC->getFullWidth(), pFrameC->getFullHeight());
 	}
 	auto pCon = static_cast<fp_Container *>(fp_Container::getNthCon(0));
 	if (!pCon) {
-		return pRec;
+		return UT_Option<UT_Rect>();
 	}
 	getScreenOffsets(pCon, xoff, yoff);
 	xoff -= pCon->getX();
 	yoff -= pCon->getY();
-	return UT_Rect(xoff, yoff, getWidth(), getHeight());
+	return UT_Option<UT_Rect>(xoff, yoff, getWidth(), getHeight());
 }
 
 /*!
@@ -561,7 +561,7 @@ UT_Rect fp_VerticalContainer::getScreenRect(void) const
  */
 void fp_VerticalContainer::markDirtyOverlappingRuns(const UT_Rect & recScreen)
 {
-	UT_Rect pRec = getScreenRect();
+	UT_Rect pRec = getScreenRect().unwrap();
 	if(recScreen.intersectsRect(&pRec))
 	{
 		UT_sint32 count = countCons();
@@ -571,7 +571,6 @@ void fp_VerticalContainer::markDirtyOverlappingRuns(const UT_Rect & recScreen)
 			fp_Container * pCon = static_cast<fp_Container * >(getNthCon(i));
 			pCon->markDirtyOverlappingRuns(recScreen);
 		}
-		return;
 	}
 }
 
