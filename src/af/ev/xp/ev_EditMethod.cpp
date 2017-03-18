@@ -63,11 +63,16 @@ EV_EditMethodCallData::EV_EditMethodCallData(const UT_UCSChar * pData, UT_uint32
 	: m_xPos(0),
 	  m_yPos(0)
 {
-	m_pData = new UT_UCSChar[dataLength];
+	m_pData = new UT_UCSChar[std::max<UT_uint32>(dataLength, 1)];
 	if (m_pData)
 	{
-		for (UT_uint32 k = 0; k < dataLength; k++)
-			m_pData[k] = pData[k];
+		if (dataLength == 0) {
+			m_pData[0] = 0;
+		} else {
+			for (UT_uint32 k = 0; k < dataLength; k++) {
+				m_pData[k] = pData[k];
+			}
+		}
 		m_dataLength = dataLength;
 		m_bAllocatedData = true;
 	}
@@ -82,11 +87,16 @@ EV_EditMethodCallData::EV_EditMethodCallData(const char * pChar, UT_uint32 dataL
 	: m_xPos(0),
 	  m_yPos(0)
 {
-	m_pData = new UT_UCSChar[dataLength];
+	m_pData = new UT_UCSChar[std::max<UT_uint32>(dataLength, 1)];
 	if (m_pData)
 	{
-		for (UT_uint32 k = 0; k < dataLength; k++)
-			m_pData[k] = pChar[k];
+		if (dataLength == 0) {
+			m_pData[0] = 0;
+		} else {
+			for (UT_uint32 k = 0; k < dataLength; k++) {
+				m_pData[k] = pChar[k];
+			}
+		}
 		m_dataLength = dataLength;
 		m_bAllocatedData = true;
 	}

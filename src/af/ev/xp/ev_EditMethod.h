@@ -85,9 +85,9 @@ public:
 	EV_EditMethodCallData(const UT_String& stScriptName);
 	~EV_EditMethodCallData();
 
-	UT_sint32			getX() { return m_xPos; }
-	UT_sint32			getY() { return m_yPos; }
-	const UT_String&	getScriptName() { return m_stScriptName; }
+	UT_sint32			getX() const { return m_xPos; }
+	UT_sint32			getY() const { return m_yPos; }
+	const UT_String&	getScriptName() const { return m_stScriptName; }
 
 // private:
 	UT_UCSChar *		m_pData;
