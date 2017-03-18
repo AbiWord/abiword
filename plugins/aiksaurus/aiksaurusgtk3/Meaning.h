@@ -1,7 +1,10 @@
 #ifndef INCLUDED_MEANING_H
 #define INCLUDED_MEANING_H
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 #include <vector>
 #include <string>
 using namespace std;

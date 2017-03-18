@@ -25,7 +25,11 @@
 #include <map>
 #include <string>
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
+
 #include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
 #include "pd_Document.h"

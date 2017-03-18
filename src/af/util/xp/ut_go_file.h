@@ -29,8 +29,11 @@
 #include "ut_types.h"
 #endif
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <glib.h>
 #include <gsf/gsf.h>
+ABI_W_POP
 #include <time.h>
 
 G_BEGIN_DECLS

@@ -25,6 +25,8 @@
 #ifndef _ODI_TEXTCONTENT_LISTENERSTATE_H_
 #define _ODI_TEXTCONTENT_LISTENERSTATE_H_
 
+#include "ut_compiler.h"
+
 #include <string>
 #include <map>
 #include <set>
@@ -38,7 +40,9 @@
 #include <ut_stack.h>
 
 // External includes
+ABI_W_NO_CONST_QUAL
 #include <gsf/gsf.h>
+ABI_W_POP
 
 // Internal classes
 class ODi_Office_Styles;

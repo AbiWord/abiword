@@ -20,7 +20,10 @@
 #ifndef AP_DOCVIEW_H
 #define AP_DOCVIEW_H
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 
 G_BEGIN_DECLS
 

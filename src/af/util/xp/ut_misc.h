@@ -238,7 +238,10 @@ UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);
 
 // Hack so we get AbiNativeWidget with an xp include
 #ifdef TOOLKIT_GTK_ALL
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 typedef GtkWidget AbiNativeWidget;
 #else
 // TODO maintainers please fix their platform

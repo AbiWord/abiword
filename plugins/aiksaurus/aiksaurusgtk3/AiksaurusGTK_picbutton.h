@@ -21,8 +21,12 @@
 #ifndef INCLUDED_GPL_JARED_AIKSAURUSGTK_PICBUTTON_H
 #define INCLUDED_GPL_JARED_AIKSAURUSGTK_PICBUTTON_H
 
+#include "ut_compiler.h"
+
 #include <glib.h>
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 
 #include "AiksaurusGTK_strlist.h"
 

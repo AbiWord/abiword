@@ -30,9 +30,12 @@
 #include <string>
 
 #include <glib.h>
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
 #include <gdk-pixbuf/gdk-pixbuf-io.h>
+ABI_W_POP
 
 #include "ut_debugmsg.h"
 #include "ut_types.h"

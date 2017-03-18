@@ -26,8 +26,13 @@
 #include "config.h"
 #endif
 
+#include "ut_compiler.h"
+
 #ifdef TOOLKIT_GTK_ALL
+ABI_W_NO_CONST_QUAL
 #include <gdk/gdk.h>
+ABI_W_POP
+
 #include <gtk/gtk.h>
 
 #ifndef UTCOLOR_H

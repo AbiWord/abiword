@@ -344,9 +344,9 @@ void AP_Dialog_Lists::Apply(void)
 		getView()->changeListStyle(getAutoNum(),m_NewListType,m_iStartValue,
                                    m_pszDelim.c_str(), m_pszDecimal.c_str(), 
                                    m_pszFont.c_str(),m_fAlign,m_fIndent);
-		if(getAutoNum() != NULL)
-		{
-			getAutoNum()->update(0);
+		fl_AutoNumPtr autoNum = getAutoNum();
+		if(autoNum) {
+			autoNum->update(0);
 		}
 		getView()->getDocument()->endUserAtomicGlob();
 		clearDirty();
@@ -476,13 +476,13 @@ void AP_Dialog_Lists::Apply(void)
 //
 				getView()->changeListStyle(pBlock2->getAutoNum(),
                                            m_NewListType, m_iStartValue,
-                                           m_pszDelim.c_str(), 
-                                           m_pszDecimal.c_str(), 
+                                           m_pszDelim.c_str(),
+                                           m_pszDecimal.c_str(),
                                            m_pszFont.c_str(), m_fAlign,
                                            m_fIndent);
-				if(pBlock2->getAutoNum() != NULL)
-				{
-					pBlock2->getAutoNum()->update(0);
+				fl_AutoNumPtr autoNum = pBlock2->getAutoNum();
+				if(autoNum) {
+					autoNum->update(0);
 				}
 
 			}

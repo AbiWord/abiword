@@ -22,10 +22,14 @@
 #include "config.h"
 #endif
 
+#include "ut_compiler.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "xap_UnixDialogHelper.h"

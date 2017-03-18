@@ -23,7 +23,10 @@
 #ifndef ABI_WIDGET_H
 #define ABI_WIDGET_H
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-output.h>
 

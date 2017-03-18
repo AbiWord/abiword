@@ -23,13 +23,13 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <gtk/gtk.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "GTKCommon.h"
+#include <gtk/gtk.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"

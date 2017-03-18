@@ -22,14 +22,17 @@
 
 // 9/4/04 Updated to use GtkTreeView , Tim O'Brien (obrientimo@vuw.ac.nz)
 
+#include "ut_compiler.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 #include <set>
 #include <string>
-
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"

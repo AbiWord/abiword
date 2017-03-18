@@ -23,7 +23,10 @@
 
 #include "AiksaurusGTK_history.h"
 #include "AiksaurusGTK_histlist.h"
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 #include <new>
 
 class AiksaurusGTK_picbutton;

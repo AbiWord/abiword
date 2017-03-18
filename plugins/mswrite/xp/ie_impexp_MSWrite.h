@@ -23,7 +23,10 @@
 #ifndef IE_IMPEXP_MSWRITE_H
 #define IE_IMPEXP_MSWRITE_H
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gsf/gsf.h>
+ABI_W_POP
 
 #define CT_IGNORE 0
 #define CT_VALUE  1

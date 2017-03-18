@@ -607,6 +607,7 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wshadow \
    -Wsign-compare \
    -Wunreachable-code \
+   -Wconst-qual \
    -Wunused \
    -Wwrite-strings \
 ], [], [$ax_compiler_flags_test])

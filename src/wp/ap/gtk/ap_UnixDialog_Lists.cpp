@@ -19,7 +19,10 @@
  * 02110-1301 USA.
  */
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 #include <stdlib.h>
 #include <string.h>
 #include "ut_string.h"

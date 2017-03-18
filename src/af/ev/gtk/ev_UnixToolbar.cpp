@@ -29,13 +29,17 @@
 #include "config.h"
 #endif
 
+#include "ut_compiler.h"
+
 #include <string.h>
 #include <stdlib.h>
 
 #include <string>
 
 #include <gdk/gdkkeysyms.h>
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 #include <goffice/gtk/go-combo-box.h>
 #include <goffice/gtk/go-combo-color.h>
 

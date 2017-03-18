@@ -651,7 +651,7 @@ void fl_AutoNum::setStartValue(UT_uint32 start)
 {
 	m_iStartValue = start;
 	m_bDirty = true;
-	_updateItems(0,NULL);
+	_updateItems(0, nullptr);
 }
 
 void fl_AutoNum::setAsciiOffset(UT_uint32 new_asciioffset)
@@ -684,7 +684,7 @@ void fl_AutoNum::insertFirstItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pLast, boo
 	if(m_pDoc->areListUpdatesAllowed() == false)
 		return;
 	if (getAutoNumFromSdh(pItem).get() == this) {
-		_updateItems(0,NULL);
+		_updateItems(0, nullptr);
 	}
 }
 
@@ -702,7 +702,7 @@ void fl_AutoNum::setParentItem(pf_Frag_Strux* pItem)
 
 void fl_AutoNum::insertItem(pf_Frag_Strux* pItem, const pf_Frag_Strux* pPrev, bool bDoFix)
 {
-	UT_sint32 ndx,i;
+	UT_sint32 ndx, i;
 	UT_ASSERT(pItem);
 	if(m_items.hasItem(pItem)) {
 		return;
@@ -727,19 +727,19 @@ void fl_AutoNum::insertItem(pf_Frag_Strux* pItem, const pf_Frag_Strux* pPrev, bo
 		{
 			pAuto->setParentItem(pItem);
 			pAuto->m_bDirty = true;
-			if(!pAuto->_updateItems(0,NULL))
+			if(!pAuto->_updateItems(0, nullptr)) {
 				return;
+			}
 		}
 	}
 
-	_updateItems(ndx+1,NULL);
+	_updateItems(ndx + 1, nullptr);
 }
 
 
 void fl_AutoNum::prependItem(pf_Frag_Strux* pItem, const pf_Frag_Strux* pNext, bool bDoFix)
 {
-	UT_sint32 ndx;
-	UT_sint32 i;
+	UT_sint32 ndx, i;
 	UT_ASSERT(pItem);
 	pf_Frag_Strux* pPrev = NULL;
 	if(m_items.hasItem(pItem)) {
@@ -768,12 +768,13 @@ void fl_AutoNum::prependItem(pf_Frag_Strux* pItem, const pf_Frag_Strux* pNext, b
 			{
 				pAuto->setParentItem(pItem);
 				pAuto->m_bDirty = true;
-				if(	pAuto->_updateItems(0,NULL))
+				if(	pAuto->_updateItems(0, nullptr)) {
 					return;
+				}
 			}
 		}
 	}
-	_updateItems(ndx,NULL);
+	_updateItems(ndx, nullptr);
 }
 
 void fl_AutoNum::removeItem(const pf_Frag_Strux* pItem)
@@ -789,7 +790,7 @@ void fl_AutoNum::removeItem(const pf_Frag_Strux* pItem)
 	if(ndx < 0 )
 	{
 		m_bDirty = true;
-		_updateItems(0,NULL);
+		_updateItems(0, nullptr);
 		return;
 	}
 	pf_Frag_Strux* ppItem = NULL;
@@ -799,7 +800,6 @@ void fl_AutoNum::removeItem(const pf_Frag_Strux* pItem)
 	}
 	m_items.deleteNthItem(ndx);
 	m_bDirty = true;
-
 	// scan through all the lists and update parent pointers
 
 	UT_sint32 numlists = m_pDoc->getListsCount();
@@ -825,12 +825,14 @@ void fl_AutoNum::removeItem(const pf_Frag_Strux* pItem)
 				pAuto->m_bDirty = true;
 				pAuto->setParentItem(getParentItem());
 			}
-			if(m_pDoc->areListUpdatesAllowed() == true)
-				if(!pAuto->_updateItems(0,NULL))
+			if(m_pDoc->areListUpdatesAllowed() == true) {
+				if(!pAuto->_updateItems(0, nullptr)) {
 					return;
+				}
+			}
 		}
 	}
-	_updateItems(ndx,NULL);
+	_updateItems(ndx, nullptr);
 }
 
 UT_uint32 fl_AutoNum::getNumLabels() const
@@ -943,7 +945,7 @@ pf_Frag_Strux* fl_AutoNum::getFirstItem() const
 pf_Frag_Strux* fl_AutoNum::getLastItem() const
 {
 	if (m_items.empty()) {
-		return NULL;
+		return nullptr;
 	}
 	return m_items.back();
 }
@@ -1063,6 +1065,7 @@ void fl_AutoNum::update(UT_uint32 start)
 		return;
 	pf_Frag_Strux* sdh = getFirstItem();
 	UT_return_if_fail(sdh);
+
 	if (m_pParent && !m_pParent->isUpdating())
 	{
 		UT_uint32 ndx = m_pParent->m_items.findItem(sdh);
@@ -1100,8 +1103,9 @@ bool fl_AutoNum::_updateItems(UT_sint32 start, const pf_Frag_Strux* notMe)
 				UT_ASSERT_HARMLESS(pAuto);
 				if( pAuto && (pItem == pAuto->getParentItem()) && (pItem != notMe))
 				{
-					if(!pAuto->_updateItems(0,pItem))
+					if(!pAuto->_updateItems(0, pItem)) {
 						return false;
+					}
 				}
 			}
 		}
@@ -1116,7 +1120,7 @@ bool fl_AutoNum::_updateItems(UT_sint32 start, const pf_Frag_Strux* notMe)
 ///
 bool fl_AutoNum::isContainedByList(pf_Frag_Strux* pItem) const
 {
-	pf_Frag_Strux* sdh, *sdh_prev, *sdh_next;
+	pf_Frag_Strux *sdh, *sdh_prev, *sdh_next;
 	PT_DocPosition pos_prev,pos_next,pos;
 	bool bret;
 	if (m_items.empty()) {
@@ -1139,7 +1143,7 @@ bool fl_AutoNum::isContainedByList(pf_Frag_Strux* pItem) const
 }
 
 
-pf_Frag_Strux* fl_AutoNum::getNthBlock( UT_sint32 list_num) const
+pf_Frag_Strux* fl_AutoNum::getNthBlock( UT_uint32 list_num) const
 {
 	if(static_cast<ItemStorage::size_type>(list_num) >= m_items.size()) {
 		return nullptr;

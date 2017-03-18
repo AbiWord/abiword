@@ -21,7 +21,10 @@
 #ifndef INCLUDED_AIKSAURUS_GTK_REPLACEBAR_H
 #define INCLUDED_AIKSAURUS_GTK_REPLACEBAR_H
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 
 namespace AiksaurusGTK_impl
 {

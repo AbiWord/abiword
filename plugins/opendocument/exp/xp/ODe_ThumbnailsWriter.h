@@ -23,7 +23,10 @@
 #ifndef _ODE_THUMBNAILSWRITER_H_
 #define _ODE_THUMBNAILSWRITER_H_
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gsf/gsf.h>
+ABI_W_POP
 
 class PD_Document;
 

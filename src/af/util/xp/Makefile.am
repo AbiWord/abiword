@@ -20,6 +20,7 @@ libxp_la_SOURCES = \
 	ut_case.h \
 	ut_color.h \
 	ut_color.cpp \
+	ut_compiler.h \
 	ut_crc32.cpp \
 	ut_crc32.h \
 	ut_debugmsg.h \

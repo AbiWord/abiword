@@ -160,9 +160,6 @@ AP_UnixApp::AP_UnixApp(const char * szAppName)
 	  m_cacheSelectionView(0),
 	  m_pFrameSelection(0)
 {
-    // hack to link abi_widget - thanks fjf
-	if(this == 0)
-		/*GtkWidget * pUn =*/ abi_widget_new_with_file("fred.abw");
 }
 
 /*!

@@ -20,7 +20,11 @@
 #ifndef GR_UNIXGNOMEIMAGE_H
 #define GR_UNIXGNOMEIMAGE_H
 
+#include "ut_compiler.h"
+
+ABI_W_NO_CONST_QUAL
 #include <gdk-pixbuf/gdk-pixbuf.h>
+ABI_W_POP
 
 #include "gr_CairoGraphics.h"
 

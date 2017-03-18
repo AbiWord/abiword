@@ -10832,8 +10832,9 @@ void fl_BlockLayout::listUpdate(void)
 		return;
 	}
 
-	if (m_bStartList == true)
+	if (m_bStartList) {
 		m_pAutoNum->update(1);
+	}
 
 	if ((m_bListLabelCreated == false) && (m_bStopList == false))
 		_createListLabel();

@@ -18,7 +18,10 @@
 #ifndef __FV_TEXT_HANDLE_PRIVATE_H__
 #define __FV_TEXT_HANDLE_PRIVATE_H__
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 
 G_BEGIN_DECLS
 

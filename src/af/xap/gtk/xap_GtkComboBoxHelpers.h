@@ -20,7 +20,10 @@
 #ifndef __XAP_GTKCOMBOBOXHELPERS_H__
 #define __XAP_GTKCOMBOBOXHELPERS_H__
 
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 
 #include "ut_vector.h"
 #include <string>

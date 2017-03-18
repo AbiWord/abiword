@@ -20,7 +20,10 @@
  */
 
 #include <memory.h>
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gsf/gsf.h>
+ABI_W_POP
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-input-stdio.h>
 #include <gsf/gsf-utils.h>

@@ -19,9 +19,12 @@
 #ifndef __XAP_UNIXDLG_COLORCHOOSER_H__
 #define __XAP_UNIXDLG_COLORCHOOSER_H__
 
-#include <memory>
+#include "ut_compiler.h"
 
+#include <memory>
+ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
+ABI_W_POP
 
 #include "ut_color.h"
 

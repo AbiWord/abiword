@@ -20,8 +20,11 @@
 #define __ODC_CRYPTO__
 
 #include <string>
+#include "ut_compiler.h"
+ABI_W_NO_CONST_QUAL
 #include <gsf/gsf.h>
 #include <gsf/gsf-input.h>
+ABI_W_POP
 #include "ut_types.h"
 
 class ODc_CryptoInfo {

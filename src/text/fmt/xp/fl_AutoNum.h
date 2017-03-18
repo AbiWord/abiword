@@ -1,8 +1,8 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indents-tab-mode:t; -*- */
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych, Yaacov Akiba Slama
- * © 2016 Hubert Figuière
+ * © 2016-2017 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -37,8 +38,6 @@
 #undef snprintf
 #define _GLIBCXX_USE_C99_DYNAMIC 1
 #endif
-
-#include <vector>
 
 // fwd. decl.
 class fl_BlockLayout;
@@ -122,15 +121,15 @@ public:
 	void						setListType(FL_ListType lType);
 	void						setDelim(const gchar * pszDelim);
 	void						setDelim(const std::string & delim)
-    {
-        setDelim(delim.c_str());
-    }
+	{
+		setDelim(delim.c_str());
+	}
 	const gchar *			getDelim() const;
 	void						setDecimal(const gchar * pszDecimal);
-    void                        setDecimal(const std::string & decimal)
-    {
-        setDecimal(decimal.c_str());
-    }
+	void						setDecimal(const std::string & decimal)
+	{
+		setDecimal(decimal.c_str());
+	}
 	const gchar *			getDecimal() const;
 	bool						isDirty() const;
 	UT_uint16					getStartValue() const { return m_iStartValue; }
@@ -146,8 +145,8 @@ public:
 	void						removeItem(const pf_Frag_Strux* pItem);
 	pf_Frag_Strux*			getParentItem() const;
 	void						setParentItem(pf_Frag_Strux* pItem);
-	bool                                 isContainedByList(pf_Frag_Strux* pItem) const;
-	pf_Frag_Strux*			getNthBlock(UT_sint32 i) const;
+	bool					isContainedByList(pf_Frag_Strux* pItem) const;
+	pf_Frag_Strux*			getNthBlock(UT_uint32 i) const;
 	pf_Frag_Strux*			getPrevInList(const pf_Frag_Strux* pItem) const;
 
 	bool					isItem(const pf_Frag_Strux* pItem) const;
@@ -169,15 +168,15 @@ public:
 	bool						isUpdating(void) const { return m_bUpdatingItems; }
 	UT_uint32					getID() const { return m_iID; }
 	UT_uint32					getParentID() const { return m_iParentID; }
-	bool                        isIDSomeWhere(UT_uint32 ID) const;
+	bool						isIDSomeWhere(UT_uint32 ID) const;
 	static char *				dec2roman(UT_sint32 value, bool lower);
 	static char *				dec2ascii(UT_sint32 value, UT_uint32 offset);
 	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);
 	void                        getAttributes(std::vector<std::string>&v,
 											  bool bEscapeXML) const;
-	PD_Document *               getDoc(void) const
+	PD_Document *				getDoc(void) const
 	{return m_pDoc;}
-	pf_Frag_Strux*           getLastItemInHeiracy(void) const;
+	pf_Frag_Strux*			 getLastItemInHeiracy(void) const;
 protected:
 	void                        _setParent(const fl_AutoNumPtr & pParent);
 	void                        _setParentID(UT_uint32 iParentID);
@@ -186,7 +185,7 @@ protected:
 												UT_uint32 * insPoint,
 												UT_uint32 depth,
 												const pf_Frag_Strux* pLayout) const;
-	bool						_updateItems(UT_sint32 start, const pf_Frag_Strux* notMe );
+	bool						_updateItems(UT_sint32 start, const pf_Frag_Strux* notMe);
 	UT_uint32					_getLevelValue(const fl_AutoNumConstPtr & pAutoNum) const;
 
 	fl_AutoNumPtr				m_pParent;
