@@ -61,7 +61,7 @@ private:
 
 	bool			m_bOpenedBlock;
 	UT_uint32		m_iCurListID;
-	UT_sint32		m_iOutlineDepth;
+	UT_uint32		m_iOutlineDepth;
 	UT_UTF8String	m_sMetaTag;
 	std::vector<fl_AutoNumConstPtr> m_utvLists;
 };
