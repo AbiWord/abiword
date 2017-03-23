@@ -707,7 +707,7 @@ AP_UnixDialog_Tab::_setDefaultTabStop (const gchar *defaultTabStop)
 {
 	UT_DEBUGMSG (("ROB: _setDefaultTabStop '%s'\n", defaultTabStop));
 
-	UT_return_if_fail (defaultTabStop && *defaultTabStop && (defaultTabStop[0] != '0' || defaultTabStop[1] != '\0'));
+	UT_return_if_fail (defaultTabStop && *defaultTabStop);
 
 	float pos;
 	sscanf (defaultTabStop, "%f", &pos);
