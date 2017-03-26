@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (c) 2009 Hubert Figuiere
+ * Copyright (c) 2009-2016 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -710,7 +710,6 @@ const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
 GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 {
 	GtkWidget *modifyDialog;
-	GtkWidget *dialog_action_area;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	std::string title;
@@ -726,15 +725,12 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 
 	_constructModifyDialogContents(gtk_dialog_get_content_area(GTK_DIALOG (modifyDialog)));
 
-	dialog_action_area = gtk_dialog_get_action_area(GTK_DIALOG (modifyDialog));
-	gtk_widget_show (dialog_action_area);
-
 	m_wModifyDialog = modifyDialog;
 
 //
 // Gnome buttons
 //
-	_constructGnomeModifyButtons(dialog_action_area);
+	_constructGnomeModifyButtons();
 //
 // Connect signals
 //
@@ -945,6 +941,14 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_widget_show (checkAutoUpdate);
 	gtk_box_pack_start (GTK_BOX (checkBoxRow), checkAutoUpdate, TRUE, TRUE, 0);
 
+	GtkWidget* box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_box_pack_start(GTK_BOX(OverallVbox), box, TRUE, TRUE, 0);
+	gtk_widget_show(box);
+	GtkWidget* formatMenu = gtk_combo_box_text_new();
+	gtk_widget_show(formatMenu);
+	gtk_box_pack_end(GTK_BOX(box), formatMenu, FALSE, FALSE, 0);
+	_constructFormatList(formatMenu);
+
 //
 // Save widget pointers in member variables
 //
@@ -960,13 +964,13 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	m_wDeletePropCombo = deletePropCombo;
 	m_wDeletePropEntry = deletePropEntry;
 	m_wDeletePropButton = deletePropButton;
+	m_wFormatMenu = formatMenu;
 }
 
-void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_action_area)
+void   AP_UnixDialog_Styles::_constructGnomeModifyButtons()
 {
 	GtkWidget *buttonOK;
 	GtkWidget *cancelButton;
-	GtkWidget *FormatMenu;
 	GtkWidget *shortCutButton = 0;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -977,12 +981,6 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
                                 pSS->getValue(XAP_STRING_ID_DLG_OK),
                                 BUTTON_MODIFY_OK);
 
-	FormatMenu = gtk_combo_box_text_new();
-	gtk_widget_show (FormatMenu);
-	gtk_container_add (GTK_CONTAINER (dialog_action_area), FormatMenu); //, FALSE, FALSE, 0);
-
-	_constructFormatList(FormatMenu);
-
 #if 0
 	shortCutButton = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyShortCut).c_str());
 	gtk_widget_show (shortCutButton);
@@ -992,7 +990,6 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
 
 	m_wModifyOk = buttonOK;
 	m_wModifyCancel = cancelButton;
-	m_wFormatMenu = FormatMenu;
 	m_wModifyShortCutKey = shortCutButton;
 }
 

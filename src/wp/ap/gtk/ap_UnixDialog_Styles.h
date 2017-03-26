@@ -142,7 +142,7 @@ protected:
 /////////////////////////////////////////////////////////////////////////
 
 	virtual GtkWidget * _constructModifyDialog(void);
-	virtual void        _constructGnomeModifyButtons( GtkWidget * dialog_action_area1);
+	virtual void        _constructGnomeModifyButtons();
 	void        _constructFormatList(GtkWidget * FormatMenu);
 	void        _connectModifySignals(void);
 	void        _constructModifyDialogContents(GtkWidget * modifyDialog);
