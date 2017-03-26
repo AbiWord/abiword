@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009, 2017 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +29,7 @@
 
 #include <stdlib.h>
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -312,14 +313,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	GtkWidget * buttonOK;
 	GtkWidget * buttonCancel;
 
-	gchar * unixstr = NULL;
-
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ParaTitle,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	windowParagraph = abiDialogNew("paragraph dialog", TRUE, unixstr);
+	std::string unixstr = UT_XML_cloneNoAmpersands(s);
+	windowParagraph = abiDialogNew("paragraph dialog", TRUE, unixstr.c_str());
 	gtk_window_set_position(GTK_WINDOW(windowParagraph), GTK_WIN_POS_CENTER_ON_PARENT);
-	FREEP(unixstr);
 	gtk_window_set_resizable(GTK_WINDOW(windowParagraph), false);
 
 	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowParagraph));
@@ -394,7 +392,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	GtkWidget * labelBreaks;
 	GtkWidget * checkbuttonDomDirection;
 
-	gchar * unixstr = NULL;
+	std::string unixstr;
 
 	vboxContents = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vboxContents);
@@ -415,20 +413,18 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_TabLabelIndentsAndSpacing,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelIndents = gtk_label_new (unixstr);
-	FREEP(unixstr);
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelIndents = gtk_label_new(unixstr.c_str());
 	gtk_widget_show (labelIndents);
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (tabMain), boxSpacing, labelIndents);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAlignment,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelAlignment = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelAlignment = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                          "xalign", 1.0, "yalign", 0.5,
                                          "justify", GTK_JUSTIFY_RIGHT,
                                          NULL);
-	FREEP(unixstr);
 	gtk_widget_show (labelAlignment);
 	gtk_grid_attach(GTK_GRID(boxSpacing), labelAlignment, 0, 0, 1, 1);
 
@@ -454,9 +450,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_combo_box_set_active(listAlignment, 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_DomDirection,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	checkbuttonDomDirection = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	checkbuttonDomDirection = gtk_check_button_new_with_label(unixstr.c_str());
 	/**/ g_object_set_data(G_OBJECT(checkbuttonDomDirection), WIDGET_ID_TAG, (gpointer) id_CHECK_DOMDIRECTION);
 	gtk_widget_show (checkbuttonDomDirection);
 	gtk_grid_attach(GTK_GRID(boxSpacing), checkbuttonDomDirection, 3, 0, 1, 1);
@@ -465,13 +460,12 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (hboxIndentation);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelIndentation,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelIndentation = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelIndentation = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                            "xalign", 0.0, "yalign", 0.5,
                                            "justify", GTK_JUSTIFY_LEFT,
                                            "xpad", 0, "ypad", 3,
                                            NULL);
-	FREEP(unixstr);
 	gtk_widget_show (labelIndentation);
 	gtk_box_pack_start (GTK_BOX (hboxIndentation), labelIndentation, FALSE, FALSE, 0);
 
@@ -481,12 +475,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_grid_attach(GTK_GRID(boxSpacing), hboxIndentation, 0, 1, 4, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelLeft,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelLeft = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelLeft = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                     "xalign", 1.0, "yalign", 0.5,
                                     "justify", GTK_JUSTIFY_RIGHT,
                                     NULL);
-	FREEP(unixstr);
 	gtk_widget_show (labelLeft);
 	gtk_grid_attach(GTK_GRID(boxSpacing), labelLeft, 0, 2, 1, 1);
 
@@ -501,12 +494,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_grid_attach(GTK_GRID(boxSpacing), spinbuttonLeft, 1, 2, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelRight,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelRight = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelRight = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                     "xalign", 1.0, "yalign", 0.5,
                                     "justify", GTK_JUSTIFY_RIGHT,
                                     NULL);
-	FREEP(unixstr);
 	gtk_widget_show (labelRight);
 	gtk_grid_attach(GTK_GRID(boxSpacing), labelRight, 0, 3, 1, 1);
 
@@ -518,12 +510,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_grid_attach(GTK_GRID(boxSpacing), spinbuttonRight, 1, 3, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelSpecial,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelSpecial = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelSpecial = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                        "xalign", 0.0, "yalign", 0.5,
                                        "justify", GTK_JUSTIFY_LEFT,
                                        NULL);
-	FREEP(unixstr);
 	gtk_widget_show (labelSpecial);
 	gtk_grid_attach(GTK_GRID(boxSpacing), labelSpecial, 2, 2, 1, 1);
 
@@ -543,12 +534,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_combo_box_set_active(listSpecial, 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelBy,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelBy = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelBy = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
 				  "xalign", 0.0, "yalign", 0.5,
 				  "justify", GTK_JUSTIFY_LEFT,
 				  NULL);
-	FREEP(unixstr);
 	gtk_widget_show (labelBy);
 	gtk_grid_attach(GTK_GRID(boxSpacing), labelBy, 2, 3, 1, 1);
 //	spinbuttonBy_adj = gtk_adjustment_new (0.5, 0, 100, 0.1, 10, 10);
@@ -562,12 +552,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (hboxSpacing);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelSpacing,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelSpacing = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelSpacing = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                        "xalign", 0.0, "yalign", 0.5,
                                        "xpad", 0, "ypad", 3,
                                        NULL);
-	FREEP(unixstr);
 	gtk_box_pack_start (GTK_BOX (hboxSpacing), labelSpacing, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelSpacing), GTK_JUSTIFY_LEFT);
 
@@ -576,12 +565,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_grid_attach(GTK_GRID(boxSpacing), hboxSpacing, 0, 4, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelBefore,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelBefore = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelBefore = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                       "justify", GTK_JUSTIFY_RIGHT,
                                       "xalign", 1.0, "yalign", 0.5,
                                       NULL);
-	FREEP(unixstr);
 	gtk_grid_attach(GTK_GRID(boxSpacing), labelBefore, 0, 5, 1, 1);
 
 //	spinbuttonBefore_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
@@ -591,12 +579,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_grid_attach(GTK_GRID(boxSpacing), spinbuttonBefore, 1, 5, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAfter,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelAfter = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelAfter = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                       "justify", GTK_JUSTIFY_RIGHT,
                                       "xalign", 1.0, "yalign", 0.5,
                                       NULL);
-	FREEP(unixstr);
 	gtk_grid_attach(GTK_GRID(boxSpacing), labelAfter, 0, 6, 1, 1);
 
 //	spinbuttonAfter_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
@@ -606,12 +593,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_grid_attach(GTK_GRID(boxSpacing), spinbuttonAfter, 1, 6, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelLineSpacing,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelLineSpacing = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelLineSpacing = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                       "justify", GTK_JUSTIFY_LEFT,
                                       "xalign", 0.0, "yalign", 0.5,
                                       NULL);
-	FREEP(unixstr);
 	gtk_grid_attach(GTK_GRID(boxSpacing), labelLineSpacing, 2, 5, 1, 1);
 
 	listLineSpacing = GTK_COMBO_BOX(gtk_combo_box_new ());
@@ -635,12 +621,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_combo_box_set_active(listLineSpacing, 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAt,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelAt = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelAt = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                       "justify", GTK_JUSTIFY_LEFT,
                                       "xalign", 0.0, "yalign", 0.5,
                                       NULL);
-	FREEP(unixstr);
 	gtk_grid_attach(GTK_GRID(boxSpacing), labelAt, 3, 5, 1, 1);
 
 //	spinbuttonAt_adj = gtk_adjustment_new (0.5, 0, 100, 0.1, 10, 10);
@@ -670,9 +655,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_container_set_border_width (GTK_CONTAINER(boxBreaks), 5);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_TabLabelLineAndPageBreaks,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelBreaks = gtk_label_new (unixstr);
-	FREEP(unixstr);
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelBreaks = gtk_label_new(unixstr.c_str());
 	gtk_widget_show (labelBreaks);
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (tabMain), boxBreaks, labelBreaks);
@@ -683,11 +667,10 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (hboxPagination);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelPagination,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelPagination = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelPagination = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                           "xpad", 0, "ypad", 3,
                                           NULL);
-	FREEP(unixstr);
 	gtk_widget_show (labelPagination);
 	gtk_box_pack_start (GTK_BOX (hboxPagination), labelPagination, FALSE, FALSE, 0);
 
@@ -700,33 +683,29 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 	// Pagination toggles
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushWidowOrphanControl,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	checkbuttonWidowOrphan = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	checkbuttonWidowOrphan = gtk_check_button_new_with_label(unixstr.c_str());
 	/**/ g_object_set_data(G_OBJECT(checkbuttonWidowOrphan), WIDGET_ID_TAG, (gpointer) id_CHECK_WIDOW_ORPHAN);
 	gtk_widget_show (checkbuttonWidowOrphan);
 	gtk_grid_attach(GTK_GRID(boxBreaks), checkbuttonWidowOrphan, 0, 1, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushKeepWithNext,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	checkbuttonKeepNext = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	checkbuttonKeepNext = gtk_check_button_new_with_label(unixstr.c_str());
 	/**/ g_object_set_data(G_OBJECT(checkbuttonKeepNext), WIDGET_ID_TAG, (gpointer) id_CHECK_KEEP_NEXT);
 	gtk_widget_show (checkbuttonKeepNext);
 	gtk_grid_attach(GTK_GRID(boxBreaks), checkbuttonKeepNext, 1, 1, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushKeepLinesTogether,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	checkbuttonKeepLines = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	checkbuttonKeepLines = gtk_check_button_new_with_label(unixstr.c_str());
 	/**/ g_object_set_data(G_OBJECT(checkbuttonKeepLines), WIDGET_ID_TAG, (gpointer) id_CHECK_KEEP_LINES);
 	gtk_widget_show (checkbuttonKeepLines);
 	gtk_grid_attach(GTK_GRID(boxBreaks), checkbuttonKeepLines, 0, 2, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushPageBreakBefore,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	checkbuttonPageBreak = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	checkbuttonPageBreak = gtk_check_button_new_with_label(unixstr.c_str());
 	/**/ g_object_set_data(G_OBJECT(checkbuttonPageBreak), WIDGET_ID_TAG, (gpointer) id_CHECK_PAGE_BREAK);
 	gtk_widget_show (checkbuttonPageBreak);
 	gtk_grid_attach(GTK_GRID(boxBreaks), checkbuttonPageBreak, 1, 2, 1, 1);
@@ -734,20 +713,18 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 	hseparator6 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show (hseparator6);
-	gtk_grid_attach(GTK_GRID(boxBreaks), hseparator6, 0, 3, 2, 1);                    
+	gtk_grid_attach(GTK_GRID(boxBreaks), hseparator6, 0, 3, 2, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushSuppressLineNumbers,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	checkbuttonSuppress = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	checkbuttonSuppress = gtk_check_button_new_with_label(unixstr.c_str());
 	/**/ g_object_set_data(G_OBJECT(checkbuttonSuppress), WIDGET_ID_TAG, (gpointer) id_CHECK_SUPPRESS);
 	gtk_widget_show (checkbuttonSuppress);
 	gtk_grid_attach(GTK_GRID(boxBreaks), checkbuttonSuppress, 0, 4, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushNoHyphenate,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	checkbuttonHyphenate = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	checkbuttonHyphenate = gtk_check_button_new_with_label(unixstr.c_str());
 	/**/ g_object_set_data(G_OBJECT(checkbuttonHyphenate), WIDGET_ID_TAG, (gpointer) id_CHECK_NO_HYPHENATE);
 	gtk_widget_show (checkbuttonHyphenate);
 	gtk_grid_attach(GTK_GRID(boxBreaks), checkbuttonHyphenate, 0, 5, 1, 1);
@@ -765,13 +742,12 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (hboxPreview);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelPreview,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	labelPreview = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
+	unixstr = UT_XML_cloneNoAmpersands(s);
+	labelPreview = gtk_widget_new(GTK_TYPE_LABEL, "label", unixstr.c_str(),
                                        "justify", GTK_JUSTIFY_LEFT,
                                        "xalign", 0.0, "yalign", 0.5,
                                        "xpad", 0, "ypad", 8,
                                        NULL);
-	FREEP(unixstr);
 	gtk_widget_show (labelPreview);
 	gtk_box_pack_start (GTK_BOX (hboxPreview), labelPreview, FALSE, TRUE, 0);
 
