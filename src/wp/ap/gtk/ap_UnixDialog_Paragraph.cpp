@@ -368,20 +368,17 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	GtkWidget * labelLeft;
 	GtkWidget * labelRight;
 	GtkWidget * labelSpecial;
-	GtkWidget * hseparator3;
 	GtkWidget * hboxSpacing;
 	GtkWidget * labelSpacing;
 	GtkWidget * labelAfter;
 	GtkWidget * labelLineSpacing;
 	GtkWidget * labelAt;
 
-	GtkWidget * hseparator1;
 	GtkWidget * labelBefore;
 	GtkWidget * labelIndents;
 	GtkWidget * boxBreaks;
 	GtkWidget * hboxPagination;
 	GtkWidget * labelPagination;
-	GtkWidget * hseparator5;
 	GtkWidget * checkbuttonWidowOrphan;
 	GtkWidget * checkbuttonKeepLines;
 	GtkWidget * checkbuttonPageBreak;
@@ -469,9 +466,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (labelIndentation);
 	gtk_box_pack_start (GTK_BOX (hboxIndentation), labelIndentation, FALSE, FALSE, 0);
 
-	hseparator3 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_widget_show (hseparator3);
-	gtk_box_pack_start (GTK_BOX (hboxIndentation), hseparator3, TRUE, TRUE, 0);
 	gtk_grid_attach(GTK_GRID(boxSpacing), hboxIndentation, 0, 1, 4, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelLeft,s);
@@ -560,8 +554,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_box_pack_start (GTK_BOX (hboxSpacing), labelSpacing, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelSpacing), GTK_JUSTIFY_LEFT);
 
-	hseparator1 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_box_pack_start (GTK_BOX (hboxSpacing), hseparator1, TRUE, TRUE, 0);
 	gtk_grid_attach(GTK_GRID(boxSpacing), hboxSpacing, 0, 4, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelBefore,s);
@@ -635,7 +627,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_grid_attach(GTK_GRID(boxSpacing), spinbuttonAt, 3, 6, 1, 1);
 
 	gtk_widget_show (labelSpacing);
-	gtk_widget_show (hseparator1);
 	gtk_widget_show (labelBefore);
 	gtk_widget_show (spinbuttonBefore);
 	gtk_widget_show (labelAfter);
@@ -673,10 +664,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                                           NULL);
 	gtk_widget_show (labelPagination);
 	gtk_box_pack_start (GTK_BOX (hboxPagination), labelPagination, FALSE, FALSE, 0);
-
-	hseparator5 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_widget_show (hseparator5);
-	gtk_box_pack_start (GTK_BOX (hboxPagination), hseparator5, TRUE, TRUE, 0);
 
 	gtk_grid_attach(GTK_GRID(boxBreaks), hboxPagination, 0, 0, 2, 1);
 
@@ -736,8 +723,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	GtkWidget * framePreview;
 	GtkWidget * drawingareaPreview;
 
-	GtkWidget * hseparator4;
-
 	hboxPreview = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_widget_show (hboxPreview);
 
@@ -751,9 +736,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (labelPreview);
 	gtk_box_pack_start (GTK_BOX (hboxPreview), labelPreview, FALSE, TRUE, 0);
 
-	hseparator4 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_widget_show (hseparator4);
-	gtk_box_pack_start (GTK_BOX (hboxPreview), hseparator4, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vboxContents), hboxPreview, TRUE, TRUE, 0);
 
 
