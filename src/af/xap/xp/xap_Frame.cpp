@@ -788,20 +788,20 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		std::string s;
 		pSS->getValue(id, XAP_App::getApp()->getDefaultEncoding(), s);
-		
-		va_list args;		
-		va_start(args, default_answer);		
-		vsprintf(szNewMessage, s.c_str(), args);
+
+		va_list args;
+		va_start(args, default_answer);
+		vsnprintf(szNewMessage, 256, s.c_str(), args);
 		va_end(args);
 
 		pDialog->setMessage("%s", szNewMessage);
-		
+
 		// XAP_MessageBox makes a copy of the message, so g_free it
 		FREEP(szNewMessage);
 	}
 	pDialog->setButtons(buttons);
 	pDialog->setDefaultAnswer(default_answer);
-	
+
 	return pDialog;
 }
 XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_Dialog_MessageBox * pDialog)
