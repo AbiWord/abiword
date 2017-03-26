@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.0 -->
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="3.12"/>
   <object class="GtkDialog" id="ap_UnixDialog_Break">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Insert Break</property>
     <property name="resizable">False</property>
-    <property name="type_hint">dialog</property>
     <property name="window_position">center-on-parent</property>
+    <property name="type_hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
@@ -27,7 +28,6 @@
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -43,7 +43,6 @@
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_underline">True</property>
               </object>
               <packing>
@@ -68,7 +67,6 @@
               <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="xpad">2</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -78,22 +76,21 @@
             </child>
             <child>
               <object class="GtkBox" id="vbox1">
-                <property name="orientation">vertical</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <property name="spacing">16</property>
                 <child>
                   <object class="GtkBox" id="vbox2">
-                    <property name="orientation">vertical</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
                     <property name="spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="lbInsertBreak">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="xalign">0</property>
-                        <property name="ypad">2</property>
+                        <property name="halign">start</property>
                         <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
@@ -111,7 +108,8 @@
                           <object class="GtkLabel" id="label7">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="xpad">6</property>
+                            <property name="halign">start</property>
+                            <property name="margin_right">12</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -121,9 +119,9 @@
                         </child>
                         <child>
                           <object class="GtkBox" id="vbox4">
-                            <property name="orientation">vertical</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
                             <property name="spacing">6</property>
                             <child>
                               <object class="GtkRadioButton" id="rbPageBreak">
@@ -131,7 +129,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
+                                <property name="halign">start</property>
                                 <property name="use_underline">True</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
@@ -148,7 +146,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
+                                <property name="halign">start</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">rbPageBreak</property>
@@ -182,16 +180,15 @@
                 </child>
                 <child>
                   <object class="GtkBox" id="vbox3">
-                    <property name="orientation">vertical</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
                     <property name="spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="lbInsertSectionBreak">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="xalign">0</property>
-                        <property name="ypad">2</property>
+                        <property name="halign">start</property>
                         <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
@@ -209,7 +206,7 @@
                           <object class="GtkLabel" id="label8">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="xpad">6</property>
+                            <property name="margin_right">12</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -219,9 +216,9 @@
                         </child>
                         <child>
                           <object class="GtkBox" id="vbox5">
-                            <property name="orientation">vertical</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
                             <property name="spacing">6</property>
                             <child>
                               <object class="GtkRadioButton" id="rbNextPage">
@@ -229,7 +226,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
+                                <property name="halign">start</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">rbPageBreak</property>
@@ -246,7 +243,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
+                                <property name="halign">start</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">rbPageBreak</property>
@@ -263,7 +260,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
+                                <property name="halign">start</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">rbPageBreak</property>
@@ -280,7 +277,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
+                                <property name="halign">start</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">rbPageBreak</property>
@@ -323,7 +320,6 @@
               <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="xpad">2</property>
               </object>
               <packing>
                 <property name="expand">False</property>
