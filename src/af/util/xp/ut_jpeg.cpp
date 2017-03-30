@@ -1,7 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2009 Hubert Figuiere
- * 
+ * Copyright (C) 2001-2017 Hubert Figuière
+ *
  * Portions from JPEG Library
  * Copyright (C) 1994-1996, Thomas G. Lane.
  *
@@ -9,15 +10,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -28,21 +29,23 @@ extern "C" {
 }
 
 #include <string.h>
+
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
 #include "ut_jpeg.h"
 
-typedef struct {
+struct bytebuf_jpeg_source_mgr {
     struct jpeg_source_mgr pub;	/* public fields */
 
     UT_ConstByteBufPtr sourceBuf;
     UT_uint32 pos;
-} bytebuf_jpeg_source_mgr;
+};
 
-typedef bytebuf_jpeg_source_mgr * bytebuf_jpeg_source_ptr;
+typedef bytebuf_jpeg_source_mgr* bytebuf_jpeg_source_ptr;
 
-static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ConstByteBufPtr & sourceBuf);
+static void _JPEG_ByteBufSrc(j_decompress_ptr cinfo, const UT_ConstByteBufPtr & sourceBuf);
+static void _JPEG_destroy_decompress(j_decompress_ptr cinfo);
 
 
 /*
@@ -58,7 +61,6 @@ static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ConstByteBufPtr &
 static void _jpegInitSource (j_decompress_ptr cinfo)
 {
 	bytebuf_jpeg_source_ptr src = reinterpret_cast<bytebuf_jpeg_source_ptr>(cinfo->src);
-	
 	src->pos = 0;
 }
 
@@ -152,7 +154,7 @@ static void _jpegTermSource (j_decompress_ptr /*cinfo*/)
 bool UT_JPEG_getDimensions(const UT_ConstByteBufPtr & pBB, UT_sint32& iImageWidth,
                                       UT_sint32& iImageHeight)
 {
-    struct jpeg_decompress_struct cinfo;
+	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
 	cinfo.err = jpeg_std_error(&jerr);
@@ -163,24 +165,25 @@ bool UT_JPEG_getDimensions(const UT_ConstByteBufPtr & pBB, UT_sint32& iImageWidt
 
 	jpeg_read_header(&cinfo, TRUE);
 	jpeg_start_decompress(&cinfo);
-    iImageWidth = cinfo.output_width;
-    iImageHeight = cinfo.output_height;
-		    
-	/* This is an important step since it will release a good deal of memory. */
-	jpeg_destroy_decompress(&cinfo);
+	iImageWidth = cinfo.output_width;
+	iImageHeight = cinfo.output_height;
 
-    return true;
+	/* This is an important step since it will release a good deal of memory. */
+	_JPEG_destroy_decompress(&cinfo);
+
+	return true;
 }
 
 // Converts the JPEG image data in pBB into raw RGB data,
 // and writes it to pDest. pDest must be large enough to
 // hold width * height * 3 bytes of data.
-bool UT_JPEG_getRGBData(const UT_ConstByteBufPtr & pBB, UT_Byte* pDest, UT_sint32 iDestRowSize, bool bBGR, bool bFlipHoriz)
+bool UT_JPEG_getRGBData(const UT_ConstByteBufPtr & pBB, UT_Byte* pDest,
+                        UT_sint32 iDestRowSize, bool bBGR, bool bFlipHoriz)
 {
 	UT_return_val_if_fail(pBB, false);
 	UT_return_val_if_fail(pDest, false);
 
-    struct jpeg_decompress_struct cinfo;
+	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
 	cinfo.err = jpeg_std_error(&jerr);
@@ -265,15 +268,25 @@ bool UT_JPEG_getRGBData(const UT_ConstByteBufPtr & pBB, UT_Byte* pDest, UT_sint3
 	FREEP(pCYMK);
 
 	/* This is an important step since it will release a good deal of memory. */
-	jpeg_destroy_decompress(&cinfo);
+	_JPEG_destroy_decompress(&cinfo);
 
     return true;
+}
+
+
+static void _JPEG_destroy_decompress(j_decompress_ptr cinfo)
+{
+	bytebuf_jpeg_source_ptr src = reinterpret_cast<bytebuf_jpeg_source_ptr>(cinfo->src);
+	// we need to call the destructor. But jpeg_destroy_decompress() will
+	// perform the deallocation.
+	src->~bytebuf_jpeg_source_mgr();
+	jpeg_destroy_decompress(cinfo);
 }
 
 static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ConstByteBufPtr & sourceBuf)
 {
 	bytebuf_jpeg_source_ptr src;
-	
+
 	/* The source object and input buffer are made permanent so that a series
 	 * of JPEG images can be read from the same file by calling jpeg_stdio_src
 	 * only before the first one.  (If we discarded the buffer at the end of
@@ -282,11 +295,14 @@ static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ConstByteBufPtr &
 	 * manager serially with the same JPEG object.  Caveat programmer.
 	 */
 	if (cinfo->src == NULL) {	/* first time for this JPEG object? */
-		cinfo->src = (struct jpeg_source_mgr *)
-					 (*cinfo->mem->alloc_small) (reinterpret_cast<j_common_ptr>(cinfo), JPOOL_PERMANENT,
-												 sizeof(bytebuf_jpeg_source_mgr));
+		cinfo->src = (jpeg_source_mgr *)
+			(*cinfo->mem->alloc_small) (reinterpret_cast<j_common_ptr>(cinfo),
+										JPOOL_PERMANENT,
+										sizeof(bytebuf_jpeg_source_mgr));
+		// in place construct the object over the existing memory.
+		new(cinfo->src) bytebuf_jpeg_source_mgr;
 	}
-	
+
 	src = reinterpret_cast<bytebuf_jpeg_source_ptr>(cinfo->src);
 	src->pub.init_source = _jpegInitSource;
 	src->pub.fill_input_buffer = _jpegFillInputBuffer;
