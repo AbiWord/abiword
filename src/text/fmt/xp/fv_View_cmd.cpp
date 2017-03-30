@@ -42,6 +42,7 @@
 #include "ut_timer.h"
 #include "ut_Language.h"
 #include "ut_uuid.h"
+#include "ut_std_string.h"
 
 #include "xav_View.h"
 #include "fl_DocLayout.h"
@@ -219,7 +220,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 		return false;
 	}
 	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
-	UT_String sCellProps;
+	std::string sCellProps;
 	getCellFormat(posCol,sCellProps);
 //
 // Find the Row and column of the cell at the current point. The strategy
@@ -507,52 +508,52 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 //
 // OK build the table properties
 //
-	UT_String sRowTop = "top-attach";
-	UT_String sRowBot = "bot-attach";
-	UT_String sColLeft = "left-attach";
-	UT_String sColRight = "right-attach";
-	UT_String sTop,sBot,sLeft,sRight;
-	UT_String_sprintf(sTop,"%d",splitTop);
-	UT_String_sprintf(sBot,"%d",splitBot);
-	UT_String_sprintf(sLeft,"%d",splitLeft);
-	UT_String_sprintf(sRight,"%d",splitRight);
-	UT_String_setProperty(sCellProps,sRowTop,sTop);
-	UT_String_setProperty(sCellProps,sRowBot,sBot);
-	UT_String_setProperty(sCellProps,sColLeft,sLeft);
-	UT_String_setProperty(sCellProps,sColRight,sRight);
-	UT_DEBUGMSG(("Cells props for new cell:\n  %s \n",sCellProps.c_str()));
+	std::string sRowTop = "top-attach";
+	std::string sRowBot = "bot-attach";
+	std::string sColLeft = "left-attach";
+	std::string sColRight = "right-attach";
+	std::string sTop = UT_std_string_sprintf("%d", splitTop);
+	std::string sBot = UT_std_string_sprintf("%d", splitBot);
+	std::string sLeft = UT_std_string_sprintf("%d", splitLeft);
+	std::string sRight = UT_std_string_sprintf("%d", splitRight);
+	UT_std_string_setProperty(sCellProps, sRowTop, sTop);
+	UT_std_string_setProperty(sCellProps, sRowBot, sBot);
+	UT_std_string_setProperty(sCellProps, sColLeft, sLeft);
+	UT_std_string_setProperty(sCellProps, sColRight, sRight);
+	UT_DEBUGMSG(("Cells props for new cell:\n  %s \n", sCellProps.c_str()));
 //
 // Insert the cell
 //
 	PP_PropertyVector atts = {
 		"props", ""
 	};
-	atts[1] = sCellProps.c_str();
+	atts[1] = sCellProps;
 	bRes = m_pDoc->insertStrux(posCell, PTX_SectionCell, atts, PP_NOPROPS);
 	bRes = m_pDoc->insertStrux(posCell+1,PTX_Block,pAP->getAttributes(),pAP->getProperties());
 	posFirstInsert = posCell + 2;
 //
 // Save the cell SDH for later..
 //
-	m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&prevCellSDH1);	
-	
+	m_pDoc->getStruxOfTypeFromPosition(posCell + 1, PTX_SectionCell, &prevCellSDH1);
+
 	bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 
 // Changes the props of the new cell
-	UT_String_sprintf(sTop,"%d",newTop);
-	UT_String_sprintf(sBot,"%d",newBot);
-	UT_String_sprintf(sLeft,"%d",newLeft);
-	UT_String_sprintf(sRight,"%d",newRight);
-	UT_String_setProperty(sCellProps,sRowTop,sTop);
-	UT_String_setProperty(sCellProps,sRowBot,sBot);
-	UT_String_setProperty(sCellProps,sColLeft,sLeft);
-	UT_String_setProperty(sCellProps,sColRight,sRight);
+	sTop = UT_std_string_sprintf("%d", newTop);
+	sBot = UT_std_string_sprintf("%d", newBot);
+	sLeft = UT_std_string_sprintf("%d", newLeft);
+	sRight = UT_std_string_sprintf("%d", newRight);
+	UT_std_string_setProperty(sCellProps, sRowTop, sTop);
+	UT_std_string_setProperty(sCellProps, sRowBot, sBot);
+	UT_std_string_setProperty(sCellProps, sColLeft, sLeft);
+	UT_std_string_setProperty(sCellProps, sColRight, sRight);
 	posCell = m_pDoc->getStruxPosition(cellSDH)+1;
 	UT_DEBUGMSG(("New Cells props for old cell:\n  %s \n",sCellProps.c_str()));
-	atts[1] = sCellProps.c_str();
+	atts[1] = sCellProps;
 	UT_DebugOnly<bool> bres = m_pDoc->changeStruxFmt(PTC_AddFmt, posCell, posCell, atts, PP_NOPROPS, PTX_SectionCell);
 	UT_ASSERT(bres);
-	m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&prevCellSDH2);		if(bDoSplitSolidHori)
+	m_pDoc->getStruxOfTypeFromPosition(posCell, PTX_SectionCell, &prevCellSDH2);
+	if(bDoSplitSolidHori)
 	{
 //
 // OK now we have to adjust all the cells with left or right >= splitleft
@@ -595,15 +596,15 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 				if(bChange)
 				{
 // Changes the props of the cell
-					UT_String_sprintf(sTop,"%d",mytop);
-					UT_String_sprintf(sBot,"%d",mybot);
-					UT_String_sprintf(sLeft,"%d",myleft);
-					UT_String_sprintf(sRight,"%d",myright);
-					UT_String_setProperty(sCellProps,sRowTop,sTop);
-					UT_String_setProperty(sCellProps,sRowBot,sBot);
-					UT_String_setProperty(sCellProps,sColLeft,sLeft);
-					UT_String_setProperty(sCellProps,sColRight,sRight);
-					atts[1] = sCellProps.c_str();
+					sTop = UT_std_string_sprintf("%d", mytop);
+					sBot = UT_std_string_sprintf("%d", mybot);
+					sLeft = UT_std_string_sprintf("%d", myleft);
+					sRight = UT_std_string_sprintf("%d", myright);
+					UT_std_string_setProperty(sCellProps, sRowTop, sTop);
+					UT_std_string_setProperty(sCellProps, sRowBot, sBot);
+					UT_std_string_setProperty(sCellProps, sColLeft, sLeft);
+					UT_std_string_setProperty(sCellProps, sColRight, sRight);
+					atts[1] = sCellProps;
 					m_pDoc->changeStruxFmt(PTC_AddFmt, posCell, posCell, atts, PP_NOPROPS, PTX_SectionCell);
 				}
 			}
@@ -661,15 +662,15 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 				if(bChange)
 				{
 // Changes the props of the cell
-					UT_String_sprintf(sTop,"%d",mytop);
-					UT_String_sprintf(sBot,"%d",mybot);
-					UT_String_sprintf(sLeft,"%d",myleft);
-					UT_String_sprintf(sRight,"%d",myright);
-					UT_String_setProperty(sCellProps,sRowTop,sTop);
-					UT_String_setProperty(sCellProps,sRowBot,sBot);
-					UT_String_setProperty(sCellProps,sColLeft,sLeft);
-					UT_String_setProperty(sCellProps,sColRight,sRight);
-					atts[1] = sCellProps.c_str();
+					sTop = UT_std_string_sprintf("%d", mytop);
+					sBot = UT_std_string_sprintf("%d", mybot);
+					sLeft = UT_std_string_sprintf("%d", myleft);
+					sRight = UT_std_string_sprintf("%d", myright);
+					UT_std_string_setProperty(sCellProps, sRowTop, sTop);
+					UT_std_string_setProperty(sCellProps, sRowBot, sBot);
+					UT_std_string_setProperty(sCellProps, sColLeft, sLeft);
+					UT_std_string_setProperty(sCellProps, sColRight, sRight);
+					atts[1] = sCellProps;
 					m_pDoc->changeStruxFmt(PTC_AddFmt, posCell, posCell, atts, PP_NOPROPS, PTX_SectionCell);
 				}
 			}
@@ -5242,14 +5243,14 @@ UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_s
 	//
 	// OK calculate all the properties of this image
 	//
-	UT_String sWidth;
-	UT_String sHeight;
+	std::string sWidth;
+	std::string sHeight;
 	double ratw = 1.0;
 	double rath = 1.0;
 	double rat = 1.0;
 	double dw = static_cast<double>(pFG->getWidth());
 	double dh = static_cast<double>(pFG->getHeight());
-	
+
 	if(dw > maxW/2.)
 	{
 	     ratw = maxW/dw;
@@ -5274,41 +5275,41 @@ UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_s
 //
 // Create a dataid for the object
 //
-	
+
 	const char * dataID = pFG->createDataItem(m_pDoc,s.utf8_str());
-	UT_String sFrameProps;
-	UT_String sProp;
-	UT_String sVal;
+	std::string sFrameProps;
+	std::string sProp;
+	std::string sVal;
 	sProp = "frame-type";
 	sVal = "image";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Turn off the borders.
 //
 	sProp = "top-style";
 	sVal = "none";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sProp = "right-style";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sProp = "left-style";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sProp = "bot-style";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Set width/Height
 //
 	sProp = "frame-width";
-	sVal = sWidth;	   
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sVal = sWidth;
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sProp = "frame-height";
 	sVal = sHeight;
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	double xpos = 0.0;
 	double ypos= 0.0;
- 
+
 	sProp = "position-to";
 	sVal = "column-above-text";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	if(isInHdrFtr(pos))
 	{
 		clearHdrFtrEdit();
@@ -5328,11 +5329,11 @@ UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_s
 	ypos = static_cast<double>(iposy)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 	sProp = "frame-col-ypos";
 	sVal = UT_formatDimensionedValue(ypos,"in", NULL);
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sProp = "wrap-mode";
 	sVal = "wrapped-both";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
-        UT_sint32 iWidth = static_cast<UT_sint32>(dw*UT_LAYOUT_RESOLUTION);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
+	UT_sint32 iWidth = static_cast<UT_sint32>(dw * UT_LAYOUT_RESOLUTION);
 	UT_sint32 iposx = mouseX - ixoff - iWidth/2;
 	UT_sint32 iColW = static_cast<UT_sint32>(maxW*2.*UT_LAYOUT_RESOLUTION);
 	if((iposx + iWidth) > (pCol->getX() + iColW))
@@ -5347,22 +5348,22 @@ UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_s
 	UT_DEBUGMSG(("iposx %d pCol->getX() %d \n",iposx,pCol->getX()));
 	xpos =  static_cast<double>(iposx)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 
-        sProp = "frame-col-xpos";
-        sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-        UT_DEBUGMSG((" %s %s \n",sProp.c_str(),sVal.c_str()));
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "frame-col-xpos";
+	sVal = UT_formatDimensionedValue(xpos, "in", nullptr);
+	UT_DEBUGMSG((" %s %s \n", sProp.c_str(), sVal.c_str()));
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Wrapped Mode
 //
 	sProp = "wrap-mode";
 	sVal = "wrapped-both";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Now define the Frame attributes strux
 //
 	PP_PropertyVector attributes = {
 		PT_STRUX_IMAGE_DATAID, dataID,
-		"props", sFrameProps.c_str()
+		"props", sFrameProps
 	};
 //
 // This should place the the frame strux immediately after the block containing
@@ -5383,7 +5384,7 @@ UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_s
 	}
 	if(pBL == NULL)
 	{
-	        pBL = pPrevBL;
+		pBL = pPrevBL;
 	}
 	UT_ASSERT((pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
 		  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));

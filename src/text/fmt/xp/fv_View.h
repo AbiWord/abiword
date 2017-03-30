@@ -839,7 +839,7 @@ public:
 	bool				getCellProperty(PT_DocPosition pos, const gchar * szPropName, gchar * &szPropValue) const;
 	bool	            setTableFormat(const PP_PropertyVector & properties);
 	bool	            setTableFormat(PT_DocPosition pos,const PP_PropertyVector & properties);
-	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const;
+	bool                getCellFormat(PT_DocPosition pos, std::string & sCellProps) const;
 
 	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols,
 									   const PP_PropertyVector & pPropsArray);

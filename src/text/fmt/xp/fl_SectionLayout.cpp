@@ -63,6 +63,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
+#include "ut_std_string.h"
 #include "fg_Graphic.h"
 #include "pt_Types.h"
 #include "xap_App.h"
@@ -1394,7 +1395,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 //
 	if(bHdrFtr)
 	{
-	        xxx_UT_DEBUGMSG(("newHeight %d  m_iNewHdrHeight %d \n",newHeight,m_iNewHdrHeight));
+		xxx_UT_DEBUGMSG(("newHeight %d  m_iNewHdrHeight %d \n", newHeight, m_iNewHdrHeight));
 		if(newHeight <= m_iNewHdrHeight)
 		{
 			return false;
@@ -1402,9 +1403,9 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 		m_iNewHdrHeight = newHeight;
 		getDocument()->setNewHdrHeight(newHeight);
 		UT_sint32 fullHeight = newHeight + getHeaderMargin();
-		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
-		UT_String sProp = "page-margin-top";
-		UT_String_setProperty(m_sHdrFtrChangeProps,sProp,sHeight);
+		std::string sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
+		std::string sProp = "page-margin-top";
+		UT_std_string_setProperty(m_sHdrFtrChangeProps, sProp, sHeight);
 	}
 	else
 	{
@@ -1415,9 +1416,9 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 		m_iNewFtrHeight = newHeight;
 		getDocument()->setNewFtrHeight(newHeight);
 		UT_sint32 fullHeight = newHeight + getFooterMargin();
-		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
-		UT_String sProp = "page-margin-bottom";
-		UT_String_setProperty(m_sHdrFtrChangeProps,sProp,sHeight);
+		std::string sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
+		std::string sProp = "page-margin-bottom";
+		UT_std_string_setProperty(m_sHdrFtrChangeProps, sProp, sHeight);
 	}
 //
 // OK the idea is to run the timer in the idle loop until the Piecetable

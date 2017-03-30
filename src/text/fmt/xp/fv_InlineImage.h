@@ -20,9 +20,10 @@
 #ifndef FV_VISUALINLINEIMAGE_H
 #define FV_VISUALINLINEIMAGE_H
 
+#include <string>
+
 #include "pt_Types.h"
 #include "fl_FrameLayout.h"
-#include "ut_string_class.h"
 #include "fv_FrameEdit.h" // for FV_Base
 
 
@@ -93,10 +94,10 @@ private:
 	bool                  m_bDoingCopy;
 	PP_AttrProp *         m_pImageAP;
 	GR_Image *            m_screenCache;
-	UT_UTF8String         m_sCopyName;
+	std::string           m_sCopyName;
 	bool                  m_bIsEmbedded;
 	bool				  m_bEmbedCanResize;
-	UT_UTF8String         m_sDataId;
+	std::string           m_sDataId;
 	bool                  m_bSelectionDrawn;
 };
 

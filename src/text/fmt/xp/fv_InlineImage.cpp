@@ -569,8 +569,9 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_Att
 
 const char * FV_VisualInlineImage::getPNGImage(UT_ConstByteBufPtr & pBuf) const
 {
-        m_pView->getDocument()->getDataItemDataByName(m_sDataId.utf8_str(), pBuf, NULL, NULL);
-	return m_sDataId.utf8_str();
+	m_pView->getDocument()->getDataItemDataByName(m_sDataId.c_str(),
+						      pBuf, nullptr, nullptr);
+	return m_sDataId.c_str();
 }
 
 void FV_VisualInlineImage::mouseCut(UT_sint32 x, UT_sint32 y)
@@ -952,15 +953,13 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	// Save it in the document under a new name
 	//
 	UT_uint32 uid = getDoc()->getUID(UT_UniqueId::Image);
-	UT_UTF8String sDataID = dataId;
-	UT_UTF8String sUID;
-	UT_UTF8String_sprintf(sUID, "%d",uid);
-	sDataID += sUID;
+	std::string sDataID = dataId;
+	sDataID += UT_std_string_sprintf("%d", uid);
 	_beginGlob();
 	//
 	// Make a copy of it and save it under a new name.
 	//
-	getDoc()->createDataItem(sDataID.utf8_str(), false, pBytes, sMimeType,NULL);
+	getDoc()->createDataItem(sDataID.c_str(), false, pBytes, sMimeType, nullptr);
 	m_sCopyName = sDataID;
 	m_pView->_resetSelection();
 }
@@ -1038,7 +1037,7 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  }
 	  else
 	  {
-	    szDataID = m_sCopyName.utf8_str();
+	    szDataID = m_sCopyName.c_str();
 	  }
 	  if(m_bIsEmbedded)
 	  {
@@ -1125,27 +1124,27 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  m_bDoingCopy = false;
 	  m_iInlineDragMode = FV_InlineDrag_NOT_ACTIVE;
 	  UT_Rect newImgBounds = m_recCurFrame;
-	  const fp_PageSize & page = m_pView->getPageSize ();		
+	  const fp_PageSize & page = m_pView->getPageSize();
 	  double max_width = 0., max_height = 0.;
 	  max_width  = page.Width (DIM_IN)*UT_LAYOUT_RESOLUTION;
 	  max_height = page.Height (DIM_IN)*UT_LAYOUT_RESOLUTION;
-		
+
 	  // some range checking stuff
 	  newImgBounds.width = abs(newImgBounds.width);
 	  newImgBounds.height = abs(newImgBounds.height);
-		
+
 	  if (newImgBounds.width > max_width)
 	    newImgBounds.width = static_cast<UT_sint32>(max_width);
-		
+
 	  if (newImgBounds.height > max_height)
 			newImgBounds.height = static_cast<UT_sint32>(max_height);
-		
+
 	  if (newImgBounds.width == 0)
 	    newImgBounds.width = getGraphics()->tlu(2);
 
 	  if (newImgBounds.height == 0)
 	    newImgBounds.height = getGraphics()->tlu(2);
-		
+
 	//
 	// Clear the previous line.
 	//

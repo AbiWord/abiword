@@ -25,6 +25,8 @@
 #include <stdio.h>
 #endif
 
+#include <string>
+
 typedef enum _SectionType
 {
 	FL_SECTION_DOC,
@@ -378,12 +380,12 @@ private:
 	fp_EndnoteContainer * m_pFirstEndnoteContainer;
 	fp_EndnoteContainer * m_pLastEndnoteContainer;
 	bool                m_bDeleteingBrokenContainers;
-	UT_String           m_sPaperColor;
-	UT_String           m_sScreenColor;
+	std::string         m_sPaperColor;
+	std::string         m_sScreenColor;
 	UT_sint32           m_iNewHdrHeight;
 	UT_sint32           m_iNewFtrHeight;
 	UT_Worker *         m_pHdrFtrChangeTimer;
-	UT_String           m_sHdrFtrChangeProps;
+	std::string         m_sHdrFtrChangeProps;
 	bool                m_bDoingCollapse;
 };
 

@@ -6143,7 +6143,7 @@ bool FV_View::getSectionFormat(PP_PropertyVector & props) const
 /*!
  * Set a string with the cell properties of the cell located at position pos
  */
-bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const
+bool FV_View::getCellFormat(PT_DocPosition pos, std::string & sCellProps) const
 {
 	sCellProps.clear();
 	if(!isInTable(pos))
@@ -6168,7 +6168,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const
 	UT_sint32 iPropsCount = PP_getPropertyCount();
 	UT_sint32 n = 0;
 	std::string sPropName;
-	UT_String sPropVal;
+	std::string sPropVal;
 	const gchar * pszPropVal;
 	for(n = 0; n < iPropsCount; n++)
 	{
@@ -6180,7 +6180,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const
 			if(bFound)
 			{
 				sPropVal = pszPropVal;
-				UT_String_setProperty(sCellProps,sPropName,sPropVal);
+				UT_std_string_setProperty(sCellProps, sPropName, sPropVal);
 			}
 		}
 	}
