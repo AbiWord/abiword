@@ -137,6 +137,10 @@ public:
 	virtual void		write(const char * sz);
 	virtual void		write(const char * sz, UT_uint32 length);
 	virtual char        rewindChar(void);
+	void write(const std::string & inStr)
+	  {
+	    write(inStr.c_str(), inStr.size());
+	  }
 	void write (const UT_String & inStr)
 	  {
 	    write ( inStr.c_str(), inStr.size() ) ;

@@ -105,12 +105,12 @@ protected:
 	void                _open_cell(PT_AttrPropIndex api);
 	void                _open_table(PT_AttrPropIndex api, bool bIsCell = false);
 	void                _export_AbiWord_Table_props(PT_AttrPropIndex api);
-	void                _fillTableProps(PT_AttrPropIndex api, UT_String & sTableProps);
+	void                _fillTableProps(PT_AttrPropIndex api, std::string & sTableProps);
 	void                _export_AbiWord_Cell_props(PT_AttrPropIndex api,bool bFill);
-	void                _fillCellProps(PT_AttrPropIndex api, UT_String & sCellProps);
-	void                _exportCellProps(PT_AttrPropIndex  api, UT_String & sTableProps);
+	void                _fillCellProps(PT_AttrPropIndex api, std::string & sCellProps);
+	void                _exportCellProps(PT_AttrPropIndex  api, std::string & sTableProps);
 	void                _exportTableProps(PT_AttrPropIndex  api);
-	void                _getPropString(const UT_String sPropString, const char * szProp, UT_String & sVal);
+	void                _getPropString(const std::string& sPropString, const char * szProp, std::string & sVal);
 	void                _newRow(void);
 	void                _outputTableBorders(UT_sint32 iThick);
 	void                _outputCellBorders(UT_sint32 iThick);
