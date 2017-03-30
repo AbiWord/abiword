@@ -561,7 +561,11 @@ UT_Option<UT_Rect> fp_VerticalContainer::getScreenRect(void) const
  */
 void fp_VerticalContainer::markDirtyOverlappingRuns(const UT_Rect & recScreen)
 {
-	UT_Rect pRec = getScreenRect().unwrap();
+	auto result = getScreenRect();
+	if (result.empty()) {
+		return;
+	}
+	UT_Rect pRec = result.unwrap();
 	if(recScreen.intersectsRect(&pRec))
 	{
 		UT_sint32 count = countCons();
