@@ -134,6 +134,7 @@ public:
     const UT_UTF8String &width, const UT_UTF8String &height);
     inline void enablePHP (bool bEnable = true) { m_bInsertPhp = bEnable; }
     inline void enableSVGScript (bool bEnable = true) { m_bInsertSvgScript = bEnable; }
+    void insertLineFeed(void);
 protected:
     IE_Exp_HTML_DocumentWriter(){}
     void inline _handleStyleAndId(const gchar *szStyleName, const gchar *szId,

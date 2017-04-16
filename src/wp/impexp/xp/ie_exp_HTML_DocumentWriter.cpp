@@ -514,6 +514,13 @@ void IE_Exp_HTML_DocumentWriter::insertMath(const UT_UTF8String& mathml,
 {
     m_pTagWriter->writeData(mathml.utf8_str());    
 }
+
+void IE_Exp_HTML_DocumentWriter::insertLineFeed(void)
+{
+    m_pTagWriter->openTag("br", true, true);
+    m_pTagWriter->closeTag();
+}
+
 /*
  * 
  */

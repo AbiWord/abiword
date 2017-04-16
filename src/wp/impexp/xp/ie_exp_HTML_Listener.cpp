@@ -757,7 +757,9 @@ void IE_Exp_HTML_Listener::_outputData(const UT_UCSChar* pData,
             break;
 
         case UCS_LF:
+            m_pCurrentImpl->insertText(sBuf);
             sBuf.clear();
+            m_pCurrentImpl->insertLineFeed();
             p++;
             break;
 

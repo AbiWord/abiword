@@ -666,7 +666,7 @@ void IE_Exp_HTML_TagWriter::_closeAttributes()
     {
         if (m_bXmlModeEnabled && m_bCurrentTagIsSingle)
         {
-                m_buffer += " />";
+            m_buffer += "/>";
         } else
         {
             m_buffer += ">";
@@ -728,7 +728,7 @@ void IE_Exp_HTML_TagWriter::closeTag()
     {
         m_bCurrentTagIsSingle = false;
     }
-    
+
     UT_DEBUGMSG(("Closed tag: %s\n", m_tagStack.back().c_str()));
     m_tagStack.pop_back();
     m_inlineFlagStack.pop_back();

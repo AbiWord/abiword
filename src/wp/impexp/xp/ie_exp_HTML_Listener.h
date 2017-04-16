@@ -146,6 +146,7 @@ public:
     virtual void insertJavaScript(const gchar* src,
 								  const gchar* script) = 0;
     virtual void insertTitle(const std::string& title) = 0;
+    virtual void insertLineFeed(void) = 0;
 };
 
 
@@ -188,6 +189,7 @@ public:
             void (*pfnBindHandles) (pf_Frag_Strux* sdhNew,
             PL_ListenerId lid,
             fl_ContainerLayout* sfhNew));
+    void insertLineFeed(void);
 
     virtual bool signal(UT_uint32 iSignal);
 
