@@ -64,7 +64,7 @@ bool ABI_Collab_Import::_isOverlapping(UT_sint32 pos1, UT_sint32 length1, UT_sin
 		return (pos2 + length2 - 1 >= pos1);
 }
 
-void ABI_Collab_Import::_calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev, const UT_UTF8String& sIncomingDocUUID, UT_sint32& iStart, UT_sint32& iEnd)
+void ABI_Collab_Import::_calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev, const std::string& sIncomingDocUUID, UT_sint32& iStart, UT_sint32& iEnd)
 {
 	UT_DEBUGMSG(("ABI_Collab_Import::_calculateCollisionSeqence() - iIncomingRemoteRev: %d\n", iIncomingRemoteRev));
 
@@ -90,8 +90,8 @@ void ABI_Collab_Import::_calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev,
 	    ChangeAdjust * pChange = pExpAdjusts->getNthItem(i);
 		if (pChange)
 		{
-		    UT_DEBUGMSG(("Looking at exported changerecord - rev: %d, pos: %d, length: %d adjust %d, queue pos: %d, orig uuid: %s\n", 
-						pChange->getLocalRev(), pChange->getLocalPos(), pChange->getLocalLength(), pChange->getLocalAdjust(), i, pChange->getRemoteDocUUID().utf8_str()));
+		    UT_DEBUGMSG(("Looking at exported changerecord - rev: %d, pos: %d, length: %d adjust %d, queue pos: %d, orig uuid: %s\n",
+						pChange->getLocalRev(), pChange->getLocalPos(), pChange->getLocalLength(), pChange->getLocalAdjust(), i, pChange->getRemoteDocUUID().c_str()));
 
 		    if (iIncomingRemoteRev >= pChange->getLocalRev())
 		    {
@@ -125,7 +125,7 @@ void ABI_Collab_Import::_calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev,
 	}
 }
 
-UT_sint32 ABI_Collab_Import::_getIncomingAdjustmentForState(const UT_GenericVector<ChangeAdjust *>* pExpAdjusts, UT_sint32 iStart, UT_sint32 iEnd, UT_sint32 iIncomingPos, UT_sint32 iIncomingLength, const UT_UTF8String& sIncomingUUID, std::deque<int>& incAdjs)
+UT_sint32 ABI_Collab_Import::_getIncomingAdjustmentForState(const UT_GenericVector<ChangeAdjust *>* pExpAdjusts, UT_sint32 iStart, UT_sint32 iEnd, UT_sint32 iIncomingPos, UT_sint32 iIncomingLength, const std::string& sIncomingUUID, std::deque<int>& incAdjs)
 {
 	UT_DEBUGMSG(("ABI_Collab_Import::_getIncomingAdjustmentForState()\n"));
 	UT_return_val_if_fail(pExpAdjusts, 0);
@@ -194,7 +194,7 @@ UT_sint32 ABI_Collab_Import::_getIncomingAdjustmentForState(const UT_GenericVect
 bool ABI_Collab_Import::_checkForCollision(const AbstractChangeRecordSessionPacket& acrsp, UT_sint32& iRev, UT_sint32& iImportAdjustment)
 {
 	UT_DEBUGMSG(("ABI_Collab_Import::_checkForCollision() - pos: %d, length: %d, UUID: %s, remoterev: %d\n", 
-				 acrsp.getPos(), acrsp.getLength(), acrsp.getDocUUID().utf8_str(), acrsp.getRemoteRev()));
+				 acrsp.getPos(), acrsp.getLength(), acrsp.getDocUUID().c_str(), acrsp.getRemoteRev()));
 
 	ABI_Collab_Export* pExport = m_pAbiCollab->getExport();
 	UT_return_val_if_fail(pExport, false);
@@ -227,7 +227,7 @@ bool ABI_Collab_Import::_checkForCollision(const AbstractChangeRecordSessionPack
 		ChangeAdjust* pChange = pExpAdjusts->getNthItem(i);
 		if (pChange)
 		{
-			UT_DEBUGMSG(("Looking at pChange->getRemoteDocUUID(): %s\n", pChange->getRemoteDocUUID().utf8_str()));
+			UT_DEBUGMSG(("Looking at pChange->getRemoteDocUUID(): %s\n", pChange->getRemoteDocUUID().c_str()));
 
 			if (pChange->getRemoteDocUUID() != acrsp.getDocUUID())
 			{
@@ -328,7 +328,7 @@ bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLoca
 			{
 				if (pChange->getLocalRev() >= iLocalRev)
 				{
-					if (strcmp(m_pDoc->getOrigDocUUIDString(), pChange->getRemoteDocUUID().utf8_str()) == 0)
+					if (m_pDoc->getOrigDocUUIDString() == pChange->getRemoteDocUUID())
 					{
 						UT_DEBUGMSG(("UNDO-ING AND NUKING LOCAL CHANGE: EXPORT POSITION %d, pChange->m_iCRNumber: %d!\n", i, pChange->getLocalRev()));
 
@@ -514,9 +514,9 @@ bool ABI_Collab_Import::import(const SessionPacket& packet, BuddyPtr collaborato
 	// import will inherit this UUID
 
 
-	UT_UTF8String sRealDocname = m_pDoc->getOrigDocUUIDString();
-	UT_DEBUGMSG(("Temp. setting document UUID to %s\n", packet.getDocUUID().utf8_str()));
-	m_pDoc->setMyUUID(packet.getDocUUID().utf8_str());
+	std::string sRealDocname = m_pDoc->getOrigDocUUIDString();
+	UT_DEBUGMSG(("Temp. setting document UUID to %s\n", packet.getDocUUID().c_str()));
+	m_pDoc->setMyUUID(packet.getDocUUID().c_str());
 
 	// disable layout/view updates
 	UT_GenericVector<AV_View *> vecViews;
@@ -530,8 +530,8 @@ bool ABI_Collab_Import::import(const SessionPacket& packet, BuddyPtr collaborato
 	_enableUpdates(vecViews, packet.getClassType() == PCT_GlobSessionPacket);
 
 	// restore our own document UUID
-	m_pDoc->setMyUUID(sRealDocname.utf8_str());
-	
+	m_pDoc->setMyUUID(sRealDocname.c_str());
+
 	return bRes;
 }
 

@@ -155,7 +155,7 @@ public:
 	virtual bool							setAcl(AbiCollab* /*pSession*/, const std::vector<std::string>& /*vAcl*/)
 		{ return true; }
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
-	virtual bool							hasSession(const UT_UTF8String& sSessionId);
+	virtual bool							hasSession(const std::string& sSessionId);
 	virtual bool							allowsSessionTakeover() = 0;
 	bool									getCanOffer()
 		{ return m_bCanOffer; }

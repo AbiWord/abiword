@@ -22,7 +22,7 @@
 void Buddy::addDocHandle(DocHandle* pDocHandle)
 {
 	UT_return_if_fail(pDocHandle);
-	UT_DEBUGMSG(("Adding DocHandle with session id: %s\n", pDocHandle->getSessionId().utf8_str()));
+	UT_DEBUGMSG(("Adding DocHandle with session id: %s\n", pDocHandle->getSessionId().c_str()));
 	
 	m_docHandles.push_back(pDocHandle);
 }

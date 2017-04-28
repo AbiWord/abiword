@@ -139,7 +139,7 @@ void AccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle)
 	send(&event, pBuddy);
 }
 
-bool AccountHandler::hasSession(const UT_UTF8String& sSessionId)
+bool AccountHandler::hasSession(const std::string& sSessionId)
 {
 	for (std::vector<BuddyPtr>::iterator it = m_vBuddies.begin(); it != m_vBuddies.end(); it++)
 	{
@@ -431,7 +431,7 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
                     // check if the buddy has access to this session
                     if (!hasAccess(pSession->getAcl(), buddy))
                     {
-                        UT_DEBUGMSG(("Buddy %s denied access to session %s by ALC\n", buddy->getDescriptor(true).utf8_str(), pSession->getSessionId().utf8_str()));
+                        UT_DEBUGMSG(("Buddy %s denied access to session %s by ALC\n", buddy->getDescriptor(true).utf8_str(), pSession->getSessionId().c_str()));
                         continue;
                     }
 
@@ -454,7 +454,7 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 		{
 			GetSessionsResponseEvent* gsre = static_cast<GetSessionsResponseEvent*>( packet );
 			UT_GenericVector<DocHandle*> vDocHandles;
-			for (std::map<UT_UTF8String,UT_UTF8String>::iterator it=gsre->m_Sessions.begin(); it!=gsre->m_Sessions.end(); ++it) {
+			for (auto it = gsre->m_Sessions.cbegin(); it != gsre->m_Sessions.cend(); ++it) {
 				DocHandle* pDocHandle = new DocHandle((*it).first, (*it).second);
 				vDocHandles.addItem(pDocHandle);
 			}

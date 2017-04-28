@@ -550,7 +550,7 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	UT_return_val_if_fail(pManager, false);
 
 	// generate a unique session id to use
-	UT_UTF8String sSessionId;
+	std::string sSessionId;
 	UT_UUID* pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
 	pUUID->toString(sSessionId);
 	DELETEP(pUUID);
@@ -601,7 +601,7 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	g_list_free(accounts);
 
 	// determine the room target id
-	std::string target_id = sSessionId.utf8_str();
+	std::string target_id = sSessionId;
 	std::string conference_server = getProperty("conference_server");
 	if (conference_server != "")
 		target_id += "@" + conference_server;
@@ -695,7 +695,7 @@ void TelepathyAccountHandler::signal(const Event& event, BuddyPtr pSource)
 				}
 				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
 
-				UT_DEBUGMSG(("Disconnecting the tube for room with session id %s\n", cse.getSessionId().utf8_str()));
+				UT_DEBUGMSG(("Disconnecting the tube for room with session id %s\n", cse.getSessionId().c_str()));
 				TelepathyChatroomPtr pChatroom = _getChatroom(cse.getSessionId());
 				UT_return_if_fail(pChatroom);
 
@@ -714,7 +714,7 @@ void TelepathyAccountHandler::signal(const Event& event, BuddyPtr pSource)
 				}
 				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
 
-				UT_DEBUGMSG(("Disconnecting the tube for room with session id %s\n", dse.getSessionId().utf8_str()));
+				UT_DEBUGMSG(("Disconnecting the tube for room with session id %s\n", dse.getSessionId().c_str()));
 				TelepathyChatroomPtr pChatroom = _getChatroom(dse.getSessionId());
 				UT_return_if_fail(pChatroom);
 
@@ -814,7 +814,7 @@ void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::str
 				send(&gsre, pBuddy);
 			}
 			else
-				UT_DEBUGMSG(("Ignoring GetSessionsEvent, we are not controlling session '%s'\n", pChatroom->getSessionId().utf8_str()));
+				UT_DEBUGMSG(("Ignoring GetSessionsEvent, we are not controlling session '%s'\n", pChatroom->getSessionId().c_str()));
 
 			break;
 		}
@@ -825,14 +825,14 @@ void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::str
 
 			GetSessionsResponseEvent* gsre = static_cast<GetSessionsResponseEvent*>( pPacket );
 			UT_return_if_fail(gsre->m_Sessions.size() == 1);
-			std::map<UT_UTF8String,UT_UTF8String>::iterator it=gsre->m_Sessions.begin();
+			auto it = gsre->m_Sessions.cbegin();
 			DocHandle* pDocHandle = new DocHandle((*it).first, (*it).second);
 
 			// store the session id
 			pChatroom->setSessionId(pDocHandle->getSessionId());
 
 			// join the session
-			UT_DEBUGMSG(("Got a running session (%s - %s), let's join it immediately\n", pDocHandle->getSessionId().utf8_str(), pDocHandle->getName().utf8_str()));
+			UT_DEBUGMSG(("Got a running session (%s - %s), let's join it immediately\n", pDocHandle->getSessionId().c_str(), pDocHandle->getName().utf8_str()));
 			pManager->joinSessionInitiate(pBuddy, pDocHandle);
 			DELETEP(pDocHandle);
 			break;
@@ -891,9 +891,9 @@ TelepathyBuddyPtr TelepathyAccountHandler::_getBuddy(TelepathyBuddyPtr pBuddy)
 	return TelepathyBuddyPtr();
 }
 
-TelepathyChatroomPtr TelepathyAccountHandler::_getChatroom(const UT_UTF8String& sSessionId)
+TelepathyChatroomPtr TelepathyAccountHandler::_getChatroom(const std::string& sSessionId)
 {
-	for (std::vector<TelepathyChatroomPtr>::iterator it = m_chatrooms.begin(); it != m_chatrooms.end(); it++)
+	for (auto it = m_chatrooms.cbegin(); it != m_chatrooms.cend(); it++)
 	{
 		TelepathyChatroomPtr pChatroom = *it;
 		UT_continue_if_fail(pChatroom);

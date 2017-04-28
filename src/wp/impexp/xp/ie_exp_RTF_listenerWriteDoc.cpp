@@ -2640,7 +2640,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 UT_ConstByteBufPtr pbb;
 		 bool bFoundDataItem = false;
 		 UT_String buf;
-		 UT_UTF8String sUID;
+		 std::string sUID;
 		 std::string mime_type;
 		 bFoundDataItem = m_pDocument->getDataItemDataByName(pszDataId,
                                                             pbb, &mime_type,
@@ -2654,13 +2654,13 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		pszOrigDataId = pszDataId;
 		if (strncmp(pszDataId, "obj-", 4))
 		{
-			UT_UTF8String s;
+			std::string s;
 			UT_UUID *uuid = m_pDocument->getNewUUID();
 			UT_return_if_fail(uuid != NULL);
 			sUID = "obj-";
 			uuid->toString(s);
 			sUID += s;
-			pszDataId = static_cast <const char *>(sUID.utf8_str());
+			pszDataId = sUID.c_str();
 		}
 		_writeEmbedData (pszDataId, pbb, mime_type);
 

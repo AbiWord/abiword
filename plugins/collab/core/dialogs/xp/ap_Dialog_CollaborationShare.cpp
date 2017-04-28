@@ -193,7 +193,7 @@ void AP_Dialog_CollaborationShare::share(AccountHandler* pAccount, const std::ve
 		if (!pSession)
 		{
 			// ... and start the session!
-			UT_UTF8String sSessionId("");
+			std::string sSessionId("");
 			// TODO: we could use/generate a proper descriptor when there is only
 			// 1 account where we share this document over
 			pSession = pManager->startSession(pDoc, sSessionId, pAccount, true, NULL, "");

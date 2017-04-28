@@ -93,16 +93,16 @@ AD_Document::AD_Document() :
 	m_pOrigUUID =  XAP_App::getApp()->getUUIDGenerator()->createUUID();
 	UT_return_if_fail(m_pOrigUUID);
 	UT_return_if_fail(m_pOrigUUID->isValid());
-	UT_UTF8String s;
+	std::string s;
 	m_pUUID->toString(s);
 	m_pOrigUUID->setUUID(s);
 	m_pMyUUID->setUUID(s);
-	UT_UTF8String OrigS;
+	std::string OrigS;
 	m_pOrigUUID->toString(OrigS);
 	m_pOrigUUID->toString(m_sOrigUUIDString);
 	m_pMyUUID->toString(m_sMyUUIDString);
-	UT_DEBUGMSG(("!!!!!!!!!!----------------- Created string %s \n",s.utf8_str()));
-	UT_DEBUGMSG(("!!!!!!!!!!----------------- Orig string %s \n",OrigS.utf8_str()));
+	UT_DEBUGMSG(("!!!!!!!!!!----------------- Created string %s \n",s.c_str()));
+	UT_DEBUGMSG(("!!!!!!!!!!----------------- Orig string %s \n",OrigS.c_str()));
 }
 
 AD_Document::~AD_Document()
@@ -136,14 +136,13 @@ void AD_Document::setPrintFilename(const std::string & sFilename)
 
 bool AD_Document::isOrigUUID(void) const
 {
-  UT_UTF8String sDoc;
-  UT_UTF8String sOrig;
+  std::string sDoc;
+  std::string sOrig;
   if((m_pMyUUID== NULL) || (m_pOrigUUID == NULL))
 	  return false;
   m_pMyUUID->toString(sDoc);
   m_pOrigUUID->toString(sOrig);
-  bool b = (strcmp(sDoc.utf8_str(),sOrig.utf8_str()) == 0);
-  return b;
+  return (sDoc == sOrig);
 }
 
 bool AD_Document::isPieceTableChanging(void) const
@@ -603,9 +602,9 @@ void AD_Document::setMyUUID(const char * s)
 const char * AD_Document::getDocUUIDString() const
 {
 	UT_return_val_if_fail(m_pUUID, NULL);
-	static UT_UTF8String s;
+	static std::string s;
 	m_pUUID->toString(s);
-	return s.utf8_str();
+	return s.c_str();
 }
 
 
@@ -616,7 +615,7 @@ const char * AD_Document::getDocUUIDString() const
 const char * AD_Document::getOrigDocUUIDString() const
 {
 	UT_return_val_if_fail(m_pOrigUUID, NULL);
-	return m_sOrigUUIDString.utf8_str();
+	return m_sOrigUUIDString.c_str();
 }
 
 
@@ -627,7 +626,7 @@ const char * AD_Document::getOrigDocUUIDString() const
 	NOTE: don't make this a static variable, as this value might change over
 	the life of the document
 */
-UT_UTF8String AD_Document::getMyUUIDString() const
+std::string AD_Document::getMyUUIDString() const
 {
 	UT_return_val_if_fail(m_pMyUUID, "");
 	return m_sMyUUIDString;
@@ -1351,12 +1350,12 @@ AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev, UT_uint3
 
 
 // constructors for importers
-AD_VersionData::AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev, UT_uint32 iTopXID):
+AD_VersionData::AD_VersionData(UT_uint32 v, const std::string &uuid, time_t start, bool autorev, UT_uint32 iTopXID):
 	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(iTopXID)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
-	
+
 	m_pUUID = pGen->createUUID(uuid);
 	UT_ASSERT_HARMLESS(m_pUUID);
 }

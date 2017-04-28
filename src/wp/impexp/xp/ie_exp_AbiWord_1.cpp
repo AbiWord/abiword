@@ -1448,11 +1448,12 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		time_t tStarted     =  m_pDocument->getHistoryNthTimeStarted(k);
 		bool bAuto          =  m_pDocument->getHistoryNthAutoRevisioned(k);
 		UT_uint32 iXID      =  m_pDocument->getHistoryNthTopXID(k);
-		
-		UT_UTF8String s, hUid;
+
+		UT_UTF8String s;
+		std::string hUid;
 		UID.toString(hUid);
-		
-		
+
+
 		if (!bWroteOpenSection)
 		{
 			m_pie->startElement("history");
@@ -1466,7 +1467,7 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		m_pie->startElement("version");
 		m_pie->addInt("id", iVersion);
 		m_pie->addInt("started", static_cast<UT_sint32>(tStarted));
-		m_pie->addString("uid", hUid.utf8_str());
+		m_pie->addString("uid", hUid.c_str());
 		m_pie->addBool("auto", bAuto);
 		m_pie->addInt("top-xid", iXID);
 		m_pie->endElement();

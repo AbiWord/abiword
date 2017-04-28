@@ -622,9 +622,9 @@ void ABI_Collab_Export::masterInit()
 	_init();
 }
 
-void ABI_Collab_Export::slaveInit(const UT_UTF8String& docUUID, UT_sint32 iRemoteRev)
+void ABI_Collab_Export::slaveInit(const std::string& docUUID, UT_sint32 iRemoteRev)
 {
-	UT_DEBUGMSG(("ABI_Collab_Export::slaveInit() - docUUID: %s, iRev: %d\n", docUUID.utf8_str(), iRemoteRev));
+	UT_DEBUGMSG(("ABI_Collab_Export::slaveInit() - docUUID: %s, iRev: %d\n", docUUID.c_str(), iRemoteRev));
 
 	// NOTE: it's important that this function resets all state, as it can be
 	// called in the middle of an already running collaboration session

@@ -115,7 +115,7 @@ public:
 	virtual bool							getAcl(AbiCollab* pSession, std::vector<std::string>& vAcl);
 	virtual bool							setAcl(AbiCollab* pSession, const std::vector<std::string>& vAcl);
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
-	virtual bool							hasSession(const UT_UTF8String& sSessionId);
+	virtual bool							hasSession(const std::string& sSessionId);
 	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
 	soa::function_call_ptr					constructListDocumentsCall();
 	soa::function_call_ptr					constructSaveDocumentCall(PD_Document* pDoc, ConnectionPtr connection_ptr);

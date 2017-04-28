@@ -25,6 +25,7 @@
 #define ABI_COLLAB_H
 
 #include <map>
+#include <string>
 #include <vector>
 #include "ev_EditBits.h"
 #include "ev_MouseListener.h"
@@ -62,7 +63,7 @@ class ChangeAdjust
 friend class AbiCollab_ImportRuleSet;
 
 public:
-	ChangeAdjust(const AbstractChangeRecordSessionPacket& packet, PT_DocPosition iOrigDocPos, const UT_UTF8String& sRemoteDocUUID);
+	ChangeAdjust(const AbstractChangeRecordSessionPacket& packet, PT_DocPosition iOrigDocPos, const std::string& sRemoteDocUUID);
 	~ChangeAdjust();
 
 	PT_DocPosition				getLocalPos() const	{ return m_iLocalPos; }
@@ -72,7 +73,7 @@ public:
 	UT_sint32					getLocalRev() const { return m_pPacket->getRev(); }
 
 	PT_DocPosition				getRemoteDocPos() const	{ return m_iRemoteDocPos; }
-	const UT_UTF8String&		getRemoteDocUUID() const { return m_sRemoteDocUUID; }
+	const std::string&		getRemoteDocUUID() const { return m_sRemoteDocUUID; }
 
 private:
 	// locally generated data (possibly in response to remotely generated data)
@@ -81,7 +82,7 @@ private:
 
 	// remotely generated data
 	PT_DocPosition								m_iRemoteDocPos;
-	UT_UTF8String								m_sRemoteDocUUID;
+	std::string		m_sRemoteDocUUID;
 };
 
 class AbiCollab;
@@ -104,14 +105,14 @@ class AbiCollab : public EV_MouseListener
 public:
 	// master constructor
 	AbiCollab(PD_Document* pDoc,
-					const UT_UTF8String& sSessionId,
+					const std::string& sSessionId,
 					AccountHandler* pAclAccount,
 					bool bLocallyOwned);
 
 	// slave constructor
-	AbiCollab(const UT_UTF8String& sSessionId,
+	AbiCollab(const std::string& sSessionId,
 					PD_Document* pDoc,
-					const UT_UTF8String& docUUID,
+					const std::string& docUUID,
 					UT_sint32 iRev,
 					BuddyPtr pControler,
 					AccountHandler* pAclAccount,
@@ -156,7 +157,7 @@ public:
 	PD_Document*						getDocument(void) const
 		{ return m_pDoc; }
 
-	const UT_UTF8String					getSessionId() const
+	const std::string& getSessionId() const
 		{ return m_sId; }
 	bool								isLocallyControlled() const
 		{ return m_pController == NULL; }
@@ -215,7 +216,7 @@ private:
 	bool								_allSlavesAckedSessionTakeover();
 	void								_switchMaster();
 	void								_becomeMaster();
-	bool								_restartAsSlave(const UT_UTF8String& sDocUUID, UT_sint32 iRev);
+	bool								_restartAsSlave(const std::string& sDocUUID, UT_sint32 iRev);
 	void								_shutdownAsMaster();
 	bool								_allSlavesReconnected();
 	void								_checkRestartAsMaster();
@@ -233,7 +234,7 @@ private:
 	UT_uint32							m_iDocListenerId;
 	bool								m_bExportMasked;
 
-	UT_UTF8String						m_sId;
+	std::string						m_sId;
 
 	BuddyPtr							m_pController;
 	bool								m_bLocallyOwned;

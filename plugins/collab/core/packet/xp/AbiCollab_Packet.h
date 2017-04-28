@@ -209,26 +209,26 @@ public:
 
 protected:
 	SessionPacket() : m_sSessionId(""), m_sDocUUID("")  {}
-	SessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID);
+	SessionPacket(const std::string& sSessionId, const std::string& sDocUUID);
 
 public:
-	virtual const UT_UTF8String& getSessionId() const
+	virtual const std::string& getSessionId() const
 		{ return m_sSessionId; }
 
-	void setSessionId(const UT_UTF8String& sSessionId)
+	void setSessionId(const std::string& sSessionId)
 		{ m_sSessionId = sSessionId; }
 
-	virtual const UT_UTF8String& getDocUUID() const
+	virtual const std::string & getDocUUID() const
 		{ return m_sDocUUID; }
 
-	void setDocUUID(const UT_UTF8String& sDocUUID)
+	void setDocUUID(const std::string& sDocUUID)
 		{ m_sDocUUID = sDocUUID; }
 
 	virtual std::string toStr() const;
 
 private:
-	UT_UTF8String			m_sSessionId;
-	UT_UTF8String			m_sDocUUID;
+	std::string			m_sSessionId;
+	std::string			m_sDocUUID;
 };
 
 class AbstractChangeRecordSessionPacket : public SessionPacket
@@ -238,7 +238,7 @@ public:
 		: SessionPacket("", "")
 		{}
 
-	AbstractChangeRecordSessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+	AbstractChangeRecordSessionPacket(const std::string& sSessionId, const std::string& sDocUUID)
 		: SessionPacket(sSessionId, sDocUUID)
 		{}
 
@@ -263,9 +263,9 @@ public:
 			m_iRev(0),
 			m_iRemoteRev(0) {}
 	ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
+			const std::string& sSessionId,
 			PX_ChangeRecord::PXType cType,
-			const UT_UTF8String& sDocUUID,
+			const std::string& sDocUUID,
 		 	PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev);
@@ -303,9 +303,9 @@ public:
 	Props_ChangeRecordSessionPacket() : m_szAtts(NULL), m_szProps(NULL) {}
 	Props_ChangeRecordSessionPacket( const Props_ChangeRecordSessionPacket& );
 	Props_ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
+			const std::string& sSessionId,
 			PX_ChangeRecord::PXType cType,
-			const UT_UTF8String& sDocUUID,
+			const std::string& sDocUUID,
 			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
@@ -347,9 +347,9 @@ public:
 	DECLARE_PACKET(InsertSpan_ChangeRecordSessionPacket);
 	InsertSpan_ChangeRecordSessionPacket() : m_sText("") {}
 	InsertSpan_ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
+			const std::string& sSessionId,
 			PX_ChangeRecord::PXType cType,
-			const UT_UTF8String& sDocUUID,
+			const std::string& sDocUUID,
 			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
@@ -368,9 +368,9 @@ public:
 	DECLARE_PACKET(ChangeStrux_ChangeRecordSessionPacket);
 	ChangeStrux_ChangeRecordSessionPacket() : m_eStruxType(PTStruxType(0)) {} // FIXME: 0 is not a good initializer
 	ChangeStrux_ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
+			const std::string& sSessionId,
 			PX_ChangeRecord::PXType cType,
-			const UT_UTF8String& sDocUUID,
+			const std::string& sDocUUID,
 			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
@@ -390,9 +390,9 @@ public:
 	DeleteStrux_ChangeRecordSessionPacket(): m_eStruxType(PTStruxType(0)) // FIXME: 0 is not a good initializer
 	{}
 	DeleteStrux_ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
+			const std::string& sSessionId,
 			PX_ChangeRecord::PXType cType,
-			const UT_UTF8String& sDocUUID,
+			const std::string& sDocUUID,
 			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
@@ -411,9 +411,9 @@ public:
 	DECLARE_PACKET(Object_ChangeRecordSessionPacket);
 	Object_ChangeRecordSessionPacket() : m_eObjectType(PTObjectType(0)) {} // FIXME: 0 is not a good initializer
 	Object_ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
+			const std::string& sSessionId,
 			PX_ChangeRecord::PXType cType,
-			const UT_UTF8String& sDocUUID,
+			const std::string& sDocUUID,
 			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
@@ -438,9 +438,9 @@ public:
 	DECLARE_PACKET(RDF_ChangeRecordSessionPacket);
 	RDF_ChangeRecordSessionPacket() {} // FIXME: 0 is not a good initializer
 	RDF_ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
+			const std::string& sSessionId,
 			PX_ChangeRecord::PXType cType,
-			const UT_UTF8String& sDocUUID,
+			const std::string& sDocUUID,
 			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
@@ -457,9 +457,9 @@ public:
 	DECLARE_PACKET(Data_ChangeRecordSessionPacket);
 	Data_ChangeRecordSessionPacket() : m_bTokenSet(false) {}
 	Data_ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
+			const std::string& sSessionId,
 			PX_ChangeRecord::PXType cType,
-			const UT_UTF8String& sDocUUID,
+			const std::string& sDocUUID,
 			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
@@ -481,9 +481,9 @@ public:
 	DECLARE_PACKET(Glob_ChangeRecordSessionPacket);
 	Glob_ChangeRecordSessionPacket() {}
 	Glob_ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
+			const std::string& sSessionId,
 			PX_ChangeRecord::PXType cType,
-			const UT_UTF8String& sDocUUID,
+			const std::string& sDocUUID,
 			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
@@ -502,7 +502,7 @@ public:
 	DECLARE_PACKET(GlobSessionPacket);
 	GlobSessionPacket() {}
 	GlobSessionPacket( const GlobSessionPacket& Other );
-	GlobSessionPacket( const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID )
+	GlobSessionPacket( const std::string& sSessionId, const std::string& sDocUUID )
 		: AbstractChangeRecordSessionPacket(sSessionId, sDocUUID)
 		{}
 	~GlobSessionPacket();
@@ -528,7 +528,7 @@ class SignalSessionPacket : public SessionPacket
 public:
 	DECLARE_PACKET(SignalSessionPacket);
 	SignalSessionPacket() {}
-	SignalSessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_uint32 iSignal);
+	SignalSessionPacket(const std::string& sSessionId, const std::string& sDocUUID, UT_uint32 iSignal);
 
 	UT_uint32 getSignalType() const
 		{ return m_iSignal; }
@@ -544,7 +544,7 @@ class RevertSessionPacket : public SessionPacket
 public:
 	DECLARE_PACKET(RevertSessionPacket);
 	RevertSessionPacket() {}
-	RevertSessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
+	RevertSessionPacket(const std::string& sSessionId, const std::string& sDocUUID, UT_sint32 iRev);
 
 	UT_sint32			getRev() const
 		{ return m_iRev; }
@@ -560,7 +560,7 @@ class RevertAckSessionPacket : public SessionPacket
 public:
 	DECLARE_PACKET(RevertAckSessionPacket);
 	RevertAckSessionPacket() {}
-	RevertAckSessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
+	RevertAckSessionPacket(const std::string& sSessionId, const std::string& sDocUUID, UT_sint32 iRev);
 
 	UT_sint32			getRev() const
 		{ return m_iRev; }
@@ -581,7 +581,7 @@ class AbstractSessionTakeoverPacket : public SessionPacket
 public:
 	AbstractSessionTakeoverPacket() {}
 
-	AbstractSessionTakeoverPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+	AbstractSessionTakeoverPacket(const std::string& sSessionId, const std::string& sDocUUID)
 		: SessionPacket(sSessionId, sDocUUID)
 		{}
 
@@ -594,7 +594,7 @@ public:
 	DECLARE_PACKET(SessionTakeoverRequestPacket);
 	SessionTakeoverRequestPacket() {}
 	SessionTakeoverRequestPacket(
-		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
+		const std::string& sSessionId, const std::string& sDocUUID,
 		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
 	);
 
@@ -616,7 +616,7 @@ class SessionTakeoverAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionTakeoverAckPacket);
 	SessionTakeoverAckPacket() {}
-	SessionTakeoverAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+	SessionTakeoverAckPacket(const std::string& sSessionId, const std::string& sDocUUID)
 		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;
@@ -627,7 +627,7 @@ class SessionFlushedPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionFlushedPacket);
 	SessionFlushedPacket() {}
-	SessionFlushedPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+	SessionFlushedPacket(const std::string& sSessionId, const std::string& sDocUUID)
 		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;
@@ -638,7 +638,7 @@ class SessionReconnectRequestPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionReconnectRequestPacket);
 	SessionReconnectRequestPacket() {}
-	SessionReconnectRequestPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+	SessionReconnectRequestPacket(const std::string& sSessionId, const std::string& sDocUUID)
 		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;
@@ -649,7 +649,7 @@ class SessionReconnectAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionReconnectAckPacket);
 	SessionReconnectAckPacket() {}
-	SessionReconnectAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
+	SessionReconnectAckPacket(const std::string& sSessionId, const std::string& sDocUUID,
 		UT_sint32 iRev);
 
 	UT_sint32					getRev() const

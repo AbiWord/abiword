@@ -704,7 +704,7 @@ bool FV_View::isActive(void) const
 	bool bAct = (pActiveView == this);
 	if(!bAct)
 		return false;
-	UT_UTF8String sUUID =  m_pDoc->getMyUUIDString();
+	std::string sUUID =  m_pDoc->getMyUUIDString();
 	if(m_sDocUUID == sUUID)
 		return true;
 	return false;
@@ -763,7 +763,7 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 {
 	fv_CaretProps * pCaretProps = NULL;
 	UT_sint32 iCount = m_vecCarets.getItemCount();
-	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
+	std::string sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
 	UT_sint32 i = 0;
 	bool bFoundID = false;
@@ -789,7 +789,7 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 	{
 		UT_DEBUGMSG(("Could find a caret to match UUID! Creating one now! \n"));
 		UT_sint32 iNewAuthor = m_pDoc->getLastAuthorInt();
-		UT_DEBUGMSG(("Creating Caret for author %d UUID %s \n",iNewAuthor,sUUID.utf8_str()));
+		UT_DEBUGMSG(("Creating Caret for author %d UUID %s \n", iNewAuthor, sUUID.c_str()));
 		addCaret(docPos, iNewAuthor);
 	}
 }
@@ -835,10 +835,10 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 	}
 	pCaretProps = new fv_CaretProps(this,docPos);
 	m_vecCarets.addItem(pCaretProps);
-	UT_DEBUGMSG((" add caret num %d id %d position %d \n",m_vecCarets.getItemCount(),iAuthorId,docPos));	
-	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString().utf8_str();
+	UT_DEBUGMSG((" add caret num %d id %d position %d \n", m_vecCarets.getItemCount(), iAuthorId, docPos));
+	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString();
 	pCaretProps->m_pCaret = m_pG->createCaret(pCaretProps->m_sCaretID );
-	UT_DEBUGMSG(("m_sCaretID %s OrigDocID %s \n",pCaretProps->m_sCaretID.c_str(),m_sDocUUID.utf8_str()));
+	UT_DEBUGMSG(("m_sCaretID %s OrigDocID %s \n", pCaretProps->m_sCaretID.c_str(), m_sDocUUID.c_str()));
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
 	addListener(pCaretProps->m_PropCaretListner,&pCaretProps->m_ListenerID);
@@ -846,7 +846,7 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 	pCaretProps->m_pCaret->enable();
 	pCaretProps->m_iAuthorId = iAuthorId;
 	UT_sint32 icnt = iAuthorId;
-	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString().utf8_str();
+	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString();
 	icnt = icnt % 12;
 	if(m_pDoc->getMyAuthorInt() != iAuthorId)
 	{

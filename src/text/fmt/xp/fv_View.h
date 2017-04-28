@@ -1176,7 +1176,7 @@ private:
 	bool                m_bInsertAtTablePending;
 	PT_DocPosition      m_iPosAtTable;
 	UT_GenericVector<fv_CaretProps *> m_vecCarets;
-	UT_UTF8String       m_sDocUUID;
+	std::string       m_sDocUUID;
 	bool				m_bAnnotationPreviewActive;
 	UT_uint32			m_iAnnPviewID;
 	bool                m_bAllowSmartQuoteReplacement;  // Enable/disable replacing of quote with smart quote

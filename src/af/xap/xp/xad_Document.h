@@ -47,7 +47,7 @@ class ABI_EXPORT AD_VersionData
   public:
 
 	// constructor for importers
-	AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev, UT_uint32 xid);
+	AD_VersionData(UT_uint32 v, const std::string &uuid, time_t start, bool autorev, UT_uint32 xid);
 	AD_VersionData(UT_uint32 v, const char * uuid, time_t start, bool autorev, UT_uint32 xid);
 
 	// constructor for new entries
@@ -230,7 +230,7 @@ public:
 	const char *    getOrigDocUUIDString()const;
 	const UT_UUID * getOrigDocUUID()const {return m_pOrigUUID;};
 	void            setMyUUID(const char * u);
-	UT_UTF8String   getMyUUIDString()const;
+	std::string     getMyUUIDString()const;
 	const UT_UUID * getMyUUID()const {return m_pMyUUID;};
 
 	UT_UUID *       getNewUUID()   const;
@@ -340,8 +340,8 @@ private:
 	UT_UUID *       m_pMyUUID;
 	bool            m_bDoNotAdjustHistory;
 	bool            m_bAfterFirstSave;
- 	UT_UTF8String   m_sMyUUIDString;
- 	UT_UTF8String   m_sOrigUUIDString;
+	std::string     m_sMyUUIDString;
+	std::string     m_sOrigUUIDString;
 	std::string     m_sPrintFilename;
 };
 

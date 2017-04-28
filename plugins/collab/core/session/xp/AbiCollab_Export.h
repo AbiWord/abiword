@@ -81,7 +81,7 @@ public:
 		{ return & m_vecAdjusts;}
 
 	void				masterInit();
-	void				slaveInit(const UT_UTF8String& docUUID, UT_sint32 iRemoteRev);
+	void				slaveInit(const std::string& docUUID, UT_sint32 iRemoteRev);
 
 private:
 

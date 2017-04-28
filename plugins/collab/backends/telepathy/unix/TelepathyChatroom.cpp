@@ -324,7 +324,7 @@ retrieve_buddy_dbus_mappings_cb(TpProxy* proxy,
 }
 
 TelepathyChatroom::TelepathyChatroom(TelepathyAccountHandler* pHandler, TpChannel* pChannel,
-		PD_Document* pDoc, const UT_UTF8String& sSessionId)
+				     PD_Document* pDoc, const std::string& sSessionId)
 	: m_pHandler(pHandler),
 	m_pChannel(pChannel),
 	m_pDoc(pDoc),
@@ -554,7 +554,7 @@ void TelepathyChatroom::queueInvite(TelepathyBuddyPtr pBuddy)
 
 bool TelepathyChatroom::offerTube()
 {
-	UT_DEBUGMSG(("TelepathyChatroom::offerTube()\n - session id: %s\n", m_sSessionId.utf8_str()));
+	UT_DEBUGMSG(("TelepathyChatroom::offerTube()\n - session id: %s\n", m_sSessionId.c_str()));
 	UT_return_val_if_fail(m_sSessionId != "", false);
 	UT_return_val_if_fail(m_pChannel, false);
 

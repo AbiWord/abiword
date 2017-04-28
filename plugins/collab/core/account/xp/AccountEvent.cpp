@@ -80,7 +80,7 @@ void AccountBuddyAddDocumentEvent::serialize(Archive & ar)
 		haveHandle = m_pDocHandle ? 1 : 0;
 		ar << haveHandle;
 		if (haveHandle) {
-			ar << const_cast<UT_UTF8String&>( m_pDocHandle->getSessionId() );
+			ar << const_cast<std::string&>( m_pDocHandle->getSessionId() );
 			ar << const_cast<UT_UTF8String&>( m_pDocHandle->getName() );
 		}
 	}

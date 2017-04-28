@@ -38,9 +38,6 @@
 
 #include <string>
 
-class UT_UTF8String;
-
-
 /* UUID Variant definitions */
 enum UT_UUIDVariant
 {
@@ -98,17 +95,16 @@ class ABI_EXPORT UT_UUID
 
 	/* These generate new UUIDs */
 	bool            makeUUID();                // changes internal state
-	bool            makeUUID(UT_UTF8String & out); // does not change internal state !!!
+	bool            makeUUID(std::string & out); // does not change internal state !!!
 
 	/* these set m_uuid to given UUID, i.e., force internal state change */
-	bool            setUUID(const UT_UTF8String &s);
+	bool            setUUID(const std::string &s);
 	bool            setUUID(const char *s);
 	bool            setUUID(const struct uuid &u);
 
 	/* translate internal state into string representation; do not change
 	   internal state */
-	bool		toString(UT_UTF8String & to) const;
-	std::string&	toString( std::string& to ) const;
+	bool            toString(std::string& to) const;
 
 	/* get the binary representation of the uuid */
 	bool            toBinary(struct uuid &u) const;
@@ -160,7 +156,7 @@ class ABI_EXPORT UT_UUID
 	/* various protected constructors */
 
 	UT_UUID(); // constructs NULL uuid; subsequent call to makeUUID() needed to initialise
-	UT_UUID(const UT_UTF8String &s); // initialises from string
+	UT_UUID(const std::string &s); // initialises from string
 	UT_UUID(const char *s);      // initialises from string
 	UT_UUID(const struct uuid&u);   // initialise from binary representation
 	UT_UUID(const UT_UUID &u);   // copy constructor
@@ -174,7 +170,7 @@ class ABI_EXPORT UT_UUID
 	bool            _parse(const char * in, struct uuid &u) const;
 
 	bool            _makeUUID(struct uuid & u);
-	bool            _toString(const struct uuid &uu, UT_UTF8String & s) const;
+	bool            _toString(const struct uuid &uu, std::string & s) const;
 
 	// these three functions could be made public, but I think it better not to
 	// encourage operations on the struct -- create an instance of UT_UUID if you need to
@@ -216,7 +212,7 @@ class ABI_EXPORT UT_UUIDGenerator
 	// to call makeUUID() with this one
 	virtual UT_UUID * createUUID(){UT_UUID *p = new UT_UUID(); if(p)p->makeUUID(); return p;}
 
-	virtual UT_UUID * createUUID(const UT_UTF8String &s){return new UT_UUID(s);}
+	virtual UT_UUID * createUUID(const std::string &s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const char *s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const UT_UUID &u){return new UT_UUID(u);}
 	virtual UT_UUID * createUUID(const struct uuid &u){return new UT_UUID(u);}

@@ -69,13 +69,13 @@ class ABI_EXPORT UT_Win32UUID : public UT_UUID
 	friend class UT_Win32UUIDGenerator;
 	/* various protected constructors */
 	// the first constr. constructs NULL uuid; subsequent call to makeUUID() needed
-	UT_Win32UUID():UT_UUID(){s_iInstCount++;};
+	UT_Win32UUID():UT_UUID(){s_iInstCount++;}
 
-	UT_Win32UUID(const UT_UTF8String &s):UT_UUID(s){s_iInstCount++;};
-	UT_Win32UUID(const char *s):UT_UUID(s){s_iInstCount++;};
-	UT_Win32UUID(const UT_UUID &u):UT_UUID(u){s_iInstCount++;};
-	UT_Win32UUID(const UT_Win32UUID &u):UT_UUID((UT_UUID&)u){s_iInstCount++;};
-	UT_Win32UUID(const struct uuid &u):UT_UUID(u){s_iInstCount++;};
+	UT_Win32UUID(const std::string &s):UT_UUID(s){s_iInstCount++;}
+	UT_Win32UUID(const char *s):UT_UUID(s){s_iInstCount++;}
+	UT_Win32UUID(const UT_UUID &u):UT_UUID(u){s_iInstCount++;}
+	UT_Win32UUID(const UT_Win32UUID &u):UT_UUID((UT_UUID&)u){s_iInstCount++;}
+	UT_Win32UUID(const struct uuid &u):UT_UUID(u){s_iInstCount++;}
 
 	virtual bool    _getRandomBytes(void *buf, int nbytes);
 
@@ -104,7 +104,7 @@ class ABI_EXPORT UT_Win32UUIDGenerator : public UT_UUIDGenerator
 	// to call makeUUID() with this one
 	virtual UT_UUID * createUUID(){UT_UUID *p=new UT_Win32UUID(); if(p)p->makeUUID(); return p;}
 
-	virtual UT_UUID * createUUID(const UT_UTF8String &s){return new UT_Win32UUID(s);}
+	virtual UT_UUID * createUUID(const std::string &s){return new UT_Win32UUID(s);}
 	virtual UT_UUID * createUUID(const char *s){return new UT_Win32UUID(s);}
 	virtual UT_UUID * createUUID(const UT_UUID &u){return new UT_Win32UUID(u);}
 	virtual UT_UUID * createUUID(const struct uuid &u){return new UT_Win32UUID(u);}

@@ -107,7 +107,7 @@ UT_sint32 Packet::getProtocolVersion() const
 /* *                   SessionPacket                     */
 /* ***************************************************** */
 
-SessionPacket::SessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID) 
+SessionPacket::SessionPacket(const std::string& sSessionId, const std::string& sDocUUID)
 	: Packet(),
 	m_sSessionId(sSessionId),
 	m_sDocUUID(sDocUUID)
@@ -136,8 +136,8 @@ bool SessionPacket::isInstanceOf(const Packet& packet)
 
 std::string SessionPacket::toStr() const
 {
-	return Packet::toStr() + 
-		str(boost::format("SessionPacket: m_sSessionId: %1%, m_sDocUUID: %2%\n") % m_sSessionId.utf8_str() % m_sDocUUID.utf8_str());
+	return Packet::toStr() +
+		str(boost::format("SessionPacket: m_sSessionId: %1%, m_sDocUUID: %2%\n") % m_sSessionId % m_sDocUUID);
 }
 
 /* ***************************************************** */
@@ -155,9 +155,9 @@ bool AbstractChangeRecordSessionPacket::isInstanceOf(const SessionPacket& packet
 /* ***************************************************** */
 
 ChangeRecordSessionPacket::ChangeRecordSessionPacket(
-			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			const std::string& sSessionId,
+			PX_ChangeRecord::PXType cType,
+			const std::string& sDocUUID,
 			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
@@ -713,7 +713,7 @@ std::string GlobSessionPacket::toStr() const
 /* *             SignalSessionPacket                     */
 /* ***************************************************** */
 
-SignalSessionPacket::SignalSessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_uint32 iSignal)
+SignalSessionPacket::SignalSessionPacket(const std::string& sSessionId, const std::string& sDocUUID, UT_uint32 iSignal)
 	: SessionPacket(sSessionId, sDocUUID),
 	m_iSignal(iSignal)
 {
@@ -735,7 +735,7 @@ std::string SignalSessionPacket::toStr() const
 /* *             RevertSessionPacket                     */
 /* ***************************************************** */
 
-RevertSessionPacket::RevertSessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
+RevertSessionPacket::RevertSessionPacket(const std::string& sSessionId, const std::string& sDocUUID, UT_sint32 iRev)
 	: SessionPacket(sSessionId, sDocUUID),
 	m_iRev(iRev)
 {
@@ -757,7 +757,7 @@ std::string RevertSessionPacket::toStr() const
 /* *             RevertAckSessionPacket                  */
 /* ***************************************************** */
 
-RevertAckSessionPacket::RevertAckSessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
+RevertAckSessionPacket::RevertAckSessionPacket(const std::string& sSessionId, const std::string& sDocUUID, UT_sint32 iRev)
 	: SessionPacket(sSessionId, sDocUUID),
 	m_iRev(iRev)
 {
@@ -789,7 +789,7 @@ bool AbstractSessionTakeoverPacket::isInstanceOf(const SessionPacket& packet)
 /* ***************************************************** */
 
 SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
-		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
+		const std::string& sSessionId, const std::string& sDocUUID,
 		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
 	) : AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
 	m_bPromote(bPromote),
@@ -862,7 +862,7 @@ std::string SessionReconnectRequestPacket::toStr() const
 /* ***************************************************** */
 
 SessionReconnectAckPacket::SessionReconnectAckPacket(
-	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
+	const std::string& sSessionId, const std::string& sDocUUID, UT_sint32 iRev)
 	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
 	m_iRev(iRev)
 {

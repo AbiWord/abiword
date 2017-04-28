@@ -175,7 +175,7 @@ void SugarAccountHandler::signal(const Event& event, BuddyPtr pSource)
 
 				if (cse.getSessionId() == m_sSessionId)
 				{
-					UT_DEBUGMSG(("We host session %s, disconnecting...\n", cse.getSessionId().utf8_str()));
+					UT_DEBUGMSG(("We host session %s, disconnecting...\n", cse.getSessionId().c_str()));
 					disconnect();
 				}
 			}

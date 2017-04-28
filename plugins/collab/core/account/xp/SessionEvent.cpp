@@ -68,7 +68,7 @@ std::string	JoinSessionEvent::toStr() const
 {
 	return 
 		Event::toStr() + 
-		str(boost::format("JoinSessionEvent: m_sSessionId: %1%\n") % m_sSessionId.utf8_str());
+		str(boost::format("JoinSessionEvent: m_sSessionId: %1%\n") % m_sSessionId);
 }
 
 void JoinSessionRequestEvent::serialize(Archive & ar)
@@ -87,7 +87,7 @@ std::string	JoinSessionRequestResponseEvent::toStr() const
 	return
 		Event::toStr() +
 		str(boost::format("JoinSessionRequestResponseEvent: m_sZABW: %1% bytes, m_iRev: %2%, m_sDocumentId: %3%, m_sDocumentName: %4%, m_iAuthorId: %5%\n") %
-			m_sZABW.size() % m_iRev % m_sDocumentId.utf8_str() % m_sDocumentName.utf8_str() % m_iAuthorId );
+			m_sZABW.size() % m_iRev % m_sDocumentId % m_sDocumentName.utf8_str() % m_iAuthorId );
 }
 
 void DisjoinSessionEvent::serialize(Archive & ar)
@@ -100,7 +100,7 @@ std::string	DisjoinSessionEvent::toStr() const
 {
 	return 
 		Event::toStr() + 
-		str(boost::format("DisjoinSessionEvent: m_sSessionId: %1%\n") % m_sSessionId.utf8_str());
+		str(boost::format("DisjoinSessionEvent: m_sSessionId: %1%\n") % m_sSessionId);
 }
 
 void CloseSessionEvent::serialize(Archive & ar)
@@ -113,5 +113,5 @@ std::string	CloseSessionEvent::toStr() const
 {
 	return 
 		Event::toStr() + 
-		str(boost::format("CloseSessionEvent: m_sSessionId: %1%\n") % m_sSessionId.utf8_str());
+		str(boost::format("CloseSessionEvent: m_sSessionId: %1%\n") % m_sSessionId);
 }

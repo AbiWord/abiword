@@ -25,7 +25,7 @@ class AbiCollab;
  class DocHandle
 {
 public:
-	DocHandle(const UT_UTF8String& sSessionId, const UT_UTF8String& name)
+	DocHandle(const std::string& sSessionId, const UT_UTF8String& name)
 		: m_sSessionId(sSessionId),
 	  m_name(name),
 	  m_pAbiCollab(NULL)
@@ -33,7 +33,7 @@ public:
 	}
 	virtual ~DocHandle() {}
 
-	const UT_UTF8String&		getSessionId() const
+	const std::string&		getSessionId() const
 		{ return m_sSessionId; }
 	const UT_UTF8String&		getName() const
 		{ return m_name; }
@@ -44,7 +44,7 @@ public:
 		{ return m_pAbiCollab;}
 
 private:
-	const UT_UTF8String			m_sSessionId;
+	const std::string			m_sSessionId;
 	const UT_UTF8String			m_name;
 	AbiCollab *					m_pAbiCollab;
 };

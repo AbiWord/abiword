@@ -623,10 +623,9 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	pDoc->addListener(m_pExport, &m_iListenerID);
 	
 	// start the session
-	UT_UTF8String sSessionId = session_id.c_str();
 	RealmBuddyPtr buddy(
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
-	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, buddy->getDescriptor());
+	*pSession = pManager->startSession(pDoc, session_id, this, true, NULL, buddy->getDescriptor());
 
 	if (bFilenameChanged)
 	{
@@ -650,8 +649,8 @@ bool ServiceAccountHandler::getAcl(AbiCollab* pSession, std::vector<std::string>
 	UT_return_val_if_fail(pSession, false);
 
 	// fetch the current set of file permissions
-	ConnectionPtr connection = _getConnection(pSession->getSessionId().utf8_str());
-	UT_return_val_if_fail(connection, false);	
+	ConnectionPtr connection = _getConnection(pSession->getSessionId());
+	UT_return_val_if_fail(connection, false);
 	DocumentPermissions perms;
 	if (!_getPermissions(connection->doc_id(), perms))
 		return false;
@@ -690,7 +689,7 @@ bool ServiceAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std::s
 	UT_return_val_if_fail(pSession, false);
 
 	// set the permissions from the acl on the document on the webservice
-	ConnectionPtr connection = _getConnection(pSession->getSessionId().utf8_str());
+	ConnectionPtr connection = _getConnection(pSession->getSessionId());
 	UT_return_val_if_fail(connection, false);
 
 	// Gather the friend and group IDs that will get read-write permission
@@ -747,21 +746,21 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);		
 	
-	UT_DEBUGMSG(("Joining document %s\n", docHandle.getSessionId().utf8_str()));
+	UT_DEBUGMSG(("Joining document %s\n", docHandle.getSessionId().c_str()));
 	
 	UT_uint64 doc_id;
 	try {
-		doc_id = boost::lexical_cast<uint64_t>(docHandle.getSessionId().utf8_str());
+		doc_id = boost::lexical_cast<uint64_t>(docHandle.getSessionId());
 	} catch (boost::bad_lexical_cast &) {
 		// TODO: report error
-		UT_DEBUGMSG(("Error casting doc_id (%s) to an UT_uint64\n", docHandle.getSessionId().utf8_str()));
+		UT_DEBUGMSG(("Error casting doc_id (%s) to an UT_uint64\n", docHandle.getSessionId().c_str()));
 		return;
 	}
 	UT_return_if_fail(doc_id != 0);
-	UT_DEBUGMSG(("doc_id: %llu\n", (long long unsigned)doc_id));	
+	UT_DEBUGMSG(("doc_id: %llu\n", (long long unsigned)doc_id));
 
 	PD_Document* pDoc = NULL;
-	acs::SOAP_ERROR err = openDocument(doc_id, 0, docHandle.getSessionId().utf8_str(), &pDoc, NULL);
+	acs::SOAP_ERROR err = openDocument(doc_id, 0, docHandle.getSessionId(), &pDoc, NULL);
 	switch (err)
 	{
 		case acs::SOAP_ERROR_OK:
@@ -792,13 +791,13 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 	}
 }
 
-bool ServiceAccountHandler::hasSession(const UT_UTF8String& sSessionId)
+bool ServiceAccountHandler::hasSession(const std::string& sSessionId)
 {
 	for (std::vector<boost::shared_ptr<RealmConnection> >::iterator it = m_connections.begin(); it != m_connections.end(); it++)
 	{
 		boost::shared_ptr<RealmConnection> connection_ptr = *it;
 		UT_continue_if_fail(connection_ptr);
-		if (connection_ptr->session_id() == sSessionId.utf8_str())
+		if (connection_ptr->session_id() == sSessionId)
 			return true;
 	}
 	return AccountHandler::hasSession(sSessionId);
@@ -987,7 +986,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(ConnectionPtr connect
 	(*pDoc)->addListener(m_pExport,	&m_iListenerID);
 	
 	// start the session
-	UT_UTF8String sSessionId = session_id.c_str();
+	std::string sSessionId = session_id;
 	RealmBuddyPtr buddy(
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
 	pManager->startSession(*pDoc, sSessionId, this, bLocallyOwned, pFrame, buddy->getDescriptor());
@@ -1347,7 +1346,7 @@ void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)
 					return;
 				}
 				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
-				ConnectionPtr connection_ptr = _getConnection(cse.getSessionId().utf8_str());
+				ConnectionPtr connection_ptr = _getConnection(cse.getSessionId());
 				// if we don't host this session, then we have no connection for it; 
 				// this is perfectly valid, for example if there are more than 1 active
 				// service accounts
@@ -1369,7 +1368,7 @@ void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)
 					return;
 				}
 				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
-				ConnectionPtr connection_ptr = _getConnection(dse.getSessionId().utf8_str());
+				ConnectionPtr connection_ptr = _getConnection(dse.getSessionId());
 				UT_return_if_fail(connection_ptr);
 				connection_ptr->disconnect();
 			}

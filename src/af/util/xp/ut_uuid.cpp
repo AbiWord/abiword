@@ -34,9 +34,9 @@
 
 #include "ut_uuid.h"
 #include "ut_assert.h"
-#include "ut_string_class.h"
 #include "ut_rand.h"
 #include "ut_misc.h"
+#include "ut_std_string.h"
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
@@ -64,9 +64,9 @@ UT_UUID::UT_UUID ()
     The following two constructors instantiate the class from
     existing UUIDs for further processing
 */
-UT_UUID::UT_UUID(const UT_UTF8String &s)
+UT_UUID::UT_UUID(const std::string &s)
 {
-	m_bIsValid = _parse(s.utf8_str(), m_uuid);
+	m_bIsValid = _parse(s.c_str(), m_uuid);
 
 	// if the UUID was not valid, we will generate a new one
 	if(!m_bIsValid)
@@ -150,13 +150,13 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
 /*!
     convert internal UUID struct to a string
 */
-bool UT_UUID::_toString(const uuid &uu, UT_UTF8String & s) const
+bool UT_UUID::_toString(const uuid &uu, std::string & s) const
 {
-    UT_UTF8String_sprintf(s,"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-        uu.time_low, uu.time_mid, uu.time_high_and_version,
-        uu.clock_seq >> 8, uu.clock_seq & 0xFF,
-        uu.node[0], uu.node[1], uu.node[2],
-        uu.node[3], uu.node[4], uu.node[5]);
+	s = UT_std_string_sprintf("%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+				  uu.time_low, uu.time_mid, uu.time_high_and_version,
+				  uu.clock_seq >> 8, uu.clock_seq & 0xFF,
+				  uu.node[0], uu.node[1], uu.node[2],
+				  uu.node[3], uu.node[4], uu.node[5]);
 
 	return true;
 }
@@ -164,19 +164,11 @@ bool UT_UUID::_toString(const uuid &uu, UT_UTF8String & s) const
 /*!
     convert internal state to string
 */
-bool UT_UUID::toString(UT_UTF8String & s) const
+bool
+UT_UUID::toString( std::string& s ) const
 {
-	UT_return_val_if_fail(m_bIsValid, false);
-	return _toString(m_uuid, s);
-}
-
-std::string&
-UT_UUID::toString( std::string& to ) const
-{
-    UT_UTF8String x;
-    toString( x );
-    to = x.utf8_str();
-    return to;
+    UT_return_val_if_fail(m_bIsValid, false);
+    return _toString(m_uuid, s);
 }
 
 
@@ -211,9 +203,9 @@ bool UT_UUID::toBinary(struct uuid &u) const
 /*!
     Set internal state to the given value represented by string
 */
-bool UT_UUID::setUUID(const UT_UTF8String &s)
+bool UT_UUID::setUUID(const std::string &s)
 {
-	if(_parse(s.utf8_str(), m_uuid))
+	if(_parse(s.c_str(), m_uuid))
 	{
 		m_bIsValid = true;
 		return true;
@@ -235,7 +227,7 @@ bool UT_UUID::setUUID(const char *s)
 
 bool UT_UUID::setUUID(const struct uuid &u)
 {
-    memcpy(&m_uuid, &u, sizeof(u));
+	memcpy(&m_uuid, &u, sizeof(u));
 	m_bIsValid = !isNull();
 
 	return m_bIsValid;
@@ -253,7 +245,7 @@ bool UT_UUID::makeUUID()
 /*!
     generate new UUID into provided string
 */
-bool UT_UUID::makeUUID(UT_UTF8String & s)
+bool UT_UUID::makeUUID(std::string & s)
 {
 	struct uuid uuid;
 	bool bRet = _makeUUID(uuid);
@@ -272,16 +264,16 @@ time_t UT_UUID::getTime() const
 
 time_t UT_UUID::_getTime(const struct uuid & uuid)
 {
-	UT_uint32 iHigh;
+    UT_uint32 iHigh;
     UT_uint64 iClockReg;
-	time_t    tRet;
-    
+    time_t    tRet;
+
     iHigh = uuid.time_mid | ((uuid.time_high_and_version & 0xFFF) << 16);
     iClockReg = uuid.time_low | ((UT_uint64) iHigh << 32);
 
     iClockReg -= (((UT_uint64) 0x01B21DD2) << 32) + 0x13814000;
     tRet = (time_t)(iClockReg / 10000000);
-	
+
     return tRet;
 }
 
@@ -312,7 +304,6 @@ UT_UUIDVariant UT_UUID::getVariant() const
 
 UT_UUIDVariant UT_UUID::_getVariant(const struct uuid &uuid)
 {
-	
     UT_sint32 var = uuid.clock_seq;
 
     if ((var & 0x8000) == 0)
@@ -334,7 +325,7 @@ bool UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes) const
 
     for (i = 0; i < nbytes; i++)
         *cp++ ^= (UT_rand() >> 7) & 0xFF;
-	
+
     return true;
 }
 
@@ -352,7 +343,7 @@ bool UT_UUID::_getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq) cons
     static UT_uint16          iClockSeq;
     struct timeval            tv;
     UT_uint64                 iClockReg;
-    
+
 try_again:
     UT_gettimeofday(&tv);
     if ((last.tv_sec == 0) && (last.tv_usec == 0))
@@ -381,7 +372,7 @@ try_again:
         iAdjustment = 0;
         last = tv;
     }
-        
+
     iClockReg = tv.tv_usec*10 + iAdjustment;
     iClockReg += ((UT_uint64) tv.tv_sec)*10000000;
     iClockReg += (((UT_uint64) 0x01B21DD2) << 32) + 0x13814000;
@@ -396,27 +387,27 @@ bool UT_UUID::resetTime()
 {
     UT_uint32  clock_mid;
     bool bRet = _getClock(clock_mid, m_uuid.time_low, m_uuid.clock_seq);
-	
+
     m_uuid.clock_seq |= 0x8000;
     m_uuid.time_mid = (UT_uint16) clock_mid;
     m_uuid.time_high_and_version = (clock_mid >> 16) | 0x1000;
 
-	return bRet;
+    return bRet;
 }
 
 bool UT_UUID::_makeUUID(uuid &uu)
 {
     UT_uint32  clock_mid;
 
-	bool bRet = true;
-	
+    bool bRet = true;
+
     if(!s_bInitDone)
 	{
 #if 0
 		bool bNoMAC;
 		XAP_App::getApp()->getPrefsValueBool((gchar*)XAP_PREF_KEY_NoMACinUUID,
 											 &bNoMAC);
-		
+
         if(bNoMAC || !UT_getEthernetAddress(s_node))
 #endif
 		{
@@ -430,15 +421,15 @@ bool UT_UUID::_makeUUID(uuid &uu)
         }
         s_bInitDone = bRet;
     }
-	
+
     bRet &= _getClock(clock_mid, uu.time_low, uu.clock_seq);
-	
+
     uu.clock_seq |= 0x8000;
     uu.time_mid = (UT_uint16) clock_mid;
     uu.time_high_and_version = (clock_mid >> 16) | 0x1000;
     memcpy(uu.node, s_node, 6);
 
-	return bRet;
+    return bRet;
 }
 
 /*!
@@ -796,7 +787,7 @@ bool UT_UUID::_unpack(const uuid_t &in, uuid &uu) const
     tmp = *ptr++;
     tmp = (tmp << 8) | *ptr++;
     uu.time_mid = tmp;
-    
+
     tmp = *ptr++;
     tmp = (tmp << 8) | *ptr++;
     uu.time_high_and_version = tmp;
@@ -807,6 +798,6 @@ bool UT_UUID::_unpack(const uuid_t &in, uuid &uu) const
 
     memcpy(uu.node, ptr, 6);
 
-	return true;
+    return true;
 }
 #endif

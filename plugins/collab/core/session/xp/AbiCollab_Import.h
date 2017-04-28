@@ -61,14 +61,15 @@ public:
 
 private:
 	bool								_isOverlapping(UT_sint32 pos1, UT_sint32 length1, UT_sint32 pos2, UT_sint32 length2);
-	void								_calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev,
-											const UT_UTF8String& sIncomingDocUUID, UT_sint32& iStart,
-											UT_sint32& iEnd);
-	UT_sint32							_getIncomingAdjustmentForState(
-											const UT_GenericVector<ChangeAdjust *>* pExpAdjusts,
-											UT_sint32 iStart, UT_sint32 iEnd, UT_sint32 iIncomingPos,
-											UT_sint32 iIncomingLength, const UT_UTF8String& sIncomingUUID,
-											std::deque<int>& impAdjs);
+	void _calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev,
+					const std::string& sIncomingDocUUID,
+					UT_sint32& iStart,
+					UT_sint32& iEnd);
+	UT_sint32 _getIncomingAdjustmentForState(
+		const UT_GenericVector<ChangeAdjust *>* pExpAdjusts,
+		UT_sint32 iStart, UT_sint32 iEnd, UT_sint32 iIncomingPos,
+		UT_sint32 iIncomingLength, const std::string& sIncomingUUID,
+		std::deque<int>& impAdjs);
 	bool								_checkForCollision(const AbstractChangeRecordSessionPacket& acrsp, UT_sint32& iRev,
 											UT_sint32& iImportAdjustment);
 	bool								_handleCollision(UT_sint32 iIncommingRev, UT_sint32 iLocalRev, BuddyPtr pCollaborator);

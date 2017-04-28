@@ -72,7 +72,7 @@ public:
 	void							addDocHandle(DocHandle* pDocHandle);
 	const std::vector<DocHandle*>&		getDocHandles() const
 		{ return m_docHandles; }
-	DocHandle*						getDocHandle(const UT_UTF8String& sSessionId) const
+	DocHandle*						getDocHandle(const std::string& sSessionId) const
 	{
 		for (std::vector<DocHandle*>::const_iterator cit = m_docHandles.begin(); cit != m_docHandles.end(); cit++)
 		{
@@ -82,16 +82,16 @@ public:
 		}
 		return NULL;
 	}
-	void							destroyDocHandle(const UT_UTF8String& sSessionId)
+	void							destroyDocHandle(const std::string& sSessionId)
 	{
-		UT_DEBUGMSG(("Request to destroy dochandle %s\n", sSessionId.utf8_str()));
+		UT_DEBUGMSG(("Request to destroy dochandle %s\n", sSessionId.c_str()));
 		for (std::vector<DocHandle*>::iterator it = m_docHandles.begin(); it != m_docHandles.end(); it++)
 		{
 			DocHandle* pCurHandle = *it;
-			UT_DEBUGMSG(("Comparing with dochandle: %s\n", pCurHandle->getSessionId().utf8_str()));
+			UT_DEBUGMSG(("Comparing with dochandle: %s\n", pCurHandle->getSessionId().c_str()));
 			if (pCurHandle && pCurHandle->getSessionId() == sSessionId)
 			{
-				UT_DEBUGMSG(("Destroying document handle: %s\n", pCurHandle->getSessionId().utf8_str()));
+				UT_DEBUGMSG(("Destroying document handle: %s\n", pCurHandle->getSessionId().c_str()));
 				m_docHandles.erase(it);
 				DELETEP(pCurHandle);
 				return;

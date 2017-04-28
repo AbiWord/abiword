@@ -592,7 +592,7 @@ bool AbiCollabSessionManager::destroySession(AbiCollab* pSession)
 void AbiCollabSessionManager::disconnectSession(AbiCollab* pSession)
 {
 	UT_return_if_fail(pSession);
-	UT_DEBUGMSG(("AbiCollabSessionManager::disconnectSession() - pSession: %s\n", pSession->getSessionId().utf8_str()));
+	UT_DEBUGMSG(("AbiCollabSessionManager::disconnectSession() - pSession: %s\n", pSession->getSessionId().c_str()));
 
 	if (isLocallyControlled(pSession->getDocument()))
 	{
@@ -654,7 +654,7 @@ AbiCollab* AbiCollabSessionManager::getSession(PD_Document* pDoc)
 
 }
 
-AbiCollab* AbiCollabSessionManager::getSessionFromDocumentId(const UT_UTF8String& sDocumentId)
+AbiCollab* AbiCollabSessionManager::getSessionFromDocumentId(const std::string& sDocumentId)
 {
 	AbiCollab * pCollab = NULL;
 	UT_sint32 i = 0;
@@ -664,7 +664,7 @@ AbiCollab* AbiCollabSessionManager::getSessionFromDocumentId(const UT_UTF8String
 		if (pCollab)
 		{
 			PD_Document* pDoc = pCollab->getDocument();
-			if (strcmp(pDoc->getDocUUIDString(), sDocumentId.utf8_str()) == 0)
+			if (pDoc->getDocUUIDString() == sDocumentId)
 			{
 				return pCollab;
 			}
@@ -673,7 +673,7 @@ AbiCollab* AbiCollabSessionManager::getSessionFromDocumentId(const UT_UTF8String
 	return NULL;
 }
 
-AbiCollab* AbiCollabSessionManager::getSessionFromSessionId(const UT_UTF8String& sSessionId)
+AbiCollab* AbiCollabSessionManager::getSessionFromSessionId(const std::string& sSessionId)
 {
 	AbiCollab * pCollab = NULL;
 	UT_sint32 i = 0;
@@ -691,7 +691,7 @@ AbiCollab* AbiCollabSessionManager::getSessionFromSessionId(const UT_UTF8String&
 	return NULL;
 }
 
-AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8String& sSessionId, 
+AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, std::string& sSessionId,
 			AccountHandler* pAclAccount, bool bLocallyOwned, XAP_Frame* pFrame, 
 			const UT_UTF8String& masterDescriptor)
 {
@@ -702,7 +702,7 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 
 	if (sSessionId == "")
 	{
-		XAP_App* pApp = XAP_App::getApp();	
+		XAP_App* pApp = XAP_App::getApp();
 		UT_UUID* pUUID = pApp->getUUIDGenerator()->createUUID();
 		pUUID->toString(sSessionId);
 	}
@@ -769,8 +769,8 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 			}
 		}
 	}
-	
-	UT_DEBUGMSG(("Creating a new collaboration session with UUID: %s\n", sSessionId.utf8_str()));
+
+	UT_DEBUGMSG(("Creating a new collaboration session with UUID: %s\n", sSessionId.c_str()));
 
 	UT_return_val_if_fail(_setupFrame(&pFrame, pDoc), NULL);
 	AbiCollab* pAbiCollab = new AbiCollab(pDoc, sSessionId, pAclAccount, bLocallyOwned);
@@ -790,7 +790,7 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 
 void AbiCollabSessionManager::closeSession(AbiCollab* pSession, bool canConfirm)
 {
-	UT_DEBUGMSG(("Stopping collaboration session %s\n", pSession->getSessionId().utf8_str()));
+	UT_DEBUGMSG(("Stopping collaboration session %s\n", pSession->getSessionId().c_str()));
 	UT_return_if_fail(pSession);
 	
 	// TODO: in the future, we should hand over control to someone
@@ -810,15 +810,15 @@ void AbiCollabSessionManager::closeSession(AbiCollab* pSession, bool canConfirm)
 		if (pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_NO) != XAP_Dialog_MessageBox::a_YES)
 			return;
 	}
-		
+
 	// check who is controlling this session
 	if (pSession->isLocallyControlled())
 	{
-		UT_UTF8String pDestroyedSession = pSession->getSessionId();
-	
+		std::string pDestroyedSession = pSession->getSessionId();
+
 		// kill the session
 		destroySession(pSession);
-		
+
 		// notify all that this session is closed
 		CloseSessionEvent event(pDestroyedSession);
 		event.setBroadcast(true);
@@ -837,7 +837,7 @@ void AbiCollabSessionManager::joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pD
 	UT_return_if_fail(pBuddy);
 	UT_return_if_fail(pDocHandle);
 
-	UT_DEBUGMSG(("Initiating join on buddy |%s|, document |%s|\n", pBuddy->getDescription().utf8_str(), pDocHandle->getSessionId().utf8_str()));
+	UT_DEBUGMSG(("Initiating join on buddy |%s|, document |%s|\n", pBuddy->getDescription().utf8_str(), pDocHandle->getSessionId().c_str()));
 	AccountHandler* pHandler = pBuddy->getHandler();
 	UT_return_if_fail(pHandler);
 	
@@ -845,8 +845,8 @@ void AbiCollabSessionManager::joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pD
 	// TODO: do some accounting here, so we know we send an auth request in ::joinSession()
 }
 
-void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
-												const UT_UTF8String& docUUID, UT_sint32 iRev, 
+void AbiCollabSessionManager::joinSession(const std::string& sSessionId, PD_Document* pDoc,
+												const std::string& docUUID, UT_sint32 iRev,
 												UT_sint32 iAuthorId, BuddyPtr pCollaborator,
 												AccountHandler* pAclAccount, bool bLocallyOwned, 
 												XAP_Frame *pFrame)
@@ -898,25 +898,25 @@ void AbiCollabSessionManager::joinSession(AbiCollab* pSession, BuddyPtr pCollabo
 	signal(event);
 }
 
-void AbiCollabSessionManager::disjoinSession(const UT_UTF8String& sSessionId)
+void AbiCollabSessionManager::disjoinSession(const std::string& sSessionId)
 {
-	UT_DEBUGMSG(("AbiCollabSessionManager::disjoinSession(%s)\n", sSessionId.utf8_str()));
+	UT_DEBUGMSG(("AbiCollabSessionManager::disjoinSession(%s)\n", sSessionId.c_str()));
 
 	AbiCollab* pSession = getSessionFromSessionId(sSessionId);
 	UT_return_if_fail(pSession);
-	
+
 	const std::map<BuddyPtr, std::string> vCollaborators = pSession->getCollaborators();
 
 	if (!isLocallyControlled(pSession->getDocument()))
-	{		
+	{
 		// we are joined to a session, so there should only be one collaborator:
 		// the person sharing the document
 		UT_return_if_fail(vCollaborators.size() == 1);
-		
+
 		std::map<BuddyPtr, std::string>::const_iterator cit = vCollaborators.begin();
 		BuddyPtr pCollaborator = (*cit).first;
 		destroySession(pSession);
-			
+
 		DisjoinSessionEvent event(sSessionId);
 		event.addRecipient(pCollaborator);
 		signal(event);
@@ -970,7 +970,7 @@ bool AbiCollabSessionManager::isInSession(PD_Document* pDoc)
 	return false;
 }
 
-bool AbiCollabSessionManager::isActive(const UT_UTF8String& sSessionId)
+bool AbiCollabSessionManager::isActive(const std::string& sSessionId)
 {
 	// find a session with this session id
 	for (UT_sint32 i = 0; i < m_vecSessions.getItemCount(); i++)
@@ -1139,7 +1139,7 @@ bool AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 				// then we can kill off the entire session. Do nothing otherwise.
 				if (pSession->getAclAccount() == pHandler)
 				{
-					UT_DEBUGMSG(("Session %s is running on this account, destroying it!\n", pSession->getSessionId().utf8_str()));
+					UT_DEBUGMSG(("Session %s is running on this account, destroying it!\n", pSession->getSessionId().c_str()));
 					destroySession(pSession);
 				}
 			}
@@ -1167,7 +1167,7 @@ void AbiCollabSessionManager::setDocumentHandles(BuddyPtr pBuddy, const UT_Gener
 		UT_continue_if_fail(pDocHandle);
 
 		// sanity checking
-		UT_UTF8String sId = pDocHandle->getSessionId();
+		std::string sId = pDocHandle->getSessionId();
 		UT_continue_if_fail(sId.size() > 0);
 	
 		// construct a nice document name
@@ -1193,16 +1193,16 @@ void AbiCollabSessionManager::setDocumentHandles(BuddyPtr pBuddy, const UT_Gener
 			DocHandle * pNewDocHandle = new DocHandle(sId, sDocumentName);
 
 			pBuddy->addDocHandle(pNewDocHandle);
-			UT_DEBUGMSG(("Added DocHandle (%s) to buddy (%s)\n", sId.utf8_str(), pBuddy->getDescription().utf8_str()));
-						
+			UT_DEBUGMSG(("Added DocHandle (%s) to buddy (%s)\n", sId.c_str(), pBuddy->getDescription().utf8_str()));
+
 			// signal that a buddy has a new session
 			AccountBuddyAddDocumentEvent event(pNewDocHandle);
 			signal(event, pBuddy);
 		}
 		else
 		{
-			UT_DEBUGMSG(("Found an existing DocHandle (%s) for buddy (%s)\n", sId.utf8_str(), pBuddy->getDescription().utf8_str()));
-			
+			UT_DEBUGMSG(("Found an existing DocHandle (%s) for buddy (%s)\n", sId.c_str(), pBuddy->getDescription().utf8_str()));
+
 			// we already have a handle for this document, remove it from the old document handles copy
 			for (std::vector<DocHandle*>::iterator it = oldDocHandles.begin(); it != oldDocHandles.end(); it++)
 			{
@@ -1225,9 +1225,9 @@ void AbiCollabSessionManager::setDocumentHandles(BuddyPtr pBuddy, const UT_Gener
 		UT_continue_if_fail(pDocHandle);
 
 		// TODO: when we are a part of this session, then handle that properly
-	
-		UT_DEBUGMSG(("Purging existing DocHandle (%s) for buddy (%s)\n", pDocHandle->getSessionId().utf8_str(), pBuddy->getDescription().utf8_str()));
-		UT_UTF8String pDestroyedSessionId = pDocHandle->getSessionId();
+
+		UT_DEBUGMSG(("Purging existing DocHandle (%s) for buddy (%s)\n", pDocHandle->getSessionId().c_str(), pBuddy->getDescription().utf8_str()));
+		std::string pDestroyedSessionId = pDocHandle->getSessionId();
 		pBuddy->destroyDocHandle(pDestroyedSessionId);
 		CloseSessionEvent event(pDestroyedSessionId);
 		signal(event, pBuddy);
@@ -1266,13 +1266,13 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 	{
 		// lookup session
 		SessionPacket* dsp = static_cast<SessionPacket*>( packet );
-		const UT_UTF8String& sessionId = dsp->getSessionId();
+		const std::string& sessionId = dsp->getSessionId();
 		AbiCollab* pAbiCollab = getSessionFromSessionId(sessionId);
 		if (!pAbiCollab) {
-			UT_DEBUGMSG(("Unknown session id: '%s'", sessionId.utf8_str()));
+			UT_DEBUGMSG(("Unknown session id: '%s'", sessionId.c_str()));
 			UT_return_val_if_fail(pAbiCollab, true);
 		}
-		
+
 		// handle packet!
 		pAbiCollab->import(dsp, buddy);
 		return true;
@@ -1292,7 +1292,7 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 		case PCT_JoinSessionEvent:
 		{
 			JoinSessionEvent* jse = static_cast<JoinSessionEvent*>(packet);
-			const UT_UTF8String& joinedSessionId = jse->getSessionId();
+			const std::string& joinedSessionId = jse->getSessionId();
 			
 			// someone who joined this session disconnected, remove him from the collaboration session
 			AbiCollab* pSession = getSessionFromSessionId(joinedSessionId);			
@@ -1320,7 +1320,7 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 		case PCT_DisjoinSessionEvent:
 		{
 			DisjoinSessionEvent* dse = static_cast<DisjoinSessionEvent*>(packet);
-			const UT_UTF8String& disjoinedSessionId = dse->getSessionId();
+			const std::string& disjoinedSessionId = dse->getSessionId();
 		
 			// someone who joined this session disconnected, remove him from the collaboration session
 			AbiCollab* pSession = getSessionFromSessionId(disjoinedSessionId);			
@@ -1343,7 +1343,7 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 		case PCT_CloseSessionEvent:
 		{
 			CloseSessionEvent* cse = static_cast<CloseSessionEvent*>(packet);
-			const UT_UTF8String& destroyedSessionId = cse->getSessionId();
+			const std::string& destroyedSessionId = cse->getSessionId();
 		
 			buddy->destroyDocHandle( destroyedSessionId );
 			
@@ -1384,18 +1384,18 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 			}
 			else
             {
-				UT_DEBUGMSG(("Ignoring a CloseSession event for unknown session (%s)\n", destroyedSessionId.utf8_str()));
+				UT_DEBUGMSG(("Ignoring a CloseSession event for unknown session (%s)\n", destroyedSessionId.c_str()));
             }
 			return true;
 		}
-		
+
 		case PCT_AccountAddBuddyRequestEvent:
 		{
 			// look at this packet; I have a feeling we need to deprecate it - MARCM
 			UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 			return true;
 		}
-		
+
 		default:
 			break;
 	}

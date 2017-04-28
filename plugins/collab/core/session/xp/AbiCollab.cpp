@@ -62,7 +62,7 @@
 #include "AbiCollabSessionManager.h"
 #include "DiskSessionRecorder.h"
 
-ChangeAdjust::ChangeAdjust(const AbstractChangeRecordSessionPacket& packet, PT_DocPosition iRemoteDocPos, const UT_UTF8String& sRemoteDocUUID) 
+ChangeAdjust::ChangeAdjust(const AbstractChangeRecordSessionPacket& packet, PT_DocPosition iRemoteDocPos, const std::string& sRemoteDocUUID)
 	: m_pPacket(static_cast<const AbstractChangeRecordSessionPacket*>(packet.clone())),
 	m_iLocalPos( m_pPacket->getPos() ),
 	m_iRemoteDocPos(iRemoteDocPos),
@@ -76,8 +76,8 @@ ChangeAdjust::~ChangeAdjust()
 }
 
 // Use this constructor to host a collaboration session
-AbiCollab::AbiCollab(PD_Document* pDoc, 
-						const UT_UTF8String& sSessionId, 
+AbiCollab::AbiCollab(PD_Document* pDoc,
+						const std::string& sSessionId,
 						AccountHandler* pAclAccount,
 						bool bLocallyOwned)
 	: EV_MouseListener(),
@@ -113,10 +113,10 @@ AbiCollab::AbiCollab(PD_Document* pDoc,
 }
 
 // Use this constructor to join a collaboration session
-AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
-						PD_Document* pDoc, 
-						const UT_UTF8String& docUUID, 
-						UT_sint32 iRev, 
+AbiCollab::AbiCollab(const std::string& sSessionId,
+						PD_Document* pDoc,
+						const std::string& docUUID,
+						UT_sint32 iRev,
 						BuddyPtr pController,
 						AccountHandler* pAclAccount,
 						bool bLocallyOwned)
@@ -486,7 +486,7 @@ void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 	maskExport();
 	if (AbstractChangeRecordSessionPacket::isInstanceOf(*pPacket))
 		m_pActivePacket = static_cast<const AbstractChangeRecordSessionPacket*>(pPacket);
-	m_vCollaborators[collaborator] = pPacket->getDocUUID().utf8_str(); // FIXME: this is redunant after we set this the first time
+	m_vCollaborators[collaborator] = pPacket->getDocUUID(); // FIXME: this is redunant after we set this the first time
 	m_Import.import(*pPacket, collaborator);
 	m_pActivePacket = NULL;
 	const std::vector<SessionPacket*>& maskedPackets = unmaskExport();
@@ -894,7 +894,7 @@ void AbiCollab::_becomeMaster()
 	m_pController = BuddyPtr();
 }
 
-bool AbiCollab::_restartAsSlave(const UT_UTF8String& sDocUUID, UT_sint32 iRev)
+bool AbiCollab::_restartAsSlave(const std::string& sDocUUID, UT_sint32 iRev)
 {
 	UT_DEBUGMSG(("AbiCollab::_restartAsSlave() - iRev: %d\n", iRev));
 	UT_return_val_if_fail(m_pController, false);

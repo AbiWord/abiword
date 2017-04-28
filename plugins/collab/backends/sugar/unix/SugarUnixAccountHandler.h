@@ -115,7 +115,7 @@ private:
 	DBusConnection*							m_pTube;
 	bool									m_bIsInSession;
 	std::set<UT_UTF8String>					m_ignoredBuddies;
-	UT_UTF8String							m_sSessionId;
+	std::string							m_sSessionId;
 };
 
 #endif /* __SUGARACCOUNTHANDLER__ */
