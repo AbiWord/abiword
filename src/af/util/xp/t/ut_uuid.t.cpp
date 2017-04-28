@@ -4,6 +4,7 @@
 
 #include "tf_test.h"
 #include "ut_uuid.h"
+#include "ut_debugmsg.h"
 
 #define TFSUITE "core.af.util.uuid"
 

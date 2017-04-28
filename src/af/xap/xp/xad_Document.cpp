@@ -93,16 +93,13 @@ AD_Document::AD_Document() :
 	m_pOrigUUID =  XAP_App::getApp()->getUUIDGenerator()->createUUID();
 	UT_return_if_fail(m_pOrigUUID);
 	UT_return_if_fail(m_pOrigUUID->isValid());
-	std::string s;
-	m_pUUID->toString(s);
+	std::string s = m_pUUID->toString().unwrap_or("");
 	m_pOrigUUID->setUUID(s);
 	m_pMyUUID->setUUID(s);
-	std::string OrigS;
-	m_pOrigUUID->toString(OrigS);
-	m_pOrigUUID->toString(m_sOrigUUIDString);
-	m_pMyUUID->toString(m_sMyUUIDString);
+	m_sOrigUUIDString = m_pOrigUUID->toString().unwrap_or("");
+	m_sMyUUIDString = m_pMyUUID->toString().unwrap_or("");
 	UT_DEBUGMSG(("!!!!!!!!!!----------------- Created string %s \n",s.c_str()));
-	UT_DEBUGMSG(("!!!!!!!!!!----------------- Orig string %s \n",OrigS.c_str()));
+	UT_DEBUGMSG(("!!!!!!!!!!----------------- Orig string %s \n", m_sOrigUUIDString.c_str()));
 }
 
 AD_Document::~AD_Document()
@@ -136,12 +133,10 @@ void AD_Document::setPrintFilename(const std::string & sFilename)
 
 bool AD_Document::isOrigUUID(void) const
 {
-  std::string sDoc;
-  std::string sOrig;
   if((m_pMyUUID== NULL) || (m_pOrigUUID == NULL))
 	  return false;
-  m_pMyUUID->toString(sDoc);
-  m_pOrigUUID->toString(sOrig);
+  std::string sDoc = m_pMyUUID->toString().unwrap_or("");
+  std::string sOrig = m_pOrigUUID->toString().unwrap_or("");
   return (sDoc == sOrig);
 }
 
@@ -570,7 +565,7 @@ void AD_Document::setOrigUUID(const char * s)
 		if(!m_pOrigUUID->isValid())
 			m_pOrigUUID->makeUUID();
 	}
-	m_pOrigUUID->toString(m_sOrigUUIDString);
+	m_sOrigUUIDString = m_pOrigUUID->toString().unwrap_or("");
 }
 
 
@@ -592,7 +587,7 @@ void AD_Document::setMyUUID(const char * s)
 		if(!m_pMyUUID->isValid())
 			m_pMyUUID->makeUUID();
 	}
-	m_pMyUUID->toString(m_sMyUUIDString);
+	m_sMyUUIDString = m_pMyUUID->toString().unwrap_or("");
 }
 
 /*!
@@ -603,7 +598,7 @@ const char * AD_Document::getDocUUIDString() const
 {
 	UT_return_val_if_fail(m_pUUID, NULL);
 	static std::string s;
-	m_pUUID->toString(s);
+	s = m_pUUID->toString().unwrap_or("");
 	return s.c_str();
 }
 

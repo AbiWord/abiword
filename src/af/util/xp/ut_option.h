@@ -42,7 +42,7 @@ public:
     , m_data(data)
   {
   }
-  UT_Option(const T& data)
+  explicit UT_Option(const T& data)
     : m_none(false)
     , m_data(data)
   {
@@ -62,10 +62,18 @@ public:
     m_none = true;
     return std::move(m_data);
   }
+  T unwrap_or(const T& value)
+  {
+    if (m_none) {
+      return value;
+    }
+    return unwrap();
+  }
   bool empty() const
   { return m_none; }
+  explicit operator bool() const
+  { return !m_none; }
 private:
   bool m_none;
   T m_data;
 };
-

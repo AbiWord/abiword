@@ -2658,7 +2658,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			UT_UUID *uuid = m_pDocument->getNewUUID();
 			UT_return_if_fail(uuid != NULL);
 			sUID = "obj-";
-			uuid->toString(s);
+			s = uuid->toString().unwrap_or("");
 			sUID += s;
 			pszDataId = sUID.c_str();
 		}

@@ -113,8 +113,7 @@ bool PX_ChangeRecord::isFromThisDoc(void) const
 {
   if(!m_pDoc)
     return false;
-  std::string sDoc;
-  m_pDoc->getOrigDocUUID()->toString(sDoc);
+  std::string sDoc = m_pDoc->getOrigDocUUID()->toString().unwrap_or("");
   char s[37];
 
   if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyDocUUID))

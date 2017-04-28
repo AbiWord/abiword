@@ -1701,9 +1701,7 @@ std::string
 XAP_App::createUUIDString() const
 {
     std::unique_ptr<UT_UUID> uuido(getUUIDGenerator()->createUUID());
-    std::string ret;
-	uuido->toString(ret);
-    return ret;
+	return uuido->toString().unwrap_or("");
 }
 
 

@@ -33,10 +33,11 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
-#include "ut_vector.h"
 #include <time.h>
 
 #include <string>
+
+#include "ut_option.h"
 
 /* UUID Variant definitions */
 enum UT_UUIDVariant
@@ -104,7 +105,7 @@ class ABI_EXPORT UT_UUID
 
 	/* translate internal state into string representation; do not change
 	   internal state */
-	bool            toString(std::string& to) const;
+	UT_Option<std::string> toString() const;
 
 	/* get the binary representation of the uuid */
 	bool            toBinary(struct uuid &u) const;
@@ -170,7 +171,7 @@ class ABI_EXPORT UT_UUID
 	bool            _parse(const char * in, struct uuid &u) const;
 
 	bool            _makeUUID(struct uuid & u);
-	bool            _toString(const struct uuid &uu, std::string & s) const;
+	std::string	_toString(const struct uuid &uu) const;
 
 	// these three functions could be made public, but I think it better not to
 	// encourage operations on the struct -- create an instance of UT_UUID if you need to
@@ -192,7 +193,7 @@ class ABI_EXPORT UT_UUID
 /*
     This class mediates creation of UT_UUID instances.
 
-    We create an instance of UT_UUIDGeneratr (or derived) class in
+    We create an instance of UT_UUIDGenerator (or derived) class in
     XAP_App() and have XAP_App::getUUIDGenerator() to gain access to
     it.  This allows us to create platform specific instances in place
     for generic UT_UUID from xp code.

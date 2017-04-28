@@ -43,12 +43,15 @@ TFTEST_MAIN("UT_option<string>")
   }
   TFPASS(!unwrapped);
   TFPASS(result.empty());
+  TFPASS(!result);
 
   // Option with value
   result = UT_Option<std::string>("hello world");
   TFPASS(!result.empty());
+  TFPASS(!!result);
   TFPASS(result.unwrap() == "hello world");
   TFPASS(result.empty());
+  TFPASS(!result);
   // try unwrapping again
   unwrapped = false;
   try {
@@ -61,4 +64,5 @@ TFTEST_MAIN("UT_option<string>")
   }
   TFPASS(!unwrapped);
   TFPASS(result.empty());
+  TFPASS(!result);
 }

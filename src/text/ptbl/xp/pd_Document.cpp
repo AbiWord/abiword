@@ -8342,8 +8342,7 @@ PD_XMLIDCreator::createUniqueXMLID( const std::string& desiredID, bool deepCopyR
 
     UT_DEBUGMSG(("createUniqueXMLID() xmlid is in use! desired:%s\n", desiredID.c_str() ));
 	UT_UUID* uuido = XAP_App::getApp()->getUUIDGenerator()->createUUID();
-	std::string uuid;
-	uuido->toString(uuid);
+	std::string uuid = uuido->toString().unwrap_or("");
     delete uuido;
 
     std::string trimmedID = desiredID;

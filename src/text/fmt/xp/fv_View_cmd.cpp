@@ -5161,8 +5161,7 @@ UT_Error FV_View::cmdInsertGraphic(const FG_ConstGraphicPtr& pFG)
 	*/
 	UT_UUID *uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
-	std::string s;
-	uuid->toString(s);
+	std::string s = uuid->toString().unwrap_or("");
 	DELETEP(uuid);
 
 	UT_Error errorCode = _insertGraphic(pFG, s.c_str());
@@ -5214,8 +5213,7 @@ UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_s
 	*/
 	UT_UUID *uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
-	std::string s;
-	uuid->toString(s);
+	std::string s = uuid->toString().unwrap_or("");
 	//
 	// Find a document position close to the requested position
 	//
@@ -5428,10 +5426,12 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	*/
 	UT_UUID *uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
-	std::string s;
-	uuid->toString(s);
-	sMathName += s;
-	sLatexName += s;
+	auto result = uuid->toString();
+	if (!result.empty()) {
+		std::string s = result.unwrap();
+		sMathName += s;
+		sLatexName += s;
+	}
 	delete uuid;
 	UT_DEBUGMSG(("Inserting latex id name %s \n",sLatexName.utf8_str()));
 	//
@@ -5555,11 +5555,13 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
  */
 bool FV_View::cmdInsertEmbed(const UT_ConstByteBufPtr & pBuf, PT_DocPosition pos, const char * szMime, const char * szProps)
 {
-	std::string sUID = "obj-", s;
+	std::string sUID = "obj-";
 	UT_UUID *uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
-	uuid->toString(s);
-	sUID += s;
+	auto result = uuid->toString();
+	if (result) {
+		sUID += result.unwrap();
+	}
 
 	PP_PropertyVector atts = {
 		"dataid", sUID,
@@ -5568,10 +5570,10 @@ bool FV_View::cmdInsertEmbed(const UT_ConstByteBufPtr & pBuf, PT_DocPosition pos
 	const gchar *cur_style = NULL;
 	UT_String sBuf(reinterpret_cast<const char *>(pBuf->getPointer(0)),pBuf->getLength());
 	UT_DEBUGMSG(("Chart text is... \n %s \n",sBuf.c_str()));
-	bool result = m_pDoc->createDataItem(sUID.c_str(),false,pBuf, szMime, NULL);
-	if(!result)
+	bool created = m_pDoc->createDataItem(sUID.c_str(), false, pBuf, szMime, NULL);
+	if(!created)
 	{
-	    return result;
+	    return created;
 	}
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
@@ -5664,11 +5666,13 @@ bool FV_View::cmdUpdateEmbed(const UT_ConstByteBufPtr & pBuf, const char * szMim
 	  return false;
 	}
 
-	std::string sUID="obj-", s;
+	std::string sUID="obj-";
 	UT_UUID *uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
-	uuid->toString(s);
-	sUID += s;
+	auto result = uuid->toString();
+	if (result) {
+		sUID += result.unwrap();
+	}
 	PP_PropertyVector atts = {
 		"dataid", sUID,
 		"props", ""
@@ -5736,8 +5740,11 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, const UT_ConstByteBufPtr & pBuf, con
 	std::string s;
 	UT_UUID *uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
-	uuid->toString(s);
-	sUID += s;
+	auto result = uuid->toString();
+	if (result) {
+		sUID += result.unwrap();
+	}
+
 	PP_PropertyVector atts = {
 		"dataid", sUID,
 		"props", ""
@@ -5829,8 +5836,7 @@ UT_Error FV_View::cmdInsertGraphicAtStrux(const FG_ConstGraphicPtr& pFG, PT_DocP
 	*/
 	UT_UUID *uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
-	std::string s;
-	uuid->toString(s);
+	std::string s = uuid->toString().unwrap_or("");
 
 	UT_Error errorCode = pFG->insertAtStrux(m_pDoc,
 											m_pG->getDeviceResolution(),

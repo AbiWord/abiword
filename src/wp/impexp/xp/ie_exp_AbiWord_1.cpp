@@ -1450,8 +1450,7 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		UT_uint32 iXID      =  m_pDocument->getHistoryNthTopXID(k);
 
 		UT_UTF8String s;
-		std::string hUid;
-		UID.toString(hUid);
+		std::string hUid = UID.toString().unwrap_or("");
 
 
 		if (!bWroteOpenSection)

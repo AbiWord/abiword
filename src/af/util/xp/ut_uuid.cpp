@@ -150,25 +150,23 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
 /*!
     convert internal UUID struct to a string
 */
-bool UT_UUID::_toString(const uuid &uu, std::string & s) const
+std::string UT_UUID::_toString(const uuid &uu) const
 {
-	s = UT_std_string_sprintf("%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+    return UT_std_string_sprintf("%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
 				  uu.time_low, uu.time_mid, uu.time_high_and_version,
 				  uu.clock_seq >> 8, uu.clock_seq & 0xFF,
 				  uu.node[0], uu.node[1], uu.node[2],
 				  uu.node[3], uu.node[4], uu.node[5]);
-
-	return true;
 }
 
 /*!
     convert internal state to string
 */
-bool
-UT_UUID::toString( std::string& s ) const
+UT_Option<std::string>
+UT_UUID::toString() const
 {
-    UT_return_val_if_fail(m_bIsValid, false);
-    return _toString(m_uuid, s);
+    UT_return_val_if_fail(m_bIsValid, UT_Option<std::string>());
+    return UT_Option<std::string>(_toString(m_uuid));
 }
 
 
@@ -249,7 +247,7 @@ bool UT_UUID::makeUUID(std::string & s)
 {
 	struct uuid uuid;
 	bool bRet = _makeUUID(uuid);
-	bRet &= _toString(uuid, s);
+	s = _toString(uuid);
 	return bRet;
 }
 
