@@ -2655,7 +2655,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		if (strncmp(pszDataId, "obj-", 4))
 		{
 			std::string s;
-			UT_UUID *uuid = m_pDocument->getNewUUID();
+			UT_UUIDPtr uuid = m_pDocument->getNewUUID();
 			UT_return_if_fail(uuid != NULL);
 			sUID = "obj-";
 			s = uuid->toString().unwrap_or("");

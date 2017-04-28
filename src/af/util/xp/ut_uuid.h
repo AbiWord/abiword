@@ -35,6 +35,7 @@
 #endif
 #include <time.h>
 
+#include <memory>
 #include <string>
 
 #include "ut_option.h"
@@ -189,6 +190,8 @@ class ABI_EXPORT UT_UUID
 	static unsigned char   s_node[6];
 	static UT_UUID         s_Null;
 };
+
+typedef std::unique_ptr<UT_UUID> UT_UUIDPtr;
 
 /*
     This class mediates creation of UT_UUID instances.

@@ -5159,10 +5159,9 @@ UT_Error FV_View::cmdInsertGraphic(const FG_ConstGraphicPtr& pFG)
 	/*
 	  Create a unique identifier for the data item.
 	*/
-	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_UUIDPtr uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
 	std::string s = uuid->toString().unwrap_or("");
-	DELETEP(uuid);
 
 	UT_Error errorCode = _insertGraphic(pFG, s.c_str());
 	if(m_FrameEdit.isActive())
@@ -5211,7 +5210,7 @@ UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_s
 	/*
 	  Create a unique identifier for the data item.
 	*/
-	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_UUIDPtr uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
 	std::string s = uuid->toString().unwrap_or("");
 	//
@@ -5424,7 +5423,7 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	/*
 	  Create a unique identifier for the data item.
 	*/
-	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_UUIDPtr uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
 	auto result = uuid->toString();
 	if (!result.empty()) {
@@ -5432,7 +5431,7 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 		sMathName += s;
 		sLatexName += s;
 	}
-	delete uuid;
+
 	UT_DEBUGMSG(("Inserting latex id name %s \n",sLatexName.utf8_str()));
 	//
 	// Insert these into the Piece Table
@@ -5556,7 +5555,7 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
 bool FV_View::cmdInsertEmbed(const UT_ConstByteBufPtr & pBuf, PT_DocPosition pos, const char * szMime, const char * szProps)
 {
 	std::string sUID = "obj-";
-	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_UUIDPtr uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
 	auto result = uuid->toString();
 	if (result) {
@@ -5667,7 +5666,7 @@ bool FV_View::cmdUpdateEmbed(const UT_ConstByteBufPtr & pBuf, const char * szMim
 	}
 
 	std::string sUID="obj-";
-	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_UUIDPtr uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
 	auto result = uuid->toString();
 	if (result) {
@@ -5738,7 +5737,7 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, const UT_ConstByteBufPtr & pBuf, con
 	cmdSelect (pos, pos+1);
 	std::string sUID = "obj-";
 	std::string s;
-	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_UUIDPtr uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
 	auto result = uuid->toString();
 	if (result) {
@@ -5834,7 +5833,7 @@ UT_Error FV_View::cmdInsertGraphicAtStrux(const FG_ConstGraphicPtr& pFG, PT_DocP
 	/*
 	  Create a unique identifier for the data item.
 	*/
-	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_UUIDPtr uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
 	std::string s = uuid->toString().unwrap_or("");
 

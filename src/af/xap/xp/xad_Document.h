@@ -33,11 +33,11 @@
 #include "ut_bytebuf.h"
 #include "ut_string_class.h"
 #include "ut_vector.h"
+#include "ut_uuid.h"
 #include "time.h"
 
 // fwd. decl.
 class XAP_ResourceManager;
-class UT_UUID;
 class XAP_Frame;
 class AV_View;
 
@@ -233,7 +233,7 @@ public:
 	std::string     getMyUUIDString()const;
 	const UT_UUID * getMyUUID()const {return m_pMyUUID;};
 
-	UT_UUID *       getNewUUID()   const;
+	UT_UUIDPtr      getNewUUID()   const;
 	UT_uint32       getNewUUID32() const;
 	UT_uint64       getNewUUID64() const;
 

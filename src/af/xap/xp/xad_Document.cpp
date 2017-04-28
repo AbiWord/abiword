@@ -152,7 +152,7 @@ bool AD_Document::isPieceTableChanging(void) const
     using MAC in the uuid we cannot absolutely guarantee universal
     uniqueness.
 */
-UT_UUID * AD_Document::getNewUUID()const
+UT_UUIDPtr AD_Document::getNewUUID() const
 {
 	// when new uuid is requested, we will generate it reusing the MAC
 	// part of the doc uuid. This will ensure that all uuid's in the
@@ -165,7 +165,8 @@ UT_UUID * AD_Document::getNewUUID()const
 	UT_return_val_if_fail(pUUID, NULL);
 	pUUID->resetTime();
 	UT_ASSERT(pUUID->isValid());
-	return pUUID;
+
+	return UT_UUIDPtr(pUUID);
 }
 
 /*!
@@ -177,10 +178,9 @@ UT_uint32 AD_Document::getNewUUID32() const
 	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(),0);
 	return XAP_App::getApp()->getUUIDGenerator()->getNewUUID32();
 #else
-	UT_UUID *pUUID = getNewUUID();
+	UT_UUIDPtr pUUID = getNewUUID();
 	UT_return_val_if_fail(pUUID, 0);
 	UT_uint32 iRet = pUUID->hash32();
-	delete pUUID;
 	return iRet;
 #endif
 }
@@ -194,10 +194,9 @@ UT_uint64 AD_Document::getNewUUID64() const
 	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(),0);
 	return XAP_App::getApp()->getUUIDGenerator()->getNewUUID64();
 #else
-	UT_UUID *pUUID = getNewUUID();
+	UT_UUIDPtr pUUID = getNewUUID();
 	UT_return_val_if_fail(pUUID, 0);
 	UT_uint32 iRet = pUUID->hash32();
-	delete pUUID;
 	return iRet;
 #endif
 }

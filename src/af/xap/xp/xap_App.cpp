@@ -1700,8 +1700,8 @@ XAP_App::setNoGUI( bool v )
 std::string
 XAP_App::createUUIDString() const
 {
-    std::unique_ptr<UT_UUID> uuido(getUUIDGenerator()->createUUID());
-	return uuido->toString().unwrap_or("");
+    UT_UUIDPtr uuido(getUUIDGenerator()->createUUID());
+    return uuido->toString().unwrap_or("");
 }
 
 
