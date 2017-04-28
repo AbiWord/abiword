@@ -589,12 +589,13 @@ AX_CHECK_COMPILE_FLAG([-Werror=unknown-warning-option], [
 ], [
 	ax_compiler_flags_test=""
 ])
+dnl XXX enable these
+dnl -Wformat-nonliteral
 AX_APPEND_COMPILE_FLAGS([ \
    -Wcast-align \
    -Wchar-subscripts \
    -Wextra \
    -Wformat \
-   -Wformat-nonliteral \
    -Wformat-security \
    -Wheader-guard \
    -Wlogical-not-parentheses \
