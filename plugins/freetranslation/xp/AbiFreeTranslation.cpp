@@ -30,6 +30,7 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
+#include "pp_AttrProp.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"

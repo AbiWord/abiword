@@ -31,6 +31,7 @@
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
 #include "ut_wctomb.h"
+#include "pp_AttrProp.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"

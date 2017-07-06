@@ -24,6 +24,7 @@
 #define FL_AUTONUM_H
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_set>
