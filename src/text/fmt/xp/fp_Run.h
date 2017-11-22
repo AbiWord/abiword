@@ -306,11 +306,12 @@ public:
 	virtual void        adjustDeletePosition(UT_uint32 & /*pos1*/,
 											 UT_uint32 & /*count*/) {}
 
-	bool                containsRevisions() const {return (m_pRevisions != NULL);}
+	bool                containsRevisions() const { return !!m_pRevisions; }
 	// would prefer to make the return value const, but the
 	// getLastRevision() and related functions use internal cache so
 	// they could not be called
-	PP_RevisionAttr *   getRevisions() const {return m_pRevisions;}
+	const std::unique_ptr<PP_RevisionAttr>& getRevisions() const
+		{ return m_pRevisions; }
 	FPVisibility        getVisibility() const {return m_eVisibility;}
 	bool         isHidden() const {return _wouldBeHidden(m_eVisibility);}
 	void                setVisibility(FPVisibility eVis);
@@ -411,7 +412,8 @@ protected:
 								 return o != w;
 							 }
 	void				_setLength(UT_uint32 l) { m_iLen = l; }
-	void				_setRevisions(PP_RevisionAttr * p) { m_pRevisions = p; }
+	void				_setRevisions(std::unique_ptr<PP_RevisionAttr>&& p)
+		{ m_pRevisions = std::move(p); }
 	void				_setDirty(bool b);
 	void				_setField(fd_Field * fd) { m_pField = fd; }
 	void                _setHyperlink(fp_HyperlinkRun * pH) { m_pHyperlink = pH; }
@@ -482,7 +484,7 @@ private:
 	UT_sint32               m_iminOverline;
 	UT_sint32               m_iOverlineXoff;
 	fp_HyperlinkRun *		m_pHyperlink;
-	PP_RevisionAttr *       m_pRevisions;
+	std::unique_ptr<PP_RevisionAttr> m_pRevisions;
 
 	// A local cache of the page color. This makes clearscreen() a bit faster
 	UT_RGBColor       		m_pColorPG;

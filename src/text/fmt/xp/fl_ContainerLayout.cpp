@@ -173,7 +173,8 @@ FPVisibility fl_ContainerLayout::getAP(const PP_AttrProp *& pAP)const
 	bool bShow     = pView->isShowRevisions();
 	bool bHiddenRevision = false;
 
-	getAttrProp(&pAP,NULL,bShow,iId,bHiddenRevision);
+	std::unique_ptr<PP_RevisionAttr> unused;
+	getAttrProp(&pAP, unused, bShow, iId, bHiddenRevision);
 
 	if(bHiddenRevision)
 	{
@@ -198,7 +199,8 @@ void fl_ContainerLayout::getSpanAP(UT_uint32 blockPos, bool bLeft, const PP_Attr
 	bool bShow     = pView->isShowRevisions();
 	bool bHiddenRevision = false;
 
-	getSpanAttrProp(blockPos, bLeft, &pSpanAP,NULL,bShow,iId,bHiddenRevision);
+	std::unique_ptr<PP_RevisionAttr> unused;
+	getSpanAttrProp(blockPos, bLeft, &pSpanAP, unused, bShow,iId,bHiddenRevision);
 }
 
 

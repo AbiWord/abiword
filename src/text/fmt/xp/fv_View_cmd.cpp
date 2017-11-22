@@ -6321,15 +6321,15 @@ bool FV_View::cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos)
 	fp_Run * pRun2 = bNext ? pRun->getNextRun() : pRun->getPrevRun();
 	fp_Run * pOldRun2 = pRun;
 
-	PP_RevisionAttr * pR1 = pRun->getRevisions();
-	
+	auto& pR1 = pRun->getRevisions();
+
 	while(pRun2)
 	{
 		if(pRun2->containsRevisions() && !pRun2->isHidden())
 		{
 			// test the two runs, if their revions are the same
 			// include this one as well
-			PP_RevisionAttr * pR2 = pRun2->getRevisions();
+			auto& pR2 = pRun2->getRevisions();
 
 			if(!(*pR1 == *pR2))
 				break;
@@ -6338,7 +6338,7 @@ bool FV_View::cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos)
 		{
 			break;
 		}
-		
+
 		pOldRun2 = pRun2;
 		pRun2 = bNext ? pRun2->getNextRun() : pRun2->getPrevRun();
 	}

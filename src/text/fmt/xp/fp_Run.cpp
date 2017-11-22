@@ -126,7 +126,6 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iminOverline(0),
 	m_iOverlineXoff(0),
 	m_pHyperlink(0),
-	m_pRevisions(NULL),
 	m_eVisibility(FP_VISIBLE),
 	m_bIsCleared(true),
 	m_FillType(NULL,this,FG_FILL_TRANSPARENT),
@@ -161,8 +160,6 @@ fp_Run::~fp_Run()
 	m_pBL = NULL;
 	m_pLine = NULL;
 #endif
-
-	DELETEP(m_pRevisions);
 }
 
 UT_sint32 fp_Run::getHeight() const
@@ -415,7 +412,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 #endif
 	// examining the m_pRevisions contents is too involved, it is
 	// faster to delete it and create a new instance if needed
-	DELETEP(m_pRevisions);
+	m_pRevisions.reset();
 
 	setVisibility(FP_VISIBLE); // set default visibility
 	
@@ -727,11 +724,11 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 
 	if(getType() != FPRUN_FMTMARK && getType() != FPRUN_DUMMY && getType() != FPRUN_DIRECTIONMARKER)
 	{
-		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP,&m_pRevisions,bShow,iId,bHiddenRevision);
+		getBlock()->getSpanAttrProp(getBlockOffset(), false, &pSpanAP, m_pRevisions, bShow, iId, bHiddenRevision);
 	}
 	else
 	{
-		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP,&m_pRevisions,bShow,iId,bHiddenRevision);
+		getBlock()->getSpanAttrProp(getBlockOffset(), true, &pSpanAP, m_pRevisions, bShow, iId, bHiddenRevision);
 	}
 	if(pSpanAP == NULL)
 	{
@@ -3227,14 +3224,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	if(pBlockAP && pBlockAP->getAttribute("revision", pRevision))
 	{
-		// we will not in fact be doing anything with the actual
-		// properties and attributes contained in the revision
-		// we just need its representation so the base class can
-		// handle us properly
-		PP_RevisionAttr * pRev = getRevisions();
-		DELETEP(pRev);
-
-		_setRevisions(new PP_RevisionAttr(pRevision));
+		_setRevisions(std::unique_ptr<PP_RevisionAttr>(new PP_RevisionAttr(pRevision)));
 	}
 
 	FV_View* pView = _getView();

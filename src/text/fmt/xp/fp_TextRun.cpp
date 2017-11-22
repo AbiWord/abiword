@@ -1216,7 +1216,9 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset, UT_sint32 iLenSkip)
 		// this, it would be preferable to design copy constructors
 		// for PP_Revision and PP_RevisionAttr and use the copy
 		// constructor, but for no this will do
-		pNew->_setRevisions(new PP_RevisionAttr(getRevisions()->getXMLstring()));
+		pNew->_setRevisions(
+			std::unique_ptr<PP_RevisionAttr>(new PP_RevisionAttr(
+				getRevisions()->getXMLstring())));
 	}
 
 	pNew->setVisibility(this->getVisibility());

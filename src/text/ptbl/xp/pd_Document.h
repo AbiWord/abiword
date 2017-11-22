@@ -446,12 +446,12 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
 
-	bool                    getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
+	bool                    getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, std::unique_ptr<PP_RevisionAttr>& pRevisions,
 										bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const;
 
 	bool                    getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP,
-											PP_RevisionAttr ** pRevisions,
+											std::unique_ptr<PP_RevisionAttr>& pRevisions,
 											bool bShowRevisions, UT_uint32 iRevisionId,
 											bool &bHiddenRevision) const;
 
@@ -650,7 +650,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	virtual bool            rejectAllHigherRevisions(UT_uint32 iLevel);
 	virtual bool            acceptAllRevisions();
 
-	const PP_AttrProp *     explodeRevisions(PP_RevisionAttr *& pRevisions, const PP_AttrProp * pAP,
+	const PP_AttrProp *     explodeRevisions(std::unique_ptr<PP_RevisionAttr>& pRevisions, const PP_AttrProp * pAP,
 											 bool bShow, UT_uint32 iId, bool &bHiddenRevision) const;
 
 	virtual void            purgeRevisionTable(bool bUnconditional = false);

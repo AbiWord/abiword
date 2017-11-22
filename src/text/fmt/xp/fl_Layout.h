@@ -59,14 +59,14 @@ public:
 		{ return m_apIndex; }
 	void				setAttrPropIndex(PT_AttrPropIndex apIndex);
 
-	bool				getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
+	bool				getAttrProp(const PP_AttrProp ** ppAP, std::unique_ptr<PP_RevisionAttr>& pRevisions,
 									bool bShowRevisions, UT_uint32 iRevisionId,
 									bool &bHiddenRevision) const;
 
-	bool				getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP,
-										PP_RevisionAttr ** pRevisions,
-										bool bShowRevisions, UT_uint32 iRevisionId,
-										bool &bHiddenRevision) const;
+	bool	getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP,
+                                std::unique_ptr<PP_RevisionAttr>& pRevisions,
+                                bool bShowRevisions, UT_uint32 iRevisionId,
+                                bool &bHiddenRevision) const;
 
 	bool				getField(UT_uint32 offset, fd_Field * &pField);
 	po_Bookmark *		getBookmark(UT_uint32 offset);

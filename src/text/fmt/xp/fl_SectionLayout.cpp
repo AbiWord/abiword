@@ -5482,9 +5482,8 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 			UT_uint32 iId  = pView->getRevisionLevel();
 			bool bShow     = pView->isShowRevisions();
 
-			PP_RevisionAttr * pRevisions = NULL; // must be NULL
+			std::unique_ptr<PP_RevisionAttr> pRevisions; // must be NULL
 
-			
 			if(  pAP->getRevisedIndex() != 0xffffffff
 			  && pAP->getRevisionState().isEqual(iId, bShow, m_pDoc->isMarkRevisions()))
 			{
@@ -5502,10 +5501,8 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 				if(pNewAP)
 					pAP = pNewAP;
 			}
-
-			delete pRevisions;
 		}
-		
+
 		if (pAP)
 		{
 			const gchar* pszSectionType = NULL;
@@ -5562,9 +5559,8 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 			UT_uint32 iId  = pView->getRevisionLevel();
 			bool bShow     = pView->isShowRevisions();
 
-			PP_RevisionAttr * pRevisions = NULL; // must be NULL
+			std::unique_ptr<PP_RevisionAttr> pRevisions; // must be NULL
 
-			
 			if(  pAP->getRevisedIndex() != 0xffffffff
 			  && pAP->getRevisionState().isEqual(iId, bShow, m_pDoc->isMarkRevisions()))
 			{
@@ -5582,10 +5578,8 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 				if(pNewAP)
 					pAP = pNewAP;
 			}
-
-			delete pRevisions;
 		}
-		
+
 		if (pAP)
 		{
 			const gchar* pszSectionType = NULL;

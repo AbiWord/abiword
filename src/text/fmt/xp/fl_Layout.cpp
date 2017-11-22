@@ -85,7 +85,7 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
                      with it.
     
 */
-bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
+bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP, std::unique_ptr<PP_RevisionAttr>& pRevisions,
 							bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
 {
 	UT_return_val_if_fail(m_pDoc, false);
@@ -96,9 +96,9 @@ bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevis
     if pRevisions is not needed, set the pointer to NULL(this speeds up things)
 */
 bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP,
-								PP_RevisionAttr ** pRevisions,
-								bool bShowRevisions, UT_uint32 iRevisionId,
-								bool &bHiddenRevision) const
+                                std::unique_ptr<PP_RevisionAttr>& pRevisions,
+                                bool bShowRevisions, UT_uint32 iRevisionId,
+                                bool &bHiddenRevision) const
 {
 	UT_return_val_if_fail(m_pDoc, false);
 	return m_pDoc->getSpanAttrProp(m_sdh,offset, bLeftSide, ppAP, pRevisions,

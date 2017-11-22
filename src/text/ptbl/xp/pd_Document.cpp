@@ -2231,8 +2231,9 @@ bool PD_Document::getAttributeFromSDH(pf_Frag_Strux* sdh, bool bShowRevisions, U
 	const gchar * pszValue = NULL;
 
 	bool bHiddenRevision = false;
-	getAttrProp(indexAP, &pAP,NULL,bShowRevisions,iRevisionLevel,bHiddenRevision);
-	
+	std::unique_ptr<PP_RevisionAttr> unused;
+	getAttrProp(indexAP, &pAP, unused, bShowRevisions, iRevisionLevel, bHiddenRevision);
+
 	UT_return_val_if_fail (pAP, false);
 	(pAP)->getAttribute(szAttribute, pszValue);
 	if(pszValue == NULL)
@@ -2281,11 +2282,12 @@ bool PD_Document::getPropertyFromSDH(const pf_Frag_Strux* sdh, bool bShowRevisio
 
 	bool bHiddenRevision = false;
 
-	getAttrProp(indexAP, &pAP,NULL,bShowRevisions,iRevisionLevel,bHiddenRevision);
-	
+	std::unique_ptr<PP_RevisionAttr> unused;
+	getAttrProp(indexAP, &pAP, unused, bShowRevisions, iRevisionLevel, bHiddenRevision);
+
 	UT_return_val_if_fail (pAP, false);
 	(pAP)->getProperty(szProperty, pszValue);
-	
+
 	if(pszValue == NULL)
 	{
 		*pszRetValue = NULL;
@@ -4395,22 +4397,22 @@ bool PD_Document::isConnected(void)
     on return bHiddenRevision indicates if the element associated with
     pAP is to be hidden or visible
 */
-const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions, const PP_AttrProp * pAP,
+const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAttr>& pRevisions, const PP_AttrProp * pAP,
 												  bool bShow, UT_uint32 iId, bool &bHiddenRevision) const
 {
 	PP_AttrProp * pNewAP = NULL;
 	const gchar* pRevision = NULL;
 	bHiddenRevision = false;
-	
+
 	bool bMark = isMarkRevisions();
-	
+
 	if(pAP && pAP->getAttribute("revision", pRevision))
 	{
 		if(!pRevisions)
-			pRevisions = new PP_RevisionAttr(pRevision);
+			pRevisions.reset(new PP_RevisionAttr(pRevision));
 
 		UT_return_val_if_fail(pRevisions, NULL);
-		
+
 		//first we need to ascertain if this revision is visible
 		bool bDeleted = false;
 
@@ -4420,7 +4422,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 
 		pRev = pRevisions->getLastRevision();
 		UT_return_val_if_fail(pRev, NULL);
-		
+
 		UT_uint32 iMaxId = pRev->getId();
 
 		if(!bMark && !bShow && iId == 0)
@@ -8032,11 +8034,12 @@ bool PD_Document::purgeFmtMarks()
 }
 
 
-bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
+bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP,
+							  std::unique_ptr<PP_RevisionAttr>& pRevisions,
 							  bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
 {
 	bool bRevisionAttrNeeded = pRevisions ? true : false;
-	PP_RevisionAttr * pRevAttr = NULL;
+	std::unique_ptr<PP_RevisionAttr> pRevAttr;
 	bHiddenRevision = false;
 
 	const PP_AttrProp * pAP = NULL;
@@ -8054,7 +8057,7 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 
 		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
 		{
-			*pRevisions = new PP_RevisionAttr(pRevision);
+			pRevisions.reset(new PP_RevisionAttr(pRevision));
 			UT_return_val_if_fail(pRevisions, false);
 		}
 
@@ -8063,7 +8066,7 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 		getAttrProp(revAPI, ppAP);
 		return true;
 	}
-	
+
 	const PP_AttrProp * pNewAP = explodeRevisions(pRevAttr, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
 
 	if(pNewAP)
@@ -8074,16 +8077,12 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 	{
 		*ppAP = pAP;
 	}
-	
+
 	if(bRevisionAttrNeeded)
 	{
-		*pRevisions = pRevAttr;
+		pRevisions = std::move(pRevAttr);
 	}
-	else
-	{
-		delete pRevAttr;
-	}
-	
+
 	return true;
 }
 
@@ -8096,14 +8095,14 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 */
 bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLeftSide,
 								  const PP_AttrProp ** ppAP,
-								  PP_RevisionAttr ** pRevisions,
+								  std::unique_ptr<PP_RevisionAttr>& pRevisions,
 								  bool bShowRevisions, UT_uint32 iRevisionId,
 								  bool &bHiddenRevision) const
 {
 	const PP_AttrProp *pAP = NULL;
 	bool bRevisionAttrNeeded = pRevisions ? true : false;
-	PP_RevisionAttr * pRevAttr = NULL;
-	
+	std::unique_ptr<PP_RevisionAttr> pRevAttr;
+
 	if(!getSpanAttrProp(sdh,offset,bLeftSide,&pAP))
 		return false;
 
@@ -8118,16 +8117,16 @@ bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLe
 		// only do this if the pRevisions pointer is set to NULL
 		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
 		{
-			*pRevisions = new PP_RevisionAttr(pRevision);
+			pRevisions.reset(new PP_RevisionAttr(pRevision));
 			UT_return_val_if_fail(pRevisions, false);
 		}
-	
+
 		PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
 
 		getAttrProp(revAPI, ppAP);
 		return true;
 	}
-	
+
 	const PP_AttrProp * pNewAP = explodeRevisions(pRevAttr, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
 
 	if(pNewAP)
@@ -8141,14 +8140,9 @@ bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLe
 
 	if(bRevisionAttrNeeded)
 	{
-		*pRevisions = pRevAttr;
+		pRevisions = std::move(pRevAttr);
 	}
-	else
-	{
-		delete pRevAttr;
-	}
-	
-	
+
 	return true;
 }
 

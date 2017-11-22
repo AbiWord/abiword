@@ -85,14 +85,7 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	if(pBlockAP && pBlockAP->getAttribute("revision", pRevision))
 	{
-		// we will not in fact be doing anything with the actual
-		// properties and attributes contained in the revision
-		// we just need its representation so the base class can
-		// handle us properly
-		PP_RevisionAttr * pRev = getRevisions();
-		DELETEP(pRev);
-
-		_setRevisions(new PP_RevisionAttr(pRevision));
+		_setRevisions(std::unique_ptr<PP_RevisionAttr>(new PP_RevisionAttr(pRevision)));
 	}
 
 	// Find drawing width
