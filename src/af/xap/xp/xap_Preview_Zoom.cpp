@@ -54,7 +54,7 @@ void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
 {
 	UT_ASSERT(m_gc);
 	UT_ASSERT(m_zoomPercent > 0);
-	char fontString [10];
+	char fontString [16];
 
 	// when searching for fonts, we use these
 	GR_Font * found = NULL;
@@ -62,7 +62,7 @@ void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
 	switch (f)
 	{
 	case XAP_Preview_Zoom::font_NORMAL:
-		sprintf (fontString, "%dpt", (10 * m_zoomPercent / 100));
+		snprintf (fontString, 16, "%dpt", (10 * m_zoomPercent / 100));
 		found = m_gc->findFont("Times New Roman",
 							   "normal", "", "normal",
 							   "", fontString,
