@@ -29,7 +29,7 @@ using namespace std;
 namespace AiksaurusGTK_impl
 {
 
-    Display::Display(DialogMediator& mediator) throw()
+    Display::Display(DialogMediator& mediator) noexcept(false)
         : d_mediator(mediator)
     {
         // ensure that styles are set up.
@@ -61,7 +61,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    Display::~Display() throw()
+    Display::~Display() noexcept(false)
     {
         for(int i = 0;i < static_cast<int>(d_meanings.size());++i)
         {
@@ -71,7 +71,7 @@ namespace AiksaurusGTK_impl
 
 
     void Display::_createMeaning(const string& title, vector<string>& words)
-        throw(std::bad_alloc)
+        noexcept(false)
     {
         Meaning *mean = new Meaning(title, words, *this);
         d_meanings.push_back(mean);
@@ -79,7 +79,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    void Display::_resetDisplay() throw()
+    void Display::_resetDisplay() noexcept(false)
     {
         // Recreate our layout widget.
         if (d_layout)
@@ -96,7 +96,7 @@ namespace AiksaurusGTK_impl
         d_meanings.clear();
     }
 
-    void Display::_displayResults(const char* word) throw(Exception, std::bad_alloc)
+    void Display::_displayResults(const char* word) noexcept(false)
     {
         _checkThesaurus();
 
@@ -135,7 +135,7 @@ namespace AiksaurusGTK_impl
 
 
 
-    void Display::_checkThesaurus() throw(Exception)
+    void Display::_checkThesaurus() noexcept(false)
     {
         if (d_thesaurus.error()[0])
         {
@@ -151,7 +151,7 @@ namespace AiksaurusGTK_impl
     }
 
     void Display::_displayAlternatives()
-        throw(Exception, std::bad_alloc)
+        noexcept(false)
     {
         _checkThesaurus();
         vector<string> words;
@@ -165,7 +165,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    void Display::showMessage(const char* message) throw()
+    void Display::showMessage(const char* message) noexcept(false)
     {
         _resetDisplay();
         GtkWidget* label = gtk_label_new(message);
@@ -174,7 +174,7 @@ namespace AiksaurusGTK_impl
         gtk_widget_show_all(d_layout);
     }
 
-    void Display::search(const char* word) throw(std::bad_alloc)
+    void Display::search(const char* word) noexcept(false)
     {
         try
         {
@@ -195,7 +195,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    void Display::_handleClick(bool isDoubleClick, const char* text) throw(std::bad_alloc)
+    void Display::_handleClick(bool isDoubleClick, const char* text) noexcept(false)
     {
         string str(text); // might throw
 
@@ -206,7 +206,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    void Display::_handleSelection(GtkWidget* list) throw()
+    void Display::_handleSelection(GtkWidget* list) noexcept(false)
     {
         for(int i = 0;i < static_cast<int>(d_meanings.size());++i)
         {
@@ -215,13 +215,13 @@ namespace AiksaurusGTK_impl
     }
 
 
-    GtkWidget* Display::getDisplay() throw()
+    GtkWidget* Display::getDisplay() noexcept(false)
     {
         return d_scroller;
     }
 
 
-    const Aiksaurus& Display::getThesaurus() const throw()
+    const Aiksaurus& Display::getThesaurus() const noexcept(false)
     {
         return d_thesaurus;
     }
@@ -233,7 +233,7 @@ namespace AiksaurusGTK_impl
     // To do this, we have to set up a resource first so that the
     // styles mean what we want them to mean.
     //
-    void Display::_initResources() throw()
+    void Display::_initResources() noexcept(false)
     {
         // Execute this code only once.
         static bool done = false;

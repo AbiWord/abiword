@@ -9,7 +9,7 @@ using namespace std;
 namespace AiksaurusGTK_impl
 {
 
-    static void ucwords(string& str) throw()
+    static void ucwords(string& str) noexcept(false)
     {
         bool ws = true;
         for(int i = 0;i < static_cast<int>(str.size());++i)
@@ -26,7 +26,7 @@ namespace AiksaurusGTK_impl
     }
 
     Meaning::Meaning(const string& title, vector<string>& words, Display& display)
-    throw(bad_alloc)
+      noexcept(false)
         : d_title(title), d_words(words), d_display(display), d_lists(4), d_models(4)
     {
         d_masterLayout = gtk_event_box_new();
@@ -126,12 +126,12 @@ namespace AiksaurusGTK_impl
 
     }
 
-    Meaning::~Meaning() throw()
+    Meaning::~Meaning() noexcept(false)
     {
 
     }
 
-    GtkWidget* Meaning::getLayout() throw()
+    GtkWidget* Meaning::getLayout() noexcept(false)
     {
         return d_masterLayout;
     }
@@ -139,7 +139,7 @@ namespace AiksaurusGTK_impl
 
     gint Meaning::_wordclick
     (GtkTreeSelection *sel, gpointer data)
-    throw(std::bad_alloc)
+    noexcept(false)
     {
         Meaning *m = static_cast<Meaning*>(data);
 		GtkTreeView *tv = gtk_tree_selection_get_tree_view(sel);
@@ -159,7 +159,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    void Meaning::unselectListsExcept(GtkWidget* list) throw()
+    void Meaning::unselectListsExcept(GtkWidget* list) noexcept(false)
     {
         for(int i = 0;i < static_cast<int>(d_lists.size());++i)
         {

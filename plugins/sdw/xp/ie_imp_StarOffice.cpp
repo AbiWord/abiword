@@ -188,7 +188,7 @@ static UT_uint16 lcl_sw3io__CompressWhich(UT_uint16 nWhich)
 #endif
 
 void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa)
-    throw(UT_Error)
+    noexcept(false)
 {
 	UT_uint8 flags;
 	gsf_off_t newPos;
@@ -428,7 +428,7 @@ static UT_String _getPassword (XAP_Frame * pFrame)
 }
 
 void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength) 
-    throw(UT_Error) 
+    noexcept(false)
 {
 	UT_uint16 length;
 	str = NULL;
@@ -441,7 +441,7 @@ void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength)
 		*aLength = length;
 }
 
-void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, SDWCryptor* cryptor) throw(UT_Error) 
+void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, SDWCryptor* cryptor) noexcept(false)
 {
 	UT_uint16 len;
 	char* rawString;
@@ -537,7 +537,7 @@ bool IE_Imp_StarOffice_Sniffer::getDlgLabels(const char** pszDesc, const char** 
 // ********************************************************************************
 // Header Class
 
-void DocHdr::load(GsfInput* stream) throw(UT_Error) 
+void DocHdr::load(GsfInput* stream) noexcept(false)
 {
 	UT_DEBUGMSG(("SDW: entering DocHdr::load\n"));
 	static const char sw3hdr[] = "SW3HDR";
@@ -619,7 +619,7 @@ IE_Imp_StarOffice::~IE_Imp_StarOffice() {
 		g_object_unref(G_OBJECT(mOle));
 }
 
-void IE_Imp_StarOffice::readRecSize(GsfInput* aStream, UT_uint32& aSize, gsf_off_t* aEOR) throw(UT_Error) {
+void IE_Imp_StarOffice::readRecSize(GsfInput* aStream, UT_uint32& aSize, gsf_off_t* aEOR) noexcept(false) {
 	// Yes, that's correct, only 3 bytes.
 	guint8 buf [3];
 	aSize = 0;
@@ -635,7 +635,7 @@ void IE_Imp_StarOffice::readRecSize(GsfInput* aStream, UT_uint32& aSize, gsf_off
 		*aEOR = gsf_input_tell(aStream) + aSize;
 }
 
-void readFlagRec(GsfInput* stream, UT_uint8& flags, gsf_off_t* newPos) throw(UT_Error) 
+void readFlagRec(GsfInput* stream, UT_uint8& flags, gsf_off_t* newPos) noexcept(false)
 {
 	streamRead(stream, flags);
 	if (newPos)

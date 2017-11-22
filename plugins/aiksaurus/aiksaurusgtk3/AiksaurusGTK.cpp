@@ -51,15 +51,15 @@ namespace AiksaurusGTK_impl
             DialogImpl();
             virtual ~DialogImpl();
 
-            const char* runThesaurus(const char* word) throw();
-            void setTitle(const char* title) throw();
-            void setReplacebar(bool replacebar) throw();
-            void setInitialMessage(const char* message) throw(std::bad_alloc);
+            const char* runThesaurus(const char* word) noexcept(false);
+            void setTitle(const char* title) noexcept(false);
+            void setReplacebar(bool replacebar) noexcept(false);
+            void setInitialMessage(const char* message) noexcept(false);
 
-            void eventCancel() throw();
-            void eventReplace(const char* replacement) throw();
-            void eventSelectWord(const char* word) throw();
-            void eventSearch(const char* word) throw();
+            void eventCancel() noexcept(false);
+            void eventReplace(const char* replacement) noexcept(false);
+            void eventSelectWord(const char* word) noexcept(false);
+            void eventSearch(const char* word) noexcept(false);
     };
 
 
@@ -78,13 +78,13 @@ namespace AiksaurusGTK_impl
     }
 
 
-    void DialogImpl::setReplacebar(bool replacebar) throw()
+    void DialogImpl::setReplacebar(bool replacebar) noexcept(false)
     {
         d_showreplacebar = replacebar;
     }
 
 
-    void DialogImpl::setInitialMessage(const char* message) throw(std::bad_alloc)
+    void DialogImpl::setInitialMessage(const char* message) noexcept(false)
     {
         d_initialMessage = message;
     }
@@ -149,7 +149,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    const char* DialogImpl::runThesaurus(const char* word) throw()
+    const char* DialogImpl::runThesaurus(const char* word) noexcept(false)
     {
         try {
 
@@ -180,7 +180,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    void DialogImpl::setTitle(const char* word) throw()
+    void DialogImpl::setTitle(const char* word) noexcept(false)
     {
         try {
             d_title = (word) ? (word) : ("");
@@ -191,13 +191,13 @@ namespace AiksaurusGTK_impl
     }
 
 
-    void DialogImpl::eventCancel() throw()
+    void DialogImpl::eventCancel() noexcept(false)
     {
         gtk_main_quit();
     }
 
 
-    void DialogImpl::eventReplace(const char* replacement) throw()
+    void DialogImpl::eventReplace(const char* replacement) noexcept(false)
     {
         try {
             d_replacement = replacement;
@@ -209,14 +209,14 @@ namespace AiksaurusGTK_impl
     }
 
 
-    void DialogImpl::eventSelectWord(const char* word) throw()
+    void DialogImpl::eventSelectWord(const char* word) noexcept(false)
     {
         if (d_replacebar_ptr)
             d_replacebar_ptr->setText(word);
     }
 
 
-    void DialogImpl::eventSearch(const char* word) throw()
+    void DialogImpl::eventSearch(const char* word) noexcept(false)
     {
         try {
             std::string w( (word) ? (word) : ("") );

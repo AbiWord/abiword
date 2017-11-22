@@ -28,18 +28,18 @@ namespace AiksaurusGTK_impl
             GtkWidget* d_label;
 
             static gint _wordclick(GtkTreeSelection *sel,
-                                   gpointer data) throw(std::bad_alloc);
+                                   gpointer data) noexcept(false);
 
         public:
 
             Meaning(const string& title, vector<string>& words, Display& display)
-                throw(std::bad_alloc);
+                noexcept(false);
 
-            ~Meaning() throw();
+            ~Meaning() noexcept(false);
 
-            GtkWidget* getLayout() throw();
+            GtkWidget* getLayout() noexcept(false);
 
-            void unselectListsExcept(GtkWidget* me) throw();
+            void unselectListsExcept(GtkWidget* me) noexcept(false);
     };
 }
 

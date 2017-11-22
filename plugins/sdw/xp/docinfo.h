@@ -41,7 +41,7 @@ class SDWDocInfo {
 		 * @param aDoc The OLE Document which contains the stream
 		 * @param aPDDoc The PD_Document on which the metadata will be set.
 		 * Should be called as load(mDoc, getDoc()); */
-		static void load(GsfInfile *aDoc, PD_Document* aPDDoc) throw(UT_Error);
+		static void load(GsfInfile *aDoc, PD_Document* aPDDoc) noexcept(false);
 };
 
 #endif

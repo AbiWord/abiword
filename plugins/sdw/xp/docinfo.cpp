@@ -41,7 +41,7 @@ SDWDocInfo::~SDWDocInfo() {}
 /** Reads a bytestring, followed by a padding. aMaxlen is the max. number of bytes to read. */
 static void readPaddedByteString(GsfInput* aStream, UT_UCS4String& aString,
                                  UT_iconv_t aConverter, UT_uint32 aMaxlen)
-    throw(UT_Error) 
+	noexcept(false)
 {
 	UT_UCS4Char* str;
 	readByteString(aStream, str, aConverter);
@@ -119,7 +119,7 @@ static inline void do_SetMetadata(PD_Document* aDoc, const std::string & aKey, U
 }
 
 void SDWDocInfo::load(GsfInfile* aDoc, PD_Document* aPDDoc) 
-	throw(UT_Error)
+	noexcept(false)
 {
 	char* headStr = NULL;
 
