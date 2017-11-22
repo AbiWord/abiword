@@ -557,15 +557,15 @@ UT_Error IE_Exp_HTML::_writeDocument(bool /*bClipBoard*/, bool /*bTemplateBody*/
         PT_DocPosition posEnd; // End of the chapter
         PT_DocPosition posCurrent;
         PT_DocPosition docBegin;
-        UT_UTF8String chapterTitle;
-        UT_UTF8String currentTitle;
+        std::string chapterTitle;
+        std::string currentTitle;
         int currentLevel = 0;
         bool firstChapter = true;
 
         getDoc()->getBounds(false, posEnd);
         docBegin = posEnd;
         posEnd = 0;
-        currentTitle = m_pNavigationHelper->getNthTOCEntry(0, NULL);
+        currentTitle = m_pNavigationHelper->getNthTOCEntry(0, NULL).utf8_str();
         bool isIndex = true;
         for (int i = m_pNavigationHelper->getMinTOCIndex();
             i < m_pNavigationHelper->getNumTOCEntries(); i++)
@@ -576,7 +576,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool /*bClipBoard*/, bool /*bTemplateBody*/
 
             if (currentLevel == m_pNavigationHelper->getMinTOCLevel())
             {
-                chapterTitle = m_pNavigationHelper->getNthTOCEntry(i, NULL);
+                chapterTitle = m_pNavigationHelper->getNthTOCEntry(i, NULL).utf8_str();
                 m_pNavigationHelper->getNthTOCEntryPos(i, posCurrent);
                 posBegin = posEnd;
 
@@ -598,7 +598,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool /*bClipBoard*/, bool /*bTemplateBody*/
                 posEnd = posCurrent;
                 PD_DocumentRange *range = new PD_DocumentRange(getDoc(), posBegin, posEnd);
                 UT_DEBUGMSG(("POS: BEGIN %d END %d\n", posBegin, posEnd));
-                UT_DEBUGMSG(("Now will create chapter of the document with title %s\n", currentTitle.utf8_str()));
+                UT_DEBUGMSG(("Now will create chapter of the document with title %s\n", currentTitle.c_str()));
 
                 _createChapter(range, currentTitle, isIndex);
                 if (isIndex)
@@ -637,10 +637,10 @@ UT_Error IE_Exp_HTML::_writeDocument(bool /*bClipBoard*/, bool /*bTemplateBody*/
 
 
 
-void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &title, 
+void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const std::string &title,
     bool isIndex)
 {
-    UT_UTF8String filename;
+    std::string filename;
     GsfOutput *output;
     if (isIndex)
     {
@@ -648,15 +648,16 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
 		char* s = UT_go_basename_from_uri(getFileName());
         filename = s;
 		g_free(s);
-    } 
+    }
 	else
     {
-        filename = ConvertToClean(title) + m_suffix;
+        filename = ConvertToClean(title.c_str()).utf8_str();
+		filename += m_suffix.utf8_str();
 		char* s = g_path_get_dirname(getFileName());
-		UT_UTF8String outputUri = s;
+		std::string outputUri = s;
 		g_free(s);
         outputUri += SEPARATOR + filename;
-        output = UT_go_file_create(outputUri.utf8_str(), NULL);
+        output = UT_go_file_create(outputUri.c_str(), NULL);
     }
     IE_Exp_HTML_OutputWriter *pOutputWriter = 
         new IE_Exp_HTML_FileWriter(output);
@@ -671,7 +672,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
     
     IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
         pDataExporter, m_style_tree, m_pNavigationHelper, pMainListener,
-        filename);
+        filename.c_str());
     // Time to send some settings to listener
     pListener->set_SplitDocument(m_exp_opt.bSplitDocument);
     pListener->set_EmbedCSS(m_exp_opt.bEmbedCSS);
@@ -788,24 +789,13 @@ void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
     }
 }
 
-bool IE_Exp_HTML::hasMathML(const UT_UTF8String& file)
-{
-    if (m_mathmlFlags.find(file) != m_mathmlFlags.end())
-    {
-        return m_mathmlFlags[file];
-    } else
-    {
-        return false;
-    }
-}
-
 bool IE_Exp_HTML::hasMathML(const std::string& file)
 {
-	UT_UTF8String f(file);
-    if (m_mathmlFlags.find(f) != m_mathmlFlags.end())
+    auto iter = m_mathmlFlags.find(file);
+    if (iter != m_mathmlFlags.end())
     {
-        return m_mathmlFlags[f];
-    } 
+        return iter->second;
+    }
 	else
     {
         return false;

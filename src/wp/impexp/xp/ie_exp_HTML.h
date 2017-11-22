@@ -115,11 +115,10 @@ private:
 
 protected:
 	virtual UT_Error	_writeDocument ();
-	void				_createChapter(PD_DocumentRange *range, const UT_UTF8String &title, bool isIndex);
+	void				_createChapter(PD_DocumentRange *range, const std::string &title, bool isIndex);
 	void _createMultipart();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
-	bool hasMathML(const UT_UTF8String &file);
 	bool hasMathML(const std::string &file);
 	static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& sink);
 private:
@@ -134,7 +133,7 @@ private:
 	IE_Exp_HTML_WriterFactory *m_pWriterFactory;
 	// We need to know file suffix to create chapters with the same suffix as the main file
 	UT_UTF8String m_suffix;
-	std::map<UT_UTF8String, bool> m_mathmlFlags;
+	std::map<std::string, bool> m_mathmlFlags;
 	IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
 };
 
