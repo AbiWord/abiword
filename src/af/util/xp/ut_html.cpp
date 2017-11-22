@@ -24,12 +24,11 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "ut_std_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_html.h"
-
-#include "ut_string_class.h"
 
 // Please keep the "/**/" to stop MSVC dependency generator complaining.
 #include <libxml/parser.h>
@@ -46,7 +45,8 @@ UT_HTML::UT_HTML (const char * szEncoding)
 	if (szEncoding && *szEncoding)
 		{
 			m_encoding = szEncoding;
-			m_encoding = m_encoding.lowerCase ();
+			// we should be safe as it is ASCII.
+			UT_tolower(m_encoding);
 		}
 }
 
@@ -91,9 +91,10 @@ static void _errorSAXFunc (void * /*ctx*/, const char *msg, ...)
 	va_list args;
 	va_start (args, msg);
 
-	UT_String errorMessage(UT_String_vprintf (msg, args));
+	std::string errorMessage;
+	UT_std_string_vprintf (errorMessage, msg, args);
 	va_end (args);
-  
+
 	UT_DEBUGMSG(("libxml2/html: error: %s", errorMessage.c_str()));
 }
 
@@ -102,10 +103,11 @@ static void _fatalErrorSAXFunc (void * /*ctx*/, const char *msg, ...)
 	va_list args;
 	va_start (args, msg);
 
-	UT_String errorMessage(UT_String_vprintf (msg, args));
+	std::string errorMessage;
+	UT_std_string_vprintf (errorMessage, msg, args);
 
 	va_end (args);
-  
+
 	UT_DEBUGMSG(("libxml2/html: fatal: %s", errorMessage.c_str()));
 }
 
@@ -150,7 +152,7 @@ UT_Error UT_HTML::parse (const char * szFilename)
 
 	if (length != 0)
 		{
-			xmlCharEncoding encoding = xmlParseCharEncoding (m_encoding.utf8_str());
+			xmlCharEncoding encoding = xmlParseCharEncoding (m_encoding.c_str());
 
 			ctxt = htmlCreatePushParserCtxt (&hdl, static_cast<void *>(this),
 											 buffer, static_cast<int>(length),

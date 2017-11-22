@@ -25,6 +25,9 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <functional>
+#include <locale>
 
 #include "ut_types.h"
 
@@ -73,6 +76,12 @@ ABI_EXPORT std::string replace_all( const std::string& s, char oldc, char newc )
 ABI_EXPORT std::string replace_all( const std::string& s,
                                     const std::string& olds,
                                     const std::string& news );
+
+/** convert to lower case in-place. Use std::tolower.
+ * \param s the string to lower case. Mutable.
+ * \return s
+ */
+ABI_EXPORT std::string & UT_tolower(std::string& s);
 
 ABI_EXPORT std::string UT_XML_cloneNoAmpersands( const std::string& szSource );
 

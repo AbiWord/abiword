@@ -208,7 +208,7 @@ std::string replace_all( const std::string& s,
     std::string ret = s;
     int olds_length = olds.length();
     int news_length = news.length();
-            
+
     std::string::size_type start = ret.find( olds );
     while( start != std::string::npos )
     {
@@ -218,11 +218,19 @@ std::string replace_all( const std::string& s,
     return ret;
 }
 
+std::string& UT_tolower(std::string& s)
+{
+	std::transform(s.begin(), s.end(), s.begin(),
+				   [](char c) {
+					   return std::tolower(c, std::locale());
+				   });
+	return s;
+}
 
 std::string UT_XML_cloneNoAmpersands( const std::string& src )
 {
     gchar* rszDest = 0;
-    
+
     bool rc = UT_XML_cloneNoAmpersands( rszDest, src.c_str() );
     if( !rc )
         return src;

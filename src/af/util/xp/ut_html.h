@@ -31,7 +31,6 @@
 #include "ut_types.h"
 #endif
 #include "ut_xml.h"
-#include "ut_string_class.h"
 
 class ABI_EXPORT UT_HTML : public UT_XML
 {
@@ -44,7 +43,7 @@ public:
 	UT_Error parse (const char * buffer, UT_uint32 length);
 
 private:
-	UT_UTF8String m_encoding;
+	std::string m_encoding;
 };
 
 #endif

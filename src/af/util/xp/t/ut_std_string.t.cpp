@@ -65,6 +65,15 @@ TFTEST_MAIN("string utilities")
   TFPASS(r == "Peekachu");
 }
 
+TFTEST_MAIN("to lower")
+{
+  std::string s = "NeXT";
+  UT_tolower(s);
+  TFPASS(s == "next");
+  UT_tolower(s);
+  TFPASS(s == "next");
+}
+
 TFTEST_MAIN("simpleSplit")
 {
   {
