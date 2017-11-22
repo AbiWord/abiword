@@ -107,8 +107,8 @@ struct TextAttr {
 	UT_uint8* data; // possible additional data. NULL if no data existant.
 	gsf_off_t dataLen;
 
-	UT_String attrName;
-	UT_String attrVal;
+	std::string attrName;
+	std::string attrVal;
 	bool isOff; // if true, attrVal is undefined
 	bool isPara; // should be applied to paragraph, not span
 };

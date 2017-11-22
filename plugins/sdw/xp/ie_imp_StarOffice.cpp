@@ -37,6 +37,7 @@ ABI_W_POP
 #include "ut_vector.h"
 #include "ut_debugmsg.h"
 #include "ut_units.h"
+#include "ut_std_string.h"
 
 #include "pd_Document.h"
 
@@ -152,7 +153,7 @@ static double twipsToPoints(UT_uint32 aTwips)
   return (double)aTwips/20;
 }
 
-static UT_String twipsToSizeString(UT_uint32 aTwips)
+static std::string twipsToSizeString(UT_uint32 aTwips)
 {
   return UT_formatDimensionString(DIM_PT, twipsToPoints(aTwips));
 }
@@ -249,8 +250,8 @@ void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa)
 			aAttr.attrName = "font-family";
 			// XXX TODO This code here assumes that the font names are in latin1
 			UT_uint16 fontLen = GSF_LE_GET_GUINT16(aAttr.data + 3);
-			UT_String_sprintf(aAttr.attrVal, "%.*s", fontLen, (aAttr.data + 5));
-			
+			aAttr.attrVal = UT_std_string_sprintf("%.*s", fontLen, (aAttr.data + 5));
+
 		break; }
     case 0x1007: // font height
       // structure: | height (2 byte, twips) | prop (?) (2 byte) (if version >= 2, if ver=1 1 byte) | unit (if version>=2) |
@@ -293,7 +294,7 @@ void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa)
         // (used for "exact" and "minimum" line spacing)
         // XXX inter-line spacing not supported by abiword (would be rule=0x00
         // interrule=0x02, value to use=inter space, unit twips)
-        UT_String lineHeight = twipsToSizeString(GSF_LE_GET_GINT16(aAttr.data + 3));
+        std::string lineHeight = twipsToSizeString(GSF_LE_GET_GINT16(aAttr.data + 3));
 
         // We'll turn the bytes at 5 and 6 into a single integer, for easier
         // evaluation
@@ -343,7 +344,7 @@ void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa)
       for (UT_uint32 i = 1; (i + 6) < aAttr.dataLen; i += 7) {
         // Abiword wants: 12.3cm/L0, where 0 indicates what to fill with
         UT_uint16 posInTwips = GSF_LE_GET_GUINT32(aAttr.data + i);
-        UT_String pos = twipsToSizeString(posInTwips);
+        std::string pos = twipsToSizeString(posInTwips);
 
         aAttr.attrVal += pos;
         aAttr.attrVal += '/';
@@ -740,8 +741,8 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 								UT_DEBUGMSG(("SDW: ...length=%zu contents are: |%s|\n", textNode.length(), textNode.utf8_str()));
 
 								// now get the attributes
-								UT_String attrs;
-								UT_String pAttrs;
+								std::string attrs;
+								std::string pAttrs;
 								UT_Vector charAttributes;
 								while (gsf_input_tell(mDocStream) < eor2) {
 									char attVal;
@@ -775,9 +776,9 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 												streamRead(mDocStream, a, eoa2);
                         if (!a.attrVal.empty()) {
   												if (a.isPara)
-	  												UT_String_setProperty(pAttrs, a.attrName, a.attrVal);
+	  												UT_std_string_setProperty(pAttrs, a.attrName, a.attrVal);
 		  										else
-			  										UT_String_setProperty(attrs, a.attrName, a.attrVal);
+			  										UT_std_string_setProperty(attrs, a.attrName, a.attrVal);
                         }
 						UT_DEBUGMSG(("SDW: ......found paragraph attr, which=0x%x, ver=0x%x, start=%u, end=%u (string now %s) Data:%s Len=%lld Data:", a.which, a.ver, (a.startSet?a.start:0), (a.endSet?a.end:0), attrs.c_str(), (a.data ? "Yes" : "No"), (long long)a.dataLen));
 #ifdef DEBUG
@@ -804,7 +805,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 								if (!appendStrux(PTX_Block, attributes))
 									return UT_IE_NOMEMORY;
 
-								UT_String pca(attrs); // character attributes for the whole paragraph
+								std::string pca(attrs); // character attributes for the whole paragraph
 								// now insert the spans of text
 								UT_uint32 len = textNode.length();
 								UT_uint32 lastInsPos = 0;
@@ -815,21 +816,21 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 										// clear the last attribute, if set
 										if (a->endSet && a->end == (i - 1)) {
 											if (a->isOff) {
-												UT_String propval = UT_String_getPropVal(pca, a->attrName);
-												UT_String_setProperty(attrs, a->attrName, propval);
+												std::string propval = UT_std_string_getPropVal(pca, a->attrName);
+												UT_std_string_setProperty(attrs, a->attrName, propval);
 											}
 											else
-												UT_String_removeProperty(attrs, a->attrName);
+												UT_std_string_removeProperty(attrs, a->attrName);
 										}
 
 										// now set new attribute, if needed
 										if (a->startSet && a->start == (i - 1)) {
 											if (a->isPara)
-												UT_String_setProperty(pAttrs, a->attrName, a->attrVal);
+												UT_std_string_setProperty(pAttrs, a->attrName, a->attrVal);
 											else if (a->isOff)
-												UT_String_removeProperty(attrs, a->attrName);
+												UT_std_string_removeProperty(attrs, a->attrName);
 											else
-												UT_String_setProperty(attrs, a->attrName, a->attrVal);
+												UT_std_string_setProperty(attrs, a->attrName, a->attrVal);
 										}
 
 										// insert if this is the last character, or if there was a format change
