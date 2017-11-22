@@ -22,11 +22,13 @@
 #ifndef IE_EXP_HTML_STYLETREE_H
 #define IE_EXP_HTML_STYLETREE_H
 
+#include <string>
+
 #include "ie_exp_HTML_util.h"
 #include "ut_locale.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
-#include "ut_string_class.h"
+#include "ut_std_string.h"
 #include "pt_Types.h"
 #include "pl_Listener.h"
 #include "pd_Document.h"
@@ -62,9 +64,9 @@ private:
 
     bool m_bInUse;
 
-    UT_UTF8String m_style_name;
-    UT_UTF8String m_class_name;
-    UT_UTF8String m_class_list;
+    std::string m_style_name;
+    std::string m_class_name;
+    std::string m_class_list;
 
     typedef std::map<std::string, std::string> map_type;
     map_type m_map;
@@ -100,15 +102,15 @@ public:
         return m_count;
     }
 
-    const UT_UTF8String & style_name() const {
+    const std::string& style_name() const {
         return m_style_name;
     }
 
-    const UT_UTF8String & class_name() const {
+    const std::string& class_name() const {
         return m_class_name;
     }
 
-    const UT_UTF8String & class_list() const {
+    const std::string& class_list() const {
         return m_class_list;
     }
 
@@ -151,16 +153,20 @@ private:
 
 template<typename StyleListener>
 void IE_Exp_HTML_StyleTree::print(StyleListener * listener) const {
-    if (!m_bInUse) return;
+    if (!m_bInUse) {
+        return;
+    }
 
-    if (strstr(m_style_name.utf8_str(), "List")) return;
+    if (strstr(m_style_name.c_str(), "List")) {
+        return;
+    }
 
     if (m_parent) {
-        UT_UTF8String selector("*.");
-        if (m_class_name.byteLength()) {
-            UT_UTF8String tmp = m_class_name;
-            tmp.escapeXML();
-            selector += tmp.utf8_str();
+        std::string selector("*.");
+        if (!m_class_name.empty()) {
+            std::string tmp = m_class_name;
+            tmp = UT_escapeXML(tmp);
+            selector += tmp;
         } else {
             if (m_style_name == "Normal")
                 selector = "p, h1, h2, h3, li";
@@ -187,7 +193,7 @@ void IE_Exp_HTML_StyleTree::print(StyleListener * listener) const {
 
 struct StyleListener {
     UT_ByteBuf& m_sink;
-    UT_UTF8String m_utf8_0;
+    std::string m_utf8_0;
     UT_uint32 m_styleIndent;
 
     StyleListener(UT_ByteBuf & sink)
@@ -198,21 +204,22 @@ struct StyleListener {
         return false;
     }
 
-    void tagRaw(UT_UTF8String & content) {
-        m_sink.append((const UT_Byte*) content.utf8_str(), content.byteLength());
+    void tagRaw(const std::string& content) {
+        m_sink.append((const UT_Byte*) content.c_str(), content.size());
     }
 
     void styleIndent() {
         m_utf8_0 = "";
 
-        for (UT_uint32 i = 0; i < m_styleIndent; i++) m_utf8_0 += "\t";
+        for (UT_uint32 i = 0; i < m_styleIndent; i++) {
+            m_utf8_0 += "\t";
+        }
     }
 
-    void styleOpen(const UT_UTF8String & rule) {
+    void styleOpen(const std::string& rule) {
         styleIndent();
 
-        m_utf8_0 += rule;
-        m_utf8_0 += " {";
+        m_utf8_0 += rule + " {";
         if (!get_Compact())
             m_utf8_0 += MYEOL;
 
@@ -237,7 +244,7 @@ struct StyleListener {
         tagRaw(m_utf8_0);
     }
 
-    void styleNameValue(const gchar * name, const UT_UTF8String & value) {
+    void styleNameValue(const gchar * name, const std::string & value) {
         styleIndent();
 
         m_utf8_0 += name;
@@ -250,7 +257,7 @@ struct StyleListener {
         tagRaw(m_utf8_0);
     }
 
-    void styleText(const UT_UTF8String & content) {
+    void styleText(const std::string& content) {
         m_utf8_0 = content;
         tagRaw(m_utf8_0);
     }

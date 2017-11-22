@@ -23,6 +23,7 @@
 */
 
 #include "ie_exp_HTML_util.h"
+#include "ut_std_string.h"
 
 #define SEPARATOR "/"
 
@@ -189,7 +190,7 @@ bool is_CSS (const char * prop_name, const char ** prop_default)
 /*!	This function copies a string to a new string, removing all the white
   space in the process.
 */
-char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
+void s_removeWhiteSpace (const char * text, std::string & utf8str,
 								  bool bLowerCase)
 {
 	utf8str = "";
@@ -213,10 +214,10 @@ char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
 			ptr++;
 		}
 
-		if(bLowerCase)
-			utf8str.lowerCase();
+		if(bLowerCase) {
+			UT_tolower(utf8str);
+		}
 	}
-	return 0;
 }
 
 UT_UTF8String ConvertToClean(const UT_UTF8String & str)

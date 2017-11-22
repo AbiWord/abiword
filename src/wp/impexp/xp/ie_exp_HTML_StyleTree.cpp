@@ -64,8 +64,8 @@ IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(IE_Exp_HTML_StyleTree * parent, con
     const gchar * szName = 0;
     const gchar * szValue = 0;
 
-    UT_UTF8String name;
-    UT_UTF8String value;
+    std::string name;
+    std::string value;
 
     while (style->getNthProperty(j++, szName, szValue))
     {
@@ -108,27 +108,28 @@ IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(IE_Exp_HTML_StyleTree * parent, con
                 value = UT_colorToHex(szValue, true);
             }
         }
-        else if (strstr(name.utf8_str(), "width"))
+        else if (strstr(name.c_str(), "width"))
         {
-            if (strstr(name.utf8_str(), "border"))
+            if (strstr(name.c_str(), "border"))
             {
-                double dPT = UT_convertToDimension(value.utf8_str(), DIM_PT);
-                value = UT_UTF8String_sprintf("%.2fpt", dPT);
+                double dPT = UT_convertToDimension(value.c_str(), DIM_PT);
+                value = UT_std_string_sprintf("%.2fpt", dPT);
             }
             else
             {
-                double dMM = UT_convertToDimension(value.utf8_str(), DIM_MM);
-                value = UT_UTF8String_sprintf("%.1fmm", dMM);
+                double dMM = UT_convertToDimension(value.c_str(), DIM_MM);
+                value = UT_std_string_sprintf("%.1fmm", dMM);
             }
         }
 
-        const std::string & cascade_value = lookup(name.utf8_str());
-        if (!cascade_value.empty())
-            if (cascade_value == value)
+        const std::string & cascade_value = lookup(name);
+        if (!cascade_value.empty()) {
+            if (cascade_value == value) {
                 continue;
+			}
+		}
 
-        m_map.insert(map_type::value_type(name.utf8_str(),
-                                          value.utf8_str()));
+        m_map.insert(std::make_pair(name, value));
     }
     if ((m_style_name == "Heading 1") ||
         (m_style_name == "Heading 2") ||
@@ -154,7 +155,7 @@ IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(PD_Document * pDocument) :
     const gchar ** ptr = s_prop_list;
     while (*ptr)
     {
-        m_map.insert(map_type::value_type(*ptr, *(ptr + 1)));
+        m_map.insert(std::make_pair(*ptr, *(ptr + 1)));
         ptr += 2;
     }
 }
@@ -282,6 +283,10 @@ const IE_Exp_HTML_StyleTree * IE_Exp_HTML_StyleTree::findAndUse(const gchar * _s
 
 const IE_Exp_HTML_StyleTree * IE_Exp_HTML_StyleTree::find(const gchar * _style_name) const
 {
+    if (!_style_name) {
+        return nullptr;
+    }
+
     if (m_style_name == _style_name)
         return this;
 
@@ -312,7 +317,7 @@ bool IE_Exp_HTML_StyleTree::descends(const gchar * _style_name) const
         return false;
 
     // the name comparison has to be be case insensitive
-    if (!g_ascii_strcasecmp(m_style_name.utf8_str(), _style_name))
+    if (!g_ascii_strcasecmp(m_style_name.c_str(), _style_name))
         return true;
 
     return m_parent->descends(_style_name);

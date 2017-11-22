@@ -121,8 +121,6 @@ public:
 	void        escapeURL ();  // makes string conform to RFC 1738
 	void        decodeURL ();
 
-	UT_UTF8Stringbuf * lowerCase ();
-
 	void		clear ();
 	void        reserve(size_t n);
 

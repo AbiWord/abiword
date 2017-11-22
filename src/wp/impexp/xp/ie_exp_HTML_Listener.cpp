@@ -832,7 +832,7 @@ void IE_Exp_HTML_Listener::_openSpan(PT_AttrPropIndex api)
     const gchar *styleName = NULL;
     if (tree != NULL)
     {
-        styleName = tree->class_name().utf8_str();
+        styleName = tree->class_name().c_str();
     }
 
 	const gchar * szP_FontWeight = 0;
@@ -1041,7 +1041,7 @@ void IE_Exp_HTML_Listener::_openBlock(PT_AttrPropIndex api)
     const gchar *styleName = NULL;
     if (tree != NULL)
     {
-        styleName = tree->class_name().utf8_str();
+        styleName = tree->class_name().c_str();
     }
 
 	const gchar * szP_TextAlign = 0;
@@ -2267,7 +2267,7 @@ void IE_Exp_HTML_Listener::_openList(PT_AttrPropIndex api, bool recursiveCall)
         const gchar *styleName = NULL;
         if (tree != NULL)
         {
-            styleName = tree->class_name().utf8_str();
+            styleName = tree->class_name().c_str();
         }
         m_pCurrentImpl->openList(isOrdered, styleName, pAP);
         _openListItem();
