@@ -613,6 +613,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			}
 		}
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
 	}
 	case PTX_Block:
 	{
@@ -2352,7 +2353,7 @@ bool fl_DocListener::insertStrux(fl_ContainerLayout* sfh,
 		  }
 			
 		}
-
+		break;
 	}
     case PTX_SectionFrame:						// The immediately prior strux is a Frame
     {

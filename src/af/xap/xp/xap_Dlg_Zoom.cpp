@@ -85,9 +85,11 @@ UT_uint32 XAP_Dialog_Zoom::getZoomPercent(void)
 	case XAP_Frame::z_PAGEWIDTH:
 	  if ( m_pFrame )
 	    return m_pFrame->getCurrentView ()->calculateZoomPercentForPageWidth () ;
+          break;
 	case XAP_Frame::z_WHOLEPAGE:
 	  if ( m_pFrame )
 	    return m_pFrame->getCurrentView ()->calculateZoomPercentForWholePage () ;
+          break;
 	case XAP_Frame::z_PERCENT:
 		// fall through
 	default:

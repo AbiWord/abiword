@@ -1104,7 +1104,9 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet,
 			// TODO What is different?  Iconv only supports one MS Hebrew codepage.
 			case 181:	// HEBREWUSER_CHARSET
 				UT_DEBUGMSG(("RTF Font charset 'HEBREWUSER'??\n"));
-				// fall through (for now)
+
+
+				// fall through
 			case 177:	// HEBREW_CHARSET
 				m_szEncoding = "CP1255";	// MS-HEBR
 				break;
@@ -3077,6 +3079,7 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 				} else
 					return AddChar(ch);
 			}
+			break;
 		default:
 			// handle other destinations....
 			return true;
@@ -4804,17 +4807,15 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		xxx_UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
 		_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
 	}
+	break;
 	case RTF_KW_cfpat:
-	{
 		m_currentRTFState.m_paraProps.m_iShadingPattern = 1;
 		m_currentRTFState.m_paraProps.m_iShadingForeCol = (int) param;
-	}
+		break;
 	case RTF_KW_cbpat:
-	{
 		m_currentRTFState.m_paraProps.m_iShadingPattern = 1;
 		m_currentRTFState.m_paraProps.m_iShadingBackCol = (int) param;
-	}
-	break;
+		break;
 	case RTF_KW_deff: 
 		if (fParam) {
 			m_iDefaultFontNumber = param;
@@ -12501,6 +12502,8 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			case RTF_KW_uc:
 				// A little bit evil, but I'd like to know if this happens! - R.Kay
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
+				/* fall through */
 			default:
 				bStop = true; // regular keyword stop reading data and handle it
 				break;

@@ -1705,6 +1705,7 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 				dpos2 += pf_Other->getLength();
 				return true;
 			}
+			break;
 		case PTX_SectionHdrFtr:
 			UT_return_val_if_fail (fragOffset_First == 0, false);
 			if (dpos2 == dpos1 + pf_First->getLength())

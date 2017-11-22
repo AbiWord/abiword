@@ -298,8 +298,8 @@ PL_ListenerCoupleCloser::populateAfter( fl_ContainerLayout* sfh,
                         {
                             return m_delegate->populate( sfh, pcr );
                         }
-                        break;
                     }
+                    break;
                 case PTO_RDFAnchor:
                     if( !m_rdfUnclosedAnchorStack.empty() )
                     {
@@ -310,8 +310,8 @@ PL_ListenerCoupleCloser::populateAfter( fl_ContainerLayout* sfh,
                         {
                             return m_delegate->populate( sfh, pcr );
                         }
-                        break;
                     }
+                    break;
                 default:
                     break;
             }
@@ -400,8 +400,8 @@ PL_ListenerCoupleCloser::populateBefore( fl_ContainerLayout* sfh,
                         PD_Bookmark a( getDocument(), api );
                         if( shouldOpen( a.getID(), a.isEnd(), m_bookmarkUnopenedStack ))
                             return m_delegate->populate( sfh, pcr );
-                        break;
                     }
+                    break;
                 case PTO_RDFAnchor:
                     if( !m_rdfUnopenedAnchorStack.empty() )
                     {
@@ -419,8 +419,8 @@ PL_ListenerCoupleCloser::populateBefore( fl_ContainerLayout* sfh,
                         //     m_rdfUnopenedAnchorStack.erase( iter );
                         //     return m_delegate->populate( sfh, pcr );
                         // }
-                        break;
                     }
+                    break;
                 default:
                     break;
             }

@@ -849,6 +849,8 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream)
 			if (bFirstChar)
 				break;
 
+			// fall through
+
 		// if we encounter any of the following characters we will
 		// substitute a '?' as they correspond to control characters,
 		// though some text files use them for their character representations
@@ -885,7 +887,9 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream)
 			// UT_ASSERT(!(c <= 0x001f));
 			c = '?';
 			/* return UT_ERROR; // fall through with modified character */
-			
+
+
+			// fall through
 		default:
 			X_ReturnNoMemIfError(gbBlock.append(reinterpret_cast<UT_GrowBufElement*>(&c),1));
 			break;

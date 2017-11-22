@@ -586,6 +586,7 @@ bool pt_PieceTable::getBlockBuf(pf_Frag_Strux* sdh,
         {
         default:
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+            break;
         case pf_Frag::PFT_Strux:
 //
 // Have to deal with embedded section struxes like Footnotes. We do this by

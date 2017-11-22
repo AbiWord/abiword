@@ -3446,7 +3446,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 					}
 					
 					// for unsuported TOCs fall through ...
-					
+					/* fall through */
 				case F_HYPERLINK:
 					// for these fields we want to dump into the
 					// document anything in the argument
@@ -4156,7 +4156,8 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 				UT_DEBUGMSG(("TOC field encountered\n"));
 				m_bInTOC = true;
 				m_bTOCsupported = _isTOCsupported(f);
-				
+
+				/* fall through */
 			default:
 				// unhandled field type
 				token = strtok(NULL, "\t, ");

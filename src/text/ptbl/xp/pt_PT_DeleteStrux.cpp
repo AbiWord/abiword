@@ -227,7 +227,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		      }
 		  }  
 		}
-
+		break;
 	case PTX_SectionHdrFtr:
 		// we are the first paragraph in this section.  if we have
 		// content, we cannot be deleted, since there is no one to
