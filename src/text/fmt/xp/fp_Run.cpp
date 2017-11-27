@@ -3798,7 +3798,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	std::unique_ptr<UT_Rect> pSavedRect;
 	if(pG->getClipRect())
 	{
-		pSavedRect.reset(new UT_Rect(pG->getClipRect()));
+		pSavedRect.reset(new UT_Rect(*pG->getClipRect()));
 	}
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{

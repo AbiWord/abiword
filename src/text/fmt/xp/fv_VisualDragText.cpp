@@ -1223,7 +1223,7 @@ void FV_VisualDragText::drawImage(void)
 		src.width = dest.width;
 		if((src.height > getGraphics()->tlu(2)) && (src.width >getGraphics()->tlu(2)) )
 		{
-			painter.fillRect(m_pDragImage,&src,&dest);
+			painter.fillRect(m_pDragImage, src, dest);
 		}
 		dest.left = m_recCurFrame.left;
 		dest.top = m_recCurFrame.top + m_recOrigLeft.height ;
@@ -1235,7 +1235,7 @@ void FV_VisualDragText::drawImage(void)
 		src.height = dest.height;
 		if(src.height > getGraphics()->tlu(2) && src.width >getGraphics()->tlu(2) )
 		{
-			painter.fillRect(m_pDragImage,&src,&dest);
+			painter.fillRect(m_pDragImage, src, dest);
 		}
 		dest.left = m_recCurFrame.left;
 		dest.top = m_recCurFrame.top + m_recCurFrame.height - m_recOrigRight.height;
@@ -1247,7 +1247,7 @@ void FV_VisualDragText::drawImage(void)
 		src.height = m_recOrigRight.height;
 		if((src.height > getGraphics()->tlu(2)) && (src.width >getGraphics()->tlu(2)) )
 		{
-			painter.fillRect(m_pDragImage,&src,&dest);
+			painter.fillRect(m_pDragImage, src, dest);
 		}
 		return;
 	}

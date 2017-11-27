@@ -42,33 +42,27 @@
 /*****************************************************************/
 
 UT_Rect::UT_Rect()
+	: left(0)
+	, top(0)
+	, width(0)
+	, height(0)
 {
-	left = top = height = width = 0;
 }
 
 UT_Rect::UT_Rect(UT_sint32 iLeft, UT_sint32 iTop, UT_sint32 iWidth, UT_sint32 iHeight)
+	: left(iLeft)
+	, top(iTop)
+	, width(iWidth)
+	, height(iHeight)
 {
-	left = iLeft;
-	top = iTop;
-	width = iWidth;
-	height = iHeight;
 }
 
 UT_Rect::UT_Rect(const UT_Rect & r)
+	: left(r.left)
+	, top(r.top)
+	, width(r.width)
+	, height(r.height)
 {
-	left = r.left;
-	top = r.top;
-	width = r.width;
-	height = r.height;
-}
-
-
-UT_Rect::UT_Rect(const UT_Rect * r)
-{
-	left = r->left;
-	top = r->top;
-	width = r->width;
-	height = r->height;
 }
 
 bool UT_Rect::containsPoint(UT_sint32 x, UT_sint32 y) const

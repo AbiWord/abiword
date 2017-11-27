@@ -45,7 +45,6 @@ public:
 	UT_Rect();
 	UT_Rect(UT_sint32 iLeft, UT_sint32 iTop, UT_sint32 iWidth, UT_sint32 iHeight);
 	UT_Rect(const UT_Rect &);
-	UT_Rect(const UT_Rect * r);
 
 	bool containsPoint(UT_sint32 x, UT_sint32 y) const;
 	void set(UT_sint32 iLeft, UT_sint32 iTop, UT_sint32 iWidth, UT_sint32 iHeight);
