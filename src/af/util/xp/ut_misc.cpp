@@ -154,7 +154,7 @@ std::string UT_pathSuffix(std::string path)
 		if (!uri)
 			return "";
 		path = uri;
-		FREEP(uri);
+		g_free(uri);
 	}
 
 	// This algorithm is pretty simple: we search for a dot, and if the
