@@ -234,7 +234,6 @@ void		AllCarets::forceDraw(void)
 GR_Graphics::GR_Graphics()
 	: m_iZoomPercentage(100),
 	  m_iFontAllocNo(0),
-	  m_pRect(NULL),
 	  m_bHave3DColors(false),
 	  m_paintCount(0),
 	  m_bDoubleBufferingActive(false),

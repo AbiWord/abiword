@@ -677,7 +677,8 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	}
 	UT_uint32 count = countCons();
 	xxx_UT_DEBUGMSG(("Number of containers in frame %d \n",count));
-	const UT_Rect * pPrevRect = pDA->pG->getClipRect();
+	auto p = pDA->pG->getClipRect();
+	std::unique_ptr<UT_Rect> pPrevRect(p ? new UT_Rect(*p) : nullptr);
 	UT_Rect pRect = getScreenRect().unwrap();
 	UT_Rect newRect;
 	bool bRemoveRectAfter = false;
@@ -689,7 +690,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		UT_DEBUGMSG(("Clip bottom is %d \n", pRect.top + pRect.height));
 		bRemoveRectAfter = true;
 	}
-	else if(pPrevRect && !pRect.intersectsRect(pPrevRect))
+	else if(pPrevRect && !pRect.intersectsRect(pPrevRect.get()))
 	{
 		bSkip = true;
 		xxx_UT_DEBUGMSG(("External Clip bottom is %d \n", pRect.top + pRect.height));
@@ -730,7 +731,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	}
 	if(bSetOrigClip)
 	{
-		pDA->pG->setClipRect(pPrevRect);
+		pDA->pG->setClipRect(pPrevRect.get());
 	}
 	drawBoundaries(pDA);
 }

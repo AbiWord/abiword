@@ -3264,7 +3264,11 @@ double GR_CairoGraphics::_tdudY(UT_sint32 layoutUnits) const
 
 void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 {
-	m_pRect = pRect;
+	if (pRect) {
+		m_pRect.reset(new UT_Rect(*pRect));
+	} else {
+		m_pRect.reset();
+	}
 	m_clipRectDirty = true;
 }
 

@@ -3794,16 +3794,17 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	// SEVIOR Says don't touch this if statement unless you know how to make windows
 	// and gnome-print print images. Otherwise your commit priviliges will be revoked.
 	//
-	const UT_Rect * pSavedRect = NULL;
+	// Try me. -- Hub
+	std::unique_ptr<UT_Rect> pSavedRect;
 	if(pG->getClipRect())
 	{
-		pSavedRect = pG->getClipRect();
+		pSavedRect.reset(new UT_Rect(pG->getClipRect()));
 	}
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		//
 		// Take the interesction of the applied rectangle;
-		if(pSavedRect != NULL)
+		if(pSavedRect)
 		{
 			UT_sint32 iTop,iLeft,iWidth,iHeight;
 			iTop = 0;
@@ -3846,7 +3847,6 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 			pClipRect.height = iHeight;
 			pG->setClipRect(&pClipRect);
 		}
-		
 	}
 
 	FV_View* pView = _getView();
@@ -3881,7 +3881,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 				(iSel1 <= iRunBase)
 				&& (iSel2 > iRunBase)
 				)
-			{				
+			{
 				UT_uint32 top = yoff;
 				UT_uint32 left = xoff;
 				UT_uint32 right = xoff + getWidth() - pG->tlu(1);
@@ -3899,7 +3899,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	// unf*ck clipping rect
-	pG->setClipRect(pSavedRect);
+	pG->setClipRect(pSavedRect.get());
 }
 
 GR_Image * fp_ImageRun::getImage()
