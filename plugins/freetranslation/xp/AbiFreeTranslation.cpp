@@ -237,7 +237,7 @@ bool FreeTranslation_invoke(AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 					|| (*p & 128)) // sometime char is signed. 
 					               // do bitwise comparison for portability
 				{
-					char temp[4] = "";
+					char temp[10] = "";
 					sprintf(&temp[0], "%%%x", *p);
 					srcText += temp;
 				} else

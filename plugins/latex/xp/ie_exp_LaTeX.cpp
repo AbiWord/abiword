@@ -716,7 +716,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			}
 			else if (0 == strcmp(szValue, "Chapter Heading")) {
 				// TODO: Clean this...
-				char			szChapterNumber[6];
+				char			szChapterNumber[12];
 				m_iBlockType = BT_HEADING1;
 				sprintf(szChapterNumber, "%d", ChapterNumber++);
 				m_pie->write ("\n\\newpage \\section*{\\LARGE\\chaptername\\ ");

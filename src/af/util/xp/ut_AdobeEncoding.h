@@ -40,7 +40,7 @@ class ABI_EXPORT UT_AdobeEncoding
 		UT_UCSChar		adobeToUcs(const char * str)   const;
 		const char *	ucsToAdobe(const UT_UCSChar c);
 	private:
-		char 			m_buff[8];
+		char 			m_buff[12];
 		const encoding_pair *	m_pLUT;
 		UT_uint32 		m_iLutSize;
 };

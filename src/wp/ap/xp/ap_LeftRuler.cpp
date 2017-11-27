@@ -1805,8 +1805,8 @@ void AP_LeftRuler::drawLU(const UT_Rect *clip)
 				// draw the number
 				UT_uint32 n = k / tick.tickLabel * tick.tickScale;
 
-				char buf[6];
-				UT_UCSChar span[6];
+				char buf[12];
+				UT_UCSChar span[12];
 				UT_ASSERT(n < 10000);
 
 				sprintf(buf, "%d", n);
@@ -1846,8 +1846,8 @@ void AP_LeftRuler::drawLU(const UT_Rect *clip)
 				// draw the number
 				UT_uint32 n = k / tick.tickLabel * tick.tickScale;
 
-				char buf[6];
-				UT_UCSChar span[6];
+				char buf[12];
+				UT_UCSChar span[12];
 				UT_ASSERT(n < 10000);
 
 				sprintf(buf, "%d", n);

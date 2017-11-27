@@ -598,6 +598,7 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wextra \
    -Wformat \
    -Wformat-security \
+   -Wformat-overflow=2 \
    -Wheader-guard \
    -Wimplicit-fallthrough=3 \
    -Wlogical-not-parentheses \

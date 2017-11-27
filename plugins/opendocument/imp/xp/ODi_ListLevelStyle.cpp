@@ -279,7 +279,7 @@ void ODi_ListLevelStyle::getAbiProperties(std::string& rProps,
     double marginLeft_cm;
     double textIndent_cm;
 
-    gchar buffer[100];
+    gchar buffer[320];
     UT_LocaleTransactor lt(LC_NUMERIC, "C");
     
     spaceBefore_cm = UT_convertToDimension(m_spaceBefore.c_str(), DIM_CM);

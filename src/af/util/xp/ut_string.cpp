@@ -1771,14 +1771,14 @@ void UT_parse_properties(const char * properties,
 */
 const char* std_size_string(float f)
 {
-  static char string[10];
+  static char string[24];
   int i=static_cast<int>(f);
-  if(f-i<0.1)
-	sprintf(string, "%d", i);
-  else {
-          int fr = int(10*(f-i));
-	sprintf(string,"%d.%d", i,fr);
-  };
+  if(f-i<0.1) {
+    sprintf(string, "%d", i);
+  } else {
+    int fr = int(10*(f-i));
+    sprintf(string,"%d.%d", i, fr);
+  }
   return string;
 }
 

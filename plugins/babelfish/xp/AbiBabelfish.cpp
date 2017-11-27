@@ -222,7 +222,7 @@ static bool BabelFish_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
 		  if (utf8[i] == ' ' || utf8[i] == '%'
 			  || utf8[i] == '&' || utf8[i] == '?' || (utf8[i] & 128))
 		  {
-			  char temp[4] = "";
+			  char temp[10] = "";
 			  sprintf(&temp[0], "%%%x", utf8[i]);
 			  srcText += temp;
 		  } else

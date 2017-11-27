@@ -1353,7 +1353,7 @@ void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint
 void fl_AutoNum::getAttributes (std::vector<std::string> & v,
 								bool bEscapeXML) const
 {
-	char szID[15], szPid[15], szType[5], szStart[5];
+	char szID[15], szPid[15], szType[12], szStart[12];
 
 	sprintf(szID, "%i", m_iID);
 	v.push_back("id");

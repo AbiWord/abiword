@@ -513,8 +513,8 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		if (n == 0)						// we never draw the zero on the
 			return;						// origin
 
-		char buf[6];
-		UT_UCSChar span[6];
+		char buf[12];
+		UT_UCSChar span[12];
 		UT_ASSERT_HARMLESS(n < 10000);
 
 		sprintf(buf, "%d", n);

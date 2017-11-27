@@ -33,7 +33,7 @@
 
 ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 {
-	char Buffer[30];
+	char Buffer[320];
 
 	m_pG = pG;
 	dimType = dim;

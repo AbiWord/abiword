@@ -82,6 +82,6 @@ const char * UT_AdobeEncoding::ucsToAdobe(const UT_UCSChar c)
 	/*	if we got this far, this char is not in our table, so we will
 		produce a name in the uniXXXX format
 	*/
-	sprintf(m_buff, "uni%04x",static_cast<UT_uint32>(c));
+	sprintf(m_buff, "uni%04x", static_cast<UT_uint32>(c));
 	return static_cast<const char *>(m_buff);
 }
