@@ -769,6 +769,7 @@ void	fp_Run::Run_setX(UT_sint32 iX, FPRUN_CLEAR_SCREEN eClearScreen)
 				return;
 			}
 			//otherwise fall through
+			/* FALLTHRU */
 		case FP_CLEARSCREEN_FORCE:
 			m_iX = m_iOldX;
 			clearScreen();

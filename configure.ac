@@ -594,10 +594,12 @@ dnl -Wformat-nonliteral
 AX_APPEND_COMPILE_FLAGS([ \
    -Wcast-align \
    -Wchar-subscripts \
+   -Wconst-qual \
    -Wextra \
    -Wformat \
    -Wformat-security \
    -Wheader-guard \
+   -Wimplicit-fallthrough=3 \
    -Wlogical-not-parentheses \
    -Wmisleading-indentation \
    -Wmissing-noreturn \
@@ -608,7 +610,6 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wshadow \
    -Wsign-compare \
    -Wunreachable-code \
-   -Wconst-qual \
    -Wunused \
    -Wwrite-strings \
 ], [], [$ax_compiler_flags_test])
