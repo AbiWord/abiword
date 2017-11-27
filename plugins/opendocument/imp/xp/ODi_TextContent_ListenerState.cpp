@@ -1505,7 +1505,7 @@ void ODi_TextContent_ListenerState::_insureInSection(
             m_columnIndex = 1;
         }
         
-        g_free(propsArray);
+        delete [] propsArray;
     }
     _openAbiSection(props, pMasterPageName);
 }
