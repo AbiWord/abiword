@@ -241,34 +241,33 @@ static void s_radiobutton_clicked (GtkWidget * /*w*/, AP_UnixDialog_New * dlg)
 // TODO we could make this some utility function and use for all platforms
 // Can return NULL
 // The list must be free'd by the caller, but the filenames are owned by the system.
-static GSList * awt_only (const char *path) {
+static std::list<std::string> awt_only (const char *path) {
 
-	GDir 		*dir;
-	GSList 		*list;
-	const char 	*name;
-	const char  *suffix;
+	GDir		*dir;
+	std::list<std::string> list;
+	const char	*name;
+	const char	*suffix;
 	int			 len;
-	GError 		*err;
+	GError		*err;
 
 	if (!g_file_test (path, G_FILE_TEST_IS_DIR))
-		return NULL;
+		return list;
 
 	err = NULL;
 	dir = g_dir_open (path, 0, &err);
 	if (err) {
 		g_warning ("%s", err->message);
 		g_error_free (err), err = NULL;
-		return NULL;
+		return list;
 	}
 
-	list = NULL;
 	while (NULL != (name = g_dir_read_name (dir))) {
 		len = strlen (name);
 		if (len < 5)
 			continue;
 		suffix = name+(len-4);
 		if(0 == strcmp (suffix, ".awt") || 0 == strcmp (suffix, ".dot")) {
-			list = g_slist_prepend (list, (void *) name);
+			list.push_front(name);
 		}
 	}
 	g_dir_close (dir), dir = NULL;
@@ -351,20 +350,20 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	for ( unsigned int i = 0; i < G_N_ELEMENTS(templateList); i++ )
 	  {
 		templateDir = templateList[i];
-		GSList *list = awt_only(templateDir.utf8_str());
+		auto list = awt_only(templateDir.utf8_str());
 
-		while (list) {
+		while (!list.empty()) {
 
-			UT_UTF8String * myTemplate = new UT_UTF8String(templateDir + (const char *) list->data);
-			mTemplates.addItem ( myTemplate ) ;		    
-			
+			UT_UTF8String * myTemplate = new UT_UTF8String(templateDir + list.front().c_str());
+			mTemplates.addItem ( myTemplate );
+
 			// Add a new row to the model
 			gtk_list_store_append (model, &iter);
 			gtk_list_store_set (model, &iter,
 								0, UT_basename(myTemplate->utf8_str()),
 								1, mTemplates.size()-1,
 								-1);
-			list = g_slist_remove(list, list->data);
+			list.pop_front();
 		}
 	  }
 
