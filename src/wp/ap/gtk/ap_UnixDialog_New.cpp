@@ -46,8 +46,6 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "ie_imp.h"
 
-#include "ut_string_class.h"
-
 /*************************************************************************/
 
 XAP_Dialog * AP_UnixDialog_New::static_constructor(XAP_DialogFactory * pFactory,
@@ -64,7 +62,6 @@ AP_UnixDialog_New::AP_UnixDialog_New(XAP_DialogFactory * pDlgFactory,
 
 AP_UnixDialog_New::~AP_UnixDialog_New(void)
 {
-  UT_VECTOR_PURGEALL(UT_UTF8String*, mTemplates);
 }
 
 void AP_UnixDialog_New::runModal(XAP_Frame * pFrame)
@@ -105,12 +102,12 @@ void AP_UnixDialog_New::event_Ok ()
 		GtkTreeSelection * selection;
 		GtkTreeIter iter;
 		GtkTreeModel * model;
-		
+
 		selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_choicesList) );
 
 		// if there is no selection, or the selection's data (GtkListItem widget)
 		// is empty, return cancel.  GTK can make this happen.
-		if ( !selection || 
+		if ( !selection ||
 			 !gtk_tree_selection_get_selected (selection, &model, &iter)
 			)
 		{
@@ -120,11 +117,11 @@ void AP_UnixDialog_New::event_Ok ()
 			// get the ID of the selected Type
 			int mRow;
 			gtk_tree_model_get (model, &iter, 1, &mRow, -1);
-			
-			UT_UTF8String * tmpl = (UT_UTF8String*)mTemplates[mRow] ;
-			if (tmpl && tmpl->utf8_str())
+
+			const auto& tmpl = mTemplates[mRow] ;
+			if (!tmpl.empty())
 			{
-				char * uri = UT_go_filename_to_uri (tmpl->utf8_str());
+				char * uri = UT_go_filename_to_uri (tmpl.c_str());
 				setFileName (uri);
 				g_free (uri);
 				setOpenType(AP_Dialog_New::open_Template);
@@ -241,7 +238,7 @@ static void s_radiobutton_clicked (GtkWidget * /*w*/, AP_UnixDialog_New * dlg)
 // TODO we could make this some utility function and use for all platforms
 // Can return NULL
 // The list must be free'd by the caller, but the filenames are owned by the system.
-static std::list<std::string> awt_only (const char *path) {
+static std::list<std::string> awt_only (const std::string& path) {
 
 	GDir		*dir;
 	std::list<std::string> list;
@@ -250,11 +247,11 @@ static std::list<std::string> awt_only (const char *path) {
 	int			 len;
 	GError		*err;
 
-	if (!g_file_test (path, G_FILE_TEST_IS_DIR))
+	if (!g_file_test (path.c_str(), G_FILE_TEST_IS_DIR))
 		return list;
 
 	err = NULL;
-	dir = g_dir_open (path, 0, &err);
+	dir = g_dir_open (path.c_str(), 0, &err);
 	if (err) {
 		g_warning ("%s", err->message);
 		g_error_free (err), err = NULL;
@@ -326,14 +323,14 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 							 (gchar*)NULL);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_choicesList), column);
 
-	UT_UTF8String templateList[2];
-	UT_UTF8String templateDir;
+	std::string templateList[2];
+	std::string templateDir;
 
 	// the locally installed templates (per-user basis)
 	templateDir = XAP_App::getApp()->getUserPrivateDirectory();
 	templateDir += "/templates/";
 	templateList[0] = templateDir;
-	
+
 	// the globally installed templates
 	templateDir = XAP_App::getApp()->getAbiSuiteLibDir();
 	templateDir += "/templates/";
@@ -341,35 +338,33 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 
 	GtkListStore *model;
 	GtkTreeIter iter;
-	
-	model = gtk_list_store_new (2, 
+
+	model = gtk_list_store_new (2,
 							    G_TYPE_STRING,
 								G_TYPE_INT
 	                            );
 
-	for ( unsigned int i = 0; i < G_N_ELEMENTS(templateList); i++ )
-	  {
+	for (unsigned int i = 0; i < G_N_ELEMENTS(templateList); i++) {
 		templateDir = templateList[i];
-		auto list = awt_only(templateDir.utf8_str());
+		auto list = awt_only(templateDir);
 
 		while (!list.empty()) {
-
-			UT_UTF8String * myTemplate = new UT_UTF8String(templateDir + list.front().c_str());
-			mTemplates.addItem ( myTemplate );
+			std::string myTemplate(templateDir + list.front());
+			mTemplates.emplace_back(myTemplate);
 
 			// Add a new row to the model
 			gtk_list_store_append (model, &iter);
 			gtk_list_store_set (model, &iter,
-								0, UT_basename(myTemplate->utf8_str()),
+								0, UT_basename(myTemplate.c_str()),
 								1, mTemplates.size()-1,
 								-1);
 			list.pop_front();
 		}
-	  }
+	}
 
-	gtk_tree_view_set_model( GTK_TREE_VIEW(m_choicesList), reinterpret_cast<GtkTreeModel *>(model));
+	gtk_tree_view_set_model(GTK_TREE_VIEW(m_choicesList), GTK_TREE_MODEL(model));
 
-	g_object_unref (model);	
+	g_object_unref (model);
 
 
 	if (getOpenType() == open_Existing)

@@ -20,9 +20,11 @@
 #ifndef AP_UNIXDIALOG_NEW_H
 #define AP_UNIXDIALOG_NEW_H
 
+#include <vector>
+#include <string>
+
 #include <gtk/gtk.h>
 #include "ap_Dialog_New.h"
-#include "ut_vector.h"
 
 class XAP_UnixFrame;
 
@@ -65,7 +67,7 @@ private:
 	GtkWidget * m_radioExisting;
 	GtkWidget * m_choicesList;
 
-	UT_Vector mTemplates ;
+	std::vector<std::string> mTemplates;
 };
 
 #endif /* AP_UNIXDIALOG_NEW_H */
