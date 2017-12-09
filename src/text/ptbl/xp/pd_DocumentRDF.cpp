@@ -2266,8 +2266,8 @@ PD_RDFEvent::exportToFile( const std::string& filename_const ) const
         icalcomponent_set_uid( c,         m_uid.c_str() );
         icalcomponent_set_location( c,    m_location.c_str() );
         icalcomponent_set_description( c, m_desc.c_str() );
-        icalcomponent_set_dtstart( c,     icaltime_from_timet( m_dtstart, 0 ) );
-        icalcomponent_set_dtend( c,       icaltime_from_timet( m_dtend, 0 ) );
+        icalcomponent_set_dtstart( c,     icaltime_from_timet_with_zone( m_dtstart, 0, NULL ) );
+        icalcomponent_set_dtend( c,       icaltime_from_timet_with_zone( m_dtend, 0, NULL ) );
 
         char* data = icalcomponent_as_ical_string( c );
         std::ofstream oss( filename.c_str() );
