@@ -77,7 +77,8 @@ bool read_wri_struct_mem (wri_struct *w, unsigned char *blob)
 				n = w[i].size;
 				w[i].value = 0;
 
-				while (n--) w[i].value = (w[i].value * 256) + blob[n];
+				while (n--)
+					w[i].value = (w[i].value * 256) + blob[n];
 
 				break;
 
@@ -106,7 +107,8 @@ bool read_wri_struct_mem (wri_struct *w, unsigned char *blob)
 int wri_struct_value (const wri_struct *w, const char *name)
 {
 	for (int i = 0; w[i].name; i++)
-		if (strcmp(w[i].name, name) == 0) return w[i].value;
+		if (strcmp(w[i].name, name) == 0)
+			return w[i].value;
 
 	/* This should never happen! */
 	UT_WARNINGMSG(("wri_struct_value: Internal error, '%s' not found!\n", name));
@@ -131,7 +133,7 @@ void free_wri_struct (wri_struct *w)
 void DEBUG_WRI_STRUCT (wri_struct *w, int spaces)
 {
 #ifdef DEBUG
-	char sp[16], format[48], x[8];
+	char sp[28], format[48], x[10];
 
 	sprintf(sp, "%%-%d.%ds", spaces, spaces);
 
