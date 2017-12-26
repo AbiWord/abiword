@@ -1,5 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource
  *
  * Copyright (C) 2009 Firat Kiyak <firatkiyak@gmail.com>
@@ -23,11 +22,10 @@
 #ifndef _OXMLI_LISTENERSTATE_TABLE_H_
 #define _OXMLI_LISTENERSTATE_TABLE_H_
 
-// Internal includes
-#include <OXMLi_ListenerState.h>
-#include <OXMLi_Types.h>
-#include <OXML_Types.h>
-#include <OXML_Element_Table.h>
+#include "OXMLi_ListenerState.h"
+#include "OXMLi_Types.h"
+#include "OXML_Types.h"
+#include "OXML_Element_Table.h"
 
 /* \class OXMLi_ListenerState_Table
  * \brief This ListenerState parses the Tables.

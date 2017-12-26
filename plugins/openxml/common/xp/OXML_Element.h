@@ -1,5 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource
  *
  * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
@@ -23,23 +22,19 @@
 #ifndef _OXML_ELEMENT_H_
 #define _OXML_ELEMENT_H_
 
-// Internal includes
-#include <OXML_Types.h>
-#include <OXML_ObjectWithAttrProp.h>
-#include "OXML_Style.h"
-#include "OXML_List.h"
-#include "OXML_Image.h"
-
-// AbiWord includes
-#include <ut_types.h>
-#include <pp_AttrProp.h>
-#include <pd_Document.h>
-
-// External includes
 #include <string>
 #include <vector>
 #include <memory>
 #include <map>
+
+#include "ut_types.h"
+#include "pp_AttrProp.h"
+#include "pd_Document.h"
+#include "OXML_Types.h"
+#include "OXML_ObjectWithAttrProp.h"
+#include "OXML_Style.h"
+#include "OXML_List.h"
+#include "OXML_Image.h"
 
 class OXML_Element;
 class IE_Exp_OpenXML;

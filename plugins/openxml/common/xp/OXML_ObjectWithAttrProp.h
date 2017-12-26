@@ -1,5 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource
  *
  * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
@@ -23,13 +22,10 @@
 #ifndef _OXML_OBJECTWITHATTRPROP_H_
 #define _OXML_OBJECTWITHATTRPROP_H_
 
-// Internal includes
-#include "OXML_Types.h"
-
-// AbiWord includes
-#include <pp_AttrProp.h>
-
 #include <string>
+
+#include "pp_AttrProp.h"
+#include "OXML_Types.h"
 
 class OXML_ObjectWithAttrProp {
 public:

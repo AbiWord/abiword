@@ -1,41 +1,37 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
-
 /* AbiSource
- * 
+ *
  * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
-// Class definition include
-#include <OXML_Element_Cell.h>
-#include "OXML_Element_Row.h"
-
-// AbiWord includes
 #include "ut_types.h"
 #include "ut_std_string.h"
 #include "ut_string.h"
 #include "pd_Document.h"
+#include "OXML_Element_Cell.h"
+#include "OXML_Element_Row.h"
 
 OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table* tbl,
-									 UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
-	OXML_Element(id, TC_TAG, CELL),
-	m_iLeft(left), 
-	m_iRight(right), 
-	m_iTop(top), 
+									 UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom)
+	: OXML_Element(id, TC_TAG, CELL),
+	m_iLeft(left),
+	m_iRight(right),
+	m_iTop(top),
 	m_iBottom(bottom),
 	m_startVerticalMerge(true),
 	m_startHorizontalMerge(true),
@@ -92,7 +88,7 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 	UT_sint32 hspan = getRight()-getLeft();
 	UT_sint32 vspan = getBottom()-getTop();
 	bool isVertCont = getTop() == -1;
-	
+
 	err = exporter->setColumnWidth(TARGET_DOCUMENT, m_table->getColumnWidth(getLeft()).c_str());
 	if(err != UT_OK)
 		return err;
@@ -112,17 +108,17 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 			if(children[i]->getTag() == TBL_TAG)
 			{
 				if((children[i]->getProperty("background-color", szValue) != UT_OK) || !szValue)
-				{			
+				{
 					children[i]->setProperty("background-color", bgColor);
 				}
 			}
 			else if((children[i]->getProperty("bgcolor", szValue) != UT_OK) || !szValue)
-			{			
+			{
 				children[i]->setProperty("bgcolor", bgColor);
 			}
 		}
 	}
-	
+
 	err = exporter->startCellBorderProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
 		return err;
@@ -137,7 +133,7 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 		}
 	}
 
-	color = NULL; 
+	color = NULL;
 	if(getProperty("left-color", szValue) == UT_OK)
 	{
 		color = szValue;
@@ -163,7 +159,7 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 		}
 	}
 
-	color = NULL; 
+	color = NULL;
 	if(getProperty("right-color", szValue) == UT_OK)
 	{
 		color = szValue;
@@ -190,7 +186,7 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 			}
 		}
 
-		color = NULL; 
+		color = NULL;
 		if(getProperty("top-color", szValue) == UT_OK)
 		{
 			color = szValue;
@@ -217,13 +213,13 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 				 borderType = "dashed";
 			}
 		}
-	
-		color = NULL; 
+
+		color = NULL;
 		if(getProperty("bot-color", szValue) == UT_OK)
 		{
 			color = szValue;
 		}
-	
+
 		size = NULL;
 		if(getProperty("bot-thickness", szValue) == UT_OK)
 		{
@@ -287,21 +283,19 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 
 	ret = setProperty("top-attach", sTop);
 	if(ret != UT_OK)
-		return ret;	
+		return ret;
 
 	ret = setProperty("bot-attach", sBottom);
 	if(ret != UT_OK)
-		return ret;	
+		return ret;
 
 	ret = setProperty("left-attach", sLeft);
 	if(ret != UT_OK)
-		return ret;	
+		return ret;
 
 	ret = setProperty("right-attach", sRight);
 	if(ret != UT_OK)
-		return ret;	
-
-
+		return ret;
 
 	const gchar * szValue = NULL;
 	const gchar * bgColor = NULL;
@@ -315,12 +309,12 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 			if(children[i]->getTag() == TBL_TAG)
 			{
 				if((children[i]->getProperty("background-color", szValue) != UT_OK) || !szValue)
-				{			
+				{
 					children[i]->setProperty("background-color", bgColor);
 				}
 			}
 			else if((children[i]->getProperty("bgcolor", szValue) != UT_OK) || !szValue)
-			{			
+			{
 				children[i]->setProperty("bgcolor", bgColor);
 			}
 		}
@@ -331,33 +325,33 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 
 	if((getProperty("top-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("top-color", bgColor); 
+		ret = setProperty("top-color", bgColor);
 		if(ret != UT_OK)
-			return ret;	
-	}		
+			return ret;
+	}
 
 	szValue = NULL;
 	if((getProperty("left-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("left-color", bgColor); 
+		ret = setProperty("left-color", bgColor);
 		if(ret != UT_OK)
-			return ret;	
+			return ret;
 	}
 
 	szValue = NULL;
 	if((getProperty("right-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("right-color", bgColor); 
+		ret = setProperty("right-color", bgColor);
 		if(ret != UT_OK)
-			return ret;	
+			return ret;
 	}
 
 	szValue = NULL;
 	if((getProperty("bot-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("bot-color", bgColor); 
+		ret = setProperty("bot-color", bgColor);
 		if(ret != UT_OK)
-			return ret;	
+			return ret;
 	}
 
 	const PP_PropertyVector cell_props = getAttributesWithProps();
@@ -449,7 +443,7 @@ void OXML_Element_Cell::setLastVerticalContinuationCell(const OXML_SharedElement
 	m_verticalTail->getProperty("bot-style", szValue);
 	if(szValue)
 		setProperty("bot-style", szValue);
-	
+
 	szValue = NULL;
 	m_verticalTail->getProperty("bot-thickness", szValue);
 	if(szValue)

@@ -1,5 +1,4 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
-
 /* AbiSource
  *
  * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
@@ -26,12 +25,12 @@
 #include <memory>
 
 // Internal includes
-#include <OXML_Element.h>
+#include "OXML_Element.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 class OXML_Element_Table;
 class OXML_Element_Row;

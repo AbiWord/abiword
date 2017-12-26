@@ -1,5 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* AbiSource
  *
  * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
@@ -23,13 +22,11 @@
 #ifndef _OXMLI_TYPES_H_
 #define _OXMLI_TYPES_H_
 
-// Internal includes
-#include <OXML_Element.h>
-#include <OXML_Section.h>
-
-// External includes
 #include <stack>
 #include <vector>
+
+#include "OXML_Element.h"
+#include "OXML_Section.h"
 
 typedef std::stack<OXML_SharedElement> OXMLi_ElementStack;
 typedef std::stack<OXML_SharedSection> OXMLi_SectionStack;

@@ -1,38 +1,34 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource
- * 
+ *
  * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
-// Class definition include
-#include <OXML_Element_Row.h>
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
+#include "OXML_Element_Row.h"
 
-// AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
-
-OXML_Element_Row::OXML_Element_Row(const std::string & id, OXML_Element_Table* tbl) : 
-	OXML_Element(id, TR_TAG, ROW), numCols(0), table(tbl),
+OXML_Element_Row::OXML_Element_Row(const std::string & id, OXML_Element_Table* tbl)
+	: OXML_Element(id, TR_TAG, ROW), numCols(0), table(tbl),
 	m_rowNumber(0), m_currentColumnNumber(0)
 {
-	if(tbl)	
+	if(tbl)
 		tbl->addRow(this);
 }
 
@@ -129,7 +125,7 @@ UT_Error OXML_Element_Row::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		err = exporter->setRowHeight(TARGET, height.c_str());
 		if(err != UT_OK)
-			return err;	
+			return err;
 	}
 
 	return exporter->finishRowProperties(TARGET);
@@ -152,7 +148,7 @@ UT_Error OXML_Element_Row::addChildrenToPT(PD_Document * pDocument)
 		m_currentColumnNumber = i;
 
 		if(bgColor && ((children[i]->getProperty("background-color", szValue) != UT_OK) || !szValue))
-		{			
+		{
 			children[i]->setProperty("background-color", bgColor);
 		}
 
@@ -171,7 +167,7 @@ UT_Error OXML_Element_Row::addToPT(PD_Document * pDocument)
 
 void OXML_Element_Row::setNumCols(UT_sint32 columns)
 {
-	numCols = columns;	
+	numCols = columns;
 }
 
 void OXML_Element_Row::setRowNumber(int row)

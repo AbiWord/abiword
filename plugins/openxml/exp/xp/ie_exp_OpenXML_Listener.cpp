@@ -1,39 +1,42 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* AbiSource
- * 
+ *
  * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
-// Class definition include
-#include <ie_exp_OpenXML_Listener.h>
+#include "pd_Style.h"
+#include "px_ChangeRecord.h"
+#include "px_CR_Object.h"
+#include "px_CR_Span.h"
+#include "px_CR_Strux.h"
+#include "ie_exp_OpenXML_Listener.h"
 
 /**
  * IE_Exp_OpenXML_Listener Class responsible for listening to the Abiword Document
  */
 
 IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
-  : pdoc(doc), 
-	tableHelper(doc), 
-	document(NULL), 
-	section(NULL), 
+  : pdoc(doc),
+	tableHelper(doc),
+	document(NULL),
+	section(NULL),
 	savedSection(NULL),
-	paragraph(NULL), 
+	paragraph(NULL),
 	savedParagraph(NULL),
 	hyperlink(NULL),
 	textbox(NULL),
@@ -43,27 +46,27 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	idCount(10) //the first ten IDs are reserved for the XML file references
 {
 	document = OXML_Document::getNewInstance();
-	
+
 	if(!pdoc->tellListener(static_cast<PL_Listener *>(this)))
-		document = NULL;	
+		document = NULL;
 
 	if(setPageSize() != UT_OK)
 	{
-		UT_DEBUGMSG(("FRT: ERROR, Setting page size failed\n"));	
+		UT_DEBUGMSG(("FRT: ERROR, Setting page size failed\n"));
 	}
 	if(addDocumentStyles() != UT_OK)
 	{
-		UT_DEBUGMSG(("FRT: ERROR, Adding Document Styles Failed\n"));	
+		UT_DEBUGMSG(("FRT: ERROR, Adding Document Styles Failed\n"));
 		document = NULL;
 	}
 	if(addLists() != UT_OK)
 	{
-		UT_DEBUGMSG(("FRT: ERROR, Adding Lists Failed\n"));	
+		UT_DEBUGMSG(("FRT: ERROR, Adding Lists Failed\n"));
 		document = NULL;
 	}
 	if(addImages() != UT_OK)
 	{
-		UT_DEBUGMSG(("FRT: ERROR, Adding Images Failed\n"));	
+		UT_DEBUGMSG(("FRT: ERROR, Adding Images Failed\n"));
 		document = NULL;
 	}
 }
@@ -75,14 +78,14 @@ IE_Exp_OpenXML_Listener::~IE_Exp_OpenXML_Listener()
 }
 
 bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_ChangeRecord* pcr)
-{	
+{
 	switch (pcr->getType())
 	{
 		case PX_ChangeRecord::PXT_InsertSpan:
 		{
 			const PX_ChangeRecord_Span* pcrs = static_cast<const PX_ChangeRecord_Span*>(pcr);
 			PT_BufIndex buffer = pcrs->getBufIndex();
-			const UT_UCSChar* pData = pdoc->getPointer(buffer);		
+			const UT_UCSChar* pData = pdoc->getPointer(buffer);
 
 			if(*pData == UCS_FF)
 			{
@@ -97,8 +100,8 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 			OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
 			OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
 
-			//add run properties 
-			PT_AttrPropIndex api = pcr->getIndexAP();			
+			// add run properties
+			PT_AttrPropIndex api = pcr->getIndexAP();
 			const PP_AttrProp* pAP = NULL;
 			bool bHaveProp = pdoc->getAttrProp(api,&pAP);
 
@@ -107,14 +110,14 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 				const gchar* szValue;
 				const gchar* szName;
 				size_t propCount = pAP->getPropertyCount();
-				
+
 				size_t i;
 				for(i=0; i<propCount; i++)
 				{
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						if(element_run->setProperty(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 						if(element_text->setProperty(szName, szValue) != UT_OK)
 							return false;
 					}
@@ -137,7 +140,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 				//make sure hyperlinks are blue and underlined
 				if(element_run->setProperty("text-decoration", "underline") != UT_OK)
 					return false;
-				if(element_run->setProperty("color", "0000FF") != UT_OK) 
+				if(element_run->setProperty("color", "0000FF") != UT_OK)
 					return false;
 				if(hyperlink->appendElement(shared_element_run) != UT_OK)
 					return false;
@@ -152,7 +155,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 		case PX_ChangeRecord::PXT_InsertObject:
 		{
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
-			PT_AttrPropIndex api = pcr->getIndexAP();			
+			PT_AttrPropIndex api = pcr->getIndexAP();
 			const PP_AttrProp* pAP = NULL;
 			bool bHaveProp = pdoc->getAttrProp(api,&pAP);
 
@@ -164,7 +167,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 				case PTO_Field:
 				{
 					fd_Field* field = pcro->getField();
-					
+
 					switch(field->getFieldType())
 					{
 						case fd_Field::FD_ListLabel:
@@ -176,7 +179,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 							if(bHaveProp && pAP)
 							{
 								size_t propCount = pAP->getPropertyCount();
-				
+
 								size_t i;
 								for(i=0; i<propCount; i++)
 								{
@@ -185,7 +188,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 										//TODO: Take the debug message out when we are done
 										UT_DEBUGMSG(("List Property %s=%s\n", szName, szValue));
 										if(element_list->setProperty(szName, szValue) != UT_OK)
-											return false;		
+											return false;
 									}
 								}
 
@@ -196,16 +199,16 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 									if(pAP->getNthAttribute(i, szName, szValue))
 									{
 										//TODO: Take the debug message out when we are done
-										UT_DEBUGMSG(("List Attribute: %s=%s\n", szName, szValue));	
+										UT_DEBUGMSG(("List Attribute: %s=%s\n", szName, szValue));
 										if(element_list->setAttribute(szName, szValue) != UT_OK)
-											return false;		
+											return false;
 									}
 								}
 							}
 
-							return paragraph->appendElement(shared_element_list) == UT_OK;			
+							return paragraph->appendElement(shared_element_list) == UT_OK;
 						}
-						
+
 						default:
 						{
 							UT_UTF8String value = field->getValue(); // getValue() can return NULL
@@ -215,7 +218,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 							if(bHaveProp && pAP)
 							{
 								size_t propCount = pAP->getPropertyCount();
-				
+
 								size_t i;
 								for(i=0; i<propCount; i++)
 								{
@@ -224,7 +227,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 										//TODO: Take the debug message out when we are done
 										UT_DEBUGMSG(("Field Property %s=%s\n", szName, szValue));
 										if(element_field->setProperty(szName, szValue) != UT_OK)
-											return false;		
+											return false;
 									}
 								}
 
@@ -235,17 +238,16 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 									if(pAP->getNthAttribute(i, szName, szValue))
 									{
 										//TODO: Take the debug message out when we are done
-										UT_DEBUGMSG(("Field Attribute: %s=%s\n", szName, szValue));	
+										UT_DEBUGMSG(("Field Attribute: %s=%s\n", szName, szValue));
 										if(element_field->setAttribute(szName, szValue) != UT_OK)
-											return false;		
+											return false;
 									}
 								}
 							}
 
-							return paragraph->appendElement(shared_element_field) == UT_OK;			
+							return paragraph->appendElement(shared_element_field) == UT_OK;
 						}
-						
-					}		
+					}
 				}
 
 				case PTO_Hyperlink:
@@ -264,7 +266,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 					if(bHaveProp && pAP)
 					{
 						size_t propCount = pAP->getPropertyCount();
-				
+
 						size_t i;
 						for(i=0; i<propCount; i++)
 						{
@@ -273,7 +275,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 								//TODO: Take the debug message out when we are done
 								UT_DEBUGMSG(("Hyperlink Property %s=%s\n", szName, szValue));
 								if(hyperlink->setProperty(szName, szValue) != UT_OK)
-									return false;		
+									return false;
 							}
 						}
 
@@ -284,9 +286,9 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 							if(pAP->getNthAttribute(i, szName, szValue))
 							{
 								//TODO: Take the debug message out when we are done
-								UT_DEBUGMSG(("Hyperlink Attribute: %s=%s\n", szName, szValue));	
+								UT_DEBUGMSG(("Hyperlink Attribute: %s=%s\n", szName, szValue));
 								if(hyperlink->setAttribute(szName, szValue) != UT_OK)
-									return false;		
+									return false;
 							}
 						}
 					}
@@ -294,7 +296,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 					return paragraph->appendElement(shared_element_hyperlink) == UT_OK;
 				}
 
-				case PTO_Image:			
+				case PTO_Image:
 				{
 					OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
 					OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
@@ -303,12 +305,12 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 						return false;
 
 					OXML_Element_Image* element_image = new OXML_Element_Image(getNextId());
-					OXML_SharedElement shared_element_image(static_cast<OXML_Element*>(element_image));					
+					OXML_SharedElement shared_element_image(static_cast<OXML_Element*>(element_image));
 
 					if(bHaveProp && pAP)
 					{
 						size_t propCount = pAP->getPropertyCount();
-				
+
 						size_t i;
 						for(i=0; i<propCount; i++)
 						{
@@ -317,7 +319,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 								//TODO: Take the debug message out when we are done
 								UT_DEBUGMSG(("Image Property %s=%s\n", szName, szValue));
 								if(element_image->setProperty(szName, szValue) != UT_OK)
-									return false;		
+									return false;
 							}
 						}
 
@@ -328,9 +330,9 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 							if(pAP->getNthAttribute(i, szName, szValue))
 							{
 								//TODO: Take the debug message out when we are done
-								UT_DEBUGMSG(("Image Attribute: %s=%s\n", szName, szValue));	
+								UT_DEBUGMSG(("Image Attribute: %s=%s\n", szName, szValue));
 								if(element_image->setAttribute(szName, szValue) != UT_OK)
-									return false;		
+									return false;
 							}
 						}
 					}
@@ -348,20 +350,21 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 
 						UT_ConstByteBufPtr pByteBuf;
 						bool bOK = pdoc->getDataItemDataByName(szValue, pByteBuf, NULL, NULL);
-						if(!bOK) return bOK;
-                                            
+						if(!bOK)
+							return bOK;
+
 						std::string mathml;
 						mathml.assign((const char*)(pByteBuf->getPointer(0)));
-				    
+
 						OXML_Element_Math* math = new OXML_Element_Math(getNextId());
 						OXML_SharedElement shared_element_math(static_cast<OXML_Element*>(math));
 						math->setMathML(mathml);
 
 						return paragraph->appendElement(shared_element_math) == UT_OK;
-					}                                   
-				    
+					}
+
 					return true;
-				}                 
+				}
 
 				case PTO_Embed:
 				{
@@ -460,14 +463,14 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 						{
 							UT_DEBUGMSG(("FRT:OpenXML exporter bookmark with invalid type attribute=%s\n", bookmarkType.c_str()));
 							return true;
-						}							
+						}
 
 						OXML_Element_Bookmark* bookmark = new OXML_Element_Bookmark(bookmarkId);
 						bookmark->setName(bookmarkId);
 						OXML_SharedElement shared_element_bookmark(static_cast<OXML_Element*>(bookmark));
 
 						size_t propCount = pAP->getPropertyCount();
-				
+
 						size_t i;
 						for(i=0; i<propCount; i++)
 						{
@@ -476,7 +479,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 								//TODO: Take the debug message out when we are done
 								UT_DEBUGMSG(("Bookmark Property %s=%s\n", szName, szValue));
 								if(bookmark->setProperty(szName, szValue) != UT_OK)
-									return false;		
+									return false;
 							}
 						}
 
@@ -487,9 +490,9 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 							if(pAP->getNthAttribute(i, szName, szValue))
 							{
 								//TODO: Take the debug message out when we are done
-								UT_DEBUGMSG(("Bookmark Attribute: %s=%s\n", szName, szValue));	
+								UT_DEBUGMSG(("Bookmark Attribute: %s=%s\n", szName, szValue));
 								if(bookmark->setAttribute(szName, szValue) != UT_OK)
-									return false;		
+									return false;
 							}
 						}
 						return paragraph->appendElement(shared_element_bookmark) == UT_OK;
@@ -515,7 +518,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 
 	const PX_ChangeRecord_Strux* pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 
-	PT_AttrPropIndex api = pcr->getIndexAP();			
+	PT_AttrPropIndex api = pcr->getIndexAP();
 	const PP_AttrProp* pAP = NULL;
 	bool bHaveProp = pdoc->getAttrProp(api,&pAP);
 
@@ -527,7 +530,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 			section->setTarget(TARGET_DOCUMENT);
 			OXML_SharedSection shared_section(section);
 
-			//add section properties 
+			// add section properties
 			if(bHaveProp && pAP)
 			{
 				const gchar* szValue;
@@ -540,9 +543,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Section Property: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Section Property: %s=%s\n", szName, szValue));
 						if(section->setProperty(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 
@@ -553,9 +556,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthAttribute(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Section Attribute: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Section Attribute: %s=%s\n", szName, szValue));
 						if(section->setAttribute(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 			}
@@ -567,7 +570,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 			paragraph = new OXML_Element_Paragraph(getNextId());
 			OXML_SharedElement shared_paragraph(static_cast<OXML_Element*>(paragraph));
 
-			//add paragraph properties 
+			// add paragraph properties
 			if(bHaveProp && pAP)
 			{
 				const gchar* szValue;
@@ -623,9 +626,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Header/Footer Property: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Header/Footer Property: %s=%s\n", szName, szValue));
 						if(section->setProperty(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 
@@ -636,9 +639,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthAttribute(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Header/Footer Attribute: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Header/Footer Attribute: %s=%s\n", szName, szValue));
 						if(section->setAttribute(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 
@@ -700,9 +703,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 							return false;
 						return document->addFooter(shared_section) == UT_OK;
 					}
-				}				
+				}
 			}
-			return true;			
+			return true;
 		}
 		case PTX_SectionEndnote:
         {
@@ -726,9 +729,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Endnote Property: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Endnote Property: %s=%s\n", szName, szValue));
 						if(section->setProperty(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 
@@ -739,9 +742,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthAttribute(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Endnote Attribute: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Endnote Attribute: %s=%s\n", szName, szValue));
 						if(section->setAttribute(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 			}
@@ -749,7 +752,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 			return document->addEndnote(shared_section) == UT_OK;
 		}
 		case PTX_SectionTable:
-		{	
+		{
 			OXML_Element_Table* table = new OXML_Element_Table(getNextId());
 			OXML_SharedElement shared_table(static_cast<OXML_Element*>(table));
 
@@ -765,9 +768,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Table Property: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Table Property: %s=%s\n", szName, szValue));
 						if(table->setProperty(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 
@@ -778,9 +781,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthAttribute(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Table Attribute: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Table Attribute: %s=%s\n", szName, szValue));
 						if(table->setAttribute(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 			}
@@ -876,7 +879,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 			OXML_SharedSection shared_section(static_cast<OXML_Section*>(section));
 
 			section->setTarget(TARGET_FOOTNOTE);
-			
+
 			if(bHaveProp && pAP)
 			{
 				const gchar* szValue;
@@ -889,9 +892,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Footnote Property: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Footnote Property: %s=%s\n", szName, szValue));
 						if(section->setProperty(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 
@@ -902,9 +905,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthAttribute(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Footnote Attribute: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Footnote Attribute: %s=%s\n", szName, szValue));
 						if(section->setAttribute(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 			}
@@ -951,9 +954,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("TextBox Property: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("TextBox Property: %s=%s\n", szName, szValue));
 						if(textbox->setProperty(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 
@@ -964,9 +967,9 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthAttribute(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("TextBox Attribute: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("TextBox Attribute: %s=%s\n", szName, szValue));
 						if(textbox->setAttribute(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 
@@ -1037,7 +1040,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 			{
 				if(m_rowStack.empty())
 					return false;
-			
+
 				m_rowStack.pop();
 			}
 
@@ -1068,7 +1071,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 		case PTX_SectionTOC:
 		case PTX_EndMarginnote:
 		case PTX_EndAnnotation:
-		case PTX_EndTOC:	
+		case PTX_EndTOC:
 		default:
 			return true;
 	}
@@ -1102,11 +1105,11 @@ UT_Error IE_Exp_OpenXML_Listener::addDocumentStyles()
 	UT_Error err = UT_OK;
 
 	const PP_AttrProp * pAP = NULL;
-	const gchar* styleName = NULL; 
+	const gchar* styleName = NULL;
 	const gchar* basedOn = NULL;
 	const gchar* followedBy = NULL;
-	const gchar* propertyName = NULL; 
-	const gchar* propertyValue = NULL; 
+	const gchar* propertyName = NULL;
+	const gchar* propertyValue = NULL;
 	PT_AttrPropIndex api = pdoc->getAttrPropIndex();
 	bool bHaveProp = pdoc->getAttrProp(api, &pAP);
 
@@ -1177,7 +1180,7 @@ UT_Error IE_Exp_OpenXML_Listener::addDocumentStyles()
 			err = style->setProperty(propertyName, propertyValue);
 			if(err != UT_OK)
 			{
-				UT_DEBUGMSG(("FRT:ERROR, Setting Document Style Property %s=%s failed\n", propertyName, propertyValue));	
+				UT_DEBUGMSG(("FRT:ERROR, Setting Document Style Property %s=%s failed\n", propertyName, propertyValue));
 				return err;
 			}
 		}
@@ -1211,7 +1214,7 @@ UT_Error IE_Exp_OpenXML_Listener::addLists()
 			continue;
 
 		OXML_List* list = new OXML_List();
-		OXML_SharedList shared_list(list);			
+		OXML_SharedList shared_list(list);
 
 		list->setId(pList->getID());
 		list->setParentId(pList->getParentID());
@@ -1220,7 +1223,7 @@ UT_Error IE_Exp_OpenXML_Listener::addLists()
 		list->setDecimal(pList->getDecimal());
 		list->setStartValue(pList->getStartValue32());
 		list->setType(pList->getType());
-		
+
 		err = document->addList(shared_list);
 		if(err != UT_OK)
 			return err;
@@ -1254,7 +1257,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 		{
 			// If you add a mime type, make sure to update the extension code in
 			// PD_Document::getDataItemFileExtension()
-			UT_DEBUGMSG(("OpenXML export: unhandled/ignored mime type: %s\n", 
+			UT_DEBUGMSG(("OpenXML export: unhandled/ignored mime type: %s\n",
                          mimeType.c_str()));
 
 			szName = NULL;
@@ -1264,7 +1267,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 		}
 
 		OXML_Image* image = new OXML_Image();
-		const OXML_SharedImage shared_image(image);			
+		const OXML_SharedImage shared_image(image);
 
 		image->setId(szName);
 		image->setMimeType(mimeType);
@@ -1273,7 +1276,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 		err = document->addImage(shared_image);
 		if(err != UT_OK)
 			return err;
-		
+
 		szName = NULL;
 		mimeType.clear();
 		pByteBuf.reset();
@@ -1284,7 +1287,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 
 std::string IE_Exp_OpenXML_Listener::getNextId()
 {
-	char buffer[12]; 
+	char buffer[12];
 	int len = snprintf(buffer, 12, "%d", ++idCount);
 	if(len <= 0)
 		return "";
@@ -1323,5 +1326,5 @@ UT_Error IE_Exp_OpenXML_Listener::setPageSize()
 	document->setPageOrientation(orientation);
 	document->setPageMargins(marginTop, marginLeft, marginRight, marginBottom);
 
-	return UT_OK;			
+	return UT_OK;
 }

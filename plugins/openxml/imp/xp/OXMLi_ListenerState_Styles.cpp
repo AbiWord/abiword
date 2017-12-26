@@ -1,40 +1,33 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource
- * 
+ *
  * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
-// Class definition include
-#include <OXMLi_ListenerState_Styles.h>
-
-// Internal includes
-#include <OXML_Document.h>
-#include <OXML_Types.h>
-
-// AbiWord includes
-#include <ut_debugmsg.h>
-
-// External includes
 #include <cstring>
 
-OXMLi_ListenerState_Styles::OXMLi_ListenerState_Styles() : 
-	OXMLi_ListenerState(), 
+#include "ut_debugmsg.h"
+#include "OXML_Document.h"
+#include "OXML_Types.h"
+#include "OXMLi_ListenerState_Styles.h"
+
+OXMLi_ListenerState_Styles::OXMLi_ListenerState_Styles()
+	: OXMLi_ListenerState(),
 	m_pCurrentStyle(NULL),
 	m_szValZero(false)
 {
@@ -147,7 +140,7 @@ void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 		m_pCurrentStyle = NULL;
 
 		rqst->handled = true;
-	} else if (nameMatches(rqst->pName, NS_W_KEY, "rPr") || 
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "rPr") ||
 			   nameMatches(rqst->pName, NS_W_KEY, "pPr") ||
 			   nameMatches(rqst->pName, NS_W_KEY, "tblPr") ||
 			   nameMatches(rqst->pName, NS_W_KEY, "trPr") ||
