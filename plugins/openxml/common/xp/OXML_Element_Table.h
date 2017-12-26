@@ -23,9 +23,11 @@
 #ifndef _OXML_ELEMENT_TABLE_H_
 #define _OXML_ELEMENT_TABLE_H_
 
+#include <memory>
+
 // Internal includes
 #include <OXML_Element.h>
-#include <OXML_Element_Row.h>
+#include "OXML_Element_Cell.h"
 #include <ie_exp_OpenXML.h>
 
 // AbiWord includes
@@ -33,6 +35,11 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 #include <vector>
+
+class OXML_Element_Row;
+class OXML_Element_Table;
+
+typedef std::shared_ptr<OXML_Element_Table> OXML_SharedElement_Table;
 
 class OXML_Element_Table : public OXML_Element
 {
@@ -62,15 +69,15 @@ public:
 	//It traverses up the cells in the table and finds the vertical merge starting cell
 	//and increments its bottom value by one. Should be called for the vertMerge=continue cells.
 	//return true if successful
-	bool incrementBottomVerticalMergeStart(OXML_Element_Cell* cell);
+	bool incrementBottomVerticalMergeStart(const OXML_SharedElement_Cell& cell);
 
 	//this method increments the horizontal merge start cell's right by one.
 	//It traverses up the cells in the table and finds the horizontal merge starting cell
 	//and increments its right value by one. Should be called for the hMerge=continue cells.
 	//return true if successful
-	bool incrementRightHorizontalMergeStart(OXML_Element_Cell* cell);
+	bool incrementRightHorizontalMergeStart(const OXML_SharedElement_Cell& cell);
 
-	void addMissingCell(unsigned int rowNumber, OXML_Element_Cell* cell);
+	void addMissingCell(unsigned int rowNumber, const OXML_SharedElement_Cell& cell);
 
 	void applyStyle(OXML_SharedStyle style);
 

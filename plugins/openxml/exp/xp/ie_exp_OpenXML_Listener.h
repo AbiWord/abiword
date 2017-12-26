@@ -92,7 +92,7 @@ private:
 
 	std::stack<OXML_Element_Table*> m_tableStack;
 	std::stack<OXML_Element_Row*> m_rowStack;
-	std::stack<OXML_Element_Cell*> m_cellStack;
+	std::stack<OXML_SharedElement_Cell> m_cellStack;
 	OXML_Element_Hyperlink* hyperlink;
 	OXML_Element_TextBox* textbox;
 

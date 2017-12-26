@@ -22,6 +22,7 @@
 
 // Class definition include
 #include <OXML_Element_Cell.h>
+#include "OXML_Element_Row.h"
 
 // AbiWord includes
 #include "ut_types.h"
@@ -29,7 +30,7 @@
 #include "ut_string.h"
 #include "pd_Document.h"
 
-OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table* tbl, OXML_Element_Row* rw,
+OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table* tbl,
 									 UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
 	OXML_Element(id, TC_TAG, CELL),
 	m_iLeft(left), 
@@ -39,17 +40,22 @@ OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table*
 	m_startVerticalMerge(true),
 	m_startHorizontalMerge(true),
 	m_table(tbl),
-	m_row(rw),
+	m_row(nullptr),
 	m_horizontalTail(NULL),
 	m_verticalTail(NULL)
 {
-	if(rw)
-		rw->addCell(this);
 }
 
 OXML_Element_Cell::~OXML_Element_Cell()
 {
 
+}
+
+void OXML_Element_Cell::setRow(OXML_Element_Row* row)
+{
+	m_row = row;
+	if(row)
+		row->addCell(std::static_pointer_cast<OXML_Element_Cell>(shared_from_this()));
 }
 
 UT_Error OXML_Element_Cell::serialize(IE_Exp_OpenXML* exporter)
@@ -247,9 +253,9 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 			if(err != UT_OK)
 				return err;
 		}
-		
+
 		//add the remaining part of the cell as a missing cell
-		OXML_Element_Cell* missingCell = new OXML_Element_Cell("", m_table, NULL, m_iLeft, m_iRight, -1, 1); //vertically continued cell
+		OXML_SharedElement_Cell missingCell(new OXML_Element_Cell("", m_table, m_iLeft, m_iRight, -1, 1)); //vertically continued cell
 		OXML_SharedElement dummy(new OXML_Element_Paragraph(""));
 		missingCell->appendElement(dummy); //cells can't be empty!
 		m_table->addMissingCell(m_row->getRowNumber()+1, missingCell);
@@ -402,7 +408,7 @@ void OXML_Element_Cell::setHorizontalMergeStart(bool start)
 	m_startHorizontalMerge = start;
 }
 
-void OXML_Element_Cell::setLastHorizontalContinuationCell(OXML_Element_Cell* cell)
+void OXML_Element_Cell::setLastHorizontalContinuationCell(const OXML_SharedElement_Cell& cell)
 {
 	if(!cell)
 		return;
@@ -419,14 +425,14 @@ void OXML_Element_Cell::setLastHorizontalContinuationCell(OXML_Element_Cell* cel
 	m_horizontalTail->getProperty("right-style", szValue);
 	if(szValue)
 		setProperty("right-style", szValue);
-	
+
 	szValue = NULL;
 	m_horizontalTail->getProperty("right-thickness", szValue);
 	if(szValue)
 		setProperty("right-thickness", szValue);
 }
 
-void OXML_Element_Cell::setLastVerticalContinuationCell(OXML_Element_Cell* cell)
+void OXML_Element_Cell::setLastVerticalContinuationCell(const OXML_SharedElement_Cell& cell)
 {
 	if(!cell)
 		return;

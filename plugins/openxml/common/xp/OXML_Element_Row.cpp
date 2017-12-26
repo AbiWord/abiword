@@ -64,33 +64,32 @@ UT_Error OXML_Element_Row::serialize(IE_Exp_OpenXML* exporter)
 UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
-	
+
 	OXML_ElementVector children = getChildren();
-	
-	UT_sint32 left = 0; 
-	OXML_Element_Cell* cell = NULL;
+
+	UT_sint32 left = 0;
+	OXML_SharedElement_Cell cell;
 
 	//during the loop check to see if we are missing any cells due to vertical merging
 	//if so let's add them manually
-	OXML_ElementVector::size_type i;
-	for(i=0; i < children.size(); i++)
+	for (OXML_ElementVector::size_type i = 0; i < children.size(); i++)
 	{
-		cell = static_cast<OXML_Element_Cell*>(children[i].get());
-		
+		cell = std::static_pointer_cast<OXML_Element_Cell>(children[i]);
+
 		//go through missing cells and serialize the correct ones
-		std::vector<OXML_Element_Cell*>::const_iterator it;
-		for( it = m_missingCells.begin(); it < m_missingCells.end() && (left < cell->getLeft()); ++it )
+		for (auto it = m_missingCells.begin(); it != m_missingCells.end() && (left < cell->getLeft()); ++it )
 		{
-			OXML_Element_Cell* pCell = *it;
-			if((pCell->getLeft() == left)) 
-			{ //found missing cell
+			auto pCell = *it;
+			if (pCell->getLeft() == left)
+			{
+				//found missing cell
 				left = pCell->getRight();
 				ret = pCell->serialize(exporter);
 				if(ret != UT_OK)
-					return ret;			
+					return ret;
 			}
 		}
-			
+
 		left = cell->getRight();
 
 		ret = cell->serialize(exporter);
@@ -99,15 +98,16 @@ UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
 	}
 
 	//right most vertically merged cells
-	for(; left < numCols; left++){
-		OXML_Element_Cell temp("", table, this, left, left+1, -1, 0); 
+	for (; left < numCols; left++) {
+		OXML_SharedElement_Cell temp(new OXML_Element_Cell("", table, left, left + 1, -1, 0));
+		temp->setRow(this);
 		OXML_SharedElement shared_paragraph(new OXML_Element_Paragraph(""));
 
-		ret = temp.appendElement(shared_paragraph);
+		ret = temp->appendElement(shared_paragraph);
 		if(ret != UT_OK)
-			return ret;			
+			return ret;
 
-		ret = temp.serialize(exporter);
+		ret = temp->serialize(exporter);
 		if(ret != UT_OK)
 			return ret;
 	}
@@ -180,52 +180,51 @@ void OXML_Element_Row::setRowNumber(int row)
 }
 
 
-void OXML_Element_Row::addCell(OXML_Element_Cell* cell)
+void OXML_Element_Row::addCell(const OXML_SharedElement_Cell& cell)
 {
 	m_cells.push_back(cell);
 	cell->inheritProperties(this);
 }
 
-void OXML_Element_Row::addMissingCell(OXML_Element_Cell* cell)
+void OXML_Element_Row::addMissingCell(const OXML_SharedElement_Cell& cell)
 {
 	m_missingCells.push_back(cell);
 	cell->setRow(this);
 }
 
-bool OXML_Element_Row::incrementBottomVerticalMergeStart(OXML_Element_Cell* cell)
+bool OXML_Element_Row::incrementBottomVerticalMergeStart(const OXML_SharedElement_Cell& cell)
 {
 	int top = cell->getTop();
 	int left = cell->getLeft();
 
-	std::vector<OXML_Element_Cell*>::const_iterator it;
-	for( it = m_cells.begin(); it < m_cells.end(); ++it )
+	for (auto it = m_cells.begin(); it != m_cells.end(); ++it)
 	{
-		OXML_Element_Cell* pCell = *it;
-		if((pCell->getLeft() == left) && (pCell->getTop() < top) && pCell->startsVerticalMerge())
+		auto pCell = *it;
+		if ((pCell->getLeft() == left) && (pCell->getTop() < top) && pCell->startsVerticalMerge())
 		{
 			pCell->setBottom(pCell->getBottom()+1);
 			pCell->setLastVerticalContinuationCell(cell);
 			return true;
 		}
 	}
-	return false;	
+	return false;
 }
 
-bool OXML_Element_Row::incrementRightHorizontalMergeStart(OXML_Element_Cell* cell)
+bool OXML_Element_Row::incrementRightHorizontalMergeStart(const OXML_SharedElement_Cell& cell)
 {
 	int top = cell->getTop();
 	int left = cell->getLeft();
 
-	std::vector<OXML_Element_Cell*>::reverse_iterator it;
-	for( it = m_cells.rbegin(); it < m_cells.rend(); ++it )
+	for (auto it = m_cells.rbegin(); it < m_cells.rend(); ++it)
 	{
-		OXML_Element_Cell* pCell = *it;
-		if((pCell->getTop() == top) && (pCell->getLeft() < left) && pCell->startsHorizontalMerge())
+		auto pCell = *it;
+		if ((pCell->getTop() == top) && (pCell->getLeft() < left)
+			&& pCell->startsHorizontalMerge())
 		{
 			pCell->setRight(pCell->getRight()+1);
 			pCell->setLastHorizontalContinuationCell(cell);
 			return true;
 		}
 	}
-	return false;	
+	return false;
 }

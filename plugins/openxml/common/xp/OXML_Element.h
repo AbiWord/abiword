@@ -55,6 +55,7 @@ typedef std::vector<OXML_SharedElement> OXML_ElementVector;
  * (see the documentation on the virtual methods in this case).
 */
 class OXML_Element : public OXML_ObjectWithAttrProp
+                   , public std::enable_shared_from_this<OXML_Element>
 {
 public:
 	/*!

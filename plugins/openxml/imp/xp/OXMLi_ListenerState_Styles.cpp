@@ -76,7 +76,7 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "tcPr")) {
 		//Push a dummy element onto the stack to collect the formatting for the current style.
-		OXML_SharedElement dummy(new OXML_Element_Cell("", NULL, NULL, 0,0,0,0));
+		OXML_SharedElement dummy(new OXML_Element_Cell("", NULL, 0, 0, 0, 0));
 		rqst->stck->push(dummy);
 		//don't handle the request so that table listener state can adjust its internal state
 

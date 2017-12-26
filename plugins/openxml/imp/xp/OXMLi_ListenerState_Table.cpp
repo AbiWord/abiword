@@ -44,10 +44,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 {
 	if (nameMatches(rqst->pName, NS_W_KEY, "tbl"))
 	{
-		OXML_Element_Table* pTable = new OXML_Element_Table("");
+		OXML_SharedElement_Table pTable(new OXML_Element_Table(""));
 		m_tableStack.push(pTable);
-		OXML_SharedElement table(pTable);
-		rqst->stck->push(table);
+		rqst->stck->push(pTable);
 		rqst->handled = true;
 		pTable->setCurrentRowNumber(-1);
 		pTable->setCurrentColNumber(-1);
@@ -61,8 +60,8 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			return;
 		}
 
-		OXML_Element_Table* table = m_tableStack.top();
-		OXML_Element_Row* pRow = new OXML_Element_Row("", table);
+		auto table = m_tableStack.top();
+		OXML_Element_Row* pRow = new OXML_Element_Row("", table.get());
 		m_rowStack.push(pRow);
 		OXML_SharedElement row(pRow);
 		rqst->stck->push(row);
@@ -80,11 +79,15 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			return;
 		}
 
-		OXML_Element_Table* table = m_tableStack.top();				
-		OXML_Element_Row* row = m_rowStack.top();				
-		OXML_Element_Cell* pCell = new OXML_Element_Cell("", table, row, 
-								table->getCurrentColNumber(), table->getCurrentColNumber()+1, //left right
-								table->getCurrentRowNumber(), table->getCurrentRowNumber()+1); //top,bottom
+		auto table = m_tableStack.top();
+		OXML_Element_Row* row = m_rowStack.top();
+		OXML_SharedElement_Cell pCell(
+			new OXML_Element_Cell("", table.get(),
+								  table->getCurrentColNumber(),
+								  table->getCurrentColNumber()+1, //left right
+								  table->getCurrentRowNumber(),
+								  table->getCurrentRowNumber()+1)); //top,bottom
+		pCell->setRow(row);
 		m_cellStack.push(pCell);
 		OXML_SharedElement cell(pCell);
 		rqst->stck->push(cell);
@@ -100,17 +103,17 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			return;
 		}
 
-		OXML_Element_Table* table = m_tableStack.top();				
+		auto table = m_tableStack.top();
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 		if(val)
 		{
 			int span = atoi(val);
 			int left = table->getCurrentColNumber()-1;
 			int right = left + span;
-			//change current cell's right index
-			OXML_Element_Cell* cell = m_cellStack.top();
+			// change current cell's right index
+			auto cell = m_cellStack.top();
 			cell->setRight(right);
-			//update column index of current table			
+			// update column index of current table
 			table->setCurrentColNumber(right);
 		}
 		rqst->handled = true;
@@ -124,10 +127,10 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			return;
 		}
 
-		OXML_Element_Cell* cell = m_cellStack.top();				
+		auto cell = m_cellStack.top();
 		cell->setVerticalMergeStart(false); //default to continue if the attribute is missing
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
-		if(val && !strcmp(val, "restart")) 
+		if (val && !strcmp(val, "restart"))
 		{
 			cell->setVerticalMergeStart(true);
 		}
@@ -142,7 +145,7 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			return;
 		}
 
-		OXML_Element_Cell* cell = m_cellStack.top();				
+		auto cell = m_cellStack.top();
 		cell->setHorizontalMergeStart(false); //default to continue if the attribute is missing
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 		if(val && !strcmp(val, "restart")) 
@@ -163,27 +166,27 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			return;
 		}
 
-		OXML_Element_Table* table = m_tableStack.top();				
+		auto table = m_tableStack.top();
 		const gchar* w = attrMatches(NS_W_KEY, "w", rqst->ppAtts);
-		if(w) 
+		if (w)
 		{
 			//append this width to table-column-props property
 			const gchar* tableColumnProps = NULL;
 			UT_Error ret = table->getProperty("table-column-props", tableColumnProps);
 			if((ret != UT_OK) || !tableColumnProps)
-				tableColumnProps = "";				
+				tableColumnProps = "";
 			std::string cols(tableColumnProps);
 			cols += _TwipsToPoints(w);
 			cols += "pt/";
 			ret = table->setProperty("table-column-props", cols);
 			if(ret != UT_OK)
-			{	
+			{
 				UT_DEBUGMSG(("FRT:OpenXML importer can't set table-column-props:%s\n", cols.c_str()));
 			}
 		}
 		rqst->handled = true;
 	}
-	else if(nameMatches(rqst->pName, NS_W_KEY, "trHeight") && 
+	else if(nameMatches(rqst->pName, NS_W_KEY, "trHeight") &&
 			contextMatches(rqst->context->back(), NS_W_KEY, "trPr"))
 	{
 		if(m_tableStack.empty())
@@ -193,14 +196,14 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			return;
 		}
 
-		OXML_Element_Table* table = m_tableStack.top();				
+		auto table = m_tableStack.top();
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
-		if(val) 
+		if (val)
 		{
 			const gchar* tableRowHeights = NULL;
 			UT_Error ret = table->getProperty("table-row-heights", tableRowHeights);
 			if((ret != UT_OK) || !tableRowHeights)
-				tableRowHeights = "";				
+				tableRowHeights = "";
 			std::string rowHeights(tableRowHeights);
 			rowHeights += _TwipsToPoints(val);
 			rowHeights += "pt/";
@@ -233,7 +236,7 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		std::string borderColor = borderName + "-color";
 		std::string borderThickness = borderName + "-thickness";
 
-		OXML_Element* element = NULL;
+		OXML_SharedElement element;
 
 		if(rqst->context->empty())
 		{
@@ -243,9 +246,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		}
 
 		if(contextMatches(rqst->context->back(), NS_W_KEY, "tcBorders"))
-			element = m_cellStack.empty() ? NULL : m_cellStack.top();
+			element = m_cellStack.empty() ? OXML_SharedElement() : m_cellStack.top();
 		else if(contextMatches(rqst->context->back(), NS_W_KEY, "tblBorders"))
-			element = m_tableStack.empty() ? NULL : m_tableStack.top();
+			element = m_tableStack.empty() ? OXML_SharedElement() : m_tableStack.top();
 
 		if(!element)
 		{
@@ -291,7 +294,7 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		const gchar* fill = attrMatches(NS_W_KEY, "fill", rqst->ppAtts);
 
 		UT_Error ret = UT_OK;
-		OXML_Element* element = NULL;
+		OXML_SharedElement element;
 
 		if(rqst->context->empty())
 		{
@@ -301,9 +304,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		}
 
 		if(contextMatches(rqst->context->back(), NS_W_KEY, "tcPr"))
-			element = m_cellStack.empty() ? NULL : m_cellStack.top();
+			element = m_cellStack.empty() ? OXML_SharedElement() : m_cellStack.top();
 		else if(contextMatches(rqst->context->back(), NS_W_KEY, "tblPr"))
-			element = m_tableStack.empty() ? NULL : m_tableStack.top();
+			element = m_tableStack.empty() ? OXML_SharedElement() : m_tableStack.top();
 
 		if(!element)
 		{
@@ -331,9 +334,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			return;
 		}
 
-		OXML_Element_Table* table = m_tableStack.top();				
+		auto table = m_tableStack.top();
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
-		if(val && table) 
+		if (val && table)
 		{
 			std::string styleName(val);
 			OXML_Document* doc = OXML_Document::getInstance();
@@ -347,7 +350,7 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		if(m_tableStack.empty())
 		{
 			//we must be in tblStyle in styles, so let's push the table instance to m_tableStack
-			OXML_Element_Table* tbl = static_cast<OXML_Element_Table*>(rqst->stck->top().get());
+			auto tbl = std::static_pointer_cast<OXML_Element_Table>(rqst->stck->top());
 			m_tableStack.push(tbl);
 		}
 		rqst->handled = true;
@@ -367,7 +370,8 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		if(m_cellStack.empty())
 		{
 			//we must be in styles, so let's push the cell instance to m_cellStack
-			OXML_Element_Cell* cell = static_cast<OXML_Element_Cell*>(rqst->stck->top().get());
+			OXML_SharedElement_Cell cell =
+				std::static_pointer_cast<OXML_Element_Cell>(rqst->stck->top());
 			m_cellStack.push(cell);
 		}
 		rqst->handled = true;
@@ -429,14 +433,14 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 		OXML_SharedElement cell = rqst->stck->top();
 		rqst->stck->pop(); //pop cell
 		OXML_SharedElement row = rqst->stck->top();
-		OXML_Element_Cell* pCell = m_cellStack.top();
+		auto pCell = m_cellStack.top();
 		if(!pCell->startsHorizontalMerge() && !pCell->startsVerticalMerge())
 		{
 			//do nothing in this case
 		}
 		else if(!pCell->startsVerticalMerge())
 		{
-			OXML_Element_Table* table = m_tableStack.top();
+			auto table = m_tableStack.top();
 			if(!table->incrementBottomVerticalMergeStart(pCell))
 			{
 				//this means there is no cell before this starting a vertical merge
@@ -447,7 +451,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 		}
 		else if(!pCell->startsHorizontalMerge())
 		{
-			OXML_Element_Table* table = m_tableStack.top();
+			auto table = m_tableStack.top();
 			if(!table->incrementRightHorizontalMergeStart(pCell))
 			{
 				//this means there is no cell before this starting a horizontal merge

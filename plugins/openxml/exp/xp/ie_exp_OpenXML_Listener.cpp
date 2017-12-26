@@ -580,7 +580,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						if(paragraph->setProperty(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 
@@ -591,14 +591,14 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					if(pAP->getNthAttribute(i, szName, szValue))
 					{
 						if(paragraph->setAttribute(szName, szValue) != UT_OK)
-							return false;		
+							return false;
 					}
 				}
 			}
-			
+
 			if(!m_cellStack.empty())
 			{
-				OXML_Element_Cell* cell = m_cellStack.top();
+				auto cell = m_cellStack.top();
 				return cell->appendElement(shared_paragraph) == UT_OK;
 			}
 			else if(bInTextbox)
@@ -792,7 +792,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 			if(tableInTable)
 			{
 				//this is a table inside another table
-				OXML_Element_Cell* cell = m_cellStack.top();
+				auto cell = m_cellStack.top();
 				return cell->appendElement(shared_table) == UT_OK;
 			}
 
@@ -830,43 +830,42 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					return false;
 			}
 
-			OXML_Element_Cell* cell = new OXML_Element_Cell(getNextId(), table, row, left, right, top, bottom);
+			OXML_SharedElement_Cell cell(new OXML_Element_Cell(getNextId(), table, left, right, top, bottom));
+			cell->setRow(row);
 			m_cellStack.push(cell);
-			OXML_SharedElement shared_cell(static_cast<OXML_Element*>(cell));
 
-			if(bHaveProp && pAP)
+			if (bHaveProp && pAP)
 			{
 				const gchar* szValue;
 				const gchar* szName;
 				size_t propCount = pAP->getPropertyCount();
 
-				size_t i;
-				for(i=0; i<propCount; i++)
+				for (size_t i = 0; i < propCount; i++)
 				{
-					if(pAP->getNthProperty(i, szName, szValue))
+					if (pAP->getNthProperty(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Cell Property: %s=%s\n", szName, szValue));	
-						if(cell->setProperty(szName, szValue) != UT_OK)
-							return false;		
+						UT_DEBUGMSG(("Cell Property: %s=%s\n", szName, szValue));
+						if (cell->setProperty(szName, szValue) != UT_OK)
+							return false;
 					}
 				}
 
 				size_t attrCount = pAP->getAttributeCount();
 
-				for(i=0; i<attrCount; i++)
+				for (size_t i = 0; i < attrCount; i++)
 				{
-					if(pAP->getNthAttribute(i, szName, szValue))
+					if (pAP->getNthAttribute(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Cell Attribute: %s=%s\n", szName, szValue));	
-						if(cell->setAttribute(szName, szValue) != UT_OK)
-							return false;		
+						UT_DEBUGMSG(("Cell Attribute: %s=%s\n", szName, szValue));
+						if (cell->setAttribute(szName, szValue) != UT_OK)
+							return false;
 					}
 				}
 			}
-					
-			return row->appendElement(shared_cell) == UT_OK;
+
+			return row->appendElement(cell) == UT_OK;
 		}
 		case PTX_SectionFootnote:
         {

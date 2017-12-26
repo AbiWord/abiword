@@ -41,9 +41,9 @@ public:
 	void charData (OXMLi_CharDataRequest * rqst);
 
 private:
-	std::stack<OXML_Element_Table*> m_tableStack;
+	std::stack<OXML_SharedElement_Table> m_tableStack;
 	std::stack<OXML_Element_Row*> m_rowStack;
-	std::stack<OXML_Element_Cell*> m_cellStack;
+	std::stack<OXML_SharedElement_Cell> m_cellStack;
 };
 
 #endif //_OXMLI_LISTENERSTATE_TABLE_H_

@@ -376,7 +376,7 @@ std::string OXML_Element_Table::getRowHeight(int rowIndex) const
 	return rowHeight.at(rowIndex);
 }
 
-bool OXML_Element_Table::incrementBottomVerticalMergeStart(OXML_Element_Cell* cell)
+bool OXML_Element_Table::incrementBottomVerticalMergeStart(const OXML_SharedElement_Cell& cell)
 {
 	std::vector<OXML_Element_Row*>::reverse_iterator rit;
 	for( rit=m_rows.rbegin(); rit < m_rows.rend(); ++rit )
@@ -388,20 +388,20 @@ bool OXML_Element_Table::incrementBottomVerticalMergeStart(OXML_Element_Cell* ce
 	return false;	
 }
 
-bool OXML_Element_Table::incrementRightHorizontalMergeStart(OXML_Element_Cell* cell)
+bool OXML_Element_Table::incrementRightHorizontalMergeStart(const OXML_SharedElement_Cell& cell)
 {
-	std::vector<OXML_Element_Row*>::reverse_iterator rit;
-	for( rit=m_rows.rbegin(); rit < m_rows.rend(); ++rit )
+	for (auto rit = m_rows.rbegin(); rit < m_rows.rend(); ++rit)
 	{
-		OXML_Element_Row* pRow = *rit;
-		if(pRow->incrementRightHorizontalMergeStart(cell))
+		auto pRow = *rit;
+		if (pRow->incrementRightHorizontalMergeStart(cell))
 			return true;
+
 		cell->setTop(cell->getTop()-1); //decrement top if we can't find the starting cell in this row
 	}
-	return false;	
+	return false;
 }
 
-void OXML_Element_Table::addMissingCell(unsigned int rowNumber, OXML_Element_Cell* cell)
+void OXML_Element_Table::addMissingCell(unsigned int rowNumber, const OXML_SharedElement_Cell& cell)
 {
 	OXML_ElementVector::size_type i;
 	OXML_ElementVector children = getChildren();
