@@ -2715,7 +2715,7 @@ void IE_Imp_DocBook :: createTitle (void)
 		 * it into a list
 		 */
 		/* deletes previous lists of same level and above */
-		for (UT_sint32 i = (m_iTitleDepth - 1); i < m_utvTitles.size(); i++)
+		for (size_t i = (m_iTitleDepth - 1); i < m_utvTitles.size(); i++)
 		{
 			if (i == 0) //always keep the first chapter title
 				continue;

@@ -82,7 +82,7 @@ protected:
 	int m_iFootnotes;
 	int m_iImages;
 	int m_iSectionDepth;
-	int m_iTitleDepth;
+	size_t m_iTitleDepth;
 	UT_sint32 m_iNoteID;
 	std::vector<fl_AutoNumPtr> m_utvTitles;
 	bool m_bMustAddTitle;
