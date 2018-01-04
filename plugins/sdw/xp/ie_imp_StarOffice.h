@@ -26,7 +26,6 @@
 #include <map>
 #include <string>
 
-#include "ut_string_class.h"
 #include "ut_types.h"
 #include "ut_iconv.h"
 #include "ie_imp.h"

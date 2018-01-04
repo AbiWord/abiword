@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* Abiword
  * Copyright (C) 2001 Christian Biesinger <cbiesinger@web.de>
@@ -116,7 +116,7 @@ static const ColorData gColors[] =
 
 /** Given a data pointer, returns a color string (like cccccc for a medium gray).
  * throws BOGUS_DOCUMENT on error. */
-UT_String makeColor(UT_uint8* aData, UT_uint32 aDataLen) {
+std::string makeColor(UT_uint8* aData, UT_uint32 aDataLen) {
 	// from tools/source/generic/color.cxx line 183ff
 	#define COL_NAME_USER		(0x8000)
 	#define COL_RED_1B			(0x0001)
@@ -126,7 +126,6 @@ UT_String makeColor(UT_uint8* aData, UT_uint32 aDataLen) {
 	#define COL_BLUE_1B 		(0x0100)
 	#define COL_BLUE_2B 		(0x0200)
 
-	UT_String rv;
 	if (aDataLen < 2)
 		throw UT_IE_BOGUSDOCUMENT;
 	UT_uint16 colorName = GSF_LE_GET_GUINT16(aData);
@@ -136,15 +135,13 @@ UT_String makeColor(UT_uint8* aData, UT_uint32 aDataLen) {
 	}
 	else {
 		if (colorName < COLOR_SIZE) {
-			UT_String_sprintf(rv, "%02x%02x%02x", gColors[colorName].red,
-			                  gColors[colorName].green, gColors[colorName].blue);
-			return rv;
+			return UT_std_string_sprintf("%02x%02x%02x", gColors[colorName].red,
+										 gColors[colorName].green, gColors[colorName].blue);
 		}
 		else {
 			UT_DEBUGMSG(("SDW: COLOR OUT OF RANGE! has num %u\n", colorName));
 			return "000000";
 		}
-			
 	}
 }
 
@@ -234,7 +231,7 @@ void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa)
 			if (aAttr.dataLen < 3)
 				break;
 			// first byte is size of text % of normal size
-			UT_sint16 height = GSF_LE_GET_GINT16(aAttr.data + 1);	
+			UT_sint16 height = GSF_LE_GET_GINT16(aAttr.data + 1);
 			aAttr.attrName = "text-position";
 			if (height > 0)
 				aAttr.attrVal = "superscript";
@@ -397,9 +394,9 @@ static void hexdump(void* aPtr, UT_uint32 aLen) {
 
 #define GetPassword() _getPassword ( XAP_App::getApp()->getLastFocussedFrame() )
 
-static UT_String _getPassword (XAP_Frame * pFrame)
+static std::string _getPassword (XAP_Frame * pFrame)
 {
-  UT_String password ( "" );
+  std::string password;
 
   if ( pFrame )
     {
@@ -774,16 +771,21 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 											if (attVal == SWG_ATTRIBUTE) {
 												TextAttr a;
 												streamRead(mDocStream, a, eoa2);
-                        if (!a.attrVal.empty()) {
-  												if (a.isPara)
-	  												UT_std_string_setProperty(pAttrs, a.attrName, a.attrVal);
-		  										else
-			  										UT_std_string_setProperty(attrs, a.attrName, a.attrVal);
-                        }
-						UT_DEBUGMSG(("SDW: ......found paragraph attr, which=0x%x, ver=0x%x, start=%u, end=%u (string now %s) Data:%s Len=%lld Data:", a.which, a.ver, (a.startSet?a.start:0), (a.endSet?a.end:0), attrs.c_str(), (a.data ? "Yes" : "No"), (long long)a.dataLen));
+												if (!a.attrVal.empty()) {
+													if (a.isPara)
+														UT_std_string_setProperty(pAttrs, a.attrName, a.attrVal);
+													else
+														UT_std_string_setProperty(attrs, a.attrName, a.attrVal);
+												}
+												UT_DEBUGMSG(("SDW: ......found paragraph attr, which=0x%x, ver=0x%x, start=%u, end=%u (string now %s) Data:%s Len=%lld Data:",
+															 a.which, a.ver,
+															 (a.startSet?a.start:0),
+															 (a.endSet?a.end:0), attrs.c_str(),
+															 (a.data ? "Yes" : "No"),
+															 (long long)a.dataLen));
 #ifdef DEBUG
 												hexdump(a.data, a.dataLen);
-                        putc('\n', stderr);
+												putc('\n', stderr);
 #endif
 											}
 											if (gsf_input_seek(mDocStream, eoa2, G_SEEK_SET))
@@ -844,7 +846,8 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 											return UT_IE_NOMEMORY; /* leave cast alone! */
 										UT_DEBUGMSG(("SDW: About to insert %u-%u\n", lastInsPos, i));
 										size_t spanLen = i - lastInsPos;
-										if (i == (len - 1)) spanLen++;
+										if (i == (len - 1))
+											spanLen++;
 										UT_UCS4String span = textNode.substr(lastInsPos, spanLen);
 										appendSpan(span.ucs4_str(), spanLen);
 										lastInsPos = i;
