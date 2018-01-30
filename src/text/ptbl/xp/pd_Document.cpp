@@ -6099,6 +6099,7 @@ bool PD_Document::fixListHierarchy(void)
 void PD_Document::removeList(const fl_AutoNumPtr & pAutoNum, pf_Frag_Strux* sdh )
 {
 	UT_return_if_fail (pAutoNum);
+	UT_uint32 ID = pAutoNum->getID();
 	auto iter = find(m_vecLists.begin(), m_vecLists.end(), pAutoNum);
 	UT_return_if_fail (iter != m_vecLists.end());
 	//
@@ -6110,7 +6111,7 @@ void PD_Document::removeList(const fl_AutoNumPtr & pAutoNum, pf_Frag_Strux* sdh 
 	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex,pfs->getXID());
 	notifyListeners(pfs, pcr);
 	delete pcr;
-	m_mapLists.erase(pAutoNum->getID());
+	m_mapLists.erase(ID);
 	m_vecLists.erase(iter);
 }
 
