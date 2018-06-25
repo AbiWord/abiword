@@ -380,6 +380,7 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	UT_sint32 oldDY = tdu(getPrevYOffset());
 	UT_sint32 oldDX = tdu(getPrevXOffset());
+	
 	UT_sint32 newY = getPrevYOffset() + dy;
 	UT_sint32 newX = getPrevXOffset() + dx;
 	UT_sint32 ddx = -(tdu(newX) - oldDX);

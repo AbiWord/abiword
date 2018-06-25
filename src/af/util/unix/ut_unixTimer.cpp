@@ -68,7 +68,7 @@ static int _Timer_Proc(void *p)
 	xxx_UT_DEBUGMSG(("ut_unixTimer.cpp:  timer fired\n"));
 	if (pTimer) {
 		pTimer->fire();
-		return true;
+		return TRUE;
 	}
 	return 0;
 }

@@ -31,6 +31,11 @@
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
 #include "ut_debugmsg.h"
+#include <inttypes.h>
+#include <math.h>
+#include <stdio.h>
+#include <time.h>
+
 static const UT_uint32 CURSOR_DELAY_TIME = 10; // milliseconds
 
 #ifdef TOOLKIT_GTK_ALL
@@ -57,6 +62,11 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		m_yPoint2(0),
 		m_pClr(NULL),
 		m_pG(pG),
+		m_iWindowWidth(0),
+		m_iWindowHeight(0),
+		m_worker(NULL),
+		m_enabler(NULL),
+		m_blinkTimeout(NULL),
 		m_nDisableCount(1),
 		m_bCursorBlink(true),
 		m_bCursorIsOn(false),
@@ -71,7 +81,9 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		m_bRemote(false),
 		m_clrRemote(0,0,0),
 		m_sID(""),
-		m_iCaretNumber(0)
+		m_iCaretNumber(0),
+		m_iLastDrawTime(0),
+		m_iRetry(0)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -98,6 +110,11 @@ GR_Caret::GR_Caret(GR_Graphics * pG, const std::string& sId)
 		m_yPoint2(0),
 		m_pClr(NULL),
 		m_pG(pG),
+		m_iWindowWidth(0),
+		m_iWindowHeight(0),
+		m_worker(NULL),
+		m_enabler(NULL),
+		m_blinkTimeout(NULL),
 		m_nDisableCount(1),
 		m_bCursorBlink(true),
 		m_bCursorIsOn(false),
@@ -112,7 +129,9 @@ GR_Caret::GR_Caret(GR_Graphics * pG, const std::string& sId)
 		m_bRemote(true),
 		m_clrRemote(0,0,0),
 		m_sID(sId),
-		m_iCaretNumber(0)
+		m_iCaretNumber(0),
+		m_iLastDrawTime(0),
+		m_iRetry(0)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -146,9 +165,11 @@ GR_Caret::~GR_Caret()
 void GR_Caret::s_work(UT_Worker * _w)
 {
 	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
-
+	UT_DEBUGMSG((" Caret timer called Disable Count = %d \n",c->m_nDisableCount));
 	if (c->m_nDisableCount == 0)
+	{
 		c->_blink(false);
+	}
 }
 
 /** One-time enabler. */
@@ -171,9 +192,12 @@ void GR_Caret::s_enable(UT_Worker * _w)
 
 void GR_Caret::s_blink_timeout(UT_Worker * _w)
 {
+	return;
+	/*
 	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
 	if (c->isEnabled())
 		c->disable();
+	*/
 }
 
 UT_uint32 GR_Caret::_getCursorBlinkTime() const
@@ -271,13 +295,17 @@ void GR_Caret::enable()
 
 	// If the caret is already enabled, just return
 	if (m_nDisableCount == 0)
+	{
+		xxx_UT_DEBUGMSG(("Don't emable disable Count is already zero \n"));
 		return;
-
+	}
 	// Check to see if we still have pending disables.
 	--m_nDisableCount;
-	if (m_nDisableCount)
+	if (m_nDisableCount != 0)
+	{
+		xxx_UT_DEBUGMSG(("Don't emable, disable Count has not reached zero \n"));
 		return;
-
+	}
 	// stop pending enables; in 10 ms, really enable blinking.
 	m_enabler->stop();
 	m_enabler->start();
@@ -327,11 +355,12 @@ void GR_Caret::JustErase(UT_sint32 xPoint,UT_sint32 yPoint)
 {
        if(m_bRecursiveDraw)
        {
-	    xxx_UT_DEBUGMSG(("Doing recursive Erase! - abort \n"));
+	    xxx_UT_DEBUGMSG(("Doing recursive Just Erase! - abort \n"));
 	    return;
        }
        if (m_bCursorIsOn && (((xPoint -m_pG->tlu(2)-1) <= m_xPoint) && (xPoint >= (m_xPoint-m_pG->tlu(2))-1)) && ((yPoint - m_pG->tlu(1)) <= m_yPoint) && (yPoint >= (m_yPoint - m_pG->tlu(1))))
        {
+	    xxx_UT_DEBUGMSG(("Doing Just Erase! now \n"));
 	    m_pG->restoreRectangle(m_iCaretNumber*3+0);
 	    if(m_bSplitCaret)
 	    {
@@ -339,7 +368,7 @@ void GR_Caret::JustErase(UT_sint32 xPoint,UT_sint32 yPoint)
 		  m_pG->restoreRectangle(m_iCaretNumber*3+2);
 		  m_bSplitCaret = false;
 	    }
-	    m_bCursorIsOn = !m_bCursorIsOn;
+	    m_bCursorIsOn = false;
 	    m_nDisableCount = 1;
        }
 }
@@ -359,7 +388,27 @@ void GR_Caret::_blink(bool bExplicit)
 	}
 	if (!m_bPositionSet)
 		return;
+	struct timespec spec;
 
+    clock_gettime(CLOCK_REALTIME, &spec);
+
+    UT_sint32 s  = spec.tv_sec;
+    long ms = round(spec.tv_nsec / 1.0e6); // Convert nanoseconds to milliseconds
+	long this_time = 1000*s + ms;
+	long time_between = this_time - m_iLastDrawTime;
+	m_iLastDrawTime = this_time;
+	if(time_between < 100)
+	{
+		m_iRetry++;
+		if(!m_bCursorIsOn)
+		{
+			return;
+		}
+	}
+	else
+	{
+		m_iRetry = 0;
+	}
 	m_bRecursiveDraw = true;
 	GR_Painter painter (m_pG, false);
 	m_bRecursiveDraw = false;
@@ -383,6 +432,7 @@ void GR_Caret::_blink(bool bExplicit)
 
 		if (m_bCursorIsOn)
 		{
+			xxx_UT_DEBUGMSG(("Clear Caret reTry %d \n",m_iRetry));
 			m_pG->restoreRectangle(m_iCaretNumber*3+0);
 
 			if(m_bSplitCaret)
@@ -391,6 +441,7 @@ void GR_Caret::_blink(bool bExplicit)
 				m_pG->restoreRectangle(m_iCaretNumber*3+2);
 				m_bSplitCaret = false;
 			}
+			m_bCursorIsOn = false;
 		}
 		else
 		{
@@ -416,7 +467,9 @@ void GR_Caret::_blink(bool bExplicit)
 					   m_yPoint+m_pG->tlu(1),
 					   m_pG->tlu(5),
 					   m_iPointHeight+m_pG->tlu(2));
+			m_bRecursiveDraw = false;
 			m_pG->allCarets()->JustErase(m_xPoint,m_yPoint);
+			m_bRecursiveDraw = true;
 			m_pG->saveRectangle(r0,m_iCaretNumber*3+0);
 
 			if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
@@ -449,7 +502,7 @@ void GR_Caret::_blink(bool bExplicit)
 			if(m_bCaret1OnScreen)
 			{
 				// draw the primary caret
-				xxx_UT_DEBUGMSG(("blink cursor turned on \n")); 
+				xxx_UT_DEBUGMSG(("Draw Caret reTry %d \n",m_iRetry)); 
 
 				UT_sint32 x1 = m_xPoint + iDelta * m_pG->tlu(1);
 				UT_sint32 x2 = m_xPoint;
@@ -466,6 +519,7 @@ void GR_Caret::_blink(bool bExplicit)
 								 m_yPoint + m_pG->tlu(1),
 								 x2, 
 								 m_yPoint + m_iPointHeight + m_pG->tlu(1));
+				m_bCursorIsOn = true;
 			}
 			
 			if(m_bSplitCaret)
@@ -502,6 +556,7 @@ void GR_Caret::_blink(bool bExplicit)
 										 m_xPoint + m_pG->tlu(2),
 										 m_yPoint + m_pG->tlu(2));
 					}
+					m_bCursorIsOn = true;
 				}
 				
 				// Now we deal with the secondary caret needed on ltr-rtl boundary
@@ -560,17 +615,18 @@ void GR_Caret::_blink(bool bExplicit)
 										 m_xPoint2 /*- m_pG->tlu(1)*/,
 										 m_yPoint2 + m_pG->tlu(2));
 					}
+					m_bCursorIsOn = true;
 				}
 				
 			}
 			
 		}
 
-		m_bCursorIsOn = !m_bCursorIsOn;
  		m_pG->setColor(oldColor);
 		m_bRecursiveDraw = false;
 	}
-	m_pG->flush();
+	if(bExplicit && !m_bCursorIsOn)
+		m_pG->flush();
 }
 
 /*!

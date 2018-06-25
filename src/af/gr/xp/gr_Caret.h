@@ -121,6 +121,8 @@ private:
 	UT_RGBColor						m_clrRemote;
 	std::string				        m_sID;
 	UT_sint32						m_iCaretNumber;
+	long                                                    m_iLastDrawTime;
+	UT_sint32                                               m_iRetry;
 };
 
 class ABI_EXPORT GR_CaretDisabler
