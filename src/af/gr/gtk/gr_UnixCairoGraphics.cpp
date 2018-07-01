@@ -490,8 +490,14 @@ void GR_UnixCairoGraphics::_endPaint()
 
 void GR_UnixCairoGraphics::flush(void)
 {
+	/*
 	if (m_Widget) {
 		gtk_widget_queue_draw(m_Widget);
+	}
+	*/
+	if(m_cr)
+	{
+		cairo_surface_flush(cairo_get_target(m_cr));
 	}
 }
 

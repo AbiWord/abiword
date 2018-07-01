@@ -415,12 +415,13 @@ void GR_Caret::_blink(bool bExplicit)
 
 	// After any autoblink, we want there to be BLINK_TIME 
 	// until next autoblink.
+	/*
 	if (!bExplicit)
 	{
 		m_worker->stop();
 		m_worker->start();
 	}
-
+	*/
 	// Blink if: (a) _blink explicitly called (not autoblink); or
 	//           (b) autoblink and caret blink enabled; or
 	//           (c) autoblink, caret blink disabled, caret is off
@@ -625,8 +626,11 @@ void GR_Caret::_blink(bool bExplicit)
  		m_pG->setColor(oldColor);
 		m_bRecursiveDraw = false;
 	}
+	/*
 	if(bExplicit && !m_bCursorIsOn)
 		m_pG->flush();
+	*/
+	m_pG->flush();
 }
 
 /*!
