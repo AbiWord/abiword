@@ -67,7 +67,8 @@ public:
 	void                            setRemoteColor(UT_RGBColor clrRemote);
 
 	void							resetBlinkTimeout(void);
-
+	void                            setPendingBlink(void);
+	bool                            doBlinkIfNeeded(void);
 private:
 	GR_Caret(); // no impl
 	GR_Caret(const GR_Caret& rhs);			// no impl.
@@ -123,6 +124,7 @@ private:
 	UT_sint32						m_iCaretNumber;
 	long                                                    m_iLastDrawTime;
 	UT_sint32                                               m_iRetry;
+	bool                                                    m_bPendingBlink;
 };
 
 class ABI_EXPORT GR_CaretDisabler

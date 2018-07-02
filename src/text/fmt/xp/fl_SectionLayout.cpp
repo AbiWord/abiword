@@ -1919,6 +1919,8 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 		checkAndRemovePages();
 		addValidPages();
 	}
+	xxx_UT_DEBUGMSG(("Doing fl_DocSectionLayout::updateLayout here %p view %p \n",this, m_pLayout->getView()));
+	m_pLayout->getView()->getGraphics()->flush(); // schedule redraw for Wayland
 }
 
 void fl_DocSectionLayout::setNeedsSectionBreak(bool bSet, fp_Page * pPage)

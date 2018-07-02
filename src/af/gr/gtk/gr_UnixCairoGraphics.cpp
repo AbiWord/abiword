@@ -479,7 +479,10 @@ void GR_UnixCairoGraphics::_beginPaint()
 void GR_UnixCairoGraphics::_endPaint()
 {
 	if (m_CairoCreated)
+	{
+		cairo_surface_flush(cairo_get_target(m_cr));
 		cairo_destroy (m_cr);
+	}
 	m_cr = NULL;
 
 	m_Painting = false;
@@ -490,15 +493,17 @@ void GR_UnixCairoGraphics::_endPaint()
 
 void GR_UnixCairoGraphics::flush(void)
 {
-	/*
+
 	if (m_Widget) {
 		gtk_widget_queue_draw(m_Widget);
 	}
-	*/
+	
+/*
 	if(m_cr)
 	{
 		cairo_surface_flush(cairo_get_target(m_cr));
 	}
+*/
 }
 
 bool GR_UnixCairoGraphics::queryProperties(GR_Graphics::Properties gp) const

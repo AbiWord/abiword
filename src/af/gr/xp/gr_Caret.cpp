@@ -83,7 +83,8 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		m_sID(""),
 		m_iCaretNumber(0),
 		m_iLastDrawTime(0),
-		m_iRetry(0)
+		m_iRetry(0),
+		m_bPendingBlink(false)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -131,7 +132,8 @@ GR_Caret::GR_Caret(GR_Graphics * pG, const std::string& sId)
 		m_sID(sId),
 		m_iCaretNumber(0),
 		m_iLastDrawTime(0),
-		m_iRetry(0)
+		m_iRetry(0),
+		m_bPendingBlink(false)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -165,10 +167,15 @@ GR_Caret::~GR_Caret()
 void GR_Caret::s_work(UT_Worker * _w)
 {
 	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
-	UT_DEBUGMSG((" Caret timer called Disable Count = %d \n",c->m_nDisableCount));
+	xxx_UT_DEBUGMSG((" Caret timer called Disable Count = %d \n",c->m_nDisableCount));
 	if (c->m_nDisableCount == 0)
 	{
+#ifdef TOOLKIT_GTK_ALL
+		c->setPendingBlink();
+		c->m_pG->flush(); // set redraw for wayland
+#else
 		c->_blink(false);
+#endif
 	}
 }
 
@@ -365,8 +372,8 @@ void GR_Caret::JustErase(UT_sint32 xPoint,UT_sint32 yPoint)
 	    if(m_bSplitCaret)
 	    {
 	          m_pG->restoreRectangle(m_iCaretNumber*3+1);
-		  m_pG->restoreRectangle(m_iCaretNumber*3+2);
-		  m_bSplitCaret = false;
+			  m_pG->restoreRectangle(m_iCaretNumber*3+2);
+			  m_bSplitCaret = false;
 	    }
 	    m_bCursorIsOn = false;
 	    m_nDisableCount = 1;
@@ -388,6 +395,8 @@ void GR_Caret::_blink(bool bExplicit)
 	}
 	if (!m_bPositionSet)
 		return;
+	if(!m_bPendingBlink)
+		return;
 	struct timespec spec;
 
     clock_gettime(CLOCK_REALTIME, &spec);
@@ -400,10 +409,13 @@ void GR_Caret::_blink(bool bExplicit)
 	if(time_between < 100)
 	{
 		m_iRetry++;
-		if(!m_bCursorIsOn)
+		xxx_UT_DEBUGMSG(("Caret redraw after %d ms \n",time_between));
+		if(m_bCursorIsOn  || (m_iRetry > 2))
 		{
-			return;
+			xxx_UT_DEBUGMSG(("Caret redraw after %d ms \n",time_between));
+//			return;
 		}
+		
 	}
 	else
 	{
@@ -626,19 +638,46 @@ void GR_Caret::_blink(bool bExplicit)
  		m_pG->setColor(oldColor);
 		m_bRecursiveDraw = false;
 	}
+	m_bPendingBlink = false;
 	/*
 	if(bExplicit && !m_bCursorIsOn)
 		m_pG->flush();
 	*/
-	m_pG->flush();
+//	if(!bExplicit)
+//		m_pG->flush();
 }
 
+//
+// Tell the widget redraw know we only need to blink on this cycle
+//
+void GR_Caret::setPendingBlink()
+{
+	xxx_UT_DEBUGMSG(("Pending blink set in GR_CARET \n"));
+	m_bPendingBlink = true;
+}
+
+//
+// Returns true if we did a blink
+//
+bool GR_Caret::doBlinkIfNeeded()
+{
+	if(!m_bPendingBlink)
+	{
+		return false;
+	}
+	_blink(true);
+	m_bPendingBlink = false;
+	return true;
+}
 /*!
  * Only call this is you are absolutely certain you need it!
  */
 void GR_Caret::forceDraw(void)
 {
-	_blink(true);
+	if(m_nDisableCount < 2)
+	{
+		_blink(true);
+	}
 }
 
 void GR_Caret::resetBlinkTimeout(void)
