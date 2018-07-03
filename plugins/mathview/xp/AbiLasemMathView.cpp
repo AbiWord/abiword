@@ -931,7 +931,7 @@ UT_ConstByteBufPtr LasemMathView::getSnapShot()
 
  void LasemMathView :: setFont(const GR_Font * pFont)
  {      
-	UT_DEBUGMSG(("Entering SetFont..\n"));
+	xxx_UT_DEBUGMSG(("Entering SetFont..\n"));
     UT_return_if_fail(pFont && mathml);
 	const GR_PangoFont *pPF = dynamic_cast<const GR_PangoFont *>(pFont);
 	UT_return_if_fail(pPF);      
@@ -986,7 +986,7 @@ UT_ConstByteBufPtr LasemMathView::getSnapShot()
 
 void LasemMathView::setColor(const UT_RGBColor& c)
 {
-	UT_DEBUGMSG(("Entering SetColor..\n"));
+	xxx_UT_DEBUGMSG(("Entering SetColor..\n"));
 	UT_return_if_fail (mathml);
 	UT_HashColor pHashColor;
 	color = g_strdup(pHashColor.setColor(c));
@@ -996,7 +996,7 @@ void LasemMathView::setColor(const UT_RGBColor& c)
       
        lsm_dom_element_set_attribute (_style_element, "mathcolor", color);
 	view = lsm_dom_document_create_view (mathml);
-	UT_DEBUGMSG(("color : %s \n",color));
+	xxx_UT_DEBUGMSG(("color : %s \n",color));
 }
 
 void LasemMathView::setDisplayMode(AbiDisplayMode mode)

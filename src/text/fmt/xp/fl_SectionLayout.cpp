@@ -1920,6 +1920,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 		addValidPages();
 	}
 	xxx_UT_DEBUGMSG(("Doing fl_DocSectionLayout::updateLayout here %p view %p \n",this, m_pLayout->getView()));
+	m_pLayout->getView()->getGraphics()->allCarets()->setPendingBlink(); // place caret after entry
 	m_pLayout->getView()->getGraphics()->flush(); // schedule redraw for Wayland
 }
 

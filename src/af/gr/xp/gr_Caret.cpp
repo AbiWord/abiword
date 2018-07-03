@@ -273,8 +273,6 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 						 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
 						 bool bPointDirection, const UT_RGBColor * pClr)
 {
-	// if visible, then hide while we change positions.
-	_erase();
 
 	m_xPoint = x; m_yPoint = y; m_iPointHeight = h;
 	m_xPoint2 = x2; m_yPoint2 = y2; m_iPointHeight2 = h2;
@@ -406,16 +404,14 @@ void GR_Caret::_blink(bool bExplicit)
 	long this_time = 1000*s + ms;
 	long time_between = this_time - m_iLastDrawTime;
 	m_iLastDrawTime = this_time;
-	if(time_between < 100)
+    //
+	// If this number is high enough the caret will not blink at all
+	// This places the caret on the screen during rapid moves.
+	//
+	if(time_between < _getCursorBlinkTime()/2) 
 	{
 		m_iRetry++;
 		xxx_UT_DEBUGMSG(("Caret redraw after %d ms \n",time_between));
-		if(m_bCursorIsOn  || (m_iRetry > 2))
-		{
-			xxx_UT_DEBUGMSG(("Caret redraw after %d ms \n",time_between));
-//			return;
-		}
-		
 	}
 	else
 	{
@@ -638,13 +634,11 @@ void GR_Caret::_blink(bool bExplicit)
  		m_pG->setColor(oldColor);
 		m_bRecursiveDraw = false;
 	}
-	m_bPendingBlink = false;
-	/*
-	if(bExplicit && !m_bCursorIsOn)
-		m_pG->flush();
-	*/
-//	if(!bExplicit)
-//		m_pG->flush();
+	//
+	// Places the caret on the screen during rapid moves like pressing the arrow keys
+	//
+	if(m_iRetry == 0)
+		m_bPendingBlink = false;
 }
 
 //

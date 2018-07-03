@@ -4779,7 +4779,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	
 	if(m_pG->allCarets()->doBlinkIfNeeded())
 	{
-		xxx_UT_DEBUGMSG(("Pending blink has bDirtyRunsOnly %d \n",bDirtyRunsOnly));
+		xxx_UT_DEBUGMSG(("Pending blink drawn has bDirtyRunsOnly %d \n",bDirtyRunsOnly));
 	}
 	xxx_UT_DEBUGMSG(("End _draw\n"));
 }
@@ -4871,7 +4871,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 		m_pG->allCarets()->setPendingBlink();
 		m_pG->flush(); // scedule a redraw for Wayland
 	}
-	
+
 }
 
 
