@@ -9778,8 +9778,8 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 	std::string sPropName = "dataid";
 	std::string sDataIDVal = UT_std_string_getPropVal(sProps,sPropName);
 	UT_std_string_removeProperty(sProps, sPropName);
-	sPropName ="latexid";
-	std::string sLatexIDVal = UT_std_string_getPropVal(sProps,sPropName);
+	std::string sPropNameLatex ="latexid";
+	std::string sLatexIDVal = UT_std_string_getPropVal(sProps,sPropNameLatex);
 
 	PP_PropertyVector attrs = {
 		sPropName, sDataIDVal,
