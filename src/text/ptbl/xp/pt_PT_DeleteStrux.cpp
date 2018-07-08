@@ -262,8 +262,8 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 
 	default:
 		UT_ASSERT_HARMLESS(0);
-		return false;
 	}
+	return false;
 }
 
 bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
