@@ -5128,7 +5128,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 	}
 
 	_dataItemPair* pPair = iter->second;
-	UT_DEBUGMSG(("Found data item name %s buf %p \n",szName,pPair->pBuf));
+	UT_DEBUGMSG(("Found data item name %s buf %p\n", szName, pPair->pBuf.get()));
 
 	pByteBuf = pPair->pBuf;
 

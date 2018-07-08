@@ -10324,7 +10324,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	if(bGetPrevAuto)
 	{
 		pAutoNum = m_pDoc->getListByID(id);
-		UT_DEBUGMSG(("SEVIOR: found autonum %p from id %d \n",pAutoNum,id));
+		UT_DEBUGMSG(("SEVIOR: found autonum %p from id %d \n", pAutoNum.get(), id));
 		if(pAutoNum != NULL)
 		{
 			m_pAutoNum = pAutoNum;
