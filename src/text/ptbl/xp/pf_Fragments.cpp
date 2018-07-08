@@ -1171,8 +1171,8 @@ pf_Fragments::checkInvariants() const
 	// These iterators should be ConstIterators
 	// ConstIterator end(end());
 	// ConstIterator it(begin());
-	Iterator end_(const_cast<pf_Fragments* const> (this));
-	Iterator it(const_cast<pf_Fragments* const> (this), const_cast<Node*> (_first()));
+	Iterator end_(const_cast<pf_Fragments*> (this));
+	Iterator it(const_cast<pf_Fragments*> (this), const_cast<Node*> (_first()));
 
 	if (it != end_)
 		nb_blacks = _countBlackNodes(it++);

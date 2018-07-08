@@ -175,7 +175,7 @@ static bool isStuxType( const pf_Frag* const pf, PTStruxType t )
     if( pf->getType() != pf_Frag::PFT_Strux )
         return false;
 
-    const pf_Frag_Strux* const pfs = static_cast<const pf_Frag_Strux* const>(pf);
+    const pf_Frag_Strux* pfs = static_cast<const pf_Frag_Strux*>(pf);
     return pfs->getStruxType() == t;
 }
 

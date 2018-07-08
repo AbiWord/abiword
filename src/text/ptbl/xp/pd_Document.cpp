@@ -1311,7 +1311,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos, const UT_UCSChar * pbuf,
 	std::string sStr;
 	for(ii=0; ii<length;ii++)
 	{
-		sStr += static_cast<const char>(pbuf[ii]);
+		sStr += static_cast<char>(pbuf[ii]);
 	}
 	UT_DEBUGMSG(("PD_Document Insert span |%s| pos %d \n",sStr.c_str(),dpos));
 #endif
