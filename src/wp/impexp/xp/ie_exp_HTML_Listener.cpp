@@ -797,6 +797,16 @@ void IE_Exp_HTML_Listener::_outputData(const UT_UCSChar* pData,
         }
     }
 
+    if (spaceCount > 0)
+    {
+        sBuf += ' ';
+        spaceCount--;
+        while (spaceCount > 0)
+        {
+            sBuf += "&nbsp;";
+            spaceCount--;
+        }
+    }
     if (!sBuf.empty())
     {
         m_pCurrentImpl->insertText(sBuf);

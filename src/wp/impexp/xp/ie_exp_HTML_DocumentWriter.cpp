@@ -55,7 +55,7 @@ void IE_Exp_HTML_DocumentWriter::closeSpan()
 void IE_Exp_HTML_DocumentWriter::openBlock(const gchar* szStyleName,
 										   const UT_UTF8String& style, const PP_AttrProp * /*pAP*/)
 {
-    m_pTagWriter->openTag("p");
+    m_pTagWriter->openTag("p", true, true);
     _handleStyleAndId(szStyleName, NULL, style.utf8_str());
 }
 
