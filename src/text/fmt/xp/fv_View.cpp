@@ -3105,11 +3105,15 @@ bool FV_View::isSelectionEmpty(void) const
 {
 	if(m_FrameEdit.isActive() && m_FrameEdit.isImageWrapper() )
 	{
-	        return false;
+		if (m_pG)
+			m_pG->allCarets()->disable(true);
+		return false;
 	}
 	if(m_FrameEdit.isActive() && (m_FrameEdit. getFrameEditMode() >= FV_FrameEdit_RESIZE_INSERT))
 	{
-	        return false;
+		if (m_pG)
+			m_pG->allCarets()->disable(true);
+		return false;
 	}
 	if (!m_Selection.isSelected())
 	{
@@ -3124,6 +3128,8 @@ bool FV_View::isSelectionEmpty(void) const
 		{
 			return true;
 		}
+		if (m_pG)
+			m_pG->allCarets()->disable(true);
 		return false;
 	}
 	PT_DocPosition curPos = getPoint();
@@ -3131,7 +3137,8 @@ bool FV_View::isSelectionEmpty(void) const
 	{
 		return true;
 	}
-
+	if (m_pG)
+		m_pG->allCarets()->disable(true);
 	return false;
 }
 

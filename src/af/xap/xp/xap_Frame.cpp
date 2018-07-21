@@ -505,7 +505,7 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 		pFrameImpl->m_ViewAutoUpdaterID = 0;
 		DELETEP(pFrameImpl->m_ViewAutoUpdater);
 		pView->draw();
-
+		pG->flush();
 		return;
 	}
 	if(!pView->isLayoutFilling() && !pFrameImpl->m_pFrame->m_bFirstDraw)
@@ -514,6 +514,7 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 		pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 		pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
 		pFrameImpl->m_pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
+		pG->flush();
 		return;
 	}
 	GR_Graphics * pG = pView->getGraphics();
@@ -534,6 +535,7 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 			pView->updateScreen();
 		}
 	}
+	pG->flush();
 }
 
 UT_RGBColor XAP_Frame::getColorSelBackground () const

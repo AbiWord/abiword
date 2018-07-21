@@ -4478,7 +4478,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 "\t\twith [yScrollOffset %d][windowHeight %d][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,getWindowHeight(),bDirtyRunsOnly));
-
 	if(m_pViewDoubleBufferingObject != NULL && m_pViewDoubleBufferingObject->getCallDrawOnlyAtTheEnd())
 	{
 		// record this call's arguments and return
@@ -4727,12 +4726,19 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		// advance to the next page
 		pPage = pPage -> getNext();
 	}
-
 	if (bClip)
 	{
 		m_pG->setClipRect(NULL);
 	}
-
+	//
+	// Look if we have to blink the caret
+	//
+	xxx_UT_DEBUGMSG(("Doing _draw bDirtyRunsOnly %d \n",bDirtyRunsOnly));
+	
+	if(m_pG->allCarets()->doBlinkIfNeeded())
+	{
+		xxx_UT_DEBUGMSG(("Pending blink drawn has bDirtyRunsOnly %d \n",bDirtyRunsOnly));
+	}
 	xxx_UT_DEBUGMSG(("End _draw\n"));
 }
 
@@ -4816,6 +4822,14 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 		  m_countDisable++;
 		}
 	}
+	
+	if(m_pG)
+	{
+		xxx_UT_DEBUGMSG(("Schedule redraw in _setPoint \n"));
+		m_pG->allCarets()->setPendingBlink();
+		m_pG->flush(); // scedule a redraw for Wayland
+	}
+
 }
 
 

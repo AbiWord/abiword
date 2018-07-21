@@ -364,7 +364,9 @@ class ABI_EXPORT AllCarets
 						  const UT_RGBColor * pClr = NULL);
 	void		setInsertMode (bool mode);
 	void		forceDraw(void);
-
+	bool        doBlinkIfNeeded(void);
+	void        setPendingBlink(void);
+	
  private:
 	GR_Graphics * m_pG;
 	GR_Caret **    m_pLocalCaret;

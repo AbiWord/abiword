@@ -27,7 +27,7 @@
 #include "ut_misc.h"
 #include "ut_debugmsg.h"
 
-//#define DEACTIVATE_FV_VIEW_DOUBLE_BUFFERING
+//#define DEACTIVATE_FV_VIEW_DOUBLE_BUFFERING 1
 
 FV_ViewDoubleBuffering::FV_ViewDoubleBuffering(FV_View *pView, bool suspendDirectDrawing, bool callDrawOnlyAtTheEnd)
 	: m_pView(pView),

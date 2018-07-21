@@ -185,6 +185,20 @@ void		AllCarets::setBlink(bool bBlink)
 	}
 }
 
+bool AllCarets::doBlinkIfNeeded(void)
+{
+	bool bBlinked = false;
+	if((*m_pLocalCaret))
+	{
+		bBlinked = (*m_pLocalCaret)->doBlinkIfNeeded();
+		for(UT_sint32 i =0; i< m_vecCarets->getItemCount();i++)
+		{
+			m_vecCarets->getNthItem(i)->forceDraw();
+		}
+	}
+	return bBlinked;
+}
+
 void        AllCarets::setWindowSize(UT_uint32 width, UT_uint32 height)
 {
 	if((*m_pLocalCaret))
@@ -193,6 +207,12 @@ void        AllCarets::setWindowSize(UT_uint32 width, UT_uint32 height)
 	{
 		m_vecCarets->getNthItem(i)->setWindowSize(width, height);
 	}
+}
+
+void        AllCarets::setPendingBlink(void)
+{
+	if((*m_pLocalCaret))
+		(*m_pLocalCaret)->setPendingBlink();
 }
 
 void		AllCarets::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
