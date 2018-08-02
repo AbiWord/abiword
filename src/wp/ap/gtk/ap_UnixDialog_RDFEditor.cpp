@@ -1,22 +1,21 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiWord
  * Copyright (C) 2011 AbiSource, Inc.
  * Copyright (C) Ben Martin
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -53,15 +52,15 @@ const char* GOBJ_COL_NUM = "GOBJ_COL_NUM";
 
 
 void
-AP_UnixDialog_RDFEditor__onActionNew ( GtkAction*, gpointer data )
+AP_UnixDialog_RDFEditor__onActionNew(GAction*, GVariant*, gpointer data)
 {
-	AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
+    AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
     dlg->createStatement();
 }
 void
-AP_UnixDialog_RDFEditor__onActionCopy ( GtkAction*, gpointer data )
+AP_UnixDialog_RDFEditor__onActionCopy(GAction*, GVariant*, gpointer data)
 {
-	AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
+    AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
     dlg->copyStatement();
 }
 
@@ -74,7 +73,6 @@ static void s_OnXMLIDChanged(GtkWidget * widget, AP_UnixDialog_RDFEditor* dlg)
     std::string xmlid = XAP_comboBoxGetActiveText( GTK_COMBO_BOX( widget ));
    	dlg->setRestrictedXMLID( xmlid );
 }
-    
 
 void cell_edited_cb ( GtkCellRendererText *cell,
                       gchar *path_string,
@@ -88,35 +86,32 @@ void cell_edited_cb ( GtkCellRendererText *cell,
 
 
 void
-AP_UnixDialog_RDFEditor__onActionDelete( GtkAction*, gpointer data )
+AP_UnixDialog_RDFEditor__onActionDelete(GAction*, GVariant*, gpointer data)
 {
-    
-	AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
+    AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
     dlg->onDelClicked();
 }
+
 void
-AP_UnixDialog_RDFEditor__onActionImportRDFXML( GtkAction*, gpointer data )
+AP_UnixDialog_RDFEditor__onActionImportRDFXML(GAction*, GVariant*, gpointer data)
 {
-    xxx_UT_DEBUGMSG(("_onActionImportRDFXML()\n"))
-	AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
+    AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
     dlg->onImportRDFXML();
 }
+
 void
-AP_UnixDialog_RDFEditor__onActionExportRDFXML( GtkAction*, gpointer data )
+AP_UnixDialog_RDFEditor__onActionExportRDFXML(GAction*, GVariant*, gpointer data)
 {
-    
-	AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
+    AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
     dlg->onExportRDFXML();
 }
-
-
 
 void
 AP_UnixDialog_RDFEditor__onShowAllClicked ( GtkButton * /*button*/,
                                             gpointer   data )
 {
-	AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor *>(data);
-	dlg->onShowAllClicked ();
+    AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor *>(data);
+    dlg->onShowAllClicked ();
 }
 
 
@@ -132,7 +127,7 @@ AP_UnixDialog_RDFEditor__onDialogResponse ( GtkDialog * /*dialog*/,
 	AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor *>(data);
 	if (response == GTK_RESPONSE_CLOSE)
     {
-		dlg->destroy ();		
+		dlg->destroy ();
 	}
 }
 
@@ -509,13 +504,23 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     m_btShowAll = GTK_WIDGET(gtk_builder_get_object(builder, "btShowAll"));
 	m_resultsView   = GTK_TREE_VIEW(gtk_builder_get_object(builder, "resultsView"));
     m_status        = GTK_WIDGET(gtk_builder_get_object(builder, "status"));
-    m_anewtriple    = GTK_ACTION(gtk_builder_get_object(builder, "anewtriple"));
-    m_acopytriple   = GTK_ACTION(gtk_builder_get_object(builder, "acopytriple"));
-    m_adeletetriple = GTK_ACTION(gtk_builder_get_object(builder, "adeletetriple"));
-    m_aimportrdfxml = GTK_ACTION(gtk_builder_get_object(builder, "aimportrdfxml"));
-    m_aexportrdfxml = GTK_ACTION(gtk_builder_get_object(builder, "aexportrdfxml"));
     m_selectedxmlid = GTK_COMBO_BOX(gtk_builder_get_object(builder, "selectedxmlid"));
     m_restrictxmlidhidew = GTK_WIDGET(gtk_builder_get_object(builder, "restrictxmlidhidew"));
+
+    // Create actions
+    GSimpleActionGroup* action_group = g_simple_action_group_new();
+    gtk_widget_insert_action_group(m_wDialog, "rdf", G_ACTION_GROUP(action_group));
+    g_object_unref(action_group);
+    m_anewtriple = g_simple_action_new("newtriple", NULL);
+    g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_anewtriple));
+    m_acopytriple = g_simple_action_new("copytriple", NULL);
+    g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_acopytriple));
+    m_adeletetriple = g_simple_action_new("deletetriple", NULL);
+    g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_adeletetriple));
+    m_aimportrdfxml = g_simple_action_new("importrdfxml", NULL);
+    g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_aimportrdfxml));
+    m_aexportrdfxml = g_simple_action_new("exportrdfxml", NULL);
+    g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_aexportrdfxml));
 
     // localization
     localizeMenuItem(GTK_WIDGET(gtk_builder_get_object(builder, "filemenuitem")), pSS, AP_STRING_ID_DLG_RDF_Editor_Menu_File);
@@ -523,19 +528,11 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     localizeButton(m_btShowAll, pSS, AP_STRING_ID_DLG_RDF_Editor_ShowAll);
     localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbRestrict")), pSS, AP_STRING_ID_DLG_RDF_Editor_Restrict);
 
-    // add three dots to menu items raising a dialog
-    text = gtk_action_get_label(m_aimportrdfxml);
-    text += "...";
-    gtk_action_set_label(m_aimportrdfxml, text.c_str());
-    text = gtk_action_get_label(m_aexportrdfxml);
-    text += "...";
-    gtk_action_set_label(m_aexportrdfxml, text.c_str());
-
     GObject *selection;
     selection = G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_resultsView)));
     gtk_tree_selection_set_mode (GTK_TREE_SELECTION (selection), GTK_SELECTION_MULTIPLE);
     gtk_tree_view_set_headers_clickable(GTK_TREE_VIEW (m_resultsView), true );
-    
+
     GtkTreeStore* m = gtk_tree_store_new( C_COLUMN_COUNT, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING );
     gtk_tree_view_set_model( m_resultsView, GTK_TREE_MODEL( m ) );
     m_resultsModel = m;
@@ -671,8 +668,8 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onCursorChanged), static_cast <gpointer>(this));
 
 #ifndef WITH_REDLAND
-	gtk_action_set_sensitive(m_aimportrdfxml, FALSE);  
-	gtk_action_set_sensitive(m_aexportrdfxml, FALSE);  
+	g_simple_action_set_enabled(m_aimportrdfxml, FALSE);
+	g_simple_action_set_enabled(m_aexportrdfxml, FALSE);
 #endif
 
 	g_object_unref(G_OBJECT(builder));

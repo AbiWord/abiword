@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.12"/>
-  <object class="GtkAction" id="acopytriple">
-    <property name="stock_id">gtk-copy</property>
-  </object>
-  <object class="GtkAction" id="adeletetriple">
-    <property name="stock_id">gtk-delete</property>
-  </object>
-  <object class="GtkAction" id="aexportrdfxml">
-    <property name="stock_id">gtk-save-as</property>
-  </object>
-  <object class="GtkAction" id="aimportrdfxml">
-    <property name="stock_id">gtk-open</property>
-  </object>
-  <object class="GtkAction" id="anewtriple">
-    <property name="stock_id">gtk-new</property>
-    <property name="is_important">True</property>
-  </object>
   <object class="GtkImage" id="showall">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -29,6 +13,9 @@
     <property name="default_width">800</property>
     <property name="default_height">600</property>
     <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox2">
         <property name="visible">True</property>
@@ -52,7 +39,6 @@
             <child>
               <object class="GtkButton" id="btShowAll">
                 <property name="label" translatable="yes">Update</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -67,7 +53,6 @@
             <child>
               <object class="GtkButton" id="btClose">
                 <property name="label">gtk-close</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -99,7 +84,6 @@
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkMenuItem" id="filemenuitem">
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">_File</property>
@@ -110,18 +94,20 @@
                         <property name="can_focus">False</property>
                         <child>
                           <object class="GtkImageMenuItem" id="miopen">
-                            <property name="related_action">aimportrdfxml</property>
+                            <property name="label" translatable="yes">Open...</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="action_name">rdf.importrdfxml</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="misave">
-                            <property name="related_action">aexportrdfxml</property>
+                            <property name="label" translatable="yes">Save...</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="action_name">rdf.exportrdfxml</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                           </object>
@@ -132,7 +118,6 @@
                 </child>
                 <child>
                   <object class="GtkMenuItem" id="editmenuitem">
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Triple</property>
@@ -143,27 +128,30 @@
                         <property name="can_focus">False</property>
                         <child>
                           <object class="GtkImageMenuItem" id="minew">
-                            <property name="related_action">anewtriple</property>
+                            <property name="label" translatable="yes">New</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="action_name">rdf.newtriple</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="micopy">
-                            <property name="related_action">acopytriple</property>
+                            <property name="label" translatable="yes">Copy</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="action_name">rdf.copytriple</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="midelete">
-                            <property name="related_action">adeletetriple</property>
+                            <property name="label" translatable="yes">Delete</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="action_name">rdf.deletetriple</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">False</property>
                           </object>
@@ -188,10 +176,10 @@
                 <child>
                   <object class="GtkButton" id="btnew">
                     <property name="label">gtk-new</property>
-                    <property name="related_action">anewtriple</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="action_name">rdf.newtriple</property>
                     <property name="use_stock">True</property>
                     <property name="image_position">bottom</property>
                   </object>
@@ -204,10 +192,10 @@
                 <child>
                   <object class="GtkButton" id="btcopy">
                     <property name="label">Copy</property>
-                    <property name="related_action">acopytriple</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="action_name">rdf.copytriple</property>
                     <property name="use_stock">True</property>
                     <property name="image_position">bottom</property>
                   </object>
@@ -220,10 +208,10 @@
                 <child>
                   <object class="GtkButton" id="btdel">
                     <property name="label">gtk-delete</property>
-                    <property name="related_action">adeletetriple</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="action_name">rdf.deletetriple</property>
                     <property name="use_stock">True</property>
                     <property name="image_position">bottom</property>
                   </object>

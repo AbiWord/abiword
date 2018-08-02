@@ -88,11 +88,11 @@ private:
 	GtkTreeView*  m_resultsView;
 	GtkTreeStore* m_resultsModel;
     GtkWidget *m_status;
-    GtkAction *m_anewtriple;
-    GtkAction *m_acopytriple;
-    GtkAction *m_adeletetriple;
-    GtkAction *m_aimportrdfxml;
-    GtkAction *m_aexportrdfxml;
+    GSimpleAction *m_anewtriple;
+    GSimpleAction *m_acopytriple;
+    GSimpleAction *m_adeletetriple;
+    GSimpleAction *m_aimportrdfxml;
+    GSimpleAction *m_aexportrdfxml;
     GtkComboBox *m_selectedxmlid;
     GtkWidget   *m_restrictxmlidhidew;
 
