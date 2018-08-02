@@ -334,7 +334,8 @@ PD_RDFModel::dumpModel( const std::string& headerMsg )
     for( ; iter != e; ++iter )
     {
         PD_RDFStatement st = *iter;
-        UT_DEBUGMSG(("PD_RDFModel::dumpModel() st:%s\n", st.toString().c_str() ));
+        std::string stS = st.toString();
+        UT_DEBUGMSG(("PD_RDFModel::dumpModel() st:%s\n", stS.c_str() ));
         
     }
     UT_DEBUGMSG(("PD_RDFModel::dumpModel() --- done -------------------------\n"));
@@ -1779,12 +1780,12 @@ PD_RDFSemanticItem::showEditorWindow( const PD_RDFSemanticItems& cl )
 
 
 void
-PD_RDFSemanticItem::showEditorWindow( const PD_RDFSemanticItemHandle& c )
+PD_RDFSemanticItem::showEditorWindow(const PD_RDFSemanticItemHandle&)
 {
 	UT_DEBUG_ONLY_ARG(c);
 
-    UT_DEBUGMSG(("showEditorWindow(base) name:%s linksubj:%s\n",
-                 c->name().c_str(), c->linkingSubject().toString().c_str() ));
+//    UT_DEBUGMSG(("showEditorWindow(base) name:%s linksubj:%s\n",
+//                 c->name().c_str(), c->linkingSubject().toString().c_str() ));
 }
 
 void
@@ -5273,7 +5274,7 @@ PD_DocumentRDFMutation::~PD_DocumentRDFMutation()
 bool PD_DocumentRDFMutation::apAdd( PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o )
 {
     POCol l;
-    const gchar* szName = s.toString().c_str();
+    const std::string szName = s.toString();
     const gchar* szValue = 0;
 	if( AP->getProperty( szName, szValue) )
     {
@@ -5351,8 +5352,6 @@ void PD_DocumentRDFMutation::apRemove( PP_AttrProp*& AP, const PD_URI& s, const 
 bool
 PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& o )
 {
-    UT_DEBUGMSG(("PD_DocumentRDFMutation::add(1) s:%s o:%s ot:%d\n",
-                 s.toString().c_str(), o.toString().c_str(), o.getObjectType() ));
     // If it already exists and was not removed
     // then you can't add it again
     if( m_rdf->contains( s, p, o ) && !m_rdf->apContains( m_crRemoveAP, s, p, o ))
@@ -5363,8 +5362,6 @@ PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& 
     if( m_rdf->apContains( m_crAddAP, s, p, o ) && !m_rdf->apContains( m_crRemoveAP, s, p, o ))
         return true;
 
-    UT_DEBUGMSG(("PD_DocumentRDFMutation::add(2) s:%s o:%s\n", s.toString().c_str(), o.toString().c_str() ));
-    
     apAdd( m_pAP, s, p, o );
     apAdd( m_crAddAP, s, p, o );
     return true;
@@ -5380,9 +5377,6 @@ PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& 
 void
 PD_DocumentRDFMutation::remove( const PD_URI& s, const PD_URI& p, const PD_Object& o )
 {
-    UT_DEBUGMSG(("PD_DocumentRDFMutation::remove(1) s:%s p:%s o:%s ot:%d\n",
-                 s.toString().c_str(), p.c_str(), o.toString().c_str(), o.getObjectType() ));
-    
     apRemove( m_pAP, s, p, o );
     apRemove( m_crAddAP, s, p, o );
     apAdd( m_crRemoveAP, s, p, o );    
@@ -5450,13 +5444,10 @@ PD_DocumentRDFMutation::add( PD_RDFModelHandle model )
     {
         const PD_RDFStatement& st = *iter;
 
-        UT_DEBUGMSG(("PD_DocumentRDFMutation::add(submodel) ot:%d o:%s\n",
-                     st.getObject().getObjectType(), st.getObject().toString().c_str()  ));
-        
         if( add( st ) )
             ++count;
     }
-    
+
     return count;
 }
 
