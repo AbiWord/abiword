@@ -38,6 +38,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -693,6 +694,13 @@ AP_UnixDialog_RDFEditor::runModeless (XAP_Frame * pFrame)
 	_constructWindow (pFrame);
 	UT_ASSERT (m_wDialog);
 	_updateWindow ();
+    GtkWidget* parent = pFrame ?
+        static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() :
+        NULL;
+    if (parent) {
+        gtk_window_set_transient_for(GTK_WINDOW(m_wDialog), GTK_WINDOW(parent));
+    }
+
 	abiSetupModelessDialog (GTK_DIALOG (m_wDialog), pFrame, this, GTK_RESPONSE_CLOSE);
     showAllRDF();
 	gtk_widget_show_all (m_wDialog);
