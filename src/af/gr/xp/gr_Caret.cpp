@@ -197,14 +197,8 @@ void GR_Caret::s_enable(UT_Worker * _w)
 	c->m_enabler->stop();
 }
 
-void GR_Caret::s_blink_timeout(UT_Worker * _w)
+void GR_Caret::s_blink_timeout(UT_Worker *)
 {
-	return;
-	/*
-	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
-	if (c->isEnabled())
-		c->disable();
-	*/
 }
 
 UT_uint32 GR_Caret::_getCursorBlinkTime() const
