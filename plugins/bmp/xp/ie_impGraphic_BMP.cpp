@@ -447,13 +447,13 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(const UT_ConstByteBufPtr & pBB)
 UT_Byte IE_ImpGraphic_BMP::ReadByte  (const UT_ConstByteBufPtr & pBB,
 									    UT_uint32 offset)
 {
-	return ( static_cast<const UT_Byte>(ReadBytes(pBB,offset,1) ));
+	return static_cast<UT_Byte>(ReadBytes(pBB, offset, 1));
 }
 
 UT_uint16 IE_ImpGraphic_BMP::Read2Bytes(const UT_ConstByteBufPtr & pBB,
 									    UT_uint32 offset)
 {
-	return ( static_cast<const UT_uint16>(ReadBytes(pBB,offset,2) ));
+	return static_cast<UT_uint16>(ReadBytes(pBB, offset, 2));
 }
 
 
