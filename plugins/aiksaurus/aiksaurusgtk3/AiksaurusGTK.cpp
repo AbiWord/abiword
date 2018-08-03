@@ -202,7 +202,7 @@ namespace AiksaurusGTK_impl
         try {
             d_replacement = replacement;
         }
-        catch(std::bad_alloc) {
+        catch (const std::bad_alloc&) {
             std::cerr << Exception::CANNOT_ALLOCATE_MEMORY;
         }
         gtk_main_quit();
@@ -233,7 +233,7 @@ namespace AiksaurusGTK_impl
             }
         }
 
-        catch(std::bad_alloc) {
+        catch (const std::bad_alloc&) {
             std::cerr << Exception::CANNOT_ALLOCATE_MEMORY;
         }
     }
