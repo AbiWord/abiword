@@ -48,7 +48,7 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	             "column-spacing", 12,
 	             "hexpand", true,
 	             NULL);
-	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
+	GtkBox* parent = (GtkBox*)pEmbeddingParent;
 
 	// username
 	GtkWidget* username_label = gtk_widget_new(GTK_TYPE_LABEL,

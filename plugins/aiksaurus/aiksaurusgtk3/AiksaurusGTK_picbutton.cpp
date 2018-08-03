@@ -351,7 +351,7 @@ AiksaurusGTK_picbutton::addMenu
 
 	gtk_widget_set_can_focus(d_menu_button_ptr, false);
 
-	d_menu_pixmap_widget_ptr = gtk_arrow_new(GTK_ARROW_DOWN,GTK_SHADOW_NONE);
+	d_menu_pixmap_widget_ptr = gtk_image_new_from_icon_name("pan-down-symbolic", GTK_ICON_SIZE_BUTTON);
 
 	gtk_widget_show(d_menu_pixmap_widget_ptr);
 
