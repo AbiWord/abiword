@@ -219,11 +219,12 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 						    GDK_FOCUS_CHANGE_MASK |
 						    GDK_LEAVE_NOTIFY_MASK |
 						    GDK_SCROLL_MASK));
-	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
 #if GTK_CHECK_VERSION(3,0,0)
 	g_signal_connect(G_OBJECT(m_dArea), "draw",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::draw), NULL);
 #else
+        // We disable double buffering on Gtk3 because it doesn't work.
+	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
 	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::expose), NULL);
 #endif

@@ -126,8 +126,12 @@ GR_Graphics *   GR_UnixCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 
 //	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
 	GR_UnixCairoAllocInfo &AI = (GR_UnixCairoAllocInfo&)info;
-
+#if GTK_CHECK_VERSION(3,0,0)
+	// We disable double buffering on Gtk3 because it doesn't work.
+	return new GR_UnixCairoGraphics(AI.m_win, false);
+#else
 	return new GR_UnixCairoGraphics(AI.m_win, AI.m_double_buffered);
+#endif
 }
 
 inline UT_RGBColor _convertGdkColor(const GdkColor &c)
