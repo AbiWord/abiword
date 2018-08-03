@@ -287,7 +287,7 @@ gsf_output_proxy_set_property (GObject      *object,
 }
 
 static void
-gsf_output_proxy_init (GObject *object)
+gsf_output_proxy_init (GObject *object, gpointer)
 {
 	GsfOutputProxy *proxy = (GsfOutputProxy *)object;
 
@@ -296,7 +296,7 @@ gsf_output_proxy_init (GObject *object)
 }
 
 static void
-gsf_output_proxy_class_init (GObjectClass *gobject_class)
+gsf_output_proxy_class_init (GObjectClass *gobject_class, gpointer)
 {
 	GsfOutputClass *output_class = GSF_OUTPUT_CLASS (gobject_class);
 	

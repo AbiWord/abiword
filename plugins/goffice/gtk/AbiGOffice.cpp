@@ -88,7 +88,7 @@ abi_progress_message_set (G_GNUC_UNUSED GOCmdContext *cc, G_GNUC_UNUSED gchar co
 }
 
 static void
-abi_cmd_context_init (GOCmdContextClass *iface)
+abi_cmd_context_init (GOCmdContextClass *iface, gpointer)
 {
 	iface->get_password	    = abi_get_password;
 	iface->set_sensitive	    = abi_set_sensitive;

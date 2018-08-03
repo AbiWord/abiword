@@ -2048,7 +2048,7 @@ abiwidget_child_type (GtkContainer *container)
 }
 
 static void
-abi_widget_init (AbiWidget * abi)
+abi_widget_init (AbiWidget * abi, gpointer)
 {
 	abi->priv = new AbiPrivData();
 
@@ -2212,7 +2212,7 @@ abi_widget_destroy_gtk (GtkWidget *object)
 
 
 static void
-abi_widget_class_init (AbiWidgetClass *abi_class)
+abi_widget_class_init (AbiWidgetClass *abi_class, gpointer)
 {
 
 #ifdef LOGFILE

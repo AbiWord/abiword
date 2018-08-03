@@ -40,7 +40,7 @@
 #define GET_CLASS(instance) G_TYPE_INSTANCE_GET_CLASS (instance, AP_DOCVIEW_TYPE, ApDocViewClass)
 
 static void
-ap_DocView_class_init(GtkWidgetClass *widget_class)
+ap_DocView_class_init(GtkWidgetClass *widget_class, gpointer)
 {
 
 #ifdef LOGFILE

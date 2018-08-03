@@ -200,7 +200,7 @@ abi_data_editor_set_value_double (GogDataEditor *editor, double val,
 }
 
 static void
-abi_data_editor_init (GogDataEditorClass *iface)
+abi_data_editor_init (GogDataEditorClass *iface, gpointer)
 {
 	iface->set_format = abi_data_editor_set_format;
 	iface->set_value_double = abi_data_editor_set_value_double;
@@ -289,14 +289,14 @@ abi_data_allocator_editor (G_GNUC_UNUSED GogDataAllocator *dalloc,
 }
 
 static void
-abi_go_plot_data_allocator_init (GogDataAllocatorClass *iface)
+abi_go_plot_data_allocator_init (GogDataAllocatorClass *iface, gpointer)
 {
 	iface->allocate   = abi_data_allocator_allocate;
 	iface->editor	  = abi_data_allocator_editor;
 }
 
 static void
-abi_control_gui_init (GObject *object)
+abi_control_gui_init (GObject *object, gpointer)
 {
 	AbiControlGUI *control = ABI_CONTROL_GUI (object);
 	control->object_id = NULL;
@@ -314,7 +314,7 @@ abi_control_gui_finalize (GObject *object)
 }
 
 static void
-abi_control_gui_class_init (GObjectClass *klass)
+abi_control_gui_class_init (GObjectClass *klass, gpointer)
 {
 	parent_klass = static_cast<GObjectClass*>(g_type_class_peek_parent (klass));
 	klass->finalize = abi_control_gui_finalize;

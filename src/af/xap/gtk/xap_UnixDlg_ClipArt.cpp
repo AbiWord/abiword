@@ -122,6 +122,11 @@ XAP_UnixDialog_ClipArt::~XAP_UnixDialog_ClipArt()
 	this->store = NULL;
 }
 
+static
+void _free_path(GtkTreePath *path, gpointer)
+{
+    gtk_tree_path_free(path);
+}
 /**
  *
  */
@@ -199,7 +204,7 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 			else {
 				setAnswer (XAP_Dialog_ClipArt::a_CANCEL);
 			}
-			g_list_foreach (list, (void (*)(void*, void*)) gtk_tree_path_free, NULL);
+			g_list_foreach (list, (GFunc)_free_path, NULL);
 			g_list_free (list);
 		}
 		break;

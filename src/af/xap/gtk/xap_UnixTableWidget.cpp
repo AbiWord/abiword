@@ -548,7 +548,7 @@ abi_table_dispose (GObject *instance)
 }
 
 static void
-abi_table_class_init (AbiTableClass *klass)
+abi_table_class_init (AbiTableClass *klass, gpointer)
 {
 	GtkWidgetClass *object_class = reinterpret_cast<GtkWidgetClass*>(klass);
 
@@ -566,7 +566,7 @@ abi_table_class_init (AbiTableClass *klass)
 }
 
 static void
-abi_table_init (AbiTable* table)
+abi_table_init (AbiTable* table, gpointer)
 {
 	char* text = g_strdup_printf("%d x %d ", init_rows, init_cols);
 

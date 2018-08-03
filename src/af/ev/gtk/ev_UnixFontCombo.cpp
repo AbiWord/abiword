@@ -151,13 +151,13 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 }
 
 static void
-abi_cell_renderer_font_instance_init (AbiCellRendererFont *self)
+abi_cell_renderer_font_instance_init (AbiCellRendererFont *self, gpointer)
 {
 	self->is_popped_up = FALSE;
 }
 
 static void
-abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass)
+abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass, gpointer)
 {
 	GtkCellRendererClass *cell_renderer_class = GTK_CELL_RENDERER_CLASS (klass);
 
@@ -272,7 +272,7 @@ renderer_popup_closed_cb (AbiFontCombo		*self,
 }
 
 static void
-abi_font_combo_init (AbiFontCombo *self)
+abi_font_combo_init (AbiFontCombo *self, gpointer)
 {
 	self->is_disposed = FALSE;
 }
@@ -306,7 +306,7 @@ abi_font_combo_finalize (GObject *instance)
 }
 
 static void
-abi_font_combo_class_init (AbiFontComboClass *klass)
+abi_font_combo_class_init (AbiFontComboClass *klass, gpointer)
 {
 	GObjectClass *g_object_class = G_OBJECT_CLASS (klass);
 
