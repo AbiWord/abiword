@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application>
-  <id type="desktop">abiword.desktop</id>
+  <id type="desktop">com.abisource.AbiWord</id>
   <name>AbiWord</name>
   <summary>A word processor</summary>
   <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
   <description>
     <p>
       AbiWord is a free word processing program. It is suitable for a
@@ -24,5 +25,5 @@
     <release version="3.0.2" type="stable" date="2016-10-21" />
   </releases>
   <content_rating type="oars-1.0" />
-  <updatecontact>hub@figuiere.net</updatecontact>
+  <update_contact>hub@figuiere.net</update_contact>
 </application>
