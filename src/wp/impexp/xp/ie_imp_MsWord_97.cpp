@@ -1122,9 +1122,9 @@ static void print_summary_stream (GsfInfile * msole,
   GsfInput * stream = gsf_infile_child_by_name (msole, stream_name);
   if (stream != NULL) {
     GsfDocMetaData *meta_data = gsf_doc_meta_data_new ();
-    GError    *err = NULL;    
+    GError    *err = NULL;
 
-    err = gsf_msole_metadata_read (stream, meta_data);
+    err = gsf_doc_meta_data_read_from_msole(meta_data, stream);
     if (err != NULL) {
       g_warning ("Error getting metadata for %s: %s", stream_name, err->message);
       g_error_free (err);

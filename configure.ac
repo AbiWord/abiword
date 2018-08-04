@@ -78,7 +78,7 @@ AC_ARG_ENABLE([qt],
 # cross platform deps
 fribidi_req='fribidi >= 0.10.4'
 glib_req='glib-2.0 >= 2.6.0 gthread-2.0 >= 2.6.0 gobject-2.0 >= 2.6.0'
-gsf_req='libgsf-1 >= 1.14.18'
+gsf_req='libgsf-1 >= 1.14.24'
 wv_req='wv-1.0 >= 1.2.0'
 
 dnl Do NOT get goffice on Qt
