@@ -40,3 +40,20 @@ user
 	are too large to be practical do not necessarily go here,
 	such as the fonts.
 
+
+flatpak
+        Files to build AbiWord as a flatpak using flatpak-builder. See
+        instructions below.
+
+Flatpak
+=======
+
+We support flatpak:
+
+To build:
+
+flatpak-builder --force-clean --repo=repo abiword flatpak/com.abisource.AbiWord.json
+
+To run:
+
+flatpak-builder --run abiword flatpak/com.abisource.AbiWord.json abiword
