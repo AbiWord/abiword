@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014 Richard Hughes <richard@hughsie.com> -->
+<application>
+  <id type="desktop">abiword.desktop</id>
+  <name>AbiWord</name>
+  <summary>A word processor</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <description>
+    <p>
+      AbiWord is a free word processing program. It is suitable for a
+      wide variety of word processing tasks but remain focused on word
+      processing.
+    </p>
+    <p>
+      AbiWord is meant to remain relatively lightweight and support
+      many file formats.
+    </p>
+    <!-- FIXME: Probably needs another paragraph -->
+  </description>
+  <url type="homepage">http://www.abisource.com/</url>
+  <screenshots>
+  <!-- FIXME: Needs an official up to date screenshot -->
+    <screenshot type="default">http://www.abisource.com/screenshots/AbiWord-2.0-Gnome.png</screenshot>
+  </screenshots>
+  <updatecontact>hub@figuiere.net</updatecontact>
+</application>
