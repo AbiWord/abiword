@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2014 Richard Hughes <richard@hughsie.com> -->
 <application>
   <id type="desktop">abiword.desktop</id>
   <name>AbiWord</name>
@@ -17,10 +16,12 @@
     </p>
     <!-- FIXME: Probably needs another paragraph -->
   </description>
-  <url type="homepage">http://www.abisource.com/</url>
+  <url type="homepage">https://www.abisource.com/</url>
   <screenshots>
-  <!-- FIXME: Needs an official up to date screenshot -->
-    <screenshot type="default">http://www.abisource.com/screenshots/AbiWord-2.0-Gnome.png</screenshot>
+    <screenshot type="source">https://www.abisource.com/screenshots/AbiWord-screenshot-302.png</screenshot>
   </screenshots>
+  <releases>
+    <release version="3.0.2" type="stable" date="2016-10-21" />
+  </releases>
   <updatecontact>hub@figuiere.net</updatecontact>
 </application>
