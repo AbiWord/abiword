@@ -7,12 +7,14 @@ Makefile
 Makefile.in
 .libs
 .deps
+.dirstamp
 
 # /
 /nbproject
 /configure
 /depcomp
 /autogen.err
+/aclocal.m4
 /config.*
 /compile
 /ltmain.sh
