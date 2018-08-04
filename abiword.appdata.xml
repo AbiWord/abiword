@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application>
-  <id type="desktop">abiword.desktop</id>
+  <id type="desktop">com.abisource.AbiWord</id>
   <name>AbiWord</name>
   <summary>A word processor</summary>
   <metadata_license>CC0-1.0</metadata_license>
