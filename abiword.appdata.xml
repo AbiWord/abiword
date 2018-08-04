@@ -23,5 +23,6 @@
   <releases>
     <release version="3.0.2" type="stable" date="2016-10-21" />
   </releases>
+  <content_rating type="oars-1.0" />
   <updatecontact>hub@figuiere.net</updatecontact>
 </application>
