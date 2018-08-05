@@ -4,7 +4,7 @@ Everything contained here is copyrighted and is available for your use
 and redistribution under certain license terms.  Please read
 COPYRIGHT.TXT and TRADEMARK.TXT for more information.
 
-Current information is available at http://www.abisource.com/.
+Current information is available at https://www.abisource.com/.
 
 This tree contains the following top-level subdirectories:
 
@@ -27,19 +27,14 @@ po
 	files are maintained as a convenience for translators, many of whom
 	are already accustomed to working with them (as opposed to .strings).
 
-regtest
-	Regression testing tools (scripts, documents, and the like) reside
-	here.
-
 test
-	Test files for AbiWord (not explicitly part of regression testing). 
+	Test files for AbiWord (not explicitly part of regression testing).
 
 user
 	Support files, other than code, which need to be installed
 	on the user's machine, are stored in here.  Items which
 	are too large to be practical do not necessarily go here,
 	such as the fonts.
-
 
 flatpak
         Files to build AbiWord as a flatpak using flatpak-builder. See
@@ -52,8 +47,8 @@ We support flatpak:
 
 To build:
 
-flatpak-builder --force-clean --repo=repo abiword flatpak/com.abisource.AbiWord.json
+$ flatpak-builder --force-clean --repo=repo abiword flatpak/com.abisource.AbiWord.json
 
 To run:
 
-flatpak-builder --run abiword flatpak/com.abisource.AbiWord.json abiword
+$ flatpak-builder --run abiword flatpak/com.abisource.AbiWord.json abiword
