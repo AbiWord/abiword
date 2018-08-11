@@ -1782,8 +1782,6 @@ PD_RDFSemanticItem::showEditorWindow( const PD_RDFSemanticItems& cl )
 void
 PD_RDFSemanticItem::showEditorWindow(const PD_RDFSemanticItemHandle&)
 {
-	UT_DEBUG_ONLY_ARG(c);
-
 //    UT_DEBUGMSG(("showEditorWindow(base) name:%s linksubj:%s\n",
 //                 c->name().c_str(), c->linkingSubject().toString().c_str() ));
 }
