@@ -5,6 +5,8 @@
   "runtime-version" : "3.28",
   "sdk" : "org.gnome.Sdk",
   "command" : "abiword",
+  "rename-desktop-file": "abiword.desktop",
+  "rename-appdata-file": "abiword.appdata.xml",
   "tags" : [
     "unstable"
   ],
@@ -52,36 +54,80 @@
     "fribidi-0.19.7.json",
     {
       "name" : "gsf",
-      "sources" : [
+      "cleanup" : [
+        "/include",
+        "/lib/pkgconfig",
+        "/share/man",
+        "/share/gtk-doc/html/gsf",
+        "/share/thumbnailers",
+        "/bin/gsf*"
+      ],
+       "sources" : [
         {
           "type" : "archive",
-          "url" : "https://download.gnome.org/core/3.20/3.20.2/sources/libgsf-1.14.36.tar.xz",
-          "sha256" : "71b7507f86c0f7c341bb362bdc7925a2ae286729be0bf5b8fd9581ffbbd62940"
+          "url" : "https://download.gnome.org/core/3.28/3.28.2/sources/libgsf-1.14.43.tar.xz",
+          "sha256" : "12944e3d6d9a6e4071e89dbf58348e1e93544f5f9266dd1a107a28d8001cee16"
         }
       ]
     },
     {
       "name" : "libwmf",
+      "cleanup" : [
+        "/include",
+        "/lib/gtk-2.0",
+        "/share/doc/libwmf",
+        "/bin/libwmf*",
+        "/bin/wmf*"
+      ],
       "sources" : [
         {
           "type" : "archive",
           "url" : "https://newcontinuum.dl.sourceforge.net/project/wvware/libwmf/0.2.8.4/libwmf-0.2.8.4.tar.gz",
           "sha256" : "5b345c69220545d003ad52bfd035d5d6f4f075e65204114a9e875e84895a7cf8"
+        },
+        {
+          "type" : "shell",
+          "commands" : [
+            "autoreconf -vfi"
+          ]
         }
       ]
     },
     {
       "name" : "wv",
+      "cleanup" : [
+        "/include",
+        "/share/man",
+        "/share/wv",
+        "/lib/pkgconfig",
+        "/bin/wv*"
+      ],
       "sources" : [
         {
           "type" : "archive",
           "url" : "https://www.abisource.com/downloads/wv/1.2.9/wv-1.2.9.tar.gz",
           "sha256" : "4c730d3b325c0785450dd3a043eeb53e1518598c4f41f155558385dd2635c19d"
+        },
+        {
+          "type" : "shell",
+          "commands" : [
+            "touch AUTHORS ChangeLog"
+          ]
+        },
+        {
+          "type" : "shell",
+          "commands" : [
+            "autoreconf -vfi"
+          ]
         }
       ]
     },
     {
       "name" : "link-grammar",
+      "cleanup" : [
+        "/lib/pkgconfig",
+        "/bin/link-parser"
+      ],
       "sources" : [
         {
           "type" : "archive",
@@ -92,6 +138,15 @@
     },
     {
       "name" : "lasem",
+      "cleanup" : [
+        "/include",
+        "/lib/pkgconfig",
+        "/doc",
+        "/share/gir-1.0",
+        "/share/gtk-doc",
+        "/share/man",
+        "/bin/lasem*"
+      ],
       "sources" : [
         {
           "type" : "archive",
@@ -102,6 +157,11 @@
     },
     {
       "name" : "goffice",
+      "cleanup" : [
+        "/include",
+        "/share/gtk-doc",
+        "/lib/pkgconfig"
+      ],
       "sources" : [
         {
           "type" : "archive",
@@ -112,6 +172,11 @@
     },
     {
       "name" : "libwpd",
+      "cleanup" : [
+        "/include",
+        "/lib/pkgconfig",
+        "/bin/wpd*"
+      ],
       "sources" : [
         {
           "type" : "archive",
@@ -122,6 +187,11 @@
     },
     {
       "name" : "libwpg",
+      "cleanup" : [
+        "/include",
+        "/lib/pkgconfig",
+        "/bin/wpg*"
+      ],
       "sources" : [
         {
           "type" : "archive",
@@ -132,16 +202,34 @@
     },
     {
       "name" : "psiconv",
+      "cleanup" : [
+        "/include",
+        "/share/man",
+        "/share/psiconv",
+        "/bin/psiconv*"
+      ],
       "sources" : [
         {
           "type" : "archive",
           "url" : "http://www.frodo.looijaard.name/system/files/software/psiconv/psiconv-0.9.9.tar.gz",
           "sha256" : "6d51fe79b502a1e277bea275a574ae2db5b1b9d7daef703a8fa3635ae02a8bb0"
+        },
+        {
+          "type" : "shell",
+          "commands" : [
+            "autoreconf -vfi"
+          ]
         }
       ]
     },
     {
       "name" : "gtkmathview",
+      "cleanup" : [
+        "/include",
+        "/lib/pkgconfig",
+        "/share/man",
+        "/bin/mathml*"
+      ],
       "sources" : [
         {
           "type" : "archive",
@@ -175,11 +263,26 @@
         {
           "type" : "patch",
           "path" : "patches/gtkmathview/gcc-6-build-fixes.patch"
+        },
+        {
+          "type" : "patch",
+          "path" : "patches/gtkmathview/configure_ac.patch"
+        },
+        {
+          "type" : "shell",
+          "commands" : [
+            "autoreconf -vfi"
+          ]
         }
       ]
     },
     {
       "name" : "libwps",
+      "cleanup" : [
+        "/include",
+        "/lib/pkgconfig",
+        "/bin/wps*"
+      ],
       "sources" : [
         {
           "type" : "archive",
@@ -197,7 +300,7 @@
         {
           "type" : "git",
           "url" : "https://gitlab.gnome.org/World/AbiWord.git",
-          "branch": "master",
+          "branch": "master"
         },
         {
           "type" : "shell",
