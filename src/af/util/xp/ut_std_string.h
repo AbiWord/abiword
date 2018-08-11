@@ -36,6 +36,10 @@
  *  escapes '<', '>', '"' and '&' in the current string
  */
 ABI_EXPORT std::string UT_escapeXML(const std::string &);
+/** replacement for UT_UTF8String::escapeURL
+ *  makes string conform to RFC 1738
+ */
+ABI_EXPORT std::string UT_escapeURL(const std::string &);
 
 /** Unescape (decode) XML. Reverse of UT_escapeXML
  */

@@ -29,7 +29,6 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_debugmsg.h"
-#include "ut_string_class.h"
 #include "ut_uuid.h"
 
 #include "xap_App.h"
@@ -211,7 +210,7 @@ protected:
 	PT_AttrPropIndex	m_apiLastSpan;
     fd_Field *          m_pCurrentField;
 	bool                m_bOpenChar;
-	UT_GenericVector<UT_UTF8String *> m_vecSnapNames;
+	std::vector<std::string> m_vecSnapNames;
 	bool				m_bInAnnotation;
 
 
@@ -365,11 +364,12 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, bool bHasContent,
 			m_bOpenChar = true;
 			m_pie->startElement(szPrefix);
 		}
-	} else
+	} else {
 		m_pie->startElement(szPrefix);
+	}
 	if (bHaveProp && pAP)
 	{
-		UT_UTF8String url;
+		std::string url;
 		const gchar * szName;
 		UT_uint32 k = 0;
 
@@ -387,15 +387,13 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, bool bHasContent,
 
 			if ((strcmp (szName, "href") == 0) || (strcmp (szName, "xlink:href") == 0))
 			{
-				url = szValue;
-				url.escapeURL();
-				m_pie->addString(szName, url.utf8_str());
+				url = UT_escapeURL(szValue);
+				m_pie->addString(szName, url.c_str());
 			}
 			else
 			{
 				m_pie->addString(szName, szValue);
 			}
-			
 		}
 		if(iXID != 0)
 		{
@@ -563,7 +561,6 @@ s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 	_handleDataItems();
 
 	m_pie->endElement();
-	UT_VECTOR_PURGEALL(UT_UTF8String * ,m_vecSnapNames);
 }
 
 
@@ -635,18 +632,18 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
                     _closeSpan();
                     _closeField();
                     _openTag("math",false,api,pcr->getXID());
-					const gchar* image_name = getObjectKey(api, static_cast<const gchar*>("dataid"));
+					const gchar* image_name = getObjectKey(api, "dataid");
 					if (image_name)
 					{
 						UT_DEBUGMSG(("resource name #%s# recorded \n",image_name));
 						m_pUsedImages.insert(image_name);
-						UT_UTF8String * sSVGname = new UT_UTF8String("snapshot-svg-");
-						m_vecSnapNames.addItem(sSVGname);
-						*sSVGname += image_name;
-						UT_DEBUGMSG(("resource name #%s# recorded \n",sSVGname->utf8_str()));
-						m_pUsedImages.insert(sSVGname->utf8_str());
+						std::string sSVGname("snapshot-svg-");
+						sSVGname += image_name;
+						m_vecSnapNames.push_back(sSVGname);
+						UT_DEBUGMSG(("resource name #%s# recorded \n", sSVGname.c_str()));
+						m_pUsedImages.insert(sSVGname);
 					}
-					const gchar* latex_name = getObjectKey(api, static_cast<const gchar*>("latexid"));
+					const gchar* latex_name = getObjectKey(api, "latexid");
 					if(latex_name)
 					{
 						UT_DEBUGMSG(("resource name #%s# recorded \n",latex_name));
@@ -664,14 +661,16 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
 					{
 						UT_DEBUGMSG(("resource name #%s# recorded \n",image_name));
 						m_pUsedImages.insert(image_name);
-						UT_UTF8String * sPNGname = new UT_UTF8String("snapshot-svg-");
-						m_vecSnapNames.addItem(sPNGname);
-						*sPNGname += image_name;
+						std::string sPNGname("snapshot-svg-");
+						m_vecSnapNames.push_back(sPNGname);
+						sPNGname += image_name;
 						UT_ConstByteBufPtr bb;
-						if (!m_pDocument->getDataItemDataByName(sPNGname->utf8_str(), bb, NULL, NULL))
-							*sPNGname = UT_UTF8String("snapshot-png-") + image_name;
-						UT_DEBUGMSG(("resource name #%s# recorded \n",sPNGname->utf8_str()));
-						m_pUsedImages.insert(sPNGname->utf8_str());
+						if (!m_pDocument->getDataItemDataByName(sPNGname.c_str(), bb, NULL, NULL)) {
+							sPNGname = std::string("snapshot-png-") + image_name;
+						}
+						UT_DEBUGMSG(("resource name #%s# recorded \n",
+									 sPNGname.c_str()));
+						m_pUsedImages.insert(sPNGname);
 					}
                     return true;
                 }
@@ -1187,7 +1186,7 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 #if 0
   // get the saved time, remove trailing newline
   time_t now = time ( NULL ) ;
-  UT_String now_str ( ctime(&now) ) ;
+  std::string now_str(ctime(&now));
   now_str = now_str.substr ( 0, now_str.size() -1 ) ;
   m_pDocument->setMetaDataProp ( PD_META_KEY_DATE_LAST_CHANGED, UT_UTF8String(now_str.c_str()) ) ;
 #endif
@@ -1485,7 +1484,6 @@ void s_AbiWord_1_Listener::_handleAuthors(void)
 		return;
 	m_pie->startElement("authors");
 	UT_sint32 i = 0;
-	UT_String sVal;
 	for(i=0;i<nAuthors;i++)
 	{
 		pp_Author * pAuthor = m_pDocument->getNthAuthor(i);

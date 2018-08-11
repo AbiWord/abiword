@@ -21,15 +21,17 @@
 
 #include <string.h>
 
+#include <iostream>
+#include <sstream>
+#include <list>
+
+#include <libxml/uri.h>
+
 #include "ut_assert.h"
 #include "ut_std_string.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_iconv.h"
-
-#include <iostream>
-#include <sstream>
-#include <list>
 
 std::string UT_escapeXML(const std::string &s)
 {
@@ -106,6 +108,20 @@ std::string UT_decodeXML(const std::string &s)
     return out;
 }
 
+std::string UT_escapeURL(const std::string &s)
+{
+    if (s.empty()) {
+        return s;
+    }
+
+    std::string rs;
+    xmlChar * uri = xmlURIEscape(BAD_CAST s.c_str());
+    if(uri) {
+        rs = (const char*)uri;
+        xmlFree(uri);
+    }
+    return rs;
+}
 
 std::string& UT_std_string_vprintf (std::string & inStr, const char *format,
                                     va_list      args1)
