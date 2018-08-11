@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* AbiWord
  * Copyright (C) 2005 Martin Sevior
  * 
@@ -234,8 +235,6 @@ void AP_UnixDialog_Latex::constructDialog(void)
 	g_signal_connect(G_OBJECT(m_wInsert), "clicked",
 					   G_CALLBACK(s_insert_clicked),
 					   reinterpret_cast<gpointer>(this));
-
-	gtk_widget_show_all (m_windowMain);
 
 #ifndef HAVE_GO_MATH_EDITOR_NEW
 	g_object_unref(G_OBJECT(builder));

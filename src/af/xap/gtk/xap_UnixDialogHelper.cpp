@@ -445,7 +445,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	{
 		XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 		GtkWidget * parentWindow = gtk_widget_get_toplevel (pUnixFrameImpl->getTopLevelWindow());
-		centerDialog ( parentWindow, GTK_WIDGET(me), false ) ;
+		centerDialog(parentWindow, GTK_WIDGET(me), true);
 	}
 	
 	// connect F1 to the help subsystem
