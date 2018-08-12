@@ -25,9 +25,8 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_xml.h"
-
-#include "ut_string_class.h"
 
 // Please keep the "/**/" to stop MSVC dependency generator complaining.
 #include <libxml/parser.h>
@@ -103,8 +102,7 @@ static void _errorSAXFunc(void *xmlp,
 {
   va_list args;
   va_start (args, msg);
-  UT_String errorMessage;
-  UT_String_vprintf (errorMessage,msg, args);
+  std::string errorMessage = UT_std_string_vprintf (errorMessage,msg, args);
   va_end (args);
   // Handle 'nbsp' here
   UT_XML * pXML = reinterpret_cast<UT_XML *>(xmlp);
@@ -137,7 +135,7 @@ static void _fatalErrorSAXFunc(void *xmlp,
 {
   va_list args;
   va_start (args, msg);
-  UT_String errorMessage(UT_String_vprintf (msg, args));
+  std::string errorMessage = UT_std_string_vprintf(errorMessage, msg, args);
   va_end (args);
   UT_DEBUGMSG((" fatal SAX function error here \n"));
 

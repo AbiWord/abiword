@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -266,97 +267,6 @@ bool UT_isValidXML(const char *pString)
 	}
 
 	return true;
-}
-
-/*!
-    XML cannot contain any control characters except \t, \n, \r, see bug 8565
-    (http://www.w3.org/TR/REC-xml/#charsets)
-    
-    This function removes any illegal characters and invalid utf-8 sequences.
-
-    The return value of true indicates that the string was modified
-*/
-bool UT_validXML(char * pString)
-{
-	if(!pString)
-		return false;
-
-	UT_ASSERT(sizeof(gchar) == sizeof(UT_Byte));
-	const UT_Byte * p = reinterpret_cast<const UT_Byte *>(pString);	// gchar is signed...
-	
-	bool bChanged = false;
-	UT_uint32 len = strlen(pString);
-
-	int bytesInSequence = 0;
-	int bytesExpectedInSequence = 0;
-
-	UT_String s;
-	s.reserve(len);
-
-	for (UT_uint32 k=0; k<len; k++)
-	{
-		if (p[k] < 0x80)						// plain us-ascii part of latin-1
-		{
-			if(bytesInSequence != 0)
-				bChanged = true;
-
-			// UT_Byte is unsigned char, hence p[k] always >= 0
-			if(p[k] < ' ' /*&& p[k] >= 0*/ && p[k] != '\t' && p[k] != '\n' && p[k] != '\r')
-			{
-				bChanged = true;
-			}
-			else
-				s += p[k];
-				
-			bytesInSequence = 0;
-			bytesExpectedInSequence = 0;
-		}
-		else if ((p[k] & 0xf0) == 0xf0)			// lead byte in 4-byte surrogate pair
-		{
-			if(bytesInSequence != 0)
-				bChanged = true;
-			
-			UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
-			bytesExpectedInSequence = 4;
-			bytesInSequence = 1;
-		}
-		else if ((p[k] & 0xe0) == 0xe0)			// lead byte in 3-byte sequence
-		{
-			if(bytesInSequence != 0)
-				bChanged = true;
-			
-			bytesExpectedInSequence = 3;
-			bytesInSequence = 1;
-		}
-		else if ((p[k] & 0xc0) == 0xc0)			// lead byte in 2-byte sequence
-		{
-			if(bytesInSequence != 0)
-				bChanged = true;
-			
-			bytesExpectedInSequence = 2;
-			bytesInSequence = 1;
-		}
-		else if ((p[k] & 0x80) == 0x80)			// trailing byte in multi-byte sequence
-		{
-			bytesInSequence++;
-			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
-			{
-				for(UT_sint32 i = k - bytesInSequence + 1; i <= (UT_sint32)k; i++)
-				{
-					s += p[i];
-				}
-				
-				bytesInSequence = 0;
-				bytesExpectedInSequence = 0;
-			}
-		}
-	}
-
-	strncpy(pString, s.c_str(), s.length());
-
-	// make sure we null-terminate
-	pString[s.length()] = 0;
-	return bChanged;
 }
 
 void UT_decodeUTF8string(const gchar * pString, UT_uint32 len, UT_GrowBuf * pResult)

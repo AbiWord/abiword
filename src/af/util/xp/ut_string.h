@@ -50,7 +50,6 @@ ABI_EXPORT void  UT_decodeUTF8string(const gchar * p, UT_uint32 len, UT_GrowBuf 
 /// and false if it needed fixing.
 ABI_EXPORT bool  UT_ensureValidXML(std::string & s);
 ABI_EXPORT bool  UT_isValidXML(const char *s);
-ABI_EXPORT bool  UT_validXML(char * s);
 
 /* ABI_EXPORT gchar *  UT_decodeXMLstring(gchar *pcIn);
  * This has moved to ut_xml.cpp as UT_XML::decode ()

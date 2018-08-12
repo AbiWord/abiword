@@ -171,7 +171,7 @@ UT_untgz(const char *szFName, const char *szWantedFile, const char *szDestPath, 
 						*retFileSize = fileSize;
 					
 					if (szDestPath) {
-						UT_String outfilename(szDestPath);
+						std::string outfilename(szDestPath);
 						outfilename += "/";
 						outfilename += fname;
 						if ((outfile = fopen(outfilename.c_str(), "wb")) == NULL) {

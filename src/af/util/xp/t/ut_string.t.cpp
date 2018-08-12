@@ -34,7 +34,6 @@ TFTEST_MAIN("UT_ensureValidXML")
     str = "foo\nbar\tbaz\rfizz buzz";
     TFPASS(UT_isValidXML(str.c_str()));
     pstr = strdup(str.c_str());
-    TFPASS(!UT_validXML(pstr));
     result = UT_ensureValidXML(str);
     TFPASS(result);
     TFPASS(str == "foo\nbar\tbaz\rfizz buzz");
@@ -44,7 +43,6 @@ TFTEST_MAIN("UT_ensureValidXML")
     str = "f\004oo\nbar\tbaz\rfizz\226 buzz";
     TFPASS(!UT_isValidXML(str.c_str()));
     pstr = strdup(str.c_str());
-    TFPASS(UT_validXML(pstr));
     result = UT_ensureValidXML(str);
     TFPASS(!result);
     TFPASS(str == "foo\nbar\tbaz\rfizz buzz");
@@ -54,7 +52,6 @@ TFTEST_MAIN("UT_ensureValidXML")
     str = "poo\nbar\tbaz\rbizz\226 fuzz";
     TFPASS(!UT_isValidXML(str.c_str()));
     pstr = strdup(str.c_str());
-    TFPASS(UT_validXML(pstr));
     result = UT_ensureValidXML(str);
     TFPASS(!result);
     TFPASS(str == "poo\nbar\tbaz\rbizz fuzz");

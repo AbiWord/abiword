@@ -20,6 +20,8 @@
 #ifndef UT_SCRIPT_H
 #define UT_SCRIPT_H
 
+#include <string>
+
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
@@ -27,7 +29,6 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
-#include "ut_string_class.h"
 
 typedef UT_sint32 UT_ScriptIdType;
 
@@ -71,7 +72,7 @@ class ABI_EXPORT UT_Script
 {
 public:
 	virtual UT_Error execute(const char * scriptName) = 0;
-	virtual const UT_String& errmsg() const = 0;
+	virtual const std::string& errmsg() const = 0;
 	virtual ~UT_Script();
 
 protected:
@@ -102,10 +103,10 @@ public:
 	void unregisterScript(UT_ScriptSniffer*);
 	void unregisterAllScripts();
 
-	const UT_String& errmsg() const { return m_stErrMsg; }
+	const std::string& errmsg() const { return m_stErrMsg; }
 
 private:
-	void errmsg(const UT_String& st) { m_stErrMsg = st; }
+	void errmsg(const std::string& st) { m_stErrMsg = st; }
 
 	UT_ScriptIdType	typeForContents(const char * szBuf,
 									UT_uint32 iNumbytes);
@@ -124,7 +125,7 @@ private:
 	friend void __dummy_method_dont_use(void);
 
 	UT_GenericVector<UT_ScriptSniffer *>* mSniffers;
-	UT_String m_stErrMsg;
+	std::string m_stErrMsg;
 };
 
 #endif /* UT_SCRIPT_H */
