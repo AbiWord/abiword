@@ -26,37 +26,27 @@
 TFTEST_MAIN("UT_ensureValidXML")
 {
     std::string str;
-    char *pstr;
     bool result = UT_ensureValidXML(str);
 
     TFPASS(result);
 
     str = "foo\nbar\tbaz\rfizz buzz";
     TFPASS(UT_isValidXML(str.c_str()));
-    pstr = strdup(str.c_str());
     result = UT_ensureValidXML(str);
     TFPASS(result);
     TFPASS(str == "foo\nbar\tbaz\rfizz buzz");
-    TFPASS(str == pstr);
-    free(pstr);
 
     str = "f\004oo\nbar\tbaz\rfizz\226 buzz";
     TFPASS(!UT_isValidXML(str.c_str()));
-    pstr = strdup(str.c_str());
     result = UT_ensureValidXML(str);
     TFPASS(!result);
     TFPASS(str == "foo\nbar\tbaz\rfizz buzz");
-    TFPASS(str == pstr);
-    free(pstr);
 
     str = "poo\nbar\tbaz\rbizz\226 fuzz";
     TFPASS(!UT_isValidXML(str.c_str()));
-    pstr = strdup(str.c_str());
     result = UT_ensureValidXML(str);
     TFPASS(!result);
     TFPASS(str == "poo\nbar\tbaz\rbizz fuzz");
-    TFPASS(str == pstr);
-    free(pstr);
 }
 
 
