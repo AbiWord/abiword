@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  * Copyright (C) 2004 Martin Sevior
@@ -183,6 +184,8 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_wStyleList));
 	itering = gtk_tree_model_get_iter_first(model, &parent);
 
+	GtkTreePath *gPathFull = NULL;
+	GtkTreePath *gPathRow = NULL;
 	while (itering)
 	{
 		if (gtk_tree_model_iter_children(model, &child, &parent))
@@ -193,6 +196,8 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 
 				if (sLocCurStyle.c_str() == entry)
 				{
+					gPathFull = gtk_tree_model_get_path(model, &child);
+					gPathRow = gtk_tree_model_get_path(model, &parent);
 					itering = FALSE;
 					break;
 				}
@@ -207,14 +212,16 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 			itering = gtk_tree_model_iter_next(model, &parent);
 	}
 
-	GtkTreePath *gPathFull = gtk_tree_model_get_path(model, &child);
-	GtkTreePath *gPathRow = gtk_tree_model_get_path(model, &parent);
-	gtk_tree_view_expand_row( GTK_TREE_VIEW(m_wStyleList),gPathRow,TRUE);
-	gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE,0.5,0.5);
-	gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE);
+	if (gPathRow) {
+		gtk_tree_view_expand_row(GTK_TREE_VIEW(m_wStyleList), gPathRow, TRUE);
+		gtk_tree_path_free(gPathRow);
+	}
+	if (gPathFull) {
+		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList), gPathFull, NULL, TRUE, 0.5, 0.5);
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList), gPathFull, NULL, TRUE);
+		gtk_tree_path_free(gPathFull);
+	}
 	setStyleChanged(false);
-	gtk_tree_path_free(gPathRow);
-	gtk_tree_path_free(gPathFull);
 }
 
 void AP_UnixDialog_Stylist::destroy(void)
