@@ -396,7 +396,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				pt_PieceTable::s_getLocalisedStyleName(sTmp.c_str(), sLoc);
+				pt_PieceTable::s_getLocalisedStyleName(style.utf8_str(), sLoc);
 				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n", sLoc.c_str(), row, col + 1));
 				gtk_tree_store_set(m_wModel, &child_iter, 0, sLoc.c_str(), 1, row, 2, col + 1, -1);
 				page++;
