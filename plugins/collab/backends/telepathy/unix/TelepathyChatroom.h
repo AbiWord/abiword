@@ -21,6 +21,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 #include <telepathy-glib/telepathy-glib.h>
 #include <boost/shared_ptr.hpp>

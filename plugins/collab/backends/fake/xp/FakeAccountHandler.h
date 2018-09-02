@@ -85,13 +85,13 @@ public:
 	bool									step(UT_sint32& iLocalRev);
 
 	// misc. functions
-	bool									initialize(UT_UTF8String* pForceSessionId);
+	bool									initialize(const std::string & pForceSessionId);
 	void									cleanup();
-	XAP_Frame*								getFrame()
+	XAP_Frame*								getFrame() const
 		{ return m_pFrame; }
 
 private:
-	bool									_loadDocument(UT_UTF8String* pForceSessionId);
+	bool									_loadDocument(const std::string & pForceSessionId);
 	bool									_createSession();
 	bool									_import(const RecordedPacket& rp);
 

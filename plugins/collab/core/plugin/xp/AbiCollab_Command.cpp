@@ -162,15 +162,15 @@ bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, con
 	char *client_uri = UT_go_filename_to_uri(sClientSessionFile.utf8_str());
 
 	UT_DEBUGMSG(("Creating server debug frame\n"));
-	UT_UTF8String sFakeServerSessionId("fake-server-session-id");
+	std::string sFakeServerSessionId("fake-server-session-id");
 	FakeAccountHandler* pServerHandler = new FakeAccountHandler(server_uri, XAP_App::getApp()->newFrame());
-	UT_return_val_if_fail(pServerHandler->initialize(&sFakeServerSessionId), false);
+	UT_return_val_if_fail(pServerHandler->initialize(sFakeServerSessionId), false);
 	pManager->addAccount(pServerHandler);
 
 	UT_DEBUGMSG(("Creating client debug frame\n"));
-	UT_UTF8String sFakeClientSessionId("fake-client-session-id");
+	std::string sFakeClientSessionId("fake-client-session-id");
 	FakeAccountHandler* pClientHandler = new FakeAccountHandler(client_uri, XAP_App::getApp()->newFrame());
-	UT_return_val_if_fail(pClientHandler->initialize(&sFakeClientSessionId), false);
+	UT_return_val_if_fail(pClientHandler->initialize(sFakeClientSessionId), false);
 	pManager->addAccount(pClientHandler);
 	
 	while (1)

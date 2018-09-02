@@ -22,6 +22,7 @@
 #define __TELEPATHY_ACCOUNT_HANDLER__
 
 #include <vector>
+#include <string>
 
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib.h>

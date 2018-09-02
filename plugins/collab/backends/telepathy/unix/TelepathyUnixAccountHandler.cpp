@@ -814,8 +814,9 @@ void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::str
 				send(&gsre, pBuddy);
 			}
 			else
+			{
 				UT_DEBUGMSG(("Ignoring GetSessionsEvent, we are not controlling session '%s'\n", pChatroom->getSessionId().c_str()));
-
+			}
 			break;
 		}
 		case PCT_GetSessionsResponseEvent:

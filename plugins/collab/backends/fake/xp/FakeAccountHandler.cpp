@@ -157,7 +157,7 @@ bool FakeAccountHandler::send(const Packet* pPacket, BuddyPtr /*pBuddy*/)
 	return true;
 }
 
-bool FakeAccountHandler::initialize(UT_UTF8String* pForceSessionId)
+bool FakeAccountHandler::initialize(const std::string & pForceSessionId)
 {
 	UT_DEBUGMSG(("FakeAccountHandler::initialize()"));
 	
@@ -169,7 +169,7 @@ bool FakeAccountHandler::initialize(UT_UTF8String* pForceSessionId)
 
 	// store a property unique to this handler, so different fake account
 	// handlers won't be treated as "equal"
-	addProperty("sessionid", m_pSession->getSessionId().utf8_str());
+	addProperty("sessionid", m_pSession->getSessionId().c_str());
 
 	return true;
 }
@@ -183,7 +183,7 @@ void FakeAccountHandler::cleanup()
 	pManager->destroySession(m_pSession); // TODO: if we want to really close properly, we'd close/disjoin the session first
 }
 		
-bool FakeAccountHandler::_loadDocument(UT_UTF8String* pForceSessionId)
+bool FakeAccountHandler::_loadDocument(const std::string & pForceSessionId)
 {
 	UT_DEBUGMSG(("FakeAccountHandler::_loadDocument()\n"));
 	
@@ -202,17 +202,17 @@ bool FakeAccountHandler::_loadDocument(UT_UTF8String* pForceSessionId)
 		return true;
 	}	
 
-	if (pForceSessionId)
+	if (!pForceSessionId.empty())
 	{
 		// force the session id of the packets to the given ID
-		UT_DEBUGMSG(("Forcing the session ID of all recorded packets to %s\n", pForceSessionId->utf8_str()));
+		UT_DEBUGMSG(("Forcing the session ID of all recorded packets to %s\n", pForceSessionId.c_str()));
 		
 		for (std::vector<RecordedPacket*>::const_iterator cit = ++m_packets.begin(); cit != m_packets.end(); cit++)
 		{
 			RecordedPacket* pRp = *cit;
 			UT_continue_if_fail (pRp && pRp->m_pPacket && SessionPacket::isInstanceOf(*pRp->m_pPacket));
 			SessionPacket* sp = static_cast<SessionPacket*>(pRp->m_pPacket);
-			sp->setSessionId(*pForceSessionId);
+			sp->setSessionId(pForceSessionId);
 		}
 	}
 	
@@ -278,28 +278,28 @@ bool FakeAccountHandler::_createSession()
 	JoinSessionRequestResponseEvent& jsrre = *static_cast<JoinSessionRequestResponseEvent*>(m_packets[0]->m_pPacket);	
 	
 	// do a quick scan through the m_packets to find the session and document id's
-	UT_UTF8String sSessionId("");
-	UT_UTF8String sDocUUID("");
+        std::string sSessionId("");
+        std::string sDocUUID("");
 	for (UT_uint32 i = 1; i < m_packets.size(); i++)
 	{
 		UT_continue_if_fail (m_packets[i] && m_packets[i]->m_pPacket && SessionPacket::isInstanceOf(*m_packets[i]->m_pPacket));
 		SessionPacket* sp = static_cast<SessionPacket*>(m_packets[i]->m_pPacket);
 		sSessionId = sp->getSessionId();
 		sDocUUID = sp->getDocUUID();
-		UT_DEBUGMSG(("Got session %s, docuuid: %s\n", sSessionId.utf8_str(), sDocUUID.utf8_str()));
+		UT_DEBUGMSG(("Got session %s, docuuid: %s\n", sSessionId.c_str(), sDocUUID.c_str()));
 		break;
 	}
 	UT_return_val_if_fail(sSessionId != "" && sDocUUID != "", false);
 	
 	if (m_bLocallyControlled)
 	{
-		UT_DEBUGMSG(("Starting a locally controlled collaboration session: %s\n", sSessionId.utf8_str()));
+		UT_DEBUGMSG(("Starting a locally controlled collaboration session: %s\n", sSessionId.c_str()));
 		// FIXME: we need to set the proper collab id and master descriptor
 		m_pSession = pManager->startSession(m_pDoc, sSessionId, this, true, NULL, "fake://master");
 	}
 	else
 	{
-		UT_DEBUGMSG(("Joining a collaboration session: %s\n", sSessionId.utf8_str()));
+		UT_DEBUGMSG(("Joining a collaboration session: %s\n", sSessionId.c_str()));
 		
 		// do a quick scan through the m_packets to find a remote buddy (which is
 		// automatically the session controller then
