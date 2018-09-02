@@ -134,12 +134,9 @@ _fv_text_handle_update_shape (FvTextHandle         *handle,
                               GdkWindow            *window,
                               FvTextHandlePosition  pos)
 {
-  FvTextHandlePrivate *priv;
   cairo_surface_t *surface;
   cairo_region_t *region;
   cairo_t *cr;
-
-  priv = handle->priv;
 
   surface =
     gdk_window_create_similar_surface (window,
@@ -153,7 +150,7 @@ _fv_text_handle_update_shape (FvTextHandle         *handle,
 
   region = gdk_cairo_region_create_from_surface (surface);
 
-  if (gtk_widget_is_composited (priv->parent))
+  if (gdk_screen_is_composited(gdk_window_get_screen(window)))
     gdk_window_shape_combine_region (window, NULL, 0, 0);
   else
     gdk_window_shape_combine_region (window, region, 0, 0);
@@ -169,7 +166,6 @@ _fv_text_handle_create_window (FvTextHandle         *handle,
                                FvTextHandlePosition  pos)
 {
   FvTextHandlePrivate *priv;
-  GdkRGBA bg = { 0, 0, 0, 0 };
   GdkWindowAttr attributes;
   GdkWindow *window;
   GdkVisual *visual;
@@ -197,9 +193,8 @@ _fv_text_handle_create_window (FvTextHandle         *handle,
       mask |= GDK_WA_VISUAL;
     }
 
-  window = gdk_window_new (NULL, &attributes, mask);
+  window = gdk_window_new (gtk_widget_get_window(priv->parent), &attributes, mask);
   gdk_window_set_user_data (window, priv->parent);
-  gdk_window_set_background_rgba (window, &bg);
 
   _fv_text_handle_update_shape (handle, window, pos);
 
