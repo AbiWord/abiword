@@ -27,7 +27,7 @@
 #include "ut_files.h"
 #include "ut_go_file.h"
 
-UT_String XAP_UnixAppImpl::localizeHelpUrl (const char * pathBefore, 
+std::string XAP_UnixAppImpl::localizeHelpUrl(const char * pathBefore,
 											const char * pathAfter,
 											const char * remoteURLbase)
 {

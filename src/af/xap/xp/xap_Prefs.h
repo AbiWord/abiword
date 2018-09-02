@@ -36,7 +36,9 @@
 
 #include "xap_Prefs_SchemeIds.h"
 
+#include <list>
 #include <vector>
+#include <set>
 
 /* For handling the position of windows on the screen, this sets up preferences */
 enum {
@@ -48,9 +50,11 @@ enum {
 
 class XAP_Prefs;
 
+typedef std::set<std::string> XAP_PrefsChangeSet;
+
 typedef void (*PrefsListener) (
 	XAP_Prefs			*pPrefs,
-	UT_StringPtrMap	    *phChanges,
+	const XAP_PrefsChangeSet*	    phChanges,
 	void				*data
 	);
 
@@ -73,7 +77,7 @@ class ABI_EXPORT XAP_FontSettings
 	XAP_FontSettings()
 		:m_bInclude(false){};
 
-	const std::vector<UT_UTF8String> & getFonts() const
+	const std::vector<std::string> & getFonts() const
 		{return m_vecFonts;}
 
 	void addFont (const char * pFace)
@@ -90,7 +94,7 @@ class ABI_EXPORT XAP_FontSettings
 	bool getIncludeFlag () const {return m_bInclude;}
 
   private:
-	std::vector<UT_UTF8String> m_vecFonts;
+	std::vector<std::string> m_vecFonts;
 	bool m_bInclude;
 };
 
@@ -120,8 +124,6 @@ public:
 	// argument; they return error information as the function
 	// return value.
 	bool				getValue(const gchar * szKey, const gchar ** pszValue) const;
-	bool				getValue(const UT_String &szKey, UT_String &szValue) const;
-	bool				getValue(const std::string &szKey, std::string &szValue) const;
 	bool                getValue(const gchar* szKey, std::string &szValue) const;
 	bool				getValueInt(const gchar * szKey, int& nValue) const;
 	bool				getValueBool(const gchar * szKey, bool * pbValue) const;
@@ -159,7 +161,6 @@ public:
 	bool					setCurrentScheme(const gchar * szSchemeName);
 
 	bool					getPrefsValue(const gchar * szKey, const gchar ** pszValue, bool bAllowBuiltin = true) const;
-	bool					getPrefsValue(const UT_String &stKey, UT_String &stValue, bool bAllowBuiltin = true) const;
 	bool					getPrefsValue(const gchar* szKey, std::string &stValue, bool bAllowBuiltin = true) const;
 	bool					getPrefsValueBool(const gchar * szKey, bool * pbValue, bool bAllowBuiltin = true) const;
 	bool					getPrefsValueInt(const gchar * szKey, int& nValue, bool bAllowBuiltin = true) const;
@@ -219,16 +220,26 @@ protected:
 
 	XAP_FontSettings        m_fonts;
 
-	typedef struct					/* used to store the listener/data pairs in the vector  */
+	/* used to store the listener/data pairs in the vector  */
+	struct tPrefsListenersPair
 	{
 		PrefsListener	m_pFunc;
 		void			*m_pData;
-	} tPrefsListenersPair;
+		tPrefsListenersPair(PrefsListener f, void* d)
+			: m_pFunc(f)
+			, m_pData(d)
+			{}
+		tPrefsListenersPair()
+			: m_pFunc(NULL)
+			, m_pData(NULL)
+			{}
+	};
 
-	UT_GenericVector<tPrefsListenersPair *>	m_vecPrefsListeners;	/* vectory of struct PrefListnersPair */
-	UT_StringPtrMap		m_ahashChanges;
+	typedef std::list<tPrefsListenersPair> PrefsListenersList;
+	PrefsListenersList m_prefsListeners;	/* list of struct PrefListnersPair */
+	XAP_PrefsChangeSet	m_ahashChanges;
 	bool				m_bInChangeBlock;
-	void				_sendPrefsSignal( UT_StringPtrMap *hash );
+	void				_sendPrefsSignal(const XAP_PrefsChangeSet& hash );
 
 	typedef struct {
 		UT_uint32		m_width, m_height;	/* Default width and height */

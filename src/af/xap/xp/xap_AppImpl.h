@@ -29,8 +29,7 @@
 #include "ut_types.h"
 #endif
 
-class UT_String;
-
+#include <string>
 
 class ABI_EXPORT XAP_AppImpl
 {
@@ -43,7 +42,7 @@ public:
 	friend class XAP_App;
 
 protected:
-	virtual UT_String 	localizeHelpUrl (const char * pathBeforeLang,
+	virtual std::string localizeHelpUrl (const char * pathBeforeLang,
 										   const char * pathAfterLang,
 										   const char * remoteURLbase);
 	virtual bool openURL(const char * url) = 0;

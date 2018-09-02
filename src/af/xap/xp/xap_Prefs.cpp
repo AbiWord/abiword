@@ -29,7 +29,8 @@
 
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
-#include "ut_string.h"
+#include "ut_std_string.h"
+#include "ut_std_vector.h"
 #include "ut_string_class.h"
 #ifdef _WIN32
 #include <ut_Win32LocaleString.h>
@@ -165,26 +166,6 @@ bool XAP_PrefsScheme::getValue(const gchar * szKey, const gchar ** pszValue) con
 
 	if (pszValue)
 		*pszValue = pEntry;
-	return true;
-}
-
-bool XAP_PrefsScheme::getValue(const UT_String &stKey, UT_String &stValue) const
-{
-	gchar *pEntry = m_hash.pick(stKey);
-	if (!pEntry)
-		return false;
-
-	stValue = pEntry;
-	return true;
-}
-
-bool XAP_PrefsScheme::getValue(const std::string &stKey, std::string &stValue) const
-{
-	gchar *pEntry = m_hash.pick(stKey.c_str());
-	if (!pEntry)
-		return false;
-
-	stValue = pEntry;
 	return true;
 }
 
@@ -515,7 +496,6 @@ void XAP_Prefs::log(const char * where, const char * what, XAPPrefsLog_Level lev
 /*****************************************************************/
 
 XAP_Prefs::XAP_Prefs() 
-	: m_ahashChanges( 20 )
 {
 	m_bAutoSavePrefs = (atoi(XAP_PREF_DEFAULT_AutoSavePrefs) ? true : false);
 	m_bUseEnvLocale = (atoi(XAP_PREF_DEFAULT_UseEnvLocale) ? true : false);
@@ -541,7 +521,6 @@ XAP_Prefs::~XAP_Prefs(void)
 	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecSchemes);
 	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecPluginSchemes);
 	UT_VECTOR_FREEALL(char *, m_vecRecent);
-	UT_VECTOR_PURGEALL(tPrefsListenersPair *, m_vecPrefsListeners);
 	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecLog);
 }
 
@@ -695,27 +674,6 @@ bool XAP_Prefs::getPrefsValue(const gchar * szKey, const gchar ** pszValue, bool
 	if (g_ascii_strncasecmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
 	{
 		*pszValue = NO_PREF_VALUE;
-		return true;
-	}
-
-	return false;
-}
-
-bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue, bool bAllowBuiltin) const
-{
-	UT_return_val_if_fail(m_currentScheme,false);
-
-	if (m_currentScheme->getValue(stKey, stValue))
-		return true;
-	if (bAllowBuiltin && m_builtinScheme->getValue(stKey, stValue))
-		return true;
-	
-	// It is legal for there to be arbitrary preference tags that start with 
-	// "Debug", and Abi apps won't choke.  The idea is that developers can use
-	// these to selectively trigger development-time behaviors.
-	if (g_ascii_strncasecmp(stKey.c_str(), DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
-	{
-		stValue = NO_PREF_VALUE;
 		return true;
 	}
 
@@ -1601,13 +1559,13 @@ bool XAP_Prefs::savePrefsFile(void)
 				"\n\t     include=\"0\" - exclude the listed fonts from the system font list"
 				"\n\t-->");
 
-		const std::vector<UT_UTF8String> & v = m_fonts.getFonts();
+		const std::vector<std::string> & v = m_fonts.getFonts();
 		
-		for (std::vector<UT_UTF8String>::const_iterator k = v.begin(); 
+		for (std::vector<std::string>::const_iterator k = v.begin(); 
 			 k != v.end() ; ++k)
 		{
 			fprintf(fp,"\n\t\t<Face name=\"%s\"/>",
-					(*k).utf8_str());
+					(*k).c_str());
 		}
 
 		fprintf(fp, "\n\t</Fonts>\n");
@@ -1703,33 +1661,22 @@ Cleanup:
 
 void XAP_Prefs::addListener	  ( PrefsListener pFunc, void *data )
 {
-	tPrefsListenersPair *pPair = new tPrefsListenersPair;	
-
-	UT_return_if_fail(pPair);
-	UT_ASSERT(pFunc);
-
-	pPair->m_pFunc = pFunc;
-	pPair->m_pData = data;
-
-	m_vecPrefsListeners.addItem(pPair);
+	m_prefsListeners.push_back(tPrefsListenersPair(pFunc, data));
 }
 
 // optional parameter, data.  If given (i.e., != 0), will try to match data,
 // otherwise, will delete all calls to pFunc
 void XAP_Prefs::removeListener ( PrefsListener pFunc, void *data )
 {
-	UT_sint32 index;
-	tPrefsListenersPair *pPair;
-
-	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )
+	for (PrefsListenersList::iterator iter = m_prefsListeners.begin();
+		 iter != m_prefsListeners.end(); )
 	{
-		pPair = m_vecPrefsListeners.getNthItem(index);
-		UT_ASSERT_HARMLESS(pPair);
-		if ( pPair ) {
-			if ( pPair->m_pFunc == pFunc && (!data || pPair->m_pData == data) ) {
-				m_vecPrefsListeners.deleteNthItem(index);
-				delete pPair;
-			}
+		const tPrefsListenersPair & pPair = *iter;
+		if ( pPair.m_pFunc == pFunc && (!data || pPair.m_pData == data) ) {
+			iter = m_prefsListeners.erase(iter);
+		}
+		else {
+			++iter;
 		}
 	}
 }
@@ -1738,21 +1685,16 @@ void XAP_Prefs::_markPrefChange( const gchar *szKey )
 {
 	if ( m_bInChangeBlock )
 	{
-		const void * uth_e = m_ahashChanges.pick(szKey );
-
-		if ( uth_e ) 
-			uth_e = reinterpret_cast<const void *>(1);
-		else
-			m_ahashChanges.insert(szKey, reinterpret_cast<void *>(1));	
+		m_ahashChanges.insert(szKey);
 
 		// notify later
 	}
 	else
 	{
-		UT_StringPtrMap	changes(3);
-		changes.insert(szKey, reinterpret_cast<void *>(1));	
+		XAP_PrefsChangeSet changes;
+		changes.insert(szKey);
 
-		_sendPrefsSignal(&changes);
+		_sendPrefsSignal(changes);
 	}
 }
 
@@ -1763,25 +1705,25 @@ void XAP_Prefs::startBlockChange()
 
 void XAP_Prefs::endBlockChange()
 {
-	if ( m_bInChangeBlock ) 
+	if ( m_bInChangeBlock )
 	{
 		m_bInChangeBlock = false;
-		_sendPrefsSignal( &m_ahashChanges );
+		_sendPrefsSignal( m_ahashChanges );
 	}
 }
 
-void XAP_Prefs::_sendPrefsSignal( UT_StringPtrMap *hash  )
+void XAP_Prefs::_sendPrefsSignal(const XAP_PrefsChangeSet& hash)
 {
-	UT_sint32	index;
-	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )
+	for (PrefsListenersList::const_iterator iter = m_prefsListeners.begin();
+		 iter != m_prefsListeners.end(); ++iter)
 	{
-		tPrefsListenersPair *p = m_vecPrefsListeners.getNthItem( index );
+		const tPrefsListenersPair & p = *iter;
 
-		UT_ASSERT_HARMLESS(p && p->m_pFunc);
-		if(!p || !p->m_pFunc)
+		UT_ASSERT_HARMLESS(p.m_pFunc);
+		if(!p.m_pFunc)
 			continue;
-	
-		(p->m_pFunc)(this, hash, p->m_pData);
+
+		(p.m_pFunc)(this, &hash, p.m_pData);
 	}
 }
 
@@ -1789,11 +1731,11 @@ bool XAP_FontSettings::isOnExcludeList (const char * name) const
 {
 	if (m_bInclude)
 		return false;
-	
+
 	if (!m_vecFonts.size())
 		return false;
 
-	std::vector<UT_UTF8String>::const_iterator i =
+	std::vector<std::string>::const_iterator i =
 		std::find(m_vecFonts.begin(), m_vecFonts.end(), name);
 
 	return i != m_vecFonts.end();

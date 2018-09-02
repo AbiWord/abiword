@@ -5867,7 +5867,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 }
 #endif
 
-void FV_View::_prefsListener( XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
+void FV_View::_prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet* /*phChanges*/, void *data )
 {
 	FV_View *pView = static_cast<FV_View *>(data);
 	bool b;

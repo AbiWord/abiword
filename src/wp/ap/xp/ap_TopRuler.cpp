@@ -4850,7 +4850,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 
 }
 
-void AP_TopRuler::_prefsListener( XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
+void AP_TopRuler::_prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet* /*phChanges*/, void *data )
 {
 	AP_TopRuler *pTopRuler = static_cast<AP_TopRuler *>(data);
 	UT_return_if_fail ( data && pPrefs );

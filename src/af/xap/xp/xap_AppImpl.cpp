@@ -20,7 +20,6 @@
 #include "xap_AppImpl.h"
 #include "ut_assert.h"
 #include "ut_path.h"
-#include "ut_string_class.h"
 #include "xap_App.h"
 #include "xap_Prefs.h"
 
@@ -41,7 +40,7 @@ bool XAP_AppImpl::openHelpURL(const char * url)
 }
 
 
-inline static void _catPath(UT_String& st, const char* st2)
+inline static void _catPath(std::string& st, const char* st2)
 {
 	if (st.size() > 0)
 	{
@@ -63,9 +62,9 @@ inline static void _catPath(UT_String& st, const char* st2)
 	
 	Override in subclasses if platform needs specific work
  */
-UT_String XAP_AppImpl::localizeHelpUrl (const char * pathBeforeLang, 
-										   const char * pathAfterLang,
-										   const char * remoteURLbase)
+std::string XAP_AppImpl::localizeHelpUrl (const char * pathBeforeLang,
+					  const char * pathAfterLang,
+					  const char * remoteURLbase)
 {
 	XAP_App* pApp = XAP_App::getApp();
 
@@ -75,16 +74,16 @@ UT_String XAP_AppImpl::localizeHelpUrl (const char * pathBeforeLang,
 
 	const char* abiSuiteLibDir = pApp->getAbiSuiteLibDir();
 	const gchar* abiSuiteLocString = NULL;
-	UT_String url;
+	std::string url;
 
 	// evil...
-	pPrefs->getPrefsValue((gchar*)"StringSet", &abiSuiteLocString);
+	pPrefs->getPrefsValue("StringSet", &abiSuiteLocString);
 
 	// 1st try file on user's computer (local file), if not exist try remote help
-	UT_String path(abiSuiteLibDir);
+	std::string path(abiSuiteLibDir);
 	_catPath(path, pathBeforeLang);
 
-	UT_String localized_path(path);
+	std::string localized_path(path);
 	_catPath(localized_path, abiSuiteLocString);
 
 	if (UT_directoryExists(localized_path.c_str()))

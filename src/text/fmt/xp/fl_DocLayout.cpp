@@ -3914,7 +3914,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 
 /*static*/ void FL_DocLayout::_prefsListener (
 	XAP_Prefs			*pPrefs,
-	UT_StringPtrMap	* /*phChanges*/,  // not used
+	const XAP_PrefsChangeSet * /*phChanges*/,  // not used
 	void				*data
 	)
 {
@@ -3966,7 +3966,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 #endif
 // autosave
 
-	UT_String stTmp;
+	std::string stTmp;
 	FV_View * pView = pDocLayout->getView();
 	if(pView)
 	{

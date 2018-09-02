@@ -2961,7 +2961,7 @@ const std::vector<std::string> & GR_CairoGraphics::getAllFontNames(void)
 		if (bInclude)
 		{
 			for (UT_uint32 k = 0; k < Fonts.getFonts().size(); ++k)
-				Vec.push_back (Fonts.getFonts()[k].utf8_str());
+				Vec.push_back (Fonts.getFonts()[k]);
 
 			return Vec;
 		}

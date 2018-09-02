@@ -557,17 +557,17 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_AutoSaveFile,&b))
 		_setAutoSaveFile (b);
 
-	UT_String stBuffer;
+	std::string stBuffer;
 	if (pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFileExt, stBuffer))
 		_setAutoSaveFileExt(stBuffer);
 
 	if (pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stBuffer))
 		_setAutoSaveFilePeriod(stBuffer);
-		
-	//Just for win32 
+
+	//Just for win32
 	if (pPrefs->getPrefsValue(AP_PREF_KEY_StringSet, stBuffer))
 		_setUILanguage(stBuffer);
-		
+
 	// ------------ Screen Color
 
 	const gchar * pszColorForTransparent = NULL;

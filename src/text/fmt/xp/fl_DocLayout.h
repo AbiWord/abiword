@@ -34,7 +34,7 @@
 #include "fl_PartOfBlock.h"
 #include "ut_units.h"
 #include "xav_Listener.h"
-
+#include "xap_Prefs.h"
 
 typedef enum _FootnoteType
 {
@@ -393,8 +393,9 @@ protected:
 #endif
 	void				_toggleAutoSmartQuotes(bool bSQ);
 
-	static void			_prefsListener(class XAP_Prefs *,
-									   UT_StringPtrMap *, void *);
+	static void		_prefsListener(class XAP_Prefs *,
+					       const XAP_PrefsChangeSet *,
+					       void *);
 
 
 	static void			_redrawUpdate(UT_Worker * pTimer);

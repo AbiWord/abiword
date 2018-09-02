@@ -933,14 +933,6 @@ bool XAP_App::getPrefsValue(const gchar * szKey, const gchar ** pszValue) const
 	return m_prefs->getPrefsValue(szKey,pszValue);
 }
 
-bool XAP_App::getPrefsValue(const UT_String &stKey, UT_String &stValue) const
-{
-	if (!m_prefs)
-		return false;
-
-	return m_prefs->getPrefsValue(stKey, stValue);
-}
-
 bool XAP_App::getPrefsValue(const gchar * szKey, std::string & stValue) const
 {
 	if (!m_prefs)

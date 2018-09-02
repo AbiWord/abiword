@@ -1948,7 +1948,7 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 	}
 }
 
-void AP_LeftRuler::_prefsListener( XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
+void AP_LeftRuler::_prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet * /*phChanges*/, void *data )
 {
 	AP_LeftRuler *pLeftRuler = static_cast<AP_LeftRuler *>(data);
 	UT_ASSERT( data && pPrefs );

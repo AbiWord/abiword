@@ -59,7 +59,6 @@ class PD_DocumentRange;
 class AV_View;
 class AD_Document;
 class XAP_EncodingManager;
-class UT_String;
 class XAP_Menu_Factory;
 class XAP_Toolbar_Factory;
 class UT_UUIDGenerator;
@@ -168,7 +167,6 @@ public:
 	void						suggestWord(UT_GenericVector<UT_UCSChar*> * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord);
     XAP_Prefs *						getPrefs() const;
 	bool						getPrefsValue(const gchar * szKey, const gchar ** pszValue) const;
-	bool						getPrefsValue(const UT_String &stKey, UT_String &stValue) const;
 	bool						getPrefsValue(const gchar* szKey, std::string &stValue) const;
 	bool						getPrefsValueBool(const gchar * szKey, bool * pbValue) const;
 
@@ -243,7 +241,7 @@ public:
 
 	bool						openURL(const char * url) { return m_pImpl->openURL(url); }
 	bool						openHelpURL(const char * url) { return m_pImpl->openHelpURL(url); }
-	UT_String					localizeHelpUrl(const char * pathBeforeLang,
+	std::string					localizeHelpUrl(const char * pathBeforeLang,
 									const char * pathAfterLang, const char * remoteURLbase)
 							{ return m_pImpl->localizeHelpUrl(pathBeforeLang, pathAfterLang, remoteURLbase); }
 

@@ -26,9 +26,9 @@ class XAP_UnixAppImpl
 	: public XAP_AppImpl
 {
 protected:
-	virtual UT_String 	localizeHelpUrl (const char * pathBeforeLang,
-										   const char * pathAfterLang,
-										   const char * remoteURLbase);
+	virtual std::string 	localizeHelpUrl (const char * pathBeforeLang,
+						 const char * pathAfterLang,
+						 const char * remoteURLbase);
 	virtual bool openURL(const char * url);
 	virtual bool openHelpURL(const char * url);
 };
