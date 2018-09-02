@@ -22,6 +22,7 @@
 #include <windows.h>
 
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -159,9 +160,9 @@ void AP_Win32Dialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 
 void AP_Win32Dialog_FormatTOC::setStyle(HWND hWnd, int nCtrlID)
 {
-	UT_UTF8String sVal;
+	std::string sVal;
 	std::string str_loc;
-	UT_UTF8String sProp;
+	std::string sProp;
 	UT_String str;
 	HWND hwndCtrl = GetDlgItem (hWnd, nCtrlID);
 
@@ -183,14 +184,14 @@ void AP_Win32Dialog_FormatTOC::setStyle(HWND hWnd, int nCtrlID)
 			break;
 	}
 
-	if(g_ascii_strcasecmp("toc-heading-style",sProp.utf8_str()) != 0)
+	if(g_ascii_strcasecmp("toc-heading-style",sProp.c_str()) != 0)
 	{
-		UT_String sNum =  UT_String_sprintf("%d",getMainLevel());
-		sProp += sNum.c_str();
+		std::string sNum =  UT_std_string_sprintf("%d",getMainLevel());
+		sProp += sNum;
 	}
 
-	sVal = getNewStyle(sProp);	
-	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);	
+	sVal = getNewStyle(sProp);
+	pt_PieceTable::s_getLocalisedStyleName (sVal.c_str(), str_loc);
 
 	SendMessageW (hwndCtrl, WM_SETTEXT, 0, (LPARAM) 
 		(AP_Win32App::s_fromUTF8ToWinLocale (str_loc.c_str())).c_str() );
@@ -409,8 +410,8 @@ BOOL AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 	{		
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING:
 		{
-			UT_UTF8String sProp = "toc-has-heading";
-			UT_UTF8String sVal = "1";
+			std::string sProp("toc-has-heading");
+			std::string sVal("1");
 
 			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING) != BST_CHECKED)
 			{
@@ -459,19 +460,18 @@ BOOL AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL:
 		{
-
-			UT_UTF8String sProp = "toc-has-label";
-			UT_UTF8String sVal = "1";
-			UT_String sNum =  UT_String_sprintf("%d",getContainer()->getMainLevel());
+			std::string sProp("toc-has-label");
+			std::string sVal("1");
+			std::string sNum =  UT_std_string_sprintf("%d",getContainer()->getMainLevel());
 
 			/* Has label */
-			sVal = getContainer()->getTOCPropVal(sProp.utf8_str(), getContainer()->getMainLevel());
+			sVal = getContainer()->getTOCPropVal(sProp.c_str(), getContainer()->getMainLevel());
 			sVal = "1";
 
 			if (IsDlgButtonChecked(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL) != BST_CHECKED)
 				sVal = "0";	
 				
-			sProp += sNum.c_str();			
+			sProp += sNum;			
 			getContainer()->setTOCProperty(sProp,sVal);	
 			return TRUE;
 		}
@@ -730,8 +730,8 @@ void AP_Win32Dialog_FormatTOC_Layout::loadCtrlsValuesForDetailsLevel ()
 void AP_Win32Dialog_FormatTOC_Layout::saveCtrlsValuesForDetailsLevel ()
 {
 		
-	UT_UTF8String sProp, sVal;
-	UT_String sNum;
+	std::string sProp, sVal;
+	std::string sNum;
 	char szText[1024];
 	int nSelected;
 
@@ -740,34 +740,33 @@ void AP_Win32Dialog_FormatTOC_Layout::saveCtrlsValuesForDetailsLevel ()
 	GetWindowText(GetDlgItem (getHandle(),
 		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTBEFORE), szText, 1024);
 
-	sVal = AP_Win32App::s_fromWinLocaleToUTF8 (szText);	
+	sVal = AP_Win32App::s_fromWinLocaleToUTF8 (szText).utf8_str();
 	
-	sNum =  UT_String_sprintf("%d",getContainer()->getDetailsLevel());	
+	sNum =  UT_std_string_sprintf("%d",getContainer()->getDetailsLevel());	
 	sProp = "toc-label-before";
-	sProp += sNum.c_str();
+	sProp += sNum;
 	getContainer()->setTOCProperty(sProp, sVal);
 
 	/* Text After */
 	GetWindowText(GetDlgItem (getHandle(),
 		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTAFTER), szText, 1024);
 
-	sVal = AP_Win32App::s_fromWinLocaleToUTF8 (szText);	
+	sVal = AP_Win32App::s_fromWinLocaleToUTF8 (szText).utf8_str();
 	sProp = "toc-label-after";
-	sProp += sNum.c_str();
+	sProp += sNum;
 	getContainer()->setTOCProperty(sProp, sVal);
 
 	/* Numering type */
 	nSelected = getComboSelectedIndex(AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_NUMTYPE);					
 
 	if (nSelected!=CB_ERR) 
-	{	
+	{
 		const FootnoteTypeDesc * footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 		const char * szVal = footnoteTypeList[nSelected].prop;
 		sProp = "toc-page-type";
 		sVal = szVal;
 		
-		sNum = UT_String_sprintf("%d",getContainer()->getDetailsLevel());
-		sProp += sNum.c_str();
+		sProp += UT_std_string_sprintf("%d",getContainer()->getDetailsLevel());
 		getContainer()->setTOCProperty(sProp,sVal);				
 		
 	}

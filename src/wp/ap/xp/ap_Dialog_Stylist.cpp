@@ -89,7 +89,7 @@ void AP_Dialog_Stylist::Apply(void)
 	{
 		return;
 	}
-	pView->setStyle(getCurStyle()->utf8_str());
+	pView->setStyle(getCurStyle().c_str());
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 }
 
@@ -166,7 +166,7 @@ void AP_Dialog_Stylist::updateDialog(void)
 			}
 			const char * pszStyle;
 			pView->getStyle(&pszStyle);
-			UT_UTF8String sCurViewStyle;
+			std::string sCurViewStyle;
 			if(!m_bIsModal)
 			{
 				sCurViewStyle = pszStyle;
@@ -458,7 +458,7 @@ UT_sint32 Stylist_tree::getNumRows(void) const
  * Return the row and column address of the style given. If not found return 
  * false.
  */
-bool Stylist_tree::findStyle(UT_UTF8String & sStyleName,UT_sint32 & row, UT_sint32 & col)
+bool Stylist_tree::findStyle(const std::string & sStyleName,UT_sint32 & row, UT_sint32 & col)
 {
 	UT_sint32 i =0;
 	UT_sint32 numRows = getNumRows();
@@ -483,7 +483,7 @@ bool Stylist_tree::findStyle(UT_UTF8String & sStyleName,UT_sint32 & row, UT_sint
  * Return the style at the row and column given. If the (row,col) address is
  * valid, return false.
  */
-bool  Stylist_tree::getStyleAtRowCol(UT_UTF8String & sStyle,UT_sint32 row, UT_sint32 col)
+bool  Stylist_tree::getStyleAtRowCol(std::string & sStyle,UT_sint32 row, UT_sint32 col)
 {
 	if(row > getNumRows() || (row < 0))
 	{
@@ -543,14 +543,12 @@ Stylist_row::Stylist_row(void):
 
 Stylist_row::~Stylist_row(void)
 {
-	UT_DEBUGMSG(("Deleteing Stylist_row %p num styles %d\n",this,m_vecStyles.getItemCount()));
-	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecStyles);
+	UT_DEBUGMSG(("Deleteing Stylist_row %p num styles %lu\n", this, m_vecStyles.size()));
 }
 
 void Stylist_row::addStyle(const std::string & sStyle)
 {
-	UT_UTF8String * psStyle = new UT_UTF8String(sStyle);
-	m_vecStyles.addItem(psStyle);
+	m_vecStyles.push_back(sStyle);
 }
 
 void Stylist_row::setRowName(const std::string & sRowName)
@@ -565,18 +563,17 @@ void Stylist_row::getRowName(std::string & sRowName) const
 
 UT_sint32 Stylist_row::getNumCols(void) const
 {
-	return m_vecStyles.getItemCount();
+	return m_vecStyles.size();
 }
 
-bool Stylist_row::findStyle(UT_UTF8String & sStyleName, UT_sint32 & col)
+bool Stylist_row::findStyle(const std::string & sStyleName, UT_sint32 & col)
 {
 	UT_sint32 i = 0;
 	UT_sint32 numCols = getNumCols();
 	bool bFound = false;
 	for(i=0; (i<numCols) && !bFound;i++)
 	{
-		UT_UTF8String * psStyle = m_vecStyles.getNthItem(i);
-		if(*psStyle == sStyleName)
+		if(m_vecStyles[i] == sStyleName)
 		{
 			col = i;
 			bFound = true;
@@ -588,14 +585,13 @@ bool Stylist_row::findStyle(UT_UTF8String & sStyleName, UT_sint32 & col)
 }
 
 
-bool Stylist_row::getStyle(UT_UTF8String & sStyleName, UT_sint32 col)
+bool Stylist_row::getStyle(std::string & sStyleName, UT_sint32 col)
 {
 	if((col > getNumCols()) || (col < 0))
 	{
 		return false;
 	}
-	UT_UTF8String * psStyle = m_vecStyles.getNthItem(col);
-	sStyleName = *psStyle;
+	sStyleName = m_vecStyles[col];
 	return true;
 }
 

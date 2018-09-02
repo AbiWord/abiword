@@ -51,15 +51,16 @@ public:
     virtual void      setSensitivity(bool bSensitive) = 0;
 	static void       autoUpdate(UT_Worker * pTimer);
 	void              updateDialog(void);
-	UT_UTF8String     getNewStyle(UT_UTF8String & sProp);
+	std::string     getNewStyle(const std::string & sProp) const;
 	bool              setPropFromDoc(const char * szProp);
-	void              setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal);
+	void              setTOCProperty(const std::string & sProp, 
+					 const std::string & sVal);
 	void              setTOCProperty(const char * szProp, const char * szVal);
 	void              fillTOCPropsFromDoc(void);
 	void              applyTOCPropsToDoc(void);
-    UT_UTF8String     getTOCPropVal(UT_UTF8String & sProp);
-    UT_UTF8String     getTOCPropVal(const char * szProp);
-    UT_UTF8String     getTOCPropVal(const char * szProp,UT_sint32 i);
+	std::string     getTOCPropVal(const std::string & sProp) const;
+	std::string     getTOCPropVal(const char * szProp) const;
+	std::string     getTOCPropVal(const char * szProp,UT_sint32 i) const;
 	const UT_GenericVector<const gchar*> *       getVecTABLeadersLabel(void)
 		{ return & m_vecTABLeadersLabel;}
 	const UT_GenericVector<const gchar*> *       getVecTABLeadersProp(void)
@@ -82,7 +83,7 @@ private:
 	UT_uint32             m_iTick;
 	const PP_AttrProp *   m_pAP;
 	bool                  m_bTOCFilled;
-	UT_UTF8String         m_sTOCProps;
+	std::string           m_sTOCProps;
 	UT_GenericVector<const gchar*> m_vecTABLeadersLabel;
 	UT_GenericVector<const gchar*> m_vecTABLeadersProp;
 	UT_sint32   m_iMainLevel;

@@ -25,6 +25,7 @@
 
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_debugmsg.h"
 
 #include "ap_Dialog_Id.h"
@@ -141,10 +142,10 @@ void AP_Dialog_FormatTOC::autoUpdate(UT_Worker * pTimer)
 	pDialog->updateDialog();
 }
 
-UT_UTF8String AP_Dialog_FormatTOC::getNewStyle(UT_UTF8String & sProp)
+std::string AP_Dialog_FormatTOC::getNewStyle(const std::string & sProp) const
 {
 	// Handshaking code
-	static UT_UTF8String sNewStyle("");
+	static std::string sNewStyle;
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	if(pView->getPoint() == 0)
 	{
@@ -161,7 +162,7 @@ UT_UTF8String AP_Dialog_FormatTOC::getNewStyle(UT_UTF8String & sProp)
 	AP_Dialog_Stylist * pDialog
 		= static_cast<AP_Dialog_Stylist *>(pDialogFactory->justMakeTheDialog((AP_DIALOG_ID_STYLIST)));
 	UT_return_val_if_fail (pDialog, sNewStyle);
-	UT_UTF8String sVal = getTOCPropVal(sProp);
+	std::string sVal = getTOCPropVal(sProp);
 
 	pDialog->setCurStyle(sVal);
 	pDialog->runModal(pFrame);
@@ -220,43 +221,43 @@ void  AP_Dialog_FormatTOC::finalize(void)
 	modeless_cleanup();
 }
 
-UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(UT_UTF8String & sProp)
+std::string AP_Dialog_FormatTOC::getTOCPropVal(const std::string & sProp) const
 {
-	return UT_UTF8String_getPropVal(m_sTOCProps,sProp);
+	return UT_std_string_getPropVal(m_sTOCProps,sProp);
 }
 
 
-UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(const char * szProp)
+std::string AP_Dialog_FormatTOC::getTOCPropVal(const char * szProp) const
 {
-	UT_UTF8String sProp = szProp;
-	return UT_UTF8String_getPropVal(m_sTOCProps,sProp);
+	return UT_std_string_getPropVal(m_sTOCProps,szProp);
 }
 
 
-UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(const char * szProp, UT_sint32 i)
+std::string AP_Dialog_FormatTOC::getTOCPropVal(const char * szProp, UT_sint32 i) const
 {
-	UT_UTF8String sProp = szProp;
-	UT_UTF8String sVal = UT_UTF8String_sprintf("%d",i);
+	std::string sProp = szProp;
+	std::string sVal = UT_std_string_sprintf("%d",i);
 	sProp += sVal;
-	return UT_UTF8String_getPropVal(m_sTOCProps,sProp);
+	return UT_std_string_getPropVal(m_sTOCProps,sProp);
 }
 
 void AP_Dialog_FormatTOC::setTOCProperty(const char * szProp, const char * szVal)
 {
-	UT_UTF8String sProp = szProp;
-	UT_UTF8String sVal = szVal;
+	std::string sProp = szProp;
+	std::string sVal = szVal;
 /*	don't return on empty prop strings - see Bug 9141
 	if(sVal.size() == 0)
 	{
 		return;
 	}
 */
-	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.utf8_str(),sVal.utf8_str()));
-	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
+	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.c_str(),sVal.c_str()));
+	UT_std_string_setProperty(m_sTOCProps,sProp,sVal);
 //	m_sTOCProps.dump();
 }
 
-void AP_Dialog_FormatTOC::setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal)
+void AP_Dialog_FormatTOC::setTOCProperty(const std::string & sProp,
+					 const std::string & sVal)
 {
 /*	don't return on empty prop strings - see Bug 9141
 	if(sVal.size() == 0)
@@ -264,8 +265,8 @@ void AP_Dialog_FormatTOC::setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & 
 		return;
 	}
 */
-	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.utf8_str(),sVal.utf8_str()));
-	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
+	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.c_str(),sVal.c_str()));
+	UT_std_string_setProperty(m_sTOCProps,sProp,sVal);
 //	m_sTOCProps.dump();
 }
 
@@ -302,11 +303,10 @@ bool AP_Dialog_FormatTOC::setPropFromDoc(const char * szProp)
  */
 void AP_Dialog_FormatTOC::incrementStartAt(UT_sint32 iLevel, bool bInc)
 {
-	UT_UTF8String sProp = "toc-label-start";
-	UT_UTF8String sLevel = UT_UTF8String_sprintf("%d",iLevel);
-	sProp += sLevel.utf8_str();
-	UT_UTF8String sStartVal = getTOCPropVal(sProp);
-	UT_sint32 iVal = atoi(sStartVal.utf8_str());
+	std::string sProp("toc-label-start");
+	sProp += UT_std_string_sprintf("%d",iLevel);
+	std::string sStartVal = getTOCPropVal(sProp);
+	UT_sint32 iVal = atoi(sStartVal.c_str());
 	if(bInc)
 	{
 		iVal++;
@@ -315,7 +315,7 @@ void AP_Dialog_FormatTOC::incrementStartAt(UT_sint32 iLevel, bool bInc)
 	{
 		iVal--;
 	}
-	sStartVal = UT_UTF8String_sprintf("%d",iVal);
+	sStartVal = UT_std_string_sprintf("%d",iVal);
 	setTOCProperty(sProp,sStartVal);
 }
 
@@ -325,16 +325,15 @@ void AP_Dialog_FormatTOC::incrementStartAt(UT_sint32 iLevel, bool bInc)
  */
 void AP_Dialog_FormatTOC::incrementIndent(UT_sint32 iLevel, bool bInc)
 {
-	UT_UTF8String sProp = "toc-indent";
-	UT_UTF8String sLevel = UT_UTF8String_sprintf("%d",iLevel);
-	sProp += sLevel.utf8_str();
-	UT_UTF8String sVal = getTOCPropVal(sProp);
-	double inc = getIncrement(sVal.utf8_str());
+	std::string sProp = "toc-indent";
+	sProp += UT_std_string_sprintf("%d",iLevel);
+	std::string sVal = getTOCPropVal(sProp);
+	double inc = getIncrement(sVal.c_str());
 	if(!bInc)
 	{
 		inc = -inc;
 	}
-	sVal = UT_incrementDimString(sVal.utf8_str(),inc);
+	sVal = UT_incrementDimString(sVal.c_str(),inc);
 	setTOCProperty(sProp,sVal);
 }
 
@@ -483,6 +482,6 @@ void AP_Dialog_FormatTOC::applyTOCPropsToDoc(void)
 {
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	PT_DocPosition pos = pView->getSelectionAnchor()+1;
-	pView->setTOCProps(pos,m_sTOCProps.utf8_str());
+	pView->setTOCProps(pos,m_sTOCProps.c_str());
 //	m_sTOCProps.dump();
 }

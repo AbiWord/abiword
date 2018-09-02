@@ -158,7 +158,6 @@ AP_UnixDialog_Stylist::~AP_UnixDialog_Stylist(void)
 
 void AP_UnixDialog_Stylist::event_Close(void)
 {
-	
 	destroy();
 }
 
@@ -168,7 +167,7 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 	gboolean itering;
 	gchar *entry;
 	std::string sLocCurStyle;
-	UT_UTF8String sCurStyle = *getCurStyle();
+	std::string sCurStyle = getCurStyle();
 
 	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
 		updateDialog();
@@ -179,7 +178,7 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 	if(isStyleTreeChanged())
 		_fillTree();
 
-	pt_PieceTable::s_getLocalisedStyleName(sCurStyle.utf8_str(), sLocCurStyle);
+	pt_PieceTable::s_getLocalisedStyleName(sCurStyle.c_str(), sLocCurStyle);
 
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_wStyleList));
 	itering = gtk_tree_model_get_iter_first(model, &parent);
@@ -249,7 +248,7 @@ void AP_UnixDialog_Stylist::notifyActiveFrame(XAP_Frame * /*pFrame*/)
  */
 void AP_UnixDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 {
-	UT_UTF8String sStyle;
+	std::string sStyle;
 	UT_DEBUGMSG(("row %d col %d clicked \n",row,col));
 
 	if((col == 0) && (getStyleTree()->getNumCols(row) == 1))
@@ -259,7 +258,7 @@ void AP_UnixDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 	else
 		getStyleTree()->getStyleAtRowCol(sStyle,row,col-1);
 
-	UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n",row,col,sStyle.utf8_str()));
+	UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n",row,col,sStyle.c_str()));
 	setCurStyle(sStyle);
 }
 
@@ -344,18 +343,18 @@ void  AP_UnixDialog_Stylist::event_Apply(void)
 void  AP_UnixDialog_Stylist::_fillTree(void)
 {
 	Stylist_tree * pStyleTree = getStyleTree();
-	if(pStyleTree == NULL)
+	if (pStyleTree == nullptr)
 	{
 		updateDialog();
 		pStyleTree = getStyleTree();
 	}
-	if(pStyleTree->getNumRows() == 0)
+	if (pStyleTree->getNumRows() == 0)
 	{
 		updateDialog();
 		pStyleTree = getStyleTree();
 	}
-	UT_DEBUGMSG(("Number of rows of styles in document %d \n",pStyleTree->getNumRows()));
-	if(m_wRenderer)
+	UT_DEBUGMSG(("Number of rows of styles in document %d \n", pStyleTree->getNumRows()));
+	if (m_wRenderer)
 	{
 //		g_object_unref (G_OBJECT (m_wRenderer));
 		gtk_widget_destroy (m_wStyleList);
@@ -369,30 +368,30 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	m_wModel = gtk_tree_store_new (3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
 
 	page = 0;
-	std::string sTmp(""), sLoc;
-	for(row= 0; row < pStyleTree->getNumRows();row++)
+	std::string sTmp, sLoc;
+	for (row = 0; row < pStyleTree->getNumRows(); row++)
 	{
 		gtk_tree_store_append (m_wModel, &iter, NULL);
-		if(!pStyleTree->getNameOfRow(sTmp,row))
+		if (!pStyleTree->getNameOfRow(sTmp, row))
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
-		if(pStyleTree->getNumCols(row) > 0)
+		if (pStyleTree->getNumCols(row) > 0)
 		{
-			xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
+			xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n", sTmp.c_str(), row));
 
 			gtk_tree_store_set (m_wModel, &iter, 0, sTmp.c_str(), 1, row,2,0, -1);
-			for(col =0 ; col < pStyleTree->getNumCols(row); col++)
+			for (col = 0; col < pStyleTree->getNumCols(row); col++)
 			{
-				gtk_tree_store_append (m_wModel, &child_iter, &iter);
-				UT_UTF8String style;
-				if(!pStyleTree->getStyleAtRowCol(style,row,col))
+				gtk_tree_store_append(m_wModel, &child_iter, &iter);
+				std::string style;
+				if (!pStyleTree->getStyleAtRowCol(style, row, col))
 				{
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				pt_PieceTable::s_getLocalisedStyleName(style.utf8_str(), sLoc);
+				pt_PieceTable::s_getLocalisedStyleName(style.c_str(), sLoc);
 				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n", sLoc.c_str(), row, col + 1));
 				gtk_tree_store_set(m_wModel, &child_iter, 0, sLoc.c_str(), 1, row, 2, col + 1, -1);
 				page++;
@@ -401,7 +400,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 		else
 		{
 			pt_PieceTable::s_getLocalisedStyleName(sTmp.c_str(), sLoc);
-			xxx_UT_DEBUGMSG(("Adding style %s at row %d \n", sLoc.utf8_str(), row));
+			xxx_UT_DEBUGMSG(("Adding style %s at row %d \n", sLoc.c_str(), row));
 			gtk_tree_store_set(m_wModel, &iter, 0, sLoc.c_str(), 1, row, 2, 0, -1);
 			page++;
 		}
@@ -410,7 +409,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	// create a new treeview
 	GtkTreeSortable *sort = GTK_TREE_SORTABLE(m_wModel);
 	gtk_tree_sortable_set_sort_func(sort, 0, s_compare, NULL, NULL);
-	gtk_tree_sortable_set_sort_column_id(sort, 0, GTK_SORT_ASCENDING);     
+	gtk_tree_sortable_set_sort_column_id(sort, 0, GTK_SORT_ASCENDING);
 	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (sort));
 	g_object_unref (G_OBJECT (m_wModel));
 
@@ -419,14 +418,14 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);
 	gtk_tree_selection_set_select_function (sel, tree_select_filter,
 														 NULL, NULL);
-	
+
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	m_wRenderer = gtk_cell_renderer_text_new ();
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles,s);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wStyleList),
 												 -1, s.c_str(),
-												 m_wRenderer, "text", 0, NULL); 	
+												 m_wRenderer, "text", 0, NULL);
 
 	gtk_tree_view_collapse_all (GTK_TREE_VIEW (m_wStyleList));
 	gtk_container_add (GTK_CONTAINER (m_wStyleListContainer), m_wStyleList);
