@@ -121,7 +121,8 @@ public:
 	// return value.
 	bool				getValue(const gchar * szKey, const gchar ** pszValue) const;
 	bool				getValue(const UT_String &szKey, UT_String &szValue) const;
-	bool                getValue(const char* szKey, std::string &szValue) const;
+	bool				getValue(const std::string &szKey, std::string &szValue) const;
+	bool                getValue(const gchar* szKey, std::string &szValue) const;
 	bool				getValueInt(const gchar * szKey, int& nValue) const;
 	bool				getValueBool(const gchar * szKey, bool * pbValue) const;
 	bool				getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue);
@@ -159,6 +160,7 @@ public:
 
 	bool					getPrefsValue(const gchar * szKey, const gchar ** pszValue, bool bAllowBuiltin = true) const;
 	bool					getPrefsValue(const UT_String &stKey, UT_String &stValue, bool bAllowBuiltin = true) const;
+	bool					getPrefsValue(const gchar* szKey, std::string &stValue, bool bAllowBuiltin = true) const;
 	bool					getPrefsValueBool(const gchar * szKey, bool * pbValue, bool bAllowBuiltin = true) const;
 	bool					getPrefsValueInt(const gchar * szKey, int& nValue, bool bAllowBuiltin = true) const;
 

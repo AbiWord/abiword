@@ -172,10 +172,10 @@ bool XAP_Win32FrameImpl::_updateTitle(void)
 		return false;
 	}
 
-	UT_UTF8String sTmp = pFrame->getTitle();
+	std::string sTmp = pFrame->getTitle();
 	sTmp += " - ";
-    sTmp += XAP_App::getApp()->getApplicationTitleForTitleBar();	
-	XAP_Win32DialogBase::setWindowText (m_hwndFrame, sTmp.utf8_str());
+	sTmp += XAP_App::getApp()->getApplicationTitleForTitleBar();
+	XAP_Win32DialogBase::setWindowText (m_hwndFrame, sTmp.c_str());
 
 	return true;
 }

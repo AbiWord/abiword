@@ -128,7 +128,7 @@ public:
 	void                        setView(AV_View * pView) {m_pView = pView;}
 	void                        setDoc(AD_Document * pDoc) {m_pDoc = pDoc;}
 	const char *				getFilename() const;
-	const UT_UTF8String &		getTitle() const;
+	const std::string &			getTitle() const;
 	const char *				getNonDecoratedTitle() const;
 
 	XAP_FrameMode getFrameMode();
@@ -195,7 +195,7 @@ public:
 	{ return m_iAutoSavePeriod;}
 	void						setAutoSaveFile(bool);
 	void						setAutoSaveFilePeriod(int);
-	void						setAutoSaveFileExt(const UT_String &);
+	void						setAutoSaveFileExt(const std::string &);
 
 	XAP_Dialog_MessageBox *      createMessageBox(XAP_String_Id id,
 												  XAP_Dialog_MessageBox::tButtons buttons,
@@ -222,7 +222,7 @@ public:
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_Dialog_MessageBox * pDialog);
 
 	UT_Error	    backup(const char* stExt = 0, UT_sint32 iEFT = -1);
-	UT_String       makeBackupName (const char * szExt = 0);
+	std::string       makeBackupName (const char * szExt = 0);
 
 	bool                        isStatusBarShown(void) const { return m_bShowStatusbar;}
 	bool                        isMenuBarShown(void) const { return m_bShowMenubar;}
@@ -266,13 +266,13 @@ private:
 	void						_createAutoSaveTimer();
 	void						_removeAutoSaveFile();
 
-	UT_UTF8String				m_sTitle;
-	UT_UTF8String				m_sNonDecoratedTitle;
+	std::string					m_sTitle;
+	std::string					m_sNonDecoratedTitle;
 
 	UT_uint32					m_iIdAutoSaveTimer;
 	UT_uint32					m_iAutoSavePeriod;
-	UT_String					m_stAutoSaveExt;
-	UT_String					m_stAutoSaveNamePrevious;
+	std::string					m_stAutoSaveExt;
+	std::string					m_stAutoSaveNamePrevious;
 	bool						m_bBackupRunning;
 	bool						m_bBackupInProgress;
 

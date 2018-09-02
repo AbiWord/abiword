@@ -30,7 +30,7 @@
 #include "xad_Document.h"
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ut_string.h"
+#include "ut_std_string.h"
 #include "ev_Keyboard.h"
 #include "ev_Mouse.h"
 #include "ev_Toolbar.h"
@@ -170,8 +170,8 @@ bool XAP_FrameImpl::_updateTitle()
 	{
 		UT_ASSERT(m_pFrame->m_iUntitled);
 		pSS->getValueUTF8(XAP_STRING_ID_UntitledDocument,s);
-		
-		m_pFrame->m_sTitle = UT_UTF8String_sprintf(m_pFrame->m_sTitle,s.c_str(),m_pFrame->m_iUntitled);
+
+		m_pFrame->m_sTitle = UT_std_string_sprintf(s.c_str(),m_pFrame->m_iUntitled);
 	}
 
 	m_pFrame->m_sNonDecoratedTitle = m_pFrame->m_sTitle;
@@ -179,8 +179,7 @@ bool XAP_FrameImpl::_updateTitle()
 	if (m_pFrame->m_nView)
 	{
 		// multiple top-level views, so append : & view number
-		UT_UTF8String sBuf;
-		UT_UTF8String_sprintf(sBuf, ":%d", m_pFrame->m_nView);
+		std::string sBuf = UT_std_string_sprintf(":%d", m_pFrame->m_nView);
 		m_pFrame->m_sTitle += sBuf;
 	}
 

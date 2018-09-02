@@ -84,7 +84,7 @@ BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/,
 		XAP_Frame * f = m_pApp->getFrame(i);
 		UT_continue_if_fail(f);
 
-		int nIndex = addItemToList(XAP_RID_DIALOG_WINDOWMORE_LIST, f->getTitle().utf8_str());
+		int nIndex = addItemToList(XAP_RID_DIALOG_WINDOWMORE_LIST, f->getTitle().c_str());
 		setListDataItem(XAP_RID_DIALOG_WINDOWMORE_LIST, nIndex, (DWORD) i);
      } 
 

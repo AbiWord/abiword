@@ -303,7 +303,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 		UT_return_val_if_fail (pFrame, NULL);
 
 		memset(buf, 0, sizeof(buf));
-		snprintf(buf, sizeof(buf), szFormat, pFrame->getTitle().utf8_str());
+		snprintf(buf, sizeof(buf), szFormat, pFrame->getTitle().c_str());
 		buf[sizeof(buf) - 1] = '\0';
 		return buf;
 	}

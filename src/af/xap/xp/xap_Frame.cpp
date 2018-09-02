@@ -27,7 +27,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_vector.h"
-#include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_growbuf.h"
 #include "ut_timer.h"
 #include "ut_go_file.h"
@@ -282,7 +282,7 @@ bool XAP_Frame::initialize(const char * /*szKeyBindingsKey*/, const char * /*szK
 	//////////////////////////////////////////////////////////////////
 	// select the auto save options
 	//////////////////////////////////////////////////////////////////
-	UT_String stTmp;
+	std::string stTmp;
 	bool autosave = true;
 
 	pApp->getPrefsValue(XAP_PREF_KEY_AutoSaveFileExt, m_stAutoSaveExt);
@@ -408,7 +408,7 @@ static void autoSaveCallback(UT_Worker *wkr)
 void XAP_Frame::_createAutoSaveTimer()
 {
 	UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
-	UT_String stPeriod;
+	std::string stPeriod;
 	
 	bool bFound = XAP_App::getApp()->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stPeriod);
 
@@ -608,14 +608,14 @@ const char * XAP_Frame::getViewKey(void) const
 	return buf;
 }
 
-const UT_UTF8String & XAP_Frame::getTitle() const
+const std::string & XAP_Frame::getTitle() const
 {
 	return m_sTitle;
 }
 
 const char * XAP_Frame::getNonDecoratedTitle() const
 {
-	return m_sNonDecoratedTitle.utf8_str();
+	return m_sNonDecoratedTitle.c_str();
 }
 
 void XAP_Frame::setZoomPercentage(UT_uint32 iZoom)
@@ -627,8 +627,7 @@ void XAP_Frame::setZoomPercentage(UT_uint32 iZoom)
 	UT_return_if_fail(pPrefs);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_if_fail(pScheme);
-	UT_String sZoom;
-	UT_String_sprintf(sZoom,"%d",iZoom);
+	std::string sZoom = UT_std_string_sprintf("%d",iZoom);
 	if(getZoomType() == z_PAGEWIDTH)
 	{
 		pScheme->setValue(XAP_PREF_KEY_ZoomType,"Width");
@@ -768,7 +767,7 @@ void XAP_Frame::setAutoSaveFilePeriod(int min)
 	}
 }
 
-void XAP_Frame::setAutoSaveFileExt(const UT_String &stExt)
+void XAP_Frame::setAutoSaveFileExt(const std::string &stExt)
 {
 	m_stAutoSaveExt = stExt;
 }
@@ -850,18 +849,18 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char * szMessage,
   return showMessageBox(pDialog);
 }
 
-UT_String XAP_Frame::makeBackupName(const char* szExt)
+std::string XAP_Frame::makeBackupName(const char* szExt)
 {
-  UT_String ext(szExt ? szExt : m_stAutoSaveExt.c_str());
-  UT_String oldName(m_pDoc->getFilename());
-  UT_String backupName;
+  std::string ext(szExt ? szExt : m_stAutoSaveExt);
+  std::string oldName(m_pDoc->getFilename());
+  std::string backupName;
   UT_DEBUGMSG(("In make Backup name. Old Name is (%s) \n",oldName.c_str()));
   if (oldName.empty())
   {
       const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
       std::string sTmp;
       pSS->getValue(XAP_STRING_ID_UntitledDocument, XAP_App::getApp()->getDefaultEncoding(), sTmp);
-      UT_String_sprintf(oldName, sTmp.c_str(), m_iUntitled);
+      oldName = UT_std_string_sprintf(sTmp.c_str(), m_iUntitled);
 
       UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
   }
@@ -906,7 +905,7 @@ UT_Error XAP_Frame::backup(const char* szExt, UT_sint32 iEFT)
 
 	m_bBackupInProgress = true;
 
-	UT_String backupName = makeBackupName ( szExt );
+	std::string backupName = makeBackupName ( szExt );
 
 	if (m_stAutoSaveNamePrevious.size() && (backupName != m_stAutoSaveNamePrevious))
 	{

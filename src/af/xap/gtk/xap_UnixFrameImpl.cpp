@@ -2009,7 +2009,7 @@ bool XAP_UnixFrameImpl::_updateTitle()
 	{
 		if (GTK_IS_WINDOW (m_wTopLevelWindow))
 			{
-				gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), getFrame()->getTitle().utf8_str());
+				gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), getFrame()->getTitle().c_str());
 			}
 	}
 	return true;

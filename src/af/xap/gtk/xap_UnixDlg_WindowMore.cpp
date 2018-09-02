@@ -183,7 +183,7 @@ void XAP_UnixDialog_WindowMore::_populateWindowData(void)
 		// Add a new row to the model
 		gtk_list_store_append (model, &iter);		
 		gtk_list_store_set (model, &iter,
-							0, f->getTitle().utf8_str(),
+							0, f->getTitle().c_str(),
 							1, i,
 							-1);
     } 
