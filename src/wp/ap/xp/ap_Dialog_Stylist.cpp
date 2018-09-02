@@ -543,7 +543,7 @@ Stylist_row::Stylist_row(void):
 
 Stylist_row::~Stylist_row(void)
 {
-	UT_DEBUGMSG(("Deleteing Stylist_row %p num styles %lu\n", this, m_vecStyles.size()));
+	UT_DEBUGMSG(("Deleteing Stylist_row %p num styles %lu\n", this, (unsigned long)m_vecStyles.size()));
 }
 
 void Stylist_row::addStyle(const std::string & sStyle)
