@@ -66,7 +66,7 @@ public:
   XAP_String_Id getLabelStringID(void);
   const gchar * getPrefKey(void);
 private:
-  UT_String m_name;
+  std::string m_name;
   XAP_String_Id m_label;
   const gchar*			m_prefKey;
   UT_GenericVector<XAP_Toolbar_Factory_lt *> m_Vec_lt;

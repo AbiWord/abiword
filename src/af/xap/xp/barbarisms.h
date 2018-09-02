@@ -52,7 +52,7 @@ private:
 	UT_GenericStringMap<UT_GenericVector<UT_UCS4Char *>*>	m_map;
 	UT_GenericVector<UT_UCS4Char *>*		m_pCurVector;
 
-	UT_String m_sLang;
+	std::string m_sLang;
 };
 
 #endif // BARBARISMS_H

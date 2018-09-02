@@ -189,7 +189,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 
 }
 
-const char* XAP_Draw_Symbol::getSelectedFont()
+const char* XAP_Draw_Symbol::getSelectedFont() const
 {
 	return m_stFont.c_str();
 }
@@ -230,7 +230,7 @@ void XAP_Draw_Symbol::setRow (UT_uint32 row)
 	draw ();
 }
 
-UT_uint32 XAP_Draw_Symbol::getSymbolRows (void)
+UT_uint32 XAP_Draw_Symbol::getSymbolRows (void) const
 {
 	UT_uint32 chars = 0;
 	for (UT_sint32 i = m_start_base; i < m_vCharSet.size(); i += 2)

@@ -19,7 +19,7 @@ private:
 
 static XAP_LogDestructor g_pLogDestructor;
 
-XAP_Log::XAP_Log(const UT_String &logfile)
+XAP_Log::XAP_Log(const std::string &logfile)
 {
 	m_pOutput = fopen(logfile.c_str(), "w");
 	fprintf(m_pOutput, "<?xml version=\"1.0\"?>\n");
@@ -35,7 +35,7 @@ XAP_Log::~XAP_Log()
 	}
 }
 
-void XAP_Log::log(const UT_String &method_name, AV_View * /*pAV_View*/, EV_EditMethodCallData *pCallData)
+void XAP_Log::log(const std::string &method_name, AV_View * /*pAV_View*/, EV_EditMethodCallData *pCallData)
 {
 	UT_ASSERT(m_pOutput != 0);
 	fprintf(m_pOutput, "\t<event name=\"%s\"", method_name.c_str());
@@ -55,7 +55,7 @@ void XAP_Log::log(const UT_String &method_name, AV_View * /*pAV_View*/, EV_EditM
 			UT_uint32 data_length = pCallData->m_dataLength;
 			gchar outbuf[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 			g_unichar_to_utf8(*data++, outbuf);
-			UT_String stData(outbuf);
+			std::string stData(outbuf);
 
 			while (static_cast<size_t>(data - pCallData->m_pData) < data_length) {
 				memset(outbuf, 0, sizeof(outbuf));

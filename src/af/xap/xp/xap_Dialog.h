@@ -37,8 +37,6 @@
 
 #include "xap_Types.h"
 
-class UT_String;
-
 class XAP_DialogFactory;
 class XAP_App;
 class XAP_Frame;
@@ -80,7 +78,7 @@ public:
 	XAP_Dialog_Id				getDialogId(void) const { return m_id; }
 	XAP_App *				getApp(void) const { return m_pApp;}
 
-	const UT_String& getHelpUrl () const { return *m_helpUrl ; }
+	const std::string& getHelpUrl () const { return m_helpUrl ; }
 
 
 	/** get a widget state (enabled/disabled) */
@@ -138,7 +136,7 @@ protected:
 	XAP_Dialog_Id				m_id;
 
 private:
-	UT_String * m_helpUrl ;
+	std::string m_helpUrl ;
 };
 
 

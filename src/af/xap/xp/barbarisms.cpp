@@ -61,7 +61,7 @@ bool BarbarismChecker::load(const char * szLang)
 
 	m_sLang = szLang;
 
-	UT_String fileName;
+	std::string fileName;
 	std::string fullPath;
 
 	fileName  = szLang;

@@ -31,7 +31,6 @@
 #include "ut_types.h"
 #endif
 #include "ut_bytebuf.h"
-#include "ut_string_class.h"
 #include "ut_vector.h"
 #include "ut_uuid.h"
 #include "time.h"
@@ -313,8 +312,8 @@ private:
 	XAP_ResourceManager *	m_pResourceManager;
 
 	int				m_iRefCount;
-	std::string		m_szFilename;
-	UT_String		m_szEncodingName;
+	std::string	    m_szFilename;
+	std::string		m_szEncodingName;
 
 	bool			m_bPieceTableChanging;
 	time_t          m_lastSavedTime;
