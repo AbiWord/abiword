@@ -118,6 +118,7 @@ protected:
 
 private:
 	GdkWindow *m_pWin;
+	GdkDrawingContext* m_context;
 	bool m_CairoCreated;
 	bool m_Painting;
 	gulong m_Signal, m_DestroySignal;

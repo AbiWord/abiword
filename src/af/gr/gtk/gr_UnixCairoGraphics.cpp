@@ -75,6 +75,7 @@ GR_UnixCairoGraphicsBase::GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDevic
 GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkWindow * win, bool /*double_buffered*/)
 	: GR_UnixCairoGraphicsBase(),
 	  m_pWin(win),
+	  m_context(nullptr),
 	  m_CairoCreated(false),
 	  m_Painting(false),
 	  m_Signal(0),
@@ -467,7 +468,8 @@ void GR_UnixCairoGraphics::_beginPaint()
 	if (m_cr == NULL)
 	{
 		UT_ASSERT(m_pWin);
-		m_cr = gdk_cairo_create (m_pWin);
+		m_context = gdk_window_begin_draw_frame(m_pWin, cairo_region_create());
+		m_cr = gdk_drawing_context_get_cairo_context(m_context);
 		m_CairoCreated = true;
 	}
 
@@ -480,9 +482,9 @@ void GR_UnixCairoGraphics::_endPaint()
 {
 	if (m_CairoCreated)
 	{
-		cairo_surface_flush(cairo_get_target(m_cr));
-		cairo_destroy (m_cr);
+		gdk_window_end_draw_frame(m_pWin, m_context);
 	}
+	m_context = nullptr;
 	m_cr = NULL;
 
 	m_Painting = false;
