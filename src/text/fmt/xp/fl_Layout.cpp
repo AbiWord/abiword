@@ -69,9 +69,7 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
 /*!
     ppAP [out] -- the requested AP
     
-    pRevisions [in/out] -- revisions attribute; can be set to NULL, in
-                       which case an instance will be created; the
-                       caller is responsible for deleting
+    pRevisions [in/out] -- revisions attribute; Pass empty if you don't want it.
 
     bShowRevisions -- indicates if in the current view revisions are
                       to be shown
@@ -85,8 +83,9 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
                      with it.
     
 */
-bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP, std::unique_ptr<PP_RevisionAttr>& pRevisions,
-							bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
+bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP,
+                            UT_Option<std::unique_ptr<PP_RevisionAttr>>& pRevisions,
+                            bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
 {
 	UT_return_val_if_fail(m_pDoc, false);
 	return m_pDoc->getAttrProp(m_apIndex, ppAP, pRevisions, bShowRevisions, iRevisionId, bHiddenRevision);
@@ -96,7 +95,7 @@ bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP, std::unique_ptr<PP_Revisi
     if pRevisions is not needed, set the pointer to NULL(this speeds up things)
 */
 bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP,
-                                std::unique_ptr<PP_RevisionAttr>& pRevisions,
+                                UT_Option<std::unique_ptr<PP_RevisionAttr>>& pRevisions,
                                 bool bShowRevisions, UT_uint32 iRevisionId,
                                 bool &bHiddenRevision) const
 {

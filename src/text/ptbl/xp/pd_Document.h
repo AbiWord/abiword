@@ -446,12 +446,13 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
 
-	bool                    getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, std::unique_ptr<PP_RevisionAttr>& pRevisions,
+	bool                    getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP,
+										UT_Option<std::unique_ptr<PP_RevisionAttr>>& pRevisions,
 										bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const;
 
 	bool                    getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP,
-											std::unique_ptr<PP_RevisionAttr>& pRevisions,
+											UT_Option<std::unique_ptr<PP_RevisionAttr>>& pRevisions,
 											bool bShowRevisions, UT_uint32 iRevisionId,
 											bool &bHiddenRevision) const;
 

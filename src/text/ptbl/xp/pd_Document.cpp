@@ -2231,7 +2231,7 @@ bool PD_Document::getAttributeFromSDH(pf_Frag_Strux* sdh, bool bShowRevisions, U
 	const gchar * pszValue = NULL;
 
 	bool bHiddenRevision = false;
-	std::unique_ptr<PP_RevisionAttr> unused;
+	UT_Option<std::unique_ptr<PP_RevisionAttr>> unused;
 	getAttrProp(indexAP, &pAP, unused, bShowRevisions, iRevisionLevel, bHiddenRevision);
 
 	UT_return_val_if_fail (pAP, false);
@@ -2282,7 +2282,7 @@ bool PD_Document::getPropertyFromSDH(const pf_Frag_Strux* sdh, bool bShowRevisio
 
 	bool bHiddenRevision = false;
 
-	std::unique_ptr<PP_RevisionAttr> unused;
+	UT_Option<std::unique_ptr<PP_RevisionAttr>> unused;
 	getAttrProp(indexAP, &pAP, unused, bShowRevisions, iRevisionLevel, bHiddenRevision);
 
 	UT_return_val_if_fail (pAP, false);
@@ -8036,11 +8036,10 @@ bool PD_Document::purgeFmtMarks()
 
 
 bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP,
-							  std::unique_ptr<PP_RevisionAttr>& pRevisions,
+							  UT_Option<std::unique_ptr<PP_RevisionAttr>>& pRevisions,
 							  bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
 {
-	bool bRevisionAttrNeeded = pRevisions ? true : false;
-	std::unique_ptr<PP_RevisionAttr> pRevAttr;
+	bool bRevisionAttrNeeded = !!pRevisions;
 	bHiddenRevision = false;
 
 	const PP_AttrProp * pAP = NULL;
@@ -8058,7 +8057,7 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 
 		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
 		{
-			pRevisions.reset(new PP_RevisionAttr(pRevision));
+			pRevisions.unwrap_ref().reset(new PP_RevisionAttr(pRevision));
 			UT_return_val_if_fail(pRevisions, false);
 		}
 
@@ -8068,6 +8067,7 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 		return true;
 	}
 
+	std::unique_ptr<PP_RevisionAttr> pRevAttr;
 	const PP_AttrProp * pNewAP = explodeRevisions(pRevAttr, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
 
 	if(pNewAP)
@@ -8081,7 +8081,7 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 
 	if(bRevisionAttrNeeded)
 	{
-		pRevisions = std::move(pRevAttr);
+		pRevisions.unwrap_ref() = std::move(pRevAttr);
 	}
 
 	return true;
@@ -8096,12 +8096,12 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 */
 bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLeftSide,
 								  const PP_AttrProp ** ppAP,
-								  std::unique_ptr<PP_RevisionAttr>& pRevisions,
+								  UT_Option<std::unique_ptr<PP_RevisionAttr>>& pRevisions,
 								  bool bShowRevisions, UT_uint32 iRevisionId,
 								  bool &bHiddenRevision) const
 {
 	const PP_AttrProp *pAP = NULL;
-	bool bRevisionAttrNeeded = pRevisions ? true : false;
+	bool bRevisionAttrNeeded = !!pRevisions;
 	std::unique_ptr<PP_RevisionAttr> pRevAttr;
 
 	if(!getSpanAttrProp(sdh,offset,bLeftSide,&pAP))
@@ -8118,7 +8118,7 @@ bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLe
 		// only do this if the pRevisions pointer is set to NULL
 		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
 		{
-			pRevisions.reset(new PP_RevisionAttr(pRevision));
+			pRevisions.unwrap_ref().reset(new PP_RevisionAttr(pRevision));
 			UT_return_val_if_fail(pRevisions, false);
 		}
 
@@ -8141,7 +8141,7 @@ bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLe
 
 	if(bRevisionAttrNeeded)
 	{
-		pRevisions = std::move(pRevAttr);
+		pRevisions.unwrap_ref() = std::move(pRevAttr);
 	}
 
 	return true;

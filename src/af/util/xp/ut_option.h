@@ -39,7 +39,7 @@ public:
   }
   UT_Option(T&& data)
     : m_none(false)
-    , m_data(data)
+    , m_data(std::move(data))
   {
   }
   explicit UT_Option(const T& data)
@@ -61,6 +61,14 @@ public:
     }
     m_none = true;
     return std::move(m_data);
+  }
+// Get a ref on the option to change the value.
+  T& unwrap_ref()
+  {
+    if (m_none) {
+      throw std::runtime_error("none option value");
+    }
+    return m_data;
   }
   T unwrap_or(const T& value)
   {
