@@ -4588,7 +4588,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 		}
 		
 
-		for(i = 1; i <= iMaxId; i++)
+		for (/*i = 1*/; i <= iMaxId; i++)
 		{
 			pRev = pRevisions->getRevisionWithId(i,iMinId);
 
