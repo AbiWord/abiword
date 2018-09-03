@@ -1489,7 +1489,7 @@ UT_go_url_show (gchar const *url)
 	return NULL;
 #else
 	GError *err = NULL;
-	if(!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &err)) {
+	if (!gtk_show_uri_on_window(NULL, url, GDK_CURRENT_TIME, &err)) {
 		fallback_open_uri(url, &err);
 	}
 	return err;
