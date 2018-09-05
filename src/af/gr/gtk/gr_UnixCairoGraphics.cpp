@@ -468,7 +468,9 @@ void GR_UnixCairoGraphics::_beginPaint()
 	if (m_cr == NULL)
 	{
 		UT_ASSERT(m_pWin);
-		m_context = gdk_window_begin_draw_frame(m_pWin, cairo_region_create());
+		auto region = cairo_region_create();
+		m_context = gdk_window_begin_draw_frame(m_pWin, region);
+		cairo_region_destroy(region);
 		m_cr = gdk_drawing_context_get_cairo_context(m_context);
 		m_CairoCreated = true;
 	}
