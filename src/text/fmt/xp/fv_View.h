@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "xap_Features.h"
+#include "xap_Prefs.h"
 #include "ut_types.h"
 #include "xav_View.h"
 #include "pt_Types.h"
@@ -101,7 +102,6 @@ class AP_Dialog_Annotation;
 class AP_Dialog_SplitCells;
 
 class XAP_App;
-class XAP_Prefs;
 
 class SpellChecker;
 
