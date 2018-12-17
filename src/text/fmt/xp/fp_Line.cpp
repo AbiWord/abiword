@@ -1915,7 +1915,9 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		UT_sint32 diff = xoff - xoffLine;
 		UT_ASSERT(yoff == yoffLine);
 
-		fp_Line * pPrevLine = static_cast<fp_Line *>(getPrevContainerInSection());
+		// static_cast might fail after a table
+		// resulting in a runtime error and a potential crash
+		fp_Line * pPrevLine = dynamic_cast<fp_Line *>(getPrevContainerInSection());
 		if(pPrevLine != NULL && (pPrevLine->getContainerType() == FP_CONTAINER_LINE))
 		{
 			UT_sint32 xPrev=0;
