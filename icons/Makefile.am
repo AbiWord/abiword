@@ -3,13 +3,13 @@ public_icons_themes = \
         $(NULL)
 
 public_icons = \
-        hicolor_apps_16x16_abiword.png \
-        hicolor_apps_22x22_abiword.png \
-        hicolor_apps_32x32_abiword.png \
-        hicolor_apps_48x48_abiword.png \
-        hicolor_apps_256x256_abiword.png \
-        hicolor_apps_512x512_abiword.png \
-        hicolor_apps_scalable_abiword.svg \
+        hicolor_apps_16x16_com.abisource.AbiWord.png \
+        hicolor_apps_22x22_com.abisource.AbiWord.png \
+        hicolor_apps_32x32_com.abisource.AbiWord.png \
+        hicolor_apps_48x48_com.abisource.AbiWord.png \
+        hicolor_apps_256x256_com.abisource.AbiWord.png \
+        hicolor_apps_512x512_com.abisource.AbiWord.png \
+        hicolor_apps_scalable_com.abisource.AbiWord.svg \
         $(NULL)
 
 icondir= $(ABIWORD_ICONDIR)

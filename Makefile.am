@@ -10,13 +10,13 @@ if TOOLKIT_GTK_ALL
 SUBDIRS += icons
 
 desktopdir = $(datadir)/applications
-desktop_DATA = abiword.desktop
+desktop_DATA = com.abisource.AbiWord.desktop
 
 mimedir = @ABIWORD_DATADIR@/mime-info
 mime_DATA = abiword.keys
 
 appdatadir = $(datarootdir)/appdata
-appdata_DATA = abiword.appdata.xml
+appdata_DATA = com.abisource.AbiWord.appdata.xml
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
