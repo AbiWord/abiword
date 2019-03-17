@@ -26,6 +26,7 @@
 
 TFTEST_MAIN("xap_UnixWidget-toggle_button")
 {
+	gtk_init(NULL, NULL);
 	GtkWidget *gtkw = gtk_toggle_button_new();
 	XAP_Widget *w = new XAP_UnixWidget(gtkw);
 
