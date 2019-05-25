@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
@@ -1298,6 +1298,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		case EV_TLF_Normal:
 			{
 				const char * szState = 0;
+				std::string sLoc;
 				EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 
                 if( tis & EV_TIS_Hidden )
@@ -1369,7 +1370,6 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					}
 					else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
 #define BUILTIN_INDEX "builtin-index"
-						std::string sLoc;
 						pt_PieceTable::s_getLocalisedStyleName(szState, sLoc);
 						szState = sLoc.c_str();
 						gint idx = GPOINTER_TO_INT(g_object_steal_data(G_OBJECT(combo), BUILTIN_INDEX));
