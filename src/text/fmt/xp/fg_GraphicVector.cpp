@@ -116,11 +116,11 @@ FG_ConstGraphicPtr FG_GraphicVector::clone(void) const
 	pClone->m_pbbSVG = m_pbbSVG;
 	pClone->m_pSpanAP = m_pSpanAP;
 	pClone->m_pszDataID = m_pszDataID;
-	pClone->m_iWidth = m_iWidth; 
+	pClone->m_iWidth = m_iWidth;
 	pClone->m_iHeight = m_iHeight;
 	pClone->m_iMaxW = m_iMaxW;
 	pClone->m_iMaxH = m_iMaxH;
-	return std::move(pClone);
+	return pClone;
 }
 
 FGType FG_GraphicVector::getType(void) const
