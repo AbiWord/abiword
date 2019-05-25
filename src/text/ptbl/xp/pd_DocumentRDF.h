@@ -220,8 +220,9 @@ class ABI_EXPORT PD_RDFModelIterator
     typedef PD_RDFModelIterator  self_type;
 
     PD_RDFModelIterator();
-    ~PD_RDFModelIterator();
+    PD_RDFModelIterator(const PD_RDFModelIterator&) = default;
     PD_RDFModelIterator( PD_RDFModelHandle model, const PP_AttrProp* AP );
+    ~PD_RDFModelIterator();
 
     self_reference operator++();
     bool operator==( self_constref other );

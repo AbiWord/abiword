@@ -231,6 +231,7 @@ class ABI_EXPORT FV_View_BubbleBlocker
     FV_View* m_pView;
   public:
     FV_View_BubbleBlocker( FV_View* pView = 0 );
+    FV_View_BubbleBlocker(const FV_View_BubbleBlocker&) = default;
     ~FV_View_BubbleBlocker();
     FV_View_BubbleBlocker& operator=( const FV_View_BubbleBlocker& r );
 
