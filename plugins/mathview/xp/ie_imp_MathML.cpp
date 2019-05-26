@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -268,20 +268,20 @@ const IE_MimeConfidence * IE_Imp_MathML_Sniffer::getMimeConfidence ()
 /*!
   Check if buffer contains data meant for this importer.
 
- We don't attmpt to recognize since other filetypes (HTML) can
+ We don't attempt to recognize since other filetypes (HTML) can
  use the same encodings a text file can.
  We also don't want to steal recognition when user wants to use
  the Encoded Text importer.
  */
 UT_Confidence_t IE_Imp_MathML_Sniffer::recognizeContents(const char * szBuf,
-													   UT_uint32 /*iNumbytes*/)
+													   UT_uint32 iNumbytes)
 {
 	const char * magic = "<math";
-	if(strncmp(szBuf,magic,strlen(magic) == 0))
-	   return UT_CONFIDENCE_PERFECT;
+	const size_t magic_len = strlen(magic);
+	if (iNumbytes >= magic_len && strncmp(szBuf, magic, magic_len) == 0) {
+		return UT_CONFIDENCE_PERFECT;
+	}
 	return UT_CONFIDENCE_ZILCH;
- 
-
 }
 
 UT_Error IE_Imp_MathML_Sniffer::constructImporter(PD_Document * pDocument,
