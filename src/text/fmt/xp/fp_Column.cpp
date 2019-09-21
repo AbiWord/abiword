@@ -1049,7 +1049,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 //	validate();
 #endif
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
-	UT_sint32 ytop = 0, ybot = (UT_sint32)(((UT_uint32)(1<<31)) - 1);
+	UT_sint32 ytop = 0, ybot = std::numeric_limits<UT_sint32>::max();
 
 	if(pClipRect)
 	{

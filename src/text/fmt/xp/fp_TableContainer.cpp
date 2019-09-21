@@ -1951,7 +1951,7 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
 	UT_sint32 i;
-	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<31)) - 1);
+	UT_sint32 imax = std::numeric_limits<UT_sint32>::max();
 	if(pClipRect)
 	{
 		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
