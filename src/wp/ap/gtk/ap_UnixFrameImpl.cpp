@@ -215,7 +215,8 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 						    GDK_ENTER_NOTIFY_MASK |
 						    GDK_FOCUS_CHANGE_MASK |
 						    GDK_LEAVE_NOTIFY_MASK |
-						    GDK_SCROLL_MASK));
+						    GDK_SCROLL_MASK |
+						    GDK_SMOOTH_SCROLL_MASK));
 	g_signal_connect(G_OBJECT(m_dArea), "draw",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::draw), NULL);
 
