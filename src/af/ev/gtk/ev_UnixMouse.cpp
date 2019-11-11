@@ -45,7 +45,7 @@ void EV_UnixMouse::mouseUp(AV_View* pView, GdkEventButton* e)
 	EV_EditMouseButton emb = 0;
 	EV_EditMouseOp mop;
 	EV_EditMouseContext emc = 0;
-	
+
 	if (e->state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)
@@ -268,25 +268,42 @@ void EV_UnixMouse::mouseScroll(AV_View* pView, GdkEventScroll *e)
 	EV_EditMouseOp mop = 0;
 	EV_EditMouseContext emc = 0;
 
+	if (!e) {
+		UT_DEBUGMSG(("mouseScroll with null even\n"));
+		return;
+	}
+
+	GdkScrollDirection dir = e->direction;
+#if GTK_CHECK_VERSION(3,0,0)
+	if (dir == GDK_SCROLL_SMOOTH) {
+		gdouble delta_x, delta_y;
+		delta_x = delta_y = 0.0;
+		if (gdk_event_get_scroll_deltas((GdkEvent*)e, &delta_x, &delta_y)) {
+			if (abs(delta_y) > abs(delta_x)) {
+				// vertical
+				dir = (delta_y > 0.0 ? GDK_SCROLL_DOWN : GDK_SCROLL_UP);
+			} else {
+				// horizontal not supported yet.
+			}
+		}
+	}
+#endif
+
 	// map the scrolling type generated from mouse buttons 4 to 7 onto mousebuttons
-	if (e->direction == GDK_SCROLL_UP)
-	{
+	if (dir == GDK_SCROLL_UP) {
 	  emb = EV_EMB_BUTTON4;
 	  xxx_UT_DEBUGMSG(("Scroll up detected \n"));
-	}
-	else if (e->direction == GDK_SCROLL_DOWN)
-	{
+	} else if (dir == GDK_SCROLL_DOWN) {
 	  emb = EV_EMB_BUTTON5;
 	  xxx_UT_DEBUGMSG(("Scroll down detected \n"));
-	}
-	/*else if (e->direction == GDK_SCROLL_LEFT) // we don't handle buttons 6 and 7
-	        emb = EV_EMB_BUTTON6;
-	else if (e->direction == GDK_SCROLL_RIGHT)
-	        emb = EV_EMB_BUTTON7;*/
-	else
-	{
+	} /*else if (dir == GDK_SCROLL_LEFT) { // we don't handle buttons 6 and 7
+		emb = EV_EMB_BUTTON6;
+	} else if (dir == GDK_SCROLL_RIGHT) {
+		emb = EV_EMB_BUTTON7;
+	} */ else {
 		// TODO decide something better to do here....
-		UT_DEBUGMSG(("EV_UnixMouse::mouseScroll: unhandled scroll action\n"));
+		UT_DEBUGMSG(("EV_UnixMouse::mouseScroll: unhandled scroll action: %d\n",
+			      e->direction));
 		return;
 	}
 
