@@ -29,7 +29,6 @@
 #include "ie_types.h"
 
 #include "ut_go_file.h"
-#include <gsf/gsf-output.h>
 
 #include "ut_string_class.h"
 

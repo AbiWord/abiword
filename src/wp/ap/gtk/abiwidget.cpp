@@ -30,11 +30,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "abiwidget.h"
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-output.h>
-#include <gsf/gsf-input-memory.h>
-#include <gsf/gsf-output-memory.h>
-#include <gsf/gsf-utils.h>
 
 #include "gr_CairoGraphics.h"
 #include "gr_Painter.h"

@@ -25,8 +25,6 @@
 // AbiWord includes
 #include <ut_string_class.h>
 
-// External includes
-#include <gsf/gsf-output.h>
 #include <stdio.h>
 
 // AbiWord classes

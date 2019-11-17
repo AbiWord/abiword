@@ -26,9 +26,6 @@
 // AbiWord includes
 #include <ut_hash.h>
 
-// External includes
-#include <gsf/gsf-output.h>
-
 // Internal classes
 class ODe_Style_Style;
 class ODe_Style_PageLayout;

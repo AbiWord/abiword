@@ -33,9 +33,11 @@
 #include <math.h>
 #include <map>
 #include <string>
-#include <gsf/gsf-utils.h>
-#include <gsf/gsf-input-memory.h>
-#include <gsf/gsf-input-stdio.h>
+
+#include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
 
 #include "ut_types.h"
 #include "ut_std_string.h"
@@ -65,11 +67,6 @@
 
 #include <librevenge-stream/librevenge-stream.h>
 #include <libwpd/libwpd.h>
-
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-msole.h>
-#include <gsf/gsf-infile-zip.h>
 
 #ifdef HAVE_LIBWPS
 #include <libwps/libwps.h>

@@ -20,10 +20,6 @@
  * 02110-1301 USA.
  */
 
-#include <gsf/gsf-input-stdio.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-zip.h>
-
 #include "ut_locale.h"
 #include <math.h>
 

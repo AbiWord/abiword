@@ -24,8 +24,7 @@
 #define ABI_WIDGET_H
 
 #include <gtk/gtk.h>
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-output.h>
+#include <gsf/gsf.h>
 
 G_BEGIN_DECLS
 

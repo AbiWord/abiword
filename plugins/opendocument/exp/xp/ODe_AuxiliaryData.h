@@ -25,7 +25,6 @@
 // AbiWord includes
 #include <ut_vector.h>
 #include <ut_string_class.h>
-#include <gsf/gsf-output-memory.h>
 
 #include "pd_DocumentRDF.h"
 

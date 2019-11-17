@@ -27,7 +27,10 @@
 #include <string>
 #include <map>
 #include <algorithm>
-#include <gsf/gsf-output.h>
+#include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
 
 // Abiword includes
 #include <ie_TOC.h>

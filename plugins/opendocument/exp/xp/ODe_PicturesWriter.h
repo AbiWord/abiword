@@ -25,13 +25,8 @@
 #ifndef _ODE_PICTURESWRITER_H_
 #define _ODE_PICTURESWRITER_H_
 
-// External includes
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-outfile.h>
-
 // Abiword classes
 class PD_Document;
-
 
 /**
  * Class holding 1 static member. Its sole duty is to write

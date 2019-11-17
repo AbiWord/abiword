@@ -42,13 +42,7 @@
 #include "ie_imp_PasteListener.h"
 #include "pd_DocumentRDF.h"
 
-// External includes
 #include <glib-object.h>
-#include <gsf/gsf-input-stdio.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-zip.h>
-#include <gsf/gsf-input-memory.h>
-
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

@@ -27,8 +27,6 @@
 #include "ut_std_vector.h"
 #include "pd_Document.h"
 
-#include <gsf/gsf-input.h>
-
 static std::vector<IE_MergeSniffer *> s_sniffers;
 
 std::vector<IE_MergeSniffer *> & IE_MailMerge::getSniffers()

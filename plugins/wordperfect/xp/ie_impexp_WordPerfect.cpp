@@ -30,7 +30,6 @@
 #endif
 
 #include "ie_impexp_WordPerfect.h"
-#include <gsf/gsf-utils.h>
 
 ABI_PLUGIN_DECLARE("WordPerfect")
 

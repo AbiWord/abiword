@@ -26,9 +26,6 @@
 // Internal includes
 #include <ie_imp_OpenXML.h>
 
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-zip.h>
-
 /**
  * Constructor
  * 

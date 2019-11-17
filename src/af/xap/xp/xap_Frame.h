@@ -43,7 +43,6 @@
 #include "xap_Types.h"
 
 #include "gr_Graphics.h"
-#include <gsf/gsf-input.h>
 
 class XAP_App;
 class XAP_DialogFactory;

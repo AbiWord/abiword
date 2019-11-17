@@ -22,8 +22,9 @@
 #include <string>
 #include "ut_compiler.h"
 ABI_W_NO_CONST_QUAL
+ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
-#include <gsf/gsf-input.h>
+ABI_W_POP
 ABI_W_POP
 #include "ut_types.h"
 

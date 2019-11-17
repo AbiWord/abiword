@@ -38,10 +38,6 @@
 #include "ap_Menu_Id.h"
 
 #include <gtk/gtk.h>
-#include <gsf/gsf-impl-utils.h>
-#include <gsf/gsf-input-memory.h>
-#include <gsf/gsf-output-memory.h>
-#include <gsf/gsf-libxml.h>
 #include <cairo-svg.h>
 
 #define ABI_TYPE_CONTROL_GUI     (abi_control_gui_get_type ())

@@ -26,12 +26,6 @@
 #endif
 
 #include "ie_impGraphic_WPG.h"
-#include <gsf/gsf-utils.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-input-memory.h>
-#include <gsf/gsf-input-stdio.h>
-#include <gsf/gsf-infile-msole.h>
-#include <gsf/gsf-infile-zip.h>
 #include <librevenge-stream/librevenge-stream.h>
 #include "xap_Module.h"
 

@@ -21,10 +21,6 @@
 #ifndef IE_IMP_EPUB_SNIFFER_H_
 #define IE_IMP_EPUB_SNIFFER_H_
 
-#include <gsf/gsf-infile-zip.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-libxml.h>
-
 #include "ie_imp.h"
 #include "ie_imp_EPUB.h"
 

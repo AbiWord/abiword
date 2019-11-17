@@ -42,7 +42,6 @@
 #include <math.h>
 #include <goffice/component/go-component-factory.h>
 #include <goffice/goffice.h>
-#include <gsf/gsf-libxml.h>
 #ifndef G_VALUE_INIT
 #define G_VALUE_INIT { 0, { { 0 } } }
 #endif

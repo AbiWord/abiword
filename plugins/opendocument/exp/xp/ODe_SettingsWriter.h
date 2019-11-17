@@ -25,15 +25,13 @@
 #ifndef _ODE_SETTINGSWRITER_H_
 #define _ODE_SETTINGSWRITER_H_
 
-
-// External includes
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-outfile.h>
-
+#include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
 
 // Abiword classes
 class PD_Document;
-
 
 /**
  * Class holding 1 static member. Its sole duty is to write

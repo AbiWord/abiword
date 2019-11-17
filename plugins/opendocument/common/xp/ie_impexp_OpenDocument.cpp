@@ -20,8 +20,6 @@
  * 02110-1301 USA.
  */
 
-// External includes
-#include <gsf/gsf-utils.h>
 #include <xap_Module.h>
 
 // Internal includes

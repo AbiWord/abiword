@@ -33,8 +33,6 @@
 
 // AbiWord includes
 #include <pp_AttrProp.h>
-#include <gsf/gsf-output-memory.h>
-
 
 /**
  * Constructor

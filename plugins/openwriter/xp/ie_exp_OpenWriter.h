@@ -41,8 +41,6 @@
 #include "ut_stack.h"
 #include "ut_assert.h"
 
-#include <gsf/gsf-output.h>
-
 class IE_Exp_OpenWriter : public IE_Exp
 {
 public:

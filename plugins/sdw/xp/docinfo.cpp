@@ -18,10 +18,10 @@
  */
 
 #include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
 ABI_W_NO_CONST_QUAL
 #include <gsf/gsf.h>
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-infile.h>
+ABI_W_POP
 ABI_W_POP
 
 #include <time.h> // for struct tm and asctime

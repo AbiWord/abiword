@@ -67,12 +67,6 @@
 
 #include "ut_Language.h"
 
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-msole.h>
-#include <gsf/gsf-msole-utils.h>
-#include <gsf/gsf-docprop-vector.h>
-#include <gsf/gsf-meta-names.h>
-
 #ifdef DEBUG
 #define IE_IMP_MSWORD_DUMP
 #include "ie_imp_MsWord_dump.h"

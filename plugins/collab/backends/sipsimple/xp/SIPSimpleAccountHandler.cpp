@@ -16,8 +16,6 @@
  * 02110-1301 USA.
  */
 
-#include <gsf/gsf-utils.h>
-
 #include "pd_Document.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"

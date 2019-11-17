@@ -36,11 +36,6 @@
 #include <OXML_Document.h>
 #include <ie_exp_OpenXML_Listener.h>
 
-// External includes
-#include <gsf/gsf-outfile.h>
-#include <gsf/gsf-outfile-zip.h>
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-output-memory.h>
 #include <string>
 #include <map>
 

@@ -29,7 +29,11 @@
 #include <string.h>
 
 #include <glib.h>
-#include <gsf/gsf-input.h>
+
+#include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

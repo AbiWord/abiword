@@ -58,8 +58,6 @@
 
 #include "ap_Prefs.h"
 
-#include <gsf/gsf-output-gzip.h>
-
 #include <sstream>
 
 // the fileformat that used to be defined here is now defined at the

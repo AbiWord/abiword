@@ -45,7 +45,11 @@
 #include <signal.h>
 #include <X11/Xlib.h>
 #include <glib.h>
-#include <gsf/gsf-output-memory.h>
+
+#include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
 
 #include "ut_debugmsg.h"
 #include "ut_path.h"

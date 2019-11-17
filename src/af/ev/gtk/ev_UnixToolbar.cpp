@@ -41,7 +41,9 @@ ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
 ABI_W_POP
 #include <goffice/gtk/go-combo-box.h>
+ABI_W_NO_DEPRECATED
 #include <goffice/gtk/go-combo-color.h>
+ABI_W_POP
 
 #include "ap_Features.h"
 #include "ut_assert.h"

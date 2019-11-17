@@ -47,9 +47,6 @@
 #include "px_ChangeRecord.h"
 #include "pp_Property.h"
 
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-output.h>
-
 #include <list>
 #include <memory>
 

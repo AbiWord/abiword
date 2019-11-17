@@ -28,9 +28,6 @@
 // Internal includes
 #include "ODe_DefaultStyles.h"
 
-// External includes
-#include <gsf/gsf-output.h>
-
 // Internal classes
 class ODe_Style_Style;
 class ODe_Style_MasterPage;

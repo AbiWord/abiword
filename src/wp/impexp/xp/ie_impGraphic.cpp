@@ -28,8 +28,6 @@
 #include "ut_vector.h"
 
 #include "ut_go_file.h"
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-input-memory.h>
 
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"

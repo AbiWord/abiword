@@ -35,8 +35,6 @@
 #include <string>
 #include <map>
 #include <glib.h>
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-infile.h>
 
 /* \class OXMLi_PackageManager
  * \brief This class wraps around the Open Package libgsf functions.

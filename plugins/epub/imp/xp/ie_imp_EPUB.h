@@ -21,10 +21,6 @@
 #ifndef IE_IMP_EPUB_H_
 #define IE_IMP_EPUB_H_
 
-#include <gsf/gsf-infile-zip.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-libxml.h>
-#include <gsf/gsf-input-memory.h>
 #include <ut_go_file.h>
 #include <stdexcept>
 #include <vector>

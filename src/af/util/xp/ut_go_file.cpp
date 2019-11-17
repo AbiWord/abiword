@@ -32,14 +32,6 @@
 #include <glib/gi18n-lib.h>
 #endif
 #include "ut_go_file.h"
-#include <gsf/gsf-impl-utils.h>
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-input-impl.h>
-#include <gsf/gsf-output-impl.h>
-#include <gsf/gsf-input-memory.h>
-#include <gsf/gsf-output-memory.h>
-#include <gsf/gsf-input-stdio.h>
-#include <gsf/gsf-output-stdio.h>
 #include <glib/gstdio.h>
 #include <libxml/encoding.h>
 
@@ -48,13 +40,7 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
-#ifdef WITH_GSF_INPUT_HTTP
-#include <gsf/gsf-input-http.h>
-#endif
 #include <stdio.h>
-
-#include <gsf/gsf-input-gio.h>
-#include <gsf/gsf-output-gio.h>
 
 #ifdef TOOLKIT_GTK_ALL
 #include <gdk/gdk.h>

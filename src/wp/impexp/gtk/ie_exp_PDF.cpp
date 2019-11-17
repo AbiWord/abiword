@@ -39,8 +39,6 @@
 #include <cairo-svg.h>
 #endif
 
-#include <gsf/gsf-output-memory.h>
-#include <gsf/gsf-input-stdio.h>
 #include <glib/gstdio.h>
 
 #include <unistd.h>

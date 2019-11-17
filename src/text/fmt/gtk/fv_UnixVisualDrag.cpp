@@ -31,12 +31,6 @@
 #include "ie_imp.h"
 #include "ie_imp_RTF.h"
 
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-output.h>
-#include <gsf/gsf-input-memory.h>
-#include <gsf/gsf-output-memory.h>
-#include <gsf/gsf-utils.h>
-
 static const GtkTargetEntry targets[] = {
   { (gchar*)"text/rtf", 0, 0},
   { (gchar*)"text/uri-list",0,0}

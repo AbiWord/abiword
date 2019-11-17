@@ -25,9 +25,6 @@
 // AbiWord includes
 #include <ut_hash.h>
 
-// External includes
-#include <gsf/gsf-output.h>
-
 // AbiWord classes
 class UT_UTF8String;
 

@@ -27,9 +27,6 @@
 #ifndef _IE_EXP_OPENDOCUMENT_H_
 #define _IE_EXP_OPENDOCUMENT_H_
 
-// External includes
-#include <gsf/gsf-output.h>
-
 // AbiWord includes
 #include "ie_exp.h"
 #include "ut_bytebuf.h"

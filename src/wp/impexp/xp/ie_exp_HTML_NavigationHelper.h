@@ -27,7 +27,6 @@
 // External includes
 #include <vector>
 #include <string>
-#include <gsf/gsf-output.h>
 
 // Abiword includes
 #include <pd_Document.h>

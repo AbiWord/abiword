@@ -20,8 +20,11 @@
 
 #include <zlib.h>
 #include <glib.h>
-#include <gsf/gsf-input-gzip.h>
-#include <gsf/gsf-input-memory.h>
+
+#include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
 
 #include "sha1.h"
 #include "gc-pbkdf2-sha1.h"

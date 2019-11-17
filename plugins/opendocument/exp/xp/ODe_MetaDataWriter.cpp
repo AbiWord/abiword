@@ -34,12 +34,7 @@
 #include <ut_string_class.h>
 #include "ut_std_string.h"
 #include <pd_Document.h>
- 
-// External includes
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-outfile.h>
- 
- 
+
 /**
  * 
  */

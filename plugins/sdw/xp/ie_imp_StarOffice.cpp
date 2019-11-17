@@ -22,13 +22,10 @@
 #include <memory.h>
 #include "ut_compiler.h"
 ABI_W_NO_CONST_QUAL
+ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
 ABI_W_POP
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-input-stdio.h>
-#include <gsf/gsf-utils.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-msole.h>
+ABI_W_POP
 
 #include "ut_types.h"
 #include "ut_std_string.h"

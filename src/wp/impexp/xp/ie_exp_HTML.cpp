@@ -29,13 +29,6 @@
 #include "ie_exp_DocRangeListener.h"
 #include "pl_ListenerCoupleCloser.h"
 
-#include <gsf/gsf-outfile.h>
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-outfile-stdio.h>
-#include <gsf/gsf-output-memory.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-input-stdio.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 

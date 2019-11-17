@@ -43,7 +43,9 @@ ABI_W_NO_CONST_QUAL
 #include <gdk/gdk.h>
 ABI_W_POP
 #include <gdk/gdkkeysyms.h>
+ABI_W_NO_DEPRECATED
 #include <goffice/gtk/goffice-gtk.h>
+ABI_W_POP
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"

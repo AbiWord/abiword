@@ -29,10 +29,6 @@
 #include "ODe_Style_Style.h"
 #include "ut_misc.h"
 
-// External includes
-#include <gsf/gsf-outfile.h>
-#include <gsf/gsf-output-memory.h>
-
 /**
  * Constructor
  */

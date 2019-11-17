@@ -38,7 +38,6 @@
 
 // AbiWord includes
 #include <pp_AttrProp.h>
-#include <gsf/gsf-output-memory.h>
 #include <ut_units.h>
 #include <fl_TOCLayout.h>
 #include <pd_DocumentRDF.h>

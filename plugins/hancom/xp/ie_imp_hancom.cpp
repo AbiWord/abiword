@@ -19,10 +19,6 @@
  * 02110-1301 USA.
  */
 
-#include <gsf/gsf-input-stdio.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-msole.h>
-
 #include <memory.h>
 #include "xap_Module.h"
 #include "ie_imp.h"

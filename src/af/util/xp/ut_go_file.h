@@ -30,9 +30,11 @@
 #endif
 
 #include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
 ABI_W_NO_CONST_QUAL
 #include <glib.h>
 #include <gsf/gsf.h>
+ABI_W_POP
 ABI_W_POP
 #include <time.h>
 

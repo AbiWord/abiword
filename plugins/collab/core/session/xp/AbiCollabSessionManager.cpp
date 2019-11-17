@@ -107,11 +107,6 @@
 // importer/exporter includes
 #include "ie_exp.h"
 #include "ie_imp_AbiWord_1.h"
-#include <gsf/gsf-input-gzip.h>
-#include <gsf/gsf-input-memory.h>
-#include <gsf/gsf-output-memory.h>
-#include <gsf/gsf-utils.h>
-#include <gsf/gsf-output-gzip.h>
 
 // packet includes
 #include <packet/xp/AbiCollab_Packet.h>

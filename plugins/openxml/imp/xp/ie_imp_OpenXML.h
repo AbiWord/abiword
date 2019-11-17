@@ -27,9 +27,6 @@
 // AbiWord includes
 #include <ie_imp.h>
 
-// External includes
-#include <gsf/gsf-infile.h>
-
 /**
  * Class used to import OpenXML files
  */

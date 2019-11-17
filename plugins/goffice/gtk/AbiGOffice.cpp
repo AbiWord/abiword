@@ -40,7 +40,6 @@
 #include "AbiGOComponent.h"
 
 #include <goffice/component/go-component-factory.h>
-#include <gsf/gsf-impl-utils.h>
 #include <list>
 #include <string>
 

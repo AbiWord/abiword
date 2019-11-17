@@ -22,8 +22,10 @@
 #ifndef IE_EXP_HTML_H
 #define IE_EXP_HTML_H
 
-// External includes
-#include <gsf/gsf-output.h>
+#include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
 
 class IE_Exp_HTML;
 

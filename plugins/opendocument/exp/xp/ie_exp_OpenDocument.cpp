@@ -48,17 +48,6 @@
 #include "ie_exp_DocRangeListener.h"
 #include "pl_ListenerCoupleCloser.h"
 
-// External includes
-#include <gsf/gsf-outfile.h>
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-outfile-zip.h>
-#include <gsf/gsf-outfile-stdio.h>
-#include <gsf/gsf-output-memory.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-input-stdio.h>
-
-
 #ifdef _WIN32
 #include <io.h>
 #endif

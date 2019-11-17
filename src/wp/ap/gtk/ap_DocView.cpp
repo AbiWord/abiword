@@ -29,7 +29,9 @@
 //#include "at_DocView.h"
 #include "ut_debugmsg.h"
 #include <atk/atk.h>
-#include <gsf/gsf-impl-utils.h>
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
 
 // our parent class
 // static GtkDrawingAreaClass * parent_class = 0;

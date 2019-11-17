@@ -34,6 +34,11 @@
 ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
 ABI_W_POP
+#include <glib/gstdio.h>
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
+#include <goffice/goffice.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -60,9 +65,6 @@ ABI_W_POP
 #include "xap_UnixEncodingManager.h"
 
 #include "gr_UnixCairoGraphics.h"
-#include <glib/gstdio.h>
-#include <gsf/gsf-utils.h>
-#include <goffice/goffice.h>
 
 #include "gr_CairoNullGraphics.h"
 static CairoNull_Graphics * nullgraphics = NULL;

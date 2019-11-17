@@ -37,11 +37,7 @@
 #include <ut_types.h>
 #include <ut_assert.h>
 
-// External includes
 #include <iostream>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-zip.h>
-
 
 /**
  * Constructor

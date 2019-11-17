@@ -22,9 +22,6 @@
 #ifndef ODE_LISTLEVELSTYLE_H_
 #define ODE_LISTLEVELSTYLE_H_
 
-// External includes
-#include <gsf/gsf-output.h>
-
 // AbiWord includes
 #include <ut_string_class.h>
 

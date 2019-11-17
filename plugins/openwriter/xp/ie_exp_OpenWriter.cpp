@@ -19,10 +19,6 @@
  * 02110-1301 USA.
  */
 
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-outfile.h>
-#include <gsf/gsf-outfile-zip.h>
-
 #include <locale.h>
 
 #include "pd_Style.h"

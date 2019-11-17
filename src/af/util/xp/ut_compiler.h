@@ -9,5 +9,9 @@
 _Pragma("GCC diagnostic push") \
 _Pragma("GCC diagnostic ignored \"-Wcast-qual\"")
 
+#define ABI_W_NO_DEPRECATED \
+_Pragma("GCC diagnostic push") \
+_Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+
 #define ABI_W_POP
 _Pragma("GCC diagnostic pop")

@@ -11,8 +11,6 @@
 
 
 #include <goffice/goffice.h>
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-output-memory.h>
 #include <cairo-svg.h>
 #include <lsmdom.h>
 

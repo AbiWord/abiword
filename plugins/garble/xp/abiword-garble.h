@@ -24,7 +24,12 @@
 #include <libxml/xmlwriter.h>
 #include <string>
 #include <vector>
-#include <gsf/gsf-utils.h>
+
+#include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
+
 #include "ut_rand.h"
 #include "ut_jpeg.h"
 #include "ut_go_file.h"
@@ -35,7 +40,6 @@
 #include "xav_View.h"
 #include "ev_EditMethod.h"
 #include "ap_Args.h"
-#include <gsf/gsf-input.h>
 
 using namespace std;
 

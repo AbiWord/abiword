@@ -27,8 +27,6 @@
 #include "ODe_Styles.h"
 #include "ODe_FontFaceDecls.h"
 
-// External includes
-#include <gsf/gsf-output.h>
 #include <stdio.h>
 
 // AbiWord classes

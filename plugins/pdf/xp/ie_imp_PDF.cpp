@@ -28,9 +28,6 @@
 #include "ut_types.h"
 #include "ie_imp_Text.h"
 
-#include <gsf/gsf-input-stdio.h>
-#include <gsf/gsf-output-stdio.h>
-
 #include "xap_Module.h"
 
 #ifdef ABI_PLUGIN_BUILTIN

@@ -27,8 +27,9 @@
 ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
 ABI_W_POP
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-output.h>
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
 
 G_BEGIN_DECLS
 

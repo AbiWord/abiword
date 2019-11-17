@@ -29,9 +29,6 @@
 // Internal includes
 #include "ie_imp_OpenDocument.h"
 
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-zip.h>
-
 /**
  * Constructor
  * 

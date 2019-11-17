@@ -27,7 +27,6 @@
 #include "ut_bytebuf.h"
 
 #include "ut_go_file.h"
-#include <gsf/gsf-output.h>
 
 #define DEFAULT_CHUNK		1024
 #define MIN_CHUNK			256

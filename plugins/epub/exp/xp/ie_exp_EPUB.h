@@ -26,14 +26,6 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-// External includes
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-outfile.h>
-#include <gsf/gsf-outfile-zip.h>
-#include <gsf/gsf-output.h>
-#include <gsf/gsf-libxml.h>
-#include <gsf/gsf-infile-stdio.h>
-#include <gsf/gsf-infile.h>
 // Abiword includes
 #include <ie_exp.h>
 #include <ie_exp_HTML.h>

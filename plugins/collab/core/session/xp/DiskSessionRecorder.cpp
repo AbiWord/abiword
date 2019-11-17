@@ -20,7 +20,6 @@
  * 02110-1301 USA.
  */
 
-#include <gsf/gsf-output-stdio.h>
 #include <account/xp/Buddy.h>
 #include <plugin/xp/AbiCollab_Plugin.h>
 #include "DiskSessionRecorder.h"

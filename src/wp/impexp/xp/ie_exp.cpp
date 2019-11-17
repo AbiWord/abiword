@@ -43,8 +43,6 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 
-#include <gsf/gsf-output-impl.h>
-
 static UT_GenericVector<IE_ExpSniffer *> m_sniffers(20);
 
 /*****************************************************************/

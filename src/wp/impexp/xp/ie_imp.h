@@ -32,7 +32,6 @@
 #include "pd_Document.h"
 
 #include "ut_go_file.h"
-#include <gsf/gsf-input.h>
 
 #if defined(__MINGW32__)
 #undef snprintf

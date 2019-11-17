@@ -26,9 +26,6 @@
 #include <ut_hash.h>
 #include <ut_string_class.h>
 
-// External includes
-#include <gsf/gsf-output.h>
-
 // Internal classes
 class ODe_ListLevelStyle;
 

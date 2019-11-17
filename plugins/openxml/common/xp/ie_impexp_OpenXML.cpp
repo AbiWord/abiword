@@ -20,8 +20,11 @@
  * 02110-1301 USA.
  */
 
-// External includes
-#include <gsf/gsf-utils.h>
+#include "ut_compiler.h"
+ABI_W_NO_DEPRECATED
+#include <gsf/gsf.h>
+ABI_W_POP
+
 #include <xap_Module.h>
 
 // Internal includes
