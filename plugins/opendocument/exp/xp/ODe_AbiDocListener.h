@@ -173,7 +173,7 @@ private:
 				m_pListenerImpl=NULL;
 				m_deleteWhenPop=false;
 			}
-
+        StackCell(const StackCell&) = default;
         StackCell& operator=(const StackCell& sc) {
             this->m_deleteWhenPop = sc.m_deleteWhenPop;
             this->m_pListenerImpl = sc.m_pListenerImpl;

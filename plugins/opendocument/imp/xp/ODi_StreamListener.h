@@ -133,6 +133,7 @@ private:
         }
         // Work around the "return 0" issue of the UT_GenericVector::getNhItem()
         StackCell(UT_uint32 /*i*/) {m_pState=NULL; m_deleteWhenPop=false;}
+        StackCell(const StackCell&) = default;
 
         StackCell& operator=(const StackCell& sc) {
             this->m_deleteWhenPop = sc.m_deleteWhenPop;
