@@ -330,12 +330,11 @@ IE_Imp_RDF_VCard::~IE_Imp_RDF_VCard()
 bool
 IE_Imp_RDF_VCard::pasteFromBufferSS( PD_DocumentRange * pDocRange,
                                      std::stringstream& inputss,
-                                     const char * szEncoding )
+                                     const char * /*szEncoding*/ )
 {
 #ifndef WITH_EVOLUTION_DATA_SERVER
 	UT_UNUSED(pDocRange);
 	UT_UNUSED(inputss);
-	UT_UNUSED(szEncoding);
     UT_DEBUGMSG(("can not parse vcards!\n"));
     return true;
 #else
@@ -473,9 +472,8 @@ static void addCalPropSZ( PD_DocumentRDFMutationHandle m,
 bool
 IE_Imp_RDF_Calendar::pasteFromBufferSS( PD_DocumentRange * pDocRange,
                                         std::stringstream& inputss,
-                                        const char * szEncoding )
+                                        const char * /*szEncoding*/ )
 {
-	UT_UNUSED(szEncoding);
 #ifndef WITH_LIBICAL
 	UT_UNUSED(pDocRange);
 	UT_UNUSED(inputss);
