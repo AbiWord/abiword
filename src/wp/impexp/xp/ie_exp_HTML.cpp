@@ -782,7 +782,7 @@ void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
     }
 }
 
-bool IE_Exp_HTML::hasMathML(const std::string& file)
+bool IE_Exp_HTML::hasMathML(const std::string& file) const
 {
     auto iter = m_mathmlFlags.find(file);
     if (iter != m_mathmlFlags.end())

@@ -4701,7 +4701,7 @@ PTStruxType PD_Document::getStruxType(pf_Frag_Strux* sdh) const
 /*!
  * Returns true if the document as any math or SVG runs within it.
  */
-bool PD_Document::hasMath(void)
+bool PD_Document::hasMath(void) const
 {
 	pf_Frag *  pf = getPieceTable()->getFragments().getFirst();
 	while(pf)

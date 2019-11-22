@@ -201,12 +201,12 @@ class ABI_EXPORT IE_Exp_HTML_DefaultWriterFactory : public IE_Exp_HTML_WriterFac
 {
 public:
     virtual ~IE_Exp_HTML_DefaultWriterFactory() {}
-    IE_Exp_HTML_DefaultWriterFactory(PD_Document *pDocument,
-            XAP_Exp_HTMLOptions &exp_opt);
+    IE_Exp_HTML_DefaultWriterFactory(const PD_Document *pDocument,
+                                     const XAP_Exp_HTMLOptions &exp_opt);
     IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
     IE_Exp_HTML_OutputWriter *pOutputWriter);
 private:
-    XAP_Exp_HTMLOptions &m_exp_opt;
-    PD_Document *m_pDocument;
+    const XAP_Exp_HTMLOptions &m_exp_opt;
+    const PD_Document *m_pDocument;
 };
 #endif

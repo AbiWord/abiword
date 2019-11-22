@@ -632,12 +632,10 @@ void IE_Exp_HTML_HTML4Writer::openHead()
 }
 
 IE_Exp_HTML_DefaultWriterFactory::IE_Exp_HTML_DefaultWriterFactory(
-PD_Document *pDocument,
-XAP_Exp_HTMLOptions& exp_opt):
-		m_exp_opt(exp_opt),
-    m_pDocument(pDocument)
+    const PD_Document *pDocument, const XAP_Exp_HTMLOptions& exp_opt)
+    : m_exp_opt(exp_opt),
+      m_pDocument(pDocument)
 {
-	
 }
 
 IE_Exp_HTML_DocumentWriter *IE_Exp_HTML_DefaultWriterFactory::constructDocumentWriter(
@@ -648,16 +646,15 @@ IE_Exp_HTML_DocumentWriter *IE_Exp_HTML_DefaultWriterFactory::constructDocumentW
 		pWriter = new IE_Exp_HTML_HTML4Writer(pOutputWriter);
 	}
 	else {
-		IE_Exp_HTML_XHTMLWriter *pXhtmlWriter = 
+		IE_Exp_HTML_XHTMLWriter *pXhtmlWriter =
             new IE_Exp_HTML_XHTMLWriter(pOutputWriter);
         pXhtmlWriter->enableAwmlNamespace(m_exp_opt.bAllowAWML);
         pXhtmlWriter->enableXmlDeclaration(m_exp_opt.bDeclareXML);
         pWriter = pXhtmlWriter;
-        
 	}
 
 	pWriter->enablePHP(m_exp_opt.bIsAbiWebDoc);
-    pWriter->enableSVGScript((!m_exp_opt.bMathMLRenderPNG) 
+    pWriter->enableSVGScript((!m_exp_opt.bMathMLRenderPNG)
         && m_pDocument->hasMath());
 	return pWriter;
 }

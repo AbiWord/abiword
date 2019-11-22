@@ -121,7 +121,7 @@ protected:
 	void _createMultipart();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
-	bool hasMathML(const std::string &file);
+	bool hasMathML(const std::string &file) const;
 	static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& sink);
 private:
     // Returns document writer depending on settings

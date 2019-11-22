@@ -552,7 +552,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
                                      fd_Field * &pField);
 	po_Bookmark * 			getBookmark(pf_Frag_Strux* sdh, UT_uint32 offset);
 	pf_Frag *               findBookmark(const char * pName, bool bEnd = false, pf_Frag * pfStart = NULL);
-	bool                    hasMath(void);
+	bool                    hasMath(void) const;
 
 	void					setDontChangeInsPoint(void);
 	void					allowChangeInsPoint(void);
