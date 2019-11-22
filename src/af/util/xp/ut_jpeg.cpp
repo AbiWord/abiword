@@ -163,7 +163,7 @@ bool UT_JPEG_getDimensions(const UT_ConstByteBufPtr & pBB, UT_sint32& iImageWidt
 	/* set the data source */
 	_JPEG_ByteBufSrc (&cinfo, pBB);
 
-	jpeg_read_header(&cinfo, TRUE);
+	jpeg_read_header(&cinfo, static_cast<boolean>(TRUE));
 	jpeg_start_decompress(&cinfo);
 	iImageWidth = cinfo.output_width;
 	iImageHeight = cinfo.output_height;
@@ -192,7 +192,7 @@ bool UT_JPEG_getRGBData(const UT_ConstByteBufPtr & pBB, UT_Byte* pDest,
 	/* set the data source */
 	_JPEG_ByteBufSrc (&cinfo, pBB);
 
-	jpeg_read_header(&cinfo, TRUE);
+	jpeg_read_header(&cinfo, static_cast<boolean>(TRUE));
 	jpeg_start_decompress(&cinfo);
 
 	int row_stride = cinfo.output_width * cinfo.output_components;
