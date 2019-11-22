@@ -46,7 +46,7 @@ public:
 	AP_UnixToolbar_StyleCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 	virtual ~AP_UnixToolbar_StyleCombo(void);
 
-	virtual bool		populate(void);
+	virtual bool		populate(void) override;
 	bool                repopulate(void);
 	const PangoFontDescription* getStyle (const gchar *name);
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);

@@ -36,12 +36,12 @@ public:
 	IE_Exp_MIF_Sniffer (const char * name);
 	virtual ~IE_Exp_MIF_Sniffer () {}
 
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual bool recognizeSuffix(const char * szSuffix) override;
+	virtual bool getDlgLabels(const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructExporter(PD_Document * pDocument,
+										IE_Exp ** ppie) override;
 };
 
 class IE_Exp_MIF : public IE_Exp
@@ -51,7 +51,7 @@ class IE_Exp_MIF : public IE_Exp
 	virtual ~IE_Exp_MIF();
 
 protected:
-	virtual UT_Error	_writeDocument(void);
+	virtual UT_Error _writeDocument(void) override;
 
  private:
 	s_MIF_Listener *	m_pListener;

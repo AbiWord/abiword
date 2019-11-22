@@ -54,7 +54,7 @@ public:
 		UT_ASSERT(m_sSessionId != "");
 	}
 
-	virtual std::string	toStr() const;
+	virtual std::string toStr() const override;
 
 	const std::string&		getSessionId() const
 		{ return m_sSessionId; }
@@ -92,7 +92,7 @@ public:
 	UT_sint32					getAuthorId() const
 		{ return m_iAuthorId; }
 
-	virtual std::string	toStr() const;
+	virtual std::string toStr() const override;
 
 	std::string					m_sZABW;
 	UT_sint32					m_iRev;
@@ -115,7 +115,7 @@ public:
 		UT_ASSERT(m_sSessionId != "");
 	}
 
-	virtual std::string	toStr() const;
+	virtual std::string toStr() const override;
 
 	const std::string&		getSessionId() const
 		{ return m_sSessionId; }
@@ -135,7 +135,7 @@ public:
 		UT_ASSERT(m_sSessionId != "");
 	}
 
-	virtual std::string	toStr() const;
+	virtual std::string toStr() const override;
 
 	const std::string&		getSessionId() const
 		{ return m_sSessionId; }

@@ -35,8 +35,8 @@ class ABI_EXPORT UT_Idle : public UT_Worker
  public:
   virtual ~UT_Idle ();
 
-  virtual void stop(void) = 0;            /* suspend events */
-  virtual void start(void) = 0;           /* resume events */
+  virtual void stop(void) override = 0;            /* suspend events */
+  virtual void start(void) override = 0;           /* resume events */
 
   static UT_Idle * static_constructor (UT_WorkerCallback pCallback, void* pData); /* implemented in platform-specific code */
 

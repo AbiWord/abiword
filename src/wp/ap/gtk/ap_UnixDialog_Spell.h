@@ -36,7 +36,7 @@ public:
 
 	static XAP_Dialog *	static_constructor (XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	virtual void runModal (XAP_Frame * pFrame);
+	virtual void runModal(XAP_Frame * pFrame) override;
 
 	// callbacks can fire these events
 	virtual void onChangeClicked	  (void);

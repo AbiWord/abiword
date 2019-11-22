@@ -118,7 +118,7 @@ public:
 		return rval;
 	}
 
-  virtual UT_Error _loadFile(GsfInput * input)
+  virtual UT_Error _loadFile(GsfInput * input) override
   {
     UT_Error rval = UT_ERROR;
 
@@ -187,27 +187,27 @@ public:
   {
   }
   
-  const IE_SuffixConfidence * getSuffixConfidence ()
+  const IE_SuffixConfidence * getSuffixConfidence() override
   {
 	return IE_Imp_PDF_Sniffer__SuffixConfidence;
   }
 
-  const IE_MimeConfidence * getMimeConfidence ()
+  const IE_MimeConfidence * getMimeConfidence() override
   {
 	return IE_Imp_PDF_Sniffer__MimeConfidence;
   }
 
-  virtual UT_Confidence_t recognizeContents (const char * szBuf,
-					     UT_uint32 /*iNumbytes*/)
+  virtual UT_Confidence_t recognizeContents(const char * szBuf,
+					     UT_uint32 /*iNumbytes*/) override
   {
     if (!strncmp (szBuf, "%PDF-", 5))
       return UT_CONFIDENCE_PERFECT;
     return UT_CONFIDENCE_ZILCH;
   }
 
-  virtual bool getDlgLabels (const char ** pszDesc,
+  virtual bool getDlgLabels(const char ** pszDesc,
 							 const char ** pszSuffixList,
-							 IEFileType * ft)
+							 IEFileType * ft) override
   {
     *pszDesc = "PDF (.pdf)";
     *pszSuffixList = "*.pdf";
@@ -215,8 +215,8 @@ public:
     return true;
   }
 
-  virtual UT_Error constructImporter (PD_Document * pDocument,
-				      IE_Imp ** ppie)
+  virtual UT_Error constructImporter(PD_Document * pDocument,
+				      IE_Imp ** ppie) override
   {
     *ppie = new IE_Imp_PDF(pDocument);
     return UT_OK;

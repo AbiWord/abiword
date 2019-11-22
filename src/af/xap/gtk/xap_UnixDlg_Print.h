@@ -38,15 +38,15 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void runModal(XAP_Frame * pFrame) override;
 
-	virtual GR_Graphics *	getPrinterGraphicsContext(void);
-	virtual void		releasePrinterGraphicsContext(GR_Graphics *);
+	virtual GR_Graphics *	getPrinterGraphicsContext(void) override;
+	virtual void		releasePrinterGraphicsContext(GR_Graphics *) override;
 	void                    setupPrint(void);
 	void                    BeginPrint(GtkPrintContext * context);
 	void                    PrintPage(gint iPage);
-	virtual	void            setPreview(bool b);
-	virtual void            PrintDirectly(XAP_Frame * pFrame, const char * szFilename, const char * szPrinter);
+	virtual	void            setPreview(bool b) override;
+	virtual void            PrintDirectly(XAP_Frame * pFrame, const char * szFilename, const char * szPrinter) override;
 	void                    cleanup(void);
 protected:
 	GR_Graphics  *                m_pPrintGraphics;

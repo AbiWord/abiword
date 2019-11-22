@@ -80,18 +80,18 @@ void setID(AV_ListenerId id)
 			m_lid = id;
 		}
 
-virtual  AV_ListenerType getType(void) { return AV_LISTENER_PLUGIN_EXTRA;}
+virtual  AV_ListenerType getType(void)  override { return AV_LISTENER_PLUGIN_EXTRA;}
 
 AV_ListenerId	getID(void)
 		{
 			return m_lid;
 		}
-virtual bool notify(AV_View * , const AV_ChangeMask )
+virtual bool notify(AV_View * , const AV_ChangeMask ) override
 		{
 		  return false;
 		}
 
-virtual bool notify(AV_View * pAView, const AV_ChangeMask mask, void * pPrivateData)
+virtual bool notify(AV_View * pAView, const AV_ChangeMask mask, void * pPrivateData) override
 		{
 		  if(mask != AV_CHG_BLOCKCHECK)
 		  {

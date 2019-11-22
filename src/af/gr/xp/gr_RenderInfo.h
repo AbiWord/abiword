@@ -87,9 +87,9 @@ class ABI_EXPORT GR_XPItem : public GR_Item
   public:
 	virtual ~GR_XPItem(){};
 
-	virtual GR_ScriptType getType() const {return m_eType;}
-	virtual GR_Item * makeCopy() const {return new GR_XPItem(m_eType);}
-	virtual GRRI_Type getClassId() const {return GRRI_XP;}
+	virtual GR_ScriptType getType() const override {return m_eType;}
+	virtual GR_Item * makeCopy() const override {return new GR_XPItem(m_eType);}
+	virtual GRRI_Type getClassId() const override {return GRRI_XP;}
 
   protected:
 	GR_XPItem():
@@ -270,13 +270,13 @@ class ABI_EXPORT GR_XPRenderInfo : public GR_RenderInfo
 
 	virtual ~GR_XPRenderInfo();
 
-	virtual GRRI_Type getType() const {return GRRI_XP;}
+	virtual GRRI_Type getType() const override {return GRRI_XP;}
 
-	virtual bool append(GR_RenderInfo &ri, bool bReverse = false);
-	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false);
-	virtual bool cut(UT_uint32 offset, UT_uint32 len, bool bReverse = false);
+	virtual bool append(GR_RenderInfo &ri, bool bReverse = false) override;
+	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false) override;
+	virtual bool cut(UT_uint32 offset, UT_uint32 len, bool bReverse = false) override;
 
-	virtual bool isJustified() const {return (m_iJustificationPoints != 0);}
+	virtual bool isJustified() const override {return (m_iJustificationPoints != 0);}
 
 	void prepareToRenderChars();
 

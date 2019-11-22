@@ -76,7 +76,7 @@ public:
   {
   }
 
-  virtual UT_Error _writeDocument(void)
+  virtual UT_Error _writeDocument(void) override
   {
     cairo_t *cr = NULL;
     cairo_surface_t *surface = NULL;

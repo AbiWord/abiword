@@ -33,9 +33,9 @@ public:
 	XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Print(void);
 
-	virtual void					useStart(void);
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
-	virtual void					useEnd(void);
+	virtual void useStart(void) override;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
+	virtual void useEnd(void) override;
 
 	typedef enum { a_VOID, a_OK, a_CANCEL }	tAnswer;
 

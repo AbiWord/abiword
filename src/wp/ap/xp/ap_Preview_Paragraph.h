@@ -116,7 +116,7 @@ class ABI_EXPORT AP_Preview_Paragraph : public XAP_Preview
 				   AP_Dialog_Paragraph::tSpacingState spacing,
 				   UT_BidiCharType dir = UT_BIDI_LTR);
 
-	virtual void draw(const UT_Rect *clip=NULL);
+	virtual void draw(const UT_Rect *clip = NULL) override;
 
  protected:
 

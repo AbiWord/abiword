@@ -9621,11 +9621,11 @@ class ABI_EXPORT FV_View_Insert_symbol_listener : public XAP_Insert_symbol_liste
 	{
 	public:
 
-		void setView( AV_View * pJustFocussedView)
+		virtual void setView( AV_View * pJustFocussedView) override
 			{
 			p_view = static_cast<FV_View *>(pJustFocussedView) ;
 			}
-		bool insertSymbol(UT_UCSChar Char, const char *p_font_name)
+		virtual bool insertSymbol(UT_UCSChar Char, const char *p_font_name) override
 		{
 			UT_return_val_if_fail (p_view != NULL, false);
 
@@ -13527,12 +13527,12 @@ public:
 		{
 		}
 		
-	virtual PD_Document* getMergeDocument () const
+	virtual PD_Document* getMergeDocument() const  override
 		{
 			return m_doc;
 		}
 	
-	virtual bool fireUpdate () 
+	virtual bool fireUpdate() override
 		{
 			// don't process any more data
 			return false;

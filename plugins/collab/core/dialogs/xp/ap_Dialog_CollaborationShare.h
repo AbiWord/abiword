@@ -49,9 +49,9 @@ public:
 	AP_Dialog_CollaborationShare(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_CollaborationShare(void);
 
-	virtual void		runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
-	void				signal(const Event& event, BuddyPtr pSource);
+	virtual void signal(const Event& event, BuddyPtr pSource) override;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 

@@ -118,7 +118,7 @@ public:
 	}
 	bool                doesOverlapBrokenTable(const fp_TableContainer * pBroke) const;
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
-	virtual void		clearScreen(void);
+	virtual void		clearScreen(void) override;
 	void		        clearScreen(bool bNoRecursive);
 	void                getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG,UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot,UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear ) const;
 	bool                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG,bool bDoClear);
@@ -128,22 +128,22 @@ public:
 	fp_VerticalContainer * getColumn(const fp_Container *pCon) const;
 	fp_Container *      getFirstContainerInBrokenTable(const fp_TableContainer * pBroke) const;
 	UT_sint32           wantCellVBreakAt(UT_sint32,UT_sint32) const;
-	virtual void		draw(dg_DrawArgs*);
-	virtual void		draw(GR_Graphics*) {}
-	virtual void        setContainer(fp_Container * pContainer);
-	virtual void        setWidth(UT_sint32 iWidth);
-	virtual void        setHeight(UT_sint32 iHeight);
+	virtual void		draw(dg_DrawArgs*) override;
+	virtual void		draw(GR_Graphics*) override {}
+	virtual void        setContainer(fp_Container * pContainer) override;
+	virtual void        setWidth(UT_sint32 iWidth) override;
+	virtual void        setHeight(UT_sint32 iHeight) override;
 	        void        _drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer *pBroke);
-	virtual bool        isVBreakable(void);
-	virtual bool        isHBreakable(void) {return false;}
-	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
-	virtual fp_ContainerObject * VBreakAt(UT_sint32);
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
-	void                recalcMaxWidth(bool bDontClearIfNeeded = false)
+	virtual bool        isVBreakable(void) override;
+	virtual bool        isHBreakable(void) override {return false;}
+	virtual UT_sint32   wantHBreakAt(UT_sint32) override {return 0;}
+	virtual fp_ContainerObject * VBreakAt(UT_sint32) override;
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return NULL;}
+	virtual void        recalcMaxWidth(bool bDontClearIfNeeded = false) override
 	{ UT_UNUSED(bDontClearIfNeeded); }
-	virtual void        setAssignedScreenHeight(UT_sint32) {}
-	virtual fp_Container * getNextContainerInSection(void) const;
-	virtual fp_Container * getPrevContainerInSection(void) const;
+	virtual void        setAssignedScreenHeight(UT_sint32) override {}
+	virtual fp_Container * getNextContainerInSection(void) const override;
+	virtual fp_Container * getPrevContainerInSection(void) const override;
 	fp_TableContainer * getTopmostTable(void) const;
 	void                extendLeftTop(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextTop);
 	void                extendLeftBot(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextBot);
@@ -364,18 +364,18 @@ public:
 	void                sizeAllocate(fp_Allocation * pAllocate);
     virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y,
 										PT_DocPosition& pos,
-										bool& bBOL, bool& bEOL, bool &isTOC);
+										bool& bBOL, bool& bEOL, bool &isTOC) override;
 	virtual fp_Page *   getPage(void) const;
 	fp_Line *           getFirstLineInColumn(fp_Column * pCol) const;
 	fp_Line *           getLastLineInColumn(fp_Column * pCol) const;
 	void				layout(void);
-	virtual void        setY(UT_sint32 iY);
-	virtual UT_sint32   getHeight(void) const;
-	virtual void        setContainer(fp_Container * pContainer);
-	virtual void		draw(dg_DrawArgs*);
-	virtual void		draw(GR_Graphics*) {}
-	virtual UT_sint32   getMarginBefore(void) const;
-	virtual UT_sint32   getMarginAfter(void) const;
+	virtual void        setY(UT_sint32 iY) override;
+	virtual UT_sint32   getHeight(void) const override;
+	virtual void        setContainer(fp_Container * pContainer) override;
+	virtual void		draw(dg_DrawArgs*) override;
+	virtual void		draw(GR_Graphics*) override {}
+	virtual UT_sint32   getMarginBefore(void) const override;
+	virtual UT_sint32   getMarginAfter(void) const override;
 	void                setAdditionalMargin(UT_sint32 iMarg)
 	{m_iAdditionalMarginAfter = iMarg;}
 	fp_Column *         getBrokenColumn(void) const;
@@ -384,17 +384,17 @@ public:
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots) const;
 	bool                containsAnnotations(void) const;
 	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns) const;
-    virtual void        clearScreen(void);
-	virtual bool        isVBreakable(void);
-	virtual bool        isHBreakable(void) {return false;}
-	virtual UT_sint32   wantVBreakAt(UT_sint32);
-	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
+    virtual void        clearScreen(void) override;
+	virtual bool        isVBreakable(void) override;
+	virtual bool        isHBreakable(void) override {return false;}
+	virtual UT_sint32   wantVBreakAt(UT_sint32) override;
+	virtual UT_sint32   wantHBreakAt(UT_sint32) override {return 0;}
 	UT_sint32           wantVBreakAtNoFootnotes(UT_sint32);
 	UT_sint32           wantVBreakAtWithFootnotes(UT_sint32);
 	UT_sint32           sumFootnoteHeight(void) const;
-	virtual fp_ContainerObject * VBreakAt(UT_sint32);
+	virtual fp_ContainerObject * VBreakAt(UT_sint32) override;
 	void                breakCellsAt(UT_sint32 vpos);
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return NULL;}
 	UT_sint32           getBrokenNumber(void) const;
 	void                setToAllocation(void);
 	void                tableAttach(fp_CellContainer * pCell);
@@ -414,8 +414,8 @@ public:
 	UT_sint32           getXOfColumn(UT_sint32 col) const;
 	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column) const;
 	fp_CellContainer *  getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 column) const;
-	virtual fp_Container * getNextContainerInSection(void) const;
-	virtual fp_Container * getPrevContainerInSection(void) const;
+	virtual fp_Container * getNextContainerInSection(void) const override;
+	virtual fp_Container * getPrevContainerInSection(void) const override;
 	fp_TableContainer * getMasterTable(void) const
 		{ return m_pMasterTable; }
 	bool                isThisBroken(void) const;
@@ -473,12 +473,12 @@ public:
 		{
 	      m_iRowHeight = iHeight;
 		}
-	virtual void setLastWantedVBreak(UT_sint32 iBreakAt)
+	virtual void setLastWantedVBreak(UT_sint32 iBreakAt) override
 		{m_iLastWantedVBreak = iBreakAt;}
-	virtual UT_sint32 getLastWantedVBreak(void) const
+	virtual UT_sint32 getLastWantedVBreak(void) const override
 		{return m_iLastWantedVBreak;}
-	virtual fp_Container * getFirstBrokenContainer() const;
-	virtual void deleteBrokenAfter(bool bClearFirst);
+	virtual fp_Container * getFirstBrokenContainer() const override;
+	virtual void deleteBrokenAfter(bool bClearFirst) override;
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -492,7 +492,7 @@ private:
     void                    _size_allocate_pass1(void);
 	void                    _size_allocate_pass2(void);
 	UT_uint32 				_getBottomOfLastContainer(void) const;
-	void					_drawBoundaries(dg_DrawArgs* pDA);
+	virtual void			_drawBoundaries(dg_DrawArgs* pDA) override;
 	void					_drawBrokenBoundaries(dg_DrawArgs* pDA);
 	void					_brokenDraw(dg_DrawArgs* pDA);
 

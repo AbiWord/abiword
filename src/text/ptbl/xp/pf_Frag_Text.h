@@ -60,7 +60,7 @@ public:
 	void					adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength);
     void                    setField(fd_Field * pField);
 
-	virtual bool            usesXID() const {return false;}
+	virtual bool            usesXID() const override {return false;}
 
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -69,7 +69,7 @@ public:
     std::string            toString() const;
 
 protected:
-	virtual bool            _isContentEqual(const pf_Frag & f2) const;
+	virtual bool            _isContentEqual(const pf_Frag & f2) const override;
 	PT_BufIndex				m_bufIndex;
 };
 

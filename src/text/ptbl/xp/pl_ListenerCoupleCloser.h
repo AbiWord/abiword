@@ -41,7 +41,7 @@ struct ABI_EXPORT PL_FinishingListener : public PL_Listener
     virtual bool isFinished() = 0;
 
     virtual bool		change(fl_ContainerLayout* /*sfh*/,
-                               const PX_ChangeRecord * /*pcr*/)
+                               const PX_ChangeRecord * /*pcr*/) override
     {return true;}
     virtual bool		insertStrux(fl_ContainerLayout* /*sfh*/,
                                     const PX_ChangeRecord * /*pcr*/,
@@ -49,9 +49,9 @@ struct ABI_EXPORT PL_FinishingListener : public PL_Listener
                                     PL_ListenerId /*lid*/,
                                     void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
                                                                 PL_ListenerId lid,
-                                                                fl_ContainerLayout* sfhNew))
+                                                                fl_ContainerLayout* sfhNew)) override
     { return true;}
-    virtual bool		signal(UT_uint32 /*iSignal*/)
+    virtual bool		signal(UT_uint32 /*iSignal*/) override
     { return true;}
 };
 
@@ -145,12 +145,12 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
             : m_self(self)
         {}
 
-        virtual bool isFinished();
+        virtual bool isFinished() override;
         virtual bool populate( fl_ContainerLayout* sfh,
-                               const PX_ChangeRecord * pcr );
+                               const PX_ChangeRecord * pcr ) override;
         virtual bool populateStrux( pf_Frag_Strux* sdh,
                                     const PX_ChangeRecord * pcr,
-                                    fl_ContainerLayout* * psfh);
+                                    fl_ContainerLayout* * psfh) override;
     };
     AfterContentListener m_AfterContentListener;
 
@@ -161,12 +161,12 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
             : m_self(self)
         {}
 
-        virtual bool isFinished();
+        virtual bool isFinished() override;
         virtual bool populate( fl_ContainerLayout* sfh,
-                               const PX_ChangeRecord * pcr );
+                               const PX_ChangeRecord * pcr ) override;
         virtual bool populateStrux( pf_Frag_Strux* sdh,
                                     const PX_ChangeRecord * pcr,
-                                    fl_ContainerLayout* * psfh);
+                                    fl_ContainerLayout* * psfh) override;
     };
     BeforeContentListener m_BeforeContentListener;
 
@@ -177,18 +177,18 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
             : m_self(self)
         {}
 
-        virtual bool isFinished()
+        virtual bool isFinished() override
         {
             return true;
         }
         virtual bool populate( fl_ContainerLayout*,
-                               const PX_ChangeRecord* )
+                               const PX_ChangeRecord* ) override
         {
             return false;
         }
         virtual bool populateStrux( pf_Frag_Strux*,
                                     const PX_ChangeRecord*,
-                                    fl_ContainerLayout**)
+                                    fl_ContainerLayout**) override
         {
             return false;
         }
@@ -205,10 +205,10 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
     void          reset();
 
     virtual bool populate( fl_ContainerLayout* sfh,
-                           const PX_ChangeRecord * pcr );
+                           const PX_ChangeRecord * pcr ) override;
     virtual bool populateStrux( pf_Frag_Strux* sdh,
                                 const PX_ChangeRecord * pcr,
-                                fl_ContainerLayout* * psfh);
+                                fl_ContainerLayout* * psfh) override;
 
     PL_FinishingListener* getAfterContentListener();
     PL_FinishingListener* getBeforeContentListener();
@@ -216,7 +216,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
 
 
     virtual bool		change(fl_ContainerLayout* /*sfh*/,
-                               const PX_ChangeRecord * /*pcr*/)
+                               const PX_ChangeRecord * /*pcr*/) override
     {return true;}
 
     virtual bool		insertStrux(fl_ContainerLayout* /*sfh*/,
@@ -225,10 +225,10 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
                                     PL_ListenerId /*lid*/,
                                     void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
                                                                 PL_ListenerId lid,
-                                                                fl_ContainerLayout* sfhNew))
+                                                                fl_ContainerLayout* sfhNew)) override
     { return true;}
 
-	virtual bool		signal(UT_uint32 /*iSignal*/)
+	virtual bool		signal(UT_uint32 /*iSignal*/) override
     { return true;}
 
   private:

@@ -68,55 +68,55 @@ public:
 
     // Listener methods
 
-    virtual void openTable(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
+    virtual void openTable(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
 
-    virtual void closeCell(ODe_ListenerAction& rAction);
-    virtual void closeSection(ODe_ListenerAction& rAction);
+    virtual void closeCell(ODe_ListenerAction& rAction) override;
+    virtual void closeSection(ODe_ListenerAction& rAction) override;
 
-    virtual void openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
-    virtual void closeBlock();
+    virtual void openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
+    virtual void closeBlock() override;
 
-    virtual void openSpan(const PP_AttrProp* pAP);
-    virtual void closeSpan();
+    virtual void openSpan(const PP_AttrProp* pAP) override;
+    virtual void closeSpan() override;
 
-    virtual void openFrame(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
-    virtual void closeFrame(ODe_ListenerAction& rAction);
+    virtual void openFrame(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
+    virtual void closeFrame(ODe_ListenerAction& rAction) override;
 
-    virtual void openField(const fd_Field* field, const UT_UTF8String& fieldType, const UT_UTF8String& fieldValue);
-    virtual void closeField(const UT_UTF8String& fieldType);
+    virtual void openField(const fd_Field* field, const UT_UTF8String& fieldType, const UT_UTF8String& fieldValue) override;
+    virtual void closeField(const UT_UTF8String& fieldType) override;
 
-    virtual void openFootnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
-    virtual void closeFootnote(ODe_ListenerAction& rAction);
+    virtual void openFootnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
+    virtual void closeFootnote(ODe_ListenerAction& rAction) override;
 
-    virtual void openEndnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
-    virtual void closeEndnote(ODe_ListenerAction& rAction);
+    virtual void openEndnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
+    virtual void closeEndnote(ODe_ListenerAction& rAction) override;
 
-    virtual void openAnnotation( const PP_AttrProp* pAP, const std::string& name, PD_Document* doc = 0 );
-    virtual void closeAnnotation( const std::string& name );
-    virtual void endAnnotation( const std::string& name );
+    virtual void openAnnotation(const PP_AttrProp* pAP, const std::string& name, PD_Document* doc = 0) override;
+    virtual void closeAnnotation(const std::string& name) override;
+    virtual void endAnnotation(const std::string& name) override;
 
-    virtual void openTOC(const PP_AttrProp* pAP);
-    virtual void closeTOC();
+    virtual void openTOC(const PP_AttrProp* pAP) override;
+    virtual void closeTOC() override;
 
-    virtual void openBookmark(const PP_AttrProp* pAP);
-    virtual void closeBookmark(const PP_AttrProp* pAP);
-    virtual void closeBookmark(UT_UTF8String &sBookmarkName);
+    virtual void openBookmark(const PP_AttrProp* pAP) override;
+    virtual void closeBookmark(const PP_AttrProp* pAP) override;
+    virtual void closeBookmark(UT_UTF8String &sBookmarkName) override;
 
-    virtual void openHyperlink(const PP_AttrProp* pAP);
-    virtual void closeHyperlink();
+    virtual void openHyperlink(const PP_AttrProp* pAP) override;
+    virtual void closeHyperlink() override;
 
-    void openRDFAnchor(const PP_AttrProp* pAP);
-    void closeRDFAnchor(const PP_AttrProp* pAP);
+    virtual void openRDFAnchor(const PP_AttrProp* pAP) override;
+    virtual void closeRDFAnchor(const PP_AttrProp* pAP) override;
 
-    virtual void insertText(const UT_UTF8String& rText);
+    virtual void insertText(const UT_UTF8String& rText) override;
 
-    virtual void insertLineBreak();
-    virtual void insertColumnBreak();
-    virtual void insertPageBreak();
-    virtual void insertTabChar();
+    virtual void insertLineBreak() override;
+    virtual void insertColumnBreak() override;
+    virtual void insertPageBreak() override;
+    virtual void insertTabChar() override;
 
     virtual void insertInlinedImage(const gchar* pImageName,
-                                    const PP_AttrProp* pAP);
+                                    const PP_AttrProp* pAP) override;
 
     virtual void insertPositionedImage(const gchar* pImageName,
                                     const PP_AttrProp* pAP);

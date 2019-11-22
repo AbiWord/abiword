@@ -34,7 +34,7 @@ public:
 	AP_UnixDialog_Border_Shading(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Border_Shading(void);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			runModeless(XAP_Frame * pFrame) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -46,17 +46,17 @@ public:
 	void                    event_ShadingOffsetChanged(void);
 	void					event_shadingPatternChange(void);
 
-	virtual void           	setBorderThicknessInGUI(const std::string & sThick);
-	virtual void            setBorderColorInGUI(const UT_RGBColor & clr);
-	virtual void            setBorderStyleInGUI(const std::string & sStyle);
-	virtual void			setShadingColorInGUI(const UT_RGBColor & clr);
-	virtual void			setShadingPatternInGUI(const std::string & sPattern);
-	virtual void			setShadingOffsetInGUI(const std::string & sOffset);
+	virtual void           	setBorderThicknessInGUI(const std::string & sThick) override;
+	virtual void            setBorderColorInGUI(const UT_RGBColor & clr) override;
+	virtual void            setBorderStyleInGUI(const std::string & sStyle) override;
+	virtual void		setShadingColorInGUI(const UT_RGBColor & clr) override;
+	virtual void		setShadingPatternInGUI(const std::string & sPattern) override;
+	virtual void		setShadingOffsetInGUI(const std::string & sOffset) override;
 
-	virtual void           	setSensitivity(bool bsens);
-	virtual void           	destroy(void);
-	virtual void            activate(void);
-	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
+	virtual void           	setSensitivity(bool bsens) override;
+	virtual void           	destroy(void) override;
+	virtual void            activate(void) override;
+	virtual void            notifyActiveFrame(XAP_Frame * pFrame) override;
 	const GtkWidget 	  * getWindow (void) const { return m_windowMain; }
 
 protected:

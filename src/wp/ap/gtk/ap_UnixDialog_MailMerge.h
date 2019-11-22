@@ -32,9 +32,9 @@ public:
 	AP_UnixDialog_MailMerge(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_MailMerge(void);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void activate(void) {XAP_gtk_window_raise(m_windowMain);}
-	virtual void destroy(void) {modeless_cleanup();}
+	virtual void runModeless(XAP_Frame * pFrame) override;
+	virtual void activate(void) override {XAP_gtk_window_raise(m_windowMain);}
+	virtual void destroy(void) override {modeless_cleanup();}
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -44,7 +44,7 @@ public:
 	void event_Close();
 
 protected:
-	virtual void setFieldList();
+	virtual void setFieldList() override;
 
 private:
 

@@ -175,8 +175,8 @@ public:
 	void								stopRecording();
 
 	// mouse listener functionality
-	virtual void						signalMouse(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos);
-	virtual void						removeMouse(EV_Mouse* pMouse);
+	virtual void signalMouse(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos) override;
+	virtual void removeMouse(EV_Mouse* pMouse) override;
 
 protected:
 	// TODO: make all Packets shared pointers, so this isn't needed anymore

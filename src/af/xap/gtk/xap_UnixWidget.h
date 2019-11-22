@@ -37,33 +37,33 @@ public:
 		{ }
 
 	/** set the widget enabled/disabled state */
-	virtual void setState(bool enabled);
+	virtual void setState(bool enabled) override;
 	/** set the widget enabled/disabled state */
-	virtual bool getState(void);
+	virtual bool getState(void) override;
 
 	/** set the widget visible state */
-	virtual void setVisible(bool visible);
+	virtual void setVisible(bool visible) override;
 	/** get the widget visible state */
-	virtual bool getVisible(void);
+	virtual bool getVisible(void) override;
 
 	/** set the widget int value */
-	virtual void setValueInt(int val);
+	virtual void setValueInt(int val) override;
 	/** get the widget int value */
-	virtual int getValueInt(void);
+	virtual int getValueInt(void) override;
 
 	/** set the widget value as string */
-	virtual void setValueString(const UT_UTF8String &val);
+	virtual void setValueString(const UT_UTF8String &val) override;
 	/** get the widget value as string */
-	virtual void getValueString(UT_UTF8String &val);
+	virtual void getValueString(UT_UTF8String &val) override;
 
 	/** set the widget value as float */
-	virtual void setValueFloat(float val);
+	virtual void setValueFloat(float val) override;
 	/** get the widget value as float */
-	virtual float getValueFloat(void);
+	virtual float getValueFloat(void) override;
 
 	/** set the widget label */
-	virtual void setLabel(const UT_UTF8String &val);
-	virtual void setLabel(const std::string &val);
+	virtual void setLabel(const UT_UTF8String &val) override;
+	virtual void setLabel(const std::string &val) override;
 
 	void setData(const std::string & data)
 	{

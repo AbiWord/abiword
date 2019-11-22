@@ -32,16 +32,16 @@ public:
 
   virtual ~IE_Imp_OpenXML_Sniffer ();
 
-  virtual const IE_SuffixConfidence * getSuffixConfidence ();
-  virtual const IE_MimeConfidence * getMimeConfidence ();
-  virtual UT_Confidence_t recognizeContents (GsfInput * input);
+  virtual const IE_SuffixConfidence * getSuffixConfidence () override;
+  virtual const IE_MimeConfidence * getMimeConfidence () override;
+  virtual UT_Confidence_t recognizeContents (GsfInput * input) override;
 
   virtual UT_Error constructImporter (PD_Document * pDocument,
-				      IE_Imp ** ppie) ;
+				      IE_Imp ** ppie) override;
 
   virtual bool getDlgLabels (const char ** szDesc,
 			     const char ** szSuffixList,
-			     IEFileType * ft) ;
+			     IEFileType * ft) override;
 };
 
 #endif //_IE_IMP_OPENXMLSNIFFER_H_

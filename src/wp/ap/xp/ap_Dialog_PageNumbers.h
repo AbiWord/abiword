@@ -37,7 +37,7 @@ class ABI_EXPORT AP_Dialog_PageNumbers : public XAP_Dialog_NonPersistent
 	AP_Dialog_PageNumbers(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_PageNumbers(void);
 
-	virtual void	runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	// answer from dialog
 	typedef enum { a_OK, a_CANCEL } tAnswer;
@@ -85,7 +85,7 @@ public:
 	void setAlign(AP_Dialog_PageNumbers::tAlign);
 
 	// where all the zoom-specific drawing happens
-	void	draw(const UT_Rect *clip=NULL);
+	void draw(const UT_Rect *clip = NULL) override;
 
 protected:
 	AP_Dialog_PageNumbers::tControl m_control;

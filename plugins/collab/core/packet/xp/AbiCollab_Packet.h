@@ -136,15 +136,15 @@ class AccountHandler;
  *************************************************************/
 
 #define DECLARE_ABSTRACT_PACKET(Class)									\
-	virtual PClassType getClassType() const { return PCT_##Class; }
+	virtual PClassType getClassType() const override { return PCT_##Class; }
 
 #define DECLARE_SERIALIZABLE_PACKET										\
-	virtual void serialize(Archive & ar);
+	virtual void serialize(Archive & ar) override;
 
 #define DECLARE_PACKET(Class)											\
 	DECLARE_ABSTRACT_PACKET(Class)										\
 	DECLARE_SERIALIZABLE_PACKET											\
-	virtual Packet* clone() const { return new Class( *this ); }		\
+	virtual Packet* clone() const override { return new Class( *this ); }		\
 	static Packet* create() { return new Class(); }
 
 #define REGISTER_PACKET(Class)											\
@@ -159,7 +159,7 @@ class AccountHandler;
 class Packet
 {
 public:
-	DECLARE_ABSTRACT_PACKET(Packet);
+	virtual PClassType getClassType() const { return PCT_Packet; }
 
 	Packet();
 	Packet( AbiCollab* session );
@@ -224,7 +224,7 @@ public:
 	void setDocUUID(const std::string& sDocUUID)
 		{ m_sDocUUID = sDocUUID; }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 private:
 	std::string			m_sSessionId;
@@ -272,11 +272,11 @@ public:
 
 	PX_ChangeRecord::PXType getPXType() const			{ return m_cType; }
 
-	virtual PT_DocPosition getPos() const				{ return m_iPos; }
-	virtual UT_sint32 getLength() const					{ return m_iLength; }
-	virtual UT_sint32 getAdjust() const					{ return m_iAdjust; }
-	virtual UT_sint32 getRev() const 					{ return m_iRev; }
-	virtual UT_sint32 getRemoteRev(void) const			{ return m_iRemoteRev; }
+	virtual PT_DocPosition getPos() const  override		{ return m_iPos; }
+	virtual UT_sint32 getLength() const override		{ return m_iLength; }
+	virtual UT_sint32 getAdjust() const override		{ return m_iAdjust; }
+	virtual UT_sint32 getRev() const override		{ return m_iRev; }
+	virtual UT_sint32 getRemoteRev(void) const override	{ return m_iRemoteRev; }
 
 	void setPos( UT_sint32 iPos )						{ m_iPos = iPos; }
 	void setLength( UT_sint32 iLength )					{ m_iLength = iLength; }
@@ -284,7 +284,7 @@ public:
 	void setRev( UT_sint32 iRev )						{ m_iRev = iRev; }
 	void setRemoteRev( UT_sint32 iRemoteRev )			{ m_iRemoteRev = iRemoteRev; }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 private:
 	PX_ChangeRecord::PXType		m_cType;
@@ -328,7 +328,7 @@ public:
 	std::map<UT_UTF8String,UT_UTF8String>& getAttMap() 				{ return m_sAtts; }
 	gchar* getAttribute( const gchar* attr ) const;
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 protected:
 	gchar**									m_szAtts;
@@ -357,7 +357,7 @@ public:
 	, m_sText("")
 	{}
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 	// XXX: make proper setters/getters when done!
 	UT_UTF8String				m_sText;
@@ -378,7 +378,7 @@ public:
 	, m_eStruxType(PTStruxType(0)) // FIXME: 0 is not a good initializer
 	{}
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 	// XXX: make proper setters/getters when done!
 	PTStruxType					m_eStruxType;
@@ -400,7 +400,7 @@ public:
 	, m_eStruxType(PTStruxType(0)) // FIXME: 0 is not a good initializer
 	{}
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 	// XXX: make proper setters/getters when done!
 	PTStruxType					m_eStruxType;
@@ -421,7 +421,7 @@ public:
 	, m_eObjectType(PTObjectType(0)) // FIXME: 0 is not a good initializer
 	{}
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 	PTObjectType getObjectType() const
 	{ return m_eObjectType; }
@@ -447,7 +447,7 @@ public:
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	{}
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 private:
 };
@@ -467,7 +467,7 @@ public:
 	, m_bTokenSet(false)
 	{}
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 	// XXX: make proper setters/getters when done!
 	std::vector<char>			m_vecData;
@@ -490,7 +490,7 @@ public:
 	: ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	{}
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 	// XXX: make proper setters/getters when done!
 	UT_Byte							m_iGLOBType;
@@ -511,13 +511,13 @@ public:
 
 	void addPacket(SessionPacket* pPacket);
 
-	virtual PT_DocPosition getPos() const;
-	virtual UT_sint32 getLength() const;
-	virtual UT_sint32 getAdjust() const;
-	virtual UT_sint32 getRev() const;
-	virtual UT_sint32 getRemoteRev(void) const;
+	virtual PT_DocPosition getPos() const override;
+	virtual UT_sint32 getLength() const override;
+	virtual UT_sint32 getAdjust() const override;
+	virtual UT_sint32 getRev() const override;
+	virtual UT_sint32 getRemoteRev(void) const override;
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 private:
 	std::vector<SessionPacket*>		m_pPackets;
@@ -533,7 +533,7 @@ public:
 	UT_uint32 getSignalType() const
 		{ return m_iSignal; }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 private:
 	UT_uint32	m_iSignal;
@@ -549,7 +549,7 @@ public:
 	UT_sint32			getRev() const
 		{ return m_iRev; }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 private:
 	UT_sint32			m_iRev;
@@ -565,7 +565,7 @@ public:
 	UT_sint32			getRev() const
 		{ return m_iRev; }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 private:
 	UT_sint32			m_iRev;
@@ -604,7 +604,7 @@ public:
 	const std::vector<std::string>& getBuddyIdentifiers() const
 		{ return m_vBuddyIdentifiers; }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 private:
 	bool						m_bPromote;
@@ -619,7 +619,7 @@ public:
 	SessionTakeoverAckPacket(const std::string& sSessionId, const std::string& sDocUUID)
 		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 };
 
 class SessionFlushedPacket : public AbstractSessionTakeoverPacket
@@ -630,7 +630,7 @@ public:
 	SessionFlushedPacket(const std::string& sSessionId, const std::string& sDocUUID)
 		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 };
 
 class SessionReconnectRequestPacket : public AbstractSessionTakeoverPacket
@@ -641,7 +641,7 @@ public:
 	SessionReconnectRequestPacket(const std::string& sSessionId, const std::string& sDocUUID)
 		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 };
 
 class SessionReconnectAckPacket : public AbstractSessionTakeoverPacket
@@ -655,7 +655,7 @@ public:
 	UT_sint32					getRev() const
 		{ return m_iRev; }
 
-	virtual std::string toStr() const;
+	virtual std::string toStr() const override;
 
 private:
 	UT_sint32					m_iRev;

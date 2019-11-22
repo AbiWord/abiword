@@ -34,7 +34,7 @@ public:
 	AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_InsertTable(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 	typedef enum { b_AUTOSIZE = 0, b_FIXEDSIZE } columnType;

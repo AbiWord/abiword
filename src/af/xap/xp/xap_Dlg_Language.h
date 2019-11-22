@@ -67,7 +67,7 @@ public:
 	XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Language(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 	void							setLanguageProperty(const gchar * pLangProp);
 	bool							getChangedLangProperty(const gchar ** pszLangProp) const;
 

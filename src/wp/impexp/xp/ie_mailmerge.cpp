@@ -431,7 +431,7 @@ public:
 		{
 		}
 	
-	virtual void startElement (const gchar * name, const gchar ** atts) 
+	virtual void startElement (const gchar * name, const gchar ** atts) override
 		{
 			mCharData.clear ();
 			mKey.clear ();
@@ -446,7 +446,7 @@ public:
 			}
 		}
 	
-	virtual void endElement (const gchar * name)
+	virtual void endElement (const gchar * name) override
 		{
 			if (!strcmp(name, "awmm:field") && mLooping) {      
 				if (m_vecHeaders)
@@ -465,7 +465,7 @@ public:
 			mKey.clear ();
 		}
 	
-	virtual void charData (const gchar * buffer, int length)
+	virtual void charData (const gchar * buffer, int length) override
 		{
 			if (buffer && length && mAcceptingText && mLooping) {
 				std::string buf(buffer, length);
@@ -473,7 +473,7 @@ public:
 			}
 		}
 
-	virtual UT_Error mergeFile(const char* szFilename)
+	virtual UT_Error mergeFile(const char* szFilename) override
 		{
 			UT_XML default_xml;
 
@@ -484,7 +484,7 @@ public:
 			return default_xml.parse (sFile.c_str());
 		}
 	
-	virtual UT_Error getHeaders (const char * szFilename, std::vector<std::string> & out_vec) {
+	virtual UT_Error getHeaders (const char * szFilename, std::vector<std::string> & out_vec) override {
 		UT_XML default_xml;
 		
 		m_vecHeaders = &out_vec;
@@ -544,28 +544,28 @@ public:
 	IE_XMLMerge_Sniffer(){}
 	virtual ~IE_XMLMerge_Sniffer (){}
 	
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
-											   UT_uint32 /*iNumbytes*/){
+	virtual UT_Confidence_t recognizeContents (const char * szBuf,
+											   UT_uint32 /*iNumbytes*/) override {
 		if (strstr(szBuf, "http://www.abisource.com/mailmerge/1.0") != 0 &&
 			strstr(szBuf, "merge-set") != 0)
 			return UT_CONFIDENCE_PERFECT;
 		return UT_CONFIDENCE_ZILCH;
 	}
 	
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) {
+	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) override {
 		return (!g_ascii_strcasecmp (szSuffix, ".xml") ? UT_CONFIDENCE_SOSO : UT_CONFIDENCE_POOR);
 	}
 	
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEMergeType * ft){
+							   IEMergeType * ft) override {
 		*szDesc = "XML Mail Merge (*.xml)";
 		*szSuffixList = "*.xml";
 		*ft = getFileType();
 		return true;
 	}
 	
-	virtual UT_Error constructMerger (IE_MailMergePtr & pie) {
+	virtual UT_Error constructMerger (IE_MailMergePtr & pie) override {
 		pie = IE_MailMergePtr(new IE_MailMerge_XML_Listener());
 		return UT_OK;
 	}
@@ -589,7 +589,7 @@ public:
 		{
 		}
 
-	UT_Error mergeFile(const char * szFilename, bool justHeaders) 
+	UT_Error mergeFile(const char * szFilename, bool justHeaders)
 		{
 		  UT_ByteBuf item;
 
@@ -668,11 +668,11 @@ public:
 		  return UT_OK;
 		}
 
-	virtual UT_Error mergeFile(const char * szFilename) {
+	virtual UT_Error mergeFile(const char * szFilename) override {
 	  return mergeFile(szFilename, false);
 	}
 
-	virtual UT_Error getHeaders (const char * szFilename, std::vector<std::string> & out_vec) {
+	virtual UT_Error getHeaders (const char * szFilename, std::vector<std::string> & out_vec) override {
 	  out_vec.clear();
 	  UT_Error err = mergeFile(szFilename, true);
 
@@ -734,8 +734,8 @@ public:
 
 	virtual ~IE_Delimiter_Sniffer (){}
 	
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
-											   UT_uint32 /*iNumbytes*/){
+	virtual UT_Confidence_t recognizeContents (const char * szBuf,
+											   UT_uint32 /*iNumbytes*/) override {
 		char delim[2];
 		delim[0] = m_delim;
 		delim[1] = '\0';
@@ -745,14 +745,14 @@ public:
 		return UT_CONFIDENCE_ZILCH;
 	}
 	
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) {
+	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) override {
 	  // skip over "*"
 		return (!g_ascii_strcasecmp (szSuffix, (m_suffix.c_str() + 1)) ? UT_CONFIDENCE_PERFECT : UT_CONFIDENCE_POOR);
 	}
 
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEMergeType * ft){
+							   IEMergeType * ft) override {
 		*szDesc = m_desc.c_str();
 		*szSuffixList = m_suffix.c_str();
 		*ft = getFileType();
@@ -760,7 +760,7 @@ public:
 		return true;
 	}
 	
-	virtual UT_Error constructMerger (IE_MailMergePtr & pie) {
+	virtual UT_Error constructMerger (IE_MailMergePtr & pie) override {
 		pie = IE_MailMergePtr(new IE_MailMerge_Delimiter_Listener(m_delim));
 		return UT_OK;
 	}

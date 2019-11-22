@@ -147,7 +147,7 @@ public:
   FV_Caret_Listener(XAP_Frame * pFrame) : m_pFrame (pFrame) {}
   virtual ~FV_Caret_Listener (){}
 
-  virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
+  virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override
   {
 	  GR_Graphics *pG = static_cast<FV_View *>(pView)->getGraphics();
 
@@ -176,7 +176,7 @@ public:
 	  return false;
   }
 
-  virtual AV_ListenerType    getType(void) {return AV_LISTENER_CARET;}
+  virtual AV_ListenerType    getType(void) override {return AV_LISTENER_CARET;}
 
 private:
   XAP_Frame   * m_pFrame;

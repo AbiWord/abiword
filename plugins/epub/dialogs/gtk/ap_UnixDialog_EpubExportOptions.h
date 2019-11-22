@@ -31,7 +31,7 @@ public:
     AP_UnixDialog_EpubExportOptions(XAP_DialogFactory * pDlgFactory,
             XAP_Dialog_Id id);
     virtual ~AP_UnixDialog_EpubExportOptions(void);
-    virtual void runModal(XAP_Frame * pFrame);
+    virtual void runModal(XAP_Frame * pFrame) override;
     static XAP_Dialog * static_constructor(XAP_DialogFactory *pDF,
             XAP_Dialog_Id id);
 

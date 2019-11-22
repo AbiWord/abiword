@@ -32,15 +32,15 @@ public:
 
   virtual ~IE_Exp_OpenXML_Sniffer ();
 
-  virtual bool recognizeSuffix (const char* szSuffix);
+  virtual bool recognizeSuffix (const char* szSuffix) override;
 
-  virtual UT_Confidence_t supportsMIME(const char * szMIME);
+  virtual UT_Confidence_t supportsMIME(const char * szMIME) override;
   virtual UT_Error constructExporter (PD_Document * pDocument,
-				      IE_Exp ** ppie) ;
+				      IE_Exp ** ppie) override;
 
   virtual bool getDlgLabels (const char ** szDesc,
 			     const char ** szSuffixList,
-			     IEFileType * ft) ;
+			     IEFileType * ft) override;
 };
 
 #endif //_IE_EXP_OPENXMLSNIFFER_H_

@@ -31,10 +31,10 @@ class AP_SemanticItemFactoryGTK
 {
 public:
     AP_SemanticItemFactoryGTK();
-    virtual PD_RDFContact*  createContact( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it );
-    virtual PD_RDFEvent*    createEvent( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it );
-    virtual PD_RDFLocation* createLocation( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it,
-                                            bool isGeo84 = false );
+    virtual PD_RDFContact* createContact(PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it) override;
+    virtual PD_RDFEvent* createEvent(PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it) override;
+    virtual PD_RDFLocation* createLocation(PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it,
+                                            bool isGeo84 = false) override;
 };
 
 

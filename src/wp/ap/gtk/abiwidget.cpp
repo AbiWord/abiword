@@ -570,7 +570,7 @@ public:
 		m_lid = (AV_ListenerId)-1;
 	}
 
-	virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
+	virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override
 	{
 		UT_return_val_if_fail(pView == m_pView, false);
 
@@ -761,8 +761,8 @@ public:
 		return true;
 	}
 
-    virtual AV_ListenerType getType(void) 
-	{ 
+    virtual AV_ListenerType getType(void) override
+	{
 		// i don't feel like creating a new type if i don't have to. this is semantically
 		// similar enough that i don't care
 		return AV_LISTENER_PLUGIN;
@@ -892,36 +892,36 @@ public:
 		: Stateful_ViewListener(pView), m_pWidget(pWidget)
 	{
 	}
-	virtual void bold(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_BOLD], 0, (gboolean)value);}
-	virtual void italic(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ITALIC], 0, (gboolean)value);}
-	virtual void underline(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_UNDERLINE], 0, (gboolean)value);}
-	virtual void overline(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_OVERLINE], 0, (gboolean)value);}
-	virtual void line_through(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LINE_THROUGH], 0, (gboolean)value);}
-	virtual void topline(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TOPLINE], 0, (gboolean)value);}
-	virtual void bottomline(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_BOTTOMLINE], 0, (gboolean)value);}
-	virtual void subscript(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SUBSCRIPT], 0, (gboolean)value);}
-	virtual void superscript(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SUPERSCRIPT], 0, (gboolean)value);}
-	virtual void color(UT_RGBColor value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_COLOR], 0, (int)value.m_red, (int)value.m_grn, (int)value.m_blu);}
-	virtual void font_size(double value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_SIZE], 0, value);}
-	virtual void font_family(const char * value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_FAMILY], 0, value);}
-	virtual void changed(void) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CHANGED], 0);}
-	virtual void can_undo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_UNDO], 0, (gboolean)value);}
-	virtual void can_redo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_REDO], 0, (gboolean)value);}
-	virtual void is_dirty(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_IS_DIRTY], 0, (gboolean)value);}
-	virtual void leftAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LEFT_ALIGN], 0, (gboolean)value);}
-	virtual void rightAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_RIGHT_ALIGN], 0, (gboolean)value);}
-	virtual void centerAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CENTER_ALIGN], 0, (gboolean)value);}
-	virtual void justifyAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_JUSTIFY_ALIGN], 0, (gboolean)value);}
-	virtual void styleName(const char * value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_STYLE_NAME], 0, value);}
-	virtual void textSelected(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TEXT_SELECTED], 0, (gboolean)value);}
-	virtual void imageSelected(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_IMAGE_SELECTED], 0, (gboolean)value);}
-	virtual void selectionCleared(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SELECTION_CLEARED], 0, (gboolean)value);}
-	virtual void enterSelection(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ENTER_SELECTION], 0, (gboolean)value);}
-	virtual void leaveSelection(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LEAVE_SELECTION], 0, (gboolean)value);}
-	virtual void tableState(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TABLE_STATE], 0, (gboolean)value);}
-	virtual void pageCount(guint32 value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_PAGE_COUNT], 0, (guint32)value);}
-	virtual void currentPage(guint32 value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CURRENT_PAGE], 0, (guint32)value);}
-	virtual void zoomPercentage(gint32 value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ZOOM_PERCENTAGE], 0, (gint32)value);}
+	virtual void bold(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_BOLD], 0, (gboolean)value);}
+	virtual void italic(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ITALIC], 0, (gboolean)value);}
+	virtual void underline(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_UNDERLINE], 0, (gboolean)value);}
+	virtual void overline(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_OVERLINE], 0, (gboolean)value);}
+	virtual void line_through(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LINE_THROUGH], 0, (gboolean)value);}
+	virtual void topline(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TOPLINE], 0, (gboolean)value);}
+	virtual void bottomline(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_BOTTOMLINE], 0, (gboolean)value);}
+	virtual void subscript(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SUBSCRIPT], 0, (gboolean)value);}
+	virtual void superscript(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SUPERSCRIPT], 0, (gboolean)value);}
+	virtual void color(UT_RGBColor value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_COLOR], 0, (int)value.m_red, (int)value.m_grn, (int)value.m_blu);}
+	virtual void font_size(double value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_SIZE], 0, value);}
+	virtual void font_family(const char * value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_FAMILY], 0, value);}
+	virtual void changed(void) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CHANGED], 0);}
+	virtual void can_undo(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_UNDO], 0, (gboolean)value);}
+	virtual void can_redo(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_REDO], 0, (gboolean)value);}
+	virtual void is_dirty(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_IS_DIRTY], 0, (gboolean)value);}
+	virtual void leftAlign(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LEFT_ALIGN], 0, (gboolean)value);}
+	virtual void rightAlign(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_RIGHT_ALIGN], 0, (gboolean)value);}
+	virtual void centerAlign(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CENTER_ALIGN], 0, (gboolean)value);}
+	virtual void justifyAlign(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_JUSTIFY_ALIGN], 0, (gboolean)value);}
+	virtual void styleName(const char * value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_STYLE_NAME], 0, value);}
+	virtual void textSelected(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TEXT_SELECTED], 0, (gboolean)value);}
+	virtual void imageSelected(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_IMAGE_SELECTED], 0, (gboolean)value);}
+	virtual void selectionCleared(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SELECTION_CLEARED], 0, (gboolean)value);}
+	virtual void enterSelection(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ENTER_SELECTION], 0, (gboolean)value);}
+	virtual void leaveSelection(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LEAVE_SELECTION], 0, (gboolean)value);}
+	virtual void tableState(bool value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TABLE_STATE], 0, (gboolean)value);}
+	virtual void pageCount(guint32 value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_PAGE_COUNT], 0, (guint32)value);}
+	virtual void currentPage(guint32 value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CURRENT_PAGE], 0, (guint32)value);}
+	virtual void zoomPercentage(gint32 value) override {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ZOOM_PERCENTAGE], 0, (gint32)value);}
 
 private:
 	AbiWidget *         m_pWidget;
@@ -989,7 +989,7 @@ public:
 		// TODO: unregister
 	}
 	
-	virtual void signalFrame(AP_FrameSignal signal)
+	virtual void signalFrame(AP_FrameSignal signal) override
 	{
 		switch (signal)
 		{

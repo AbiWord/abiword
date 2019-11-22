@@ -54,7 +54,7 @@ public:
 	XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_FontChooser(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	virtual void					runModal(XAP_Frame * pFrame) override = 0;
 
 	typedef enum { a_OK, a_CANCEL, a_YES, a_NO }	tAnswer;
 
@@ -163,7 +163,7 @@ public:
 	virtual ~XAP_Preview_FontPreview(void);
 	void setVecProperties( const XAP_Dialog_FontChooser::PropMap * vFontProps);
 	std::string getVal(const std::string &) const;
-	void draw(const UT_Rect *clip=NULL);
+	void draw(const UT_Rect *clip = NULL) override;
 	void setDrawString( const UT_UCSChar * pszChars) {m_pszChars = pszChars;}
 	void clearScreen(void);
 

@@ -39,7 +39,7 @@ public:
 
  protected:
 
-	virtual UT_Error _loadFile(GsfInput * input);
+	virtual UT_Error _loadFile(GsfInput * input) override;
 
 private:
 

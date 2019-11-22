@@ -60,7 +60,7 @@ public:
 	XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Image(void);
 
-	virtual void  runModal(XAP_Frame * pFrame) = 0;
+	virtual void  runModal(XAP_Frame * pFrame) override = 0;
 
 	void setWrapping(WRAPPING_TYPE iWrap);
 	void setPositionTo(POSITION_TO iPos);

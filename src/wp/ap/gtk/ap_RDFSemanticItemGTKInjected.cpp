@@ -369,7 +369,7 @@ public:
     {
         g_free(s_id);
     }
-    virtual void runSemanticStylesheetsDialog( FV_View* pView )
+    virtual void runSemanticStylesheetsDialog(FV_View* pView) override
     {
         const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
         std::string text;
@@ -441,7 +441,7 @@ public:
         gtk_widget_show_all (window);
         
     }
-    std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
+    std::pair<PT_DocPosition, PT_DocPosition> runInsertReferenceDialog(FV_View* pView) override
     {
         const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
         std::string text;

@@ -39,9 +39,9 @@ public:
 	UT_UNIXTimer(UT_WorkerCallback pCallback, void* pData);
 	virtual ~UT_UNIXTimer();
 
-	virtual UT_sint32 set(UT_uint32 iMilliseconds);
-	virtual void stop();
-	virtual void start();
+	virtual UT_sint32 set(UT_uint32 iMilliseconds) override;
+	virtual void stop() override;
+	virtual void start() override;
 private:
 	typedef UT_sint32 millisec_t;
 	millisec_t m_iMilliseconds;

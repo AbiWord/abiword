@@ -56,9 +56,9 @@ public:
 
 	void setupStates(OXML_PartType type, const char * partId = "");
 
-	virtual void startElement (const gchar* pName, const gchar** ppAtts);
-	virtual void endElement (const gchar* pName);
-	virtual void charData (const gchar* pBuffer, int length);
+	virtual void startElement (const gchar* pName, const gchar** ppAtts) override;
+	virtual void endElement (const gchar* pName) override;
+	virtual void charData (const gchar* pBuffer, int length) override;
 
 private:
 	OXMLi_ElementStack* m_pElemStack;

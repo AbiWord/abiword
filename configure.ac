@@ -611,6 +611,7 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wredundant-decls \
    -Wshadow \
    -Wsign-compare \
+   -Wsuggest-override \
    -Wunreachable-code \
    -Wunreachable-code-loop-increment \
    -Wunused \

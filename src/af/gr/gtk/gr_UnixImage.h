@@ -36,26 +36,26 @@ public:
 	GR_UnixImage(const char* pszName, GRType imageType);
 	virtual ~GR_UnixImage();
 
-	virtual bool		convertToBuffer(UT_ConstByteBufPtr & ppBB) const;
+	virtual bool		convertToBuffer(UT_ConstByteBufPtr & ppBB) const override;
 	virtual bool		convertFromBuffer(const UT_ConstByteBufPtr& pBB,
                                           const std::string & mimetype,
                                           UT_sint32 iDisplayWidth,
-                                          UT_sint32 iDisplayHeight);
+                                          UT_sint32 iDisplayHeight) override;
 	bool                saveToPNG(const char * szFile);
-	virtual bool hasAlpha (void) const;
+	virtual bool hasAlpha (void) const override;
 	virtual UT_sint32  rowStride (void) const;
-    virtual GR_Image::GRType getType(void) const;
+	virtual GR_Image::GRType getType(void) const override;
    	GdkPixbuf *			getData(void) const { return m_image; }
 	void setData(GdkPixbuf *data)
 	{ m_image = data;}
-    virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
-    virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
+	virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec) override;
+	virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y) override;
     void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-	virtual void cairoSetSource(cairo_t *);
+	virtual void cairoSetSource(cairo_t *) override;
 protected:
 	virtual GR_UnixImage *makeSubimage(const std::string & n,
 											  UT_sint32 x, UT_sint32 y,
-											  UT_sint32 w, UT_sint32 h) const;
+											  UT_sint32 w, UT_sint32 h) const override;
 private:
 	GdkPixbuf * m_image;
     GR_Image::GRType m_ImageType;

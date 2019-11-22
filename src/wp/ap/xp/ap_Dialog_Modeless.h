@@ -72,11 +72,11 @@ public:
 	// values.
   	bool						setView(FV_View * view);
   	FV_View * 					getView() const;
-	void						setActiveFrame(XAP_Frame *pFrame);
+	void setActiveFrame(XAP_Frame *pFrame) override;
 
-    virtual void                maybeClosePopupPreviewBubbles();
+    virtual void maybeClosePopupPreviewBubbles() override;
     void                        closePopupPreviewBubbles();
-    virtual void                maybeReallowPopupPreviewBubbles();
+    virtual void maybeReallowPopupPreviewBubbles() override;
 
 protected:
 	// These are the "current use" dialog data items,

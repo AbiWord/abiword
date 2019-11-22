@@ -36,9 +36,9 @@ public:
 	OXMLi_ListenerState_Common();
 	~OXMLi_ListenerState_Common();
 
-	void startElement (OXMLi_StartElementRequest * rqst);
-	void endElement (OXMLi_EndElementRequest * rqst);
-	void charData (OXMLi_CharDataRequest * rqst);
+	virtual void startElement (OXMLi_StartElementRequest * rqst) override;
+	virtual void endElement (OXMLi_EndElementRequest * rqst) override;
+	virtual void charData (OXMLi_CharDataRequest * rqst) override;
 
 private:
 	bool m_pendingSectBreak;

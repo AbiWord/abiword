@@ -51,13 +51,13 @@ public:
 	fp_VerticalContainer(FP_ContainerType iType, fl_SectionLayout* pSectionLayout);
 	virtual ~fp_VerticalContainer();
 
-	virtual void		setWidth(UT_sint32);
+	virtual void		setWidth(UT_sint32) override;
 	void		        _setWidth(UT_sint32 iWidth) {m_iWidth = iWidth;}
-	virtual void		setHeight(UT_sint32);
+	virtual void		setHeight(UT_sint32) override;
 	void		        _setHeight(UT_sint32 iHeight) {m_iHeight = iHeight;}
 	virtual void		setMaxHeight(UT_sint32);
-	virtual void		setX(UT_sint32, bool bDontClearIfNeeded=false);
-	virtual void		setY(UT_sint32);
+	virtual void		setX(UT_sint32, bool bDontClearIfNeeded=false) override;
+	virtual void		setY(UT_sint32) override;
 	/*!
 	  Get container's max height
 	  \return Max height
@@ -69,14 +69,14 @@ public:
 	  Get container's width
 	  \return Width
 	*/
-	virtual UT_sint32	getWidth(void) const
+	virtual UT_sint32	getWidth(void) const override
 		{ return m_iWidth; }
 
-	virtual UT_sint32	getX(void) const;
+	virtual UT_sint32	getX(void) const override;
 
 	void        _setX( UT_sint32 iX) { m_iX = iX;}
 
-	virtual UT_sint32	getY(void) const;
+	virtual UT_sint32	getY(void) const override;
 	UT_sint32	        getY(GR_Graphics * pG) const;
 
 	void        _setY( UT_sint32 iY) { m_iY = iY;}
@@ -84,7 +84,7 @@ public:
 	  Get container's height
 	  \return Height
 	*/
-	virtual UT_sint32	getHeight(void) const
+	virtual UT_sint32	getHeight(void) const override
 		{ return m_iHeight; }
 
 	UT_sint32	getColumnGap(void) const;
@@ -111,12 +111,12 @@ public:
 	bool				addContainer(fp_Container*);
 	void				removeContainer(fp_Container* pContainer, bool bClear = false);
         void                            removeAll(void);
-	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y);
+	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y) override;
 
 	virtual void		mapXYToPosition(UT_sint32 xPos,
 										UT_sint32 yPos,
 										PT_DocPosition& pos,
-										bool& bBOL, bool& bEOL, bool &isTOC);
+										bool& bBOL, bool& bEOL, bool &isTOC) override;
 
 	void		 		getOffsets(const fp_ContainerObject* pContainer,
 								   UT_sint32& xoff,
@@ -127,31 +127,31 @@ public:
                                              UT_sint32& xoff,
                                              UT_sint32& yoff) const;
 
-	virtual UT_Option<UT_Rect>     getScreenRect() const;
-	virtual void        markDirtyOverlappingRuns(const UT_Rect & recScreen);
+	virtual UT_Option<UT_Rect>     getScreenRect() const override;
+	virtual void        markDirtyOverlappingRuns(const UT_Rect & recScreen) override;
 	UT_sint32           countWrapped(void);
 
-	virtual void		draw(dg_DrawArgs*);
-	virtual void		draw(GR_Graphics*) {}
+	virtual void		draw(dg_DrawArgs*) override;
+	virtual void		draw(GR_Graphics*) override {}
 
-	void				clearScreen(void);
+	virtual void		clearScreen(void) override;
 	void 				bumpContainers(fp_ContainerObject* pLastContainerToKeep);
-	virtual bool        isVBreakable(void) {return true;}
-	virtual bool        isHBreakable(void) {return false;}
-	virtual UT_sint32   wantVBreakAt(UT_sint32) {return 0;}
-	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
-	virtual fp_ContainerObject * VBreakAt(UT_sint32) {return NULL;}
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
-	void                recalcMaxWidth(bool bDontClearIfNeeded = false)
+	virtual bool        isVBreakable(void) override {return true;}
+	virtual bool        isHBreakable(void) override {return false;}
+	virtual UT_sint32   wantVBreakAt(UT_sint32) override {return 0;}
+	virtual UT_sint32   wantHBreakAt(UT_sint32) override {return 0;}
+	virtual fp_ContainerObject * VBreakAt(UT_sint32) override {return NULL;}
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return NULL;}
+	virtual void        recalcMaxWidth(bool bDontClearIfNeeded = false) override
 	{
 		UT_UNUSED(bDontClearIfNeeded);
 	}
-	virtual UT_sint32   getMarginBefore(void) const { return 0;}
-	virtual UT_sint32   getMarginAfter(void) const { return 0;}
-	virtual void        setAssignedScreenHeight(UT_sint32) {}
-	virtual fp_Container * getNextContainerInSection(void) const
+	virtual UT_sint32   getMarginBefore(void) const override { return 0;}
+	virtual UT_sint32   getMarginAfter(void) const override{ return 0;}
+	virtual void        setAssignedScreenHeight(UT_sint32) override {}
+	virtual fp_Container * getNextContainerInSection(void) const override
 		{return NULL;}
-	virtual fp_Container * getPrevContainerInSection(void) const
+	virtual fp_Container * getPrevContainerInSection(void) const override
 		{return NULL;}
 	bool                validate(void);
 	FV_View*			getView(void) const;
@@ -251,7 +251,7 @@ public:
 protected:
 	UT_uint32 				_getBottomOfLastContainer(void) const;
 
-	void					_drawBoundaries(dg_DrawArgs* pDA);
+	virtual void _drawBoundaries(dg_DrawArgs* pDA) override;
 
 private:
 
@@ -270,11 +270,11 @@ public:
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
 	fl_HdrFtrShadow *   getShadow();
- 	virtual void		draw(dg_DrawArgs*);
- 	virtual void		draw(GR_Graphics*) {};
-  	virtual void		layout(void);
+	virtual void		draw(dg_DrawArgs*) override;
+	virtual void		draw(GR_Graphics*) override {};
+	virtual void		layout(void);
 	void                layout(bool bForce);
- 	virtual void		clearScreen(void);
+	virtual void		clearScreen(void) override;
 	void                clearHdrFtrBoundaries(void);
 	void				setPage(fp_Page* pPage);
 	virtual inline fp_Page*		getPage(void) const
@@ -300,9 +300,9 @@ public:
 	~fp_HdrFtrContainer();
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
- 	virtual void		draw(dg_DrawArgs*);
-  	virtual void		layout(void);
- 	virtual void		clearScreen(void);
+	virtual void		draw(dg_DrawArgs*) override;
+	virtual void		layout(void);
+	virtual void		clearScreen(void) override;
 	void		 		getScreenOffsets(fp_ContainerObject* pContainer, UT_sint32& xoff,
 										 UT_sint32& yoff);
 

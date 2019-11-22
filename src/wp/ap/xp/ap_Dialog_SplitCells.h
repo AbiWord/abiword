@@ -36,7 +36,7 @@ public:
 	AP_Dialog_SplitCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_SplitCells(void);
 
-	virtual void					runModeless(XAP_Frame * pFrame) = 0;
+	virtual void	runModeless(XAP_Frame * pFrame) override = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 
@@ -48,7 +48,7 @@ public:
 	static void                         autoUpdateMC(UT_Worker * pTimer);
 	virtual void                        setSensitivity(AP_CellSplitType splitThis,
 													   bool bSens) = 0;
-    virtual void                        setActiveFrame(XAP_Frame *pFrame);
+	virtual void                        setActiveFrame(XAP_Frame *pFrame) override;
 	void                                ConstructWindowName(void);
 	void                                setAllSensitivities(void);
 	void                                event_update(void);

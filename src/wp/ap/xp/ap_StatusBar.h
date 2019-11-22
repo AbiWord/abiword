@@ -88,8 +88,8 @@ public:
     virtual void		hide(void) {}
 
     /* used with AV_Listener */
-    virtual bool		    notify(AV_View * pView, const AV_ChangeMask mask);
-    virtual AV_ListenerType getType(void) { return AV_LISTENER_STATUSBAR;}
+    virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override;
+    virtual AV_ListenerType getType(void) override { return AV_LISTENER_STATUSBAR;}
 
 
     UT_GenericVector<AP_StatusBarField*> *             getFields() { return &m_vecFields; }
@@ -178,7 +178,7 @@ public:
     AP_StatusBarField_ProgressBar(AP_StatusBar * pSB);
     virtual ~AP_StatusBarField_ProgressBar(void);
 
-    virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
+    virtual void		notify(AV_View * pView, const AV_ChangeMask mask) override;
     void setStatusProgressType(int start, int end, int flags);
     void setStatusProgressValue(int value);
     double              getFraction(void);

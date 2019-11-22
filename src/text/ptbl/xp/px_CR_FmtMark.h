@@ -47,7 +47,7 @@ public:
 				PT_BlockOffset blockOffset);
 	~PX_ChangeRecord_FmtMark();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 
 	PT_BlockOffset		  getBlockOffset(void) const;
 	void                      AdjustBlockOffset(PT_BlockOffset iBlk) const

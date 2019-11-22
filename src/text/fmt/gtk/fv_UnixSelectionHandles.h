@@ -33,10 +33,10 @@ public:
 	FV_UnixSelectionHandles (FV_View * pView, FV_Selection selection);
 	virtual ~FV_UnixSelectionHandles();
 
-	virtual void hide(void);
-	virtual void setCursorCoords (UT_sint32 x, UT_sint32 y, UT_uint32 height, bool visible);
+	virtual void hide(void) override;
+	virtual void setCursorCoords (UT_sint32 x, UT_sint32 y, UT_uint32 height, bool visible) override;
 	virtual void setSelectionCoords (UT_sint32 start_x, UT_sint32 start_y, UT_uint32 start_height, bool start_visible,
-					 UT_sint32 end_x, UT_sint32 end_y, UT_uint32 end_height, bool end_visible);
+					 UT_sint32 end_x, UT_sint32 end_y, UT_uint32 end_height, bool end_visible) override;
 
 private:
         FvTextHandle *m_text_handle;

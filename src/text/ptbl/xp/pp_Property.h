@@ -81,7 +81,7 @@ class ABI_EXPORT PP_PropertyTypeBool : public PP_PropertyType
 public:
 	PP_PropertyTypeBool(const gchar *p_init);
 
-	tProperty_type getType() const {return Property_type_bool;}
+	tProperty_type getType() const override {return Property_type_bool;}
 
 	bool getState() const {return State;}
 
@@ -97,7 +97,7 @@ class ABI_EXPORT PP_PropertyTypeInt : public PP_PropertyType
 public:
 	PP_PropertyTypeInt(const gchar *p_init);
 
-	tProperty_type getType() const {return Property_type_int;}
+	tProperty_type getType() const override {return Property_type_int;}
 
 	int getValue() const {return Value;}
 
@@ -113,7 +113,7 @@ class ABI_EXPORT PP_PropertyTypeSize : public PP_PropertyType
 public:
 	PP_PropertyTypeSize(const gchar *p_init);
 
-	tProperty_type getType() const {return Property_type_size;}
+	tProperty_type getType() const override {return Property_type_size;}
 
 	double getValue() const {return Value;}
 	UT_Dimension getDim() const {return Dim;}
@@ -131,7 +131,7 @@ class ABI_EXPORT PP_PropertyTypeColor : public PP_PropertyType
 public:
 	PP_PropertyTypeColor(const gchar *p_init);
 
-	tProperty_type getType() const {return Property_type_color;}
+	tProperty_type getType() const override {return Property_type_color;}
 
 	const UT_RGBColor &getColor() const {return Color;}
 

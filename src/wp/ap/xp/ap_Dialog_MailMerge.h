@@ -38,10 +38,10 @@ public:
 
 	void eventOpen ();
 
-	virtual void setActiveFrame(XAP_Frame *pFrame) { m_pFrame = pFrame; }
+	virtual void setActiveFrame(XAP_Frame *pFrame) override { m_pFrame = pFrame; }
 
-	virtual void			destroy(void) {}
-	virtual void			activate(void) {}
+	virtual void			destroy(void) override {}
+	virtual void			activate(void) override {}
 
 protected:
 

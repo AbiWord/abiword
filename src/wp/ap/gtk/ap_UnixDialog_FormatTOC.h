@@ -33,7 +33,7 @@ public:
 	AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_FormatTOC(void);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void runModeless(XAP_Frame * pFrame) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -41,11 +41,11 @@ public:
 	void			event_Close(void);
 	void            event_Apply(void);
 	void            setStyle(GtkWidget * wid);
-	virtual void            destroy(void);
-	virtual void            activate(void);
-    virtual void            setSensitivity(bool bSensitive);
-	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
-	virtual void            setTOCPropsInGUI(void);
+	virtual void destroy(void) override;
+	virtual void activate(void) override;
+	virtual void setSensitivity(bool bSensitive) override;
+	virtual void notifyActiveFrame(XAP_Frame * pFrame) override;
+	virtual void setTOCPropsInGUI(void) override;
 	void                    setMainLevel(UT_sint32 iLevel);
 	void                    setDetailsLevel(UT_sint32 iLevel);
 	void                    event_IndentChanged(GtkWidget * wSpin);

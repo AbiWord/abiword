@@ -30,7 +30,7 @@ class AP_UnixDialog_CollaborationShare : public AP_Dialog_CollaborationShare
 public:
 	AP_UnixDialog_CollaborationShare(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
-	void						runModal(XAP_Frame * pFrame);
+	void runModal(XAP_Frame * pFrame) override;
 
 	void						eventOk();
 	void						eventToggle(gchar* path_str);
@@ -38,10 +38,10 @@ public:
 private:
 	GtkWidget*	 				_constructWindow(void);
 	void						_populateWindowData(void);
-	void						_populateBuddyModel(bool refresh);
-	AccountHandler*				_getActiveAccountHandler();
-	void						_setAccountHint(const UT_UTF8String& sHint);
-	void						_refreshWindow();
+	void _populateBuddyModel(bool refresh) override;
+	AccountHandler* _getActiveAccountHandler() override;
+	void _setAccountHint(const UT_UTF8String& sHint) override;
+	void _refreshWindow() override;
 	void						_getSelectedBuddies(std::vector<std::string>& vACL);
 	void						_freeBuddyList();
 

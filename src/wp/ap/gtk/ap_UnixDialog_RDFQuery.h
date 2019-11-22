@@ -37,10 +37,10 @@ public:
 	static XAP_Dialog *static_constructor (XAP_DialogFactory *,
 										   XAP_Dialog_Id id);
 
-	virtual void runModeless 	   (XAP_Frame *pFrame);
-	virtual void notifyActiveFrame (XAP_Frame *pFrame);
-	virtual void activate	 	   (void);
-	virtual void destroy 		   (void);
+	virtual void runModeless(XAP_Frame *pFrame) override;
+	virtual void notifyActiveFrame(XAP_Frame *pFrame) override;
+	virtual void activate(void) override;
+	virtual void destroy(void) override;
 
     void onExecuteClicked();
     void onShowAllClicked();
@@ -48,12 +48,12 @@ public:
 
 	const GtkWidget *getWindow (void) { return m_wDialog; }
 
-    virtual void clear();
-    virtual void addStatement( const PD_RDFStatement& st );
-    virtual void addBinding( std::map< std::string, std::string >& b );
-    virtual void setStatus( const std::string& msg );
-    virtual void setQueryString( const std::string& sparql );
-    virtual void setupBindingsView( std::map< std::string, std::string >& b );
+    virtual void clear() override;
+    virtual void addStatement(const PD_RDFStatement& st) override;
+    virtual void addBinding(std::map<std::string, std::string>& b) override;
+    virtual void setStatus(const std::string& msg) override;
+    virtual void setQueryString(const std::string& sparql) override;
+    virtual void setupBindingsView(std::map<std::string, std::string>& b) override;
 
 protected:
 

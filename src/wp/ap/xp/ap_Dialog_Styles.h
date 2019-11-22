@@ -44,7 +44,7 @@ class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Styles(void);
 
-	virtual void			  runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	typedef enum { a_OK, a_CANCEL }   tAnswer;
 	AP_Dialog_Styles::tAnswer	  getAnswer(void) const;

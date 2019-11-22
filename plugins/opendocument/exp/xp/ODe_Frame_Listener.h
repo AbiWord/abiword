@@ -54,11 +54,11 @@ public:
                        UT_uint8 zIndex,
                        UT_uint8 spacesOffset);
 
-    virtual void openFrame(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
-    virtual void closeFrame(ODe_ListenerAction& rAction);
+    virtual void openFrame(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
+    virtual void closeFrame(ODe_ListenerAction& rAction) override;
 
-    virtual void openTable(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
-    virtual void openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
+    virtual void openTable(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
+    virtual void openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
 
 private:
     void _openODTextbox(const PP_AttrProp& rAP, ODe_ListenerAction& rAction);

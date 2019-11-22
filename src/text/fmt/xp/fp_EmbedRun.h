@@ -34,17 +34,17 @@ class ABI_EXPORT fp_EmbedRun : public fp_Run
 {
 public:
 	fp_EmbedRun(fl_BlockLayout* pBL, PT_BlockOffset iOffsetFirst,PT_AttrPropIndex indexAP,pf_Frag_Object* oh);
-    virtual	~ fp_EmbedRun(void);
+    virtual	~fp_EmbedRun(void);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
-	virtual bool			canBreakAfter(void) const;
-	virtual bool			canBreakBefore(void) const;
-	virtual bool			isSuperscript(void) const ;
-	virtual bool			isSubscript(void)  const;
-	virtual bool 			hasLayoutProperties(void) const;
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC) override;
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection) override;
+	virtual bool			canBreakAfter(void) const override;
+	virtual bool			canBreakBefore(void) const override;
+	virtual bool			isSuperscript(void) const override;
+	virtual bool			isSubscript(void) const override;
+	virtual bool 			hasLayoutProperties(void) const override;
 
-	virtual void            updateVerticalMetric();
+	virtual void            updateVerticalMetric() override;
 
 	GR_EmbedManager *       getEmbedManager(void) const;
 	bool                    isEdittable(void);
@@ -59,17 +59,17 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL);
+											  GR_Graphics * pG = NULL) override;
 
 	void                    _lookupLocalProperties();
 
-	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(bool bFullLineHeightRect);
-	virtual bool			_letPointPass(void) const;
+	virtual void			_draw(dg_DrawArgs*) override;
+	virtual void			_clearScreen(bool bFullLineHeightRect) override;
+	virtual bool			_letPointPass(void) const override;
 	void                    _drawResizeBox(UT_Rect box);
 	UT_sint32               _getLayoutPropFromObject(const char * szProp) const;
     bool                    _updatePropValuesIfNeeded(void);
-	virtual	bool		    _recalcWidth(void);
+	virtual	bool		    _recalcWidth(void) override;
 
 	UT_sint32               m_iPointHeight;
 	const PP_AttrProp *     m_pSpanAP;

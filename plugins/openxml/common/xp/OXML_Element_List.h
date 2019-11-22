@@ -41,8 +41,8 @@ public:
 	OXML_Element_List(const std::string & id, OXML_Element_Paragraph* paragraph);
 	virtual ~OXML_Element_List();
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter) override;
+	virtual UT_Error addToPT(PD_Document * pDocument) override;
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);

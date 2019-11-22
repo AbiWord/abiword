@@ -48,7 +48,7 @@ public:
 
 	~PX_ChangeRecord_DataItem();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 };
 
 #endif /* PX_CHANGERECORD_DATAITEM_H */

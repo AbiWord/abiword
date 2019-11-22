@@ -58,11 +58,11 @@ public:
 	ProtocolErrorPacket( UT_sint32 errorEnum );
 	DECLARE_PACKET(ProtocolErrorPacket);
 
-	virtual UT_sint32						getProtocolVersion() const
+	virtual UT_sint32 getProtocolVersion() const  override
 		{ return 0; } // not ABICOLLAB_PROTOCOL_VERSION!!
-	UT_sint32 								getErrorEnum() const
+	UT_sint32 getErrorEnum() const
 		{ return m_errorEnum; }
-	UT_sint32								getRemoteVersion() const
+	UT_sint32 getRemoteVersion() const
 		{ return m_remoteVersion; }
 protected:
 	UT_sint32		m_errorEnum;
@@ -168,7 +168,7 @@ public:
 	virtual void							handleMessage(Packet* pPacket, BuddyPtr pBuddy);
 
 	// signal management
-	virtual void							signal(const Event& event, BuddyPtr pSource);
+	virtual void signal(const Event& event, BuddyPtr pSource) override;
 
 	// protocol error management
 	enum

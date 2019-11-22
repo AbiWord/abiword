@@ -56,10 +56,10 @@ public:
 
     virtual ~ODi_ContentStreamAnnotationMatcher_ListenerState();
 
-    void startElement( const gchar* pName, const gchar** ppAtts,
-                       ODi_ListenerStateAction& rAction );
-    void endElement  ( const gchar* pName, ODi_ListenerStateAction& rAction );
-    void charData    ( const gchar* pBuffer, int length );
+    void startElement(const gchar* pName, const gchar** ppAtts,
+                       ODi_ListenerStateAction& rAction) override;
+    void endElement(const gchar* pName, ODi_ListenerStateAction& rAction) override;
+    void charData(const gchar* pBuffer, int length) override;
 
     const std::set< std::string >& getRangedAnnotationNames() const;
 

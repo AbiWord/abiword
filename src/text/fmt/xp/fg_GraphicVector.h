@@ -38,32 +38,32 @@ public:
 	FG_GraphicVector();
 	virtual ~FG_GraphicVector();
 
-	virtual FGType		getType(void) const;
-    virtual const std::string & getMimeType(void) const;
-	virtual FG_ConstGraphicPtr clone(void) const;
-	virtual double		getWidth(void) const;
-	virtual double		getHeight(void) const;
-	virtual const char * getDataId(void) const { return m_pszDataID;}
-	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) const;
+	virtual FGType		getType(void) const override;
+    virtual const std::string & getMimeType(void) const override;
+	virtual FG_ConstGraphicPtr clone(void) const override;
+	virtual double		getWidth(void) const override;
+	virtual double		getHeight(void) const override;
+	virtual const char * getDataId(void) const override { return m_pszDataID;}
+	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) const override;
 	virtual GR_Image*	generateImage(GR_Graphics* pG,
 									  const PP_AttrProp * pSpanAP,
-									  UT_sint32 maxW, UT_sint32 maxH);
-	virtual GR_Image*	regenerateImage(GR_Graphics* pG);
+									  UT_sint32 maxW, UT_sint32 maxH) override;
+	virtual GR_Image*	regenerateImage(GR_Graphics* pG) override;
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
-										   UT_uint32 iPos, const char* szName) const;
+										   UT_uint32 iPos, const char* szName) const override;
 
 	virtual UT_Error   	insertAtStrux(PD_Document* pDoc,
 									  UT_uint32 res,
 									  UT_uint32 iPos,
 									  PTStruxType iStruxType,
-									  const char* szName) const;
+									  const char* szName) const override;
 
 	bool				setVector_SVG(const UT_ConstByteBufPtr & pBB);
-	const UT_ConstByteBufPtr & getBuffer(void) const;
+	virtual const UT_ConstByteBufPtr & getBuffer(void) const override;
 
-	virtual const char * getWidthProp(void);
-	virtual const char * getHeightProp(void);
+	virtual const char * getWidthProp(void) override;
+	virtual const char * getHeightProp(void) override;
 
 protected:
 	UT_ConstByteBufPtr m_pbbSVG;

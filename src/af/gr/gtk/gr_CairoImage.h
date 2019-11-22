@@ -39,17 +39,17 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
   GR_RSVGVectorImage(const char* name);
   virtual ~GR_RSVGVectorImage();
 
-  virtual bool convertToBuffer(UT_ConstByteBufPtr & ppBB) const;
+  virtual bool convertToBuffer(UT_ConstByteBufPtr & ppBB) const override;
   virtual bool convertFromBuffer(const UT_ConstByteBufPtr & pBB,
                  const std::string& mimetype,
 				 UT_sint32 iDisplayWidth,
-				 UT_sint32 iDisplayHeight);
-  virtual void cairoSetSource(cairo_t *cr);
-  virtual void scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
+				 UT_sint32 iDisplayHeight) override;
+  virtual void cairoSetSource(cairo_t *cr) override;
+  virtual void scaleImageTo(GR_Graphics * pG, const UT_Rect & rec) override;
 
-  virtual bool            hasAlpha(void) const;
-  virtual bool            isTransparentAt(UT_sint32 x, UT_sint32 y);
-  virtual GR_Image *  createImageSegment(GR_Graphics *pG, const UT_Rect &rec);
+  virtual bool            hasAlpha(void) const override;
+  virtual bool            isTransparentAt(UT_sint32 x, UT_sint32 y) override;
+  virtual GR_Image *  createImageSegment(GR_Graphics *pG, const UT_Rect &rec) override;
 
  private:
   void reset();
@@ -57,7 +57,7 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
   void createSurface(cairo_t* cairo);
   void createImageSurface();
   void renderToSurface(cairo_surface_t* surf);
-  void renderToCairo(cairo_t *cr);
+  void renderToCairo(cairo_t *cr) override;
 
   UT_ByteBufPtr m_data;
   RsvgDimensionData m_size;

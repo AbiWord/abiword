@@ -49,8 +49,8 @@ public:
 	ap_ViewListener(XAP_Frame* pFrame);
 	virtual ~ap_ViewListener();
 
-	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
-  	virtual  AV_ListenerType getType(void) { return AV_LISTENER_VIEW;}
+	virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override;
+	virtual AV_ListenerType getType(void) override { return AV_LISTENER_VIEW;}
 
 protected:
 	XAP_Frame*		m_pFrame;

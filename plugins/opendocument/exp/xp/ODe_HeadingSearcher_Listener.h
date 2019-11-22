@@ -41,7 +41,7 @@ class ODe_HeadingSearcher_Listener: public ODe_AbiDocListenerImpl {
 public:
     ODe_HeadingSearcher_Listener(ODe_Styles& m_rStyles, ODe_AuxiliaryData& rAuxiliaryData);
 
-    virtual void openTOC(const PP_AttrProp* pAP);
+    virtual void openTOC(const PP_AttrProp* pAP) override;
 
 private:
     ODe_Styles& m_rStyles;

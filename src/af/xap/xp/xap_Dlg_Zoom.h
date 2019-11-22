@@ -38,7 +38,7 @@ public:
 	XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Zoom(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 //	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } zoomType;

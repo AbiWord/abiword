@@ -64,7 +64,7 @@ class ABI_EXPORT XAP_Dialog_ListDocuments : public XAP_Dialog_NonPersistent
 	XAP_Dialog_ListDocuments(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_ListDocuments(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	typedef enum { a_OK, a_CANCEL }	tAnswer;
 

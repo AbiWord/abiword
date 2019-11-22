@@ -52,13 +52,13 @@ public:
 
     virtual ~ODi_Style_List();
 
-    void startElement (const gchar* pName, const gchar** ppAtts,
-                               ODi_ListenerStateAction& rAction);
+    virtual void startElement (const gchar* pName, const gchar** ppAtts,
+                               ODi_ListenerStateAction& rAction) override;
 
-    void endElement (const gchar* pName,
-                             ODi_ListenerStateAction& rAction);
+    virtual void endElement (const gchar* pName,
+                             ODi_ListenerStateAction& rAction) override;
 
-    void charData (const gchar* /*pBuffer*/, int /*length*/) { };
+    virtual void charData (const gchar* /*pBuffer*/, int /*length*/) override { };
 
     void defineAbiList(PD_Document* pDocument);
     void redefine(PD_Document* pDocument, UT_uint32 iLevel);

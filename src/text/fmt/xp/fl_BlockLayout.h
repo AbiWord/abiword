@@ -139,7 +139,7 @@ public:
 	} eSpacingPolicy;
 
     void                formatAll(void);
-	virtual void        format(void);
+	virtual void        format(void) override;
 	void                formatWrappedFromHere(fp_Line * pLine,fp_Page * pPage);
 	fp_Line *           getNextWrappedLine(UT_sint32 iX,
 											  UT_sint32 iHeight,
@@ -149,11 +149,11 @@ public:
 												UT_sint32 & iMinLeft,
 												UT_sint32 & iMinRight,
 												UT_sint32 & iMinWidth);
-	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
+	virtual bool		recalculateFields(UT_uint32 iUpdateCount) override;
 
-	virtual void		redrawUpdate();
-	virtual void        updateLayout(bool /*bDoAll*/) {}
-	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL);
+	virtual void		redrawUpdate() override;
+	virtual void        updateLayout(bool /*bDoAll*/) override {}
+	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL) override;
 	FV_View *		getView(void) const {
 		UT_return_val_if_fail( m_pLayout, NULL );
 		return m_pLayout->getView();
@@ -182,9 +182,9 @@ public:
 	UT_sint32 getMaxNonBreakableRun(void) const;
 	fp_Line* findPrevLineInDocument(fp_Line*) const;
 	fp_Line* findNextLineInDocument(fp_Line*) const;
-	virtual void     appendTextToBuf(UT_GrowBuf & buf) const;
+	virtual void     appendTextToBuf(UT_GrowBuf & buf) const override;
 	void             appendUTF8String(UT_UTF8String & sText) const;
-	virtual fp_Run* getFirstRun(void) const { return m_pFirstRun; }
+	virtual fp_Run* getFirstRun(void) const override { return m_pFirstRun; }
 	inline void setFirstRun(fp_Run* pRun) { m_pFirstRun = pRun; }
 	void        clearPrint(void) const;
 	inline bool isListItem(void) const { return m_bListItem; }
@@ -195,7 +195,7 @@ public:
 	void  refreshRunProperties(void) const;
 	char *	getFormatFromListType(FL_ListType iListType) const;
 	void remItemFromList(void);
-	virtual void listUpdate(void);
+	virtual void listUpdate(void) override;
 	void resumeList( fl_BlockLayout * prevList);
 	void prependList( fl_BlockLayout * nextList);
 	FL_ListType decodeListType(char * listformat) const;
@@ -231,7 +231,7 @@ public:
 
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
-	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
+	PT_DocPosition getPosition(bool bActualBlockPos = false) const override;
 	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL,
 							UT_sint32& x, UT_sint32& y, UT_sint32& x2,
 							UT_sint32& y2, UT_sint32& height, bool& bDirection) const;
@@ -250,9 +250,9 @@ public:
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
-	virtual FL_DocLayout*		getDocLayout(void) const { return m_pLayout; }
-	virtual fl_SectionLayout*	getSectionLayout(void) const { return m_pSectionLayout;}
-	fl_DocSectionLayout * getDocSectionLayout(void) const;
+	virtual FL_DocLayout*		getDocLayout(void) const override { return m_pLayout; }
+	virtual fl_SectionLayout*	getSectionLayout(void) const override { return m_pSectionLayout;}
+	fl_DocSectionLayout * getDocSectionLayout(void) const override;
 
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
 
@@ -345,17 +345,17 @@ public:
 	bool doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 
 	void					purgeLayout(void);
-	virtual void			collapse(void);
-	virtual bool			isCollapsed(void) const
+	virtual void			collapse(void) override;
+	virtual bool			isCollapsed(void) const override
 		{return m_bIsCollapsed;}
 	void					coalesceRuns(void) const;
-	virtual void			setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0);
-	inline bool 		    needsReformat(void) const
+	virtual void			setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0) override;
+	inline bool 		    needsReformat(void) const override
 		{ return (m_iNeedsReformat >= 0); }
-	virtual void			setNeedsRedraw(void);
-	virtual bool 		    needsRedraw(void) const
+	virtual void			setNeedsRedraw(void) override;
+	virtual bool 		    needsRedraw(void) const override
 		{ return m_bNeedsRedraw; }
-	virtual void			markAllRunsDirty(void);
+	virtual void			markAllRunsDirty(void) override;
 	UT_sint32               findLineInBlock(fp_Line * pLine) const;
 
 	bool                    isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Char prev, UT_uint32 iBlockPos) const;
@@ -435,7 +435,7 @@ public:
 #endif
 
 private:
-	virtual bool            _canContainPoint() const;
+	virtual bool            _canContainPoint() const override;
 
 protected:
 
@@ -487,8 +487,8 @@ protected:
 	bool                    _doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, UT_UCS4Char iM);
 	bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 
-	virtual void			_lookupProperties(const PP_AttrProp* pAP);
-	virtual void			_lookupMarginProperties(const PP_AttrProp* pAP);
+	virtual void			_lookupProperties(const PP_AttrProp* pAP) override;
+	virtual void			_lookupMarginProperties(const PP_AttrProp* pAP) override;
 	void					_removeLine(fp_Line*, bool bRemoveFromContainer, bool bReCalc);
 	void                    _purgeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);

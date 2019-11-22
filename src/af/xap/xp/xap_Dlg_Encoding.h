@@ -57,7 +57,7 @@ public:
 	XAP_Dialog_Encoding(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Encoding(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 	void							setEncoding(const gchar * pEncoding);
 	const gchar *				getEncoding() const;
 	XAP_Dialog_Encoding::tAnswer	getAnswer(void) const;

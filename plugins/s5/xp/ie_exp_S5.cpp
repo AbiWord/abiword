@@ -84,7 +84,7 @@ public:
 	virtual ~IE_Exp_S5();
 	
 protected:
-	virtual UT_Error	_writeDocument(void);
+	virtual UT_Error _writeDocument(void) override;
 	void _writeHeader();
 	void _writeFooter();
 	void _writeSlide(FV_View* view, UT_uint32 pageno);
@@ -100,12 +100,12 @@ public:
 	IE_Exp_S5_Sniffer ();
 	virtual ~IE_Exp_S5_Sniffer () {}
 
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual bool recognizeSuffix(const char * szSuffix) override;
+	virtual bool getDlgLabels(const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructExporter(PD_Document * pDocument,
+										IE_Exp ** ppie) override;
 };
 
 /*****************************************************************/

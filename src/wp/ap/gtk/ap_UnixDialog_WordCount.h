@@ -36,10 +36,10 @@ public:
 	AP_UnixDialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_WordCount(void);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			destroy(void);
-	virtual void			activate(void);
-	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void runModeless(XAP_Frame * pFrame) override;
+	virtual void destroy(void) override;
+	virtual void activate(void) override;
+	virtual void notifyActiveFrame(XAP_Frame *pFrame) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -49,8 +49,8 @@ public:
 	void			event_WindowDelete(void);
 
 protected:
-	virtual XAP_Widget *getWidget(xap_widget_id wid);
-	virtual void constructDialog(void);
+	virtual XAP_Widget *getWidget(xap_widget_id wid) override;
+	virtual void constructDialog(void) override;
 
 	static void s_response(GtkWidget * wid, gint id, AP_UnixDialog_WordCount * me ) ;
 

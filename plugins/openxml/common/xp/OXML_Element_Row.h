@@ -38,8 +38,8 @@ public:
 	OXML_Element_Row(const std::string & id, OXML_Element_Table* table);
 	virtual ~OXML_Element_Row();
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter) override;
+	virtual UT_Error addToPT(PD_Document * pDocument) override;
 	UT_Error addChildrenToPT(PD_Document * pDocument);
 	virtual void setNumCols(UT_sint32 numCols);
 

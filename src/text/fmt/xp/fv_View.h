@@ -257,11 +257,11 @@ public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
 
-	virtual inline GR_Graphics*    getGraphics(void) const { return m_pG; }
+	virtual inline GR_Graphics*    getGraphics(void) const override { return m_pG; }
 	void  setGraphics(GR_Graphics *pG);
 	void  replaceGraphics(GR_Graphics *pG);
 
-	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
+	virtual inline PT_DocPosition   getPoint(void) const override { return m_iInsPoint; }
 	PT_DocPosition	getSelectionAnchor(void) const;
 	PT_DocPosition	getSelectionLeftAnchor(void) const;
 	PT_DocPosition	getSelectionRightAnchor(void) const;
@@ -269,18 +269,18 @@ public:
 
 	UT_sint32       getFrameMargin(void) const;
 
-	virtual void focusChange(AV_Focus focus);
-	virtual bool    isActive(void) const;
+	virtual void focusChange(AV_Focus focus) override;
+	virtual bool    isActive(void) const override;
 
-	virtual void	setXScrollOffset(UT_sint32);
-	virtual void	setYScrollOffset(UT_sint32);
-	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0);
+	virtual void	setXScrollOffset(UT_sint32) override;
+	virtual void	setYScrollOffset(UT_sint32) override;
+	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) override;
 
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 	void	        cmdHyperlinkJump(PT_DocPosition pos);
 	void			cmdHyperlinkCopyLocation(PT_DocPosition pos);
 
-	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
+	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL)) override;
 	virtual void 	drawSelectionBox(UT_Rect & box, bool drawHandles);
 
 	void			setVisualSelectionEnabled(bool bActive);
@@ -298,13 +298,13 @@ public:
 
 	virtual bool	notifyListeners(const AV_ChangeMask hint);
 
-	virtual bool	canDo(bool bUndo) const;
+	virtual bool	canDo(bool bUndo) const override;
 	virtual UT_uint32 undoCount (bool bUndo) const;
-	virtual void	cmdUndo(UT_uint32 count);
-	virtual void	cmdRedo(UT_uint32 count);
-	virtual UT_Error	cmdSave(void);
-	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft);
-	virtual UT_Error		cmdSaveAs(const char * szFilename, int ieft, bool cpy);
+	virtual void	cmdUndo(UT_uint32 count) override;
+	virtual void	cmdRedo(UT_uint32 count) override;
+	virtual UT_Error	cmdSave(void) override;
+	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft) override;
+	virtual UT_Error		cmdSaveAs(const char * szFilename, int ieft, bool cpy) override;
 
 	UT_Error		cmdInsertField(const char* szName, const PP_PropertyVector & extra_attrs = PP_NOPROPS, const PP_PropertyVector & extra_props = PP_NOPROPS);
 	UT_Error		cmdInsertBookmark(const char* szName);
@@ -333,11 +333,11 @@ public:
 	virtual void	toggleCase(ToggleCase c);
 	virtual void	setPaperColor(const gchar * clr);
 
-	virtual bool    isDocumentPresent(void) const;
-	virtual void	cmdCopy(bool bToClipboard = true);
-	virtual void	cmdCut(void);
-	virtual void	cmdPaste(bool bHonorFormatting = true);
-	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos);
+	virtual bool    isDocumentPresent(void) const override;
+	virtual void	cmdCopy(bool bToClipboard = true) override;
+	virtual void	cmdCut(void) override;
+	virtual void	cmdPaste(bool bHonorFormatting = true) override;
+	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos) override;
 
 	void            pasteFromLocalTo(PT_DocPosition pos);
 	void            _pasteFromLocalTo(PT_DocPosition pos);
@@ -348,26 +348,26 @@ public:
 	virtual void	getTopRulerInfo(PT_DocPosition pos, AP_TopRulerInfo * pInfo);
 	virtual void	getLeftRulerInfo(AP_LeftRulerInfo * pInfo);
 	virtual void	getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo);
-        virtual void    setCursorWait(void);
-	virtual void    clearCursorWait(void);
-	virtual void    setCursorToContext(void);
+	virtual void    setCursorWait(void) override;
+	virtual void    clearCursorWait(void) override;
+	virtual void    setCursorToContext(void) override;
 	EV_EditMouseContext         getLastMouseContext(void);
 	void                getMousePos(UT_sint32 * x, UT_sint32 * y);
 
-	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
+	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) override;
 	EV_EditMouseContext _getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 	void                setPrevMouseContext(EV_EditMouseContext  emc)
 	{m_prevMouseContext = emc;}
 
-	virtual void        updateLayout(void);
-	virtual void        rebuildLayout(void);
-	virtual void        remeasureCharsWithoutRebuild();
-	virtual void        fontMetricsChange();
-	virtual bool		isSelectionEmpty(void) const;
+	virtual void        updateLayout(void) override;
+	virtual void        rebuildLayout(void) override;
+	virtual void        remeasureCharsWithoutRebuild() override;
+	virtual void        fontMetricsChange() override;
+	virtual bool		isSelectionEmpty(void) const override;
 	bool                isSelectAll(void) const
 	{ return m_Selection.isSelectAll();}
-	virtual void		cmdUnselectSelection(void);
+	virtual void		cmdUnselectSelection(void) override;
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr) const;
 	PT_DocPosition		mapDocPos( FV_DocPos dp );
 	PT_DocPosition		mapDocPosSimple( FV_DocPos dp );
@@ -519,7 +519,7 @@ public:
 	PT_DocPosition  getDocPositionFromLastXY(void);
 
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};
-	virtual void	updateScreen(bool bDirtyRunsOnly=true);
+	virtual void	updateScreen(bool bDirtyRunsOnly = true) override;
 	bool            isInDocSection(PT_DocPosition pos = 0) const;
 
 //---------
@@ -745,7 +745,7 @@ public:
 // -----------------------
 
 	bool				insertPageNum(const PP_PropertyVector & props, HdrFtrType hfType);
-	virtual void        setPoint(UT_uint32 pt);
+	virtual void        setPoint(UT_uint32 pt) override;
 	void                ensureInsertionPointOnScreen(void);
     void                removeCaret(const std::string& sCaretID);
 	void                addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId);
@@ -759,9 +759,9 @@ public:
 	inline bool 	getShowPara(void) const { return m_bShowPara; };
 
 	const fp_PageSize&	getPageSize(void) const;
-	virtual UT_uint32	calculateZoomPercentForPageWidth() const;
-	virtual UT_uint32	calculateZoomPercentForPageHeight() const;
-	virtual UT_uint32	calculateZoomPercentForWholePage() const;
+	virtual UT_uint32	calculateZoomPercentForPageWidth() const override;
+	virtual UT_uint32	calculateZoomPercentForPageHeight() const override;
+	virtual UT_uint32	calculateZoomPercentForWholePage() const override;
 	void 			    setViewMode (ViewMode vm);
 	ViewMode 			getViewMode (void) const  {return m_viewMode;}
 	bool				isPreview(void) const {return VIEW_PREVIEW == m_viewMode;}

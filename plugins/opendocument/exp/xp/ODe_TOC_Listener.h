@@ -47,12 +47,12 @@ class ODe_TOC_Listener: public ODe_AbiDocListenerImpl {
 public:
     ODe_TOC_Listener(ODe_AuxiliaryData& rAuxiliaryData);
 
-    virtual void insertText(const UT_UTF8String& rText);
+    virtual void insertText(const UT_UTF8String& rText) override;
 
-    virtual void insertTabChar();
+    virtual void insertTabChar() override;
 
-    virtual void openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
-    virtual void closeBlock();
+    virtual void openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
+    virtual void closeBlock() override;
 
 private:
     bool m_bInTOCBlock;

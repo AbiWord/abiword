@@ -32,10 +32,10 @@ public:
 	AP_UnixDialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Latex(void);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			destroy(void);
-	virtual void			activate(void);
-	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void runModeless(XAP_Frame * pFrame) override;
+	virtual void destroy(void) override;
+	virtual void activate(void) override;
+	virtual void notifyActiveFrame(XAP_Frame *pFrame) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -44,11 +44,11 @@ public:
 	void			event_Insert(void);
 	void			event_Close(void);
 	void			event_WindowDelete(void);
-	virtual void            setLatexInGUI(void);
-	virtual bool            getLatexFromGUI(void);
+	virtual void setLatexInGUI(void) override;
+	virtual bool getLatexFromGUI(void) override;
 
 protected:
-	virtual void constructDialog(void);
+	virtual void constructDialog(void) override;
 
 	// pointers to widgets we need
 

@@ -33,7 +33,7 @@ public:
 	AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_FormatTable(void);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void runModeless(XAP_Frame * pFrame) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -42,12 +42,12 @@ public:
 	void					event_previewExposed(void);
 	void					event_ApplyToChanged(void);
 	void                    event_BorderThicknessChanged(void);
-	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
-	virtual void			setBackgroundColorInGUI(UT_RGBColor clr);
-	virtual void            setSensitivity(bool bsens);
-	virtual void            destroy(void);
-	virtual void            activate(void);
-	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
+	virtual void  setBorderThicknessInGUI(UT_UTF8String & sThick) override;
+	virtual void  setBackgroundColorInGUI(UT_RGBColor clr) override;
+	virtual void  setSensitivity(bool bsens) override;
+	virtual void  destroy(void) override;
+	virtual void  activate(void) override;
+	virtual void  notifyActiveFrame(XAP_Frame * pFrame) override;
 	const GtkWidget 	  * getWindow (void) const { return m_windowMain; }
 protected:
 	typedef enum

@@ -53,8 +53,8 @@ public:
 
 	virtual void		initialize(fp_Line *pLine) = 0;
 	virtual UT_sint32	getStartPosition() = 0;
-	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) = 0;
-    virtual FB_AlignmentType getType() = 0;
+	virtual void	 eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) = 0;
+	virtual FB_AlignmentType getType() = 0;
 
 };
 
@@ -62,10 +62,10 @@ class ABI_EXPORT fb_Alignment_left : public fb_Alignment
 {
 public:
 
-	void		initialize(fp_Line *pLine);
-	UT_sint32	getStartPosition();
-	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
-    FB_AlignmentType getType(){return FB_ALIGNMENT_LEFT;};
+	virtual void		initialize(fp_Line *pLine) override;
+	virtual UT_sint32	getStartPosition() override;
+	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) override;
+	virtual FB_AlignmentType getType() override {return FB_ALIGNMENT_LEFT;}
 
 private:
 
@@ -76,10 +76,10 @@ class ABI_EXPORT fb_Alignment_center : public fb_Alignment
 {
 public:
 
-	void		initialize(fp_Line *pLine);
-	UT_sint32	getStartPosition();
-	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
-    FB_AlignmentType getType(){return FB_ALIGNMENT_CENTER;};
+	virtual void		initialize(fp_Line *pLine) override;
+	virtual UT_sint32	getStartPosition() override;
+	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) override;
+	virtual FB_AlignmentType getType() override {return FB_ALIGNMENT_CENTER;}
 
 private:
 
@@ -90,10 +90,10 @@ class ABI_EXPORT fb_Alignment_right : public fb_Alignment
 {
 public:
 
-	void		initialize(fp_Line *pLine);
-	UT_sint32	getStartPosition();
-	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
-    FB_AlignmentType getType(){return FB_ALIGNMENT_RIGHT;};
+	virtual void		initialize(fp_Line *pLine) override;
+	virtual UT_sint32	getStartPosition() override;
+	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) override;
+	virtual FB_AlignmentType getType() override {return FB_ALIGNMENT_RIGHT;}
 
 private:
 
@@ -104,16 +104,15 @@ class ABI_EXPORT fb_Alignment_justify : public fb_Alignment
 {
 public:
 
-	void		initialize(fp_Line *pLine);
-	UT_sint32	getStartPosition();
-	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
-    FB_AlignmentType getType(){return FB_ALIGNMENT_JUSTIFY;};
+	virtual void		initialize(fp_Line *pLine) override;
+	virtual UT_sint32	getStartPosition() override;
+	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) override;
+	virtual FB_AlignmentType getType() override {return FB_ALIGNMENT_JUSTIFY;}
 
 private:
 
 	int			m_iExtraWidth;
 	UT_sint32	m_iStartPosition;
-
 
 };
 

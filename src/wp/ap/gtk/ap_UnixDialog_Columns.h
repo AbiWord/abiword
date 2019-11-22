@@ -54,8 +54,8 @@ public:
 	AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Columns(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
-	virtual void			enableLineBetweenControl(bool bState = true);
+	virtual void runModal(XAP_Frame * pFrame) override;
+	virtual void enableLineBetweenControl(bool bState = true) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 

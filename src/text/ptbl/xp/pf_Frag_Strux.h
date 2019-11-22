@@ -54,19 +54,19 @@ public:
 	void                    clearAllFmtHandles() {m_vecFmtHandle.clear();}
 
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
-													  PT_DocPosition dpos) const;
+													  PT_DocPosition dpos) const override;
 
-	virtual bool            usesXID() const;
+	virtual bool            usesXID() const override;
 	bool                    isMatchingType(PTStruxType e) const;
 	bool                    isMatchingType(const pf_Frag * p) const;
 
 #ifdef PT_TEST
-	virtual void			__dump(FILE * fp) const = 0;
+	virtual void			__dump(FILE * fp) const override = 0;
 #endif
 
 protected:
 
-	virtual bool            _isContentEqual(const pf_Frag &f2) const;
+	virtual bool            _isContentEqual(const pf_Frag &f2) const override;
 	PTStruxType				m_struxType;
 	UT_GenericVector<fl_ContainerLayout*>	m_vecFmtHandle;
 };

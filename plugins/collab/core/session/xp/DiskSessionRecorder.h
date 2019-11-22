@@ -74,13 +74,13 @@ public:
 
 	static bool	dumpSession(const std::string& filename);
 
-	void storeOutgoing(const Packet* pPacket)
+	virtual void storeOutgoing(const Packet* pPacket) override
 		{ store(false, pPacket, BuddyPtr()); }
 
-	void storeOutgoing(const Packet* pPacket, BuddyPtr toBuddy)
+	virtual void storeOutgoing(const Packet* pPacket, BuddyPtr toBuddy) override
 		{ store(false, pPacket, toBuddy); }
 
-	void storeIncoming(const Packet* pPacket, BuddyPtr fromBuddy)
+	virtual void storeIncoming(const Packet* pPacket, BuddyPtr fromBuddy) override
 		{ store(true, pPacket, fromBuddy); }
 
 	static const char* getHeader()

@@ -30,7 +30,7 @@ class AP_UnixDialog_CollaborationAccounts : public AP_Dialog_CollaborationAccoun
 public:
 	AP_UnixDialog_CollaborationAccounts(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
-	void				runModal(XAP_Frame * pFrame);
+	void runModal(XAP_Frame * pFrame) override;
 
 	void				eventAdd();
 	void				eventProperties();
@@ -38,7 +38,7 @@ public:
 	void				eventSelectAccount();
 	void				eventOnline(AccountHandler* pHandler, bool online);
 
-	virtual void		signal(const Event& event, BuddyPtr pSource);
+	virtual void signal(const Event& event, BuddyPtr pSource) override;
 
 	GtkListStore*		getModel()
 		{ return m_wModel; }

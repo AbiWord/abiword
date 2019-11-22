@@ -56,10 +56,10 @@ namespace AiksaurusGTK_impl
             void setReplacebar(bool replacebar) noexcept(false);
             void setInitialMessage(const char* message) noexcept(false);
 
-            void eventCancel() noexcept(false);
-            void eventReplace(const char* replacement) noexcept(false);
-            void eventSelectWord(const char* word) noexcept(false);
-            void eventSearch(const char* word) noexcept(false);
+            void eventCancel() noexcept(false) override;
+            void eventReplace(const char* replacement) noexcept(false) override;
+            void eventSelectWord(const char* word) noexcept(false) override;
+            void eventSearch(const char* word) noexcept(false) override;
     };
 
 

@@ -211,8 +211,8 @@ public:
 
 	bool            isMouseOverTab(UT_uint32 x, UT_uint32 y);
 	/* used with AV_Listener */
-	virtual bool	notify(AV_View * pView, const AV_ChangeMask mask);
-    virtual  AV_ListenerType getType(void) { return AV_LISTENER_TOPRULER;}
+	virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override;
+	virtual AV_ListenerType getType(void) override { return AV_LISTENER_TOPRULER;}
 
 	/* used with AV_ScrollObj */
 	static void		_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
@@ -228,7 +228,7 @@ public:
 
 protected:
 	/* implement XAP_CustomWidgetLU::drawLU */
-	virtual void drawLU(const UT_Rect *clip);
+	virtual void drawLU(const UT_Rect *clip) override;
 
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,

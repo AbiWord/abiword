@@ -51,7 +51,7 @@ public:
 	virtual ~AP_Columns_preview(void);
 
 	// data twiddlers
-	void			draw(const UT_Rect *clip=NULL);
+	virtual void	draw(const UT_Rect *clip=NULL) override;
 
 	void			set(UT_uint32 iColumns, bool bLines)
 					{
@@ -76,7 +76,7 @@ public:
 	AP_Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Columns(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 	virtual void					enableLineBetweenControl(bool bState = true) = 0;
 
 

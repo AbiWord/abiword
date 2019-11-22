@@ -36,12 +36,12 @@ public:
 	IE_Exp_LaTeX_Sniffer ();
 	virtual ~IE_Exp_LaTeX_Sniffer () {}
 
-	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool recognizeSuffix (const char * szSuffix) override;
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
+							   IEFileType * ft) override;
 	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
+										IE_Exp ** ppie) override;
 };
 
 class IE_Exp_LaTeX : public IE_Exp
@@ -51,7 +51,7 @@ public:
 	virtual ~IE_Exp_LaTeX();
 
 protected:
-	virtual UT_Error	_writeDocument(void);
+	virtual UT_Error	_writeDocument(void) override;
 
 private:
 	s_LaTeX_Listener *	m_pListener;

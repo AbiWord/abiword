@@ -30,7 +30,7 @@ class AP_UnixDialog_CollaborationJoin : public AP_Dialog_CollaborationJoin
 public:
 	AP_UnixDialog_CollaborationJoin(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
-	void				runModal(XAP_Frame * pFrame);
+	void runModal(XAP_Frame * pFrame) override;
 
 	void				eventAddBuddy();
 	void				eventRefresh();
@@ -46,9 +46,9 @@ private:
 	void				_populateWindowData(void);
 	GtkTreeStore*		_constructModel();
 	void				_setModel(GtkTreeStore* model);
-	void				_refreshWindow();
-	void				_enableBuddyAddition(bool bEnabled);
-	void				_addDocument(BuddyPtr pBuddy, DocHandle* pDocHandle);
+	virtual void _refreshWindow() override;
+	virtual void _enableBuddyAddition(bool bEnabled) override;
+	virtual void _addDocument(BuddyPtr pBuddy, DocHandle* pDocHandle) override;
 
 	GtkWidget*			m_wWindowMain;
 	GtkWidget*			m_wAddBuddy;

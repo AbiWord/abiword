@@ -63,7 +63,7 @@ public:
 
 	virtual ~XAP_Dialog_HTMLOptions (void);
 
-	virtual void            runModal (XAP_Frame * pFrame) = 0;
+	virtual void            runModal (XAP_Frame * pFrame) override = 0;
 
 	bool			shouldSave () const { return m_bShouldSave; }
 

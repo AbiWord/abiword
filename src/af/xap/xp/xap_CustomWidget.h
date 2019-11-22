@@ -42,7 +42,7 @@ public:
 	virtual GR_Graphics *getGraphics() const = 0;
 	virtual void queueDrawLU(const UT_Rect *clip);
 
-	virtual void draw(const UT_Rect *clip);
+	virtual void draw(const UT_Rect *clip) override;
 
 protected:
 	virtual void drawLU(const UT_Rect *clip) = 0;

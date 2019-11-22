@@ -37,10 +37,10 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 {
  public:
 	AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame);
-	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
+	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame) override;
 
-	virtual UT_RGBColor getColorSelBackground () const;
-	virtual UT_RGBColor getColorSelForeground () const;
+	virtual UT_RGBColor getColorSelBackground() const override;
+	virtual UT_RGBColor getColorSelForeground() const override;
 
 	GtkShadowType getShadowType () { return gtk_frame_get_shadow_type (GTK_FRAME (m_wSunkenBox)); }
 	void setShadowType (GtkShadowType shadow) { gtk_frame_set_shadow_type (GTK_FRAME (m_wSunkenBox), shadow); }
@@ -48,7 +48,7 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	GtkWidget * getDrawingArea() const {return m_dArea;}
 	static gboolean ap_focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me);
 	static gboolean ap_focus_out_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me);
-	virtual GtkWidget * getViewWidget(void) const
+	virtual GtkWidget * getViewWidget(void) const override
 	{ return m_dArea; }
 
  protected:
@@ -56,17 +56,17 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	void _showOrHideStatusbar(void);
 	void _showOrHideToolbars(void);
 
-	virtual void _hideMenuScroll(bool bHideMenuScroll);
+	virtual void _hideMenuScroll(bool bHideMenuScroll) override;
 
 
-	virtual void _refillToolbarsInFrameData();
+	virtual void _refillToolbarsInFrameData() override;
 	void _bindToolbars(AV_View * pView);
 	virtual void _createWindow();
 
-	virtual GtkWidget * _createDocumentWindow();
-	virtual GtkWidget * _createStatusBarWindow();
+	virtual GtkWidget * _createDocumentWindow() override;
+	virtual GtkWidget * _createStatusBarWindow() override;
 
-	virtual void _setWindowIcon();
+	virtual void _setWindowIcon() override;
 	void _setScrollRange(apufi_ScrollType scrollType, int iValue, gfloat fUpperLimit, gfloat fSize);
 
 	GtkWidget * m_dArea;

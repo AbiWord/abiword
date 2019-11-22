@@ -47,18 +47,18 @@ public:
 		g_object_unref(m_pContact);
 	}
 
-	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
+	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const override
 	{
 		return UT_UTF8String("telepathy://") + tp_contact_get_identifier (m_pContact);
 	}
 
-	virtual UT_UTF8String getDescription() const
+	virtual UT_UTF8String getDescription() const override
 	{
 		UT_UTF8String description = tp_contact_get_identifier (m_pContact);
 		return description;
 	}
 
-	virtual const DocTreeItem* getDocTreeItems() const
+	virtual const DocTreeItem* getDocTreeItems() const override
 	{
 		UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		return NULL;

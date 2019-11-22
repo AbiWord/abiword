@@ -61,7 +61,7 @@ public:
 	virtual ~AP_FormatFrame_preview(void);
 
 	// data twiddlers
-	void			draw(const UT_Rect *clip=NULL);
+	void			draw(const UT_Rect *clip = NULL) override;
 	GR_Graphics *   getGraphics(void) const { return m_gc;}
 	/*void			set(UT_uint32 iColumns, bool bLines)
 					{
@@ -81,7 +81,7 @@ public:
 	AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_FormatFrame(void);
 
-	virtual void					runModeless(XAP_Frame * pFrame) = 0;
+	virtual void runModeless(XAP_Frame * pFrame) override = 0;
 
 	typedef enum { a_OK, a_CLOSE } tAnswer;
 	typedef enum { toggle_left, toggle_right, toggle_top, toggle_bottom } toggle_button;
@@ -92,7 +92,7 @@ public:
 	static void                         autoUpdateMC(UT_Worker * pTimer);
 
 	virtual void                        setSensitivity(bool bSens) = 0;
-    virtual void                        setActiveFrame(XAP_Frame *pFrame);
+    virtual void setActiveFrame(XAP_Frame *pFrame) override;
 	void                                ConstructWindowName(void);
 	void                                event_update(void);
 	void                                finalize(void);

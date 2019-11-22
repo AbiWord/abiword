@@ -40,8 +40,8 @@ public:
 	OXML_Element_TextBox(const std::string & id);
 	virtual ~OXML_Element_TextBox();
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter) override;
+	virtual UT_Error addToPT(PD_Document * pDocument) override;
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);

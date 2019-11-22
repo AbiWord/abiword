@@ -35,7 +35,7 @@ public:
 	AP_Dialog_CollaborationAddAccount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_CollaborationAddAccount(void);
 
-	virtual void							runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	AccountHandler*							getAccountHandler() const
 		{ return m_pHandler; }

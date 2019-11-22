@@ -266,10 +266,10 @@ public:
 	fp_Page *              getPage(void) const;
 	virtual UT_sint32      getMarginBefore(void) const =0;
 	virtual UT_sint32      getMarginAfter(void) const =0;
-    virtual fp_ContainerObject * getNext(void) const {return m_pNext;}
-    virtual fp_ContainerObject * getPrev(void) const {return m_pPrev;}
-    virtual void        setNext(fp_ContainerObject * pNext);
-    virtual void        setPrev(fp_ContainerObject * pPrev);
+    virtual fp_ContainerObject * getNext(void) const override {return m_pNext;}
+    virtual fp_ContainerObject * getPrev(void) const override {return m_pPrev;}
+    virtual void        setNext(fp_ContainerObject * pNext) override;
+    virtual void        setPrev(fp_ContainerObject * pPrev) override;
 	void                   clearCons(void)
 		{ m_vecContainers.clear();}
 	fp_ContainerObject *   getNthCon(UT_sint32 i) const;

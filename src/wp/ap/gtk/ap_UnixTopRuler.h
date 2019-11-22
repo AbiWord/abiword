@@ -46,7 +46,8 @@ public:
 	virtual ~AP_UnixTopRuler(void);
 
 	GtkWidget *		createWidget(void);
-	virtual void	setView(AV_View * pView);
+	virtual void setView(AV_View * pView) override;
+
 protected:
 	virtual XAP_Frame* _getFrame() const override
 		{ return m_pFrame; }

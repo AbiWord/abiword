@@ -47,7 +47,7 @@ public:
 						  UT_uint32 iXID);
 	~PX_ChangeRecord_AddStyle();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 };
 
 
@@ -59,7 +59,7 @@ public:
 						  PT_AttrPropIndex indexAP,
 						  UT_uint32 iXID);
 	~PX_ChangeRecord_RemoveStyle();
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 
 };
 

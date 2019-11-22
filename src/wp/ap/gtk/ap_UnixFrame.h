@@ -38,34 +38,34 @@ public:
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);
 
-	virtual	XAP_Frame *			cloneFrame(void);
-	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
+	virtual	XAP_Frame *cloneFrame(void) override;
+	virtual bool	initialize(XAP_FrameMode frameMode = XAP_NormalFrame) override;
 
-	virtual void				setXScrollRange(void);
-	virtual void				setYScrollRange(void);
-	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
-	virtual void				setStatusMessage(const char * szMsg);
+	virtual void	setXScrollRange(void) override;
+	virtual void	setYScrollRange(void) override;
+	virtual void	translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
+	virtual void	setStatusMessage(const char * szMsg) override;
 
-	virtual void				toggleRuler(bool bRulerOn);
-	virtual void                            toggleTopRuler(bool bRulerOn);
-	virtual void                            toggleLeftRuler(bool bRulerOn);
-	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
-	virtual void				toggleStatusBar(bool bStatusBarOn);
-	virtual UT_sint32 getDocumentAreaXoff();
-	virtual UT_sint32 getDocumentAreaYoff();
+	virtual void	toggleRuler(bool bRulerOn) override;
+	virtual void    toggleTopRuler(bool bRulerOn) override;
+	virtual void    toggleLeftRuler(bool bRulerOn) override;
+	virtual void	toggleBar(UT_uint32 iBarNb, bool bBarOn) override;
+	virtual void	toggleStatusBar(bool bStatusBarOn) override;
+	virtual UT_sint32 getDocumentAreaXoff() override;
+	virtual UT_sint32 getDocumentAreaYoff() override;
 
 protected:
 	friend class AP_UnixFrameImpl;
 
 	// implementation of helper methods for AP_Frame::_showDocument
-	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom);
-	virtual void _bindToolbars(AV_View *pView);
-	virtual void _setViewFocus(AV_View *pView);
+	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom) override;
+	virtual void _bindToolbars(AV_View *pView) override;
+	virtual void _setViewFocus(AV_View *pView) override;
 	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj,
 					       ap_ViewListener *& pViewListener, ap_Scrollbar_ViewListener *& pScrollbarViewListener,
-					       AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener);
-	virtual UT_sint32 _getDocumentAreaWidth();
-	virtual UT_sint32 _getDocumentAreaHeight();
+					       AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener) override;
+	virtual UT_sint32 _getDocumentAreaWidth() override;
+	virtual UT_sint32 _getDocumentAreaHeight() override;
 
 	// scrolling function
 	static void _scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);

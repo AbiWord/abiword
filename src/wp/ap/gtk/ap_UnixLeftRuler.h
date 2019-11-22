@@ -46,7 +46,7 @@ public:
 	virtual ~AP_UnixLeftRuler(void);
 
 	GtkWidget *		createWidget(void);
-	virtual void	setView(AV_View * pView);
+	virtual void setView(AV_View * pView) override;
 
 protected:
 	virtual XAP_Frame* _getFrame() const override

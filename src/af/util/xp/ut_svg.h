@@ -44,9 +44,9 @@ class ABI_EXPORT UT_svg : public UT_XML::Listener
 public:
 	/* UT_XML::Listener implementation:
 	 */
-	void startElement (const gchar * name, const gchar ** atts);
-	void endElement (const gchar * name);
-	void charData (const gchar * buffer, int length);
+	virtual void startElement (const gchar * name, const gchar ** atts) override;
+	virtual void endElement (const gchar * name) override;
+	virtual void charData (const gchar * buffer, int length) override;
 
 	enum ParseMode
 	{

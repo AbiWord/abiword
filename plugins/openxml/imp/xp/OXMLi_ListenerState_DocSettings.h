@@ -34,9 +34,9 @@
 class OXMLi_ListenerState_DocSettings : public OXMLi_ListenerState
 {
 public:
-	void startElement (OXMLi_StartElementRequest * rqst);
-	void endElement (OXMLi_EndElementRequest * rqst);
-	void charData (OXMLi_CharDataRequest * rqst);
+	virtual void startElement (OXMLi_StartElementRequest * rqst) override;
+	virtual void endElement (OXMLi_EndElementRequest * rqst) override;
+	virtual void charData (OXMLi_CharDataRequest * rqst) override;
 private:
 	std::string _convert_ST_LANG(std::string code_in);
 };

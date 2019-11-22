@@ -56,7 +56,7 @@ public:
 
 	~PX_ChangeRecord_SpanChange();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 
 	UT_uint32				getLength(void) const;
 	PT_BufIndex				getBufIndex(void) const;
@@ -68,14 +68,14 @@ public:
 	bool                    isRevisionDelete() const {return m_bRevisionDelete;}
 
 #ifdef PT_TEST
-	virtual void			__dump(FILE * fp) const;
+	virtual void			__dump(FILE * fp) const override;
 #endif
 
 protected:
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
 	UT_uint32				m_length;	/* length of our text */
 	PT_AttrPropIndex		m_indexOldAP;
-mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+	mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 
 	// used in revisions mode to indicate if fmt change record represents deletion
 	bool                    m_bRevisionDelete;

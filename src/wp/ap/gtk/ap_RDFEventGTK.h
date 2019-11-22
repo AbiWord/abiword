@@ -38,8 +38,8 @@ class ABI_EXPORT AP_RDFEventGTK
     AP_RDFEventGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it );
     virtual ~AP_RDFEventGTK();
 
-    virtual void* createEditor();
-    virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
+    virtual void* createEditor() override;
+    virtual void updateFromEditorData(PD_DocumentRDFMutationHandle m) override;
 };
 
 #endif

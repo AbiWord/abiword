@@ -198,9 +198,9 @@ public:
   DefaultReader ();
   virtual ~DefaultReader ();
 
-  virtual bool      openFile (const char * szFilename);
-  virtual UT_uint32 readBytes (char * buffer, UT_uint32 length);
-  virtual void      closeFile (void);
+  virtual bool openFile (const char * szFilename) override;
+  virtual UT_uint32 readBytes (char * buffer, UT_uint32 length) override;
+  virtual void closeFile (void) override;
 
 private:
   FILE * in;
@@ -218,9 +218,9 @@ public:
 
   virtual ~UT_XML_BufReader ();
 
-  virtual bool      openFile (const char * szFilename);
-  virtual UT_uint32 readBytes (char * buffer, UT_uint32 length);
-  virtual void      closeFile (void);
+  virtual bool openFile (const char * szFilename) override;
+  virtual UT_uint32 readBytes (char * buffer, UT_uint32 length) override;
+  virtual void closeFile (void) override;
 
 private:
   const char * const m_buffer;

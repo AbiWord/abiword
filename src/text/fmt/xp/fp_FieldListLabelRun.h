@@ -29,16 +29,16 @@ public:
 	fp_FieldListLabelRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 
-	virtual bool			calculateValue(void);
+	virtual bool			calculateValue(void) override;
 	virtual bool            isListLabelField(void) { return true;}
 
 private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG);
+											  GR_Graphics * pG) override;
 
-	virtual void			_draw(dg_DrawArgs*);
+	virtual void			_draw(dg_DrawArgs*) override;
 
 };
 

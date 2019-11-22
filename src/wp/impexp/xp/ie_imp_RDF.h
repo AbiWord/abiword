@@ -45,8 +45,8 @@ class ABI_EXPORT IE_Imp_RDF_Sniffer : public IE_ImpSniffer
 	IE_Imp_RDF_Sniffer( const char * name );
 	virtual ~IE_Imp_RDF_Sniffer();
 
-	virtual UT_Confidence_t recognizeContents ( const char * szBuf,
-                                                UT_uint32 iNumbytes );
+	virtual UT_Confidence_t recognizeContents(const char * szBuf,
+                                                UT_uint32 iNumbytes) override;
 
 
 };
@@ -58,14 +58,14 @@ class ABI_EXPORT IE_Imp_RDF_VCard_Sniffer : public IE_Imp_RDF_Sniffer
 	IE_Imp_RDF_VCard_Sniffer();
 	virtual ~IE_Imp_RDF_VCard_Sniffer();
 
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual bool getDlgLabels(const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructImporter(PD_Document * pDocument,
+										IE_Imp ** ppie) override;
 
-    const IE_SuffixConfidence* getSuffixConfidence ();
-    const IE_MimeConfidence*   getMimeConfidence ();
+    const IE_SuffixConfidence* getSuffixConfidence() override;
+    const IE_MimeConfidence*   getMimeConfidence() override;
 
 };
 
@@ -76,14 +76,14 @@ class ABI_EXPORT IE_Imp_RDF_Calendar_Sniffer : public IE_Imp_RDF_Sniffer
 	IE_Imp_RDF_Calendar_Sniffer();
 	virtual ~IE_Imp_RDF_Calendar_Sniffer();
 
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual bool getDlgLabels(const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructImporter(PD_Document * pDocument,
+										IE_Imp ** ppie) override;
 
-    const IE_SuffixConfidence* getSuffixConfidence ();
-    const IE_MimeConfidence*   getMimeConfidence ();
+    const IE_SuffixConfidence* getSuffixConfidence() override;
+    const IE_MimeConfidence*   getMimeConfidence() override;
 
 };
 
@@ -97,12 +97,12 @@ class ABI_EXPORT IE_Imp_RDF : public IE_Imp
 	IE_Imp_RDF(PD_Document * pDocument, const char * encoding);
 	virtual ~IE_Imp_RDF();
 
-	virtual bool pasteFromBuffer( PD_DocumentRange * pDocRange,
+	virtual bool pasteFromBuffer(PD_DocumentRange * pDocRange,
                                   const unsigned char * pData, UT_uint32 lenData,
-                                  const char * szEncoding = 0 );
+                                  const char * szEncoding = 0) override;
 
   protected:
-	virtual UT_Error	_loadFile(GsfInput * fp);
+	virtual UT_Error _loadFile(GsfInput * fp) override;
 
     virtual bool pasteFromBufferSS( PD_DocumentRange * pDocRange,
                                     std::stringstream& ss,
@@ -123,9 +123,9 @@ class ABI_EXPORT IE_Imp_RDF_VCard : public IE_Imp_RDF
 	IE_Imp_RDF_VCard(PD_Document * pDocument, const char * encoding);
 	virtual ~IE_Imp_RDF_VCard();
 
-    virtual bool pasteFromBufferSS( PD_DocumentRange * pDocRange,
+    virtual bool pasteFromBufferSS(PD_DocumentRange * pDocRange,
                                     std::stringstream& ss,
-                                    const char * szEncoding );
+                                    const char * szEncoding) override;
 
 };
 
@@ -137,9 +137,9 @@ class ABI_EXPORT IE_Imp_RDF_Calendar : public IE_Imp_RDF
 	IE_Imp_RDF_Calendar(PD_Document * pDocument, const char * encoding);
 	virtual ~IE_Imp_RDF_Calendar();
 
-    virtual bool pasteFromBufferSS( PD_DocumentRange * pDocRange,
+    virtual bool pasteFromBufferSS(PD_DocumentRange * pDocRange,
                                     std::stringstream& ss,
-                                    const char * szEncoding );
+                                    const char * szEncoding) override;
 
 };
 

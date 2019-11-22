@@ -35,9 +35,9 @@ class OXMLi_ListenerState_Valid : public OXMLi_ListenerState
 {
 public:
 	OXMLi_ListenerState_Valid();
-	void startElement (OXMLi_StartElementRequest * rqst);
-	void endElement (OXMLi_EndElementRequest * rqst);
-	void charData (OXMLi_CharDataRequest * rqst);
+	virtual void startElement (OXMLi_StartElementRequest * rqst) override;
+	virtual void endElement (OXMLi_EndElementRequest * rqst) override;
+	virtual void charData (OXMLi_CharDataRequest * rqst) override;
 
 private:
 	void populateKeywordTable();

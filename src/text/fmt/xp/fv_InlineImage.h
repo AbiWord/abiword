@@ -75,7 +75,7 @@ public:
 	UT_sint32             getImageSelBoxSize() const; // in device units!
 	void                  setSelectionDrawn(bool bSelectionDrawn);
 protected:
-	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y);
+	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y) override;
 private:
 	FV_InlineDragMode     m_iInlineDragMode;
 	GR_Image *            m_pDragImage;

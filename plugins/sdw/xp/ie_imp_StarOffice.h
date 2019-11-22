@@ -166,11 +166,11 @@ class IE_Imp_StarOffice_Sniffer : public IE_ImpSniffer
 		IE_Imp_StarOffice_Sniffer();
 		virtual ~IE_Imp_StarOffice_Sniffer() {}
 
-		virtual const IE_SuffixConfidence * getSuffixConfidence ();
-		virtual const IE_MimeConfidence * getMimeConfidence ();
-		virtual UT_Confidence_t recognizeContents(GsfInput * input);
-		virtual bool getDlgLabels(const char** szDesc, const char** szSuffixList, IEFileType *ft);
-		virtual UT_Error constructImporter(PD_Document* pDocument, IE_Imp **ppie);
+		virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+		virtual const IE_MimeConfidence * getMimeConfidence() override;
+		virtual UT_Confidence_t recognizeContents(GsfInput * input) override;
+		virtual bool getDlgLabels(const char** szDesc, const char** szSuffixList, IEFileType *ft) override;
+		virtual UT_Error constructImporter(PD_Document* pDocument, IE_Imp **ppie) override;
 };
 
 // Actual Importer
@@ -181,7 +181,7 @@ class IE_Imp_StarOffice : public IE_Imp
 		~IE_Imp_StarOffice();
 
 	protected:
-		virtual UT_Error _loadFile(GsfInput * input);
+		virtual UT_Error _loadFile(GsfInput * input) override;
 
 	private:
 		FILE* mFile;

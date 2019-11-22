@@ -43,19 +43,19 @@ public:
 	IE_Imp_Object_Sniffer();
 	virtual ~IE_Imp_Object_Sniffer() {}
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
 
-	virtual const IE_MimeConfidence * getMimeConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence() override;
 
-	virtual UT_Confidence_t recognizeContents (const char * szBuf,
+	virtual UT_Confidence_t recognizeContents(const char * szBuf,
+									UT_uint32 iNumbytes) override;
+	const char * recognizeContentsType(const char * szBuf,
 									UT_uint32 iNumbytes);
-	const char * recognizeContentsType (const char * szBuf,
-									UT_uint32 iNumbytes);
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual bool getDlgLabels(const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructImporter(PD_Document * pDocument,
+										IE_Imp ** ppie) override;
 
 protected:
 	enum UCS2_Endian { UE_BigEnd = -1, UE_NotUCS = 0, UE_LittleEnd };
@@ -76,11 +76,11 @@ public:
 	virtual	~IE_Imp_Object();
 
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
+										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0) override;
 	const UT_ByteBufPtr & getByteBuf(void) const {return m_pByteBuf;}
 
 protected:
-	virtual UT_Error	_loadFile (GsfInput * input);
+	virtual UT_Error	_loadFile (GsfInput * input) override;
 	UT_Error			_parseStream(ImportStream * pStream);
 
  private:

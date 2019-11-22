@@ -125,10 +125,10 @@ public:
 
     virtual ~ODe_Table_Listener();
 
-    virtual void openTable(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
-    virtual void closeTable(ODe_ListenerAction& rAction);
+    virtual void openTable(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
+    virtual void closeTable(ODe_ListenerAction& rAction) override;
 
-    virtual void openCell(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
+    virtual void openCell(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
 
 private:
     void _buildTable();

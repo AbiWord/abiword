@@ -56,8 +56,8 @@ public:
 
     // Listener methods
 
-    virtual void openSection(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
-    virtual void closeSection(ODe_ListenerAction& rAction);
+    virtual void openSection(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
+    virtual void closeSection(ODe_ListenerAction& rAction) override;
 
 private:
 

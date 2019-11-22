@@ -32,7 +32,7 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 	XAP_UnixDialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_UnixDialog_Image(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	void                    setPositionToGUI(void);

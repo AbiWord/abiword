@@ -21,6 +21,10 @@ _Pragma("GCC diagnostic ignored \"-Wcast-qual\"")
 ABI_W_PUSH \
 _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
+#define ABI_W_NO_SUGGEST_OVERRIDE \
+ABI_W_PUSH \
+_Pragma("GCC diagnostic ignored \"-Wsuggest-override\"")
+
 #if defined(__clang__)
 # define ABI_W_POP \
 _Pragma("clang diagnostic pop")

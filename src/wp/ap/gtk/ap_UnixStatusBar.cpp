@@ -35,7 +35,7 @@ class ap_usb_TextListener : public AP_StatusBarFieldListener
 {
 public:
 	ap_usb_TextListener(AP_StatusBarField *pStatusBarField, GtkWidget *pLabel) : AP_StatusBarFieldListener(pStatusBarField) { m_pLabel = pLabel; }
-	virtual void notify(); 
+	virtual void notify() override;
 
 protected:
 	GtkWidget *m_pLabel;
@@ -74,7 +74,7 @@ public:
         { 
 	    m_wProgress = wProgress; 
 	}
-	virtual void notify(); 
+	virtual void notify() override;
 
 protected:
 	GtkWidget *m_wProgress;

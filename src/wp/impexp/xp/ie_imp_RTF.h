@@ -582,15 +582,15 @@ public:
 	IE_Imp_RTF_Sniffer();
 	virtual ~IE_Imp_RTF_Sniffer() {}
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-	virtual const IE_MimeConfidence * getMimeConfidence ();
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+	virtual const IE_MimeConfidence * getMimeConfidence() override;
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
-									UT_uint32 iNumbytes);
+									UT_uint32 iNumbytes) override;
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
+							   IEFileType * ft) override;
 	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
+										IE_Imp ** ppie) override;
 
 };
 
@@ -604,7 +604,7 @@ public:
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData,
                                         UT_uint32 lenData,
-                                        const char * szEncoding = 0);
+                                        const char * szEncoding = 0) override;
 	UT_sint32 get_vecWord97ListsCount(void) const
         { return m_vecWord97Lists.size();}
 	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) const
@@ -625,7 +625,7 @@ public:
 	};
 
 protected:
-	virtual UT_Error	_loadFile(GsfInput * input);
+	virtual UT_Error	_loadFile(GsfInput * input) override;
 	UT_Error			_parseFile(GsfInput * fp);
 	UT_Error			_writeHeader(GsfInput * fp);
 	UT_Error            _parseHdrFtr ();

@@ -49,17 +49,17 @@ public:
 	virtual ~EV_UnixToolbar(void);
 
 	bool toolbarEvent(_wd * wd, const UT_UCSChar * pData, UT_uint32 dataLength);
-	virtual bool synthesize(void);
+	virtual bool synthesize(void) override;
 	bool bindListenerToView(AV_View * pView);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
-	virtual bool repopulateStyles(void);
+	virtual bool repopulateStyles(void) override;
 	UT_sint32 destroy(void);
 	void      rebuildToolbar(UT_sint32 oldpos);
 	XAP_UnixApp *	getApp(void);
 	XAP_Frame * getFrame(void);
 	void setCurrentEvent(GdkEvent * event) {m_eEvent = event;}
-	virtual void show(void);
-	virtual void hide(void);
+	virtual void show(void) override;
+	virtual void hide(void) override;
 
 	XAP_FontPreview *				m_pFontPreview;
 	gint							m_pFontPreviewPositionX;

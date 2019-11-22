@@ -86,10 +86,10 @@ public:
 	virtual ~ODe_Bullet_ListLevelStyle()
 		{}
 
-    virtual void fetchAttributesFromAbiBlock(const PP_AttrProp& rAP);
+    virtual void fetchAttributesFromAbiBlock(const PP_AttrProp& rAP) override;
 
     virtual bool write(GsfOutput* pODT,
-                       const UT_UTF8String& rSpacesOffset) const;
+                       const UT_UTF8String& rSpacesOffset) const override;
 
 private:
     UT_UTF8String m_bulletChar; // text:bullet-char
@@ -103,10 +103,10 @@ class ODe_Numbered_ListLevelStyle : public ODe_ListLevelStyle {
 public:
 	virtual ~ODe_Numbered_ListLevelStyle()
 		{}
-    virtual void fetchAttributesFromAbiBlock(const PP_AttrProp& rAP);
+    virtual void fetchAttributesFromAbiBlock(const PP_AttrProp& rAP) override;
 
     virtual bool write(GsfOutput* pODT,
-                       const UT_UTF8String& rSpacesOffset) const;
+                       const UT_UTF8String& rSpacesOffset) const override;
 private:
     UT_UTF8String m_startValue;    // text:start-value
     UT_UTF8String m_numFormat;     // style:num-format

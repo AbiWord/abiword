@@ -80,12 +80,12 @@ public:
 		{
 		}
 		
-	virtual PD_Document* getMergeDocument () const
+	virtual PD_Document* getMergeDocument() const override
 		{
 			return m_doc;
 		}
 	
-	virtual bool fireUpdate () 
+	virtual bool fireUpdate() override
 		{
 			if (!m_doc)
 				return false;
@@ -125,12 +125,12 @@ public:
 				m_pGraphics->endPrint();
 		}
 		
-	virtual PD_Document* getMergeDocument () const
+	virtual PD_Document* getMergeDocument() const override
 		{
 			return m_doc;
 		}
 	
-	virtual bool fireUpdate () 
+	virtual bool fireUpdate() override
 		{
 			FL_DocLayout *pDocLayout = new FL_DocLayout(m_doc,m_pGraphics);
 			FV_View printView(XAP_App::getApp(),0,pDocLayout);

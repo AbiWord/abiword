@@ -45,7 +45,7 @@ class ABI_EXPORT AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Tab(void);
 
-	virtual void	runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	// answer from dialog
 	typedef enum { a_OK, a_CANCEL } tAnswer;

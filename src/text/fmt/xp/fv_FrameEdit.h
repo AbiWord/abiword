@@ -84,7 +84,7 @@ public:
     bool                  isImageWrapper(void) const;
 
 protected:
-	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y);
+	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y) override;
 
 private:
 	FV_FrameEditMode      m_iFrameEditMode;

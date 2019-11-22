@@ -370,16 +370,16 @@ public:
 	UT_XML_Decoder () {}
 	virtual ~UT_XML_Decoder () {}
 
-	virtual void startElement (const gchar * /*name*/, const gchar ** atts)
+	virtual void startElement (const gchar * /*name*/, const gchar ** atts) override
 	{
 		mKey = UT_getAttribute ( "k", atts ) ;
 	}
 
-	virtual void endElement (const gchar * /*name*/)
+	virtual void endElement (const gchar * /*name*/) override
 	{
 	}
 
-	virtual void charData (const gchar * /*buffer*/, int /*length*/)
+	virtual void charData (const gchar * /*buffer*/, int /*length*/) override
 	{
 	}
 

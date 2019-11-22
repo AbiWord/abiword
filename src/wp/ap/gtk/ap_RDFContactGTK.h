@@ -43,8 +43,8 @@ class ABI_EXPORT AP_RDFContactGTK
     AP_RDFContactGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it );
     virtual ~AP_RDFContactGTK();
 
-    virtual void* createEditor();
-    virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
+    virtual void* createEditor() override;
+    virtual void updateFromEditorData(PD_DocumentRDFMutationHandle m) override;
 
 };
 

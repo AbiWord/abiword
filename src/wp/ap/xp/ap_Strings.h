@@ -47,7 +47,7 @@ public:
 	AP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguageName);
 	virtual ~AP_BuiltinStringSet(void);
 
-	virtual const gchar *	getValue(XAP_String_Id id) const;
+	virtual const gchar *	getValue(XAP_String_Id id) const override;
 
 #ifdef DEBUG
 	bool						dumpBuiltinSet(const char * szFilename) const;
@@ -67,10 +67,10 @@ public:
 	AP_DiskStringSet(XAP_App * pApp);
 	virtual ~AP_DiskStringSet(void);
 
-	virtual bool				setValue(XAP_String_Id id, const gchar * szString);
-	virtual bool				setValue(const gchar * szId, const gchar * szString);
-	virtual const gchar *	getValue(XAP_String_Id id) const;
-	virtual bool				loadStringsFromDisk(const char * szFilename);
+	virtual bool setValue(XAP_String_Id id, const gchar * szString) override;
+	virtual bool setValue(const gchar * szId, const gchar * szString) override;
+	virtual const gchar *	getValue(XAP_String_Id id) const override;
+	virtual bool loadStringsFromDisk(const char * szFilename) override;
 
 protected:
 	UT_GenericVector<gchar*>					m_vecStringsAP;

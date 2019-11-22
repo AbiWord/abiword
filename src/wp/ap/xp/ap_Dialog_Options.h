@@ -49,7 +49,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	AP_Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Options(void);
 
-	virtual void	runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	// answer from dialog
 	typedef enum { a_OK, a_CANCEL, a_SAVE, a_APPLY } tAnswer;
@@ -151,11 +151,11 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(PrefsAutoSave, 	bool);
     SET_GATHER          (EnableOverwrite,   bool);
 
-#if !defined (TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA)
 	SET_GATHER			(ViewShowRuler, 	bool);
+	SET_GATHER			(ViewShowStatusBar, bool);
+#if !defined (TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA)
 	virtual bool _gatherViewShowToolbar(UT_uint32 t) = 0;
 	virtual void _setViewShowToolbar(UT_uint32 row, bool b) = 0;
-	SET_GATHER			(ViewShowStatusBar, bool);
 #endif
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(OuterQuoteStyle,	gint);

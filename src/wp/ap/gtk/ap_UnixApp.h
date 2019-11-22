@@ -55,57 +55,57 @@ public:
 	virtual ~AP_UnixApp();
 
 	virtual bool					initialize(bool has_display);
-	virtual XAP_Frame *				newFrame(void);
-	virtual bool					forgetFrame(XAP_Frame * pFrame);
-	virtual GR_Graphics *           newDefaultScreenGraphics() const;
+	virtual XAP_Frame *				newFrame(void) override;
+	virtual bool					forgetFrame(XAP_Frame * pFrame) override;
+	virtual GR_Graphics *           newDefaultScreenGraphics() const override;
 
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
 									       const gchar * szKey, const gchar ** pszValue) const;
-	virtual const XAP_StringSet *	                getStringSet(void) const;
-	virtual const char *			        getAbiSuiteAppDir(void) const;
-	virtual const std::string&			getAbiSuiteAppUIDir(void) const;
+	virtual const XAP_StringSet *	                getStringSet(void) const override;
+	virtual const char *			        getAbiSuiteAppDir(void) const override;
+	virtual const std::string&			getAbiSuiteAppUIDir(void) const override;
 
-	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
-	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true);
-	virtual bool					canPasteFromClipboard(void);
-	virtual void					addClipboardFmt (const char * szFormat) {m_pClipboard->addFormat(szFormat);}
-	virtual void					deleteClipboardFmt (const char * szFormat) {m_pClipboard->deleteFormat(szFormat);}
+	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) override;
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) override;
+	virtual bool					canPasteFromClipboard(void) override;
+	virtual void					addClipboardFmt (const char * szFormat) override {m_pClipboard->addFormat(szFormat);}
+	virtual void					deleteClipboardFmt (const char * szFormat) override {m_pClipboard->deleteFormat(szFormat);}
 
-	virtual void					setSelectionStatus(AV_View * pView);
+	virtual void					setSelectionStatus(AV_View * pView) override;
 
 	/*!
 	  Sets the view selection
 	  \param pView The veiw the selection view is to be set to.
 	*/
-	inline virtual void                             setViewSelection( AV_View * pView)
+	inline virtual void                             setViewSelection( AV_View * pView) override
 	{ m_pViewSelection = pView; }
 
 	/*!
 	  Gets the View Selection
 	  \return The View currently selected.
 	*/
-	inline virtual AV_View *                        getViewSelection(void)
+	inline virtual AV_View *                        getViewSelection(void) override
 	{ return m_pViewSelection; }
-	virtual void					clearSelection(void);
+	virtual void					clearSelection(void) override;
 	virtual bool					getCurrentSelection(const char** formatList,
 														void ** ppData, UT_uint32 * pLen,
-														const char **pszFormatFound);
-	virtual void					cacheCurrentSelection(AV_View *);
+														const char **pszFormatFound) override;
+	virtual void					cacheCurrentSelection(AV_View *) override;
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
-	void							catchSignals(int sig_num) ABI_NORETURN;
+	virtual void	catchSignals(int sig_num) override ABI_NORETURN;
 	void loadAllPlugins ();
 
 	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file,
-								 UT_Error error);
-	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);
+								 UT_Error error) override;
+	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess) override;
 	bool makePngPreview(const char * pszInFile,const char * pszPNGFile,  UT_sint32 iWidth, UT_sint32 iHeight);
 	AP_DiskStringSet * loadStringsFromDisk(const char 		   * szStringSet,
 										   AP_BuiltinStringSet * pFallbackStringSet);
 
-	virtual XAP_UnixClipboard * getClipboard () { return m_pClipboard; }
+	virtual XAP_UnixClipboard * getClipboard () override { return m_pClipboard; }
 
 protected:	// JCA: Why in the hell we have so many (any) protected
 		// variables?

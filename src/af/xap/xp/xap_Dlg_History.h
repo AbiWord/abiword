@@ -66,7 +66,7 @@ class ABI_EXPORT XAP_Dialog_History : public XAP_Dialog_NonPersistent
 
 	virtual ~XAP_Dialog_History(void) {};
 
-	virtual void runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	typedef enum { a_OK, a_CANCEL, a_SHOW } tAnswer;
 

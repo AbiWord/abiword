@@ -98,7 +98,7 @@ public:
 	AP_BindingSet(EV_EditMethodContainer * pemc);
 	virtual ~AP_BindingSet(void);
 
-	virtual EV_EditBindingMap *	getMap(const char * szName);
+	virtual EV_EditBindingMap *	getMap(const char * szName) override;
 	void                            loadBuiltin(void);
 	EV_EditBindingMap *            createMap(const char * szName);
 	void _loadChar(	EV_EditBindingMap*			pebm,

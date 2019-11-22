@@ -33,9 +33,9 @@ public:
   AP_UnixPreview_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixPreview_Annotation(void);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			destroy(void);
-	virtual void			activate(void);
+	virtual void runModeless(XAP_Frame * pFrame) override;
+	virtual void destroy(void) override;
+	virtual void activate(void) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	void					_constructWindow(void);

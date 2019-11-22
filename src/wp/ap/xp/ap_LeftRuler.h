@@ -145,8 +145,8 @@ public:
 	virtual void        mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y) override;
 	UT_sint32           setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed, UT_sint32 y);
 	/* used with AV_Listener */
-	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
-    virtual  AV_ListenerType getType(void) { return AV_LISTENER_LEFTRULER;}
+	virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override;
+	virtual AV_ListenerType getType(void) override { return AV_LISTENER_LEFTRULER;}
 
 	/* used with AV_ScrollObj */
 	static void			_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
@@ -157,11 +157,12 @@ public:
 	void			    setDimension( UT_Dimension newdim );
 	virtual GR_Graphics* getGraphics(void) const override { return m_pG; }
 	virtual XAP_Frame* getFrame() const override {	return m_pFrame; }
+
 protected:
 	virtual void        _refreshView(void) override;
 
 	/* don't call this function directly, use XAP_CustomWidget::queueDraw() instead */
-	virtual void		drawLU(const UT_Rect *clip);
+	virtual void		drawLU(const UT_Rect *clip) override;
 
 //	void				_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 //									 UT_sint32 x, UT_sint32 h);
@@ -191,7 +192,7 @@ private:
 	void                _getCellMarkerRects(const AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell, fp_TableContainer * pBroke=NULL);
 	void		        _drawCellProperties(const AP_LeftRulerInfo * pInfo);
 protected:
-	virtual void		_drawCellMark(UT_Rect *prDrag, bool bUp);
+	virtual void		_drawCellMark(UT_Rect *prDrag, bool bUp) ;
 private:
 	void                _xorGuide(bool bClear=false);
 	void				_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);

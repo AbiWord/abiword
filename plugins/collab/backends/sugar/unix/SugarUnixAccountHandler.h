@@ -44,55 +44,55 @@ public:
 
 	// housekeeping
 	static UT_UTF8String					getStaticStorageType();
-	virtual UT_UTF8String					getStorageType()
+	virtual UT_UTF8String					getStorageType() override
 		{ return getStaticStorageType(); }
-	virtual UT_UTF8String					getDescription();
-	virtual UT_UTF8String					getDisplayType();
+	virtual UT_UTF8String					getDescription() override;
+	virtual UT_UTF8String					getDisplayType() override;
 
 	// dialog management
-	virtual void							embedDialogWidgets(void* /*pEmbeddingParent*/)
+	virtual void embedDialogWidgets(void* /*pEmbeddingParent*/) override
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
-	virtual void							removeDialogWidgets(void* /*pEmbeddingParent*/)
+	virtual void removeDialogWidgets(void* /*pEmbeddingParent*/) override
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
-	virtual bool							canDelete()
+	virtual bool canDelete() override
 		{ return false; }
-	virtual bool							canEditProperties()
+	virtual bool canEditProperties() override
 		{ return false; }
-	virtual void							loadProperties();
-	virtual void							storeProperties();
+	virtual void loadProperties() override;
+	virtual void storeProperties() override;
 
 	// connection management
-	virtual ConnectResult					connect();
-	virtual bool							disconnect();
-	virtual bool							isOnline();
+	virtual ConnectResult connect() override;
+	virtual bool disconnect() override;
+	virtual bool isOnline() override;
 
 	// user management
-	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
-	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
-	virtual bool							allowsManualBuddies()
+	virtual BuddyPtr constructBuddy(const PropertyMap& props) override;
+	virtual BuddyPtr constructBuddy(const std::string& descriptor, BuddyPtr pBuddy) override;
+	virtual bool allowsManualBuddies() override
 		{ return false; }
-	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
-	virtual bool							hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
-	virtual bool							hasPersistentAccessControl()
+	virtual void forceDisconnectBuddy(BuddyPtr pBuddy) override;
+	virtual bool hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy) override;
+	virtual bool hasPersistentAccessControl()  override
 		{ return false; }
-	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
+	virtual bool recognizeBuddyIdentifier(const std::string& identifier) override;
 
 	// session management
-	virtual bool							allowsSessionTakeover()
+	virtual bool allowsSessionTakeover() override
 		{ return true; }
-	virtual bool							canManuallyStartSession()
+	virtual bool canManuallyStartSession() override
 		{ return false; }
 
 	// packet management
-	virtual bool							send(const Packet* pPacket);
-	virtual bool							send(const Packet* pPacket, BuddyPtr buddy);
+	virtual bool send(const Packet* pPacket) override;
+	virtual bool send(const Packet* pPacket, BuddyPtr buddy) override;
 	Packet*									createPacket(const std::string& packet, BuddyPtr pBuddy);
 
 	// event management
 	void									handleEvent(Session& pSession);
 
 	// signal management
-	virtual void							signal(const Event& event, BuddyPtr pSource);
+	virtual void signal(const Event& event, BuddyPtr pSource) override;
 
 	// tube & buddy management
 	SugarBuddyPtr							getBuddy(const UT_UTF8String& dbusAddress);
@@ -108,7 +108,7 @@ public:
 protected:
 	bool									_send(const Packet* pPacket, const char* dbusAddress);
 	void									_registerEditMethods();
-	virtual	void							_handlePacket(Packet* packet, BuddyPtr buddy);
+	virtual	void _handlePacket(Packet* packet, BuddyPtr buddy) override;
 
 private:
 	static SugarAccountHandler* 			m_pHandler;

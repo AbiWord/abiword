@@ -44,35 +44,35 @@ public:
 	virtual ~GR_CairoPrintGraphics();
 
 	static UT_uint32 s_getClassId() {return GRID_UNIX_PANGO_PRINT;}
-	virtual UT_uint32 getClassId() {return s_getClassId();}
+	virtual UT_uint32 getClassId() override {return s_getClassId();}
 
-	virtual GR_Capability  getCapability() {return GRCAP_PRINTER_ONLY;}
+	virtual GR_Capability  getCapability() override {return GRCAP_PRINTER_ONLY;}
 	static const char *    graphicsDescriptor(){return "Unix Cairo Print";}
 
-	virtual bool queryProperties(GR_Graphics::Properties gp) const;
+	virtual bool queryProperties(GR_Graphics::Properties gp) const override;
 
-	virtual bool startPrint(void);
+	virtual bool startPrint(void) override;
 	virtual bool startPage(const char * /*szPagelabel*/, UT_uint32 /*pageNumber*/,
-						   bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/);
-	virtual bool endPrint(void);
+						   bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/) override;
+	virtual bool endPrint(void) override;
 
-	virtual void setCursor(GR_Graphics::Cursor /*c*/) { UT_ASSERT_NOT_REACHED(); }
-	virtual GR_Graphics::Cursor getCursor(void) const { UT_ASSERT_NOT_REACHED(); return GR_CURSOR_INVALID; }
-	virtual GR_Font * getGUIFont(void);
+	virtual void setCursor(GR_Graphics::Cursor /*c*/) override { UT_ASSERT_NOT_REACHED(); }
+	virtual GR_Graphics::Cursor getCursor(void) const override { UT_ASSERT_NOT_REACHED(); return GR_CURSOR_INVALID; }
+	virtual GR_Font * getGUIFont(void) override;
 	virtual void setPageSize(char * /*pageSizeName*/, UT_uint32 /*iwidth*/ = 0, UT_uint32 /*iheight*/=0) { UT_ASSERT_NOT_REACHED(); }
 
-	virtual void scroll(UT_sint32, UT_sint32) { UT_ASSERT_NOT_REACHED(); }
-	virtual void scroll(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_sint32)
+	virtual void scroll(UT_sint32, UT_sint32) override { UT_ASSERT_NOT_REACHED(); }
+	virtual void scroll(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_sint32) override
 			{ UT_ASSERT_NOT_REACHED(); }
 
-    virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { UT_ASSERT_NOT_REACHED(); return NULL;}
-	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) { UT_ASSERT_NOT_REACHED(); }
-	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) { UT_ASSERT_NOT_REACHED(); }
+    virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) override { UT_ASSERT_NOT_REACHED(); return NULL;}
+	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) override { UT_ASSERT_NOT_REACHED(); }
+	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) override { UT_ASSERT_NOT_REACHED(); }
 
-	double            getResolutionRatio(void) const;
+	double            getResolutionRatio(void) const override;
 	void              setResolutionRatio(double dres);
 
-	virtual bool      canQuickPrint(void) const { return true;}
+	virtual bool      canQuickPrint(void) const override { return true;}
 
   protected:
 

@@ -199,7 +199,7 @@ public:
 	PD_Document* getDoc() {return m_pDoc;};
 
 protected:
-    virtual UT_Error _writeDocument(void);
+    virtual UT_Error _writeDocument(void) override;
 
 private:
 	PD_Document* m_pDoc;

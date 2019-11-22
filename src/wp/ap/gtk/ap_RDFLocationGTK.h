@@ -46,8 +46,8 @@ class ABI_EXPORT AP_RDFLocationGTK
     AP_RDFLocationGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it, bool isGeo84 = false );
     virtual ~AP_RDFLocationGTK();
 
-    virtual void* createEditor();
-    virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
+    virtual void* createEditor() override;
+    virtual void updateFromEditorData(PD_DocumentRDFMutationHandle m) override;
 #ifdef WITH_CHAMPLAIN
     void OnMouseClick( ClutterActor *actor, ClutterButtonEvent *event );
 #endif

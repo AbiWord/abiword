@@ -43,9 +43,9 @@ public:
 	OXML_Element_Table(const std::string & id);
 	virtual ~OXML_Element_Table();
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter) override;
 	virtual UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+	virtual UT_Error addToPT(PD_Document * pDocument) override;
 	virtual std::string getColumnWidth(int colIndex) const;
 	virtual std::string getRowHeight(int rowIndex) const;
 	UT_Error addChildrenToPT(PD_Document * pDocument);

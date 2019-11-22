@@ -32,7 +32,7 @@ class XAP_Frame;
 class ABI_EXPORT AP_Dialog_RDFEditor : public AP_Dialog_Modeless
 {
   protected:
-    virtual XAP_String_Id getWindowTitleStringId();
+    virtual XAP_String_Id getWindowTitleStringId() override;
 
 public:
 	AP_Dialog_RDFEditor(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -57,7 +57,7 @@ public:
      */
     virtual void clear();
     virtual void addStatement( const PD_RDFStatement& st );
-    virtual void setStatus( const std::string& msg );
+    virtual void setStatus(const std::string& msg) override;
     virtual void removeStatement( const PD_RDFStatement& st );
     virtual std::list< PD_RDFStatement > getSelection();
     virtual void setSelection( const std::list< PD_RDFStatement >& l );

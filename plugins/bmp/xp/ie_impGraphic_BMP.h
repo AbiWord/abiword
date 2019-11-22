@@ -32,21 +32,21 @@
 class IE_ImpGraphicBMP_Sniffer : public IE_ImpGraphicSniffer
 {
  public:
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
-	virtual UT_Confidence_t recognizeContents (const char * szBuf,
-					UT_uint32 iNumbytes);
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
+	virtual UT_Confidence_t recognizeContents(const char * szBuf,
+					UT_uint32 iNumbytes) override;
+	virtual bool getDlgLabels(const char ** szDesc,
 				   const char ** szSuffixList,
-				   IEGraphicFileType * ft);
-	virtual UT_Error constructImporter (IE_ImpGraphic ** ppieg);
+				   IEGraphicFileType * ft) override;
+	virtual UT_Error constructImporter(IE_ImpGraphic ** ppieg) override;
 };
 
 class IE_ImpGraphic_BMP : public IE_ImpGraphic
 {
 public:
-    virtual UT_Error	importGraphic(const UT_ConstByteBufPtr &pBB,
-                                          FG_ConstGraphicPtr & pfg);
+    virtual UT_Error importGraphic(const UT_ConstByteBufPtr &pBB,
+                                          FG_ConstGraphicPtr & pfg) override;
 
 private:
 	// PNG structures used

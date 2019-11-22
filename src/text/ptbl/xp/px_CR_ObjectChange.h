@@ -53,7 +53,7 @@ public:
 
 	~PX_ChangeRecord_ObjectChange();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 	PTObjectType			getObjectType(void) const;
 	PT_AttrPropIndex		getOldIndexAP(void) const;
 	PT_BlockOffset			getBlockOffset(void) const;
@@ -65,7 +65,7 @@ public:
 protected:
 	PT_AttrPropIndex		m_indexOldAP;
 	PTObjectType			m_objectType;		/* our type (image, etc.) */
-mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+	mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 
 	// used in revisions mode to indicate if fmt change record represents deletion
 	bool                    m_bRevisionDelete;

@@ -40,12 +40,12 @@ public:
 	IE_Exp_PalmDoc_Sniffer (const char * name);
 	virtual ~IE_Exp_PalmDoc_Sniffer () {}
 
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual bool recognizeSuffix(const char * szSuffix) override;
+	virtual bool getDlgLabels(const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructExporter(PD_Document * pDocument,
+										IE_Exp ** ppie) override;
 };
 
 class IE_Exp_PalmDoc : public IE_Exp_Text
@@ -55,11 +55,11 @@ public:
 	virtual ~IE_Exp_PalmDoc();
 
 protected:
-	virtual UT_Error            _writeDocument(void);
-	virtual UT_uint32			_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-	virtual bool				_writeBytes(const UT_Byte * sz);
+	virtual UT_Error _writeDocument(void) override;
+	virtual UT_uint32 _writeBytes(const UT_Byte * pBytes, UT_uint32 length) override;
+	virtual bool _writeBytes(const UT_Byte * sz) override;
 
-        void				_selectSwap();
+	void				_selectSwap();
 	void				_compress( buffer* );
 	Byte*				_mem_find( Byte *t, int t_len, Byte *m, int m_len );
 	Word				_swap_Word( Word );

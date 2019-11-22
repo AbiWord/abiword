@@ -27,7 +27,7 @@ class XAP_UnixCustomWidget: virtual public XAP_CustomWidget
 {
 public:
 	virtual GtkWidget *getWidget() = 0;
-	virtual void queueDraw(const UT_Rect *clip=NULL);
+	virtual void queueDraw(const UT_Rect *clip = NULL) override;
 
 protected:
 	class _fe

@@ -46,7 +46,7 @@ public:
 	virtual ~AP_Lists_preview(void);
 
 	// data twiddlers
-	void				draw(const UT_Rect *clip=NULL);
+	void draw(const UT_Rect *clip = NULL) override;
 	AP_Dialog_Lists*	getLists(void);
 	void				setData(const gchar * pszFont,float fAlign,float fIndent);
 	void				setData(const std::string & font, float fAlign,
@@ -69,7 +69,7 @@ protected:
 class ABI_EXPORT AP_Dialog_Lists : public AP_Dialog_Modeless
 {
   protected:
-    virtual XAP_String_Id getWindowTitleStringId();
+    virtual XAP_String_Id getWindowTitleStringId() override;
 
 public:
 	AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

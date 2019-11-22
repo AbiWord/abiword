@@ -97,7 +97,7 @@ public:
 
 	virtual ~fl_TOCLayout();
 
-	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) override;
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    doclistener_deleteEndTOC(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    bl_doclistener_insertEndTOC(fl_ContainerLayout*,
@@ -108,15 +108,15 @@ public:
 																		PL_ListenerId lid,
 																		fl_ContainerLayout* sfhNew));
 
-	virtual void		     format(void);
-	virtual void		     updateLayout(bool bDoFull);
-	virtual void             collapse(void);
-	virtual void             markAllRunsDirty(void);
-	virtual fl_SectionLayout *  getSectionLayout(void)  const;
-	bool                     recalculateFields(UT_uint32 iUpdateCount);
-	virtual void		     redrawUpdate(void);
-	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
-	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
+	virtual void		     format(void) override;
+	virtual void		     updateLayout(bool bDoFull) override;
+	virtual void             collapse(void) override;
+	virtual void             markAllRunsDirty(void) override;
+	virtual fl_SectionLayout *  getSectionLayout(void) const override;
+	virtual bool         recalculateFields(UT_uint32 iUpdateCount) override;
+	virtual void		     redrawUpdate(void) override;
+	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) override;
+	virtual fl_DocSectionLayout*	 getDocSectionLayout(void) const override { return m_pDocSL; }
 	bool                     isEndTOCIn(void) const {return m_bHasEndTOC;}
 	void                     setTOCEndIn(void);
 	TOCEntry *               createNewEntry(fl_BlockLayout * pBL);
@@ -150,7 +150,7 @@ public:
 
 private:
 	virtual void             _purgeLayout(void);
-	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP) override;
 	void                     _createTOCContainer(void);
 	bool                     _isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCStyle);
 	void                     _insertTOCContainer(fp_TOCContainer * pNewTOC);
@@ -235,14 +235,14 @@ public:
 	virtual ~fl_TOCListener();
 
 	virtual bool				populate(fl_ContainerLayout* sfh,
-										 const PX_ChangeRecord * pcr);
+										 const PX_ChangeRecord * pcr) override;
 
 	virtual bool				populateStrux(pf_Frag_Strux* sdh,
 											  const PX_ChangeRecord * pcr,
-											  fl_ContainerLayout* * psfh);
+											  fl_ContainerLayout* * psfh) override;
 
 	virtual bool				change(fl_ContainerLayout* sfh,
-									   const PX_ChangeRecord * pcr);
+									   const PX_ChangeRecord * pcr) override;
 
 	virtual bool				insertStrux(fl_ContainerLayout* sfh,
 											const PX_ChangeRecord * pcr,
@@ -250,9 +250,9 @@ public:
 											PL_ListenerId lid,
 											void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	PL_ListenerId lid,
-																	fl_ContainerLayout* sfhNew));
+																	fl_ContainerLayout* sfhNew)) override;
 
-	virtual bool				signal(UT_uint32 iSignal);
+	virtual bool				signal(UT_uint32 iSignal) override;
 
 private:
 	PD_Document*				m_pDoc;

@@ -40,15 +40,15 @@ public:
 	IE_Imp_PalmDoc_Sniffer(const char * name);
 	virtual ~IE_Imp_PalmDoc_Sniffer() {}
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-	virtual const IE_MimeConfidence * getMimeConfidence ();
-	virtual UT_Confidence_t recognizeContents (const char * szBuf,
-									UT_uint32 iNumbytes);
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+	virtual const IE_MimeConfidence * getMimeConfidence() override;
+	virtual UT_Confidence_t recognizeContents(const char * szBuf,
+									UT_uint32 iNumbytes) override;
+	virtual bool getDlgLabels(const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructImporter(PD_Document * pDocument,
+										IE_Imp ** ppie) override;
 
 };
 
@@ -59,7 +59,7 @@ public:
 	~IE_Imp_PalmDoc();
 
 protected:
-	virtual UT_Error	_loadFile(GsfInput * fp);
+	virtual UT_Error _loadFile(GsfInput * fp) override;
 	UT_Error			_parseFile(GsfInput * fp);
 	UT_Error			_writeHeader(GsfInput * fp);
 

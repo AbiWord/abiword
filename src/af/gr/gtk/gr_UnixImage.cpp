@@ -35,7 +35,7 @@ public:
 	GR_UnixCroppedImage(const char* pszName);
 	GR_UnixCroppedImage(const char* pszName, GdkPixbuf * pPixbuf);
 
-	virtual void cairoSetSource(cairo_t *);
+	virtual void cairoSetSource(cairo_t *) override;
 	void crop(double left, double top, double right, double bottom);
 private:
 	 double m_CropLeft, m_CropRight, m_CropTop, m_CropBottom;

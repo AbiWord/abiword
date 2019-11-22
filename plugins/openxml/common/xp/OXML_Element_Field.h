@@ -40,8 +40,8 @@ public:
 	OXML_Element_Field(const std::string & id, const std::string & type, const gchar* value);
 	virtual ~OXML_Element_Field();
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter) override;
+	virtual UT_Error addToPT(PD_Document * pDocument) override;
 	void setFieldType(const std::string & type);
 
 private:

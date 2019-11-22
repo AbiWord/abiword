@@ -41,7 +41,7 @@ public:
 	AP_CocoaDialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~AP_CocoaDialog_FormatFrame(void);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void runModeless(XAP_Frame * pFrame) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
@@ -49,11 +49,11 @@ public:
 	virtual void			event_Close(void);
 	void					event_ApplyToChanged(void);
 	void 					event_previewExposed(void);
-	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
-	virtual void			setSensitivity(bool bSens);
-	virtual void            destroy(void);
-	virtual void            activate(void);
-	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
+	virtual void setBorderThicknessInGUI(UT_UTF8String & sThick) override;
+	virtual void setSensitivity(bool bSens) override;
+	virtual void destroy(void) override;
+	virtual void activate(void) override;
+	virtual void notifyActiveFrame(XAP_Frame * pFrame) override;
 	char * 					getWindowName()
 						{ return m_WindowName; };
 protected:

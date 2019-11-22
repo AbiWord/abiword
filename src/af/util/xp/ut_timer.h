@@ -50,8 +50,8 @@ public:
 	void setInstanceData(void*);
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds) = 0;	/* set freq and start */
-	virtual void stop(void) = 0;		/* suspend events */
-	virtual void start(void) = 0;		/* resume events */
+	virtual void stop(void) override = 0;		/* suspend events */
+	virtual void start(void) override = 0;		/* resume events */
 
 	void setIdentifier(UT_uint32);
 	UT_uint32 getIdentifier();

@@ -38,8 +38,8 @@ public:
 	OXML_Element_Bookmark(const std::string & id);
 	virtual ~OXML_Element_Bookmark();
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter) override;
+	virtual UT_Error addToPT(PD_Document * pDocument) override;
 
 	void setType(const std::string & type);
 	void setName(const std::string & name);

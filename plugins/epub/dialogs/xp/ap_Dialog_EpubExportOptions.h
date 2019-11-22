@@ -41,7 +41,7 @@ public:
 
     virtual ~AP_Dialog_EpubExportOptions(void);
 
-    virtual void runModal(XAP_Frame * pFrame) = 0;
+    virtual void runModal(XAP_Frame * pFrame) override = 0;
 
     bool shouldSave() const;
 

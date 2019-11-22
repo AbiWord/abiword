@@ -38,8 +38,8 @@ public:
     virtual ~IE_Exp_OpenDocument();
     void setGSFOutput(GsfOutput * pBuf);
 protected:
-    virtual GsfOutput* _openFile(const char *szFilename);
-    virtual UT_Error  _writeDocument(void);
+    virtual GsfOutput* _openFile(const char *szFilename) override;
+    virtual UT_Error  _writeDocument(void) override;
     virtual UT_Error copyToBuffer(PD_DocumentRange * pDocRange, const UT_ByteBufPtr & bufODT);
 
 private:

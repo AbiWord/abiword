@@ -119,9 +119,9 @@ public:
     IE_Exp_HTML_FileExporter(PD_Document* pDocument,
             const UT_UTF8String &baseName);
 
-    UT_UTF8String saveData(const gchar *szDataId, const gchar* extension);
-    UT_UTF8String saveData(const UT_UTF8String &name,
-    const UT_UTF8String &data);
+    virtual UT_UTF8String saveData(const gchar *szDataId, const gchar* extension) override;
+    virtual UT_UTF8String saveData(const UT_UTF8String &name,
+    const UT_UTF8String &data) override;
 private:
     void _init();
     bool m_bInitialized;
@@ -138,9 +138,9 @@ public:
             UT_UTF8String &buffer,
             const UT_UTF8String &title);
 
-    UT_UTF8String saveData(const gchar *szDataId, const gchar* extension);
-    UT_UTF8String saveData(const UT_UTF8String &name,
-        const UT_UTF8String &data);
+    virtual UT_UTF8String saveData(const gchar *szDataId, const gchar* extension) override;
+    virtual UT_UTF8String saveData(const UT_UTF8String &name,
+        const UT_UTF8String &data) override;
 
     UT_UTF8String generateHeader(const UT_UTF8String &index,
         const UT_UTF8String &mimetype);
@@ -163,7 +163,7 @@ class ABI_EXPORT IE_Exp_HTML_FileWriter : public IE_Exp_HTML_OutputWriter
 {
 public:
     IE_Exp_HTML_FileWriter(GsfOutput *output);
-    void write(const UT_UTF8String &str);
+    virtual void write(const UT_UTF8String &str) override;
 private:
     GsfOutput *m_output;
 };
@@ -172,7 +172,7 @@ class ABI_EXPORT IE_Exp_HTML_StringWriter: public IE_Exp_HTML_OutputWriter
 {
 public:
     IE_Exp_HTML_StringWriter();
-    void write(const UT_UTF8String &str);
+    virtual void write(const UT_UTF8String &str) override;
     UT_UTF8String getString() const { return m_buffer; }
 private:
     UT_UTF8String m_buffer;

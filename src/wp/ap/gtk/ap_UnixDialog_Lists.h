@@ -42,11 +42,11 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			destroy(void);
-	virtual void			activate(void);
-	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
-	virtual void            runModal(XAP_Frame * pFrame);
+	virtual void runModeless(XAP_Frame * pFrame) override;
+	virtual void destroy(void) override;
+	virtual void activate(void) override;
+	virtual void notifyActiveFrame(XAP_Frame *pFrame) override;
+	virtual void runModal(XAP_Frame * pFrame) override;
 	/* CALLBACKS */
 
 	void					customChanged(void);
@@ -66,10 +66,10 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	void					updateDialog(void);
 	bool                                    dontUpdate(void);
 	static void				autoupdateLists(UT_Worker * pTimer);
-    virtual bool            isPageLists(void);
-	virtual void            setFoldLevelInGUI(void);
+    virtual bool            isPageLists(void) override;
+	virtual void            setFoldLevelInGUI(void) override;
  protected:
-	virtual GtkWidget *		_constructWindow(void);
+	virtual GtkWidget* _constructWindow(void);
 	GtkWidget *				_constructWindowContents(void);
 	void					_setRadioButtonLabels(void);
 	void					_connectSignals(void);

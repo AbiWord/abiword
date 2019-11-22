@@ -552,7 +552,7 @@ public:
 
 protected:
 
-	virtual UT_Error _loadFile(GsfInput * input);
+	virtual UT_Error _loadFile(GsfInput * input) override;
 
 private:
 
@@ -881,7 +881,7 @@ public:
   {
   }
   
-  virtual void startElement (const gchar * name, const gchar ** atts) 
+  virtual void startElement (const gchar * name, const gchar ** atts) override
   {
     mCharData.clear ();
     mAttrib.clear ();
@@ -894,7 +894,7 @@ public:
 	}
   }
   
-  virtual void endElement (const gchar * name)
+  virtual void endElement (const gchar * name) override
   {
     if (mCharData.size()) {
       if (!strcmp (name, "dc:language"))
@@ -909,7 +909,7 @@ public:
     mAttrib.clear ();
   }
   
-  virtual void charData (const gchar * buffer, int length)
+  virtual void charData (const gchar * buffer, int length) override
   {
     if (buffer && length)      
 		mCharData += std::string (buffer, length);
@@ -978,15 +978,15 @@ public:
   {
   }
 
-  virtual void startElement (const gchar * /*name*/, const gchar ** /*atts*/) 
+  virtual void startElement (const gchar * /*name*/, const gchar ** /*atts*/) override
   {
   }
 
-  virtual void endElement (const gchar * /*name*/)
+  virtual void endElement (const gchar * /*name*/) override
   {
   }
 
-  virtual void charData (const gchar * /*buffer*/, int /*length*/)
+  virtual void charData (const gchar * /*buffer*/, int /*length*/) override
   {
   }
 
@@ -1031,7 +1031,7 @@ public:
       return *name;
   }
   
-  virtual void startElement (const gchar * name, const gchar ** atts) 
+  virtual void startElement (const gchar * name, const gchar ** atts) override
   {
 	/* SXW || ODT */
     if (!strcmp (name, "style:page-master") || !strcmp (name, "style:page-layout")) {
@@ -1107,7 +1107,7 @@ public:
     }
   } 
 
-  virtual void endElement (const gchar * name)
+  virtual void endElement (const gchar * name) override
   {
     if (!strcmp (name, "style:page-master")) {
       m_pageMaster.clear();
@@ -1159,7 +1159,7 @@ public:
     }
   }
   
-  virtual void charData (const gchar * /*buffer*/, int /*length*/)
+  virtual void charData (const gchar * /*buffer*/, int /*length*/) override
   {
   }  
 
@@ -1241,7 +1241,7 @@ public:
   {
   }
 
-  virtual void startElement (const gchar * name, const gchar ** atts) 
+  virtual void startElement (const gchar * name, const gchar ** atts) override
   {
     // if we're inside a TOC, ignore the contents since SXW/ODT include a copy of the TOC
     if (m_bInTOC)
@@ -1485,7 +1485,7 @@ public:
     }
   }
 
-  virtual void endElement (const gchar * name)
+  virtual void endElement (const gchar * name) override
   {
     if (!strcmp(name, "text:section" ))
       {
@@ -1548,7 +1548,7 @@ public:
     }
   }
 
-  virtual void charData (const gchar * buffer, int length)
+  virtual void charData (const gchar * buffer, int length) override
   {
     if (buffer && length && m_bAcceptingText && !m_bInTOC)
       m_charData += UT_UCS4String (buffer, length, true);

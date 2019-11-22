@@ -45,7 +45,7 @@ public:
 	AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Styles(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void runModal(XAP_Frame * pFrame) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -109,8 +109,8 @@ protected:
 	void                            _populateCList(void);
 	void 				_storeWindowData(void) const;
 	void				_connectSignals(void) const;
-	virtual const char * getCurrentStyle (void) const;
-	virtual void setDescription (const char * desc) const;
+	virtual const char * getCurrentStyle(void) const override;
+	virtual void setDescription(const char * desc) const override;
 
 	GR_CairoGraphics	* m_pParaPreviewWidget;
 	GR_CairoGraphics	* m_pCharPreviewWidget;
@@ -146,7 +146,7 @@ protected:
 	void        _constructFormatList(GtkWidget * FormatMenu);
 	void        _connectModifySignals(void);
 	void        _constructModifyDialogContents(GtkWidget * modifyDialog);
-	virtual void setModifyDescription( const char * desc);
+	virtual void setModifyDescription( const char * desc) override;
 	bool        _populateModify(void);
 
 	GR_CairoGraphics	* m_pAbiPreviewWidget;

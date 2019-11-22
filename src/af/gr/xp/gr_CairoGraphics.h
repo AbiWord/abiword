@@ -59,7 +59,7 @@ public:
 	GR_CairoPatternImpl(cairo_surface_t * surf);
 	GR_CairoPatternImpl(const GR_CairoPatternImpl &);
 	virtual ~GR_CairoPatternImpl();
-    virtual UT_ColorPatImpl * clone() const;
+    virtual UT_ColorPatImpl * clone() const override;
 	cairo_pattern_t *getPattern() const
 		{
 			return m_pattern;
@@ -83,7 +83,7 @@ class GR_CairoRasterImage
 	: public GR_RasterImage
 {
 public:
-	virtual GR_Image * createImageSegment(GR_Graphics * pG,const UT_Rect & rec);
+	virtual GR_Image * createImageSegment(GR_Graphics * pG,const UT_Rect & rec) override;
 	virtual void cairoSetSource(cairo_t *) = 0;
 protected:
 	// called by createImageSegment()
@@ -107,9 +107,9 @@ class ABI_EXPORT GR_PangoFont : public GR_Font
 		Measure the unremapped char to be put into the cache.
 		That means measuring it for a font size of 120
 	 */
-	virtual UT_sint32 measureUnremappedCharForCache(UT_UCS4Char cChar) const;
-	virtual bool      doesGlyphExist(UT_UCS4Char g) const;
-	virtual bool      glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
+	virtual UT_sint32 measureUnremappedCharForCache(UT_UCS4Char cChar) const override;
+	virtual bool      doesGlyphExist(UT_UCS4Char g) const override;
+	virtual bool      glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG) override;
 	PangoFont *       getPangoFont() const {return m_pf;}
 	PangoFont *       getPangoLayoutFont() const {return m_pLayoutF;}
 
@@ -119,7 +119,7 @@ class ABI_EXPORT GR_PangoFont : public GR_Font
 	bool              isGuiFont () const {return m_bGuiFont;}
 	const UT_String & getDescription() const {return m_sDesc;}
 
-	virtual const char* getFamily() const;
+	virtual const char* getFamily() const override;
 	const PangoFontDescription * getPangoDescription() const {return m_pfdLay;}
 
 	// ascent/descent in layout units
@@ -159,8 +159,8 @@ public:
 		  m_double_buffered(double_buffered)
 	{
 	}
-	virtual GR_GraphicsId getType() const {return GRID_UNIX;}
-	virtual bool isPrinterGraphics() const {return m_bPrinter;}
+	virtual GR_GraphicsId getType() const override {return GRID_UNIX;}
+	virtual bool isPrinterGraphics() const override {return m_bPrinter;}
 	virtual cairo_t *createCairo() = 0;
 
 	bool            m_bPreview;
@@ -178,88 +178,88 @@ class ABI_EXPORT GR_CairoGraphics : public GR_Graphics
 public:
 	virtual ~GR_CairoGraphics();
 
-	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_ONLY;}
+	virtual GR_Capability  getCapability() override {return GRCAP_SCREEN_ONLY;}
 
-	virtual UT_sint32      measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0);
+	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0) override;
 
 	virtual void		   drawChars(const UT_UCSChar* pChars,
 									 int iCharOffset, int iLength,
 									 UT_sint32 xoff, UT_sint32 yoff,
-									 int * pCharWidth);
+									 int * pCharWidth) override;
 
 	virtual void           drawGlyph(UT_uint32 glyph_idx,
-									 UT_sint32 xoff, UT_sint32 yoff);
+									 UT_sint32 xoff, UT_sint32 yoff) override;
 
 	virtual UT_uint32      measureString(const UT_UCSChar* s, int iOffset,
-										 int num,  UT_GrowBufElement* pWidths, UT_uint32 * height = 0);
+										 int num,  UT_GrowBufElement* pWidths, UT_uint32 * height = 0) override;
 
 	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily,
 										  const char * pszLang);
 
-	virtual void           setFont(const GR_Font *);
-	virtual void           clearFont(void) {m_pPFont = NULL;}
+	virtual void           setFont(const GR_Font *) override;
+	virtual void           clearFont(void) override {m_pPFont = NULL;}
 
-	virtual void           setZoomPercentage(UT_uint32 iZoom);
+	virtual void           setZoomPercentage(UT_uint32 iZoom) override;
 
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
 	//
-	virtual bool itemize(UT_TextIterator & text, GR_Itemization & I);
-	virtual bool shape(GR_ShapingInfo & si, GR_RenderInfo *& ri);
-	virtual void prepareToRenderChars(GR_RenderInfo & ri);
-	virtual void renderChars(GR_RenderInfo & ri);
-	virtual void measureRenderedCharWidths(GR_RenderInfo & ri);
-	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
-	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter);
+	virtual bool itemize(UT_TextIterator & text, GR_Itemization & I) override;
+	virtual bool shape(GR_ShapingInfo & si, GR_RenderInfo *& ri) override;
+	virtual void prepareToRenderChars(GR_RenderInfo & ri) override;
+	virtual void renderChars(GR_RenderInfo & ri) override;
+	virtual void measureRenderedCharWidths(GR_RenderInfo & ri) override;
+	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const override;
+	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter) override;
 
-	virtual bool needsSpecialCaretPositioning(GR_RenderInfo & ri);
-	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward);
-	virtual void adjustDeletePosition(GR_RenderInfo & ri);
-	virtual bool nativeBreakInfoForRightEdge() {return false;}
+	virtual bool needsSpecialCaretPositioning(GR_RenderInfo & ri) override;
+	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward) override;
+	virtual void adjustDeletePosition(GR_RenderInfo & ri) override;
+	virtual bool nativeBreakInfoForRightEdge() override {return false;}
 
-	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
-	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
-	virtual void      justify(GR_RenderInfo & ri);
+	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent) override;
+	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const override;
+	virtual void      justify(GR_RenderInfo & ri) override;
 
-	virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const;
+	virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const override;
 	virtual void      positionToXY(const GR_RenderInfo & ri,
 								   UT_sint32& x, UT_sint32& y,
 								   UT_sint32& x2, UT_sint32& y2,
-								   UT_sint32& height, bool& bDirection) const;
-	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri);
+								   UT_sint32& height, bool& bDirection) const override;
+	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri) override;
 
-	virtual const UT_VersionInfo & getVersion() const {return s_Version;}
+	virtual const UT_VersionInfo & getVersion() const override {return s_Version;}
 
-	virtual void setColor(const UT_RGBColor& clr);
-	virtual void getColor(UT_RGBColor &clr);
+	virtual void setColor(const UT_RGBColor& clr) override;
+	virtual void getColor(UT_RGBColor &clr) override;
 
 	PangoFontMap * getFontMap() const {return m_pFontMap;}
 	PangoContext * getContext() const {return m_pContext;}
 	PangoFontMap * getLayoutFontMap() const {return m_pLayoutFontMap;}
 	PangoContext * getLayoutContext() const {return m_pLayoutContext;}
 
-	virtual UT_uint32 getFontAscent();
-	virtual UT_uint32 getFontDescent();
-	virtual UT_uint32 getFontHeight();
+	virtual UT_uint32 getFontAscent() override;
+	virtual UT_uint32 getFontDescent() override;
+	virtual UT_uint32 getFontHeight() override;
 
-	virtual UT_uint32 getFontAscent(const GR_Font *);
-	virtual UT_uint32 getFontDescent(const GR_Font *);
-	virtual UT_uint32 getFontHeight(const GR_Font *);
+	virtual UT_uint32 getFontAscent(const GR_Font *) override;
+	virtual UT_uint32 getFontDescent(const GR_Font *) override;
+	virtual UT_uint32 getFontHeight(const GR_Font *) override;
 
-	virtual void		fillRect(GR_Color3D c,
+	virtual void fillRect(GR_Color3D c,
 								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
-	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
-	virtual void		polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints);
-	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void		drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void		polyLine(const UT_Point * pts, UT_uint32 nPoints);
-	virtual void		fillRect(const UT_RGBColor& c,
+								 UT_sint32 w, UT_sint32 h) override;
+	virtual void fillRect(GR_Color3D c, UT_Rect &r) override;
+	virtual void polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints) override;
+	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32) override;
+	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest) override;
+	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) override;
+	virtual void polyLine(const UT_Point * pts, UT_uint32 nPoints) override;
+	virtual void fillRect(const UT_RGBColor& c,
 								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
-	virtual void		invertRect(const UT_Rect* pRect);
-	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+								 UT_sint32 w, UT_sint32 h) override;
+	virtual void invertRect(const UT_Rect* pRect) override;
+	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) override;
 
 	bool isDingbat(void) const {return m_bIsDingbat;}
 	bool isSymbol(void) const {return m_bIsSymbol;};
@@ -272,13 +272,13 @@ public:
 							   const char* pszFontWeight,
 							   const char* pszFontStretch,
 							   const char* pszFontSize,
-							   const char* pszLang);
+							   const char* pszLang) override;
 
-	virtual void getCoverage(UT_NumberVector& coverage);
-	virtual void setLineWidth(UT_sint32);
-	virtual void setClipRect(const UT_Rect* pRect);
-	virtual UT_uint32 getDeviceResolution(void) const;
-	double    getResolutionRatio(void) const { return 1.0;}
+	virtual void getCoverage(UT_NumberVector& coverage) override;
+	virtual void setLineWidth(UT_sint32) override;
+	virtual void setClipRect(const UT_Rect* pRect) override;
+	virtual UT_uint32 getDeviceResolution(void) const override;
+	virtual double getResolutionRatio(void) const override { return 1.0;}
 
 	static  const std::vector<std::string> &       getAllFontNames(void);
 	static  UT_uint32                         getAllFontCount();
@@ -293,42 +293,42 @@ public:
 	int ltpunz(int l) const;
 	int pftlu(int pf) const;
 
-	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
+	virtual bool		queryProperties(GR_Graphics::Properties gp) const override;
 //	virtual GR_Image*	createNewImage(const char* pszName,
 //									   const UT_ConstByteBufPtr & pBB,
 //									   UT_sint32 iDisplayWidth,
 //									   UT_sint32 iDisplayHeight,
 //									   GR_Image::GRType =GR_Image::GRT_Raster);
 
-  	virtual bool		startPrint(void);
-	virtual bool		endPrint(void);
+  	virtual bool		startPrint(void) override;
+	virtual bool		endPrint(void) override;
 	virtual bool		startPage(const char * szPageLabel,
 								  UT_uint32 pageNumber,
 								  bool bPortrait,
-								  UT_uint32 iWidth, UT_uint32 iHeight);
+								  UT_uint32 iWidth, UT_uint32 iHeight) override;
 
-	virtual void		setColorSpace(GR_Graphics::ColorSpace c);
-	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
+	virtual void		setColorSpace(GR_Graphics::ColorSpace c) override;
+	virtual GR_Graphics::ColorSpace getColorSpace(void) const override;
 
 	// virtual void		setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor getCursor(void) const;
+	virtual GR_Graphics::Cursor getCursor(void) const override;
 
-	virtual void		setColor3D(GR_Color3D c);
-	virtual bool		getColor3D(GR_Color3D name, UT_RGBColor &color);
+	virtual void		setColor3D(GR_Color3D c) override;
+	virtual bool		getColor3D(GR_Color3D name, UT_RGBColor &color) override;
 
 	// virtual void		scroll(UT_sint32, UT_sint32);
 	// virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	//						   UT_sint32 x_src, UT_sint32 y_src,
 	//						   UT_sint32 width, UT_sint32 height);
 
-	virtual void	    	saveRectangle(UT_Rect & r, UT_uint32 iIndx);
-	virtual void	    	restoreRectangle(UT_uint32 iIndx);
+	virtual void	    	saveRectangle(UT_Rect & r, UT_uint32 iIndx) override;
+	virtual void	    	restoreRectangle(UT_uint32 iIndx) override;
 	// virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	virtual void setLineProperties(double inWidth,
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
-					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);
+					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID) override;
 	cairo_t* getCairo ();
 	void setCairo(cairo_t *cr);
 
@@ -420,12 +420,12 @@ public:
 	void _initCairo();
 
 	// Double buffering implementation
-	void _DeviceContext_SwitchToBuffer();
-	void _DeviceContext_SwitchToScreen();
+	virtual void _DeviceContext_SwitchToBuffer() override;
+	virtual void _DeviceContext_SwitchToScreen() override;
 
 	// Suspend / resume drawing
-	void _DeviceContext_SuspendDrawing();
-	void _DeviceContext_ResumeDrawing();
+	virtual void _DeviceContext_SuspendDrawing() override;
+	virtual void _DeviceContext_ResumeDrawing() override;
 
 	// save / restore rectangle vectors
 	std::vector<UT_Rect*> m_vSaveRect;

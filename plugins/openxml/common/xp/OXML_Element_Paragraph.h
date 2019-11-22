@@ -38,9 +38,9 @@ public:
 	OXML_Element_Paragraph(const std::string & id);
 	virtual ~OXML_Element_Paragraph();
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter) override;
 	virtual UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+	virtual UT_Error addToPT(PD_Document * pDocument) override;
 	virtual const gchar* getListLevel();
 	virtual const gchar* getListId();
 	virtual void setPageBreak();

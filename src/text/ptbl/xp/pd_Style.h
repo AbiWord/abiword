@@ -103,7 +103,7 @@ public:
 	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, bool bDisplayed);
 	virtual ~PD_BuiltinStyle();
 
-	virtual bool			isUserDefined(void) const { return (m_indexAP != m_indexAPOrig); };
+	virtual bool			isUserDefined(void) const override { return (m_indexAP != m_indexAPOrig); };
 
 protected:
 	PT_AttrPropIndex		m_indexAPOrig;	// the builtin one

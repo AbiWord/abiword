@@ -34,7 +34,7 @@ public:
 				UT_uint32 iXID);
 	~PX_ChangeRecord_DocProp();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 };
 
 #endif /* PX_CHANGERECORD_DOCPROP_H */

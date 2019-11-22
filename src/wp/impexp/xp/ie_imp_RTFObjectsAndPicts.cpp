@@ -739,13 +739,13 @@ public:
 			DELETEP(m_value); 
 			DELETEP(m_lastData);
 		}
-	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
-							  UT_sint32 param, bool paramUsed);
-	virtual bool tokenOpenBrace(IE_Imp_RTF * ie);
-	virtual bool tokenCloseBrace(IE_Imp_RTF * ie);
-	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
+	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
+							  UT_sint32 param, bool paramUsed) override;
+	virtual bool tokenOpenBrace(IE_Imp_RTF * ie) override;
+	virtual bool tokenCloseBrace(IE_Imp_RTF * ie) override;
+	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data) override;
 	
-	virtual bool finalizeParse(void);
+	virtual bool finalizeParse(void) override;
 
 	/*!
 	  Fetch the property key/value pair
@@ -852,14 +852,14 @@ class ABI_EXPORT IE_Imp_TextParaPropParser
 	: public IE_Imp_RTFGroupParser
 {
 public:
-	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
-							  UT_sint32 param, bool paramUsed);
+	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
+							  UT_sint32 param, bool paramUsed) override;
 
- 	virtual bool tokenOpenBrace(IE_Imp_RTF * ie);
-	virtual bool tokenCloseBrace(IE_Imp_RTF * ie);
-	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
-	
-	virtual bool finalizeParse(void);
+	virtual bool tokenOpenBrace(IE_Imp_RTF * ie) override;
+	virtual bool tokenCloseBrace(IE_Imp_RTF * ie) override;
+	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data) override;
+
+	virtual bool finalizeParse(void) override;
 };
 
 
@@ -918,10 +918,10 @@ class ABI_EXPORT IE_Imp_ShpGroupParser
 public:
 	IE_Imp_ShpGroupParser(IE_Imp_RTF * ie);
 	virtual ~IE_Imp_ShpGroupParser();
-	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
-							  UT_sint32 param, bool paramUsed);
-	virtual bool tokenCloseBrace(IE_Imp_RTF *ie);
-	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
+	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
+							  UT_sint32 param, bool paramUsed) override;
+	virtual bool tokenCloseBrace(IE_Imp_RTF *ie) override;
+	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data) override;
 	RTFProps_FrameProps & frame(void)
 		{ return m_currentFrame; }
 private:

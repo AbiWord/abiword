@@ -96,7 +96,7 @@ public:
 	XAP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguageName);
 	virtual ~XAP_BuiltinStringSet(void);
 
-	virtual const gchar *	getValue(XAP_String_Id id) const;
+	virtual const gchar *	getValue(XAP_String_Id id) const override;
 
 private:
 	const gchar **			m_arrayXAP;
@@ -114,7 +114,7 @@ public:
 
 	virtual bool				setValue(XAP_String_Id id, const gchar * szString);
 	virtual bool				setValue(const gchar * szId, const gchar * szString);
-	virtual const gchar *	getValue(XAP_String_Id id) const;
+	virtual const gchar *	getValue(XAP_String_Id id) const override;
 	virtual bool				loadStringsFromDisk(const char * szFilename);
 
 	bool						setLanguage(const gchar * szLanguageName);
@@ -123,9 +123,9 @@ public:
 public:
 	/* Implementation of UT_XML::Listener
 	 */
-	void					startElement(const gchar *name, const gchar **atts);
-	void					endElement(const gchar *name);
-	void					charData(const gchar *s, int len);
+	virtual void startElement(const gchar *name, const gchar **atts) override;
+	virtual void endElement(const gchar *name) override;
+	virtual void charData(const gchar *s, int len) override;
 
 protected:
 	XAP_StringSet *				m_pFallbackStringSet;

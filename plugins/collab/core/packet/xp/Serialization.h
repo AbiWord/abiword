@@ -202,7 +202,7 @@ public:
 class StrArchive : public Archive
 {
 public:
-	unsigned int Size() const { return m_sSource.size(); }
+	virtual unsigned int Size() const override { return m_sSource.size(); }
 	const std::string& getData() const { return m_sSource; }
 protected:
 	StrArchive()
@@ -223,7 +223,7 @@ public:
 	: StrArchive( sSource )
 	, m_uPosition( 0 )
 	{}
-	virtual void Serialize( void* Buffer, unsigned int Count )
+	virtual void Serialize(void* Buffer, unsigned int Count) override
 	{
 #if !defined(SERIALIZATION_TEST)
 		UT_ASSERT( m_uPosition + Count <= m_sSource.size() );	// check if we're overshooting!
@@ -231,14 +231,14 @@ public:
 		memcpy( Buffer, &m_sSource[m_uPosition], Count );
 		m_uPosition += Count;
 	}
-	virtual void Skip( unsigned int Count )
+	virtual void Skip(unsigned int Count) override
 	{
 #if !defined(SERIALIZATION_TEST)
 		UT_ASSERT( m_uPosition + Count <= m_sSource.size() );	// check if we're overshooting!
 #endif
 		m_uPosition += Count;
 	}
-	virtual bool EndOfFile() const
+	virtual bool EndOfFile() const override
 	{
 		return m_uPosition >= m_sSource.size();
 	}
@@ -253,19 +253,19 @@ public:
 	OStrArchive()
 	: StrArchive()
 	{}
-	virtual void Serialize( void* Buffer, unsigned int Count )
+	virtual void Serialize(void* Buffer, unsigned int Count) override
 	{
 		unsigned int pos = m_sSource.size();
 		m_sSource.resize( pos + Count );
 		memcpy( &m_sSource[pos], Buffer, Count );
 	}
-	virtual void Skip( unsigned int /*Count*/ )
+	virtual void Skip(unsigned int /*Count*/) override
 	{
 #if !defined(SERIALIZATION_TEST)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 #endif
 	}
-	virtual bool EndOfFile() const
+	virtual bool EndOfFile() const override
 	{
 		return true;	// writing file is always at EOF ;)
 	}

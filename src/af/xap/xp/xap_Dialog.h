@@ -146,7 +146,7 @@ public:
 	XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_Dialog_NonPersistent(void);
 
-	virtual void			runModal(XAP_Frame * pFrame) = 0;
+	virtual void			runModal(XAP_Frame * pFrame) override = 0;
 
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_NON_PERSISTENT; };
 
@@ -175,7 +175,7 @@ public:
 	virtual ~XAP_Dialog_Persistent(void);
 
 	virtual void				useStart(void);
-	virtual void				runModal(XAP_Frame * pFrame) = 0;
+	virtual void				runModal(XAP_Frame * pFrame) override = 0;
 	virtual void				useEnd(void);
 
 protected:
@@ -188,9 +188,9 @@ public:
 	XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_Dialog_FramePersistent(void);
 
-	virtual void				useStart(void);
-	virtual void				runModal(XAP_Frame * pFrame) = 0;
-	virtual void				useEnd(void);
+	virtual void				useStart(void) override;
+	virtual void				runModal(XAP_Frame * pFrame) override = 0;
+	virtual void				useEnd(void) override;
 
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_FRAME_PERSISTENT; };
 
@@ -203,9 +203,9 @@ public:
 	XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_Dialog_AppPersistent(void);
 
-	virtual void				useStart(void);
-	virtual void				runModal(XAP_Frame * pFrame) = 0;
-	virtual void				useEnd(void);
+	virtual void				useStart(void) override;
+	virtual void				runModal(XAP_Frame * pFrame) override = 0;
+	virtual void				useEnd(void) override;
 
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
 
@@ -219,12 +219,12 @@ public:
 	XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_Dialog_Modeless(void);
 
-	void						useStart(void);
-	void						useEnd(void);
+	void						useStart(void) override;
+	void						useEnd(void) override;
 
 // runModal is not a virtual pure function.  It's here only to make happy the old
 // dialogs that have been partially transformed to non modal dialogs (is it true?)
-	virtual void				runModal(XAP_Frame * /*pFrame*/) {}
+	virtual void				runModal(XAP_Frame * /*pFrame*/) override {}
 
 	virtual void				runModeless(XAP_Frame * pFrame) = 0;
 	virtual void				setActiveFrame(XAP_Frame *pFrame);

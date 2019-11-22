@@ -41,36 +41,36 @@ public:
 	FG_GraphicRaster();
 	virtual ~FG_GraphicRaster();
 
-	virtual FGType		getType(void) const;
-    virtual const std::string & getMimeType() const;
-	virtual FG_ConstGraphicPtr clone(void) const;
-	virtual double		getWidth(void) const;
-	virtual double		getHeight(void) const;
-	virtual const char * getDataId(void) const;
-	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) const;
-	virtual GR_Image*	regenerateImage(GR_Graphics* pG);
+	virtual FGType		getType(void) const override;
+    virtual const std::string & getMimeType() const override;
+	virtual FG_ConstGraphicPtr clone(void) const override;
+	virtual double		getWidth(void) const override;
+	virtual double		getHeight(void) const override;
+	virtual const char * getDataId(void) const override;
+	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) const override;
+	virtual GR_Image*	regenerateImage(GR_Graphics* pG) override;
 	virtual GR_Image*	generateImage(GR_Graphics* pG,
 					      const PP_AttrProp * pSpanAP,
-					      UT_sint32 maxW, UT_sint32 maxH);
+					      UT_sint32 maxW, UT_sint32 maxH) override;
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
-										   UT_uint32 iPos, const char* szName) const;
+										   UT_uint32 iPos, const char* szName) const override;
 	virtual UT_Error   	insertAtStrux(PD_Document* pDoc,
 									  UT_uint32 res,
 									  UT_uint32 iPos,
 									  PTStruxType iStruxType,
-									  const char* szName) const;
+									  const char* szName) const override;
 
 	bool			setRaster_PNG(const UT_ConstByteBufPtr & pBB);
 	bool                    setRaster_JPEG(const UT_ConstByteBufPtr & pBB);
-	virtual const UT_ConstByteBufPtr &	getBuffer() const;
+	virtual const UT_ConstByteBufPtr &	getBuffer() const override;
     Format              getFormat() const
     {
         return m_format;
     }
 
-	virtual const char * getWidthProp(void);
-	virtual const char * getHeightProp(void);
+	virtual const char * getWidthProp(void) override;
+	virtual const char * getHeightProp(void) override;
 
 protected:
     Format            m_format;

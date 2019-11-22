@@ -57,7 +57,7 @@ public:
 
     // where all the Symbol-specific drawing happens
 
-	void						draw(const UT_Rect *clip=NULL);
+	void draw(const UT_Rect *clip = NULL) override;
 	void						drawarea(UT_UCSChar c, UT_UCSChar p);
 
 	UT_UCSChar					calcSymbol(UT_uint32 x, UT_uint32 y);
@@ -66,7 +66,7 @@ public:
 	UT_UCSChar					getCurrent() const
 	{ return m_CurrentSymbol; }
 
-	void						onLeftButtonDown(UT_sint32 x, UT_sint32 y);
+	void onLeftButtonDown(UT_sint32 x, UT_sint32 y) override;
 	void						calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y);
 	GR_Graphics * 				getGraphics(void) const
 	{return m_areagc;};

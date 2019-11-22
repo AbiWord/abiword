@@ -116,10 +116,10 @@ public:
 
 	SectionType     	        getType(void) const { return m_iType; }
 
-	virtual bool		        recalculateFields(UT_uint32 iUpdateCount);
-	virtual bool 	            doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
-	virtual bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
-	virtual bool                bl_doclistener_insertCell(fl_ContainerLayout* pCell,
+	virtual bool recalculateFields(UT_uint32 iUpdateCount) override;
+	virtual bool doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) override;
+	virtual bool doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+	virtual bool bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
@@ -132,9 +132,9 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  fl_ContainerLayout* sfhNew));
+																	  fl_ContainerLayout* sfhNew)) override;
 
-	virtual bool                bl_doclistener_insertEndTable(fl_ContainerLayout*,
+	virtual bool bl_doclistener_insertEndTable(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
@@ -142,7 +142,7 @@ public:
 																	  PL_ListenerId lid,
 																	  fl_ContainerLayout* sfhNew));
 
-	virtual bool               bl_doclistener_insertTable( const PX_ChangeRecord_Strux * pcrx,
+	virtual bool bl_doclistener_insertTable( const PX_ChangeRecord_Strux * pcrx,
 											   SectionType iType,
 											   pf_Frag_Strux* sdh,
 											   PL_ListenerId lid,
@@ -154,20 +154,20 @@ public:
 	virtual void		__dump(FILE * fp) const;
 #endif
 	void                        setTableContainerProperties(fp_TableContainer * pTab);
-	virtual void		        format(void);
+	virtual void		        format(void) override;
 	void                        attachCell(fl_ContainerLayout * pCell);
 	void                        createTableContainer(void);
 	void                        insertTableContainer(fp_TableContainer * pNewTab);
-	virtual void		        updateLayout(bool bDoFull);
+	virtual void		        updateLayout(bool bDoFull) override;
 	void		                updateTable(void);
-	virtual void                collapse(void);
-	virtual void                markAllRunsDirty(void);
-	virtual bool                needsReformat(void) const;
-	virtual PT_DocPosition      getPosition(bool bActualBlockPosition = false) const;
+	virtual void                collapse(void) override;
+	virtual void                markAllRunsDirty(void) override;
+	virtual bool                needsReformat(void) const override;
+	virtual PT_DocPosition      getPosition(bool bActualBlockPosition = false) const override;
 	UT_uint32                   getLength(void);
-	virtual void		        redrawUpdate(void);
-	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
-	virtual fl_SectionLayout *  getSectionLayout(void)  const;
+	virtual void		        redrawUpdate(void) override;
+	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) override;
+	virtual fl_SectionLayout *  getSectionLayout(void)  const override;
 
 	void                        markForRebuild(void) { m_bNeedsRebuild = true;}
 	void                        clearRebuild(void) { m_bNeedsRebuild = false;}
@@ -224,8 +224,8 @@ UT_sint32                    getBottomOffset(void) const;
 	void                     setMaxExtraMargin(double margin);
 
 protected:
-	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
-	virtual void			    _lookupMarginProperties(const PP_AttrProp* pAP);
+	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP) override;
+	virtual void			    _lookupMarginProperties(const PP_AttrProp* pAP) override;
 	void				        _purgeLayout();
 private:
 	bool                   m_bNeedsRebuild;
@@ -291,7 +291,7 @@ public:
 
 	bool            isCellSelected(void);
 	void            checkAndAdjustCellSize(void);
-	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) override;
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
@@ -310,17 +310,17 @@ public:
 
 	void                     setCellContainerProperties(fp_CellContainer * pCell);
 	void                     createCellContainer(void);
-	virtual void		     format(void);
-	virtual void		     updateLayout(bool bDoFull);
-	virtual void             collapse(void);
+	virtual void		     format(void) override;
+	virtual void		     updateLayout(bool bDoFull) override;
+	virtual void             collapse(void) override;
 	bool                     isLayedOut(void) const;
 	bool                     isDoingFormat(void) const;
-	virtual bool             needsReformat(void) const;
-	virtual void             markAllRunsDirty(void);
-	virtual fl_SectionLayout *  getSectionLayout(void)  const;
-	bool                     recalculateFields(UT_uint32 iUpdateCount);
-	virtual void		     redrawUpdate(void);
-	virtual fp_Container*	 getNewContainer(fp_Container * pFirstContainer = NULL);
+	virtual bool             needsReformat(void) const override;
+	virtual void             markAllRunsDirty(void) override;
+	virtual fl_SectionLayout *  getSectionLayout(void)  const override;
+	virtual bool             recalculateFields(UT_uint32 iUpdateCount) override;
+	virtual void		     redrawUpdate(void) override;
+	virtual fp_Container*	 getNewContainer(fp_Container * pFirstContainer = NULL) override;
 #ifdef FMT_TEST
 	void				     __dump(FILE * fp) const;
 #endif
@@ -347,7 +347,7 @@ UT_sint32                    getBottomOffset(void) const;
 		{ return m_iCellWidth;}
 
 protected:
-	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP) override;
 	virtual void             _purgeLayout(void);
 private:
 	bool                   m_bNeedsRebuild;

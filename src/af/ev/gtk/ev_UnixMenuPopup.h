@@ -38,7 +38,7 @@ public:
 	virtual ~EV_UnixMenuPopup(void);
 
 	virtual bool		synthesizeMenuPopup(void);
-	virtual bool		refreshMenu(AV_View * pView);
+	virtual bool		refreshMenu(AV_View * pView) override;
 	virtual GtkWidget *	getMenuHandle(void) const;
 
 

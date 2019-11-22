@@ -79,8 +79,8 @@ public:
 	AP_Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Stylist(void);
 
-	virtual void runModeless(XAP_Frame * pFrame) = 0;
-	virtual void runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModeless(XAP_Frame * pFrame) override = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	bool              isStyleValid(void)
 		{ return  m_bStyleValid;}
@@ -88,7 +88,7 @@ public:
 	void              stopUpdater(void);
 	// I am gonna be nice and make this an empty implementation instead of pure virtual
 	virtual void      setSensitivity(bool /*bSens*/) {};
-    void              setActiveFrame(XAP_Frame *pFrame);
+	void              setActiveFrame(XAP_Frame *pFrame) override;
 	void              event_update(void);
 	void              finalize(void);
 	Stylist_tree *  getStyleTree(void) const

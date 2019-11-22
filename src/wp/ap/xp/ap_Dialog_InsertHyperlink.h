@@ -35,7 +35,7 @@ public:
 			     XAP_Dialog_Id id);
 	virtual ~AP_Dialog_InsertHyperlink(void);
 
-	virtual void		 runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	typedef enum { a_OK=0, a_CANCEL=1 } tAnswer;
 

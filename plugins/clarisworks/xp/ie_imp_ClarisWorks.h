@@ -38,15 +38,15 @@ public:
 	IE_Imp_ClarisWorks_Sniffer();
 	virtual ~IE_Imp_ClarisWorks_Sniffer() {}
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-	virtual UT_Confidence_t recognizeContents (const char * szBuf,
-									UT_uint32 iNumbytes);
-	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+	virtual UT_Confidence_t recognizeContents(const char * szBuf,
+									UT_uint32 iNumbytes) override;
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
+	virtual bool getDlgLabels(const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructImporter(PD_Document * pDocument,
+										IE_Imp ** ppie) override;
 
 };
 
@@ -57,7 +57,7 @@ class IE_Imp_ClarisWorks : public IE_Imp
    ~IE_Imp_ClarisWorks();
 
  protected:
-	virtual UT_Error _loadFile(GsfInput * fp);
+	virtual UT_Error _loadFile(GsfInput * fp) override;
    UT_Error			_parseFile(GsfInput * fp);
    UT_Error			_writeHeader(GsfInput * fp);
  private:

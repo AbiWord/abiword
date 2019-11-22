@@ -39,13 +39,13 @@ public:
 	AP_UnixStatusBar(XAP_Frame * pFrame);
 	virtual ~AP_UnixStatusBar(void);
 
-	virtual void		setView(AV_View * pView);
+	virtual void setView(AV_View * pView) override;
 	GtkWidget *			createWidget(void);
 
-	virtual void		show(void);
-	virtual void		hide(void);
-	virtual void        showProgressBar(void);
-	virtual void        hideProgressBar(void);
+	virtual void show(void) override;
+	virtual void hide(void) override;
+	virtual void showProgressBar(void) override;
+	virtual void hideProgressBar(void) override;
 protected:
 	GtkWidget *			m_wStatusBar;
 	GtkWidget *			m_wProgressFrame;

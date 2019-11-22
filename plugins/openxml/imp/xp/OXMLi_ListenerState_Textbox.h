@@ -36,9 +36,9 @@ class OXMLi_ListenerState_Textbox : public OXMLi_ListenerState
 {
 public:
 	OXMLi_ListenerState_Textbox();
-	void startElement (OXMLi_StartElementRequest * rqst);
-	void endElement (OXMLi_EndElementRequest * rqst);
-	void charData (OXMLi_CharDataRequest * rqst);
+	virtual void startElement (OXMLi_StartElementRequest * rqst) override;
+	virtual void endElement (OXMLi_EndElementRequest * rqst) override;
+	virtual void charData (OXMLi_CharDataRequest * rqst) override;
 private:
 	std::string m_style;
 };

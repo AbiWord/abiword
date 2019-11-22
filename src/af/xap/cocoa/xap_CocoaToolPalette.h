@@ -59,8 +59,8 @@ public:
 
 	virtual ~XAP_CocoaToolPaletteListener();
 
-	virtual bool				notify(AV_View * pView, const AV_ChangeMask mask);
-    virtual AV_ListenerType		getType(void);
+	virtual bool			notify(AV_View * pView, const AV_ChangeMask mask) override;
+	virtual AV_ListenerType		getType(void) override;
 
 	void						setCurrentView(AV_View * view);
 

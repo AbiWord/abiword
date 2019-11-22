@@ -42,11 +42,11 @@ class IE_Imp_MSWrite_Sniffer : public IE_ImpSniffer
 public:
 	IE_Imp_MSWrite_Sniffer();
 	virtual ~IE_Imp_MSWrite_Sniffer() {}
-	virtual bool getDlgLabels(const char **szDesc, const char **szSuffixList, IEFileType *ft);
-	virtual const IE_SuffixConfidence *getSuffixConfidence();
-	virtual const IE_MimeConfidence *getMimeConfidence() { return 0; }
-	virtual UT_Confidence_t recognizeContents(const char *szBuf, UT_uint32 iNumbytes);
-	virtual UT_Error constructImporter(PD_Document *pDocument, IE_Imp **ppie);
+	virtual bool getDlgLabels(const char **szDesc, const char **szSuffixList, IEFileType *ft) override;
+	virtual const IE_SuffixConfidence *getSuffixConfidence() override;
+	virtual const IE_MimeConfidence *getMimeConfidence() override { return 0; }
+	virtual UT_Confidence_t recognizeContents(const char *szBuf, UT_uint32 iNumbytes) override;
+	virtual UT_Error constructImporter(PD_Document *pDocument, IE_Imp **ppie) override;
 
 private:
 	friend class IE_Imp;
@@ -59,7 +59,7 @@ public:
 	~IE_Imp_MSWrite();
 
 protected:
-	virtual UT_Error _loadFile(GsfInput *input);
+	virtual UT_Error _loadFile(GsfInput *input) override;
 
 private:
 	enum pap_t {All, Header, Footer};

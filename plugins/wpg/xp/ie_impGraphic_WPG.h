@@ -20,7 +20,10 @@
 #ifndef IE_IMP_WPG_H
 #define IE_IMP_WPG_H
 
+#include "ut_compiler.h"
+ABI_W_NO_SUGGEST_OVERRIDE
 #include <libwpg/libwpg.h>
+ABI_W_POP
 #include "ie_impGraphic_SVG.h"
 
 class IE_Imp_WordPerfectGraphics_Sniffer : public IE_ImpGraphicSniffer

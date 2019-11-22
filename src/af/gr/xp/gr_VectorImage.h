@@ -32,20 +32,20 @@ public:
 	GR_VectorImage();
 	virtual ~GR_VectorImage();
 
-   	virtual bool		convertToBuffer(UT_ConstByteBufPtr & ppBB) const;
+	virtual bool		convertToBuffer(UT_ConstByteBufPtr & ppBB) const override;
 	virtual bool		convertFromBuffer(const UT_ConstByteBufPtr & pBB, const std::string& mimetype,
-										  UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+										  UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) override;
 
     virtual GR_Image *  createImageSegment(GR_Graphics * /*pG*/,
-										   const UT_Rect & /*rec*/)
+										   const UT_Rect & /*rec*/) override
 		// TODO: we need createImageSegment for converting inline images to positioned images
 		// via the context menu
 		{ UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED) ; return NULL; }
 
-   	virtual GRType		getType() const { return GRT_Vector; }
-   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-	virtual bool            hasAlpha(void) const;
-	virtual bool            isTransparentAt(UT_sint32 x, UT_sint32 y);
+	virtual GRType		getType() const override { return GRT_Vector; }
+	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) override;
+	virtual bool            hasAlpha(void) const override;
+	virtual bool            isTransparentAt(UT_sint32 x, UT_sint32 y) override;
 
 private:
 	UT_ConstByteBufPtr m_pBB_Image;

@@ -35,14 +35,14 @@ protected:
 	XAP_UnixModule () ;
 	virtual ~XAP_UnixModule (void);
 
-	virtual bool   load (const char * name);
-	virtual bool   unload (void);
+	virtual bool   load (const char * name) override;
+	virtual bool   unload (void) override;
 
 public:
 
-	virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
-	virtual bool   getModuleName (char ** dest) const;
-	virtual bool   getErrorMsg (char ** dest) const;
+	virtual bool   resolveSymbol (const char * symbol_name, void ** symbol) override;
+	virtual bool   getModuleName (char ** dest) const override;
+	virtual bool   getErrorMsg (char ** dest) const override;
 
 private:
 

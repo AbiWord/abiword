@@ -44,15 +44,15 @@ public:
 
 	// housekeeping
 	static UT_UTF8String	getStaticStorageType();
-	virtual UT_UTF8String	getStorageType()
+	virtual UT_UTF8String getStorageType() override
 		{ return getStaticStorageType(); }
-	virtual UT_UTF8String	getDescription();
-	virtual UT_UTF8String	getDisplayType();
+	virtual UT_UTF8String getDescription() override;
+	virtual UT_UTF8String getDisplayType() override;
 
 	// connection management
-	virtual ConnectResult	connect();
-	virtual bool			disconnect(void);
-	virtual bool			isOnline()
+	virtual ConnectResult connect() override;
+	virtual bool disconnect(void) override;
+	virtual bool isOnline() override
 		{ return m_bLoggedIn; }
 
 	// asynchronous connection helper functions
@@ -61,27 +61,27 @@ public:
 	bool					tearDown();
 
 	// dialog management
-	virtual void			embedDialogWidgets(void* pEmbeddingParent) = 0;
-	virtual void			removeDialogWidgets(void* pEmbeddingParent) = 0;
-	virtual void			storeProperties() = 0;
+	virtual void embedDialogWidgets(void* pEmbeddingParent) override = 0;
+	virtual void removeDialogWidgets(void* pEmbeddingParent) override = 0;
+	virtual void storeProperties() override = 0;
 
 	// user management
-	virtual BuddyPtr		constructBuddy(const PropertyMap& vProps);
-	virtual BuddyPtr		constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
-	virtual bool			recognizeBuddyIdentifier(const std::string& identifier);
-	virtual bool			allowsManualBuddies()
+	virtual BuddyPtr constructBuddy(const PropertyMap& vProps) override;
+	virtual BuddyPtr constructBuddy(const std::string& descriptor, BuddyPtr pBuddy) override;
+	virtual bool recognizeBuddyIdentifier(const std::string& identifier) override;
+	virtual bool allowsManualBuddies() override
 		{ return true; }
-	virtual void			forceDisconnectBuddy(BuddyPtr) { /* TODO: implement me? */ }
-	virtual bool							hasPersistentAccessControl()
+	virtual void forceDisconnectBuddy(BuddyPtr) override { /* TODO: implement me? */ }
+	virtual bool hasPersistentAccessControl() override
 		{ return true; }
 
 	// session management
-	virtual bool							allowsSessionTakeover()
+	virtual bool allowsSessionTakeover() override
 		{ return false; } // no technical reason not to allow this; we just didn't implement session takeover for this backend yet
 
 		// packet management
-	virtual bool			send(const Packet* pPacket);
-	virtual bool 			send(const Packet* pPacket, BuddyPtr pBuddy);
+	virtual bool send(const Packet* pPacket) override;
+	virtual bool send(const Packet* pPacket, BuddyPtr pBuddy) override;
 
 	virtual void 			handleMessage(const gchar* packet_data, const std::string& from_address);
 

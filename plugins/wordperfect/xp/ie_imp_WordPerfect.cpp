@@ -421,10 +421,10 @@ UT_Error IE_Imp_WordPerfect::_loadFile(GsfInput * input)
 	return UT_OK;
 }
 
-void IE_Imp_WordPerfect::pasteFromBuffer (PD_DocumentRange *, 
-					  unsigned char *, unsigned int, const char *)
+bool IE_Imp_WordPerfect::pasteFromBuffer (PD_DocumentRange *,
+					  const unsigned char *, UT_uint32, const char *)
 {
-	// nada
+	return false;
 }
 
 void IE_Imp_WordPerfect::setDocumentMetaData(const librevenge::RVNGPropertyList &propList)

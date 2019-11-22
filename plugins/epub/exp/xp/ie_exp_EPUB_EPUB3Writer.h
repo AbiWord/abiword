@@ -27,25 +27,25 @@
 class IE_Exp_EPUB_EPUB3Writer : public IE_Exp_HTML_DocumentWriter {
 public:
     IE_Exp_EPUB_EPUB3Writer(IE_Exp_HTML_OutputWriter* pOutputWriter);
-    void openAnnotation();
-    void closeAnnotation();
+    virtual void openAnnotation() override;
+    virtual void closeAnnotation() override;
 
-    void openDocument();
-    void insertDTD();
-    void insertTOC(const gchar *title, const std::vector<UT_UTF8String> &items,
-            const std::vector<UT_UTF8String> &itemUriList);
-    void insertEndnotes(const std::vector<UT_UTF8String> &endnotes);
-    void insertFootnotes(const std::vector<UT_UTF8String> &footnotes);
-    void insertAnnotations(const std::vector<UT_UTF8String> &titles,
+    virtual void openDocument() override;
+    virtual void insertDTD() override;
+    virtual void insertTOC(const gchar *title, const std::vector<UT_UTF8String> &items,
+            const std::vector<UT_UTF8String> &itemUriList) override;
+    virtual void insertEndnotes(const std::vector<UT_UTF8String> &endnotes) override;
+    virtual void insertFootnotes(const std::vector<UT_UTF8String> &footnotes) override;
+    virtual void insertAnnotations(const std::vector<UT_UTF8String> &titles,
             const std::vector<UT_UTF8String> &authors,
-            const std::vector<UT_UTF8String> &annotations);
+            const std::vector<UT_UTF8String> &annotations) override;
 };
 
 class IE_Exp_EPUB_EPUB3WriterFactory : public IE_Exp_HTML_WriterFactory
 {
 public:
-    IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
-        IE_Exp_HTML_OutputWriter* pOutputWriter);
+    virtual IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
+        IE_Exp_HTML_OutputWriter* pOutputWriter) override;
 };
 
 #endif	/* IE_EXP_EPUB_EPUB3WRITER_H */

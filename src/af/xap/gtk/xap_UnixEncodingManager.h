@@ -10,16 +10,16 @@ protected:
     XAP_UnixEncodingManager();
     virtual ~XAP_UnixEncodingManager();
 
-    void 	initialize();
+    virtual void initialize() override;
 
 public:
-    const char* getNativeEncodingName() 	const;
-    const char* getNativeSystemEncodingName() 	const;
-    const char* getNative8BitEncodingName()	const;
-    const char* getNativeNonUnicodeEncodingName() 	const;
-    const char* getNativeUnicodeEncodingName() 	const;
-    const char* getLanguageISOName() 		const;
-    const char* getLanguageISOTerritory() 	const;
+    const char* getNativeEncodingName() const override;
+    const char* getNativeSystemEncodingName() const override;
+    const char* getNative8BitEncodingName() const override;
+    const char* getNativeNonUnicodeEncodingName() const override;
+    const char* getNativeUnicodeEncodingName() const override;
+    const char* getLanguageISOName() const override;
+    const char* getLanguageISOTerritory() const override;
 
 	friend class XAP_EncodingManager;
 };

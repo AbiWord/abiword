@@ -39,8 +39,8 @@ public:
 
 	~UT_HTML ();
 
-	UT_Error parse (const char * szFilename);
-	UT_Error parse (const char * buffer, UT_uint32 length);
+	virtual UT_Error parse (const char * szFilename) override;
+	virtual UT_Error parse (const char * buffer, UT_uint32 length) override;
 
 private:
 	std::string m_encoding;

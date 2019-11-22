@@ -85,29 +85,29 @@ public:
 
     ~IE_Exp_HTML_HeaderFooterListener();
 
-    bool populate(fl_ContainerLayout* sfh,
-            const PX_ChangeRecord * pcr);
+    virtual bool populate(fl_ContainerLayout* sfh,
+            const PX_ChangeRecord * pcr) override;
 
-    bool populateStrux(pf_Frag_Strux* sdh,
+    virtual bool populateStrux(pf_Frag_Strux* sdh,
             const PX_ChangeRecord * pcr,
-            fl_ContainerLayout* * psfh);
+            fl_ContainerLayout* * psfh)  override;
 
     //See note in _writeDocument
     //bool 	startOfDocument ();
     bool endOfDocument();
 
-    bool change(fl_ContainerLayout* sfh,
-            const PX_ChangeRecord * pcr);
+    virtual bool change(fl_ContainerLayout* sfh,
+            const PX_ChangeRecord * pcr) override;
 
-    bool insertStrux(fl_ContainerLayout* sfh,
+    virtual bool insertStrux(fl_ContainerLayout* sfh,
             const PX_ChangeRecord * pcr,
             pf_Frag_Strux* sdh,
             PL_ListenerId lid,
             void (*pfnBindHandles) (pf_Frag_Strux* sdhNew,
             PL_ListenerId lid,
-            fl_ContainerLayout* sfhNew));
+            fl_ContainerLayout* sfhNew)) override;
 
-    bool signal(UT_uint32 iSignal);
+    virtual bool signal(UT_uint32 iSignal) override;
     void doHdrFtr(bool bHeader);
 private:
     PD_DocumentRange * m_pHdrDocRange;

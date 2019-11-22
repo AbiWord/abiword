@@ -29,8 +29,8 @@ class UT_UnixIdle : public UT_Idle
   UT_UnixIdle ( UT_WorkerCallback cb, void * data );
   ~UT_UnixIdle ();
 
-  void start ();
-  void stop ();
+  virtual void start () override;
+  virtual void stop () override;
 
  private:
 

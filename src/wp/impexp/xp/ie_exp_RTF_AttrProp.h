@@ -156,8 +156,8 @@ public:
 	virtual ~s_RTF_AttrPropAdapter_Style() {}
     s_RTF_AttrPropAdapter_Style(const PD_Style * pStyle) : m_pStyle(pStyle) {}
 
-    virtual const gchar * getAttribute(const gchar * szName) const;
-    virtual const gchar * getProperty(const gchar * szName) const;
+    virtual const gchar * getAttribute(const gchar * szName) const override;
+    virtual const gchar * getProperty(const gchar * szName) const override;
 };
 
 class ABI_EXPORT s_RTF_AttrPropAdapter_AP : public s_RTF_AttrPropAdapter
@@ -176,8 +176,8 @@ public:
                              PD_Document * pDoc);
 	virtual ~s_RTF_AttrPropAdapter_AP();
 
-    virtual const gchar * getAttribute(const gchar * szName) const;
-    virtual const gchar * getProperty(const gchar * szName) const;
+    virtual const gchar * getAttribute(const gchar * szName) const override;
+    virtual const gchar * getProperty(const gchar * szName) const override;
 };
 
 #endif

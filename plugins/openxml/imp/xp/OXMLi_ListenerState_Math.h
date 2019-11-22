@@ -33,9 +33,9 @@ class OXMLi_ListenerState_Math : public OXMLi_ListenerState
 {
 public:
     OXMLi_ListenerState_Math();
-    void startElement (OXMLi_StartElementRequest * rqst);
-    void endElement (OXMLi_EndElementRequest * rqst);
-    void charData (OXMLi_CharDataRequest * rqst);
+    virtual void startElement (OXMLi_StartElementRequest * rqst) override;
+    virtual void endElement (OXMLi_EndElementRequest * rqst) override;
+    virtual void charData (OXMLi_CharDataRequest * rqst) override;
 
 private:
     UT_ByteBuf* m_pMathBB;

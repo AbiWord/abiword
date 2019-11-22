@@ -57,7 +57,7 @@ public:
 
 	~PX_ChangeRecord_Span();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 
 	UT_uint32				getLength(void) const;
 	PT_BufIndex				getBufIndex(void) const;
@@ -68,7 +68,7 @@ public:
 	{ m_blockOffset = iBlk;}
 
 #ifdef PT_TEST
-	virtual void			__dump(FILE * fp) const;
+	virtual void			__dump(FILE * fp) const override;
 #endif
 
 protected:

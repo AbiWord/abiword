@@ -76,7 +76,7 @@ class ABI_EXPORT XAP_Dialog_About : public XAP_Dialog_NonPersistent
 	XAP_Dialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_About(void);
 
-	virtual void				runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
  protected:
 

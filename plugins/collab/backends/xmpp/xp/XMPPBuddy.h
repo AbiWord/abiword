@@ -38,19 +38,19 @@ public:
 	{
 	}
 
-	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
+	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const override
 	{
 		return UT_UTF8String("xmpp://") + m_address.c_str();
 	}
 
-	virtual UT_UTF8String		getDescription() const
+	virtual UT_UTF8String getDescription() const override
 		{ return m_address.c_str(); }
 
 	virtual const std::string& getAddress() const {
 		return m_address;
 	}
 
-	virtual const DocTreeItem* getDocTreeItems() const
+	virtual const DocTreeItem* getDocTreeItems() const override
 	{
 		const std::vector<DocHandle*>& docHandles = getDocHandles();
 		DocTreeItem* first = 0;

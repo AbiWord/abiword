@@ -61,7 +61,7 @@ class ABI_EXPORT XAP_Dialog_DocComparison : public XAP_Dialog_NonPersistent
 
 	virtual ~XAP_Dialog_DocComparison(void) {};
 
-	virtual void runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 	bool         calculate(AD_Document * pDoc1, AD_Document * pDoc2);
 
 	const char * getWindowLabel() const;

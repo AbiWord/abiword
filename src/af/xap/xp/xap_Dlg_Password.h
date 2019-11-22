@@ -37,7 +37,7 @@ public:
 	XAP_Dialog_Password(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Password(void);
 
-	virtual void  runModal(XAP_Frame * pFrame) = 0;
+	virtual void  runModal(XAP_Frame * pFrame) override = 0;
 
 	UT_UTF8String getPassword () const { return m_passwd; }
 

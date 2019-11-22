@@ -39,7 +39,7 @@ public:
 	ImportISCIIStreamFile(GsfInput *pFile);
 	~ImportISCIIStreamFile() {}
 protected:
-	virtual bool getRawChar(UT_UCSChar &b);
+	virtual bool getRawChar(UT_UCSChar &b) override;
 private:
 	unsigned char m_cLookAhead;
 	bool m_bNeedByte;
@@ -55,15 +55,15 @@ public:
 	IE_Imp_ISCII_Sniffer(const char * name);
 	virtual ~IE_Imp_ISCII_Sniffer() {}
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
-									UT_uint32 iNumbytes);
+									UT_uint32 iNumbytes) override;
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
+							   IEFileType * ft) override;
 	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
+										IE_Imp ** ppie) override;
 
 };
 
@@ -74,7 +74,7 @@ public:
 	virtual ~IE_Imp_ISCII() {};
 
 protected:
-	virtual UT_Error	_constructStream(ImportStream *& pStream, GsfInput * fp);
+	virtual UT_Error	_constructStream(ImportStream *& pStream, GsfInput * fp) override;
 };
 
 #endif /* IE_IMP_ISCII_H */

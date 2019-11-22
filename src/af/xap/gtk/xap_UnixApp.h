@@ -54,33 +54,33 @@ public:
 	XAP_UnixApp(const char* szAppName);
 	virtual ~XAP_UnixApp();
 
-	virtual const char * getDefaultEncoding () const
+	virtual const char * getDefaultEncoding () const override
 	  {
 	    return "UTF-8" ;
 	  }
 
-	virtual bool					initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
+	virtual bool					initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue) override;
 	void							shutdown();
-	virtual XAP_Frame * 					newFrame() = 0;
-	virtual void							reallyExit();
+	virtual XAP_Frame * 					newFrame() override = 0;
+	virtual void							reallyExit() override;
 
-	virtual XAP_DialogFactory *				getDialogFactory();
-	virtual XAP_Toolbar_ControlFactory *	getControlFactory();
-	virtual const XAP_StringSet *			getStringSet() const = 0;
-	virtual const char *					getAbiSuiteAppDir() const = 0;
+	virtual XAP_DialogFactory *				getDialogFactory() override;
+	virtual XAP_Toolbar_ControlFactory *	getControlFactory() override;
+	virtual const XAP_StringSet *			getStringSet() const override = 0;
+	virtual const char *					getAbiSuiteAppDir() const override = 0;
 	virtual const std::string&					getAbiSuiteAppUIDir() const = 0;
-	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
-	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
-	virtual bool							canPasteFromClipboard() = 0;
-	void									migrate(const char *oldName, const char *newName, const char *path) const;
-	virtual const char *					getUserPrivateDirectory() const;
+	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) override = 0;
+	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) override = 0;
+	virtual bool							canPasteFromClipboard() override = 0;
+	void									migrate(const char *oldName, const char *newName, const char *path) const override;
+	virtual const char *					getUserPrivateDirectory() const override;
 
 	virtual void							setSelectionStatus(AV_View * pView) = 0;
 	virtual void							clearSelection() = 0;
 	virtual bool							getCurrentSelection(const char** formatList,
 																void ** ppData, UT_uint32 * pLen,
 																const char **pszFormatFound) = 0;
-	virtual void							cacheCurrentSelection(AV_View *) = 0;
+	virtual void							cacheCurrentSelection(AV_View *) override = 0;
 
 	virtual XAP_UnixClipboard * getClipboard () = 0;
 
@@ -104,7 +104,7 @@ public:
 
 	void							setTimeOfLastEvent(UT_uint32 eventTime);
 	UT_uint32	   					getTimeOfLastEvent() const { return m_eventTime; };
-    virtual XAP_App::BidiSupportType  theOSHasBidiSupport() const {return BIDI_SUPPORT_GUI;}
+    virtual XAP_App::BidiSupportType  theOSHasBidiSupport() const override {return BIDI_SUPPORT_GUI;}
     char **                          getTmpFile(void)
 	{ return &m_szTmpFile;}
 	void                            removeTmpFile(void);

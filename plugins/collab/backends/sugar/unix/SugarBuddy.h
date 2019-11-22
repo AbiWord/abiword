@@ -36,15 +36,15 @@ public:
 	{
 	}
 
-	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
+	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const override
 	{
 		return UT_UTF8String("sugar://") + m_sDBusAddress;
 	}
 
-	virtual UT_UTF8String		getDescription() const
+	virtual UT_UTF8String		getDescription() const override
 		{ return m_sDBusAddress; }
 
-	virtual const DocTreeItem* getDocTreeItems() const
+	virtual const DocTreeItem* getDocTreeItems() const override
 	{
 		UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		return NULL;

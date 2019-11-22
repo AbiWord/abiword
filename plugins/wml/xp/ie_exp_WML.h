@@ -38,12 +38,12 @@ public:
 	IE_Exp_WML_Sniffer (const char * name);
 	virtual ~IE_Exp_WML_Sniffer () {}
 
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual bool recognizeSuffix(const char * szSuffix) override;
+	virtual bool getDlgLabels(const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructExporter(PD_Document * pDocument,
+										IE_Exp ** ppie) override;
 };
 
 class IE_Exp_WML : public IE_Exp
@@ -53,7 +53,7 @@ public:
 	virtual ~IE_Exp_WML();
 
 protected:
-	virtual UT_Error	_writeDocument(void);
+	virtual UT_Error _writeDocument(void) override;
 
  private:
 	s_WML_Listener *	m_pListener;
@@ -67,25 +67,25 @@ public:
 		       IE_Exp_WML * pie);
 	virtual ~s_WML_Listener();
 
-	virtual bool		populate(fl_ContainerLayout* sfh,
-					 const PX_ChangeRecord * pcr);
+	virtual bool populate(fl_ContainerLayout* sfh,
+					 const PX_ChangeRecord * pcr) override;
 
-	virtual bool		populateStrux(pf_Frag_Strux* sdh,
+	virtual bool populateStrux(pf_Frag_Strux* sdh,
 					      const PX_ChangeRecord * pcr,
-					      fl_ContainerLayout* * psfh);
+					      fl_ContainerLayout* * psfh) override;
 
-	virtual bool		change(fl_ContainerLayout* sfh,
-				       const PX_ChangeRecord * pcr);
+	virtual bool change(fl_ContainerLayout* sfh,
+				       const PX_ChangeRecord * pcr) override;
 
-	virtual bool		insertStrux(fl_ContainerLayout* sfh,
+	virtual bool insertStrux(fl_ContainerLayout* sfh,
 					    const PX_ChangeRecord * pcr,
 					    pf_Frag_Strux* sdh,
 					    PL_ListenerId lid,
 					    void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 								    PL_ListenerId lid,
-								    fl_ContainerLayout* sfhNew));
+								    fl_ContainerLayout* sfhNew)) override;
 
-        virtual bool		signal(UT_uint32 iSignal);
+	virtual bool signal(UT_uint32 iSignal) override;
 
 protected:
 	void				_closeSection(void);

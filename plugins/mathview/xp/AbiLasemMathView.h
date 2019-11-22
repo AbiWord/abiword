@@ -43,27 +43,27 @@ class GR_LasemMathManager : public GR_EmbedManager
 public:
 	GR_LasemMathManager(GR_Graphics * pG);
 	virtual ~GR_LasemMathManager();
-	virtual GR_EmbedManager *  create(GR_Graphics * pG);
-	virtual const char *   getObjectType(void) const;
-	virtual void           initialize(void);
-	virtual UT_sint32      makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID) ;
-	virtual void           setColor(UT_sint32 uid, const UT_RGBColor& c);
-	virtual bool           setFont(UT_sint32 uid, const GR_Font * pFont);
-	virtual void           setDisplayMode(UT_sint32 uid, AbiDisplayMode mode);
-	virtual UT_sint32      getWidth(UT_sint32 uid);
-	virtual UT_sint32      getAscent(UT_sint32 uid) ;
-	virtual UT_sint32      getDescent(UT_sint32 uid) ;
-	virtual void           loadEmbedData(UT_sint32 uid);
-	virtual void           setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize);
-	virtual void           render(UT_sint32 uid, UT_Rect & rec);
-	virtual void           releaseEmbedView(UT_sint32 uid);
-	virtual void           initializeEmbedView(UT_sint32 uid);
-	virtual void           makeSnapShot(UT_sint32 uid, UT_Rect & rec);
-	virtual bool           isDefault(void);
-	virtual bool           convert(UT_uint32 iConv, const UT_ConstByteBufPtr & From, const UT_ByteBufPtr & To);
-	virtual void           updateData(UT_sint32 uid, UT_sint32 api);
-	virtual bool           isEdittable(UT_sint32 uid);
-	virtual void		   setRun(UT_sint32 uid, fp_Run * run);
+	virtual GR_EmbedManager* create(GR_Graphics * pG) override;
+	virtual const char* getObjectType(void) const override;
+	virtual void initialize(void) override;
+	virtual UT_sint32 makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID) override;
+	virtual void setColor(UT_sint32 uid, const UT_RGBColor& c) override;
+	virtual bool setFont(UT_sint32 uid, const GR_Font * pFont) override;
+	virtual void setDisplayMode(UT_sint32 uid, AbiDisplayMode mode) override;
+	virtual UT_sint32 getWidth(UT_sint32 uid) override;
+	virtual UT_sint32 getAscent(UT_sint32 uid) override;
+	virtual UT_sint32 getDescent(UT_sint32 uid) override;
+	virtual void loadEmbedData(UT_sint32 uid) override;
+	virtual void setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize) override;
+	virtual void render(UT_sint32 uid, UT_Rect & rec) override;
+	virtual void releaseEmbedView(UT_sint32 uid) override;
+	virtual void initializeEmbedView(UT_sint32 uid) override;
+	virtual void makeSnapShot(UT_sint32 uid, UT_Rect & rec) override;
+	virtual bool isDefault(void) override;
+	virtual bool convert(UT_uint32 iConv, const UT_ConstByteBufPtr & From, const UT_ByteBufPtr & To) override;
+	virtual void updateData(UT_sint32 uid, UT_sint32 api) override;
+	virtual bool isEdittable(UT_sint32 uid) override;
+	virtual void setRun(UT_sint32 uid, fp_Run * run) override;
 	const IE_Imp_MathML_EntityTable & EntityTable() const { return m_EntityTable; }
 
     static LasemMathView * last_created_view;

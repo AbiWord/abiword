@@ -37,7 +37,7 @@ public:
 	virtual ~IE_Imp_OpenXML ();
 
 protected:
-	virtual UT_Error _loadFile(GsfInput * input);
+	virtual UT_Error _loadFile(GsfInput * input) override;
 
 private:
 	void _setDocumentProperties();

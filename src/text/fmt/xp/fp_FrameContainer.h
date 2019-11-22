@@ -49,23 +49,23 @@ public:
 	fp_FrameContainer(fl_SectionLayout* pSectionLayout);
 	virtual ~fp_FrameContainer();
 	void				layout(void);
-	virtual void		clearScreen(void);
-	virtual void		draw(dg_DrawArgs*);
-	virtual void		draw(GR_Graphics*) {}
+	virtual void		clearScreen(void) override;
+	virtual void		draw(dg_DrawArgs*) override;
+	virtual void		draw(GR_Graphics*) override {}
 	void                drawHandles(dg_DrawArgs * pDA);
 	void                drawBoundaries(dg_DrawArgs * pDA);
-	virtual void        setContainer(fp_Container * pContainer);
-	virtual fp_Container * getNextContainerInSection(void) const;
-	virtual fp_Container * getPrevContainerInSection(void) const;
+	virtual void        setContainer(fp_Container * pContainer) override;
+	virtual fp_Container * getNextContainerInSection(void) const override;
+	virtual fp_Container * getPrevContainerInSection(void) const override;
 	virtual fp_Page *   getPage(void) const { return m_pPage;}
-	virtual UT_sint32   getX() const;
-	virtual UT_sint32   getY() const;
-	virtual UT_sint32   getWidth() const;
-	virtual UT_sint32   getHeight() const;
-	virtual void        setHeight(UT_sint32 iHeight);
+	virtual UT_sint32   getX() const override;
+	virtual UT_sint32   getY() const override;
+	virtual UT_sint32   getWidth() const override;
+	virtual UT_sint32   getHeight() const override;
+	virtual void        setHeight(UT_sint32 iHeight) override;
 	UT_sint32           getLeftPad(UT_sint32 y, UT_sint32 height);
 	UT_sint32           getRightPad(UT_sint32 y, UT_sint32 height);
-	virtual bool        isVBreakable(void)
+	virtual bool        isVBreakable(void) override
 		{ return false;}
 	UT_sint32           getFullX() const;
 	UT_sint32           getFullY() const;

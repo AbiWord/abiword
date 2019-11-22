@@ -39,18 +39,18 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	virtual ~AP_Frame();
 
 	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame) = 0;
-	virtual	XAP_Frame *			buildFrame(XAP_Frame * pFrame);
-	virtual UT_Error   			loadDocument(AD_Document* pDoc);
-	virtual UT_Error   			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Error			loadDocument(const char * szFilename, int ieft, bool createNew);
-	virtual UT_Error			loadDocument(GsfInput * input, int ieft);
-	virtual UT_Error			importDocument(const char * szFilename, int ieft, bool markClean);
+	virtual	XAP_Frame *			buildFrame(XAP_Frame * pFrame) override;
+	virtual UT_Error   			loadDocument(AD_Document* pDoc) override;
+	virtual UT_Error   			loadDocument(const char * szFilename, int ieft) override;
+	virtual UT_Error			loadDocument(const char * szFilename, int ieft, bool createNew) override;
+	virtual UT_Error			loadDocument(GsfInput * input, int ieft) override;
+	virtual UT_Error			importDocument(const char * szFilename, int ieft, bool markClean) override;
 	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 	UT_uint32                   getNewZoom(XAP_Frame::tZoomType * tZoom);
-	virtual void				setZoomPercentage(UT_uint32 iZoom);
-	virtual UT_uint32			getZoomPercentage(void);
-	virtual void                quickZoom(UT_uint32 iZoom);
+	virtual void				setZoomPercentage(UT_uint32 iZoom) override;
+	virtual UT_uint32			getZoomPercentage(void) override;
+	virtual void                quickZoom(UT_uint32 iZoom) override;
 	bool                        isShowMargin(void) const
 	{ return m_bShowMargin;}
 	void                        setShowMargin(bool b)

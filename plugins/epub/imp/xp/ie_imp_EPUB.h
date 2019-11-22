@@ -50,9 +50,9 @@ public:
     virtual ~IE_Imp_EPUB();
     virtual bool pasteFromBuffer(PD_DocumentRange * pDocRange,
             const unsigned char * pData, UT_uint32 lenData,
-            const char * szEncoding = 0);
+            const char * szEncoding = 0) override;
 protected:
-    virtual UT_Error _loadFile(GsfInput * input);
+    virtual UT_Error _loadFile(GsfInput * input) override;
 
 private:
     GsfInfile* m_epub;
@@ -75,9 +75,9 @@ private:
 class ContainerListener: public UT_XML::Listener
 {
 public:
-    void startElement(const gchar * name, const gchar ** atts);
-    void endElement(const gchar * name);
-    void charData(const gchar * buffer, int length);
+    virtual void startElement(const gchar * name, const gchar ** atts) override;
+    virtual void endElement(const gchar * name) override;
+    virtual void charData(const gchar * buffer, int length) override;
 
     const std::string & getRootFilePath() const;
 
@@ -91,9 +91,9 @@ private:
 class OpfListener: public UT_XML::Listener
 {
 public:
-    void startElement(const gchar * name, const gchar ** atts);
-    void endElement(const gchar * name);
-    void charData(const gchar * buffer, int length);
+    virtual void startElement(const gchar * name, const gchar ** atts) override;
+    virtual void endElement(const gchar * name) override;
+    virtual void charData(const gchar * buffer, int length) override;
 
     const std::map<std::string, std::string> & getManifestItems() const
     {
@@ -125,9 +125,9 @@ private:
 class NavigationListener: public UT_XML::Listener
 {
 public:
-    void startElement(const gchar * name, const gchar ** atts);
-    void endElement(const gchar * name);
-    void charData(const gchar * buffer, int length);
+    virtual void startElement(const gchar * name, const gchar ** atts) override;
+    virtual void endElement(const gchar * name) override;
+    virtual void charData(const gchar * buffer, int length) override;
 };
 
 #endif

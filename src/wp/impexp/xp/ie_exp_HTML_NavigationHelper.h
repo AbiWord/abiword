@@ -65,48 +65,47 @@ private:
 class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener
 {
 public:
-IE_Exp_HTML_BookmarkListener(PD_Document* pDoc,
+    IE_Exp_HTML_BookmarkListener(PD_Document* pDoc,
         IE_Exp_HTML_NavigationHelper *pNavigationHelper);
-bool populate(fl_ContainerLayout* sfh,
-              const PX_ChangeRecord * pcr);
-// Not used
+    virtual bool populate(fl_ContainerLayout* sfh,
+                          const PX_ChangeRecord * pcr) override;
 
-bool populateStrux(pf_Frag_Strux* /*sdh*/,
-                   const PX_ChangeRecord * /*pcr*/,
-                   fl_ContainerLayout* * /*psfh*/)
-{
-    return true;
-}
 // Not used
+    bool populateStrux(pf_Frag_Strux* /*sdh*/,
+                       const PX_ChangeRecord * /*pcr*/,
+                       fl_ContainerLayout* * /*psfh*/) override
+    {
+        return true;
+    }
 
-bool change(fl_ContainerLayout* /*sfh*/,
-            const PX_ChangeRecord * /*pcr*/)
-{
-    return true;
-}
 // Not used
+    bool change(fl_ContainerLayout* /*sfh*/,
+                const PX_ChangeRecord * /*pcr*/) override
+    {
+        return true;
+    }
 
-bool insertStrux(fl_ContainerLayout* /*sfh*/,
-                 const PX_ChangeRecord * /*pcr*/,
-                 pf_Frag_Strux* /*sdh*/,
-                 PL_ListenerId /*lid*/,
-                 void (* /*pfnBindHandles*/) (pf_Frag_Strux* sdhNew,
-                 PL_ListenerId lid,
-                 fl_ContainerLayout* sfhNew))
-{
-    return true;
-}
 // Not used
+    bool insertStrux(fl_ContainerLayout* /*sfh*/,
+                     const PX_ChangeRecord * /*pcr*/,
+                     pf_Frag_Strux* /*sdh*/,
+                     PL_ListenerId /*lid*/,
+                     void (* /*pfnBindHandles*/) (pf_Frag_Strux* sdhNew,
+                                                  PL_ListenerId lid,
+                                                  fl_ContainerLayout* sfhNew)) override
+    {
+        return true;
+    }
 
-bool signal(UT_uint32 /*iSignal*/)
-{
-    return true;
-}
+// Not used
+    bool signal(UT_uint32 /*iSignal*/) override
+    {
+        return true;
+    }
 
 private:
-PD_Document * m_pDoc;
-IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
-
+    PD_Document * m_pDoc;
+    IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
 };
 
 #endif	/* IE_EXP_HTML_NAVIGATIONHELPER_H */

@@ -46,12 +46,12 @@ public:
 
     virtual ~ODi_TableOfContent_ListenerState() {}
 
-    void startElement (const gchar* pName, const gchar** ppAtts,
-                       ODi_ListenerStateAction& rAction);
+    virtual void startElement(const gchar* pName, const gchar** ppAtts,
+                       ODi_ListenerStateAction& rAction) override;
 
-    void endElement (const gchar* pName, ODi_ListenerStateAction& rAction);
+    virtual void endElement(const gchar* pName, ODi_ListenerStateAction& rAction) override;
 
-    void charData (const gchar* pBuffer, int length);
+    virtual void charData(const gchar* pBuffer, int length) override;
 
     pf_Frag_Strux* getTOCStrux() {return m_pTOCStrux;}
     const UT_UTF8String& getProps() const {return props;}

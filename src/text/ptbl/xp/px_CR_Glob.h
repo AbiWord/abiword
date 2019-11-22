@@ -55,13 +55,13 @@ public:
 						 UT_Byte flags);
 	~PX_ChangeRecord_Glob();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 
 	UT_Byte					getFlags(void) const;
 	UT_Byte					getRevFlags(void) const;
 
 #ifdef PT_TEST
-	virtual void			__dump(FILE * fp) const;
+	virtual void			__dump(FILE * fp) const override;
 #endif
 
 protected:

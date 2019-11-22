@@ -35,7 +35,7 @@ public:
 	XAP_Dialog_ClipArt(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_ClipArt(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
 
 	inline XAP_Dialog_ClipArt::tAnswer getAnswer(void) const {return m_answer;}
 

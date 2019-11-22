@@ -42,7 +42,7 @@ public:
 		: GR_CairoAllocInfo(bPreview, true, false),
 		  m_win(NULL){}
 
-	cairo_t *createCairo() {return NULL;} // we need this since otherwise the class would be abstract
+	cairo_t *createCairo() override {return NULL;} // we need this since otherwise the class would be abstract
 	GtkWidget     * m_win;
 };
 
@@ -57,7 +57,7 @@ class ABI_EXPORT GR_UnixCairoGraphicsBase
 		                               const std::string& mimetype,
 									   UT_sint32 iDisplayWidth,
 									   UT_sint32 iDisplayHeight,
-									   GR_Image::GRType =GR_Image::GRT_Raster);
+									   GR_Image::GRType = GR_Image::GRT_Raster) override;
  protected:
 	GR_UnixCairoGraphicsBase();
 	GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDeviceResolution);
@@ -71,37 +71,37 @@ class ABI_EXPORT GR_UnixCairoGraphics
 public:
 	~GR_UnixCairoGraphics();
 	static UT_uint32       s_getClassId() {return GRID_UNIX_PANGO;}
-	virtual UT_uint32      getClassId() {return s_getClassId();}
+	virtual UT_uint32      getClassId() override {return s_getClassId();}
 
 	static const char *    graphicsDescriptor(){return "Unix Cairo Pango";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 	GdkWindow *  getWindow () {return m_pWin;}
 
-	virtual GR_Font * getGUIFont(void);
+	virtual GR_Font * getGUIFont(void) override;
 
-	virtual void		setCursor(GR_Graphics::Cursor c);
-	virtual void		scroll(UT_sint32, UT_sint32);
+	virtual void		setCursor(GR_Graphics::Cursor c) override;
+	virtual void		scroll(UT_sint32, UT_sint32) override;
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						   UT_sint32 x_src, UT_sint32 y_src,
-						   UT_sint32 width, UT_sint32 height);
-	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
+						   UT_sint32 width, UT_sint32 height) override;
+	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r) override;
 
 	void				init3dColors(GtkWidget* w);
-	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
+	virtual bool		queryProperties(GR_Graphics::Properties gp) const override;
 
 	/** In the UnixCairoGraphics, color3D are mostly invalid. */
-	virtual bool        getColor3D(GR_Color3D name, UT_RGBColor &color);
+	virtual bool        getColor3D(GR_Color3D name, UT_RGBColor &color) override;
 
 	virtual void		fillRect(GR_Color3D c,
 								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
-	virtual void      flush(void);
+								 UT_sint32 w, UT_sint32 h) override;
+	virtual void      flush(void) override;
 
 	// Return the cursor name.
 	static const char* _getCursor(GR_Graphics::Cursor c);
 protected:
 	void _initWidget();
-	virtual void		_resetClip(void);
+	virtual void		_resetClip(void) override;
 	static void		widget_size_allocate (GtkWidget        *widget,
 									  GtkAllocation    *allocation,
 									  GR_UnixCairoGraphics *me);
@@ -111,8 +111,8 @@ protected:
 	virtual GdkWindow * _getWindow(void)
 	{  return m_pWin;}
 
-	virtual void _beginPaint();
-	virtual void _endPaint();
+	virtual void _beginPaint() override;
+	virtual void _endPaint() override;
 
 private:
 	GdkWindow *m_pWin;

@@ -40,7 +40,7 @@ public:
 	static XAP_Dialog *		static_constructor (XAP_DialogFactory *pDlgFactory,
 												XAP_Dialog_Id 	   id);
 
-	virtual void			runModal		   (XAP_Frame *pFrame);
+	virtual void runModal(XAP_Frame *pFrame) override;
 
 	// Event-Handler
 	void onDefaultTabChanged  (double value);
@@ -58,18 +58,18 @@ public:
  protected:
 
 	GtkWidget *_lookupWidget( tControl id );
-	virtual void _controlEnable( tControl id, bool value );
-        void _spinChanged(void);
+	virtual void _controlEnable(tControl id, bool value) override;
+	void _spinChanged(void);
 	// we implement these so the XP dialog can set/grab our data
-#define SET_GATHER(a,t) virtual t _gather##a(void);  \
- 					    virtual void    _set##a( t )
+#define SET_GATHER(a,t) virtual t _gather##a(void) override;  \
+					    virtual void _set##a(t) override
 	SET_GATHER			(Alignment,			eTabType);
 	SET_GATHER			(Leader,			eTabLeader);
 	SET_GATHER			(DefaultTabStop,	const gchar*);
 
 
 	// to populate the whole list
-	virtual void _setTabList(UT_uint32 count);
+	virtual void _setTabList(UT_uint32 count) override;
 
 	// get/set the selected tab
 	// the list of n tabs are index 0..(n-1)
@@ -81,7 +81,7 @@ public:
 #undef SET_GATHER
 
 	// clear all the items from the tab list - only gui side
-	virtual void _clearList();
+	virtual void _clearList() override;
 
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);

@@ -50,7 +50,7 @@ public:
     virtual ~IE_Exp_EPUB();
 
 protected:
-    virtual UT_Error _writeDocument();
+    virtual UT_Error _writeDocument() override;
 
 private:
     UT_Error writeStructure();

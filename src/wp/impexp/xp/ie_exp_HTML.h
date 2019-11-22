@@ -70,14 +70,14 @@ public:
 	IE_Exp_HTML_Sniffer ();
 	virtual ~IE_Exp_HTML_Sniffer () {}
 
-	virtual bool recognizeSuffix (const gchar * szSuffix);
-	virtual bool getDlgLabels (const gchar ** szDesc,
+	virtual bool recognizeSuffix(const gchar * szSuffix) override;
+	virtual bool getDlgLabels(const gchar ** szDesc,
 							   const gchar ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
+							   IEFileType * ft) override;
+	virtual UT_Error constructExporter(PD_Document * pDocument,
+										IE_Exp ** ppie) override;
 
-	virtual UT_Confidence_t supportsMIME (const gchar * szMimeType);
+	virtual UT_Confidence_t supportsMIME(const gchar * szMimeType) override;
 };
 
 class IE_Exp_HTML_NavigationHelper;
@@ -89,7 +89,7 @@ public:
 	IE_Exp_HTML (PD_Document * pDocument);
 	virtual ~IE_Exp_HTML ();
 
-	virtual UT_Error copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bufHTML);
+	virtual UT_Error copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bufHTML) override;
 
 	static bool			RecognizeSuffix (const gchar * szSuffix);
 	static UT_Error		StaticConstructor (PD_Document * pDocument,
@@ -116,7 +116,7 @@ private:
 	void _buildStyleTree();
 
 protected:
-	virtual UT_Error	_writeDocument ();
+	virtual UT_Error _writeDocument() override;
 	void				_createChapter(PD_DocumentRange *range, const std::string &title, bool isIndex);
 	void _createMultipart();
 public:

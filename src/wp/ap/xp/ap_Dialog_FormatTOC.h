@@ -39,11 +39,11 @@ public:
 	AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_FormatTOC(void);
 
-	virtual void runModeless(XAP_Frame * pFrame) = 0;
+	virtual void runModeless(XAP_Frame * pFrame) override = 0;
 
 	void              startUpdater(void);
 	void              stopUpdater(void);
-    void              setActiveFrame(XAP_Frame *pFrame);
+	void              setActiveFrame(XAP_Frame *pFrame) override;
 	void              event_update(void);
 	void              finalize(void);
 	void              Apply(void);

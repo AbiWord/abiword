@@ -37,7 +37,7 @@ public:
 											PT_DocPosition& pos,
 											bool& bBOL,
 											bool& bEOL,
-											bool & isTOC);
+											bool & isTOC) override;
 
 	virtual void 			findPointCoords(UT_uint32 iOffset,
 											UT_sint32& x,
@@ -45,26 +45,26 @@ public:
 											UT_sint32& x2,
 											UT_sint32& y2,
 											UT_sint32& height,
-											bool& bDirection);
+											bool& bDirection) override;
 
-	virtual bool			canBreakAfter(void) const;
-	virtual bool			canBreakBefore(void) const;
-	virtual UT_sint32       getDrawingWidth() const { return static_cast<UT_sint32>(m_iDrawWidth);}
+	virtual bool			canBreakAfter(void) const override;
+	virtual bool			canBreakBefore(void) const override;
+	virtual UT_sint32       getDrawingWidth() const override { return static_cast<UT_sint32>(m_iDrawWidth);}
 
 	// for the purposes of linebreaking, direction markers are just whitespace
-	virtual bool		    doesContainNonBlankData(void) const { return false; }
+	virtual bool		    doesContainNonBlankData(void) const override { return false; }
 
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG);
+											  GR_Graphics * pG) override;
 
-	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(bool bFullLineHeightRect);
-	virtual bool			_recalcWidth(void);
-	virtual bool			_letPointPass(void) const;
-	virtual bool            _deleteFollowingIfAtInsPoint() const;
+	virtual void			_draw(dg_DrawArgs*) override;
+	virtual void       		_clearScreen(bool bFullLineHeightRect) override;
+	virtual bool			_recalcWidth(void) override;
+	virtual bool			_letPointPass(void) const override;
+	virtual bool            _deleteFollowingIfAtInsPoint() const override;
 
 private:
 	UT_uint32				m_iXoffText;

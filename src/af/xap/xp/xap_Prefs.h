@@ -252,9 +252,9 @@ protected:
 
 	/* Implementation of UT_XML::Listener */
 public:
-	void				startElement(const gchar *name, const gchar **atts);
-	void				endElement(const gchar *name);
-	void				charData(const gchar *s, int len);
+	virtual void startElement(const gchar *name, const gchar **atts) override;
+	virtual void endElement(const gchar *name) override;
+	virtual void charData(const gchar *s, int len) override;
 private:
 	void				_startElement_SystemDefaultFile(const gchar *name,
 														const gchar **atts);

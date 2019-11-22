@@ -53,29 +53,28 @@ typedef std::map< std::string, std::string > stringmap_t;
 /******************************/
 
 class PD_SemanticItemFactoryNull
-    :
-    public PD_SemanticItemFactory
+    : public PD_SemanticItemFactory
 {
 public:
-    virtual PD_RDFContact*  createContact(PD_DocumentRDFHandle /*rdf*/, 
-										  PD_ResultBindings_t::iterator /*it*/)
+    virtual PD_RDFContact*  createContact(PD_DocumentRDFHandle /*rdf*/,
+										  PD_ResultBindings_t::iterator /*it*/) override
     {
         return 0;
     }
-    virtual PD_RDFEvent*    createEvent(PD_DocumentRDFHandle /*rdf*/, 
-										PD_ResultBindings_t::iterator /*it*/)
+    virtual PD_RDFEvent*    createEvent(PD_DocumentRDFHandle /*rdf*/,
+										PD_ResultBindings_t::iterator /*it*/) override
     {
         return 0;
     }
-    virtual PD_RDFLocation* createLocation(PD_DocumentRDFHandle /*rdf*/, 
+    virtual PD_RDFLocation* createLocation(PD_DocumentRDFHandle /*rdf*/,
 										   PD_ResultBindings_t::iterator /*it*/,
-										   bool isGeo84 = false )
+										   bool isGeo84 = false) override
     {
 		UT_UNUSED(isGeo84);
         return 0;
     }
 };
-PD_SemanticItemFactory *PD_DocumentRDF::s_SemanticItemFactory; 
+PD_SemanticItemFactory *PD_DocumentRDF::s_SemanticItemFactory;
 PD_SemanticItemFactory *PD_DocumentRDF::getSemanticItemFactory()
 {
     if (!s_SemanticItemFactory) s_SemanticItemFactory = new PD_SemanticItemFactoryNull;
@@ -91,10 +90,10 @@ PD_DocumentRDF::setSemanticItemFactory( PD_SemanticItemFactory* f )
 class PD_RDFDialogsNull : public PD_RDFDialogs
 {
   public:
-    virtual void runSemanticStylesheetsDialog(FV_View* /*pView*/)
+    virtual void runSemanticStylesheetsDialog(FV_View* /*pView*/) override
     {
     }
-    virtual std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog(FV_View* /*pView*/)
+    virtual std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog(FV_View* /*pView*/) override
     {
 		return std::make_pair(0,0);
     }
@@ -102,7 +101,7 @@ class PD_RDFDialogsNull : public PD_RDFDialogs
 PD_RDFDialogs *PD_DocumentRDF::s_RDFDialogs;
 PD_RDFDialogs *PD_DocumentRDF::getRDFDialogs()
 {
-    if (!s_RDFDialogs) s_RDFDialogs = new PD_RDFDialogsNull; 
+    if (!s_RDFDialogs) s_RDFDialogs = new PD_RDFDialogsNull;
     return s_RDFDialogs;
 }
 void
@@ -858,24 +857,24 @@ public:
         UT_DEBUGMSG(("~PD_RDFModelFromAP() this:%p\n",this));
         delete m_AP;
     }
-    virtual const PP_AttrProp* getAP(void)
+    virtual const PP_AttrProp* getAP(void) override
     {
         return m_AP;
     }
-    virtual UT_Error setAP( PP_AttrProp* newAP )
+    virtual UT_Error setAP( PP_AttrProp* newAP ) override
     {
         delete m_AP;
         m_AP = newAP;
         return UT_OK;
     }
-    virtual bool isStandAlone() const
+    virtual bool isStandAlone() const override
     {
         return true;
     }
-    virtual void maybeSetDocumentDirty()
+    virtual void maybeSetDocumentDirty() override
     {
     }
-    
+
 };
 
 
@@ -900,17 +899,17 @@ public:
     virtual ~PD_RDFModelFromStartEndPos()
     {
     }
-    virtual const PP_AttrProp* getAP(void)
+    virtual const PP_AttrProp* getAP(void) override
     {
         UT_DEBUGMSG(("ERROR: getAP() is not valid for a start-end position rdf model\n"));
         return 0;
     }
-    virtual UT_Error setAP( PP_AttrProp* newAP )
+    virtual UT_Error setAP( PP_AttrProp* newAP ) override
     {
         UT_UNUSED( newAP );
         return UT_OK;
     }
-    virtual bool isStandAlone() const
+    virtual bool isStandAlone() const override
     {
         return true;
     }
@@ -1122,7 +1121,7 @@ public:
     ////////////////
     // PD_RDFModel methods...
 
-    virtual PD_ObjectList getObjects( const PD_URI& s, const PD_URI& p )
+    virtual PD_ObjectList getObjects( const PD_URI& s, const PD_URI& p ) override
     {
         PD_ObjectList ret;
         for( m_APList_t::iterator iter = apBegin(); iter != apEnd(); ++iter )
@@ -1130,13 +1129,13 @@ public:
         return ret;
     }
     
-    virtual PD_Object getObject( const PD_URI& s, const PD_URI& p )
+    virtual PD_Object getObject( const PD_URI& s, const PD_URI& p ) override
     {
         PD_ObjectList l = getObjects(s,p);
         return front(l);
     }
     
-    virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o )
+    virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o ) override
     {
         PD_URIList ret;
         for( m_APList_t::iterator iter = apBegin(); iter != apEnd(); ++iter )
@@ -1144,13 +1143,13 @@ public:
         return ret;
     }
     
-    virtual PD_URI getSubject( const PD_URI& p, const PD_Object& o )
+    virtual PD_URI getSubject( const PD_URI& p, const PD_Object& o ) override
     {
         PD_URIList l = getSubjects( p,o );
         return front(l);
     }
     
-    virtual PD_URIList getAllSubjects()
+    virtual PD_URIList getAllSubjects() override
     {
         PD_URIList ret;
         for( m_APList_t::iterator iter = apBegin(); iter != apEnd(); ++iter )
@@ -1158,7 +1157,7 @@ public:
         return ret;
     }
     
-    virtual POCol getArcsOut( const PD_URI& s )
+    virtual POCol getArcsOut( const PD_URI& s ) override
     {
         POCol ret;
         for( m_APList_t::iterator iter = apBegin(); iter != apEnd(); ++iter )
@@ -1166,7 +1165,7 @@ public:
         return ret;
     }
     
-    virtual bool contains( const PD_URI& s, const PD_URI& p, const PD_Object& o )
+    virtual bool contains( const PD_URI& s, const PD_URI& p, const PD_Object& o ) override
     {
         bool ret = false;
         for( m_APList_t::iterator iter = apBegin(); iter != apEnd(); ++iter )
@@ -1178,7 +1177,7 @@ public:
         return ret;
     }
     
-    virtual void dumpModel( const std::string& headerMsg = "dumpModel()" )
+    virtual void dumpModel( const std::string& headerMsg = "dumpModel()" ) override
     {
         UT_DEBUG_ONLY_ARG(headerMsg);
 
@@ -4606,7 +4605,7 @@ public:
     virtual ~RDFModel_SPARQLLimited()
     {
     }
-    virtual PD_DocumentRDFMutationHandle createMutation();    
+    virtual PD_DocumentRDFMutationHandle createMutation() override;
     virtual std::string getSparql()
     {
         return m_sparql;
@@ -4618,7 +4617,7 @@ public:
         m_sparql = s;
     }
     
-    virtual const PP_AttrProp* getAP(void)
+    virtual const PP_AttrProp* getAP(void) override
     {
         update();
         return m_AP;
@@ -4707,7 +4706,7 @@ class RDFModel_XMLIDLimited
     std::string m_writeID;
     std::set< std::string > m_readIDList;
 protected:
-    virtual void update();
+    virtual void update() override;
     
 public:
     
@@ -4726,8 +4725,8 @@ public:
         UT_DEBUGMSG(("~RDFModel_XMLIDLimited()\n"));
     }
 
-    virtual std::string getSparql();
-    virtual PD_DocumentRDFMutationHandle createMutation();
+    virtual std::string getSparql() override;
+    virtual PD_DocumentRDFMutationHandle createMutation() override;
 };
 
 void
@@ -4794,7 +4793,7 @@ class ABI_EXPORT PD_RDFMutation_XMLIDLimited
     {
     }
     
-    virtual bool add( const PD_URI& s, const PD_URI& p, const PD_Object& o )
+    virtual bool add( const PD_URI& s, const PD_URI& p, const PD_Object& o ) override
     {
         UT_DEBUGMSG(("XMLIDLimited::add() s:%s\n", s.toString().c_str() ));
         UT_DEBUGMSG(("XMLIDLimited::add() p:%s\n", p.toString().c_str() ));
@@ -4823,7 +4822,7 @@ class ABI_EXPORT PD_RDFMutation_XMLIDLimited
         return rc;
         
     }
-    virtual void remove( const PD_URI& s, const PD_URI& p, const PD_Object& o )
+    virtual void remove( const PD_URI& s, const PD_URI& p, const PD_Object& o ) override
     {
         POCol po = m_rdf->getArcsOut( s );
         UT_DEBUGMSG(("XMLIDLimited::remove() subject count:%d\n", (int)po.size() ));
@@ -4831,7 +4830,7 @@ class ABI_EXPORT PD_RDFMutation_XMLIDLimited
         m_delegate->remove( s, p, o );
         m_cleanupSubjects.insert( s.toString() );
     }
-    virtual UT_Error commit()
+    virtual UT_Error commit() override
     {
         UT_DEBUGMSG(("XMLIDLimited::commit()\n" ));
         UT_Error ret = m_delegate->commit();
@@ -4893,7 +4892,7 @@ class ABI_EXPORT PD_RDFMutation_XMLIDLimited
         return ret;
     }
     
-    virtual void rollback()
+    virtual void rollback() override
     {
         m_delegate->rollback();
     }

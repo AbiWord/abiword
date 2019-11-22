@@ -35,7 +35,7 @@ public:
 pFactory , XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Field(void);
 
-	virtual void runModal(XAP_Frame * pFrame);
+	virtual void runModal(XAP_Frame * pFrame) override;
 
 	void event_Insert(void);
 	void types_changed(GtkTreeView *treeview);

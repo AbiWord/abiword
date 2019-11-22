@@ -49,18 +49,18 @@ public:
 			g_object_unref(m_pContact);
 	}
 
-	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
+	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const override
 	{
 		return UT_UTF8String("dtube://") + m_sDBusName;
 	}
 
-	virtual UT_UTF8String getDescription() const
+	virtual UT_UTF8String getDescription() const override
 	{
 		static UT_UTF8String description = m_sDBusName;
 		return description;
 	}
 
-	virtual const DocTreeItem* getDocTreeItems() const
+	virtual const DocTreeItem* getDocTreeItems() const override
 	{
 		UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		return NULL;

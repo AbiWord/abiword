@@ -32,7 +32,7 @@ class XAP_Frame;
 class ABI_EXPORT AP_Dialog_RDFQuery : public AP_Dialog_Modeless
 {
   protected:
-    virtual XAP_String_Id getWindowTitleStringId();
+    virtual XAP_String_Id getWindowTitleStringId() override;
 
 public:
 	AP_Dialog_RDFQuery(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -54,7 +54,7 @@ public:
     virtual void addStatement( const PD_RDFStatement& st );
     virtual void setupBindingsView( std::map< std::string, std::string >& b );
     virtual void addBinding( std::map< std::string, std::string >& b );
-    virtual void setStatus( const std::string& msg );
+    virtual void setStatus(const std::string& msg) override;
     virtual void setQueryString( const std::string& sparql );
 
 

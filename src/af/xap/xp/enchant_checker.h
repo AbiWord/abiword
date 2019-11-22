@@ -34,12 +34,12 @@ public:
 
 	virtual ~EnchantChecker();
 
-	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
+	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len) override;
 	virtual void correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
-							  const UT_UCSChar *correct, size_t correctLen);
+							  const UT_UCSChar *correct, size_t correctLen) override;
 
-	virtual void ignoreWord (const UT_UCSChar *toCorrect, size_t toCorrectLen);
-	virtual bool isIgnored (const UT_UCSChar * pWord, size_t len) const;
+	virtual void ignoreWord (const UT_UCSChar *toCorrect, size_t toCorrectLen) override;
+	virtual bool isIgnored (const UT_UCSChar * pWord, size_t len) const override;
 
 protected:
 
@@ -47,8 +47,8 @@ protected:
 
 private:
 
-	bool _requestDictionary (const char * szLang);
-	SpellChecker::SpellCheckResult _checkWord (const UT_UCSChar * word, size_t len);
+	virtual bool _requestDictionary (const char * szLang) override;
+	virtual SpellChecker::SpellCheckResult _checkWord (const UT_UCSChar * word, size_t len) override;
 	virtual std::unique_ptr<std::vector<UT_UCSChar*>> _suggestWord (const UT_UCSChar * word, size_t len) override;
 
 	EnchantDict *m_dict;

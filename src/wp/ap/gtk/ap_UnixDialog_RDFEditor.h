@@ -37,10 +37,10 @@ public:
 	static XAP_Dialog *static_constructor (XAP_DialogFactory *,
 										   XAP_Dialog_Id id);
 
-	virtual void runModeless 	   (XAP_Frame *pFrame);
-	virtual void notifyActiveFrame (XAP_Frame *pFrame);
-	virtual void activate	 	   (void);
-	virtual void destroy 		   (void);
+	virtual void runModeless(XAP_Frame *pFrame) override;
+	virtual void notifyActiveFrame(XAP_Frame *pFrame) override;
+	virtual void activate(void) override;
+	virtual void destroy(void) override;
 
     void onExecuteClicked();
     void onShowAllClicked();
@@ -55,13 +55,13 @@ public:
 
 	const GtkWidget *getWindow (void) { return m_wDialog; }
 
-    virtual void clear();
-    virtual void addStatement( const PD_RDFStatement& st );
-    virtual void setStatus( const std::string& msg );
-    virtual void removeStatement( const PD_RDFStatement& st );
-    virtual std::list< PD_RDFStatement > getSelection();
-    virtual void setSelection( const std::list< PD_RDFStatement >& l );
-    virtual void hideRestrictionXMLID( bool v );
+    virtual void clear() override;
+    virtual void addStatement(const PD_RDFStatement& st) override;
+    virtual void setStatus(const std::string& msg) override;
+    virtual void removeStatement(const PD_RDFStatement& st) override;
+    virtual std::list<PD_RDFStatement> getSelection() override;
+    virtual void setSelection(const std::list<PD_RDFStatement>& l) override;
+    virtual void hideRestrictionXMLID(bool v) override;
 
     PD_RDFStatement next( const PD_RDFStatement& st );
 

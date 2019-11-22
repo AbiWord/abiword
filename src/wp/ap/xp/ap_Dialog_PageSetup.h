@@ -32,7 +32,7 @@ public:
 	AP_Dialog_PageSetup(XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_PageSetup() = 0;
 
-	virtual void runModal(XAP_Frame *pFrame) = 0;
+	virtual void runModal(XAP_Frame *pFrame) override = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 	typedef enum { PORTRAIT, LANDSCAPE } Orientation;

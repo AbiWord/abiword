@@ -49,7 +49,7 @@ public:
   virtual ~IE_Imp_Hancom();
   
 protected:
-	virtual UT_Error _loadFile(GsfInput * input);
+	virtual UT_Error _loadFile(GsfInput * input) override;
 private:
   GsfInfile *mDoc;
 };
@@ -132,24 +132,24 @@ class IE_Imp_Hancom_Sniffer : public IE_ImpSniffer {
 		}
 		virtual ~IE_Imp_Hancom_Sniffer() {}
 
-		const IE_SuffixConfidence * getSuffixConfidence ()
+		const IE_SuffixConfidence * getSuffixConfidence() override
 		{
 			return IE_Imp_Hancom_Sniffer__SuffixConfidence;
 		}
 
-		virtual const IE_MimeConfidence * getMimeConfidence ()
+		virtual const IE_MimeConfidence * getMimeConfidence() override
 		{
 			return NULL;
 		}
 
-		virtual UT_Confidence_t recognizeContents(const char* szBuf, UT_uint32 iNumBytes) {
+		virtual UT_Confidence_t recognizeContents(const char* szBuf, UT_uint32 iNumBytes) override {
 			if (iNumBytes >= sizeof(hwpSignature))
 				return (memcmp(szBuf, hwpSignature, sizeof(hwpSignature)) == 0) ? UT_CONFIDENCE_GOOD : UT_CONFIDENCE_ZILCH;
 			return UT_CONFIDENCE_ZILCH;
 
 		}
 
-		virtual bool getDlgLabels(const char** szDesc, const char** szSuffixList, IEFileType *ft) {
+		virtual bool getDlgLabels(const char** szDesc, const char** szSuffixList, IEFileType *ft) override {
 			*szDesc = "Hancom Word (*.hwp)";
 			*szSuffixList = "*.hwp";
 			*ft = getFileType();
@@ -157,7 +157,7 @@ class IE_Imp_Hancom_Sniffer : public IE_ImpSniffer {
 
 		}
 
-		virtual UT_Error constructImporter(PD_Document* pDocument, IE_Imp **ppie) {
+		virtual UT_Error constructImporter(PD_Document* pDocument, IE_Imp **ppie) override {
 			*ppie = new IE_Imp_Hancom(pDocument);
 			if (!ppie)
 				return UT_OUTOFMEM;

@@ -163,7 +163,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
     void importFromDataComplete( std::istream& /*iss*/,
                                 PD_DocumentRDFHandle rdf,
                                 PD_DocumentRDFMutationHandle m,
-                                PD_DocumentRange * pDocRange = 0 )
+                                PD_DocumentRange * pDocRange = 0 ) override
     {
         // Create and populate and editor with the current data,
         // then update the Rdf from that editor.
@@ -183,7 +183,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
     }
 
     std::string getImportFromFileName( const std::string& filename_const,
-                                       std::list< std::pair< std::string, std::string> > types ) const
+                                       std::list< std::pair< std::string, std::string> > types ) const override
     {
         std::string ret = filename_const;
 
@@ -211,7 +211,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
     std::string
         getExportToFileName( const std::string& filename_const,
                              std::string defaultExtension,
-                             std::list< std::pair< std::string, std::string> > types ) const
+                             std::list<std::pair<std::string, std::string>> types) const override
     {
         std::string filename = filename_const;
 

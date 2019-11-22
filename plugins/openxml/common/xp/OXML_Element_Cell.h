@@ -45,8 +45,8 @@ public:
 					  UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom);
 	virtual ~OXML_Element_Cell();
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter) override;
+	virtual UT_Error addToPT(PD_Document * pDocument) override;
 	UT_sint32 getLeft() const
 		{
 			return m_iLeft;

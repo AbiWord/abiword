@@ -49,14 +49,14 @@ class ABI_EXPORT XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
 	//------------------------------------------------------------
 	// All these are needed for a modeless dialog
 
-	virtual void     useStart(void);
-	virtual void     useEnd(void);
-	virtual void	 runModal(XAP_Frame * pFrame) = 0;
-	virtual void	 runModeless(XAP_Frame * pFrame) = 0;
-        virtual void     destroy(void)=0;
-        virtual void     activate(void)=0;
-	void		 setActiveFrame(XAP_Frame *pFrame);
-	virtual void		notifyActiveFrame(XAP_Frame *pFrame) = 0;
+	virtual void useStart(void) override;
+	virtual void useEnd(void) override;
+	virtual void runModal(XAP_Frame * pFrame) override = 0;
+	virtual void runModeless(XAP_Frame * pFrame) override = 0;
+	virtual void destroy(void) override = 0;
+	virtual void activate(void) override = 0;
+	virtual void setActiveFrame(XAP_Frame *pFrame) override;
+	virtual void notifyActiveFrame(XAP_Frame *pFrame) override = 0;
 
 	//--------------------------------------------------------------
 

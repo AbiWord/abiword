@@ -41,7 +41,7 @@ public:
 
 	virtual bool		synthesizeMenuBar();
 	virtual bool		rebuildMenuBar();
-	virtual bool		refreshMenu(AV_View * pView);
+	virtual bool		refreshMenu(AV_View * pView) override;
     virtual void        destroy(void);
 
     GtkWidget *         getMenuBar(void) const {return m_wMenuBar;}

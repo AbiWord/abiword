@@ -30,13 +30,13 @@ class AP_UnixDialog_CollaborationAddAccount : public AP_Dialog_CollaborationAddA
 public:
 	AP_UnixDialog_CollaborationAddAccount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
-	void						runModal(XAP_Frame * pFrame);
+	void runModal(XAP_Frame * pFrame) override;
 
 	void						eventOk();
 	void						eventAccountTypeChanged();
 
 protected:
-	virtual void*				_getEmbeddingParent()
+	virtual void* _getEmbeddingParent() override
 		{ return m_wEmbeddingParent; }
 	virtual AccountHandler*		_getActiveAccountHandler();
 

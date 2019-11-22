@@ -37,14 +37,14 @@ public:
 	IE_Exp_Passepartout_Sniffer (const char * name);
 	virtual ~IE_Exp_Passepartout_Sniffer () {}
 
-	UT_Confidence_t supportsMIME (const char * szMIME);
+	virtual UT_Confidence_t supportsMIME (const char * szMIME) override;
 
-	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool recognizeSuffix (const char * szSuffix) override;
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
+							   IEFileType * ft) override;
 	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
+										IE_Exp ** ppie) override;
 };
 
 #endif /* IE_EXP_PASSEPARTOUT_H */

@@ -44,14 +44,14 @@ public:
   virtual ~TOC_Listener();
   
   virtual bool		populate(fl_ContainerLayout* sfh,
-				 const PX_ChangeRecord * pcr);
+				 const PX_ChangeRecord * pcr) override;
   
   virtual bool		populateStrux(pf_Frag_Strux* sdh,
 				      const PX_ChangeRecord * pcr,
-				      fl_ContainerLayout* * psfh);
+				      fl_ContainerLayout* * psfh) override;
   
   virtual bool		change(fl_ContainerLayout* sfh,
-			       const PX_ChangeRecord * pcr);
+			       const PX_ChangeRecord * pcr) override;
   
   virtual bool		insertStrux(fl_ContainerLayout* sfh,
 				    const PX_ChangeRecord * pcr,
@@ -59,9 +59,9 @@ public:
 				    PL_ListenerId lid,
 				    void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 							    PL_ListenerId lid,
-							    fl_ContainerLayout* sfhNew));
+							    fl_ContainerLayout* sfhNew)) override;
   
-  virtual bool		signal(UT_uint32 iSignal);
+  virtual bool		signal(UT_uint32 iSignal) override;
   
   
 private:

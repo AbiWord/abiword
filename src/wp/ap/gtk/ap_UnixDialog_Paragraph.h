@@ -33,7 +33,7 @@ public:
 	AP_UnixDialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Paragraph(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void runModal(XAP_Frame * pFrame) override;
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -83,7 +83,7 @@ public:
 
 	void                 _populateWindowData(void);
 
-	virtual void         _syncControls(tControl changed, bool bAll = false);
+	virtual void         _syncControls(tControl changed, bool bAll = false) override;
 
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog

@@ -32,8 +32,8 @@ public:
 	EV_CocoaToolbar_ViewListener(EV_CocoaToolbar * pCocoaToolbar,
 								AV_View * pView);
 
-	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
-    virtual AV_ListenerType getType(void) { return AV_LISTENER_TOOLBAR;}
+	virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override;
+	virtual AV_ListenerType getType(void) override { return AV_LISTENER_TOOLBAR;}
 
 protected:
 	EV_CocoaToolbar *	m_pCocoaToolbar;

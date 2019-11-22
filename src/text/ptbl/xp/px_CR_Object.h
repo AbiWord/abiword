@@ -53,7 +53,7 @@ public:
 			   pf_Frag_Object* pOH);
 	~PX_ChangeRecord_Object();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void) const override;
 
 	PTObjectType			getObjectType(void) const;
 	PT_BlockOffset			getBlockOffset(void) const;

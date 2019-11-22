@@ -51,52 +51,52 @@ public:
 	virtual ~TelepathyAccountHandler();
 
 	// housekeeping
-	virtual UT_UTF8String					getDescription();
-	virtual UT_UTF8String					getDisplayType();
-	virtual UT_UTF8String					getStorageType();
+	virtual UT_UTF8String getDescription() override;
+	virtual UT_UTF8String getDisplayType() override;
+	virtual UT_UTF8String getStorageType() override;
 
 	// dialog management
-	virtual void							embedDialogWidgets(void* pEmbeddingParent);
-	virtual void							removeDialogWidgets(void* pEmbeddingParent);
-	virtual bool							canDelete()
+	virtual void embedDialogWidgets(void* pEmbeddingParent) override;
+	virtual void removeDialogWidgets(void* pEmbeddingParent) override;
+	virtual bool canDelete() override
 		{ return false; }
-	virtual void							loadProperties();
-	virtual void							storeProperties();
+	virtual void loadProperties() override;
+	virtual void storeProperties() override;
 
 	// connection management
-	virtual ConnectResult					connect();
-	virtual bool							disconnect();
-	virtual bool							isOnline();
+	virtual ConnectResult connect() override;
+	virtual bool disconnect() override;
+	virtual bool isOnline() override;
 	void									acceptTube(TpChannel *tubes_chan, const char* address);
 	void									finalizeOfferTube(TelepathyChatroomPtr pChatroom);
 
 	// user management
-	virtual void							getBuddiesAsync();
-	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
-	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
-	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
-	virtual bool							allowsManualBuddies()
+	virtual void getBuddiesAsync() override;
+	virtual BuddyPtr constructBuddy(const PropertyMap& props) override;
+	virtual BuddyPtr constructBuddy(const std::string& descriptor, BuddyPtr pBuddy) override;
+	virtual bool recognizeBuddyIdentifier(const std::string& identifier) override;
+	virtual bool allowsManualBuddies() override
 		{ return false; }
-	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
-	virtual bool 							hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy);
-	virtual bool							hasPersistentAccessControl()
+	virtual void forceDisconnectBuddy(BuddyPtr pBuddy) override;
+	virtual bool hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy) override;
+	virtual bool hasPersistentAccessControl() override
 		{ return true; }
 	void									addContact(TpContact* contact);
 	void									buddyDisconnected(TelepathyChatroomPtr pChatroom, TpHandle disconnected);
 
 	// session management
-	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& acl, AbiCollab** pSession);
-	virtual bool							setAcl(AbiCollab* /*pSession*/, const std::vector<std::string>& /*vAcl*/);
-	virtual bool							allowsSessionTakeover()
+	virtual bool startSession(PD_Document* pDoc, const std::vector<std::string>& acl, AbiCollab** pSession) override;
+	virtual bool setAcl(AbiCollab* /*pSession*/, const std::vector<std::string>& /*vAcl*/) override;
+	virtual bool allowsSessionTakeover() override
 		{ return false; /* not right now */ }
 	void									unregisterChatroom(TelepathyChatroomPtr pChatroom);
 
 	// signal management
-	virtual void							signal(const Event& event, BuddyPtr pSource);
+	virtual void signal(const Event& event, BuddyPtr pSource) override;
 
 	// packet management
-	virtual bool							send(const Packet* pPacket);
-	virtual bool							send(const Packet* pPacket, BuddyPtr buddy);
+	virtual bool send(const Packet* pPacket) override;
+	virtual bool send(const Packet* pPacket, BuddyPtr buddy) override;
 	void									handleMessage(DTubeBuddyPtr pBuddy, const std::string& packet_str);
 
 private:

@@ -66,15 +66,15 @@ public:
 
     virtual ~ODi_StreamListener();
 
-    void startElement (const gchar* pName, const gchar** ppAtts) {
+    void startElement (const gchar* pName, const gchar** ppAtts) override {
         _startElement(pName, ppAtts, false);
     }
 
-    void endElement (const gchar* pName) {
+    void endElement (const gchar* pName) override {
         _endElement(pName, false);
     }
 
-    void charData (const gchar* pBuffer, int length);
+    void charData (const gchar* pBuffer, int length) override;
 
     UT_Error setState(const char* pStateName);
     void setState(ODi_ListenerState* pState, bool deleteWhenPop);

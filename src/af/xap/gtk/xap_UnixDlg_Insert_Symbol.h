@@ -39,12 +39,12 @@ public:
 	XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_UnixDialog_Insert_Symbol(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
-	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
-	virtual void			notifyCloseFrame(XAP_Frame * /*pFrame*/ ){};
-	virtual void			destroy(void);
-	virtual void			activate(void);
+	virtual void			runModal(XAP_Frame * pFrame) override;
+	virtual void			runModeless(XAP_Frame * pFrame) override;
+	virtual void			notifyActiveFrame(XAP_Frame *pFrame) override;
+	virtual void			notifyCloseFrame(XAP_Frame * /*pFrame*/) override {};
+	virtual void			destroy(void) override;
+	virtual void			activate(void) override;
 
 	void			event_Insert(void);
 	void			event_WindowDelete(void);

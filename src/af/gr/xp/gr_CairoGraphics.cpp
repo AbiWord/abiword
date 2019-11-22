@@ -187,14 +187,14 @@ class GR_CairoPangoItem: public GR_Item
   public:
 	virtual ~GR_CairoPangoItem(){ if (m_pi) {pango_item_free(m_pi);}};
 	
-	virtual GR_ScriptType getType() const {return (GR_ScriptType)m_iType;}
+	virtual GR_ScriptType getType() const override {return (GR_ScriptType)m_iType;}
 	
-	virtual GR_Item *     makeCopy() const
+	virtual GR_Item *     makeCopy() const override
 	    {
 			return new GR_CairoPangoItem(pango_item_copy(m_pi));
 		}
 	
-	virtual GRRI_Type     getClassId() const {return GRRI_CAIRO_PANGO;}
+	virtual GRRI_Type     getClassId() const override {return GRRI_CAIRO_PANGO;}
 
   protected:
 	GR_CairoPangoItem(PangoItem *pi);
@@ -263,12 +263,12 @@ class GR_PangoRenderInfo : public GR_RenderInfo
 		}
 	};
 
-	virtual GRRI_Type getType() const {return GRRI_CAIRO_PANGO;}
-	virtual bool append(GR_RenderInfo &ri, bool bReverse = false);
-	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false);
-	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
-	virtual bool isJustified() const;
-	virtual bool canAppend(GR_RenderInfo &ri) const;
+	virtual GRRI_Type getType() const override {return GRRI_CAIRO_PANGO;}
+	virtual bool append(GR_RenderInfo &ri, bool bReverse = false) override;
+	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false) override;
+	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false) override;
+	virtual bool isJustified() const override;
+	virtual bool canAppend(GR_RenderInfo &ri) const override;
 
 	bool getUTF8Text();
 	

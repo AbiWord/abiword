@@ -45,13 +45,13 @@ public:
 	virtual ~fp_FootnoteContainer();
 	UT_sint32           getValue(void);
 	void				layout(void);
-	virtual bool        isVBreakable(void) {return false;}
-	virtual void		clearScreen(void);
-	virtual void		draw(dg_DrawArgs*);
-	virtual void		draw(GR_Graphics*) {}
-	virtual void        setContainer(fp_Container * pContainer);
-	virtual fp_Container * getNextContainerInSection(void) const;
-	virtual fp_Container * getPrevContainerInSection(void) const;
+	virtual bool        isVBreakable(void) override {return false;}
+	virtual void		clearScreen(void) override;
+	virtual void		draw(dg_DrawArgs*) override;
+	virtual void		draw(GR_Graphics*) override {}
+	virtual void        setContainer(fp_Container * pContainer) override;
+	virtual fp_Container * getNextContainerInSection(void) const override;
+	virtual fp_Container * getPrevContainerInSection(void) const override;
 	virtual fp_Page *   getPage(void) const { return m_pPage;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
@@ -67,14 +67,14 @@ public:
 	virtual ~fp_AnnotationContainer();
 	UT_sint32           getValue(void);
 	void				layout(void);
-	virtual bool        isVBreakable(void) {return false;}
-	virtual void		clearScreen(void);
-	virtual void		draw(dg_DrawArgs*);
-	virtual void		draw(GR_Graphics*) {}
-	virtual void        setY(UT_sint32 iY);
-	virtual void        setContainer(fp_Container * pContainer);
-	virtual fp_Container * getNextContainerInSection(void) const;
-	virtual fp_Container * getPrevContainerInSection(void) const;
+	virtual bool        isVBreakable(void) override {return false;}
+	virtual void		clearScreen(void) override;
+	virtual void		draw(dg_DrawArgs*) override;
+	virtual void		draw(GR_Graphics*) override {}
+	virtual void        setY(UT_sint32 iY) override;
+	virtual void        setContainer(fp_Container * pContainer) override;
+	virtual fp_Container * getNextContainerInSection(void) const override;
+	virtual fp_Container * getPrevContainerInSection(void) const override;
 	virtual fp_Page *   getPage(void) const { return m_pPage;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
@@ -94,19 +94,19 @@ public:
 	virtual ~fp_EndnoteContainer();
 	UT_sint32           getValue(void);
 	void				layout(void);
-	virtual bool        isVBreakable(void) {return false;}
-	virtual void		clearScreen(void);
-	virtual void		draw(dg_DrawArgs*);
-	virtual void		draw(GR_Graphics*) {}
-	virtual void        setContainer(fp_Container * pContainer);
-	virtual fp_Container * getNextContainerInSection(void) const;
-	virtual fp_Container * getPrevContainerInSection(void) const;
+	virtual bool        isVBreakable(void) override {return false;}
+	virtual void		clearScreen(void) override;
+	virtual void		draw(dg_DrawArgs*) override;
+	virtual void		draw(GR_Graphics*) override {}
+	virtual void        setContainer(fp_Container * pContainer) override;
+	virtual fp_Container * getNextContainerInSection(void) const override;
+	virtual fp_Container * getPrevContainerInSection(void) const override;
 	virtual fp_Page *   getPage(void) const { return fp_Container::getPage();}
 	fp_EndnoteContainer * getLocalNext(void);
 	fp_EndnoteContainer * getLocalPrev(void);
 	fl_DocSectionLayout * getDocSectionLayout(void);
-	virtual void        setY(UT_sint32 iY);
-	virtual UT_sint32   getY(void) const;
+	virtual void        setY(UT_sint32 iY) override;
+	virtual UT_sint32   getY(void) const override;
 
 private:
 	fp_EndnoteContainer * m_pLocalNext;

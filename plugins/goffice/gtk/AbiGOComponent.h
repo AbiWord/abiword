@@ -46,29 +46,29 @@ class GR_GOComponentManager : public GR_EmbedManager
 public:
     GR_GOComponentManager(GR_Graphics * pG);
     virtual ~GR_GOComponentManager();
-    virtual GR_EmbedManager *  create(GR_Graphics * pG);
-    virtual const char *   getObjectType(void) const;
-    virtual void           initialize(void);
-    virtual UT_sint32      makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID) ;
+    virtual GR_EmbedManager *  create(GR_Graphics * pG) override;
+    virtual const char *   getObjectType(void) const override;
+    virtual void           initialize(void) override;
+    virtual UT_sint32      makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID)  override;
     virtual void           setColor(UT_sint32 uid, UT_RGBColor c);
-    virtual UT_sint32      getWidth(UT_sint32 uid);
-    virtual UT_sint32      getAscent(UT_sint32 uid) ;
-    virtual UT_sint32      getDescent(UT_sint32 uid) ;
-    virtual void           loadEmbedData(UT_sint32 uid);
-    virtual void           setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize);
-    virtual void           render(UT_sint32 uid, UT_Rect & rec);
-    virtual void           releaseEmbedView(UT_sint32 uid);
-    virtual void           initializeEmbedView(UT_sint32 uid);
-    virtual void           makeSnapShot(UT_sint32 uid, UT_Rect & rec);
-    virtual bool           isDefault(void);
-    virtual bool           modify(UT_sint32 uid);
+    virtual UT_sint32      getWidth(UT_sint32 uid) override;
+    virtual UT_sint32      getAscent(UT_sint32 uid) override;
+    virtual UT_sint32      getDescent(UT_sint32 uid) override;
+    virtual void           loadEmbedData(UT_sint32 uid) override;
+    virtual void           setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize) override;
+    virtual void           render(UT_sint32 uid, UT_Rect & rec) override;
+    virtual void           releaseEmbedView(UT_sint32 uid) override;
+    virtual void           initializeEmbedView(UT_sint32 uid) override;
+    virtual void           makeSnapShot(UT_sint32 uid, UT_Rect & rec) override;
+    virtual bool           isDefault(void) override;
+    virtual bool           modify(UT_sint32 uid) override;
     virtual bool           convert(UT_uint32 iConv, const UT_ConstByteBufPtr & From,
-                                   const UT_ByteBufPtr & To);
-    virtual bool           isEdittable(UT_sint32 uid);
-    virtual bool           isResizeable(UT_sint32 uid);
-	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
-	virtual void		   updateData(UT_sint32 uid, UT_sint32 api);
-	virtual bool           setFont(UT_sint32 uid, const GR_Font * pFont);
+                                   const UT_ByteBufPtr & To) override;
+    virtual bool           isEdittable(UT_sint32 uid) override;
+    virtual bool           isResizeable(UT_sint32 uid) override;
+    virtual void	   setRun (UT_sint32 uid, fp_Run * run) override;
+    virtual void	   updateData(UT_sint32 uid, UT_sint32 api) override;
+    virtual bool           setFont(UT_sint32 uid, const GR_Font * pFont) override;
 
 private:
     UT_sint32                              _makeGOComponentView(void);
