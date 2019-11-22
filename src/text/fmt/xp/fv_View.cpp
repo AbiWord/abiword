@@ -13679,13 +13679,12 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 /*! find out which pages in the document are visible on the screen and
     calculate the rectangles of their view-ports (the rectangles are
     relative to the top-left corner of the page, not to the screen
-    the caller must use UT_VECTOR_PURGEALL() on vRect to delete the
-    objects allocated by this function, but NOT on vPages
-    \param vRect -- vector where to store UT_Rect* referring to vieports of pages in vPages
+    The pointers in vPages are owned and shall not be deleted
+    \param vRect -- vector where to store UT_Rect referring to vieports of pages in vPages
     \param vPage -- vector where to store pointers to currently visible pages
 */
-void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &vRect, 
-													UT_GenericVector<fp_Page*> &vPages) const
+void FV_View::getVisibleDocumentPagesAndRectangles(std::vector<UT_Rect> &vRect,
+												   std::vector<fp_Page*> &vPages) const
 {
 	UT_sint32 curY = getPageViewTopMargin();
 	fp_Page * pPage = m_pLayout->getFirstPage();
@@ -13739,7 +13738,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 						 getWindowHeight()));
 
 
-			vPages.addItem(pPage);
+			vPages.push_back(pPage);
 
 			// now create the rectangle
 			// NB the adjustedTop is relative to the screen, but we
@@ -13771,16 +13770,12 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 			{
 				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 			}
-			
-			
+
 			UT_uint32 iPortWidth = UT_MIN(static_cast<UT_uint32>(iPageWidth), iWindowWidth);
-
-			UT_Rect * pRect = new UT_Rect(iPortLeft,
-										  iPortTop,
-										  iPortWidth,
-										  iPortHeight);
-
-			vRect.addItem(pRect);
+			vRect.push_back(UT_Rect(iPortLeft,
+									iPortTop,
+									iPortWidth,
+									iPortHeight));
 		}
 
 		curY += iPageHeight + getPageViewSep();

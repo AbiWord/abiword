@@ -1201,13 +1201,13 @@ bool fl_ContainerLayout::isOnScreen() const
 
 	if(bHidden)
 		return false;
-	
-	UT_GenericVector<UT_Rect*> vRect;
-	UT_GenericVector<fp_Page*> vPages;
+
+	std::vector<UT_Rect> vRect;
+	std::vector<fp_Page*> vPages;
 
 	pView->getVisibleDocumentPagesAndRectangles(vRect, vPages);
 
-	UT_uint32 iCount = vPages.getItemCount();
+	UT_uint32 iCount = vPages.size();
 
 	if(!iCount)
 		return false;
@@ -1228,17 +1228,17 @@ bool fl_ContainerLayout::isOnScreen() const
 		{
 			for(UT_uint32 i = 0; i < iCount; i++)
 			{
-				fp_Page * pPage = vPages.getNthItem(i);
+				fp_Page * pPage = vPages[i];
 
 				if(pPage == pMyPage)
 				{
 					UT_Rect r;
-					UT_Rect *pR = vRect.getNthItem(i);
+					const UT_Rect& pR = vRect[i];
 
 					if(!pC->getPageRelativeOffsets(r))
 						break;
 				
-					bRet = r.intersectsRect(pR);
+					bRet = r.intersectsRect(&pR);
 					break;
 				}
 		
@@ -1250,8 +1250,7 @@ bool fl_ContainerLayout::isOnScreen() const
 
 		pC = static_cast<fp_Container*>(pC->getNext());
 	}
-	
-	UT_VECTOR_PURGEALL(UT_Rect*,vRect);
+
 	return bRet;
 }
 

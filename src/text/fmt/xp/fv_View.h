@@ -864,8 +864,8 @@ public:
 	UT_RGBColor			getColorHdrFtr(void) const { return m_colorHdrFtr; }
 	UT_RGBColor			getColorColumnLine(void) const { return m_colorColumnLine; }
 
-	void                getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &vRect,
-															 UT_GenericVector<fp_Page*> &vPages) const;
+	void                getVisibleDocumentPagesAndRectangles(std::vector<UT_Rect> &vRect,
+															 std::vector<fp_Page*> &vPages) const;
 
 	//
 	// image selection && resizing && dragging functions
