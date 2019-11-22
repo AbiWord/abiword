@@ -59,7 +59,7 @@ struct FvTextHandlePrivate
   guint mode : 2;
 };
 
-G_DEFINE_TYPE (FvTextHandle, _fv_text_handle, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE(FvTextHandle, _fv_text_handle, G_TYPE_OBJECT)
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
@@ -497,8 +497,6 @@ _fv_text_handle_class_init (FvTextHandleClass *klass)
                                                         "Window the coordinates are based upon",
                                                         GDK_TYPE_WINDOW,
                                                         (GParamFlags)G_PARAM_READWRITE));
-
-  g_type_class_add_private (object_class, sizeof (FvTextHandlePrivate));
 }
 
 static void
@@ -507,9 +505,7 @@ _fv_text_handle_init (FvTextHandle *handle)
   FvTextHandlePrivate *priv;
   GtkWidgetPath *path;
 
-  handle->priv = priv = G_TYPE_INSTANCE_GET_PRIVATE (handle,
-                                                     FV_TYPE_TEXT_HANDLE,
-                                                     FvTextHandlePrivate);
+  handle->priv = priv = (FvTextHandlePrivate*)_fv_text_handle_get_instance_private(handle);
 
   path = gtk_widget_path_new ();
   gtk_widget_path_append_type (path, FV_TYPE_TEXT_HANDLE);
