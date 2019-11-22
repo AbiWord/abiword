@@ -156,6 +156,8 @@ struct timeval
  */
 void UT_gettimeofday(struct timeval *tv);
 
+int UT_clock_gettime_realtime(struct timespec *tp);
+
 typedef unsigned char UT_EthernetAddress[6];
 /*!
     retrieve the 6-byte address of the network card; returns true on success

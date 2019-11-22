@@ -550,8 +550,26 @@ UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen)
 
 #undef MYZERO
 
+#if defined(__MACH__) && !defined(CLOCK_REALTIME)
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
 
-
-
-
-
+// compat layer for clock_gettime(). macOS don't have it.
+// https://gist.github.com/jbenet/1087739
+int UT_clock_gettime_realtime(struct timespec *tp)
+{
+#if defined(__MACH__) && !defined(CLOCK_REALTIME)
+	// OS X does not have clock_gettime, use clock_get_time
+	clock_serv_t cclock;
+	mach_timespec_t mts;
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+	clock_get_time(cclock, &mts);
+	mach_port_deallocate(mach_task_self(), cclock);
+	tp->tv_sec = mts.tv_sec;
+	tp->tv_nsec = mts.tv_nsec;
+	return 0;
+#else
+	return clock_gettime(CLOCK_REALTIME, tp);
+#endif
+}

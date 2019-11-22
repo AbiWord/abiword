@@ -391,7 +391,7 @@ void GR_Caret::_blink(bool bExplicit)
 		return;
 	struct timespec spec;
 
-    clock_gettime(CLOCK_REALTIME, &spec);
+	UT_clock_gettime_realtime(&spec);
 
     UT_sint32 s  = spec.tv_sec;
     long ms = round(spec.tv_nsec / 1.0e6); // Convert nanoseconds to milliseconds
