@@ -89,7 +89,6 @@ public:
 
 	void loadAllPlugins ();
 
-	virtual void errorMsgBadArg(const char*);
 	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 								 UT_Error error);
 	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);

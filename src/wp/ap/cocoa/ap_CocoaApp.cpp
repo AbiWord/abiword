@@ -1037,12 +1037,6 @@ int AP_CocoaApp::main(const char * szAppName, int argc, char ** argv)
     return 0;
 }
 
-void AP_CocoaApp::errorMsgBadArg(const char *msg)
-{
-	printf ("%s.\nRun '%s --help' to see a full list of available command line options.\n",
-			msg, g_get_prgname());
-}
-
 void AP_CocoaApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
 							 UT_Error error)
 {

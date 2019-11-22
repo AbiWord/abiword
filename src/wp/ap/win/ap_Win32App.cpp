@@ -1312,18 +1312,6 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 }
 
 // cmdline processing call back I reckon
-void AP_Win32App::errorMsgBadArg(const char *msg)
-{
-	char *pszMessage;
-	UT_Win32LocaleString str;
-
-	pszMessage = g_strdup_printf ("%s\nRun with --help' to see a full list of available command line options.\n", msg);
-	str.fromUTF8(pszMessage);
-	MessageBoxW(NULL, str.c_str(), L"Command Line Option Error", MB_OK|MB_ICONERROR);
-	g_free( pszMessage );
-}
-
-// cmdline processing call back I reckon
 void AP_Win32App::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
 							 UT_Error error)
 {

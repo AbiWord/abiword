@@ -63,7 +63,6 @@ class ABI_EXPORT AP_App : public XAP_App_BaseClass
 	/* Command line stuff. */
 
 	/* Print an error message.  eg printf on UNIX, MessageBox on Windows. */
-	virtual void errorMsgBadArg (AP_Args *, int);
 	virtual void errorMsgBadFile(XAP_Frame *, const char *, UT_Error);
 
 	/* Allow additional platform-specific windowless args. */

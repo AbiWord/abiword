@@ -192,11 +192,6 @@ bool	AP_App::initialize(void)
 	return XAP_App_BaseClass::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings);
 }
 
-void AP_App::errorMsgBadArg (AP_Args *, int)
-{
-	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-}
-
 void AP_App::errorMsgBadFile(XAP_Frame *, const char *, UT_Error)
 {
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);

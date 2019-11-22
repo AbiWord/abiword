@@ -1330,14 +1330,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	
 	return exit_status;
 }
-	
-void AP_UnixApp::errorMsgBadArg(const char *msg)
-{
-  fprintf (stderr, "%s.\nRun '%s --help' to see a full list of available command line options.\n",
-	  msg, g_get_prgname());
-}
 
-void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
+void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 				 UT_Error error)
 {
   s_CouldNotLoadFileMessage (pFrame, file, error);

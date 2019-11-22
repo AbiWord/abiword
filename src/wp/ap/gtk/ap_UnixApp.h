@@ -98,7 +98,6 @@ public:
 	void							catchSignals(int sig_num) ABI_NORETURN;
 	void loadAllPlugins ();
 
-	virtual void errorMsgBadArg(const char *msg);
 	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 								 UT_Error error);
 	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);
