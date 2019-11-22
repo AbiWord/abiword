@@ -600,7 +600,7 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wformat-security \
    -Wformat-overflow=2 \
    -Wheader-guard \
-   -Wimplicit-fallthrough=3 \
+   -Wimplicit-fallthrough=2 \
    -Wlogical-not-parentheses \
    -Wmisleading-indentation \
    -Wmissing-noreturn \

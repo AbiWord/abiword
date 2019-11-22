@@ -690,7 +690,7 @@ bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */
 					break;
 				}
 			}
-
+			break;
 		case pf_Frag::PFT_Strux:
 			{
 				return false;

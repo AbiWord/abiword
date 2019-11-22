@@ -2735,8 +2735,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 
 		case FPRUN_TEXT:
 			pRun->recalcWidth();
-			//and fall through to default
-
+			/* Falls through to default */
 		default:
 		{
 			if(eWorkingDirection == WORK_FORWARD)
