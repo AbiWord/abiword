@@ -24,7 +24,6 @@
 #include "ut_string_class.h"
 #include "gr_EmbedManager.h"
 #include "ut_types.h"
-#include "ut_vector.h"
 #include <goffice/goffice.h>
 
 

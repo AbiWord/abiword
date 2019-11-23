@@ -28,7 +28,6 @@
 
 // AbiWord includes
 #include <pd_Document.h>
-#include <ut_vector.h>
 #include <pd_Style.h>
 #include <pp_AttrProp.h>
 
