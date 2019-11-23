@@ -99,7 +99,7 @@ xp_pkgs="
 "
 
 # optional deps
-enchant_req='enchant >= 1.2.0'
+enchant_req='enchant-2'
 gio_req='gio-2.0'
 
 dnl libosso-gsf-1'
