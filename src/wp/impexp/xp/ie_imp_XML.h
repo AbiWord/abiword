@@ -110,7 +110,7 @@ protected:
     const gchar* _getXMLPropValue(const gchar *name, const gchar **atts);
 
     UT_uint32		_getInlineDepth(void) const;
-    bool			_pushInlineFmt(const PP_PropertyVector & atts);
+    void			_pushInlineFmt(const PP_PropertyVector & atts);
     void			_popInlineFmt(void);
 
     typedef enum _parseState { _PS_Init,

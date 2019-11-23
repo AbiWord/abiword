@@ -1750,18 +1750,15 @@ private:
     return getImporter ()->mapStyleObj (oo_sty.utf8_str());
   }
 
-  bool _pushInlineFmt(const gchar ** atts)
+  void _pushInlineFmt(const gchar ** atts)
   {
     UT_uint32 start = m_vecInlineFmt.size() + 1;
     UT_uint32 k;
     
-    for (k=0; (atts[k]); k++)
-      {
-          m_vecInlineFmt.push_back(atts[k]);
-      }
-    if (!m_stackFmtStartIndex.push(start))
-      return false;
-    return true;
+    for (k=0; (atts[k]); k++) {
+      m_vecInlineFmt.push_back(atts[k]);
+    }
+    m_stackFmtStartIndex.push(start);
   }
   
   void _popInlineFmt(void)

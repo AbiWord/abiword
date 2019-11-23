@@ -430,15 +430,13 @@ UT_uint32 IE_Imp_XML::_getInlineDepth(void) const
 	return m_nstackFmtStartIndex.getDepth();
 }
 
-bool IE_Imp_XML::_pushInlineFmt(const PP_PropertyVector & atts)
+void IE_Imp_XML::_pushInlineFmt(const PP_PropertyVector & atts)
 {
 	UT_uint32 start = m_vecInlineFmt.size() + 1;
 
 	m_vecInlineFmt.insert(m_vecInlineFmt.end(),
 						  atts.begin(), atts.end());
-	if (!m_nstackFmtStartIndex.push(start))
-		return false;
-	return true;
+	m_nstackFmtStartIndex.push(start);
 }
 
 void IE_Imp_XML::_popInlineFmt(void)

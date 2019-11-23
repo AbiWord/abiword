@@ -874,7 +874,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 				const PP_PropertyVector attr = {
 					PT_PROPS_ATTRIBUTE_NAME, "font-weight:bold"
 				};
-				X_CheckError(_pushInlineFmt(attr));
+				_pushInlineFmt(attr);
 				X_CheckError(appendFmt(m_vecInlineFmt));
 				m_bWroteBold = true;
 			}
@@ -933,7 +933,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		PP_PropertyVector attr = {
 			PT_PROPS_ATTRIBUTE_NAME, props
 		};
-		X_CheckError(_pushInlineFmt(attr));
+		_pushInlineFmt(attr);
 		X_CheckError(appendFmt(m_vecInlineFmt));
 		break;
 	}

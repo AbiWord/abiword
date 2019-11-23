@@ -35,9 +35,9 @@
 #include "../../common/xp/ODc_util.h"
 #include "ODi_ListenerState.h"
 
-// AbiWord includes
-#include <ut_types.h>
-#include <ut_stack.h>
+#include "ut_types.h"
+#include "ut_stack.h"
+#include "ut_vector.h"
 
 // External includes
 ABI_W_NO_CONST_QUAL
@@ -108,7 +108,7 @@ private:
                                  ODi_ListenerStateAction& rAction);
     void _endParagraphElement (const gchar* pName,
                                ODi_ListenerStateAction& rAction);
-    bool _pushInlineFmt(const PP_PropertyVector & ppAtts);
+    void _pushInlineFmt(const PP_PropertyVector & ppAtts);
     void _popInlineFmt(void);
     void _insureInBlock(const PP_PropertyVector & atts);
     void _insureInSection(const std::string* pMasterPageName = NULL);

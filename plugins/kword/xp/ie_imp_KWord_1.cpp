@@ -806,7 +806,7 @@ void IE_Imp_KWord_1::endElement(const gchar *name)
 
       xxx_UT_DEBUGMSG(("ABIDEBUG: formatting properties are: %s\n",propsArray[1]));
 
-      X_CheckError(_pushInlineFmt(propsArray));
+      _pushInlineFmt(propsArray);
       X_CheckError(appendFmt(m_vecInlineFmt));
 
       UT_DEBUGMSG(("DOM: APPENDED FORMAT\n"));

@@ -509,7 +509,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			m_bWroteParagraph = true;
 		}
 
-		X_CheckError(_pushInlineFmt(atts));
+		_pushInlineFmt(atts);
 
 		if(!isClipboard()) {
 			X_CheckError(appendFmt(m_vecInlineFmt));

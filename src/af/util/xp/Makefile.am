@@ -97,7 +97,6 @@ libxp_la_SOURCES = \
 	ut_units.h \
 	ut_uuid.cpp \
 	ut_uuid.h \
-	ut_vector.cpp \
 	ut_vector.h \
 	ut_warning.h \
 	ut_wctomb.cpp \

@@ -1412,17 +1412,13 @@ void ODi_TextContent_ListenerState::_flush ()
 /**
  *
  */
-bool ODi_TextContent_ListenerState::_pushInlineFmt(const PP_PropertyVector & atts)
+void ODi_TextContent_ListenerState::_pushInlineFmt(const PP_PropertyVector & atts)
 {
     UT_uint32 start = m_vecInlineFmt.size() + 1;
 
     m_vecInlineFmt.insert(m_vecInlineFmt.end(), atts.begin(), atts.end());
 
-    if (!m_stackFmtStartIndex.push(start)) {
-        return false;
-    }
-
-    return true;
+    m_stackFmtStartIndex.push(start);
 }
 
 

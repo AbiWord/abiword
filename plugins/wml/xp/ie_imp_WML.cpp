@@ -510,7 +510,7 @@ void IE_Imp_WML::startElement(const gchar *name,
 			}
 		}
 
-		X_CheckError(_pushInlineFmt(attr));
+		_pushInlineFmt(attr);
 		X_CheckError(appendFmt(m_vecInlineFmt));
 		return;
 	}

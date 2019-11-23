@@ -4,6 +4,7 @@ EXTRA_DIST = \
 	ut_locale.t.cpp \
 	ut_misc.t.cpp \
 	ut_option.t.cpp \
+	ut_stack.t.cpp \
 	ut_std_string.t.cpp \
 	ut_string.t.cpp \
 	ut_string_class.t.cpp \

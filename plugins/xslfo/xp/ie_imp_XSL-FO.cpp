@@ -591,7 +591,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				xxx_UT_DEBUGMSG(("FO import: inline props='%s'\n", sBuf.utf8_str()));
 
 				p_atts = &buf[0];
-				X_CheckError(_pushInlineFmt(PP_std_copyProps(p_atts)));
+				_pushInlineFmt(PP_std_copyProps(p_atts));
 				X_CheckError(appendFmt(m_vecInlineFmt));
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("id", atts));
