@@ -64,7 +64,7 @@ FG_GraphicPtr FG_GraphicVector::createFromChangeRecord(const fl_ContainerLayout*
 		pFG.reset();
 	}
 
-	return pFG;
+	return FG_GraphicPtr(pFG.release());
 }
 
 
@@ -96,7 +96,7 @@ FG_GraphicPtr FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 		pFG.reset();
 	}
 
-	return pFG;
+	return FG_GraphicPtr(pFG.release());
 }
 
 
@@ -120,7 +120,7 @@ FG_ConstGraphicPtr FG_GraphicVector::clone(void) const
 	pClone->m_iHeight = m_iHeight;
 	pClone->m_iMaxW = m_iMaxW;
 	pClone->m_iMaxH = m_iMaxH;
-	return pClone;
+	return FG_ConstGraphicPtr(pClone.release());
 }
 
 FGType FG_GraphicVector::getType(void) const
