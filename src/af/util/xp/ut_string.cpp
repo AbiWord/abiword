@@ -404,8 +404,8 @@ UT_uint32 UT_UCS2_strlen(const UT_UCS2Char * string)
 
 UT_UCS2Char * UT_UCS2_strstr(const UT_UCS2Char * phaystack, const UT_UCS2Char * pneedle)
 {
-	register const UT_UCS2Char *haystack, *needle;
-	register UT_UCS2Char b, c;
+	const UT_UCS2Char *haystack, *needle;
+	UT_UCS2Char b, c;
 
 	haystack = phaystack;
 	needle = pneedle;
@@ -430,8 +430,8 @@ UT_UCS2Char * UT_UCS2_strstr(const UT_UCS2Char * phaystack, const UT_UCS2Char * 
 
 		for (;;)
         {
-			register UT_UCS2Char a;
-			register const UT_UCS2Char *rhaystack, *rneedle;
+			UT_UCS2Char a;
+			const UT_UCS2Char *rhaystack, *rneedle;
 
 			do
             {
@@ -570,8 +570,8 @@ UT_UCS2Char UT_UCS2_tolower(UT_UCS2Char c)
 
 UT_UCS2Char * UT_UCS2_stristr(const UT_UCS2Char * phaystack, const UT_UCS2Char * pneedle)
 {
-	register const UT_UCS2Char *haystack, *needle;
-	register UT_UCS2Char b, c;
+	const UT_UCS2Char *haystack, *needle;
+	UT_UCS2Char b, c;
 
 	haystack = phaystack;
 	needle = pneedle;
@@ -596,8 +596,8 @@ UT_UCS2Char * UT_UCS2_stristr(const UT_UCS2Char * phaystack, const UT_UCS2Char *
 
 		for (;;)
         {
-			register UT_UCS2Char a;
-			register const UT_UCS2Char *rhaystack, *rneedle;
+			UT_UCS2Char a;
+			const UT_UCS2Char *rhaystack, *rneedle;
 
 			do
             {
@@ -988,8 +988,8 @@ UT_UCS4Char * UT_UCS4_strnrev(UT_UCS4Char * src, UT_uint32 n)
 
 UT_UCS4Char * UT_UCS4_strstr(const UT_UCS4Char * phaystack, const UT_UCS4Char * pneedle)
 {
-	register const UT_UCS4Char *haystack, *needle;
-	register UT_UCS4Char b, c;
+	const UT_UCS4Char *haystack, *needle;
+	UT_UCS4Char b, c;
 
 	haystack = static_cast<const UT_UCS4Char *>(phaystack);
 	needle = static_cast<const UT_UCS4Char *>(pneedle);
@@ -1014,8 +1014,8 @@ UT_UCS4Char * UT_UCS4_strstr(const UT_UCS4Char * phaystack, const UT_UCS4Char * 
 
 		for (;;)
         {
-			register UT_UCS4Char a;
-			register const UT_UCS4Char *rhaystack, *rneedle;
+			UT_UCS4Char a;
+			const UT_UCS4Char *rhaystack, *rneedle;
 
 			do
             {
@@ -1155,8 +1155,8 @@ UT_UCS4Char UT_UCS4_tolower(UT_UCS4Char c)
 
 UT_UCS4Char * UT_UCS4_stristr(const UT_UCS4Char * phaystack, const UT_UCS4Char * pneedle)
 {
-	register const UT_UCS4Char *haystack, *needle;
-	register UT_UCS4Char b, c;
+	const UT_UCS4Char *haystack, *needle;
+	UT_UCS4Char b, c;
 
 	haystack = static_cast<const UT_UCS4Char *>(phaystack);
 	needle = static_cast<const UT_UCS4Char *>(pneedle);
@@ -1181,8 +1181,8 @@ UT_UCS4Char * UT_UCS4_stristr(const UT_UCS4Char * phaystack, const UT_UCS4Char *
 
 		for (;;)
         {
-			register UT_UCS4Char a;
-			register const UT_UCS4Char *rhaystack, *rneedle;
+			UT_UCS4Char a;
+			const UT_UCS4Char *rhaystack, *rneedle;
 
 			do
             {
