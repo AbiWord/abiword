@@ -1,5 +1,7 @@
 <?php
 
+die('AbiWord moved to git. This script is no longer functional. Use tools/generate_changelog.py');
+
 define('REPOROOT', 'http://svn.abisource.com');
 define('TAGROOT', REPOROOT . '/abiword/tags');
 
