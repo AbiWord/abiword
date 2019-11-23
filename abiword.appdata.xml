@@ -24,6 +24,25 @@
     <screenshot type="source">https://www.abisource.com/screenshots/AbiWord-screenshot-302.png</screenshot>
   </screenshots>
   <releases>
+    <release version="3.0.3" type="stable">
+      <description>
+        <p>This bug fixe release addresses the following:</p>
+        <ul>
+          <li>Bug 13827 - Fix overflow read in PNG</li>
+          <li>Bug 13826 - Fix out of bounds access</li>
+          <li>Bug 13834 - Do not delete[] strings allocated with g_malloc()</li>
+          <li>Bug 13815 - Fix the black drawing regression with Gtk3.22</li>
+          <li>Bug 13791 - Fix flicker and caret problems</li>
+          <li>Bug 13791 - Reduce flickering</li>
+          <li>Fix Gtk criticals in dialog stylist</li>
+          <li>Fix stylist styles population</li>
+          <li>Fix a bad static_cast</li>
+          <li>Fix a runtime error (integer overflow)</li>
+          <li>Update sq-AL.po</li>
+          <li>Bug 13904 - Fix touch pad scrolling</li>
+        </ul>
+      </description>
+    </release>
     <release version="3.0.2" type="stable" date="2016-10-21" />
   </releases>
   <content_rating type="oars-1.0" />
