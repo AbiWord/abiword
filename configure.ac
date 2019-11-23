@@ -122,7 +122,7 @@ gtk_pkgs="
 qt_pkgs="Qt5Gui Qt5Widgets   ${cairo_req}"
 
 # cocoa deps
-cocoa_pkgs="$enchant_req $cairo_req"
+cocoa_pkgs="$enchant_req $cairo_req gmodule-2.0"
 
 
 # win32 deps

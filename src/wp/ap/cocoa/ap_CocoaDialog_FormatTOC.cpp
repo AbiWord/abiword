@@ -28,6 +28,7 @@
 #include <string>
 
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -303,13 +304,13 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 		int iTabLeader = 1;
 
-		if      (g_ascii_strcasecmp(sVal.utf8_str(), "none"     ) == 0)
+		if (g_ascii_strcasecmp(sVal.c_str(), "none") == 0)
 			iTabLeader = 0;
-		else if (g_ascii_strcasecmp(sVal.utf8_str(), "dot"      ) == 0)
+		else if (g_ascii_strcasecmp(sVal.c_str(), "dot") == 0)
 			iTabLeader = 1;
-		else if (g_ascii_strcasecmp(sVal.utf8_str(), "hyphen"   ) == 0)
+		else if (g_ascii_strcasecmp(sVal.c_str(), "hyphen") == 0)
 			iTabLeader = 2;
-		else if (g_ascii_strcasecmp(sVal.utf8_str(), "underline") == 0)
+		else if (g_ascii_strcasecmp(sVal.c_str(), "underline") == 0)
 			iTabLeader = 3;
 
 		[   _tabLeadersData selectItemAtIndex:iTabLeader];
@@ -328,7 +329,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 	if (_xap) {
 		std::string sTOCProp = "toc-heading-style";
 
-		std::tring sVal = _xap->getNewStyle(sTOCProp);
+		std::string sVal = _xap->getNewStyle(sTOCProp);
 
 		[[self window] makeKeyAndOrderFront:self];
 

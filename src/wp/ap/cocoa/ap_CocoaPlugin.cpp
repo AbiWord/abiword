@@ -51,12 +51,12 @@ static void s_updateMailMergeFields(XAP_Frame * pFrame, PD_Document * pDoc);
 
 class XAP_Cocoa_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
 {
-	IE_MailMerge *		m_Importer;
+	IE_MailMerge&		m_Importer;
 
 	NSMutableArray *	m_DataSet;
 
 public:
-	XAP_Cocoa_MailMerge_Listener(IE_MailMerge * importer, NSMutableArray * dataset) :
+	XAP_Cocoa_MailMerge_Listener(IE_MailMerge& importer, NSMutableArray * dataset) :
 		m_Importer(importer),
 		m_DataSet(dataset)
 	{
@@ -74,7 +74,7 @@ public:
 	}
 	virtual bool fireUpdate()
 	{
-		const std::map<std::string, std::string> & map = m_Importer->getCurrentMapping();
+		const std::map<std::string, std::string> & map = m_Importer.getCurrentMapping();
 
 		NSMutableArray * fieldArray = (NSMutableArray *) [m_DataSet objectAtIndex:0];
 
@@ -624,7 +624,7 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 						}
 					[dataset addObject:fieldArray];
 
-					XAP_Cocoa_MailMerge_Listener listener(pie, dataset);
+					XAP_Cocoa_MailMerge_Listener listener(*pie, dataset);
 
 					pie->setListener(&listener);
 					pie->mergeFile([path UTF8String]);
