@@ -1633,8 +1633,8 @@ bool GR_CairoGraphics::_scriptBreak(GR_PangoRenderInfo &ri)
 		UT_return_val_if_fail(ri.allocStaticBuffers(ri.sUTF8->length()+1),
 							  false);
 	}
-	
-	pango_break(ri.sUTF8->utf8_str(),
+
+	pango_default_break(ri.sUTF8->utf8_str(),
 				ri.sUTF8->byteLength(),
 				&(pItem->m_pi->analysis),
 				ri.s_pLogAttrs, ri.s_iStaticSize);
