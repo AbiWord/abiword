@@ -605,13 +605,20 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wmisleading-indentation \
    -Wmissing-noreturn \
    -Wno-overloaded-virtual \
+   -Wparentheses-equality \
    -Wpointer-arith \
    -Wpointer-bool-conversion \
    -Wredundant-decls \
    -Wshadow \
    -Wsign-compare \
    -Wunreachable-code \
+   -Wunreachable-code-loop-increment \
    -Wunused \
+   -Wunused-const-variable \
+   -Wunused-local-typedef \
+   -Wunused-private-field \
+   -Wunused-value \
+   -Wunused-variable \
    -Wwrite-strings \
 ], [], [$ax_compiler_flags_test])
 AC_LANG_POP
