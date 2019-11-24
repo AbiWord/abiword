@@ -1,35 +1,49 @@
 #!/bin/bash
 
-BRANCH="branches/ABI-3-0-0-STABLE"
-RELEASE="3.0.2"
+BRANCH="ABI-3-0-0-STABLE"
+RELEASE="3.0.3"
 RELEASE_DIR="abiword-release-dir-$RELEASE"
 
-# check for a svn checkout
-svn info > /dev/null 2>&1 
-if [ $? -ne 0 ] ; then
-	echo "Must be in a SVN checkout" 
-	exit 1
+TAG=release-$RELEASE
+
+# check for a git checkout
+if [ `git branch | grep $BRANCH | wc -l` -ne 1 ] ; then
+    echo "Must be in a git checkout"
+    exit 1
+fi
+
+if [ `git tag -l $TAG | wc -l` -ne 0 ] ; then
+    echo "Already found a tag for $RELEASE"
+    exit 1
 fi
 
 if [ -d "$RELEASE_DIR" ] ; then
-	echo "Unclean release. Directory $RELEASE_DIR exists."
-	exit 2
+    echo "Unclean release. Directory $RELEASE_DIR exists."
+    exit 2
 fi
 
 mkdir $RELEASE_DIR
 
-svn copy -m "Tag release $RELEASE" ^/abiword/$BRANCH ^/abiword/tags/release-$RELEASE
-svn copy -m "Tag release $RELEASE" ^/abiword-docs/$BRANCH ^/abiword-docs/tags/release-$RELEASE
-svn copy -m "Tag release $RELEASE" ^/abiword-msvc2008/$BRANCH ^/abiword-msvc2008/tags/release-$RELEASE
+echo "About to tag. Your GPG passphrase will be requested"
+git tag -s -m "release $RELEASE" $TAG $BRANCH
+# For now we'll skip the other modules.
+# There was no change from 3.0.2
+# svn copy -m "Tag release $RELEASE" ^/abiword-docs/$BRANCH ^/abiword-docs/tags/release-$RELEASE
+# svn copy -m "Tag release $RELEASE" ^/abiword-msvc2008/$BRANCH ^/abiword-msvc2008/tags/release-$RELEASE
 
-svn export ^/abiword/tags/release-$RELEASE $RELEASE_DIR/abiword-$RELEASE
-svn export ^/abiword-docs/tags/release-$RELEASE $RELEASE_DIR/abiword-docs-$RELEASE
+mkdir $RELEASE_DIR/abiword-$RELEASE
+git archive --format=tar $TAG | tar -x -C $RELEASE_DIR/abiword-$RELEASE
+#svn export ^/abiword-docs/tags/release-$RELEASE $RELEASE_DIR/abiword-docs-$RELEASE
 
 cd $RELEASE_DIR
 
 cd abiword-$RELEASE
 ./autogen.sh && make distcheck
 
-cd ../abiword-docs-$RELEASE
-./autogen.sh && make dist
+if [ -d ../abiword-docs-$RELEASE ] ; then
+    cd ../abiword-docs-$RELEASE
+    ./autogen.sh && make dist
+fi
 
+echo "Tarball is ready in $RELEASE_DIR/abiword-$RELEASE/abiword-$RELEASE.tar.gz."
+echo "After everything is OK don't forget to git push --tags."
