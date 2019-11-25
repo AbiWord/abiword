@@ -24,7 +24,7 @@
     <screenshot type="source">https://www.abisource.com/screenshots/AbiWord-screenshot-302.png</screenshot>
   </screenshots>
   <releases>
-    <release version="3.0.3" type="stable">
+    <release version="3.0.3" type="stable" date="2019-11-24">
       <description>
         <p>This bug fixe release addresses the following:</p>
         <ul>
