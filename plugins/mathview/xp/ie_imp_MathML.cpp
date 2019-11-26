@@ -277,11 +277,9 @@ UT_Confidence_t IE_Imp_MathML_Sniffer::recognizeContents(const char * szBuf,
 													   UT_uint32 /*iNumbytes*/)
 {
 	const char * magic = "<math";
-	if(strncmp(szBuf,magic,strlen(magic) == 0))
+	if(strncmp(szBuf, magic, strlen(magic)) == 0)
 	   return UT_CONFIDENCE_PERFECT;
 	return UT_CONFIDENCE_ZILCH;
- 
-
 }
 
 UT_Error IE_Imp_MathML_Sniffer::constructImporter(PD_Document * pDocument,
