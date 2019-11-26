@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BRANCH="ABI-3-0-0-STABLE"
-RELEASE="3.0.3"
+RELEASE="3.0.4"
 RELEASE_DIR="abiword-release-dir-$RELEASE"
 
 TAG=release-$RELEASE
