@@ -2,7 +2,8 @@
 
 BRANCH="ABI-3-1-0-STABLE"
 RELEASE="3.1.0"
-RELEASE_DIR="abiword-release-dir-$RELEASE"
+RELEASE_BASE_DIR=~/tmp
+RELEASE_DIR="$RELEASE_BASE_DIR/abiword-release-dir-$RELEASE"
 
 TAG=release-$RELEASE
 
@@ -22,10 +23,20 @@ if [ -d "$RELEASE_DIR" ] ; then
     exit 2
 fi
 
-mkdir $RELEASE_DIR
+if [ ! -d "$RELEASE_BASE_DIR" ] ; then
+    echo "I am about to create ~/tmp."
+    echo "Continue [y/n]?"
+    read c
+    if [ x$c != "xy" ] ; then
+        echo "Cancelled"
+        exit 3
+    fi
+fi
+
+mkdir -p $RELEASE_DIR
 
 echo "About to tag. Your GPG passphrase will be requested"
-git tag -s -m "release $RELEASE" $TAG $BRANCH
+git tag -s -m "release $RELEASE" $TAG $BRANCH || exit 4
 # For now we'll skip the other modules.
 # There was no change from 3.0.2
 # svn copy -m "Tag release $RELEASE" ^/abiword-docs/$BRANCH ^/abiword-docs/tags/release-$RELEASE
