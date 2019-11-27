@@ -24,7 +24,19 @@
     <screenshot type="source">https://www.abisource.com/screenshots/AbiWord-screenshot-302.png</screenshot>
   </screenshots>
   <releases>
+    <release version="3.0.4" type="stable" date="2019-11-27">
+      <url>https://www.abisource.com/changelogs/3.0.4.phtml</url>
+      <description>
+        <p>This bug fixe release addresses the following:</p>
+        <ul>
+          <li>Bug 12697 - fix a build failure in ut_jpeg.cpp</li>
+          <li>Bug 13917 - Fix a improper call to strncmp()</li>
+          <li>Updated Russian translation</li>
+        </ul>
+      </description>
+    </release>
     <release version="3.0.3" type="stable" date="2019-11-24">
+      <url>https://www.abisource.com/changelogs/3.0.3.phtml</url>
       <description>
         <p>This bug fixe release addresses the following:</p>
         <ul>
