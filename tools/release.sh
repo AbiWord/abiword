@@ -58,5 +58,10 @@ if [ -d ../abiword-docs-$RELEASE ] ; then
     ./autogen.sh && make dist
 fi
 
+echo "Will sign the tarball. Your GPG passphrase will be requested"
+sha256sum abiword-*$RELEASE.tar.gz > SHA256SUM
+sha1sum abiword-*$RELEASE.tar.gz > SHA1SUM
+gpg -ba abiword-*$RELEASE.tar.gz
+
 echo "Tarball is ready in $RELEASE_DIR/abiword-$RELEASE/abiword-$RELEASE.tar.gz."
 echo "After everything is OK don't forget to git push --tags."
