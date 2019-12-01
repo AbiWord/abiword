@@ -1894,13 +1894,19 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	{
 		GdkGeometry geom;
 		geom.min_width   = 100;
-		geom.min_height  = 100;
+		geom.min_height	 = 100;
 		gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
 									   static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE));
 
-		GdkScreen *screen = gdk_screen_get_default ();
-		user_w = (user_w < gdk_screen_get_width (screen) ? user_w : gdk_screen_get_width (screen));
-		user_h = (user_h < gdk_screen_get_height (screen) ? user_h : gdk_screen_get_height (screen));
+		GdkDisplay* display = gdk_display_get_default();
+		GdkMonitor* monitor = gdk_display_get_primary_monitor(display);
+		if (monitor)
+		{
+			GdkRectangle geometry;
+			gdk_monitor_get_geometry(monitor, &geometry);
+			user_w = (user_w < geometry.width ? user_w : geometry.width);
+			user_h = (user_h < geometry.height ? user_h : geometry.height);
+		}
 		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 	}
 
