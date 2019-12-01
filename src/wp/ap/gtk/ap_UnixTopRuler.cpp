@@ -179,25 +179,34 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 
 	if (!pUnixTopRuler->getGraphics())
 		return 1;
-	
-	if (e->state & GDK_SHIFT_MASK)
+
+	GdkModifierType ev_state = (GdkModifierType)0;
+	gdk_event_get_state((GdkEvent*)e, &ev_state);
+
+	if (ev_state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (ev_state & GDK_CONTROL_MASK)
 		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
+	if (ev_state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	if (1 == e->button )
+	guint ev_button = 0;
+	gdk_event_get_button((GdkEvent*)e, &ev_button);
+
+	if (1 == ev_button )
 		emb = EV_EMB_BUTTON1;
-	else if (2 == e->button )
+	else if (2 == ev_button )
 		emb = EV_EMB_BUTTON2;
-	else if (3 == e->button)
+	else if (3 == ev_button)
 		emb = EV_EMB_BUTTON3;
 
-	UT_DEBUGMSG(("SEVIOR: e->button = %x \n",e->button));
-	pUnixTopRuler->mousePress(ems, emb, 
-				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->x)), 
-				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->y)));
+	UT_DEBUGMSG(("SEVIOR: ev_button = %x \n",ev_button));
+	gdouble ev_x, ev_y;
+	ev_x = ev_y = 0.0f;
+	gdk_event_get_coords((GdkEvent*)e, &ev_x, &ev_y);
+	pUnixTopRuler->mousePress(ems, emb,
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(ev_x)),
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(ev_y)));
 	return 1;
 }
 
@@ -212,23 +221,32 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 	if (!pUnixTopRuler->getGraphics())
 		return 1;
 
-	if (e->state & GDK_SHIFT_MASK)
+	GdkModifierType ev_state = (GdkModifierType)0;
+	gdk_event_get_state((GdkEvent*)e, &ev_state);
+
+	if (ev_state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (ev_state & GDK_CONTROL_MASK)
 		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
+	if (ev_state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	if (1 == e->button )
+	guint ev_button = 0;
+	gdk_event_get_button((GdkEvent*)e, &ev_button);
+
+	if (1 == ev_button )
 		emb = EV_EMB_BUTTON1;
-	else if (2 == e->button )
+	else if (2 == ev_button )
 		emb = EV_EMB_BUTTON2;
-	else if (3 == e->button)
+	else if (3 == ev_button)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixTopRuler->mouseRelease(ems, emb, 
-				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->x)), 
-				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->y)));
+	gdouble ev_x, ev_y;
+	ev_x = ev_y = 0.0f;
+	gdk_event_get_coords((GdkEvent*)e, &ev_x, &ev_y);
+	pUnixTopRuler->mouseRelease(ems, emb,
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(ev_x)),
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(ev_y)));
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -265,20 +283,26 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 
 	EV_EditModifierState ems = 0;
 	
-	if (e->state & GDK_SHIFT_MASK)
+	GdkModifierType ev_state = (GdkModifierType)0;
+	gdk_event_get_state((GdkEvent*)e, &ev_state);
+
+	if (ev_state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (ev_state & GDK_CONTROL_MASK)
 		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
+	if (ev_state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
 	// Map the mouse into coordinates relative to our window.
 
-	pUnixTopRuler->mouseMotion(ems, 
-				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->x)), 
-				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->y)));
-	pUnixTopRuler->isMouseOverTab(pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->x)), 
-				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->y)));
+	gdouble ev_x, ev_y;
+	ev_x = ev_y = 0.0f;
+	gdk_event_get_coords((GdkEvent*)e, &ev_x, &ev_y);
+	pUnixTopRuler->mouseMotion(ems,
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(ev_x)),
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(ev_y)));
+	pUnixTopRuler->isMouseOverTab(pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(ev_x)),
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(ev_y)));
 
 	return 1;
 

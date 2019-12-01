@@ -178,24 +178,31 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 	
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
-	
-	if (e->state & GDK_SHIFT_MASK)
+
+	GdkModifierType ev_state = (GdkModifierType)0;
+	gdk_event_get_state((GdkEvent*)e, &ev_state);
+
+	if (ev_state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (ev_state & GDK_CONTROL_MASK)
 		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
+	if (ev_state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	if (e->state & GDK_BUTTON1_MASK)
+	if (ev_state & GDK_BUTTON1_MASK)
 		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
+	else if (ev_state & GDK_BUTTON2_MASK)
 		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
+	else if (ev_state & GDK_BUTTON3_MASK)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixLeftRuler->mousePress(ems, emb, 
-				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->x)), 
-				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->y)));
+	gdouble ev_x, ev_y;
+	ev_x = ev_y = 0.0f;
+	gdk_event_get_coords((GdkEvent*)e, &ev_x, &ev_y);
+
+	pUnixLeftRuler->mousePress(ems, emb,
+				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(ev_x)),
+				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(ev_y)));
 
 	return 1;
 }
@@ -211,23 +218,29 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 	if (!pView || pView->getPoint() == 0 || !pUnixLeftRuler->m_pG)
 		return 1;
 
-	if (e->state & GDK_SHIFT_MASK)
+	GdkModifierType ev_state = (GdkModifierType)0;
+	gdk_event_get_state((GdkEvent*)e, &ev_state);
+
+	if (ev_state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (ev_state & GDK_CONTROL_MASK)
 		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
+	if (ev_state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	if (e->state & GDK_BUTTON1_MASK)
+	if (ev_state & GDK_BUTTON1_MASK)
 		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
+	else if (ev_state & GDK_BUTTON2_MASK)
 		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
+	else if (ev_state & GDK_BUTTON3_MASK)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixLeftRuler->mouseRelease(ems, emb, 
-				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->x)),
-				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->y)));
+	gdouble ev_x, ev_y;
+	ev_x = ev_y = 0.0f;
+	gdk_event_get_coords((GdkEvent*)e, &ev_x, &ev_y);
+	pUnixLeftRuler->mouseRelease(ems, emb,
+				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(ev_x)),
+				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(ev_y)));
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -243,10 +256,10 @@ gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 	// nb: we'd convert here, but we can't: have no graphics class!
 	pUnixLeftRuler->setHeight(e->height);
 	pUnixLeftRuler->setWidth(e->width);
-	
+
 	return 1;
 }
-	
+
 gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e)
 {
 	// a static function
@@ -257,26 +270,32 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e
 		return 1;
 
 	EV_EditModifierState ems = 0;
-	
-	if (e->state & GDK_SHIFT_MASK)
+
+	GdkModifierType ev_state = (GdkModifierType)0;
+	gdk_event_get_state((GdkEvent*)e, &ev_state);
+
+	if (ev_state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (ev_state & GDK_CONTROL_MASK)
 		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
+	if (ev_state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	pUnixLeftRuler->mouseMotion(ems, 
-				    pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->x)),
-				    pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->y)));
+	gdouble ev_x, ev_y;
+	ev_x = ev_y = 0.0f;
+	gdk_event_get_coords((GdkEvent*)e, &ev_x, &ev_y);
+	pUnixLeftRuler->mouseMotion(ems,
+				    pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(ev_x)),
+				    pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(ev_y)));
 	return 1;
 }
-	
+
 gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* /*w*/, GdkEventKey* /* e */)
 {
 	// a static function
 	return 1;
 }
-	
+
 gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function

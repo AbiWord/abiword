@@ -241,11 +241,8 @@ ApplySemanticStylesheets( const std::string& semItemClassRestriction,
 
 
 static gboolean
-OnSemanticStylesheetsSet_cb (GtkWidget *widget, GdkEvent *event, combo_box_t *box)
+OnSemanticStylesheetsSet_cb (GtkWidget *, GdkEvent *, combo_box_t *box)
 {
-    UT_UNUSED(widget);
-    UT_UNUSED(event);
-
     const char *t = getStylesheetName(box->ssList, gtk_combo_box_get_active_id(GTK_COMBO_BOX(box->combo_box)));
     std::string ssName = t ? t : box->defaultStylesheet;
 

@@ -52,9 +52,12 @@ static gboolean __onKeyPressed(G_GNUC_UNUSED GtkWidget* widget,
                                GdkEventKey* event,
                                G_GNUC_UNUSED gpointer user_data )
 {
-    guint32 uc = gdk_keyval_to_unicode(event->keyval);
+    guint ev_keyval = 0;
+    gdk_event_get_keyval((GdkEvent*)event, &ev_keyval);
+
+    guint32 uc = gdk_keyval_to_unicode(ev_keyval);
     xxx_UT_DEBUGMSG(("__onKeyPressed() uc: %u\n", uc));
-    
+
     if( uc >= 'A' && uc <= 'Z' )
     {
         return false;
@@ -67,17 +70,16 @@ static gboolean __onKeyPressed(G_GNUC_UNUSED GtkWidget* widget,
     {
         return false;
     }
-    if( event->keyval == GDK_KEY_Delete
-        || event->keyval == GDK_KEY_BackSpace
-        || event->keyval == GDK_KEY_Left
-        || event->keyval == GDK_KEY_Right )
+    if (ev_keyval == GDK_KEY_Delete
+        || ev_keyval == GDK_KEY_BackSpace
+        || ev_keyval == GDK_KEY_Left
+        || ev_keyval == GDK_KEY_Right)
     {
         return false;
     }
 
     // filter the rest
     return true;
-    
 }
 
 /*****************************************************************/

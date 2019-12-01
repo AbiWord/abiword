@@ -39,11 +39,8 @@
 
 /*****************************************************************/
 
-static gboolean s_focus_out(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+static gboolean s_focus_out(GtkWidget *widget, GdkEvent *, gpointer /*user_data*/)
 {
-	UT_UNUSED(event);
-	UT_UNUSED(user_data);
-
 	gtk_editable_select_region(GTK_EDITABLE(widget), 0, 0);
 	return FALSE;
 }

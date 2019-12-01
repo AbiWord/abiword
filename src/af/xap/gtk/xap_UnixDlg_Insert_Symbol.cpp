@@ -423,7 +423,9 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 	UT_uint32 ix = m_ix;
 	UT_uint32 iy = m_iy;
 	UT_DEBUGMSG(("Current Symbol %x \n",m_CurrentSymbol));
-	switch (e->keyval)
+	guint ev_keyval = 0;
+	gdk_event_get_keyval((GdkEvent*)e, &ev_keyval);
+	switch (ev_keyval)
 	{
 	case GDK_KEY_Up:
 		if(iy > 0)
@@ -516,9 +518,9 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 
 void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
 {
-	UT_uint32 x,y;
-	x = static_cast<UT_uint32>(event->button.x);
-	y = static_cast<UT_uint32>(event->button.y);
+	gdouble x, y;
+	x = y = 0;
+	gdk_event_get_coords(event, &x, &y);
 
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
@@ -557,7 +559,7 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_previewNew (int w, int h)
 void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
 {
 	// have single-click insert the symbol
-	if(event->type == GDK_BUTTON_PRESS)
+	if (gdk_event_get_event_type((GdkEvent*)event), GDK_BUTTON_PRESS)
 	    event_Insert();
 }
 

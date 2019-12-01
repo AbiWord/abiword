@@ -235,34 +235,42 @@ fv_text_handle_widget_event (GtkWidget    * /*widget*/,
 
   priv = handle->priv;
 
-  if (event->any.window == priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_START].window)
+  auto window = gdk_event_get_window(event);
+  if (window == priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_START].window)
     pos = FV_TEXT_HANDLE_POSITION_SELECTION_START;
-  else if (event->any.window == priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_END].window)
+  else if (window == priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_END].window)
     pos = FV_TEXT_HANDLE_POSITION_SELECTION_END;
   else
     return FALSE;
 
-  if (event->type == GDK_BUTTON_PRESS)
+  gdouble ev_x, ev_y;
+  ev_x = ev_y = 0.0f;
+  gdk_event_get_coords(event, &ev_x, &ev_y);
+  GdkEventType ev_type = gdk_event_get_event_type(event);
+  if (ev_type == GDK_BUTTON_PRESS)
     {
-      priv->windows[pos].dx = event->button.x;
-      priv->windows[pos].dy = event->button.y;
+      priv->windows[pos].dx = ev_x;
+      priv->windows[pos].dy = ev_y;
       priv->windows[pos].dragged = TRUE;
     }
-  else if (event->type == GDK_BUTTON_RELEASE)
+  else if (ev_type == GDK_BUTTON_RELEASE)
     {
       g_signal_emit (handle, signals[DRAG_FINISHED], 0, pos);
       priv->windows[pos].dx =  priv->windows[pos].dy = 0;
       priv->windows[pos].dragged = FALSE;
     }
-  else if (event->type == GDK_MOTION_NOTIFY && priv->windows[pos].dragged)
+  else if (ev_type == GDK_MOTION_NOTIFY && priv->windows[pos].dragged)
     {
       gint x, y, width, height;
 
       _fv_text_handle_get_size (handle, &width, &height);
       gdk_window_get_origin (priv->relative_to, &x, &y);
 
-      x = event->motion.x_root - priv->windows[pos].dx + (width / 2) - x;
-      y = event->motion.y_root - priv->windows[pos].dy - y;
+      gdouble ev_x_root, ev_y_root;
+      ev_x_root = ev_y_root = 0;
+      gdk_event_get_root_coords(event, &ev_x_root, &ev_y_root);
+      x = ev_x_root - priv->windows[pos].dx + (width / 2) - x;
+      y = ev_y_root - priv->windows[pos].dy - y;
 
       if (pos == FV_TEXT_HANDLE_POSITION_SELECTION_START)
         y += height;

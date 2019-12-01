@@ -143,7 +143,9 @@ AP_UnixDialog_FormatTable__onBorderColorClicked (GtkWidget 		*button,
 												 gpointer 		data)
 {
 	// only handle left clicks
-	if (event->button != 1) {
+	guint ev_button = 0;
+	gdk_event_get_button((GdkEvent*)event, &ev_button);
+	if (ev_button != 1) {
 		return FALSE;
 	}
 
@@ -172,7 +174,9 @@ AP_UnixDialog_FormatTable__onBackgroundColorClicked (GtkWidget 		*button,
 													 gpointer 		data)
 {
 	// only handle left clicks
-	if (event->button != 1) {
+	guint ev_button = 0;
+	gdk_event_get_button((GdkEvent*)event, &ev_button);
+	if (ev_button != 1) {
 		return FALSE;
 	}
 

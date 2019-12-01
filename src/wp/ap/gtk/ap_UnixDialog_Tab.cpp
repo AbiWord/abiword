@@ -70,7 +70,7 @@ AP_UnixDialog_Tab__onDefaultTabFocusOut (GtkWidget 	   * /*widget*/,
 										 GdkEventFocus *event,
 										 gpointer 		data)
 {	
-	if (event->type == GDK_FOCUS_CHANGE) {
+	if (gdk_event_get_event_type((GdkEvent*)event) == GDK_FOCUS_CHANGE) {
 		AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
 		dlg->onDefaultTabFocusOut ();
 	}
@@ -104,7 +104,7 @@ AP_UnixDialog_Tab__onPositionFocusOut (GtkWidget 	 * /*widget*/,
 {
 	xxx_UT_DEBUGMSG (("onPositionFocusOut() '%d' \n", event->type));
 	
-	if (event->type == GDK_FOCUS_CHANGE) {
+	if (gdk_event_get_event_type((GdkEvent*)event) == GDK_FOCUS_CHANGE) {
 		AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
 		dlg->onPositionFocusOut ();
 	}

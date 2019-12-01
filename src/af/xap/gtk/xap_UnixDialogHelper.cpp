@@ -268,8 +268,10 @@ static void sDoHelp ( XAP_Dialog * pDlg )
 static gint modal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event, 
 								XAP_Dialog * pDlg )
 {
-	// propegate keypress up if not F1
-	if ( event->keyval == GDK_KEY_F1 || event->keyval == GDK_KEY_Help )
+	guint ev_keyval = 0;
+	gdk_event_get_keyval((GdkEvent*)event, &ev_keyval);
+	// propagate keypress up if not F1
+	if (ev_keyval == GDK_KEY_F1 || ev_keyval == GDK_KEY_Help)
 	{
 		sDoHelp( pDlg ) ;
 
@@ -283,11 +285,13 @@ static gint modal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event,
 /*!
  * Catch F1 keypress over a dialog and open up the help file, if any
  */
-static gint nonmodal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event, 
+static gint nonmodal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event,
 								   XAP_Dialog * pDlg )
 {
-	// propegate keypress up if not F1
-	if ( event->keyval == GDK_KEY_F1 || event->keyval == GDK_KEY_Help )
+	guint ev_keyval = 0;
+	gdk_event_get_keyval((GdkEvent*)event, &ev_keyval);
+	// propagate keypress up if not F1
+	if (ev_keyval == GDK_KEY_F1 || ev_keyval == GDK_KEY_Help)
 	{
 		sDoHelp( pDlg ) ;
 		return TRUE ;

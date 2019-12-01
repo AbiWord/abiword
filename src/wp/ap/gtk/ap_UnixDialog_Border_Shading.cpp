@@ -124,7 +124,9 @@ static gboolean s_on_border_color_clicked (GtkWidget 		*button,
 								gpointer 		data)
 {
 	// only handle left clicks
-	if (event->button != 1) {
+	guint ev_button = 0;
+	gdk_event_get_button((GdkEvent*)event, &ev_button);
+	if (ev_button != 1) {
 		return FALSE;
 	}
 
@@ -166,7 +168,9 @@ static gboolean s_on_shading_color_clicked (GtkWidget 		*button,
 										gpointer 		data)
 {
 	// only handle left clicks
-	if (event->button != 1) {
+	guint ev_button = 0;
+	gdk_event_get_button((GdkEvent*)event, &ev_button);
+	if (ev_button != 1) {
 		return FALSE;
 	}
 

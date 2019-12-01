@@ -785,7 +785,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
-	pUnixFrameImpl->setTimeOfLastEvent(e->time);
+	pUnixFrameImpl->setTimeOfLastEvent(gdk_event_get_time((GdkEvent*)e));
 	AV_View * pView = pFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pFrame->getMouse());
 
@@ -802,7 +802,7 @@ gint XAP_UnixFrameImpl::_fe::button_release_event(GtkWidget * w, GdkEventButton 
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
-	pUnixFrameImpl->setTimeOfLastEvent(e->time);
+	pUnixFrameImpl->setTimeOfLastEvent(gdk_event_get_time((GdkEvent*)e));
 	AV_View * pView = pFrame->getCurrentView();
 
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pFrame->getMouse());
@@ -994,16 +994,18 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	AV_View * pView = pFrame->getCurrentView();
 	if (pView)
 	{
+		gdouble ev_x, ev_y;
+		ev_x = ev_y = 0.0f;
 		if (pUnixFrameImpl->m_iNewWidth == e->width &&
 		    pUnixFrameImpl->m_iNewHeight == e->height &&
-		    pUnixFrameImpl->m_iNewY == e->y &&
-		    pUnixFrameImpl->m_iNewX == e->x)
+		    pUnixFrameImpl->m_iNewY == ev_y &&
+		    pUnixFrameImpl->m_iNewX == ev_x)
 			return 1;
 		pUnixFrameImpl->m_iNewWidth = e->width;
 		pUnixFrameImpl->m_iNewHeight = e->height;
-		pUnixFrameImpl->m_iNewY = e->y;
-		pUnixFrameImpl->m_iNewX = e->x;
-		xxx_UT_DEBUGMSG(("Drawing in zoom at x %d y %d height %d width %d \n",e->x,e->y,e->height,e->width));
+		pUnixFrameImpl->m_iNewY = ev_y;
+		pUnixFrameImpl->m_iNewX = ev_x;
+		xxx_UT_DEBUGMSG(("Drawing in zoom at x %f y %f height %d width %d \n", ev_x, ev_y, e->height, e->width));
 		XAP_App * pApp = XAP_App::getApp();
 		UT_sint32 x,y;
 		UT_uint32 width,height,flags;
@@ -1027,7 +1029,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 
 				gint gwidth,gheight;
 				gtk_window_get_size(pWin,&gwidth,&gheight);
-				pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
+				pApp->setGeometry(ev_x, ev_y, gwidth, gheight, flags);
 			}
 		}
 
@@ -1046,17 +1048,17 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 gint XAP_UnixFrameImpl::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
-	if(e->type == GDK_MOTION_NOTIFY)
+	if (gdk_event_get_event_type((GdkEvent*)e) == GDK_MOTION_NOTIFY)
 	{
 		//
 		// swallow queued drag events and just get the last one.
 		//
 		GdkEvent  * eNext = gdk_event_peek();
-		if(eNext && eNext->type == GDK_MOTION_NOTIFY)
+		if (eNext && gdk_event_get_event_type(eNext) == GDK_MOTION_NOTIFY)
 		{
 			g_object_unref(G_OBJECT(e));
 			e = reinterpret_cast<GdkEventMotion *>(eNext);
-			while(eNext && eNext->type == GDK_MOTION_NOTIFY)
+			while (eNext && gdk_event_get_event_type(eNext) == GDK_MOTION_NOTIFY)
 			{
 				xxx_UT_DEBUGMSG(("Swallowing drag event \n"));
 				gdk_event_free(eNext);
@@ -1073,7 +1075,7 @@ gint XAP_UnixFrameImpl::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e
 	}
 
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
-	pUnixFrameImpl->setTimeOfLastEvent(e->time);
+	pUnixFrameImpl->setTimeOfLastEvent(gdk_event_get_time((GdkEvent*)e));
 	AV_View * pView = pFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pFrame->getMouse());
 
@@ -1088,7 +1090,7 @@ gint XAP_UnixFrameImpl::_fe::scroll_notify_event(GtkWidget* w, GdkEventScroll* e
 	xxx_UT_DEBUGMSG(("Scroll event \n"));
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
-	pUnixFrameImpl->setTimeOfLastEvent(e->time);
+	pUnixFrameImpl->setTimeOfLastEvent(gdk_event_get_time((GdkEvent*)e));
 	AV_View * pView = pFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pFrame->getMouse());
 
@@ -1104,7 +1106,9 @@ gint XAP_UnixFrameImpl::_fe::key_release_event(GtkWidget* w, GdkEventKey* e)
 
 	// Let IM handle the event first.
 	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
-	    UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %u\n", e->keyval));
+		guint ev_keyval = 0;
+		gdk_event_get_keyval((GdkEvent*)e, &ev_keyval);
+		UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %u\n", ev_keyval));
 		pUnixFrameImpl->queueIMReset ();
 	    return 0;
 	}
@@ -1115,13 +1119,18 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 
+	guint ev_keyval = 0;
+	gdk_event_get_keyval((GdkEvent*)e, &ev_keyval);
+
 	// Let IM handle the event first.
 	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
 		pUnixFrameImpl->queueIMReset ();
 
-		if ((e->state & GDK_MOD1_MASK) ||
-			(e->state & GDK_MOD3_MASK) ||
-			(e->state & GDK_MOD4_MASK))
+		GdkModifierType ev_state = (GdkModifierType)0;
+		gdk_event_get_state((GdkEvent*)e, &ev_state);
+		if ((ev_state & GDK_MOD1_MASK) ||
+			(ev_state & GDK_MOD3_MASK) ||
+			(ev_state & GDK_MOD4_MASK))
 			return 0;
 
 		// ... else, stop this signal
@@ -1140,7 +1149,7 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 		pUnixKeyboard->keyPressEvent(pView, e);
 
 	// stop emission for keys that would take the focus away from the document widget
-	switch (e->keyval) {
+	switch (ev_keyval) {
 	case GDK_KEY_Tab: 
 	case GDK_KEY_ISO_Left_Tab:
 	case GDK_KEY_Left: 
