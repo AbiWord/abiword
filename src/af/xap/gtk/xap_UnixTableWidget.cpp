@@ -455,6 +455,8 @@ on_pressed(GtkButton* button, gpointer user_data)
 							   gtk_get_current_event_time ()))
 		return;
 
+	auto toplevel = gtk_widget_get_toplevel(GTK_WIDGET(table));
+	gtk_window_set_transient_for(table->window, GTK_WINDOW(toplevel));
 	gdk_window_get_origin (gtk_widget_get_window(GTK_WIDGET(table)), &left, &top);
 	gtk_widget_get_allocation(GTK_WIDGET(table), &alloc);
 	gtk_window_move(table->window,
