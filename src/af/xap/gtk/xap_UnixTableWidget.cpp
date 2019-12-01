@@ -352,22 +352,11 @@ on_leave_event (GtkWidget *area,
 }
 
 static gboolean
-popup_grab_on_window (GdkWindow *window,
-					  guint32    activate_time)
+popup_grab_on_window (GdkWindow *window)
 {
-	GdkEventMask emask = static_cast<GdkEventMask>(GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
-												   GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK |
-												   GDK_ENTER_NOTIFY_MASK) ;
-	if ((XAP_gdk_pointer_grab (window, FALSE,emask, nullptr, activate_time) == 0)) {
-		if (XAP_gdk_keyboard_grab (window, FALSE, activate_time) == 0) {
-			return TRUE;
-		} else {
-			XAP_gdk_pointer_ungrab (activate_time);
-			return FALSE;
-		}
-	}
-
-	return FALSE;
+	GdkSeat *seat = gdk_display_get_default_seat(gdk_window_get_display(window));
+	return gdk_seat_grab(seat, window, GDK_SEAT_CAPABILITY_ALL,
+						 FALSE, nullptr, nullptr, nullptr, nullptr) == GDK_GRAB_SUCCESS;
 }
 
 static void
@@ -382,8 +371,7 @@ on_pressed(GtkButton* button, gpointer user_data)
 	 * events generated when the window is mapped, such as enter
 	 * notify events on subwidgets. If the grab fails, bail out.
 	 */
-	if (!popup_grab_on_window (gtk_widget_get_window(GTK_WIDGET(button)),
-							   gtk_get_current_event_time ()))
+	if (!popup_grab_on_window(gtk_widget_get_window(GTK_WIDGET(button))))
 		return;
 
 	gdk_window_get_origin (gtk_widget_get_window(GTK_WIDGET(table)), &left, &top);
@@ -398,8 +386,7 @@ on_pressed(GtkButton* button, gpointer user_data)
 	/* Now transfer our grabs to the popup window; this
 	 * should always succeed.
 	 */
-	popup_grab_on_window (gtk_widget_get_window(GTK_WIDGET(table->area)),
-			      gtk_get_current_event_time ());
+	popup_grab_on_window (gtk_widget_get_window(GTK_WIDGET(table->area)));
 }
 
 gboolean

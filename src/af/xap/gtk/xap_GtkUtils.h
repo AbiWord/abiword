@@ -22,21 +22,6 @@
 
 #include <gtk/gtk.h>
 
-// Now onto the device were the deprecated functions are to be
-// with several line of code.
-GdkGrabStatus XAP_gdk_keyboard_grab(GdkWindow *window,
-				    gboolean owner_events,
-				    guint32 time_);
-
-GdkGrabStatus XAP_gdk_pointer_grab(GdkWindow *window,
-				   gboolean owner_events,
-				   GdkEventMask event_mask,
-				   GdkCursor *cursor,
-				   guint32 time_);
-
-// http://permalink.gmane.org/gmane.comp.gnome.svn/520942
-void XAP_gdk_keyboard_ungrab(guint32 t);
-
-void XAP_gdk_pointer_ungrab(guint32 t);
+void XAP_gdk_keyboard_ungrab(GdkWindow *window);
 
 #endif

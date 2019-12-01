@@ -22,55 +22,8 @@
 
 #include "xap_GtkUtils.h"
 
-// Now onto the device were the deprecated functions are to be
-// with several line of code.
-GdkGrabStatus XAP_gdk_keyboard_grab(GdkWindow *window,
-				    gboolean owner_events,
-				    guint32 time_)
+void XAP_gdk_keyboard_ungrab(GdkWindow *window)
 {
-	GdkDeviceManager *manager
-		= gdk_display_get_device_manager(gdk_display_get_default());
-	GdkDevice *device = gdk_device_manager_get_client_pointer (manager);
-
-	return gdk_device_grab (gdk_device_get_associated_device(device),
-				window,
-				GDK_OWNERSHIP_WINDOW,
-				owner_events,
-				GDK_ALL_EVENTS_MASK,
-				NULL,
-				time_);
-}
-
-GdkGrabStatus XAP_gdk_pointer_grab(GdkWindow *window,
-				   gboolean owner_events,
-				   GdkEventMask event_mask,
-				   GdkCursor *cursor,
-				   guint32 time_)
-{
-	GdkDeviceManager *manager
-		= gdk_display_get_device_manager(gdk_display_get_default());
-	GdkDevice *device = gdk_device_manager_get_client_pointer (manager);
-	return gdk_device_grab (device, window,
-				GDK_OWNERSHIP_WINDOW,
-				owner_events, event_mask,
-				cursor, time_);
-}
-
-
-// http://permalink.gmane.org/gmane.comp.gnome.svn/520942
-void XAP_gdk_keyboard_ungrab(guint32 t)
-{
-	GdkDeviceManager *manager
-		= gdk_display_get_device_manager(gdk_display_get_default());
-	GdkDevice *device = gdk_device_manager_get_client_pointer (manager);
-	gdk_device_ungrab (gdk_device_get_associated_device(device),
-			   t);
-}
-
-void XAP_gdk_pointer_ungrab(guint32 t)
-{
-	GdkDeviceManager *manager
-		= gdk_display_get_device_manager(gdk_display_get_default());
-	GdkDevice *device = gdk_device_manager_get_client_pointer (manager);
-	gdk_device_ungrab (device, t);
+  GdkSeat *seat = gdk_display_get_default_seat(gdk_window_get_display(window));
+  gdk_seat_ungrab(seat);
 }

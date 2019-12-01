@@ -84,7 +84,7 @@ void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 		event_Cancel(); break;
 	}
 
-	XAP_gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+	XAP_gdk_keyboard_ungrab(gtk_widget_get_window(cf));
 
 	abiDestroyWidget(cf);
 }
