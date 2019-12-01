@@ -24,6 +24,7 @@
 #include "ut_debugmsg.h"
 
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkUtils.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -36,7 +37,7 @@
 
 void XAP_UnixDialog_Password::event_OK ()
 {
-	const char * txt = gtk_entry_get_text (GTK_ENTRY(mTextEntry));
+	const char * txt = XAP_gtk_entry_get_text (GTK_ENTRY(mTextEntry));
 	if (txt && strlen(txt)) {
 		setPassword (txt);
 		setAnswer(XAP_Dialog_Password::a_OK);

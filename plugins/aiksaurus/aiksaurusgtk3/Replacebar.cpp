@@ -22,6 +22,8 @@
 #include "DialogMediator.h"
 #include <gdk/gdkkeysyms.h>
 
+#include "xap_GtkUtils.h"
+
 namespace AiksaurusGTK_impl
 {
 
@@ -93,13 +95,13 @@ namespace AiksaurusGTK_impl
 
     const char* Replacebar::getText() const throw()
     {
-        return gtk_entry_get_text(GTK_ENTRY(d_replacewith_ptr));
+        return XAP_gtk_entry_get_text(GTK_ENTRY(d_replacewith_ptr));
     }
 
 
     void Replacebar::setText(const char* word) throw()
     {
-        gtk_entry_set_text(GTK_ENTRY(d_replacewith_ptr), word);
+        XAP_gtk_entry_set_text(GTK_ENTRY(d_replacewith_ptr), word);
     }
 
 }

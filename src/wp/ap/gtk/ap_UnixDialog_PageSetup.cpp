@@ -28,6 +28,7 @@
 #include "xap_UnixDialogHelper.h"
 #include "xap_GtkSignalBlocker.h"
 #include "xap_GtkComboBoxHelpers.h"
+#include "xap_GtkUtils.h"
 #include "ap_UnixDialog_PageSetup.h"
 
 #include <string.h>
@@ -198,15 +199,15 @@ void AP_UnixDialog_PageSetup::_setHeight(const char * buf)
 
 void AP_UnixDialog_PageSetup::event_LandscapeChanged(void)
 {
-	std::string sHeight = gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
-	std::string sWidth = gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
+	std::string sHeight = XAP_gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
+	std::string sWidth = XAP_gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
 
 	_setWidth(sHeight.c_str());
 	_setHeight(sWidth.c_str());
 	g_signal_handler_block(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
 	g_signal_handler_block(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
-	gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sHeight.c_str() );
-	gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sWidth.c_str() );
+	XAP_gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sHeight.c_str() );
+	XAP_gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sWidth.c_str() );
 	g_signal_handler_unblock(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
 	g_signal_handler_unblock(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 
@@ -231,14 +232,14 @@ void AP_UnixDialog_PageSetup::event_LandscapeChanged(void)
 
 void AP_UnixDialog_PageSetup::doWidthEntry(void)
 {
-	UT_UTF8String sAfter = gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
+	UT_UTF8String sAfter = XAP_gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
 
 	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_setWidth(sAfter.utf8_str());
 	{
 		XAP_GtkSignalBlocker b(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageWidth));
-		gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sAfter.utf8_str() );
+		XAP_gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sAfter.utf8_str() );
 		gtk_editable_set_position(GTK_EDITABLE(m_entryPageWidth), pos);
 	}
 	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
@@ -247,7 +248,7 @@ void AP_UnixDialog_PageSetup::doWidthEntry(void)
 
 void AP_UnixDialog_PageSetup::doHeightEntry(void)
 {
-    UT_UTF8String sAfter = gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
+    UT_UTF8String sAfter = XAP_gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
 
 	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_setHeight(sAfter.utf8_str());
@@ -255,7 +256,7 @@ void AP_UnixDialog_PageSetup::doHeightEntry(void)
 	{
 		XAP_GtkSignalBlocker b(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageHeight));
-		gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sAfter.utf8_str() );
+		XAP_gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sAfter.utf8_str() );
 		gtk_editable_set_position(GTK_EDITABLE(m_entryPageHeight), pos);
 	}
 	_updatePageSizeList();
@@ -346,13 +347,13 @@ void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
 	{
 	  XAP_GtkSignalBlocker b(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
 	  val = g_strdup_printf (FMT_STRING, static_cast<float>(width));
-	  gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
+	  XAP_gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
 	  g_free (val);
 	}
 	{
 	  XAP_GtkSignalBlocker C(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 	  val = g_strdup_printf (FMT_STRING, static_cast<float>(height));
-	  gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
+	  XAP_gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
 	  g_free (val);
 	}
 	setPageUnits(pu);
@@ -390,19 +391,19 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 	  XAP_GtkSignalBlocker c(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 	  val = g_strdup_printf (FMT_STRING, w);
  	  _setWidth(val);
-	  gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
+	  XAP_gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
 	  g_free (val);
 
 	  val = g_strdup_printf (FMT_STRING, h);
 	  _setHeight(val);
-	  gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
+	  XAP_gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
 	  g_free (val);
   }
   else
   {																	
 	  UT_Dimension dim = (UT_Dimension)XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(m_optionPageUnits));
-	  ps.Set(atof(gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth))),
-			 atof(gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight))),
+	  ps.Set(atof(XAP_gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth))),
+			 atof(XAP_gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight))),
 			 dim);
   }
 }

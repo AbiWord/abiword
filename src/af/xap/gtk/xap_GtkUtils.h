@@ -22,6 +22,19 @@
 
 #include <gtk/gtk.h>
 
+inline
+const gchar* XAP_gtk_entry_get_text(GtkEntry* entry)
+{
+    return gtk_entry_buffer_get_text(gtk_entry_get_buffer(entry));
+}
+
+inline
+void XAP_gtk_entry_set_text(GtkEntry* entry, const gchar* text)
+{
+  auto buffer = gtk_entry_get_buffer(entry);
+  gtk_entry_buffer_set_text(GTK_ENTRY_BUFFER(buffer), text, g_utf8_strlen(text, -1));
+}
+
 void XAP_gdk_keyboard_ungrab(GdkWindow *window);
 
 #endif

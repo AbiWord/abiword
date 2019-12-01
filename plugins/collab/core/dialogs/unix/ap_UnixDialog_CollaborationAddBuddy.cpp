@@ -21,6 +21,7 @@
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkUtils.h"
 #include "ut_string_class.h"
 #include <xp/AbiCollabSessionManager.h>
 
@@ -156,7 +157,7 @@ void AP_UnixDialog_CollaborationAddBuddy::event_Ok()
 		if (handler)
 		{
 			m_pAccount = reinterpret_cast<AccountHandler*>(handler);
-			_setName(gtk_entry_get_text(GTK_ENTRY(m_wName)));
+			_setName(XAP_gtk_entry_get_text(GTK_ENTRY(m_wName)));
 		}
 		else
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);

@@ -27,6 +27,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkUtils.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -185,7 +186,7 @@ void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
 static UT_UCS4String
 get_combobox_text(GtkWidget* combo)
 {
-	UT_UCS4String ucs = gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo))));
+	UT_UCS4String ucs = XAP_gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo))));
 
 	return ucs;
 }

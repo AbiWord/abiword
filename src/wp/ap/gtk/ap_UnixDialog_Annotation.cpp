@@ -28,6 +28,7 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkUtils.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -93,7 +94,7 @@ void AP_UnixDialog_Annotation::eventCancel ()
 	setAnswer ( AP_Dialog_Annotation::a_CANCEL ) ;
 }
 
-#define GRAB_ENTRY_TEXT(name) txt = gtk_entry_get_text(GTK_ENTRY(m_entry##name)) ; \
+#define GRAB_ENTRY_TEXT(name) txt = XAP_gtk_entry_get_text(GTK_ENTRY(m_entry##name)) ; \
 if( txt ) \
 set##name ( txt )
 
@@ -184,7 +185,7 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	#define SET_ENTRY_TXT(name) \
 	prop = get##name () ;                      \
 	if ( !prop.empty() ) {                          \
-		gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.c_str() ) ; \
+		XAP_gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.c_str() ) ; \
 	}
 	
 	GtkWidget * wReplace = GTK_WIDGET(gtk_builder_get_object(builder, "btReplace"));

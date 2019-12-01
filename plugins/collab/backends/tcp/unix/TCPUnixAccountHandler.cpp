@@ -136,7 +136,7 @@ void TCPUnixAccountHandler::loadProperties()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(client_button), !serve);
 
 	if (server_entry && GTK_IS_ENTRY(server_entry))
-		gtk_entry_set_text(GTK_ENTRY(server_entry), getProperty("server").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(server_entry), getProperty("server").c_str());
 
 	int port = DEFAULT_TCP_PORT;
 	try {
@@ -164,11 +164,11 @@ void TCPUnixAccountHandler::storeProperties()
 	if (server_entry && GTK_IS_ENTRY(server_entry))
 	{
 		// simply clear the server field if we are are hosting this session
-		addProperty("server", serve ? "" : gtk_entry_get_text(GTK_ENTRY(server_entry)));
+		addProperty("server", serve ? "" : XAP_gtk_entry_get_text(GTK_ENTRY(server_entry)));
 	}
 	
 	if (port_button && GTK_IS_ENTRY(port_button))
-		addProperty("port", gtk_entry_get_text(GTK_ENTRY(port_button)));
+		addProperty("port", XAP_gtk_entry_get_text(GTK_ENTRY(port_button)));
 		
 	if (allow_all_button && GTK_IS_TOGGLE_BUTTON(allow_all_button))
 		addProperty("allow-all", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(allow_all_button)) ? "true" : "false" );

@@ -28,6 +28,7 @@
 #include <fv_View.h>
 #include <xap_Frame.h>
 #include <xap_UnixApp.h>
+#include "xap_GtkUtils.h"
 
 #include <telepathy-glib/telepathy-glib.h>
 
@@ -348,7 +349,7 @@ void TelepathyAccountHandler::loadProperties()
 
 	std::string conference_server = getProperty("conference_server");
 	if (conference_entry && GTK_IS_ENTRY(conference_entry))
-		gtk_entry_set_text(GTK_ENTRY(conference_entry), conference_server.c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(conference_entry), conference_server.c_str());
 
 	bool autoconnect = hasProperty("autoconnect") ? getProperty("autoconnect") == "true" : true;
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
@@ -360,7 +361,7 @@ void TelepathyAccountHandler::storeProperties()
 	UT_DEBUGMSG(("TelepathyAccountHandler::storeProperties()\n"));
 
 	if (conference_entry && GTK_IS_ENTRY(conference_entry))
-		addProperty("conference_server", gtk_entry_get_text(GTK_ENTRY(conference_entry)));
+		addProperty("conference_server", XAP_gtk_entry_get_text(GTK_ENTRY(conference_entry)));
 
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
 		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );

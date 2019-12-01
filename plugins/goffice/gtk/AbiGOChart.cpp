@@ -36,6 +36,7 @@
 #include "gr_UnixCairoGraphics.h"
 #include "xap_Menu_Layouts.h"
 #include "ap_Menu_Id.h"
+#include "xap_GtkUtils.h"
 
 #include <gtk/gtk.h>
 #include <cairo-svg.h>
@@ -137,7 +138,7 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 	col_sep[0] = go_locale_get_col_sep ();
 	sep[1] = col_sep[1]= 0;
 #endif
-	char const* str = gtk_entry_get_text (gee);
+	char const* str = XAP_gtk_entry_get_text (gee);
 	if (str == NULL)
 		return;
 	data = NULL;
@@ -191,7 +192,7 @@ abi_data_editor_set_value_double (GogDataEditor *editor, double val,
 {
 	GtkEntry *entry = GTK_ENTRY (editor);
 	char *buf = g_strdup_printf ("%g", val);
-	gtk_entry_set_text (entry, buf);
+	XAP_gtk_entry_set_text (entry, buf);
 	g_free (buf);
 }
 
@@ -260,7 +261,7 @@ abi_data_allocator_editor (G_GNUC_UNUSED GogDataAllocator *dalloc,
 	val = gog_dataset_get_dim (dataset, dim_i);
 	if (val != NULL) {
 		char *txt = go_data_serialize (val, NULL);
-		gtk_entry_set_text (editor->entry, txt);
+		XAP_gtk_entry_set_text (editor->entry, txt);
 		g_free (txt);
 	}
 //	gnm_expr_entry_set_flags (editor->entry,

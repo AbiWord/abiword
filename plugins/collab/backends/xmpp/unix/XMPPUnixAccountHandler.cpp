@@ -19,6 +19,8 @@
 
 #include "XMPPUnixAccountHandler.h"
 
+#include "xap_GtkUtils.h"
+
 AccountHandlerConstructor XMPPAccountHandlerConstructor = &XMPPUnixAccountHandler::static_constructor;
 
 XMPPUnixAccountHandler::XMPPUnixAccountHandler()
@@ -106,7 +108,7 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_widget_show_all(GTK_WIDGET(parent));
 
 	// some convenient default values
-	gtk_entry_set_text(GTK_ENTRY(port_entry), "5222");
+	XAP_gtk_entry_set_text(GTK_ENTRY(port_entry), "5222");
 }
 
 void XMPPUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/)
@@ -121,16 +123,16 @@ void XMPPUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/)
 void XMPPUnixAccountHandler::loadProperties()
 {
 	if (username_entry && GTK_IS_ENTRY(username_entry))
-		gtk_entry_set_text(GTK_ENTRY(username_entry), getProperty("username").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(username_entry), getProperty("username").c_str());
 
 	if (password_entry && GTK_IS_ENTRY(password_entry))
-		gtk_entry_set_text(GTK_ENTRY(password_entry), getProperty("password").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(password_entry), getProperty("password").c_str());
 
 	if (server_entry && GTK_IS_ENTRY(server_entry))
-		gtk_entry_set_text(GTK_ENTRY(server_entry), getProperty("server").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(server_entry), getProperty("server").c_str());
 
 	if (port_entry && GTK_IS_ENTRY(server_entry))
-		gtk_entry_set_text(GTK_ENTRY(port_entry), getProperty("port").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(port_entry), getProperty("port").c_str());
 
 	bool tls = hasProperty("encryption") ? getProperty("encryption") == "true" : false;
 	if (lm_ssl_is_supported() && starttls_button && GTK_IS_TOGGLE_BUTTON(starttls_button))
@@ -144,16 +146,16 @@ void XMPPUnixAccountHandler::loadProperties()
 void XMPPUnixAccountHandler::storeProperties()
 {
 	if (username_entry && GTK_IS_ENTRY(username_entry))
-		addProperty("username", gtk_entry_get_text(GTK_ENTRY(username_entry)));
+		addProperty("username", XAP_gtk_entry_get_text(GTK_ENTRY(username_entry)));
 
 	if (password_entry && GTK_IS_ENTRY(password_entry))
-		addProperty("password", gtk_entry_get_text(GTK_ENTRY(password_entry)));
+		addProperty("password", XAP_gtk_entry_get_text(GTK_ENTRY(password_entry)));
 
 	if (server_entry && GTK_IS_ENTRY(server_entry))
-		addProperty("server", gtk_entry_get_text(GTK_ENTRY(server_entry)));
+		addProperty("server", XAP_gtk_entry_get_text(GTK_ENTRY(server_entry)));
 		
 	if (port_entry && GTK_IS_ENTRY(server_entry))
-		addProperty("port", gtk_entry_get_text(GTK_ENTRY(port_entry)));	
+		addProperty("port", XAP_gtk_entry_get_text(GTK_ENTRY(port_entry)));	
 	
 	if (lm_ssl_is_supported() && starttls_button && GTK_IS_TOGGLE_BUTTON(starttls_button))
 		addProperty("encryption", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(starttls_button)) ? "true" : "false" );

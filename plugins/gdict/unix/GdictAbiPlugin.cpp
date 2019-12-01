@@ -32,6 +32,7 @@
 
 #include "xap_UnixFrameImpl.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkUtils.h"
 
 #ifdef USE_FORK_AND_EXEC_METHOD
 
@@ -219,7 +220,7 @@ GDict_exec (const char * search)
     }
 
   GtkWidget * entry = gnome_entry_gtk_entry (GNOME_ENTRY(gdict_entry));
-  gtk_entry_set_text (GTK_ENTRY(entry), search);
+  XAP_gtk_entry_set_text (GTK_ENTRY(entry), search);
   gnome_entry_prepend_history(GNOME_ENTRY(gdict_entry), false, search);
   gdict_defbox_lookup (GDICT_DEFBOX (gdict_defbox), (char*)search);
 }

@@ -72,6 +72,7 @@ ABI_W_POP
 #include "ap_Toolbar_Id.h"
 #include "ap_UnixStockIcons.h"
 #include "ev_UnixFontCombo.h"
+#include "xap_GtkUtils.h"
 
 #ifdef ENABLE_MENUBUTTON
 #include "ev_UnixMenuBar.h"
@@ -1368,7 +1369,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 							ret = combo_box_set_active_text(combo, fsz, wd->m_handlerId);
 						}
 						if (!ret) {
-							gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo))), 
+							XAP_gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo))), 
 											   szState);
 						}
 					}

@@ -34,6 +34,7 @@
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 #include "xap_GtkSignalBlocker.h"
+#include "xap_GtkUtils.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -271,12 +272,12 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 
     {
 		XAP_GtkSignalBlocker b(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
-		gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
+		XAP_gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
 	}
 
 	{
 		XAP_GtkSignalBlocker b(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
-		gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
+		XAP_gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
 	}
 
 	// *** this is how we add the gc for Column Preview ***
@@ -350,7 +351,7 @@ void AP_UnixDialog_Columns::doHeightSpin(void)
 	m_iMaxColumnHeight = val;
 	incrementMaxHeight(bIncrement);
 	//g_signal_handler_block(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
-	gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
+	XAP_gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
 	//g_signal_handler_unblock(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 }
 
@@ -367,7 +368,7 @@ void  AP_UnixDialog_Columns::doSpaceAfterSpin(void)
 	m_iSpaceAfter = val;
 	incrementSpaceAfter(bIncrement);
 	//g_signal_handler_block(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
-	gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
+	XAP_gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
 	//g_signal_handler_unblock(G_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
 }
 
@@ -451,28 +452,28 @@ void AP_UnixDialog_Columns::event_OK(void)
 
 void AP_UnixDialog_Columns::doMaxHeightEntry(void)
 {
-	const char * szHeight = gtk_entry_get_text(GTK_ENTRY(m_wMaxColumnHeightEntry));
+	const char * szHeight = XAP_gtk_entry_get_text(GTK_ENTRY(m_wMaxColumnHeightEntry));
 	if(UT_determineDimension(szHeight,DIM_none) != DIM_none)
 	{
 		setMaxHeight(szHeight);
 
 		XAP_GtkSignalBlocker b(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wMaxColumnHeightEntry));
-		gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
+		XAP_gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
 		gtk_editable_set_position(GTK_EDITABLE(m_wMaxColumnHeightEntry), pos);
 	}
 }
 
 void AP_UnixDialog_Columns::doSpaceAfterEntry(void)
 {
-	const char * szAfter = gtk_entry_get_text(GTK_ENTRY(m_wSpaceAfterEntry));
+	const char * szAfter = XAP_gtk_entry_get_text(GTK_ENTRY(m_wSpaceAfterEntry));
 	if(UT_determineDimension(szAfter,DIM_none) != DIM_none)
 	{
 		setSpaceAfter(szAfter);
 
 		XAP_GtkSignalBlocker b(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wSpaceAfterEntry));
-		gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
+		XAP_gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
 		gtk_editable_set_position(GTK_EDITABLE(m_wSpaceAfterEntry), pos);
 	}
 }

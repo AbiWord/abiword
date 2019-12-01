@@ -18,6 +18,8 @@
 
 #include "SIPSimpleUnixAccountHandler.h"
 
+#include "xap_GtkUtils.h"
+
 AccountHandlerConstructor SIPSimpleAccountHandlerConstructor = &SIPSimpleUnixAccountHandler::static_constructor;
 
 SIPSimpleUnixAccountHandler::SIPSimpleUnixAccountHandler()
@@ -100,13 +102,13 @@ void SIPSimpleUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/
 void SIPSimpleUnixAccountHandler::loadProperties()
 {
 	if (address_entry && GTK_IS_ENTRY(address_entry))
-		gtk_entry_set_text(GTK_ENTRY(address_entry), getProperty("address").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(address_entry), getProperty("address").c_str());
 
 	if (password_entry && GTK_IS_ENTRY(password_entry))
-		gtk_entry_set_text(GTK_ENTRY(password_entry), getProperty("password").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(password_entry), getProperty("password").c_str());
 
 	if (proxy_entry && GTK_IS_ENTRY(proxy_entry))
-		gtk_entry_set_text(GTK_ENTRY(proxy_entry), getProperty("outbound-proxy").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(proxy_entry), getProperty("outbound-proxy").c_str());
 
 	bool autoconnect = hasProperty("autoconnect") ? getProperty("autoconnect") == "true" : true;
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
@@ -116,13 +118,13 @@ void SIPSimpleUnixAccountHandler::loadProperties()
 void SIPSimpleUnixAccountHandler::storeProperties()
 {
 	if (address_entry && GTK_IS_ENTRY(address_entry))
-		addProperty("address", gtk_entry_get_text(GTK_ENTRY(address_entry)));
+		addProperty("address", XAP_gtk_entry_get_text(GTK_ENTRY(address_entry)));
 
 	if (password_entry && GTK_IS_ENTRY(password_entry))
-		addProperty("password", gtk_entry_get_text(GTK_ENTRY(password_entry)));
+		addProperty("password", XAP_gtk_entry_get_text(GTK_ENTRY(password_entry)));
 
 	if (proxy_entry && GTK_IS_ENTRY(proxy_entry))
-		addProperty("outbound-proxy", gtk_entry_get_text(GTK_ENTRY(proxy_entry)));
+		addProperty("outbound-proxy", XAP_gtk_entry_get_text(GTK_ENTRY(proxy_entry)));
 
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
 		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );

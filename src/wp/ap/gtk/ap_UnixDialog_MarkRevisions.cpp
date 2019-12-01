@@ -27,6 +27,7 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkUtils.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -168,7 +169,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
 void AP_UnixDialog_MarkRevisions::event_OK ()
 {
   m_answer = AP_Dialog_MarkRevisions::a_OK ;
-  setComment2 ( gtk_entry_get_text ( GTK_ENTRY( mComment ) ) ) ;
+  setComment2 ( XAP_gtk_entry_get_text ( GTK_ENTRY( mComment ) ) ) ;
 }
 
 void AP_UnixDialog_MarkRevisions::event_Cancel ()

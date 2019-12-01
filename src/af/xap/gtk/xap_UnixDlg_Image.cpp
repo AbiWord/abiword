@@ -26,6 +26,7 @@
 #include "ut_debugmsg.h"
 
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkUtils.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -119,8 +120,8 @@ void XAP_UnixDialog_Image::wrappingChanged(void)
 void XAP_UnixDialog_Image::event_Ok ()
 {
 	setAnswer(XAP_Dialog_Image::a_OK);
-	setTitle (gtk_entry_get_text (GTK_ENTRY(m_wTitleEntry)));
-	setDescription (gtk_entry_get_text (GTK_ENTRY(m_wDescriptionEntry)));
+	setTitle (XAP_gtk_entry_get_text (GTK_ENTRY(m_wTitleEntry)));
+	setDescription (XAP_gtk_entry_get_text (GTK_ENTRY(m_wDescriptionEntry)));
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbInLine)))
 	{
 		setWrapping(WRAP_INLINE);
@@ -189,7 +190,7 @@ void XAP_UnixDialog_Image::doHeightSpin(void)
 	m_iHeight = val;
 	incrementHeight(bIncrement);
 	adjustWidthForAspect();
-	gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
+	XAP_gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
 }
 
 
@@ -204,25 +205,25 @@ void XAP_UnixDialog_Image::doWidthSpin(void)
 	m_iWidth = val;
 	incrementWidth(bIncrement);
 	adjustHeightForAspect();
-	gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
+	XAP_gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
 }
 
 void XAP_UnixDialog_Image::doHeightEntry(void)
 {
-	const char * szHeight = gtk_entry_get_text(GTK_ENTRY(m_wHeightEntry));
+	const char * szHeight = XAP_gtk_entry_get_text(GTK_ENTRY(m_wHeightEntry));
 	if(UT_determineDimension(szHeight,DIM_none) != DIM_none)
 	{
 		setHeight(szHeight);
 
 		g_signal_handler_block(G_OBJECT(m_wHeightEntry), m_iHeightID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wHeightEntry));
-		gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
+		XAP_gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
 		gtk_editable_set_position(GTK_EDITABLE(m_wHeightEntry), pos);
 		g_signal_handler_unblock(G_OBJECT(m_wHeightEntry), m_iHeightID);
 	}
 	else
 	  {
-	    gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() ); 
+	    XAP_gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() ); 
 	  }
 	adjustWidthForAspect();
 }
@@ -231,7 +232,7 @@ void XAP_UnixDialog_Image::setHeightEntry(void)
 {
 	g_signal_handler_block(G_OBJECT(m_wHeightEntry), m_iHeightID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_wHeightEntry));
-	gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
+	XAP_gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
 	gtk_editable_set_position(GTK_EDITABLE(m_wHeightEntry), pos);
 	g_signal_handler_unblock(G_OBJECT(m_wHeightEntry), m_iHeightID);
 }
@@ -240,27 +241,27 @@ void XAP_UnixDialog_Image::setWidthEntry(void)
 {
 	g_signal_handler_block(G_OBJECT(m_wWidthEntry), m_iWidthID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_wWidthEntry));
-	gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
+	XAP_gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
 	gtk_editable_set_position(GTK_EDITABLE(m_wWidthEntry), pos);
 	g_signal_handler_unblock(G_OBJECT(m_wWidthEntry), m_iWidthID);
 }
 
 void XAP_UnixDialog_Image::doWidthEntry(void)
 {
-	const char * szWidth = gtk_entry_get_text(GTK_ENTRY(m_wWidthEntry));
+	const char * szWidth = XAP_gtk_entry_get_text(GTK_ENTRY(m_wWidthEntry));
 	if(UT_determineDimension(szWidth,DIM_none) != DIM_none)
 	{
 		setWidth(szWidth);
 		
 		g_signal_handler_block(G_OBJECT(m_wWidthEntry), m_iWidthID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wWidthEntry));
-		gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
+		XAP_gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
 		gtk_editable_set_position(GTK_EDITABLE(m_wWidthEntry), pos);
 		g_signal_handler_unblock(G_OBJECT(m_wWidthEntry), m_iWidthID);
 	}
 	else
 	  {
-	    gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
+	    XAP_gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
 	  }
 	adjustHeightForAspect();
 }
@@ -565,8 +566,8 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_iWidth = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wWidthSpin));
 	m_iHeight = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wHeightSpin));
 
-	gtk_entry_set_text (GTK_ENTRY(m_wTitleEntry), getTitle().utf8_str());
-	gtk_entry_set_text (GTK_ENTRY(m_wDescriptionEntry), getDescription().utf8_str());
+	XAP_gtk_entry_set_text (GTK_ENTRY(m_wTitleEntry), getTitle().utf8_str());
+	XAP_gtk_entry_set_text (GTK_ENTRY(m_wDescriptionEntry), getDescription().utf8_str());
 
 	_connectSignals ();
 	

@@ -26,6 +26,8 @@
 #include "ut_debugmsg.h"
 #include "ut_std_string.h"
 
+#include "xap_GtkUtils.h"
+
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
@@ -61,7 +63,7 @@ tostr( GtkEntry* e )
     if(!e)
         return "";
     std::string ret;
-    ret = gtk_entry_get_text (GTK_ENTRY (e));
+    ret = XAP_gtk_entry_get_text (GTK_ENTRY (e));
     return ret;
 }
 
@@ -191,7 +193,7 @@ std::string tostr( GtkComboBox* combo )
 {
     GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo)));
 	UT_ASSERT(entry);
-	const gchar *s = gtk_entry_get_text(entry);
+	const gchar *s = XAP_gtk_entry_get_text(entry);
 	if(s && *s)
 	{
         return s;
@@ -202,27 +204,27 @@ std::string tostr( GtkComboBox* combo )
 void setEntry( GtkWidget* w, const std::string& v )
 {
     if( v.empty() )
-        gtk_entry_set_text(GTK_ENTRY(w), "" );
+        XAP_gtk_entry_set_text(GTK_ENTRY(w), "" );
     else 
-        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
+        XAP_gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
 }
 
 void setEntry( GtkEntry* w, const std::string& v )
 {
     if( v.empty() )
-        gtk_entry_set_text(GTK_ENTRY(w), "" );
+        XAP_gtk_entry_set_text(GTK_ENTRY(w), "" );
     else 
-        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
+        XAP_gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
 }
 void setEntry( GtkEntry* w, time_t v )
 {
     UT_DEBUGMSG(("setEntry(time) v:%ld str:%s\n", v, toTimeString(v).c_str()));
-    gtk_entry_set_text(GTK_ENTRY(w), toTimeString(v).c_str());
+    XAP_gtk_entry_set_text(GTK_ENTRY(w), toTimeString(v).c_str());
 }
 void setEntry( GtkEntry* w, double v )
 {
     UT_DEBUGMSG(("setEntry(double) v:%f str:%s\n", v, tostr(v).c_str()));
-    gtk_entry_set_text(GTK_ENTRY(w), tostr(v).c_str());
+    XAP_gtk_entry_set_text(GTK_ENTRY(w), tostr(v).c_str());
 }
 
 

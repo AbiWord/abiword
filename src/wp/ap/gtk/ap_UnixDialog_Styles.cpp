@@ -1062,7 +1062,7 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 
 bool AP_UnixDialog_Styles::event_Modify_OK(void)
 {
-  const char * text = gtk_entry_get_text (GTK_ENTRY (m_wStyleNameEntry));
+  const char * text = XAP_gtk_entry_get_text (GTK_ENTRY (m_wStyleNameEntry));
 
   if (!text || !strlen (text))
     {
@@ -1090,7 +1090,7 @@ void AP_UnixDialog_Styles::new_styleName(void)
 {
 	static char message[200];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	const gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wStyleNameEntry));
+	const gchar * psz = XAP_gtk_entry_get_text( GTK_ENTRY( m_wStyleNameEntry));
 	std::string s;
 	std::string s1;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s);
@@ -1125,7 +1125,7 @@ void AP_UnixDialog_Styles::new_styleName(void)
  */
 void AP_UnixDialog_Styles::event_RemoveProperty(void)
 {
-	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wDeletePropEntry));
+	const gchar * psz = XAP_gtk_entry_get_text( GTK_ENTRY(m_wDeletePropEntry));
 	PP_removeAttribute(psz, m_vecAllProps);
 	rebuildDeleteProps();
 	updateCurrentStyle();
@@ -1156,7 +1156,7 @@ void AP_UnixDialog_Styles::rebuildDeleteProps(void)
 void AP_UnixDialog_Styles::event_basedOn(void)
 {
 	const XAP_StringSet *pSS = m_pApp->getStringSet();
-	const gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
+	const gchar * psz = XAP_gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
 	if (strcmp(psz, pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone)) == 0)
 		psz = "None";
 	else
@@ -1173,7 +1173,7 @@ void AP_UnixDialog_Styles::event_basedOn(void)
 void AP_UnixDialog_Styles::event_followedBy(void)
 {
 	const XAP_StringSet *pSS = m_pApp->getStringSet();
-	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
+	const gchar * psz = XAP_gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
 	if (strcmp(psz, pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent)) == 0)
 		psz = "Current Settings";
 	else
@@ -1191,7 +1191,7 @@ void AP_UnixDialog_Styles::event_styleType(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	std::string s;
 
-	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
+	const gchar * psz = XAP_gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
 	g_snprintf(static_cast<gchar *>(m_styleType),40,"%s",psz);
 	const gchar * pszSt = "P";
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter,s);
@@ -1401,7 +1401,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		}
 		std::string sLoc;
 		pt_PieceTable::s_getLocalisedStyleName(getCurrentStyle(), sLoc);
-		gtk_entry_set_text(GTK_ENTRY(m_wStyleNameEntry), sLoc.c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(m_wStyleNameEntry), sLoc.c_str());
 		gtk_editable_set_editable(GTK_EDITABLE(m_wStyleNameEntry),FALSE );
 	}
 	else
@@ -1488,35 +1488,35 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(pBasedOnStyle != NULL)
 		{
 			pt_PieceTable::s_getLocalisedStyleName(szBasedOn, sLoc);
-			gtk_entry_set_text(GTK_ENTRY(m_wBasedOnEntry), sLoc.c_str());
+			XAP_gtk_entry_set_text(GTK_ENTRY(m_wBasedOnEntry), sLoc.c_str());
 		}
 		else
 		{
 			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s);
-			gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), s.c_str());
+			XAP_gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), s.c_str());
 		}
 
 		if(pFollowedByStyle != NULL)
 		{
 			pt_PieceTable::s_getLocalisedStyleName(szFollowedBy, sLoc);
-			gtk_entry_set_text(GTK_ENTRY(m_wFollowingEntry), sLoc.c_str());
+			XAP_gtk_entry_set_text(GTK_ENTRY(m_wFollowingEntry), sLoc.c_str());
 		}
 		else
 		{
 			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent,s);
-			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), s.c_str());
+			XAP_gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), s.c_str());
 		}
 
 		const std::string & sType = PP_getAttribute(PT_TYPE_ATTRIBUTE_NAME, m_vecAllAttribs);
 		if(sType.find("P") != std::string::npos)
 		{
 			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph,s);
-			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),s.c_str());
+			XAP_gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),s.c_str());
 		}
 		else
 		{
 			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter,s);
-			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),s.c_str());
+			XAP_gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),s.c_str());
 		}
 	}
 	else
@@ -1525,11 +1525,11 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 // Hardwire defaults for "new"
 //
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s);
-		gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), s.c_str());
+		XAP_gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), s.c_str());
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent,s);
-		gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), s.c_str());
+		XAP_gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), s.c_str());
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph,s);
-		gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),s.c_str());
+		XAP_gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),s.c_str());
 	}
 	gtk_editable_set_editable(GTK_EDITABLE(m_wFollowingEntry),FALSE );
 	gtk_editable_set_editable(GTK_EDITABLE(m_wBasedOnEntry),FALSE );
@@ -1556,7 +1556,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 // Now set the list of properties which can be deleted.
 //
 	rebuildDeleteProps();
-	gtk_entry_set_text(GTK_ENTRY(m_wDeletePropEntry),"");
+	XAP_gtk_entry_set_text(GTK_ENTRY(m_wDeletePropEntry),"");
 	return true;
 }
 

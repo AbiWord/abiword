@@ -23,6 +23,8 @@
 #include "DialogMediator.h"
 #include <gdk/gdkkeysyms.h>
 
+#include "xap_GtkUtils.h"
+
 namespace AiksaurusGTK_impl
 {
 
@@ -138,7 +140,7 @@ namespace AiksaurusGTK_impl
 
     const char* Toolbar::getText() const noexcept(false)
     {
-        return gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(d_searchbar_ptr))));
+        return XAP_gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(d_searchbar_ptr))));
     }
 
     GtkWidget* Toolbar::getToolbar() noexcept(false)

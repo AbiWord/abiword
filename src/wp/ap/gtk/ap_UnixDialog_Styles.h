@@ -29,7 +29,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ap_Dialog_Styles.h"
-
+#include "xap_GtkUtils.h"
 
 class XAP_UnixFrame;
 class GR_CairoGraphics;

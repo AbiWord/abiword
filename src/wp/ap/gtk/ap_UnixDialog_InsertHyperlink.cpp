@@ -28,6 +28,7 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkUtils.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -78,7 +79,7 @@ static void s_blist_clicked(GtkTreeSelection * select,
 		gint* rows = gtk_tree_path_get_indices(path);
 		if(rows) {
 			me->setRow(*rows);
-			gtk_entry_set_text(GTK_ENTRY(me->m_entry), 
+			XAP_gtk_entry_set_text(GTK_ENTRY(me->m_entry), 
 					   me->m_pBookmarks[*rows].c_str());
 		}
 	}
@@ -112,8 +113,8 @@ void AP_UnixDialog_InsertHyperlink::event_OK(void)
 {
 	UT_ASSERT(m_windowMain);
 	// get the bookmark name, if any (return cancel if no name given)
-	const gchar * res = gtk_entry_get_text(GTK_ENTRY(m_entry));
-	const gchar * title = gtk_entry_get_text(GTK_ENTRY(m_titleEntry));
+	const gchar * res = XAP_gtk_entry_get_text(GTK_ENTRY(m_entry));
+	const gchar * title = XAP_gtk_entry_get_text(GTK_ENTRY(m_titleEntry));
 	if(res && *res)
 	{
 		setAnswer(AP_Dialog_InsertHyperlink::a_OK);
@@ -154,11 +155,11 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   {
     if (*hyperlink == '#')
     {
-      gtk_entry_set_text ( GTK_ENTRY(m_entry), hyperlink + 1) ;
+      XAP_gtk_entry_set_text ( GTK_ENTRY(m_entry), hyperlink + 1) ;
     }
     else
     {
-      gtk_entry_set_text ( GTK_ENTRY(m_entry), hyperlink ) ;
+      XAP_gtk_entry_set_text ( GTK_ENTRY(m_entry), hyperlink ) ;
     }
   }
 
@@ -213,7 +214,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
 
   if (hyperlinkTitle && *hyperlinkTitle)
   {
-      gtk_entry_set_text(GTK_ENTRY(m_titleEntry), hyperlinkTitle);
+      XAP_gtk_entry_set_text(GTK_ENTRY(m_titleEntry), hyperlinkTitle);
   }
 }
 

@@ -27,6 +27,7 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkUtils.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -156,7 +157,7 @@ void AP_UnixDialog_Field::event_Insert(void)
 	// get the ID of the selected Type
 	gtk_tree_model_get (model, &iter, 1, &m_iFormatIndex, -1);
 	
-	setParameter(gtk_entry_get_text(GTK_ENTRY(m_entryParam)));	
+	setParameter(XAP_gtk_entry_get_text(GTK_ENTRY(m_entryParam)));	
 	m_answer = AP_Dialog_Field::a_OK;
 }
 

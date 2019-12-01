@@ -19,6 +19,8 @@
 
 #include "ServiceUnixAccountHandler.h"
 
+#include "xap_GtkUtils.h"
+
 AccountHandlerConstructor ServiceAccountHandlerConstructor = &ServiceUnixAccountHandler::static_constructor;
 
 AccountHandler * ServiceUnixAccountHandler::static_constructor()
@@ -122,10 +124,10 @@ void ServiceUnixAccountHandler::loadProperties()
 	UT_DEBUGMSG(("ServiceUnixAccountHandler::loadProperties()\n"));
 
 	if (username_entry && GTK_IS_ENTRY(username_entry))
-		gtk_entry_set_text(GTK_ENTRY(username_entry), getProperty("email").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(username_entry), getProperty("email").c_str());
 
 	if (password_entry && GTK_IS_ENTRY(password_entry))
-		gtk_entry_set_text(GTK_ENTRY(password_entry), getProperty("password").c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(password_entry), getProperty("password").c_str());
 
 	bool autoconnect = hasProperty("autoconnect") ? getProperty("autoconnect") == "true" : true;
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
@@ -134,7 +136,7 @@ void ServiceUnixAccountHandler::loadProperties()
 #ifdef DEBUG
 	std::string uri = hasProperty("uri") ? getProperty("uri").c_str() : "https://abicollab.net/soap/";
 	if (uri_entry && GTK_IS_ENTRY(uri_entry))
-		gtk_entry_set_text(GTK_ENTRY(uri_entry), uri.c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(uri_entry), uri.c_str());
 
 	bool verify_webapp_host = hasProperty("verify-webapp-host") ? getProperty("verify-webapp-host") == "true" : true;
 	if (verify_webapp_host_button && GTK_IS_TOGGLE_BUTTON(verify_webapp_host_button))
@@ -151,10 +153,10 @@ void ServiceUnixAccountHandler::storeProperties()
 	UT_DEBUGMSG(("ServiceUnixAccountHandler::storeProperties()\n"));
 
 	if (username_entry && GTK_IS_ENTRY(username_entry))
-		addProperty("email", gtk_entry_get_text(GTK_ENTRY(username_entry)));
+		addProperty("email", XAP_gtk_entry_get_text(GTK_ENTRY(username_entry)));
 
 	if (password_entry && GTK_IS_ENTRY(password_entry))
-		addProperty("password", gtk_entry_get_text(GTK_ENTRY(password_entry)));
+		addProperty("password", XAP_gtk_entry_get_text(GTK_ENTRY(password_entry)));
 	
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
 	{
@@ -164,7 +166,7 @@ void ServiceUnixAccountHandler::storeProperties()
 
 #ifdef DEBUG
 	if (uri_entry && GTK_IS_ENTRY(uri_entry))
-		addProperty("uri", gtk_entry_get_text(GTK_ENTRY(uri_entry)));
+		addProperty("uri", XAP_gtk_entry_get_text(GTK_ENTRY(uri_entry)));
 
 	if (verify_webapp_host_button && GTK_IS_TOGGLE_BUTTON(verify_webapp_host_button))
 		addProperty("verify-webapp-host", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(verify_webapp_host_button)) ? "true" : "false" );

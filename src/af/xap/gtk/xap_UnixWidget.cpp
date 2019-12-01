@@ -30,6 +30,7 @@ ABI_W_POP
 #include "ut_std_string.h"
 #include "ut_string_class.h"
 #include "xap_UnixWidget.h"
+#include "xap_GtkUtils.h"
 
 XAP_UnixWidget::XAP_UnixWidget(GtkWidget * w)
 	: XAP_Widget()
@@ -78,7 +79,7 @@ void XAP_UnixWidget::setValueInt(int val)
 	}
 	else if (GTK_IS_ENTRY(m_widget)) {
 		std::string str = UT_std_string_sprintf("%d", val);
-		gtk_entry_set_text(GTK_ENTRY(m_widget), str.c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(m_widget), str.c_str());
 	}
 	else {
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -92,7 +93,7 @@ int XAP_UnixWidget::getValueInt(void)
 		return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_widget));
 	}
 	else if (GTK_IS_ENTRY(m_widget)) {
-		return atoi(gtk_entry_get_text(GTK_ENTRY(m_widget)));
+		return atoi(XAP_gtk_entry_get_text(GTK_ENTRY(m_widget)));
 	}
 	else {
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -105,7 +106,7 @@ int XAP_UnixWidget::getValueInt(void)
 void XAP_UnixWidget::setValueString(const UT_UTF8String &val)
 {
 	if (GTK_IS_ENTRY(m_widget)) {
-		gtk_entry_set_text(GTK_ENTRY(m_widget), val.utf8_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(m_widget), val.utf8_str());
 	}
 	else if (GTK_IS_LABEL(m_widget)) {
 		gtk_label_set_text(GTK_LABEL(m_widget), val.utf8_str());
@@ -119,7 +120,7 @@ void XAP_UnixWidget::setValueString(const UT_UTF8String &val)
 void XAP_UnixWidget::getValueString(UT_UTF8String &val)
 {
 	if (GTK_IS_ENTRY(m_widget)) {
-		val.assign(gtk_entry_get_text(GTK_ENTRY(m_widget)));
+		val.assign(XAP_gtk_entry_get_text(GTK_ENTRY(m_widget)));
 	}
 	else if (GTK_IS_LABEL(m_widget)) {
 		val.assign(gtk_label_get_text(GTK_LABEL(m_widget)));
@@ -134,7 +135,7 @@ void XAP_UnixWidget::setValueFloat(float val)
 {
 	if (GTK_IS_ENTRY(m_widget)) {
 		std::string str = UT_std_string_sprintf("%f", val);
-		gtk_entry_set_text(GTK_ENTRY(m_widget), str.c_str());
+		XAP_gtk_entry_set_text(GTK_ENTRY(m_widget), str.c_str());
 	}
 }
 
