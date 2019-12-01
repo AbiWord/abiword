@@ -233,7 +233,7 @@ AbiGOComponent_FileInsert(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodC
 
 static bool button_press_cb(GtkDialog *dlg, GdkEventButton *ev)
 {
-	if (ev->type == GDK_2BUTTON_PRESS)
+	if (gdk_event_get_event_type((GdkEvent*)ev) == GDK_DOUBLE_BUTTON_PRESS)
 		gtk_dialog_response(dlg, GTK_RESPONSE_OK);
 	return false;
 }

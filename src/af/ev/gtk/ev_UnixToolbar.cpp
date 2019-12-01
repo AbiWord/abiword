@@ -451,7 +451,9 @@ public:									// we create...
 	{
 		GtkComboBox *combo;
 
-		if (event->keyval == GDK_KEY_Return) {
+		guint ev_keyval = 0;
+		gdk_event_get_keyval((GdkEvent*)event, &ev_keyval);
+		if (ev_keyval == GDK_KEY_Return) {
 			combo = GTK_COMBO_BOX (gtk_widget_get_parent (widget));
 			s_combo_apply_changes (combo, wd);
 		}

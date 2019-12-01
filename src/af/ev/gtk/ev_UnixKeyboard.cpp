@@ -59,13 +59,17 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
 
-	UT_uint32 charData = e->keyval;
+	GdkModifierType ev_state = (GdkModifierType)0;
+	gdk_event_get_state((GdkEvent*)e, &ev_state);
+
+	UT_uint32 charData = 0;
+	gdk_event_get_keyval((GdkEvent*)e, &charData);
 
 	pView->setVisualSelectionEnabled(false);
 
-	if (e->state & GDK_SHIFT_MASK)
+	if (ev_state & GDK_SHIFT_MASK)
 		state |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (ev_state & GDK_CONTROL_MASK)
 	{
 		state |= EV_EMS_CONTROL;
 
@@ -74,16 +78,19 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			// Gdk does us the favour of working out a translated keyvalue for us,
 			// but with the Ctrl keys, we do not want that -- see bug 9545
 			// Ported to use Gdk instead of Xkb for bug 13766.
-			GdkKeymap* keymap = gdk_keymap_get_for_display(gdk_window_get_display(e->window));
+			auto ev_window = gdk_event_get_window((GdkEvent*)e);
+			GdkKeymap* keymap = gdk_keymap_get_for_display(gdk_window_get_display(ev_window));
 			guint keyval;
-			if (gdk_keymap_translate_keyboard_state(keymap, e->hardware_keycode,
-													(GdkModifierType)e->state, e->group,
+			guint16 ev_keycode = 0;
+			gdk_event_get_keycode((GdkEvent*)e, &ev_keycode);
+			if (gdk_keymap_translate_keyboard_state(keymap, ev_keycode,
+													(GdkModifierType)ev_state, e->group,
 													&keyval, NULL, NULL, NULL)) {
 				charData = keyval;
 			}
 		}
 	}
-	if (e->state & (GDK_MOD1_MASK))
+	if (ev_state & (GDK_MOD1_MASK))
 		state |= EV_EMS_ALT;
 
 	if (s_isVirtualKeyCode(charData))

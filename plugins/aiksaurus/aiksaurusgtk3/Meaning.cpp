@@ -152,7 +152,7 @@ namespace AiksaurusGTK_impl
             char* text;
             gtk_tree_model_get (model, 0, &text, -1);
 		    GdkEvent *e = gtk_get_current_event ();
-            m->d_display._handleClick((e->type == GDK_2BUTTON_PRESS), text);
+            m->d_display._handleClick((gdk_event_get_event_type(e) == GDK_DOUBLE_BUTTON_PRESS), text);
 		}
 
         return 0;

@@ -531,7 +531,7 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
 		iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
 		// double click should also insert the symbol
-		if(event->type == GDK_2BUTTON_PRESS)
+		if (gdk_event_get_event_type(event) == GDK_DOUBLE_BUTTON_PRESS)
 			event_Insert();
 	}
 }
