@@ -253,10 +253,14 @@ on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_dat
 	guint selected_cols;
 	guint selected_rows;
 
-	if (ev->x < 0 || ev->y < 0)
+	gdouble x, y;
+	x = y = 0.0f;
+	gdk_event_get_coords((GdkEvent*)ev, &x, &y);
+
+	if (x < 0.0f || y < 0.0f)
 		return TRUE;
-	
-	pixels_to_cells(static_cast<guint>(ev->x), static_cast<guint>(ev->y), &selected_cols, &selected_rows);
+
+	pixels_to_cells(static_cast<guint>(x), static_cast<guint>(y), &selected_cols, &selected_rows);
 
 	if ((selected_cols != table->selected_cols) || (selected_rows != table->selected_rows))
 	{
@@ -312,8 +316,12 @@ on_button_release_event (GtkWidget *, GdkEventButton *ev, gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 
+	gdouble x, y;
+	x = y = 0.0f;
+	gdk_event_get_coords((GdkEvent*)ev, &x, &y);
+
 	/* Quick test to know if we're possibly over the button */
-	if (ev->y < 0.0 && ev->x >= 0.0)
+	if (y < 0.0 && x >= 0.0)
 	{
 		GtkRequisition size;
 
@@ -321,7 +329,7 @@ on_button_release_event (GtkWidget *, GdkEventButton *ev, gpointer user_data)
 
 		/* And now, precise and slightly slower test.
 		   I wonder if the double test really matters from a speed pov */
-		if (-ev->y < size.height && ev->x < size.width)
+		if (-y < size.height && x < size.width)
 			return TRUE;
 	}
 
@@ -337,7 +345,11 @@ on_leave_event (GtkWidget *area,
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 
-	if (gtk_widget_get_visible(GTK_WIDGET(table->window)) && (event->x < 0 || event->y < 0))
+	gdouble x, y;
+	x = y = 0.0f;
+	gdk_event_get_coords((GdkEvent*)event, &x, &y);
+
+	if (gtk_widget_get_visible(GTK_WIDGET(table->window)) && (x < 0 || y < 0))
 	{
 		table->selected_rows = 0;
 		table->selected_cols = 0;
@@ -394,8 +406,10 @@ on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 	gboolean grew = FALSE;
+	guint keyval = 0;
+	gdk_event_get_keyval((GdkEvent*)event, &keyval);
 
-	switch (event->keyval)
+	switch (keyval)
 	{
 	case GDK_KEY_Up:
 	case GDK_KEY_KP_Up:
