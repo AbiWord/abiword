@@ -2042,20 +2042,18 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 		// From the gtk FAQ.
 		//
 		GdkEvent * event = gtk_get_current_event();
-		GdkEventButton *bevent = reinterpret_cast<GdkEventButton *>(event);
-		if(!bevent)
+		if(!event)
 		{
 			DELETEP(m_pUnixPopup);
 			return false;
 		}
 
-		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
-			       NULL, NULL, bevent->button, bevent->time);
+		gtk_menu_popup_at_pointer(GTK_MENU(m_pUnixPopup->getMenuHandle()), event);
 
 		// We run this menu synchronously, since GTK doesn't.
 		// Popup menus have a special "unmap" function to call
 		// gtk_main_quit() when they're done.
-		gdk_event_free(event);	
+		gdk_event_free(event);
 		gtk_main();
 	}
 

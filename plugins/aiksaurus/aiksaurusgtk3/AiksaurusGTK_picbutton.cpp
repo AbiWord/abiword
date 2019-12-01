@@ -265,14 +265,12 @@ AiksaurusGTK_picbutton::popMenu()
 {
 	d_menushowing = true;
 
-    gtk_menu_popup(
+    gtk_menu_popup_at_widget(
 		GTK_MENU(d_menu_ptr),
-		NULL,
-		NULL,
-		cbPopupFunction,
-		this,
-		0,
-		0
+                d_button_ptr,
+                GDK_GRAVITY_SOUTH_WEST,
+                GDK_GRAVITY_NORTH_WEST,
+                nullptr
 	);
 }
 
