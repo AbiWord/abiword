@@ -310,7 +310,7 @@ void TelepathyAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	             "column-spacing", 12,
 	             "hexpand", true,
 	             NULL);
-	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
+	GtkBox* parent = (GtkBox*)pEmbeddingParent;
 
 	// Jabber conference server
 	GtkWidget* conference_label
