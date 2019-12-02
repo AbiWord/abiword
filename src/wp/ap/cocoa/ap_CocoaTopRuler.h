@@ -50,7 +50,6 @@ public:
 	// cheats for the callbacks
 	void 				getWidgetPosition(int * x, int * y);
 	XAP_CocoaNSView * 		getWidget(void) { return m_wTopRuler; };
-	NSWindow * 	getRootWindow(void);
 
 protected:
 #if 0
@@ -66,7 +65,6 @@ private:
 	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *pG, void* param);
 
 	XAP_CocoaNSView *			m_wTopRuler;
-	NSWindow *	m_rootWindow;
 	AP_CocoaTopRulerDelegate*	m_delegate;
 };
 

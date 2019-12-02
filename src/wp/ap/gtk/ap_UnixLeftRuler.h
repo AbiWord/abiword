@@ -47,13 +47,11 @@ public:
 	// cheats for the callbacks
 	void				getWidgetPosition(gint * x, gint * y);
 	GtkWidget * 		getWidget(void) { return m_wLeftRuler; };
-	GdkWindow * 	getRootWindow(void);
 
 	void _ruler_style_context_changed (void);
 
 protected:
 	GtkWidget *		m_wLeftRuler;
-	GdkWindow *	m_rootWindow;
     guint            m_iBackgroundRedrawID;
 protected:
 

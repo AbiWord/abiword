@@ -54,7 +54,6 @@
 AP_CocoaTopRuler::AP_CocoaTopRuler(XAP_Frame * pFrame)
 	: AP_TopRuler(pFrame),
 		m_wTopRuler(nil),
-		m_rootWindow(nil),
 		m_delegate(nil)
 {
 	m_wTopRuler = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrameImpl *>(m_pFrame->getFrameImpl())->_getController()) getHRuler];
@@ -107,18 +106,6 @@ void AP_CocoaTopRuler::getWidgetPosition(int * x, int * y)
 	NSRect theBounds = [m_wTopRuler bounds];
 	*x = (int)theBounds.size.width;
 	*y = (int)theBounds.size.height;
-}
-
-NSWindow * AP_CocoaTopRuler::getRootWindow(void)
-{
-	// TODO move this function somewhere more logical, like
-	// TODO the XAP_Frame level, since that's where the
-	// TODO root window is common to all descendants.
-	if (m_rootWindow)
-		return m_rootWindow;
-
-	m_rootWindow  = [m_wTopRuler window];
-	return m_rootWindow;
 }
 
 #if 0

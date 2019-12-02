@@ -54,7 +54,6 @@
 AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 	: AP_LeftRuler(pFrame),
 		m_wLeftRuler(nil),
-		m_rootWindow(nil),
 		m_delegate(nil)
 {
 	m_wLeftRuler = [(AP_CocoaFrameController *)(static_cast<AP_CocoaFrameImpl*>(m_pFrame->getFrameImpl())->_getController()) getVRuler];
@@ -112,18 +111,6 @@ void AP_CocoaLeftRuler::getWidgetPosition(int * x, int * y)
 	NSRect theBounds = [m_wLeftRuler bounds]; // FIXME ?? [... frame], or just remove method? also TopRuler
 	*x = (int)theBounds.size.width;
 	*y = (int)theBounds.size.height;
-}
-
-NSWindow * AP_CocoaLeftRuler::getRootWindow(void)
-{
-	// TODO move this function somewhere more logical, like
-	// TODO the XAP_Frame level, since that's where the
-	// TODO root window is common to all descendants.
-	if (m_rootWindow)
-		return m_rootWindow;
-
-	m_rootWindow  = [m_wLeftRuler window];
-	return m_rootWindow;
 }
 
 #if 0

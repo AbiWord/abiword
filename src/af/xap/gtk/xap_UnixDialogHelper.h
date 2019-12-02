@@ -105,11 +105,6 @@ void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Str
 void localizeMenuItem(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void setLabelMarkup(GtkWidget * widget, const gchar * str);
 
-
-// Returns the root window of the X display, useful for doing
-// pointer or coordinate measurement on an absolute scale.
-GdkWindow * getRootWindow(GtkWidget * widget);
-
 void abiSetActivateOnWidgetToActivateButton( GtkWidget* source, GtkWidget* button );
 
 #endif /* UT_DIALOGHELPER_H */

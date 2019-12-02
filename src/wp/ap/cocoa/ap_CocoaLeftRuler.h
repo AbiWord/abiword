@@ -50,7 +50,6 @@ public:
 	// cheats for the callbacks
 	void				getWidgetPosition(int * x, int * y);
 	XAP_CocoaNSView * 		getWidget(void) { return m_wLeftRuler; };
-	NSWindow * 	getRootWindow(void);
 
 //	void _ruler_style_changed (void);
 protected:
@@ -64,7 +63,6 @@ private:
 	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *pG, void* param);
 
 	XAP_CocoaNSView *		m_wLeftRuler;
-	NSWindow *	m_rootWindow;
 	AP_CocoaLeftRulerDelegate* m_delegate;
 };
 

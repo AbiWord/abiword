@@ -50,7 +50,6 @@ ruler_style_context_changed (GtkWidget 			* /*w*/,
 AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	: AP_TopRuler(pFrame)
 {
-	m_rootWindow = NULL;
 	m_wTopRuler = NULL;
 	m_pG = NULL;
 
@@ -136,19 +135,6 @@ void AP_UnixTopRuler::getWidgetPosition(gint * x, gint * y)
 	gdk_window_get_position(gtk_widget_get_window(m_wTopRuler), x, y);
 }
 
-GdkWindow * AP_UnixTopRuler::getRootWindow(void)
-{
-	// TODO move this function somewhere more logical, like
-	// TODO the XAP_Frame level, since that's where the
-	// TODO root window is common to all descendants.
-	if (m_rootWindow)
-		return m_rootWindow;
-
-	m_rootWindow  = ::getRootWindow(m_wTopRuler);
-	return m_rootWindow;
-}
-
-		
 /*****************************************************************/
 
 void AP_UnixTopRuler::_fe::realize(AP_UnixTopRuler *self)

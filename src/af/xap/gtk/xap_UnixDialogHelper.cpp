@@ -767,13 +767,6 @@ void messageBoxOK(const char * message)
 /****************************************************************/
 /****************************************************************/
 
-GdkWindow * getRootWindow(GtkWidget * widget)
-{
-	UT_return_val_if_fail(widget, NULL);
-	return gdk_get_default_root_window() ;
-}
-
-
 static void activate_button( GtkEntry * /*entry*/, gpointer user_data )
 {
 //    UT_DEBUGMSG(("activate_button() ud:%x\n", user_data ));

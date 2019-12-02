@@ -49,7 +49,6 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	: AP_LeftRuler(pFrame),
 	  XAP_UnixCustomWidget()
 {
-	m_rootWindow = NULL;
 	m_wLeftRuler = NULL;
 	m_pG = NULL;
     // change ruler color on theme change
@@ -133,18 +132,6 @@ void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)
 	UT_ASSERT(x && y);
 	
 	gdk_window_get_position(gtk_widget_get_window(m_wLeftRuler), x, y);
-}
-
-GdkWindow * AP_UnixLeftRuler::getRootWindow(void)
-{
-	// TODO move this function somewhere more logical, like
-	// TODO the XAP_Frame level, since that's where the
-	// TODO root window is common to all descendants.
-	if (m_rootWindow)
-		return m_rootWindow;
-
-	m_rootWindow  = ::getRootWindow(m_wLeftRuler);
-	return m_rootWindow;
 }
 
 /*****************************************************************/
