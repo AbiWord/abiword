@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2011-2016 Hubert Figuiere
+ * Copyright (C) 2011-2019 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,9 +17,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef _XAP_GTK2UTILS_H_
-#define _XAP_GTK2UTILS_H_
-
+#pragma once
 #include <gtk/gtk.h>
 
 inline
@@ -35,6 +33,4 @@ void XAP_gtk_entry_set_text(GtkEntry* entry, const gchar* text)
   gtk_entry_buffer_set_text(GTK_ENTRY_BUFFER(buffer), text, g_utf8_strlen(text, -1));
 }
 
-void XAP_gdk_keyboard_ungrab(GdkWindow *window);
-
-#endif
+void XAP_gtk_keyboard_ungrab(GtkWidget *widget);

@@ -257,8 +257,7 @@ void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 		return;
 
 	m_cursor = c;
-
-	GdkCursorType cursor_number;
+	const char* cursor_name;
 
 	switch (c)
 	{
@@ -266,11 +265,11 @@ void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
-		cursor_number = GDK_LEFT_PTR;
+		cursor_name = "default";
 		break;
 
 	case GR_CURSOR_IBEAM:
-		cursor_number = GDK_XTERM;
+		cursor_name = "text";
 		break;
 
 	//I have changed the shape of the arrow so get a consistent
@@ -278,100 +277,100 @@ void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 	//for the purpose anyway
 
 	case GR_CURSOR_RIGHTARROW:
-		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
+		cursor_name = "default"; //XXX GDK_ARROW;
 		break;
 
 	case GR_CURSOR_LEFTARROW:
-		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
+		cursor_name = "default"; //XXX GDK_LEFT_PTR;
 		break;
 
 	case GR_CURSOR_IMAGE:
-		cursor_number = GDK_FLEUR;
+		cursor_name = "move";
 		break;
 
 	case GR_CURSOR_IMAGESIZE_NW:
-		cursor_number = GDK_TOP_LEFT_CORNER;
+		cursor_name = "nw-resize";
 		break;
 
 	case GR_CURSOR_IMAGESIZE_N:
-		cursor_number = GDK_TOP_SIDE;
+		cursor_name = "n-resize";
 		break;
 
 	case GR_CURSOR_IMAGESIZE_NE:
-		cursor_number = GDK_TOP_RIGHT_CORNER;
+		cursor_name = "ne-resize";
 		break;
 
 	case GR_CURSOR_IMAGESIZE_E:
-		cursor_number = GDK_RIGHT_SIDE;
+		cursor_name = "e-resize";
 		break;
 
 	case GR_CURSOR_IMAGESIZE_SE:
-		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
+		cursor_name = "se-resize";
 		break;
 
 	case GR_CURSOR_IMAGESIZE_S:
-		cursor_number = GDK_BOTTOM_SIDE;
+		cursor_name = "s-resize";
 		break;
 
 	case GR_CURSOR_IMAGESIZE_SW:
-		cursor_number = GDK_BOTTOM_LEFT_CORNER;
+		cursor_name = "sw-resize";
 		break;
 
 	case GR_CURSOR_IMAGESIZE_W:
-		cursor_number = GDK_LEFT_SIDE;
+		cursor_name = "w-resize";
 		break;
 
 	case GR_CURSOR_LEFTRIGHT:
-		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		cursor_name = "col-resize";
 		break;
 
 	case GR_CURSOR_UPDOWN:
-		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		cursor_name = "row-resize";
 		break;
 
 	case GR_CURSOR_EXCHANGE:
-		cursor_number = GDK_EXCHANGE;
+		cursor_name = "default"; // XXX no equivalent
 		break;
 
 	case GR_CURSOR_GRAB:
-		cursor_number = GDK_HAND1;
+		cursor_name = "grab";
 		break;
 
 	case GR_CURSOR_LINK:
-		cursor_number = GDK_HAND2;
+		cursor_name = "alias";
 		break;
 
 	case GR_CURSOR_WAIT:
-		cursor_number = GDK_WATCH;
+		cursor_name = "wait";
 		break;
 
 	case GR_CURSOR_HLINE_DRAG:
-		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		cursor_name = "col-resize";
 		break;
 
 	case GR_CURSOR_VLINE_DRAG:
-		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		cursor_name = "row-resize";
 		break;
 
 	case GR_CURSOR_CROSSHAIR:
-		cursor_number = GDK_CROSSHAIR;
+		cursor_name = "crosshair";
 		break;
 
 	case GR_CURSOR_DOWNARROW:
-		cursor_number = GDK_SB_DOWN_ARROW;
+		cursor_name = "s-resize"; // not sure
 		break;
 
 	case GR_CURSOR_DRAGTEXT:
-		cursor_number = GDK_TARGET;
+		cursor_name = "grabbing";
 		break;
 
 	case GR_CURSOR_COPYTEXT:
-		cursor_number = GDK_DRAPED_BOX;
+		cursor_name = "copy";
 		break;
 	}
-	xxx_UT_DEBUGMSG(("cursor set to %d	gdk %d \n",c,cursor_number));
-	GdkCursor * cursor = gdk_cursor_new_for_display(
-		gdk_window_get_display(m_pWin), cursor_number);
+	UT_DEBUGMSG(("cursor set to %d	gdk %s \n", c, cursor_name));
+	GdkCursor * cursor = gdk_cursor_new_from_name(
+		gdk_window_get_display(m_pWin), cursor_name);
 	gdk_window_set_cursor(m_pWin, cursor);
 	g_object_unref(cursor);
 }

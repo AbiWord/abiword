@@ -22,8 +22,8 @@
 
 #include "xap_GtkUtils.h"
 
-void XAP_gdk_keyboard_ungrab(GdkWindow *window)
+void XAP_gtk_keyboard_ungrab(GtkWidget* widget)
 {
-  GdkSeat *seat = gdk_display_get_default_seat(gdk_window_get_display(window));
+  GdkSeat *seat = gdk_display_get_default_seat(gtk_widget_get_display(widget));
   gdk_seat_ungrab(seat);
 }
