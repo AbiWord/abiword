@@ -17,8 +17,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef UT_DIALOGHELPER_H
-#define UT_DIALOGHELPER_H
+#pragma once
 
 #include "ut_compiler.h"
 ABI_W_NO_CONST_QUAL
@@ -30,6 +29,7 @@ ABI_W_POP
 
 #include "ut_types.h"
 #include "xap_Strings.h"
+#include "xap_GtkUtils.h"
 
 class XAP_Frame;
 class XAP_FrameHelper;
@@ -107,4 +107,3 @@ void setLabelMarkup(GtkWidget * widget, const gchar * str);
 
 void abiSetActivateOnWidgetToActivateButton( GtkWidget* source, GtkWidget* button );
 
-#endif /* UT_DIALOGHELPER_H */
