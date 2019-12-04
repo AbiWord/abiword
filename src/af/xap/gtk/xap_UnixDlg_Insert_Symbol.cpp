@@ -322,7 +322,9 @@ static void s_new_row(GtkWidget * /*widget*/, XAP_UnixDialog_Insert_Symbol * dlg
 
 static void  s_scroll_event(GtkWidget * /*widget*/, GdkEventScroll * event, XAP_UnixDialog_Insert_Symbol * dlg)
 {
-	dlg->Scroll_Event (static_cast <int> (event->direction));
+	GdkScrollDirection ev_direction = (GdkScrollDirection)0;
+	gdk_event_get_scroll_direction((GdkEvent*)event, &ev_direction);
+	dlg->Scroll_Event (static_cast<int>(ev_direction));
 }
 
 static gboolean s_sym_SymbolMap_draw(GtkWidget * /*widget*/, cairo_t * /*cr*/, XAP_UnixDialog_Insert_Symbol * dlg)
