@@ -250,13 +250,8 @@ GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
 	return m_pPFontGUI;
 }
 
-
-void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
+const char* GR_UnixCairoGraphics::_getCursor(GR_Graphics::Cursor c)
 {
-	if (m_cursor == c)
-		return;
-
-	m_cursor = c;
 	const char* cursor_name;
 
 	switch (c)
@@ -368,7 +363,17 @@ void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 		cursor_name = "copy";
 		break;
 	}
-	UT_DEBUGMSG(("cursor set to %d	gdk %s \n", c, cursor_name));
+
+	return cursor_name;
+}
+
+void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
+{
+	if (m_cursor == c)
+		return;
+	const char* cursor_name = _getCursor(c);
+	m_cursor = c;
+	xxx_UT_DEBUGMSG(("cursor set to %d	gdk %s \n", c, cursor_name));
 	GdkCursor * cursor = gdk_cursor_new_from_name(
 		gdk_window_get_display(m_pWin), cursor_name);
 	gdk_window_set_cursor(m_pWin, cursor);

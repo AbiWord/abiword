@@ -65,6 +65,7 @@ ABI_W_POP
 #include "fl_DocLayout.h"
 #include "xad_Document.h"
 #include "gr_CairoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixClipboard.h"
 #include "xap_Strings.h"
@@ -1322,120 +1323,10 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 	if(getTopLevelWindow() == NULL || (m_iFrameMode != XAP_NormalFrame))
 		return;
 
-	GdkCursorType cursor_number;
-
-	switch (c)
-	{
-	default:
-		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-		/*FALLTHRU*/
-	case GR_Graphics::GR_CURSOR_DEFAULT:
-		cursor_number = GDK_LEFT_PTR;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IBEAM:
-		cursor_number = GDK_XTERM;
-		break;
-
-	//I have changed the shape of the arrow so get a consistent
-	//behaviour in the bidi build; I think the new arrow is better
-	//for the purpose anyway
-
-	case GR_Graphics::GR_CURSOR_RIGHTARROW:
-		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
-		break;
-
-	case GR_Graphics::GR_CURSOR_LEFTARROW:
-		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IMAGE:
-		cursor_number = GDK_FLEUR;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IMAGESIZE_NW:
-		cursor_number = GDK_TOP_LEFT_CORNER;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IMAGESIZE_N:
-		cursor_number = GDK_TOP_SIDE;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IMAGESIZE_NE:
-		cursor_number = GDK_TOP_RIGHT_CORNER;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IMAGESIZE_E:
-		cursor_number = GDK_RIGHT_SIDE;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IMAGESIZE_SE:
-		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IMAGESIZE_S:
-		cursor_number = GDK_BOTTOM_SIDE;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IMAGESIZE_SW:
-		cursor_number = GDK_BOTTOM_LEFT_CORNER;
-		break;
-
-	case GR_Graphics::GR_CURSOR_IMAGESIZE_W:
-		cursor_number = GDK_LEFT_SIDE;
-		break;
-
-	case GR_Graphics::GR_CURSOR_LEFTRIGHT:
-		cursor_number = GDK_SB_H_DOUBLE_ARROW;
-		break;
-
-	case GR_Graphics::GR_CURSOR_UPDOWN:
-		cursor_number = GDK_SB_V_DOUBLE_ARROW;
-		break;
-
-	case GR_Graphics::GR_CURSOR_EXCHANGE:
-		cursor_number = GDK_EXCHANGE;
-		break;
-
-	case GR_Graphics::GR_CURSOR_GRAB:
-		cursor_number = GDK_HAND1;
-		break;
-
-	case GR_Graphics::GR_CURSOR_LINK:
-		cursor_number = GDK_HAND2;
-		break;
-
-	case GR_Graphics::GR_CURSOR_WAIT:
-		cursor_number = GDK_WATCH;
-		break;
-
-	case GR_Graphics::GR_CURSOR_HLINE_DRAG:
-		cursor_number = GDK_SB_V_DOUBLE_ARROW;
-		break;
-
-	case GR_Graphics::GR_CURSOR_VLINE_DRAG:
-		cursor_number = GDK_SB_H_DOUBLE_ARROW;
-		break;
-
-	case GR_Graphics::GR_CURSOR_CROSSHAIR:
-		cursor_number = GDK_CROSSHAIR;
-		break;
-
-	case GR_Graphics::GR_CURSOR_DOWNARROW:
-		cursor_number = GDK_SB_DOWN_ARROW;
-		break;
-
-	case GR_Graphics::GR_CURSOR_DRAGTEXT:
-		cursor_number = GDK_TARGET;
-		break;
-
-	case GR_Graphics::GR_CURSOR_COPYTEXT:
-		cursor_number = GDK_DRAPED_BOX;
-		break;
-	}
-	xxx_UT_DEBUGMSG(("Set cursor number in Frame %d to %d \n",c,cursor_number));
-	GdkCursor * cursor = gdk_cursor_new_for_display(
-		gtk_widget_get_display(getTopLevelWindow()), cursor_number);
+	const char* cursor_name = GR_UnixCairoGraphics::_getCursor(c);
+	xxx_UT_DEBUGMSG(("Set cursor number in Frame %d to %s\n", c, cursor_name));
+	GdkCursor * cursor = gdk_cursor_new_from_name(
+		gtk_widget_get_display(getTopLevelWindow()), cursor_name);
 	gdk_window_set_cursor(gtk_widget_get_window(getTopLevelWindow()), cursor);
 	gdk_window_set_cursor(gtk_widget_get_window(getVBoxWidget()), cursor);
 

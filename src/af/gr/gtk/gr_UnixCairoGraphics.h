@@ -102,6 +102,8 @@ public:
 								 UT_sint32 w, UT_sint32 h);
 	virtual void      flush(void);
 
+	// Return the cursor name.
+	static const char* _getCursor(GR_Graphics::Cursor c);
 protected:
 	virtual void		_resetClip(void);
 	static void		widget_size_allocate (GtkWidget        *widget,
