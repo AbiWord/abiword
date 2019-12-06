@@ -71,7 +71,7 @@ void  AP_UnixDialog_WordCount::activate(void)
 	setWidgetLabel(DIALOG_WID, std::string(m_WindowName));
 	setCountFromActiveFrame ();
 	updateDialogData();
-	gdk_window_raise (gtk_widget_get_window(m_windowMain));
+	XAP_gtk_window_raise(m_windowMain);
 }
 
 void AP_UnixDialog_WordCount::s_response(GtkWidget * wid, gint id,

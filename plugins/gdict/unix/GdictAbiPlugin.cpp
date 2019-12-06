@@ -216,7 +216,7 @@ GDict_exec (const char * search)
   else
     {
       // raise to the front
-      gdk_window_raise (gdict_dlg->window);
+      XAP_gtk_window_raise(gdict_dlg);
     }
 
   GtkWidget * entry = gnome_entry_gtk_entry (GNOME_ENTRY(gdict_entry));

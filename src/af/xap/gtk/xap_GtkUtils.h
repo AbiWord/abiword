@@ -20,6 +20,8 @@
 #pragma once
 #include <gtk/gtk.h>
 
+void XAP_gtk_window_raise(GtkWidget*);
+
 inline
 const gchar* XAP_gtk_entry_get_text(GtkEntry* entry)
 {

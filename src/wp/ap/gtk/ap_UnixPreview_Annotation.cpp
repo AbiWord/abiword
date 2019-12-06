@@ -72,7 +72,7 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 void AP_UnixPreview_Annotation::activate(void)
 {
 	UT_return_if_fail(m_pPreviewWindow);
-	gdk_window_raise(gtk_widget_get_window(m_pPreviewWindow));
+	XAP_gtk_window_raise(m_pPreviewWindow);
 }
 
 XAP_Dialog * AP_UnixPreview_Annotation::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)

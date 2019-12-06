@@ -99,7 +99,7 @@ void XAP_UnixDialog_Insert_Symbol::activate(void)
 	UT_return_if_fail(m_windowMain);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-	gdk_window_raise(gtk_widget_get_window(m_windowMain));
+	XAP_gtk_window_raise(m_windowMain);
 }
 
 void   XAP_UnixDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *)

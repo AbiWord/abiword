@@ -391,7 +391,7 @@ void AP_UnixDialog_Lists::activate (void)
 	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), getWindowName());
 	m_bDontUpdate = false;
 	updateDialog();
-	gdk_window_raise (gtk_widget_get_window(m_wMainWindow));
+	XAP_gtk_window_raise(m_wMainWindow);
 }
 
 void AP_UnixDialog_Lists::notifyActiveFrame(XAP_Frame * /*pFrame*/)

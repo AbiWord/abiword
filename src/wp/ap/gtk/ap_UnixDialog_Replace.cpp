@@ -158,7 +158,7 @@ void AP_UnixDialog_Replace::activate(void)
 	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-	gdk_window_raise(gtk_widget_get_window(m_windowMain));
+	XAP_gtk_window_raise(m_windowMain);
 }
 
 void AP_UnixDialog_Replace::notifyActiveFrame(XAP_Frame * /*pFrame*/)

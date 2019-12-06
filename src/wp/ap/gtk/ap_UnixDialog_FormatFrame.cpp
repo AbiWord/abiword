@@ -385,7 +385,7 @@ void AP_UnixDialog_FormatFrame::activate(void)
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	setAllSensitivities();
-	gdk_window_raise (gtk_widget_get_window(m_windowMain));
+	XAP_gtk_window_raise(m_windowMain);
 }
 
 void AP_UnixDialog_FormatFrame::notifyActiveFrame(XAP_Frame *_pFrame)
