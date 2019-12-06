@@ -24,9 +24,9 @@
 #include "ut_unixColor.h"
 #include "ut_assert.h"
 
-#if defined(TOOLKIT_GTK) || defined(TOOLKIT_GTK2)
+#if defined(TOOLKIT_GTK)
 
-UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkRGBA &color)
+UT_RGBColor* UT_UnixGdkRGBAToRGBColor(const GdkRGBA &color)
 {
 	return new UT_RGBColor(color.red * 255.,
 			       color.green * 255.,

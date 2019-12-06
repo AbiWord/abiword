@@ -308,9 +308,9 @@ AP_UnixDialog_Spell::_constructWindow (void)
 
 
 	// highlight our misspelled word in red
-	m_highlight.red = 0xffff;
-	m_highlight.green = 0x0000;
-	m_highlight.blue = 0x0000;
+	m_highlight.red = 1.0;
+	m_highlight.green = 0.0;
+	m_highlight.blue = 0.0;
 
 	// Liststore and -view
 	GtkListStore *store = gtk_list_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_UINT);
@@ -362,7 +362,7 @@ AP_UnixDialog_Spell::_updateWindow (void)
 	// insert misspelled word (in highlight color)
 	p = m_pWordIterator->getCurrentWord(iLength);
 	gchar * word = (gchar*) _convertToMB(p, iLength);
-	GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, NULL, "foreground-gdk", &m_highlight, NULL); 
+	GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, NULL, "foreground-rgba", &m_highlight, NULL);
 	gtk_text_buffer_get_end_iter(buffer, &iter2);
 	gtk_text_buffer_insert_with_tags(buffer, &iter2, word, -1, txt_tag, NULL);
 	// word is freed at the end of the method...

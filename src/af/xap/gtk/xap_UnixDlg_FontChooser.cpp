@@ -468,7 +468,7 @@ void XAP_UnixDialog_FontChooser::fgColorChanged(void)
 {
 	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER(m_colorSelector),
 							   &m_currentFGColor);
-	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(m_currentFGColor);
+	UT_RGBColor * rgbcolor = UT_UnixGdkRGBAToRGBColor(m_currentFGColor);
 	UT_HashColor hash_color;
 	const char * c = hash_color.setColor(*rgbcolor);
 	addOrReplaceVecProp("color",  c + 1);
@@ -481,7 +481,7 @@ void XAP_UnixDialog_FontChooser::bgColorChanged(void)
 {
 	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER(m_bgcolorSelector),
 								&m_currentBGColor);
-	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(m_currentBGColor);
+	UT_RGBColor * rgbcolor = UT_UnixGdkRGBAToRGBColor(m_currentBGColor);
 	UT_HashColor hash_color;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
 	m_currentBGColorTransparent = false;

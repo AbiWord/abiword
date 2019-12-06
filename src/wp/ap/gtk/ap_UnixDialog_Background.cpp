@@ -54,7 +54,7 @@ static void s_color_changed(GtkWidget * /*csel*/,
 {
 	UT_ASSERT(dlg);
 
-	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(*color);
+	UT_RGBColor * rgbcolor = UT_UnixGdkRGBAToRGBColor(*color);
 	UT_HashColor hash_color;
 	dlg->setColor (hash_color.setColor(*rgbcolor) + 1); // return with # prefix
 	delete rgbcolor;

@@ -68,7 +68,7 @@ private:
    GtkWidget * m_eChange;
    GtkWidget * m_lvSuggestions;
 
-   GdkColor m_highlight;
+   GdkRGBA m_highlight;
 
    guint m_listHandlerID;
    guint m_replaceHandlerID;

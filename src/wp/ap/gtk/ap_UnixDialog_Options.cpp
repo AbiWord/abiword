@@ -128,7 +128,7 @@ void AP_UnixDialog_Options::runModal ( XAP_Frame * pFrame )
 void AP_UnixDialog_Options::s_real_color_changed(GdkRGBA & gdkcolor, AP_UnixDialog_Options * dlg)
 {
 
-	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(gdkcolor);
+	UT_RGBColor * rgbcolor = UT_UnixGdkRGBAToRGBColor(gdkcolor);
 	UT_HashColor hash_color;
     strncpy ( dlg->m_CurrentTransparentColor, hash_color.setColor(*rgbcolor), 9 );
 	

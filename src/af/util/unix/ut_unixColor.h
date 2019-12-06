@@ -39,7 +39,7 @@ ABI_W_POP
 #include "ut_color.h"
 #endif
 
-UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkRGBA &color);
+UT_RGBColor* UT_UnixGdkRGBAToRGBColor(const GdkRGBA &color);
 GdkRGBA* UT_UnixRGBColorToGdkRGBA(const UT_RGBColor &rgb);
 
 #endif
