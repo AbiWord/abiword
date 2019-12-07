@@ -148,7 +148,7 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// *** this is how we add the gc ***
 	{
 		// attach a new graphics context to the drawing area
-		UT_ASSERT(m_drawingareaPreview && gtk_widget_get_window(m_drawingareaPreview));
+		UT_ASSERT(m_drawingareaPreview && XAP_HAS_NATIVE_WINDOW(m_drawingareaPreview));
 
 		// make a new Unix GC
 		GR_UnixCairoAllocInfo ai(m_drawingareaPreview);

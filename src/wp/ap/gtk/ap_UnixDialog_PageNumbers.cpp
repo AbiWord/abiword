@@ -116,7 +116,7 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	
 	UT_return_if_fail(unixapp);
-	UT_return_if_fail(m_previewArea && gtk_widget_get_window(m_previewArea));
+	UT_return_if_fail(m_previewArea && XAP_HAS_NATIVE_WINDOW(m_previewArea));
 	DELETEP (m_unixGraphics);
 	
 	// make a new Unix GC

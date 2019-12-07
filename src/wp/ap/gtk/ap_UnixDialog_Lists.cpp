@@ -204,7 +204,7 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 
 	// Now Display the dialog, so m_wPreviewArea->window exists
 	gtk_widget_show(m_wMainWindow);	
-	UT_ASSERT(m_wPreviewArea && gtk_widget_get_window(m_wPreviewArea));
+	UT_ASSERT(m_wPreviewArea && XAP_HAS_NATIVE_WINDOW(m_wPreviewArea));
 
 	// make a new Unix GC
 	GR_UnixCairoAllocInfo ai(m_wPreviewArea);
@@ -252,7 +252,7 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 
 	// *** this is how we add the gc for Lists Preview ***
 
-	UT_ASSERT(m_wPreviewArea && gtk_widget_get_window(m_wPreviewArea));
+	UT_ASSERT(m_wPreviewArea && XAP_HAS_NATIVE_WINDOW(m_wPreviewArea));
 
 	// make a new Unix GC
 	GR_UnixCairoAllocInfo ai(gtk_widget_get_window(m_wPreviewArea));

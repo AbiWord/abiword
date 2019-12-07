@@ -123,7 +123,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	//XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	//UT_ASSERT(unixapp);
 	
-	UT_ASSERT(m_SymbolMap && gtk_widget_get_window(m_SymbolMap));
+	UT_ASSERT(m_SymbolMap && XAP_HAS_NATIVE_WINDOW(m_SymbolMap));
 
 	// make a new Unix GC
 	DELETEP (m_unixGraphics);
@@ -141,7 +141,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 						static_cast<UT_uint32>(alloc.height));
 	
 	// *** Re use the code to draw into the selected symbol area.
-	UT_ASSERT(m_areaCurrentSym && gtk_widget_get_window(m_areaCurrentSym));
+	UT_ASSERT(m_areaCurrentSym && XAP_HAS_NATIVE_WINDOW(m_areaCurrentSym));
 	
 	// make a new Unix GC
 	DELETEP (m_unixarea);

@@ -278,7 +278,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	// *** this is how we add the gc for the para and char Preview's ***
 	// attach a new graphics context to the drawing area
 
-	UT_ASSERT(m_wParaPreviewArea && gtk_widget_get_window(m_wParaPreviewArea));
+	UT_ASSERT(m_wParaPreviewArea && XAP_HAS_NATIVE_WINDOW(m_wParaPreviewArea));
 
 	// make a new Unix GC
 	DELETEP (m_pParaPreviewWidget);
@@ -297,7 +297,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 				 static_cast<UT_uint32>(allocation.height));
 
 
-	UT_ASSERT(m_wCharPreviewArea && gtk_widget_get_window(m_wCharPreviewArea));
+	UT_ASSERT(m_wCharPreviewArea && XAP_HAS_NATIVE_WINDOW(m_wCharPreviewArea));
 
 	// make a new Unix GC
 	DELETEP (m_pCharPreviewWidget);

@@ -20,6 +20,9 @@
 #pragma once
 #include <gtk/gtk.h>
 
+#define XAP_HAS_NATIVE_WINDOW(w) \
+  (gtk_widget_get_window(w) != nullptr)
+
 void XAP_gtk_window_raise(GtkWidget*);
 
 inline

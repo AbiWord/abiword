@@ -266,7 +266,7 @@ void AP_UnixDialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 	
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
-	UT_return_if_fail(m_wPreviewArea && gtk_widget_get_window(m_wPreviewArea));
+	UT_return_if_fail(m_wPreviewArea && XAP_HAS_NATIVE_WINDOW(m_wPreviewArea));
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
