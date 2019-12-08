@@ -212,22 +212,15 @@ void AP_UnixDialog_PageSetup::event_LandscapeChanged(void)
 	g_signal_handler_unblock(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 
   	/* switch layout XPM image */
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioPageLandscape)))
-	{
-		gtk_widget_destroy(customPreview);
-		customPreview = create_pixmap (orient_horizontal_xpm);
-		gtk_widget_show (customPreview);
-		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
-		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
+	gtk_widget_destroy(customPreview);
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_radioPageLandscape))) {
+		customPreview = create_pixmap(orient_horizontal_xpm);
+	} else {
+		customPreview = create_pixmap(orient_vertical_xpm);
 	}
-	else
-	{
-		gtk_widget_destroy(customPreview);
-		customPreview = create_pixmap (orient_vertical_xpm);
-		gtk_widget_show (customPreview);
-		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
-		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
-	}
+	gtk_widget_show(customPreview);
+	gtk_box_pack_start(GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
+	gtk_box_reorder_child(GTK_BOX (m_PageHbox), customPreview, 0);
 }
 
 void AP_UnixDialog_PageSetup::doWidthEntry(void)
@@ -639,7 +632,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_inch), DIM_IN);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_cm), DIM_CM);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_mm), DIM_MM);
-    XAP_comboBoxSetActiveFromIntCol(combo, 1, getPageUnits ());
+	XAP_comboBoxSetActiveFromIntCol(combo, 1, getPageUnits());
 
 	/* setup margin units menu */
 	combo = GTK_COMBO_BOX(m_optionMarginUnits);
@@ -648,7 +641,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_cm), DIM_CM);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_mm), DIM_MM);
 	last_margin_unit = getMarginUnits ();
-    XAP_comboBoxSetActiveFromIntCol(combo, 1, last_margin_unit);
+	XAP_comboBoxSetActiveFromIntCol(combo, 1, last_margin_unit);
 
 	/* add margin XPM image to the margin window */
 	customPreview = create_pixmap (margin_xpm);
@@ -656,24 +649,18 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	gtk_grid_attach (GTK_GRID (m_MarginHbox), customPreview, 2, 0, 1, 8);
 
 	/* add correct page XPM image to the page window */
-	if (getPageOrientation () == PORTRAIT)
-	{
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioPagePortrait), TRUE);
+	if (getPageOrientation() == PORTRAIT) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radioPagePortrait), TRUE);
 
-		customPreview = create_pixmap (orient_vertical_xpm);
-		gtk_widget_show (customPreview);
-		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
-		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
-	}
-	else
-	{
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioPageLandscape), TRUE);
+		customPreview = create_pixmap(orient_vertical_xpm);
+	} else {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radioPageLandscape), TRUE);
 
-		customPreview = create_pixmap (orient_horizontal_xpm);
-		gtk_widget_show (customPreview);
-		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
-		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
+		customPreview = create_pixmap(orient_horizontal_xpm);
 	}
+	gtk_widget_show(customPreview);
+	gtk_box_pack_start(GTK_BOX(m_PageHbox), customPreview, FALSE, FALSE, 0);
+	gtk_box_reorder_child(GTK_BOX(m_PageHbox), customPreview, 0);
 
 	std::string s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
