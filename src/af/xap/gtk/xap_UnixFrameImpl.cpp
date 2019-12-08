@@ -997,10 +997,11 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	{
 		gdouble ev_x, ev_y;
 		ev_x = ev_y = 0.0f;
+		gdk_event_get_coords((GdkEvent*)e, &ev_x, &ev_y);
 		if (pUnixFrameImpl->m_iNewWidth == e->width &&
 		    pUnixFrameImpl->m_iNewHeight == e->height &&
-		    pUnixFrameImpl->m_iNewY == ev_y &&
-		    pUnixFrameImpl->m_iNewX == ev_x)
+		    pUnixFrameImpl->m_iNewY == static_cast<gint>(ev_y) &&
+		    pUnixFrameImpl->m_iNewX == static_cast<gint>(ev_x))
 			return 1;
 		pUnixFrameImpl->m_iNewWidth = e->width;
 		pUnixFrameImpl->m_iNewHeight = e->height;
