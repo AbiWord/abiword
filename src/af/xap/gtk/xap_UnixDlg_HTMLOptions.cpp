@@ -305,7 +305,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wIs4 = gtk_check_button_new_with_label (Is4);
 	if (m_wIs4)
 		{
-			gtk_container_set_border_width (GTK_CONTAINER (m_wIs4), 5);
+			XAP_gtk_widget_set_margin(m_wIs4, 5);
 			gtk_widget_show (m_wIs4);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wIs4, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wIs4), "toggled",
@@ -314,7 +314,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wAbiWebDoc = gtk_check_button_new_with_label (AbiWebDoc);
 	if (m_wAbiWebDoc)
 		{
-			gtk_container_set_border_width (GTK_CONTAINER (m_wAbiWebDoc), 5);
+			XAP_gtk_widget_set_margin(m_wAbiWebDoc, 5);
 			gtk_widget_show (m_wAbiWebDoc);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wAbiWebDoc, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wAbiWebDoc), "toggled",
@@ -323,7 +323,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wDeclareXML = gtk_check_button_new_with_label (DeclareXML);
 	if (m_wDeclareXML)
 		{
-			gtk_container_set_border_width (GTK_CONTAINER (m_wDeclareXML), 5);
+			XAP_gtk_widget_set_margin(m_wDeclareXML, 5);
 			gtk_widget_show (m_wDeclareXML);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wDeclareXML, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wDeclareXML), "toggled",
@@ -332,7 +332,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wAllowAWML = gtk_check_button_new_with_label (AllowAWML);
 	if (m_wAllowAWML)
 		{
-			gtk_container_set_border_width (GTK_CONTAINER (m_wAllowAWML), 5);
+			XAP_gtk_widget_set_margin(m_wAllowAWML, 5);
 			gtk_widget_show (m_wAllowAWML);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wAllowAWML, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wAllowAWML), "toggled",
@@ -341,7 +341,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wEmbedCSS = gtk_check_button_new_with_label (EmbedCSS);
 	if (m_wEmbedCSS)
 		{
-			gtk_container_set_border_width (GTK_CONTAINER (m_wEmbedCSS), 5);
+			XAP_gtk_widget_set_margin(m_wEmbedCSS, 5);
 			gtk_widget_show (m_wEmbedCSS);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wEmbedCSS, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wEmbedCSS), "toggled",
@@ -350,7 +350,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wEmbedImages = gtk_check_button_new_with_label (EmbedImages);
 	if (m_wEmbedImages)
 		{
-			gtk_container_set_border_width (GTK_CONTAINER (m_wEmbedImages), 5);
+			XAP_gtk_widget_set_margin(m_wEmbedImages, 5);
 			gtk_widget_show (m_wEmbedImages);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wEmbedImages, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wEmbedImages), "toggled",
@@ -360,7 +360,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
         m_wMathMLRenderPNG = gtk_check_button_new_with_label (MathMLRenderPNG);
         if (m_wMathMLRenderPNG)
 		{
-			gtk_container_set_border_width (GTK_CONTAINER (m_wMathMLRenderPNG), 5);
+			XAP_gtk_widget_set_margin(m_wMathMLRenderPNG, 5);
 			gtk_widget_show (m_wMathMLRenderPNG);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wMathMLRenderPNG, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wMathMLRenderPNG), "toggled",
@@ -370,7 +370,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	 m_wSplitDocument = gtk_check_button_new_with_label (SplitDocument);
         if (m_wSplitDocument)
 		{
-			gtk_container_set_border_width (GTK_CONTAINER (m_wSplitDocument), 5);
+			XAP_gtk_widget_set_margin(m_wSplitDocument, 5);
 			gtk_widget_show (m_wSplitDocument);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wSplitDocument, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wSplitDocument), "toggled",

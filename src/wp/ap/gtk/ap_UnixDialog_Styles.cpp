@@ -720,7 +720,7 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_NewTitle,title);
 
 	modifyDialog = abiDialogNew("modify style dialog", TRUE, title.c_str());
-	gtk_container_set_border_width (GTK_CONTAINER (modifyDialog), 5);
+	XAP_gtk_widget_set_margin(modifyDialog, 5);
 	gtk_window_set_resizable(GTK_WINDOW(modifyDialog), FALSE);
 
 	_constructModifyDialogContents(gtk_dialog_get_content_area(GTK_DIALOG (modifyDialog)));
@@ -773,13 +773,13 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	OverallVbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show(OverallVbox);
 	gtk_box_pack_start(GTK_BOX(dialog_vbox1), OverallVbox, TRUE, TRUE, 0);
-	gtk_container_set_border_width(GTK_CONTAINER(OverallVbox), 5);
+	XAP_gtk_widget_set_margin(OverallVbox, 5);
 
 	comboTable = gtk_grid_new ();
 	gtk_widget_set_hexpand (comboTable, TRUE);
 	gtk_widget_show(comboTable);
 	gtk_box_pack_start(GTK_BOX(OverallVbox), comboTable, TRUE, TRUE, 2);
-	gtk_container_set_border_width(GTK_CONTAINER(comboTable), 2);
+	XAP_gtk_widget_set_margin(comboTable, 2);
 	gtk_grid_set_column_spacing(GTK_GRID(comboTable), 2);
 
 	std::string s;
@@ -865,13 +865,13 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_frame_set_shadow_type(GTK_FRAME(previewFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (previewFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), previewFrame, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (previewFrame), 3);
+	XAP_gtk_widget_set_margin(previewFrame, 3);
 
 	GtkWidget *wDrawFrame = gtk_frame_new(NULL);
 	gtk_frame_set_shadow_type(GTK_FRAME(wDrawFrame), GTK_SHADOW_NONE);
 	gtk_widget_show(wDrawFrame);
 	gtk_container_add(GTK_CONTAINER(previewFrame), wDrawFrame);
-	gtk_container_set_border_width(GTK_CONTAINER(wDrawFrame), 6);
+	XAP_gtk_widget_set_margin(wDrawFrame, 6);
 
 	modifyDrawingArea = gtk_drawing_area_new();
 	gtk_widget_set_size_request (modifyDrawingArea, -1, 85);
@@ -905,7 +905,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	GtkWidget * deleteRow = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
 	gtk_widget_show (deleteRow);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), deleteRow, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (deleteRow), 2);
+	XAP_gtk_widget_set_margin(deleteRow, 2);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveLab,s);
 	GtkWidget * deleteLabel = gtk_label_new(s.c_str());
@@ -929,7 +929,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	checkBoxRow = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), checkBoxRow, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (checkBoxRow), 2);
+	XAP_gtk_widget_set_margin(checkBoxRow, 2);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTemplate,s);
 	checkAddTo = gtk_check_button_new_with_label (s.c_str());

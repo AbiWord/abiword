@@ -27,6 +27,14 @@ void XAP_gtk_window_raise(GtkWidget* w)
   gdk_window_raise(gtk_widget_get_window(w));
 }
 
+void XAP_gtk_widget_set_margin(GtkWidget* w, gint margin)
+{
+  gtk_widget_set_margin_bottom(w, margin);
+  gtk_widget_set_margin_top(w, margin);
+  gtk_widget_set_margin_start(w, margin);
+  gtk_widget_set_margin_end(w, margin);
+}
+
 void XAP_gtk_keyboard_ungrab(GtkWidget* widget)
 {
   GdkSeat *seat = gdk_display_get_default_seat(gtk_widget_get_display(widget));

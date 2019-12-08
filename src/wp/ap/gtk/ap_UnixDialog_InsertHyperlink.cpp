@@ -232,13 +232,14 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
   frame1 = gtk_frame_new (NULL);
   gtk_widget_show (frame1);
   gtk_box_pack_start(GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(m_windowMain))), frame1,true,true,0);
-  gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
+  XAP_gtk_widget_set_margin(frame1, 4);
+
   gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 
   vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_widget_show (vbox2);
   gtk_container_add (GTK_CONTAINER (frame1), vbox2);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);
+  XAP_gtk_widget_set_margin(vbox2, 5);
 
   _constructWindowContents ( vbox2 );
 

@@ -89,7 +89,7 @@ GtkWidget * AP_UnixDialog_ToggleCase::_constructWindow (void)
 
   GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
   gtk_widget_show(vbox);
-  gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
+  XAP_gtk_widget_set_margin(vbox, 12);
   gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(windowMain))), vbox);
   _constructWindowContents(vbox);
 

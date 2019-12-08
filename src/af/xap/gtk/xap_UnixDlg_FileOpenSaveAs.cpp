@@ -621,7 +621,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		
 		// place the preview area inside a container to get a nice border
 		GtkWidget * preview_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-		gtk_container_set_border_width  (GTK_CONTAINER(preview_hbox), 4);
+		XAP_gtk_widget_set_margin(preview_hbox, 4);
 		gtk_box_pack_start(GTK_BOX(preview_hbox), preview, TRUE, TRUE, 0);
 		
 		// attach the preview area to the dialog

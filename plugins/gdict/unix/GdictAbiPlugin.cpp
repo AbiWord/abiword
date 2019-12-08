@@ -156,7 +156,7 @@ GDict_dlg_create (const char * search)
   vbox = GNOME_DIALOG(gdict_dlg)->vbox;
   
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, GNOME_PAD_SMALL);	
-  gtk_container_set_border_width (GTK_CONTAINER (hbox), GNOME_PAD_SMALL);
+  XAP_gtk_widget_set_margin(hbox, GNOME_PAD_SMALL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   
   button = gtk_button_new_with_label ("Look Up");
@@ -167,7 +167,7 @@ GDict_dlg_create (const char * search)
   gtk_box_pack_start (GTK_BOX (hbox), gdict_entry, TRUE, TRUE, 0);
 
   scrolled = gtk_scrolled_window_new (NULL, NULL);
-  gtk_container_set_border_width (GTK_CONTAINER (scrolled), GNOME_PAD_SMALL); 
+  XAP_gtk_widget_set_margin(scrolled, GNOME_PAD_SMALL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled),
 				  GTK_POLICY_AUTOMATIC,
 				  GTK_POLICY_AUTOMATIC);

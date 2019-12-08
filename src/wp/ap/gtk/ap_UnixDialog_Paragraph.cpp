@@ -322,7 +322,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_window_set_resizable(GTK_WINDOW(windowParagraph), false);
 
 	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowParagraph));
-	gtk_container_set_border_width (GTK_CONTAINER(vboxMain), 10);
+	XAP_gtk_widget_set_margin(vboxMain, 10);
 
 	windowContents = _constructWindowContents(windowParagraph);
 	gtk_box_pack_start (GTK_BOX (vboxMain), windowContents, FALSE, TRUE, 5);
@@ -407,7 +407,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	             "row-spacing", 6,
 	             "column-spacing", 12,
 	             NULL);
-	gtk_container_set_border_width (GTK_CONTAINER(boxSpacing), 5);
+	XAP_gtk_widget_set_margin(boxSpacing, 5);
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_TabLabelIndentsAndSpacing,s);
@@ -644,7 +644,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	             "row-spacing", 6,
 	             "column-spacing", 12,
 	             NULL);
-	gtk_container_set_border_width (GTK_CONTAINER(boxBreaks), 5);
+	XAP_gtk_widget_set_margin(boxBreaks, 5);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_TabLabelLineAndPageBreaks,s);
 	unixstr = UT_XML_cloneNoAmpersands(s);

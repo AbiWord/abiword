@@ -125,7 +125,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
    vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
    gtk_widget_show (vbox1);
    gtk_box_pack_start (GTK_BOX (container), vbox1, TRUE, TRUE, 0);
-   gtk_container_set_border_width (GTK_CONTAINER (vbox1), 3);
+   XAP_gtk_widget_set_margin(vbox1, 3);
 
    if(getRadio1Label() != NULL)
      {

@@ -191,7 +191,7 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_widget_show (vbox);
   gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG (m_windowMain))), vbox);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
+  XAP_gtk_widget_set_margin(vbox, 5);
 
   _constructWindowContents ( vbox );
 

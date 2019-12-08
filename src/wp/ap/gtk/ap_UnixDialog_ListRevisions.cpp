@@ -139,7 +139,7 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
 
   vbDialog = gtk_dialog_get_content_area(GTK_DIALOG(ap_UnixDialog_ListRevisions));
   gtk_widget_show (vbDialog);
-  gtk_container_set_border_width (GTK_CONTAINER (vbDialog), 5);
+  XAP_gtk_widget_set_margin(vbDialog, 5);
 
   constructWindowContents ( vbDialog ) ;
 
@@ -161,7 +161,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   vbContent = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_widget_show (vbContent);
   gtk_container_add (GTK_CONTAINER (vbDialog), vbContent);
-  gtk_container_set_border_width (GTK_CONTAINER (vbContent), 5);
+  XAP_gtk_widget_set_margin(vbContent, 5);
 
   std::string s("<b>");
   s += getLabel1();

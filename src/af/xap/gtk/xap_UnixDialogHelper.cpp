@@ -482,7 +482,7 @@ GtkWidget * abiDialogNew(const char * role, gboolean resizable)
   if ( role )
     gtk_window_set_role ( GTK_WINDOW(dlg), role ) ;
   gtk_window_set_resizable ( GTK_WINDOW(dlg), resizable ) ;
-  gtk_container_set_border_width ( GTK_CONTAINER (dlg), 5 ) ;
+  XAP_gtk_widget_set_margin(dlg, 5);
   gtk_box_set_spacing ( GTK_BOX ( gtk_dialog_get_content_area(GTK_DIALOG (dlg))), 2 ) ;
   return dlg ;
 }

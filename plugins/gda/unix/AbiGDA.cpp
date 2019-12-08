@@ -330,7 +330,7 @@ GDA_execSQL(AV_View* v, EV_EditMethodCallData *d)
 	text = gnome_db_editor_new ();
 
 	table = gnome_db_new_table_widget (4, 2, FALSE);
-	gtk_container_set_border_width (GTK_CONTAINER (table), 12);
+	XAP_gtk_widget_set_margin(table, 12);
 
 	label = gnome_db_new_label_widget (NULL);
 	gtk_label_set_markup (GTK_LABEL (label), "<b>Data Source</b>");

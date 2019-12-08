@@ -557,7 +557,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
 	notebookMain = gtk_notebook_new ();
 	gtk_widget_show (notebookMain);
 	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, 1, 1, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (notebookMain), 8);
+	XAP_gtk_widget_set_margin(notebookMain, 8);
 
 	GtkWidget *grid1;
 	GtkWidget *scrolledwindow1;
@@ -695,7 +695,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
     gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), hbox1,labelTabColor);
 
 	colorSelector = gtk_color_chooser_widget_new ();
-	gtk_container_set_border_width(GTK_CONTAINER(colorSelector), 6);
+	XAP_gtk_widget_set_margin(colorSelector, 6);
 	gtk_color_chooser_set_use_alpha(GTK_COLOR_CHOOSER(colorSelector), FALSE);
 	gtk_widget_show (colorSelector);
 	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
@@ -716,7 +716,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
     gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), vboxBG,labelTabBGColor);
 
 	colorBGSelector = gtk_color_chooser_widget_new ();
-	gtk_container_set_border_width(GTK_CONTAINER(colorBGSelector), 6);
+	XAP_gtk_widget_set_margin(colorBGSelector, 6);
 	gtk_color_chooser_set_use_alpha(GTK_COLOR_CHOOSER(colorBGSelector), FALSE);
 	gtk_widget_show (colorBGSelector);
 	gtk_box_pack_start (GTK_BOX (vboxBG), colorBGSelector, TRUE, TRUE, 0);
@@ -726,7 +726,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
 //
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_TransparencyCheck,s);
 	GtkWidget * checkbuttonTrans = gtk_check_button_new_with_label (s.c_str());
-	gtk_container_set_border_width(GTK_CONTAINER(checkbuttonTrans), 6);
+	XAP_gtk_widget_set_margin(checkbuttonTrans, 6);
 	gtk_widget_show (checkbuttonTrans);
 	gtk_box_pack_start (GTK_BOX (vboxBG), checkbuttonTrans, TRUE, TRUE, 0);
 
@@ -739,7 +739,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
 	// setting the height takes into account the border applied on all
 	// sides, so we need to double the single border width
 	gtk_widget_set_size_request (frame4, -1, PREVIEW_BOX_HEIGHT_PIXELS + (PREVIEW_BOX_BORDER_WIDTH_PIXELS * 2));
-	gtk_container_set_border_width (GTK_CONTAINER (frame4), PREVIEW_BOX_BORDER_WIDTH_PIXELS);
+	XAP_gtk_widget_set_margin(frame4, PREVIEW_BOX_BORDER_WIDTH_PIXELS);
 
 	entryArea = gtk_drawing_area_new();
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);

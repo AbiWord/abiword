@@ -178,7 +178,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindow(void)
 	gtk_window_set_position(GTK_WINDOW(windowMergeCells), GTK_WIN_POS_MOUSE);
 	gtk_window_set_resizable(GTK_WINDOW(windowMergeCells), false);
 	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowMergeCells));
-	gtk_container_set_border_width(GTK_CONTAINER (vboxMain), 10);
+	XAP_gtk_widget_set_margin(vboxMain, 10);
 	_constructWindowContents();
 	gtk_box_pack_start (GTK_BOX (vboxMain), m_wContents, FALSE, FALSE, 0);
 	abiAddButton(GTK_DIALOG(windowMergeCells),
@@ -214,7 +214,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	frame1 = gtk_frame_new (NULL);
 	gtk_widget_show (frame1);
 	gtk_container_add (GTK_CONTAINER (wContents), frame1);
-	gtk_container_set_border_width (GTK_CONTAINER (frame1), 3);
+	XAP_gtk_widget_set_margin(frame1, 3);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 
 	grid1 = gtk_grid_new();

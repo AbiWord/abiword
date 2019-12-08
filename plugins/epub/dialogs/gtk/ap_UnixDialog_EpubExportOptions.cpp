@@ -210,7 +210,7 @@ GtkWidget * AP_UnixDialog_EpubExportOptions::_constructWindow ()
 	m_wEpub2 = gtk_check_button_new_with_label (Epub2);
 	if (m_wEpub2)
 	{
-		gtk_container_set_border_width(GTK_CONTAINER(m_wEpub2), 5);
+		XAP_gtk_widget_set_margin(m_wEpub2, 5);
 		gtk_widget_show(m_wEpub2);
 		gtk_box_pack_start(GTK_BOX(vboxMain), m_wEpub2, TRUE, TRUE, 0);
 	        g_signal_connect(G_OBJECT(m_wEpub2), "toggled",
@@ -220,7 +220,7 @@ GtkWidget * AP_UnixDialog_EpubExportOptions::_constructWindow ()
 	m_wSplitDocument = gtk_check_button_new_with_label (SplitDocument);
 	if (m_wSplitDocument)
     {
-        gtk_container_set_border_width(GTK_CONTAINER(m_wSplitDocument), 5);
+        XAP_gtk_widget_set_margin(m_wSplitDocument, 5);
         gtk_widget_show(m_wSplitDocument);
         gtk_box_pack_start(GTK_BOX(vboxMain), m_wSplitDocument, TRUE, TRUE, 0);
         g_signal_connect(G_OBJECT(m_wSplitDocument), "toggled",
@@ -230,7 +230,7 @@ GtkWidget * AP_UnixDialog_EpubExportOptions::_constructWindow ()
 	m_wRenderMathMlToPng = gtk_check_button_new_with_label (RenderMathMlToPng);
 	if (m_wRenderMathMlToPng) 
     {
-        gtk_container_set_border_width(GTK_CONTAINER(m_wRenderMathMlToPng), 5);
+        XAP_gtk_widget_set_margin(m_wRenderMathMlToPng, 5);
         gtk_widget_show(m_wRenderMathMlToPng);
         gtk_box_pack_start(GTK_BOX(vboxMain), m_wRenderMathMlToPng, TRUE, TRUE, 0);
         g_signal_connect(G_OBJECT(m_wRenderMathMlToPng), "toggled",
