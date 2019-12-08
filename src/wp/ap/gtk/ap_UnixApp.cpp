@@ -1154,7 +1154,7 @@ bool AP_UnixApp::makePngPreview(const char * pszInFile, const char * pszPNGFile,
 	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, iWidth, iHeight);
 	cairo_t *cr = cairo_create (surface);
 
-	GR_UnixCairoAllocInfo ai(NULL, false);
+	GR_UnixCairoAllocInfo ai(nullptr);
 
 	GR_CairoGraphics * pG = static_cast<GR_CairoGraphics*>(GR_UnixCairoGraphics::graphicsAllocator(ai));
 	pG->setCairo(cr);

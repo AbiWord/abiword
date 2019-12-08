@@ -1236,7 +1236,7 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 	// make a new Unix GC
 
 	DELETEP (m_pAbiPreviewWidget);
-	GR_UnixCairoAllocInfo ai(gtk_widget_get_window(m_wModifyDrawingArea));
+	GR_UnixCairoAllocInfo ai(m_wModifyDrawingArea);
 	m_pAbiPreviewWidget =
 	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 

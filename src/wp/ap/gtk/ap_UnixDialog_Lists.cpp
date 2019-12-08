@@ -255,7 +255,7 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 	UT_ASSERT(m_wPreviewArea && XAP_HAS_NATIVE_WINDOW(m_wPreviewArea));
 
 	// make a new Unix GC
-	GR_UnixCairoAllocInfo ai(gtk_widget_get_window(m_wPreviewArea));
+	GR_UnixCairoAllocInfo ai(m_wPreviewArea);
 	m_pPreviewWidget =
 	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 

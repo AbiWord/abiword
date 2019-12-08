@@ -1465,7 +1465,7 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, iWidth, iHeight);
 	cairo_t *cr = cairo_create(surface);
 
-	GR_UnixCairoAllocInfo ai(NULL, false);
+	GR_UnixCairoAllocInfo ai(nullptr);
 
 	GR_CairoGraphics * pG = static_cast<GR_CairoGraphics*>(GR_UnixCairoGraphics::graphicsAllocator(ai));
 	pG->setCairo(cr);

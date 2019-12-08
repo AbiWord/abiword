@@ -33,13 +33,9 @@ ABI_W_POP
 class ABI_EXPORT GR_UnixCairoAllocInfo : public GR_CairoAllocInfo
 {
 public:
-	GR_UnixCairoAllocInfo(GdkWindow * win, bool double_buffered=true)
-		: GR_CairoAllocInfo(false, false, double_buffered),
-		m_win(win)
-		{}
 	GR_UnixCairoAllocInfo(GtkWidget *widget)
 		: GR_CairoAllocInfo(false, false, true),
-		  m_win(gtk_widget_get_window(GTK_WIDGET(widget)))
+		m_win(widget ? gtk_widget_get_window(GTK_WIDGET(widget)) : nullptr)
 	{}
 
 	GR_UnixCairoAllocInfo(bool bPreview)
