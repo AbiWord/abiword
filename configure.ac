@@ -85,7 +85,7 @@ dnl Do NOT get goffice on Qt
 dnl It will link Gtk+ 3 but Qt will dlopen Gtk+ 2
 dnl This cause kaboom.
 if test "x$abi_cv_qt" = "xno"; then
-goffice_req='libgoffice-0.10 >= 0.10.0'
+goffice_req='libgoffice-0.10 >= 0.10.12'
 fi
 
 xslt_req='libxslt'
@@ -935,13 +935,8 @@ if test "$abi_cv_gio" = "yes"; then
 	AC_DEFINE([WITH_GIO], [1], [Define if using GIO])
 fi
 
-dnl remove the following lines when we request goffice >= 0.10.12
-SAVE_LIBS=$LIBS
-LIBS=`pkg-config --libs libgoffice-0.10`
-AC_CHECK_FUNCS(go_math_editor_new)
-LIBS=$SAVE_LIBS
-unset SAVE_LIBS
-
+dnl It's always on with goffice.
+AC_DEFINE([HAVE_GO_MATH_EDITOR_NEW], [1], [Always defined to goffice])
 AM_CONDITIONAL([TOOLKIT_GTK_ALL], test "$TOOLKIT" = "gtk")
 
 ALL_PLUGINS_="\

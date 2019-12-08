@@ -33,7 +33,9 @@
 #include "ap_Dialog_Id.h"
 #include "ap_UnixDialog_Latex.h"
 #include "xap_Dlg_MessageBox.h"
+#ifdef HAVE_GO_MATH_EDITOR_NEW
 #include <goffice/goffice.h>
+#endif
 
 
 static gboolean s_delete_clicked(GtkWidget * /*widget*/, GdkEvent * /*event*/, AP_UnixDialog_Latex * dlg)
