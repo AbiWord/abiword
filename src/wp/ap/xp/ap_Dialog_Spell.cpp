@@ -254,12 +254,12 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 					if (checker->checkWord(m_pWord, m_iWordLength) == SpellChecker::LOOKUP_FAILED)
 					{
-						std::unique_ptr<UT_GenericVector<UT_UCSChar*>> cpvEngineSuggestions;
+						std::unique_ptr<std::vector<UT_UCSChar*>> cpvEngineSuggestions;
 						cpvEngineSuggestions = checker->suggestWord(m_pWord, m_iWordLength);
 
-				   		for (UT_sint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
+						for (UT_uint32 i = 0; i < cpvEngineSuggestions->size(); ++i)
 						{
-							UT_UCS4Char *sug = cpvEngineSuggestions->getNthItem(i);
+							UT_UCS4Char *sug = cpvEngineSuggestions->at(i);
 							UT_return_val_if_fail (sug, false);
 							m_Suggestions->addItem(sug);
 						}

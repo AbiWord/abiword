@@ -21,6 +21,7 @@
 #define SPELL_MANAGER_H
 
 #include <memory>
+#include <vector>
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
@@ -30,7 +31,6 @@
 #include "ut_types.h"
 #endif
 #include "ut_string_class.h"
-#include "ut_vector.h"
 #include "ut_hash.h"
 #include "barbarisms.h"
 
@@ -39,9 +39,9 @@ class SpellManager;
 
 struct DictionaryMapping
 {
-	UT_String lang;	// the language tag
-	UT_String dict;	// the dictionary for the tag
-	UT_String enc;	// the encoding of the dictionary
+	std::string lang;	// the language tag
+	std::string dict;	// the dictionary for the tag
+	std::string enc;	// the encoding of the dictionary
 };
 
 class ABI_EXPORT SpellChecker
@@ -58,10 +58,10 @@ public:
 	};
 
 	SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len);
-	std::unique_ptr<UT_GenericVector<UT_UCSChar*>> suggestWord(const UT_UCSChar* word, size_t len);
+	std::unique_ptr<std::vector<UT_UCSChar*>> suggestWord(const UT_UCSChar* word, size_t len);
 
 	// vector of DictionaryMapping*
-	virtual	UT_Vector & getMapping() {return m_vecEmpty;};
+	virtual	const std::vector<DictionaryMapping> & getMapping() const {return m_vecEmpty;};
 	virtual bool doesDictionaryExist (const char * /*szLang*/) {return false;};
 	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
 
@@ -72,10 +72,10 @@ public:
 
 	virtual bool isIgnored (const UT_UCSChar * pWord, size_t len) const = 0;
 
-    const UT_String& getLanguage () const
-    {
+	const std::string& getLanguage() const
+	{
 		return m_sLanguage;
-    }
+	}
 
 	bool requestDictionary (const char * szLang);
 	bool isDictionaryFound(void)
@@ -96,21 +96,21 @@ protected:
 
 	static void couldNotLoadDictionary ( const char * szLang );
 
-    UT_String       	m_sLanguage;
+	std::string       	m_sLanguage;
     BarbarismChecker	m_BarbarismChecker;
-    UT_Vector			m_vecEmpty;
+	std::vector<DictionaryMapping> m_vecEmpty;
 
     bool				m_bIsBarbarism;
 	bool				m_bIsDictionaryWord;
 	bool                m_bFoundDictionary;
 
 private:
-    SpellChecker(const SpellChecker&);		// no impl
-    void operator=(const SpellChecker&);	// no impl
+    SpellChecker(const SpellChecker&) = delete;
+    void operator=(const SpellChecker&) = delete;
 
 	virtual bool				_requestDictionary (const char * szLang) = 0;
 	virtual SpellCheckResult	_checkWord(const UT_UCSChar* word, size_t len) = 0;
-	virtual std::unique_ptr<UT_GenericVector<UT_UCSChar*>> _suggestWord(const UT_UCSChar* word, size_t len) = 0;
+	virtual std::unique_ptr<std::vector<UT_UCSChar*>> _suggestWord(const UT_UCSChar* word, size_t len) = 0;
 };
 
 class ABI_EXPORT SpellManager
@@ -128,13 +128,13 @@ public:
 	SpellChecker *	getInstance() const;
 
 private:
-	SpellManager ();
-	SpellManager ( const SpellManager & other );
-	SpellManager & operator= ( const SpellManager & other );
+	SpellManager();
+	SpellManager(const SpellManager & other) = delete;
+	SpellManager & operator=(const SpellManager& other) = delete;
 
 
 	UT_StringPtrMap m_map;
-	UT_String m_missingHashs;
+	std::string m_missingHashs;
 	SpellChecker * m_lastDict;
 	UT_uint32 m_nLoadedDicts;
 };

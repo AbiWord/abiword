@@ -129,7 +129,7 @@ SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, s
 	return ret;
 }
 
-std::unique_ptr<UT_GenericVector<UT_UCSChar*>> SpellChecker::suggestWord(const UT_UCSChar* word, size_t len)
+std::unique_ptr<std::vector<UT_UCSChar*>> SpellChecker::suggestWord(const UT_UCSChar* word, size_t len)
 {
 	auto pvSugg = _suggestWord(word, len);
 

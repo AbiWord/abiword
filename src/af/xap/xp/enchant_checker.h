@@ -49,7 +49,7 @@ private:
 
 	bool _requestDictionary (const char * szLang);
 	SpellChecker::SpellCheckResult _checkWord (const UT_UCSChar * word, size_t len);
-	std::unique_ptr<UT_GenericVector<UT_UCSChar*>> _suggestWord (const UT_UCSChar * word, size_t len);
+	virtual std::unique_ptr<std::vector<UT_UCSChar*>> _suggestWord (const UT_UCSChar * word, size_t len) override;
 
 	EnchantDict *m_dict;
 };

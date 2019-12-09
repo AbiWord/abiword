@@ -17,14 +17,16 @@
  * 02110-1301 USA.
  */
 
-#include "ut_vector.h"
+
+#ifndef BARBARISMS_H
+#define BARBARISMS_H
+
+#include <vector>
+
 #include "ut_xml.h"
 #include "ut_hash.h"
 
 #include "ut_string_class.h"
-
-#ifndef BARBARISMS_H
-#define BARBARISMS_H
 
 class ABI_EXPORT BarbarismChecker : public UT_XML::Listener
 {
@@ -37,7 +39,7 @@ public:
 	bool checkWord(const UT_UCSChar * word32, size_t length);
 
 	bool suggestWord(const UT_UCSChar *word32, size_t length,
-                         const std::unique_ptr<UT_GenericVector<UT_UCSChar*>>& pVecsugg);
+                         const std::unique_ptr<std::vector<UT_UCSChar*>>& pVecsugg);
 
 	/*
 		Implementation of UT_XML::Listener
@@ -49,7 +51,7 @@ public:
 private:
 
 	bool suggestExactWord(const UT_UCSChar *word32, size_t length,
-                              const std::unique_ptr<UT_GenericVector<UT_UCSChar*>>& pVecsugg);
+                              const std::unique_ptr<std::vector<UT_UCSChar*>>& pVecsugg);
 
 	UT_GenericStringMap<UT_GenericVector<UT_UCS4Char *>*>	m_map;
 	UT_GenericVector<UT_UCS4Char *>*		m_pCurVector;

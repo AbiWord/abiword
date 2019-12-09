@@ -5835,13 +5835,13 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		if (checker && (checker->checkWord(stMisspelledWord.ucs4_str(), iLength) == SpellChecker::LOOKUP_FAILED))
 		{
 			// get suggestions from spelling engine
-			std::unique_ptr<UT_GenericVector<UT_UCSChar*>> cpvEngineSuggestions;
+			std::unique_ptr<std::vector<UT_UCSChar*>> cpvEngineSuggestions;
 
 			cpvEngineSuggestions = checker->suggestWord (stMisspelledWord.ucs4_str(), iLength);
 
-			for (UT_sint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
+			for (UT_uint32 i = 0; i < cpvEngineSuggestions->size(); ++i)
 			{
-				UT_UCSChar *sug = cpvEngineSuggestions->getNthItem(i);
+				UT_UCSChar *sug = cpvEngineSuggestions->at(i);
 				UT_ASSERT(sug);
 				pvFreshSuggestions->addItem(sug);
 			}
