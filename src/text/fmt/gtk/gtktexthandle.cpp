@@ -176,7 +176,7 @@ _fv_text_handle_create_window (FvTextHandle         *handle,
   attributes.x = 0;
   attributes.y = 0;
   _fv_text_handle_get_size (handle, &attributes.width, &attributes.height);
-  attributes.window_type = GDK_WINDOW_TEMP;
+  attributes.window_type = GDK_WINDOW_CHILD;
   attributes.wclass = GDK_INPUT_OUTPUT;
   attributes.event_mask = (GDK_EXPOSURE_MASK |
                            GDK_BUTTON_PRESS_MASK |
