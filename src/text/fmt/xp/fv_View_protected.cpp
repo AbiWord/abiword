@@ -5835,7 +5835,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		if (checker && (checker->checkWord(stMisspelledWord.ucs4_str(), iLength) == SpellChecker::LOOKUP_FAILED))
 		{
 			// get suggestions from spelling engine
-			const UT_GenericVector<UT_UCSChar*>* cpvEngineSuggestions;
+			std::unique_ptr<UT_GenericVector<UT_UCSChar*>> cpvEngineSuggestions;
 
 			cpvEngineSuggestions = checker->suggestWord (stMisspelledWord.ucs4_str(), iLength);
 

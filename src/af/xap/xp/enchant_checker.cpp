@@ -105,13 +105,13 @@ EnchantChecker::_checkWord (const UT_UCSChar * ucszWord, size_t len)
 	}
 }
 
-UT_GenericVector<UT_UCSChar*> *
+std::unique_ptr<UT_GenericVector<UT_UCSChar*>>
 EnchantChecker::_suggestWord (const UT_UCSChar *ucszWord, size_t len)
 {
 	UT_return_val_if_fail (m_dict, 0);
 	UT_return_val_if_fail (ucszWord && len, 0);
 
-	UT_GenericVector<UT_UCSChar*> * pvSugg = new UT_GenericVector<UT_UCSChar*>();
+	std::unique_ptr<UT_GenericVector<UT_UCSChar*>> pvSugg(new UT_GenericVector<UT_UCSChar*>());
 
 	UT_UTF8String utf8 (ucszWord, len);
 

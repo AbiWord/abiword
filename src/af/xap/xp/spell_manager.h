@@ -20,6 +20,8 @@
 #ifndef SPELL_MANAGER_H
 #define SPELL_MANAGER_H
 
+#include <memory>
+
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
@@ -56,7 +58,7 @@ public:
 	};
 
 	SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len);
-	UT_GenericVector<UT_UCSChar*>* suggestWord(const UT_UCSChar* word, size_t len);
+	std::unique_ptr<UT_GenericVector<UT_UCSChar*>> suggestWord(const UT_UCSChar* word, size_t len);
 
 	// vector of DictionaryMapping*
 	virtual	UT_Vector & getMapping() {return m_vecEmpty;};
@@ -108,7 +110,7 @@ private:
 
 	virtual bool				_requestDictionary (const char * szLang) = 0;
 	virtual SpellCheckResult	_checkWord(const UT_UCSChar* word, size_t len) = 0;
-	virtual UT_GenericVector<UT_UCSChar*> *_suggestWord(const UT_UCSChar* word, size_t len) = 0;
+	virtual std::unique_ptr<UT_GenericVector<UT_UCSChar*>> _suggestWord(const UT_UCSChar* word, size_t len) = 0;
 };
 
 class ABI_EXPORT SpellManager
