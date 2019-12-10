@@ -1,8 +1,8 @@
 
 if TOOLKIT_COCOA
 include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
-
 resources_DATA=$(PNG_FILES)
+endif
 
 PNG_FILES=menu_about.png\
 menu_add_column.png\
@@ -163,17 +163,12 @@ tb_semitem_this.png \
 tb_semitem_next.png \
 tb_semitem_prev.png \
 tb_semitem_edit.png \
-tb_semitem_stylesheet_apply.png
+tb_semitem_stylesheet_apply.png \
 $(NULL)
 
-CLEANFILES=$(PNG_FILES)
-
-.xpm.png:
-	convert $< $@
-
-endif
 
 EXTRA_DIST = \
+	$(PNG_FILES) \
 	menu_about.xpm \
 	menu_add_column.xpm \
 	menu_add_row.xpm \
@@ -333,4 +328,4 @@ EXTRA_DIST = \
 	tb_semitem_next.xpm \
 	tb_semitem_prev.xpm \
 	tb_semitem_edit.xpm \
-	tb_semitem_stylesheet_apply.xpm 
+	tb_semitem_stylesheet_apply.xpm
