@@ -170,9 +170,7 @@ XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
 /*****************************************************************/
 
 static gint s_color_update(GtkWidget * /* widget */,
-#if GTK_CHECK_VERSION(3,4,0)
                            GdkRGBA * /* color */,
-#endif
                            XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_return_val_if_fail(dlg,FALSE);
@@ -181,9 +179,7 @@ static gint s_color_update(GtkWidget * /* widget */,
 }
 
 static gint s_bgcolor_update(GtkWidget * /* widget */,
-#if GTK_CHECK_VERSION(3,4,0)
                            GdkRGBA * /* color */,
-#endif
 						   XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_return_val_if_fail(dlg,FALSE);
@@ -826,20 +822,12 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
 	// real-time updating of the color so we can refresh our preview
 	// text
 	g_signal_connect(G_OBJECT(colorSelector),
-#if GTK_CHECK_VERSION(3,4,0)
 			 "color-activated",
-#else
-			 "color-changed", //"event",
-#endif
 			 G_CALLBACK(s_color_update),
 			 static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(colorBGSelector),
-#if GTK_CHECK_VERSION(3,4,0)
 			 "color-activated",
-#else
-			 "color-changed", //"event",
-#endif
 			 G_CALLBACK(s_bgcolor_update),
 			 static_cast<gpointer>(this));
 

@@ -73,16 +73,10 @@ _fv_text_handle_get_size (FvTextHandle *handle,
 
   priv = handle->priv;
 
-#if GTK_CHECK_VERSION (3, 6, 0)
   gtk_widget_style_get (priv->parent,
                         "text-handle-width", &w,
                         "text-handle-height", &h,
                         NULL);
-#else
-  /* Hardcode default values from GTK+ 3.6 */
-  w = 16;
-  h = 20;
-#endif
 
   if (width)
     *width = w;
