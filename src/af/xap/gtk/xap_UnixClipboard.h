@@ -22,6 +22,8 @@
 #ifndef XAP_UNIXCLIPBOARD_H
 #define XAP_UNIXCLIPBOARD_H
 
+#include <vector>
+
 #include "ut_compiler.h"
 
 #include <glib.h>
@@ -31,7 +33,6 @@ ABI_W_NO_CONST_QUAL
 ABI_W_POP
 
 #include "ut_types.h"
-#include "ut_vector.h"
 #include "ut_bytebuf.h"
 #include "xap_FakeClipboard.h"
 #include "xap_UnixApp.h"
@@ -132,8 +133,8 @@ protected:
 			     GtkSelectionData *selection_data,
 			     guint info, T_AllowGet which);
 
-	UT_GenericVector<const char*>  m_vecFormat_AP_Name;
-	UT_GenericVector<GdkAtom>  m_vecFormat_GdkAtom;
+	std::vector<const char*>  m_vecFormat_AP_Name;
+	std::vector<GdkAtom>  m_vecFormat_GdkAtom;
 
 	UT_ByteBuf m_databuf; // for gets only
 
