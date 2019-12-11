@@ -25,7 +25,7 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-GtkClipboard * XAP_UnixClipboard::gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get)
+GtkClipboard * XAP_UnixClipboard::gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get) const
 {
 	if (XAP_UnixClipboard::TAG_ClipboardOnly == get)
 		return m_clip;
@@ -46,7 +46,7 @@ static AV_View * viewFromApp(XAP_App * pApp)
 //////////////////////////////////////////////////////////////////
 
 XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
-	: m_pUnixApp(pUnixApp), m_Targets(0), m_nTargets(0)
+	: m_pUnixApp(pUnixApp), m_Targets(nullptr), m_nTargets(0)
 {
 	m_clip = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
 	m_primary = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
@@ -348,7 +348,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-bool XAP_UnixClipboard::canPaste(T_AllowGet tFrom)
+bool XAP_UnixClipboard::canPaste(T_AllowGet tFrom) const
 {
 #if 0
 	bool found = false;

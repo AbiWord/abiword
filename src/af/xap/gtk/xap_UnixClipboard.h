@@ -63,7 +63,7 @@ public:
 	bool				getTextData(T_AllowGet tFrom, void ** ppData,
 									UT_uint32 * pLen);
 
-	bool canPaste(T_AllowGet tFrom);
+	bool canPaste(T_AllowGet tFrom) const;
 
 	GtkTargetEntry * getTargets () const { return m_Targets ; }
 	UT_uint32 getNumTargets () const { return m_nTargets; }
@@ -75,7 +75,7 @@ protected:
 
  private:
 
-	GtkClipboard * gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get);
+	GtkClipboard * gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get) const;
 
 	bool				_getDataFromServer(T_AllowGet tFrom, const char** formatList,
 							   void ** ppData, UT_uint32 * pLen,
