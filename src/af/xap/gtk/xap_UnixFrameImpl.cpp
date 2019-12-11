@@ -1389,9 +1389,6 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
 		gtk_window_set_role(GTK_WINDOW(m_wTopLevelWindow), "topLevelWindow");
 
-		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
-		gtk_window_set_role(GTK_WINDOW(m_wTopLevelWindow), "topLevelWindow");
-
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);
 
