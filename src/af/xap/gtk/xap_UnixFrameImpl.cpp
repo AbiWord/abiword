@@ -1143,7 +1143,7 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	}
 
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
-	pUnixFrameImpl->setTimeOfLastEvent(e->time);
+	pUnixFrameImpl->setTimeOfLastEvent(gdk_event_get_time((GdkEvent*)e));
 	AV_View * pView = pFrame->getCurrentView();
 	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
 
