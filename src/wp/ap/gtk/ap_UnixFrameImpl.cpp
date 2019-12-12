@@ -25,6 +25,7 @@ ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
 ABI_W_POP
 
+#include "ut_std_string.h"
 #include "ap_UnixFrameImpl.h"
 #include "ap_UnixApp.h"
 #include "ev_UnixToolbar.h"
@@ -355,9 +356,10 @@ void AP_UnixFrameImpl::_setWindowIcon()
 	GList* iconList = NULL;
 	while(*currentSize)
 	{
-		std::string icon_path = std::string(ICONDIR) + "/hicolor/"
-			+ *currentSize + "/apps/abiword.png";
-		icon = gdk_pixbuf_new_from_file(icon_path.c_str(), &error);
+		std::string icon_path =
+			UT_std_string_sprintf("/com/abisource/AbiWord/%s/apps/abiword.png",
+								  *currentSize);
+		icon = gdk_pixbuf_new_from_resource(icon_path.c_str(), &error);
 		if (icon)
 		{
 			iconList = g_list_append(iconList, icon);
@@ -370,6 +372,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 			if (error)
 			{
 				g_error_free(error);
+				error = nullptr;
 			}
 		}
 		currentSize++;

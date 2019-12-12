@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/abisource/AbiWord">
+    <file alias="16x16/apps/abiword.png">../icons/hicolor_apps_16x16_com.abisource.AbiWord.png</file>
+    <file alias="22x22/apps/abiword.png">../icons/hicolor_apps_22x22_com.abisource.AbiWord.png</file>
+    <file alias="32x32/apps/abiword.png">../icons/hicolor_apps_32x32_com.abisource.AbiWord.png</file>
+    <file alias="48x48/apps/abiword.png">../icons/hicolor_apps_48x48_com.abisource.AbiWord.png</file>
+    <file alias="256x256/apps/abiword.png">../icons/hicolor_apps_256x256_com.abisource.AbiWord.png</file>
+    <file alias="512x512/apps/abiword.png">../icons/hicolor_apps_512x512_com.abisource.AbiWord.png</file>
+    <file alias="scalable/apps/abiword.svg">../icons/hicolor_apps_scalable_com.abisource.AbiWord.svg</file>
+
     <file alias="16x16/actions/menu_about.png">wp/ap/xp/ToolbarIcons/menu_about.png</file>
     <file alias="16x16/actions/menu_add_column.png">wp/ap/xp/ToolbarIcons/menu_add_column.png</file>
     <file alias="16x16/actions/menu_add_row.png">wp/ap/xp/ToolbarIcons/menu_add_row.png</file>
