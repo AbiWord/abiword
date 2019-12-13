@@ -72,19 +72,22 @@ GR_UnixCairoGraphicsBase::GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDevic
 {
 }
 
-GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkWindow * win, bool /*double_buffered*/)
+GR_UnixCairoGraphics::GR_UnixCairoGraphics(GtkWidget * win)
 	: GR_UnixCairoGraphicsBase(),
-	  m_pWin(win),
+	  m_pWin(win ? gtk_widget_get_window(win) : nullptr),
 	  m_context(nullptr),
 	  m_CairoCreated(false),
 	  m_Painting(false),
 	  m_Signal(0),
  	  m_DestroySignal(0),
-	  m_Widget(NULL),
+	  m_Widget(win),
 	  m_styleBg(NULL),
 	  m_styleHighlight(NULL)
 {
 	m_cr = NULL;
+	if (m_Widget) {
+		_initWidget();
+	}
 	if (_getWindow())
 	{
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
@@ -119,7 +122,7 @@ GR_Graphics *   GR_UnixCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 //	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
 	GR_UnixCairoAllocInfo &AI = (GR_UnixCairoAllocInfo&)info;
 
-	return new GR_UnixCairoGraphics(AI.m_win, AI.m_double_buffered);
+	return new GR_UnixCairoGraphics(AI.m_win);
 }
 
 inline UT_RGBColor _convertGdkRGBA(const GdkRGBA &c)
@@ -145,12 +148,11 @@ void GR_UnixCairoGraphics::widget_destroy(GtkWidget* widget, GR_UnixCairoGraphic
 	me->m_DestroySignal = 0;
 }
 
-void GR_UnixCairoGraphics::initWidget(GtkWidget* widget)
+void GR_UnixCairoGraphics::_initWidget()
 {
-	UT_return_if_fail(widget && m_Widget == NULL);
-	m_Widget = widget;
-	m_Signal = g_signal_connect_after(G_OBJECT(widget), "size_allocate", G_CALLBACK(widget_size_allocate), this);
-	m_DestroySignal = g_signal_connect(G_OBJECT(widget), "destroy", G_CALLBACK(widget_destroy), this);
+	UT_return_if_fail(m_Widget);
+	m_Signal = g_signal_connect_after(G_OBJECT(m_Widget), "size_allocate", G_CALLBACK(widget_size_allocate), this);
+	m_DestroySignal = g_signal_connect(G_OBJECT(m_Widget), "destroy", G_CALLBACK(widget_destroy), this);
 }
 
 #define COLOR_MIX 0.67   //COLOR_MIX should be between 0 and 1

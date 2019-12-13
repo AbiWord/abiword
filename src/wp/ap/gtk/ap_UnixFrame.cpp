@@ -512,12 +512,10 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	GR_UnixCairoAllocInfo ai(pImpl->m_dArea);
 	pG = (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
-	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);
 	GR_UnixCairoGraphics *pUnixGraphics = static_cast<GR_UnixCairoGraphics *>(pG);
 	GtkWidget * w = gtk_entry_new();
 	pUnixGraphics->init3dColors(w);
 	gtk_widget_destroy(w);
-	pUnixGraphics->initWidget(widget);
 
 	ENSUREP_RF(pG);
 	pG->setZoomPercentage(iZoom);

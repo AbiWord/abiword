@@ -35,7 +35,7 @@ class ABI_EXPORT GR_UnixCairoAllocInfo : public GR_CairoAllocInfo
 public:
 	GR_UnixCairoAllocInfo(GtkWidget *widget)
 		: GR_CairoAllocInfo(false, false, true),
-		m_win(widget ? gtk_widget_get_window(GTK_WIDGET(widget)) : nullptr)
+		m_win(widget)
 	{}
 
 	GR_UnixCairoAllocInfo(bool bPreview)
@@ -43,7 +43,7 @@ public:
 		  m_win(NULL){}
 
 	cairo_t *createCairo() {return NULL;} // we need this since otherwise the class would be abstract
-	GdkWindow     * m_win;
+	GtkWidget     * m_win;
 };
 
 class ABI_EXPORT GR_UnixCairoGraphicsBase
@@ -87,7 +87,6 @@ public:
 	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	void				init3dColors(GtkWidget* w);
-	void				initWidget(GtkWidget *widget);
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 
 	/** In the UnixCairoGraphics, color3D are mostly invalid. */
@@ -101,13 +100,14 @@ public:
 	// Return the cursor name.
 	static const char* _getCursor(GR_Graphics::Cursor c);
 protected:
+	void _initWidget();
 	virtual void		_resetClip(void);
 	static void		widget_size_allocate (GtkWidget        *widget,
 									  GtkAllocation    *allocation,
 									  GR_UnixCairoGraphics *me);
 	static void		widget_destroy (GtkWidget        *widget,
 									  GR_UnixCairoGraphics *me);
-	GR_UnixCairoGraphics(GdkWindow * win = NULL, bool double_buffered=true);
+	GR_UnixCairoGraphics(GtkWidget* win = nullptr);
 	virtual GdkWindow * _getWindow(void)
 	{  return m_pWin;}
 
