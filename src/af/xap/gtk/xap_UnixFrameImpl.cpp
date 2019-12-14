@@ -1452,11 +1452,6 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "destroy",
 					   G_CALLBACK(_fe::destroy), NULL);
 
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
-					   G_CALLBACK(_fe::focus_in_event), NULL);
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
-					   G_CALLBACK(_fe::focus_out_event), NULL);
-
 	// create a VBox inside it.
 
 	m_wVBox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
