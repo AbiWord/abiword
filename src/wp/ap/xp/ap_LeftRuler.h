@@ -1,8 +1,7 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2004 Hubert Figuière
+ * Copyright (C) 2004-2019 Hubert FiguiÃ¨re
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,6 +38,7 @@
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
 #include "xap_CustomWidget.h"
+#include "ap_Ruler.h"
 
 class XAP_App;
 class XAP_Frame;
@@ -119,7 +119,7 @@ public:
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_LeftRuler : public AV_Listener, public XAP_CustomWidgetLU
+class ABI_EXPORT AP_LeftRuler : public AP_Ruler, public AV_Listener, public XAP_CustomWidgetLU
 {
 public:
 	AP_LeftRuler(XAP_Frame * pFrame);
@@ -133,16 +133,16 @@ public:
 		{ return m_bIsHidden;}
 	AV_View *           getView(void) const
 		{return m_pView;}
-	void				setHeight(UT_uint32 iHeight);
+	virtual void		setHeight(UT_uint32 iHeight) override;
 	UT_uint32			getHeight(void) const;
-	void				setWidth(UT_uint32 iWidth);
+	virtual void		setWidth(UT_uint32 iWidth) override;
 	UT_uint32			getWidth(void) const;
 	void				scrollRuler(UT_sint32 yoff, UT_sint32 ylimit);
 
-	void			    mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y);
-	void                mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y);
+	virtual void	    mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y) override;
+	virtual void        mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y) override;
 
-	void                mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y);
+	virtual void        mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y) override;
 	UT_sint32           setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed, UT_sint32 y);
 	/* used with AV_Listener */
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
@@ -155,9 +155,10 @@ public:
 	/* for use with the prefs listener top_ruler_prefs_listener */
 	UT_Dimension	    getDimension() const { return m_dim; }
 	void			    setDimension( UT_Dimension newdim );
-	GR_Graphics *       getGraphics(void) const { return m_pG;}
+	virtual GR_Graphics* getGraphics(void) const override { return m_pG; }
+	virtual XAP_Frame* getFrame() const override {	return m_pFrame; }
 protected:
-	void                _refreshView(void);
+	virtual void        _refreshView(void) override;
 
 	/* don't call this function directly, use XAP_CustomWidget::queueDraw() instead */
 	virtual void		drawLU(const UT_Rect *clip);

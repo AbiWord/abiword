@@ -116,6 +116,8 @@ libgtk_la_SOURCES = \
 	ap_UnixPrefs.h \
 	ap_UnixPreview_Annotation.cpp \
 	ap_UnixPreview_Annotation.h \
+	ap_UnixRuler.h \
+	ap_UnixRuler.cpp \
 	ap_UnixStatusBar.h \
 	ap_UnixStockIcons.cpp \
 	ap_UnixStockIcons.h \

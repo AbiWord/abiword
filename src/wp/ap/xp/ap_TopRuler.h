@@ -1,9 +1,8 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
- * Copyright (C) 2004 Hubert Figuière
+ * Copyright (C) 2004-2019 Hubert FiguiÃ¨re
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -183,7 +182,7 @@ public:
 	} u;
 };
 
-class ABI_EXPORT AP_TopRuler : public AV_Listener, virtual public XAP_CustomWidgetLU
+class ABI_EXPORT AP_TopRuler : public AP_Ruler, public AV_Listener, virtual public XAP_CustomWidgetLU
 {
 public:
 	AP_TopRuler(XAP_Frame * pFrame);
@@ -195,19 +194,20 @@ public:
 	AV_View *       getView(void) const { return m_pView;}
 	void			setOffsetLeftRuler(UT_uint32 iLeftRulerWidth);
 	void            setZoom(UT_uint32 iZoom);
-	void			setHeight(UT_uint32 iHeight);
+	virtual void	setHeight(UT_uint32 iHeight) override;
 	UT_uint32		getHeight(void) const;
-	void			setWidth(UT_uint32 iWidth);
+	virtual void	setWidth(UT_uint32 iWidth) override;
 	UT_uint32		getWidth(void) const;
-	GR_Graphics *	getGraphics(void) const { return m_pG;}
+	virtual GR_Graphics*	getGraphics(void) const override { return m_pG; }
+	virtual XAP_Frame* getFrame() const override {  return m_pFrame; }
 	bool            isHidden(void) const
 		{ return m_bIsHidden;}
 	void			scrollRuler(UT_sint32 xoff, UT_sint32 xlimit);
 
 	UT_sint32       setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint32 & iFixed);
-	void			mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y);
-	void			mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y);
-	void			mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y);
+	virtual void	mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y) override;
+	virtual void	mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y) override;
+	virtual void	mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y) override;
 
 	bool            isMouseOverTab(UT_uint32 x, UT_uint32 y);
 	/* used with AV_Listener */
@@ -309,8 +309,7 @@ protected:
 	void		_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * format);
 	void		_displayStatusMessage(XAP_String_Id FormatMessageID);
 
-
-	void        _refreshView(void);
+	virtual void _refreshView(void) override;
 
 	// must be static so that I can pass as a functional arg - shack
 	static void _prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet *phChanges, void *data );

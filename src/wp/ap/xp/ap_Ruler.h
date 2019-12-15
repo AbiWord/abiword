@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2019 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,12 +26,13 @@
 
 #include "ut_types.h"
 #include "gr_Graphics.h"
+#include "ev_EditBits.h"
 
 class ABI_EXPORT ap_RulerTicks
 {
 public:
 	ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim);
-    UT_sint32 snapPixelToGrid(UT_sint32 dist);
+	UT_sint32 snapPixelToGrid(UT_sint32 dist);
 	double scalePixelDistanceToUnits(UT_sint32 dist);
 
 	GR_Graphics *	m_pG;
@@ -45,6 +48,19 @@ public:
 
 	UT_Dimension	dimType;
 	double			dBasicUnit;
+};
+
+class AP_Ruler
+{
+public:
+	virtual void setHeight(UT_uint32 iHeight) = 0;
+	virtual void setWidth(UT_uint32 iWidth) = 0;
+	virtual GR_Graphics* getGraphics(void) const = 0;
+	virtual XAP_Frame* getFrame() const = 0;
+	virtual void mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y) = 0;
+	virtual void mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y) = 0;
+	virtual void mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y) = 0;
+	virtual void _refreshView(void) = 0;
 };
 
 #endif /* AP_RULER_H */

@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2019 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,13 +31,15 @@
 #include <gdk/gdk.h>
 #include "ut_types.h"
 #include "ap_TopRuler.h"
-#include "xap_UnixCustomWidget.h"
+#include "ap_UnixRuler.h"
 
 class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_UnixTopRuler : public AP_TopRuler, public XAP_UnixCustomWidget
+class AP_UnixTopRuler :
+	public AP_TopRuler,
+	public AP_UnixRuler
 {
 public:
 	AP_UnixTopRuler(XAP_Frame * pFrame);
@@ -43,30 +47,14 @@ public:
 
 	GtkWidget *		createWidget(void);
 	virtual void	setView(AV_View * pView);
-
-	// cheats for the callbacks
-	void 				getWidgetPosition(gint * x, gint * y);
-	GtkWidget * 		getWidget(void) { return m_wTopRuler; };
-
-	void _ruler_style_context_changed (void);
-
 protected:
-	GtkWidget *			m_wTopRuler;
-	gulong          m_iStyleID;
-	class _fe
-	{
-	public:
-		static void realize(AP_UnixTopRuler *self);
-		static void unrealize(AP_UnixTopRuler *self);
-		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
-		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
-		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
-		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
-		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
-		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
-	};
-
+	virtual XAP_Frame* _getFrame() const override
+		{ return m_pFrame; }
+	virtual GR_Graphics* _getGraphics() const override
+		{ return m_pG; }
+	virtual void _setGraphics(GR_Graphics* pG) override
+		{ m_pG = pG; }
+	virtual void _finishMotionEvent(UT_uint32 x, UT_uint32 y) override;
 };
 
 #endif /* AP_UNIXTOPRULER_H */
