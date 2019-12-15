@@ -1634,7 +1634,11 @@ bool GR_CairoGraphics::_scriptBreak(GR_PangoRenderInfo &ri)
 							  false);
 	}
 
+#if defined(PANGO_VERSION_1_44)
 	pango_default_break(ri.sUTF8->utf8_str(),
+#else
+	pango_break(ri.sUTF8->utf8_str(),
+#endif
 				ri.sUTF8->byteLength(),
 				&(pItem->m_pi->analysis),
 				ri.s_pLogAttrs, ri.s_iStaticSize);
