@@ -358,7 +358,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_FormatFootnotes.ui");
+	GtkBuilder * builder = newDialogBuilderFromResource("ap_UnixDialog_FormatFootnotes.ui");
 
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_FormatFootnotes"));

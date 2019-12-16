@@ -306,7 +306,7 @@ void AP_UnixDialog_Stylist::runModal(XAP_Frame * pFrame)
 GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 {
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Stylist.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_Stylist.ui");
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 

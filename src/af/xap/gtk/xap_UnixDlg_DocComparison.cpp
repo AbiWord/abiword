@@ -75,7 +75,7 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_DocComparison.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("xap_UnixDlg_DocComparison.ui");
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_DocComparison"));

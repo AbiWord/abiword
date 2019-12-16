@@ -498,7 +498,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 	std::string text;
 
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFEditor.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_RDFEditor.ui");
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_RDFEditor"));
 	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));

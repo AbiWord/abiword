@@ -164,7 +164,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	GtkWidget * window;	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers.ui");
+	GtkBuilder * builder = newDialogBuilderFromResource("ap_UnixDialog_PageNumbers.ui");
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

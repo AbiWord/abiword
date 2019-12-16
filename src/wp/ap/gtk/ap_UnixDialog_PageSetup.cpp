@@ -530,7 +530,7 @@ void Markup(GtkWidget * widget, const XAP_StringSet * /*pSS*/, char *string)
 GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 {  
 	// load the dialog from the UI file
-	m_pBuilder = newDialogBuilder("ap_UnixDialog_PageSetup.ui");
+	m_pBuilder = newDialogBuilderFromResource("ap_UnixDialog_PageSetup.ui");
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	GList *glist;

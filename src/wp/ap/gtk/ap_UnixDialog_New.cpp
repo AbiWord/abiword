@@ -299,7 +299,7 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	GtkTreeViewColumn *column;
 	
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_New.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_New.ui");
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

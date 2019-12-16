@@ -361,7 +361,7 @@ GtkWidget * AP_UnixDialog_FormatTOC::_getWidget(const char * szNameBase, UT_sint
 
 GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 {
-	m_pBuilder = newDialogBuilder("ap_UnixDialog_FormatTOC.ui");
+	m_pBuilder = newDialogBuilderFromResource("ap_UnixDialog_FormatTOC.ui");
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 

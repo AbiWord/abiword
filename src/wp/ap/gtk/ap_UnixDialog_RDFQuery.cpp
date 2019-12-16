@@ -292,7 +292,7 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
 	std::string text;
 
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFQuery.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_RDFQuery.ui");
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_RDFQuery"));
 	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));

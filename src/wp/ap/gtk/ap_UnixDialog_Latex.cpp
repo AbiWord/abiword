@@ -199,7 +199,7 @@ void AP_UnixDialog_Latex::constructDialog(void)
 	                m_wText);
 #else
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_Latex.ui");
 
     // Update our member variables with the important widgets that
     // might need to be queried or altered later

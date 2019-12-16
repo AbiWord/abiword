@@ -493,7 +493,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	GtkBuilder * builder = newDialogBuilder("xap_UnixDlg_Image.ui");
+	GtkBuilder * builder = newDialogBuilderFromResource("xap_UnixDlg_Image.ui");
 
 	mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Image"));
 	m_wHeightSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbHeight"));

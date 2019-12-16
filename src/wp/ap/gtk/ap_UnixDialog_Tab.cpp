@@ -240,7 +240,7 @@ GtkWidget *
 AP_UnixDialog_Tab::_constructWindow ()
 {
 	// load the dialog from the UI file
-	m_pBuilder = newDialogBuilder("ap_UnixDialog_Tab.ui");
+	m_pBuilder = newDialogBuilderFromResource("ap_UnixDialog_Tab.ui");
 	GtkWidget *wDialog = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "ap_UnixDialog_Tab"));
 	m_exUserTabs = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "exUserTabs"));
 

@@ -480,7 +480,7 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Styles.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_Styles.ui");
 
 	GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Styles"));
 	std::string s;

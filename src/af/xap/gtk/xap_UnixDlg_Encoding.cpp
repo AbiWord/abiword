@@ -124,7 +124,7 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 	GtkTreeViewColumn *column;
 	
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_Encoding.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("xap_UnixDlg_Encoding.ui");
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

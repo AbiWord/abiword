@@ -169,5 +169,50 @@
     <file alias="24x24/actions/tb_view_full_screen.png">wp/ap/xp/ToolbarIcons/tb_view_full_screen.png</file>
     <file alias="24x24/actions/tb_view_showpara.png">wp/ap/xp/ToolbarIcons/tb_view_showpara.png</file>
     <file alias="24x24/actions/tb_WrapButton.png">wp/ap/xp/ToolbarIcons/tb_WrapButton.png</file>
+
+    <file alias="xap_UnixDlg_PluginManager.ui">af/xap/gtk/xap_UnixDlg_PluginManager.ui</file>
+    <file alias="xap_UnixDlg_Password.ui">af/xap/gtk/xap_UnixDlg_Password.ui</file>
+    <file alias="xap_UnixDlg_Language.ui">af/xap/gtk/xap_UnixDlg_Language.ui</file>
+    <file alias="xap_UnixDlg_DocComparison.ui">af/xap/gtk/xap_UnixDlg_DocComparison.ui</file>
+    <file alias="xap_UnixDlg_WindowMore.ui">af/xap/gtk/xap_UnixDlg_WindowMore.ui</file>
+    <file alias="xap_UnixDlg_Encoding.ui">af/xap/gtk/xap_UnixDlg_Encoding.ui</file>
+    <file alias="xap_UnixDlg_History.ui">af/xap/gtk/xap_UnixDlg_History.ui</file>
+    <file alias="xap_UnixDlg_ListDocuments.ui">af/xap/gtk/xap_UnixDlg_ListDocuments.ui</file>
+    <file alias="xap_UnixDlg_Zoom.ui">af/xap/gtk/xap_UnixDlg_Zoom.ui</file>
+    <file alias="xap_UnixDlg_Image.ui">af/xap/gtk/xap_UnixDlg_Image.ui</file>
+
+    <file alias="ap_UnixDialog_Goto.ui">wp/ap/gtk/ap_UnixDialog_Goto.ui</file>
+    <file alias="ap_UnixDialog_Spell.ui">wp/ap/gtk/ap_UnixDialog_Spell.ui</file>
+    <file alias="ap_UnixDialog_FormatFrame.ui">wp/ap/gtk/ap_UnixDialog_FormatFrame.ui</file>
+    <file alias="ap_UnixDialog_Stylist.ui">wp/ap/gtk/ap_UnixDialog_Stylist.ui</file>
+    <file alias="ap_UnixDialog_Replace.ui">wp/ap/gtk/ap_UnixDialog_Replace.ui</file>
+    <file alias="ap_UnixDialog_Options_ColorSel.ui">wp/ap/gtk/ap_UnixDialog_Options_ColorSel.ui</file>
+    <file alias="ap_UnixDialog_WordCount.ui">wp/ap/gtk/ap_UnixDialog_WordCount.ui</file>
+    <file alias="ap_UnixDialog_RDFQuery.ui">wp/ap/gtk/ap_UnixDialog_RDFQuery.ui</file>
+    <file alias="ap_UnixDialog_Latex.ui">wp/ap/gtk/ap_UnixDialog_Latex.ui</file>
+    <file alias="ap_UnixDialog_New.ui">wp/ap/gtk/ap_UnixDialog_New.ui</file>
+    <file alias="ap_UnixDialog_Insert_DateTime.ui">wp/ap/gtk/ap_UnixDialog_Insert_DateTime.ui</file>
+    <file alias="ap_UnixDialog_FormatTOC.ui">wp/ap/gtk/ap_UnixDialog_FormatTOC.ui</file>
+    <file alias="ap_UnixDialog_PageNumbers.ui">wp/ap/gtk/ap_UnixDialog_PageNumbers.ui</file>
+    <file alias="pd_RDFContact.ui">wp/ap/gtk/pd_RDFContact.ui</file>
+    <file alias="ap_UnixDialog_Field.ui">wp/ap/gtk/ap_UnixDialog_Field.ui</file>
+    <file alias="ap_UnixDialog_PageSetup.ui">wp/ap/gtk/ap_UnixDialog_PageSetup.ui</file>
+    <file alias="ap_UnixDialog_Tab.ui">wp/ap/gtk/ap_UnixDialog_Tab.ui</file>
+    <file alias="ap_UnixDialog_InsertTable.ui">wp/ap/gtk/ap_UnixDialog_InsertTable.ui</file>
+    <file alias="ap_UnixDialog_MetaData.ui">wp/ap/gtk/ap_UnixDialog_MetaData.ui</file>
+    <file alias="ap_UnixDialog_Options.ui">wp/ap/gtk/ap_UnixDialog_Options.ui</file>
+    <file alias="ap_UnixDialog_FormatTable.ui">wp/ap/gtk/ap_UnixDialog_FormatTable.ui</file>
+    <file alias="ap_UnixDialog_Border_Shading.ui">wp/ap/gtk/ap_UnixDialog_Border_Shading.ui</file>
+    <file alias="pd_RDFEvent.ui">wp/ap/gtk/pd_RDFEvent.ui</file>
+    <file alias="ap_UnixDialog_Annotation.ui">wp/ap/gtk/ap_UnixDialog_Annotation.ui</file>
+    <file alias="pd_RDFInsertReference.ui">wp/ap/gtk/pd_RDFInsertReference.ui</file>
+    <file alias="ap_UnixDialog_HdrFtr.ui">wp/ap/gtk/ap_UnixDialog_HdrFtr.ui</file>
+    <file alias="ap_UnixDialog_MailMerge.ui">wp/ap/gtk/ap_UnixDialog_MailMerge.ui</file>
+    <file alias="ap_UnixDialog_Styles.ui">wp/ap/gtk/ap_UnixDialog_Styles.ui</file>
+    <file alias="ap_UnixDialog_Break.ui">wp/ap/gtk/ap_UnixDialog_Break.ui</file>
+    <file alias="pd_RDFLocation.ui">wp/ap/gtk/pd_RDFLocation.ui</file>
+    <file alias="ap_UnixDialog_FormatFootnotes.ui">wp/ap/gtk/ap_UnixDialog_FormatFootnotes.ui</file>
+    <file alias="ap_UnixDialog_SemanticStylesheets.ui">wp/ap/gtk/ap_UnixDialog_SemanticStylesheets.ui</file>
+    <file alias="ap_UnixDialog_RDFEditor.ui">wp/ap/gtk/ap_UnixDialog_RDFEditor.ui</file>
   </gresource>
 </gresources>

@@ -87,9 +87,7 @@ libgtk_la_SOURCES = \
 	xap_UnixWidget.h
 
 
-uidir=$(ABIWORD_UIDIR)
-
-ui_DATA =  \
+EXTRA_DIST =  \
 	xap_UnixDlg_Encoding.ui \
 	xap_UnixDlg_Image.ui \
 	xap_UnixDlg_Language.ui \

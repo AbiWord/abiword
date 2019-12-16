@@ -374,7 +374,7 @@ public:
         const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
         std::string text;
 
-        GtkBuilder* builder   = newDialogBuilder("ap_UnixDialog_SemanticStylesheets.ui");
+        GtkBuilder* builder   = newDialogBuilderFromResource("ap_UnixDialog_SemanticStylesheets.ui");
         GtkWidget*  window    = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
         GtkWidget*  lbExplanation = GTK_WIDGET(gtk_builder_get_object(builder, "lbExplanation"));         
         combo_box_data[0].combo_box = GTK_WIDGET(gtk_builder_get_object(builder, "contacts"));
@@ -446,7 +446,7 @@ public:
         const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
         std::string text;
 
-        GtkBuilder* builder = newDialogBuilder("pd_RDFInsertReference.ui");
+        GtkBuilder* builder = newDialogBuilderFromResource("pd_RDFInsertReference.ui");
         GtkWidget*  window  = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
         GtkWidget*  tv      = GTK_WIDGET(gtk_builder_get_object(builder, "tv"));
 

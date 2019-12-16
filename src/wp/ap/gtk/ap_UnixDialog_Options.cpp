@@ -170,7 +170,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel.ui");
+    GtkBuilder * builder = newDialogBuilderFromResource("ap_UnixDialog_Options_ColorSel.ui");
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
     pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
@@ -473,7 +473,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
     GtkWidget *mainWindow;
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options.ui");
+    GtkBuilder * builder = newDialogBuilderFromResource("ap_UnixDialog_Options.ui");
 
     // Update member variables with the important widgets that
     // might need to be queried or altered later.

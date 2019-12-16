@@ -345,7 +345,7 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_PluginManager.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("xap_UnixDlg_PluginManager.ui");
 	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_PluginManager"));
 	m_list = GTK_WIDGET(gtk_builder_get_object(builder, "tvPlugins"));
 	m_name = GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginName"));

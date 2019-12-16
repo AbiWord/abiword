@@ -113,7 +113,7 @@ GtkWidget * XAP_UnixDialog_History::_constructWindow(void)
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_History.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("xap_UnixDlg_History.ui");
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

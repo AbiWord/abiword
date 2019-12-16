@@ -180,6 +180,16 @@ GtkBuilder * newDialogBuilder(const char * name)
 	return builder;
 }
 
+GtkBuilder* newDialogBuilderFromResource(const char* name)
+{
+    UT_ASSERT(name);
+	std::string ui_path = std::string("/com/abisource/AbiWord/") + name;
+
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new_from_resource(ui_path.c_str());
+	return builder;
+}
+
 
 /*****************************************************************/
 

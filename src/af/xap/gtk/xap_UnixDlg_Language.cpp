@@ -107,7 +107,7 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	
-	GtkBuilder * builder = newDialogBuilder("xap_UnixDlg_Language.ui");
+	GtkBuilder * builder = newDialogBuilderFromResource("xap_UnixDlg_Language.ui");
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

@@ -436,7 +436,7 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_FormatFrame.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_FormatFrame.ui");
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

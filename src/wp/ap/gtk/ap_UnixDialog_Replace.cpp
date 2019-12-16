@@ -290,7 +290,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	char * unixstr = NULL;
 
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Replace.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_Replace.ui");
 
 	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Replace"));
 	m_buttonFind = GTK_WIDGET(gtk_builder_get_object(builder, "btnFind"));

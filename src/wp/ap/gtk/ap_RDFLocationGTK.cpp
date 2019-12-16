@@ -84,7 +84,7 @@ AP_RDFLocationGTK::createEditor()
 {
     UT_DEBUGMSG(("AP_RDFLocationGTK::createEditor()\n" ));
     
-	GtkBuilder* builder = newDialogBuilder("pd_RDFLocation.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("pd_RDFLocation.ui");
     UT_DEBUGMSG(("createEditor(loc)\n"));
 
 #ifdef WITH_CHAMPLAIN

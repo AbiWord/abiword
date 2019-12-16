@@ -64,6 +64,7 @@ class XAP_Dialog;
  * @return the GtkBuilder or NULL. The returned object my be freed as usual.
  */
 GtkBuilder * newDialogBuilder(const char * name);
+GtkBuilder* newDialogBuilderFromResource(const char* name);
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame);
 void connectFocusModeless(GtkWidget *widget,const XAP_App *pApp);
 void connectFocusModelessOther(GtkWidget *widget, const XAP_App *pApp,

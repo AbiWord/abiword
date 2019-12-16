@@ -614,7 +614,7 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 	UT_DEBUGMSG (("ROB: _constructWindow ()\n"));		
 
 	// load the dialog from the UI file
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Goto.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_Goto.ui");
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Goto"));
 	m_nbNotebook = GTK_WIDGET(gtk_builder_get_object(builder, "nbNotebook"));

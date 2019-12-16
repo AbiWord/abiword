@@ -35,7 +35,7 @@ AP_RDFContactGTK::~AP_RDFContactGTK()
 void*
 AP_RDFContactGTK::createEditor()
 {
-	GtkBuilder* builder = newDialogBuilder("pd_RDFContact.ui");
+	GtkBuilder* builder = newDialogBuilderFromResource("pd_RDFContact.ui");
     UT_DEBUGMSG(("createEditor()\n"));
     
 	m_mainWidget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWidget"));
