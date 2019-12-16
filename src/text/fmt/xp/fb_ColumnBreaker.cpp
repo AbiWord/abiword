@@ -38,8 +38,7 @@ fb_ColumnBreaker::fb_ColumnBreaker(fl_DocSectionLayout * pDSL) :
 	m_pStartPage(NULL),
 	m_bStartFromStart(true),
 	m_bReBreak(false),
-	m_pDocSec(pDSL),
-	m_pCurrentBlock(NULL)
+	m_pDocSec(pDSL)
 {
 }
 
