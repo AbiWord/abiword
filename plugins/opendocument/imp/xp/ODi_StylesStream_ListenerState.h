@@ -50,7 +50,6 @@ class ODi_StylesStream_ListenerState : public ODi_ListenerState {
 public:
 
     ODi_StylesStream_ListenerState (PD_Document* pAbiDocument,
-                                   GsfInfile* pGsfInfile,
                                    ODi_Office_Styles* pStyles,
                                    ODi_ElementStack& rElementStack,
                                    ODi_Abi_Data& rAbiData);
@@ -67,7 +66,6 @@ public:
 private:
 
     PD_Document* m_pAbiDocument;
-    GsfInfile* m_pGsfInfile;
     ODi_Office_Styles* m_pStyles;
     ODi_Abi_Data& m_rAbiData;
     bool          m_bOutlineStyle;

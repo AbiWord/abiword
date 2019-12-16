@@ -48,10 +48,7 @@ class ODi_ContentStreamAnnotationMatcher_ListenerState : public ODi_ListenerStat
 
 public:
 
-    ODi_ContentStreamAnnotationMatcher_ListenerState ( PD_Document* pDocument,
-                                                       GsfInfile* pGsfInfile,
-                                                       ODi_Office_Styles* pStyles,
-                                                       ODi_ElementStack& rElementStack,
+    ODi_ContentStreamAnnotationMatcher_ListenerState ( ODi_ElementStack& rElementStack,
                                                        ODi_Abi_Data & rAbiData );
 
     virtual ~ODi_ContentStreamAnnotationMatcher_ListenerState();
@@ -65,9 +62,6 @@ public:
 
 private:
 
-    PD_Document* m_pAbiDocument;
-    GsfInfile* m_pGsfInfile;
-    ODi_Office_Styles* m_pStyles;
     ODi_Abi_Data& m_rAbiData;
 
 

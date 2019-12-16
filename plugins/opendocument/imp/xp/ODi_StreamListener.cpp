@@ -444,7 +444,7 @@ ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
     UT_DEBUGMSG(("ODi ListenerState name %s \n",pStateName));
     if (!strcmp("StylesStream", pStateName)) {
         
-        pState = new ODi_StylesStream_ListenerState(m_pAbiDocument, m_pGsfInfile,
+        pState = new ODi_StylesStream_ListenerState(m_pAbiDocument,
                                                    m_pStyles, *m_pElementStack, m_rAbiData);
         
     } else if (!strcmp("MetaStream", pStateName)) {
@@ -457,7 +457,7 @@ ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
         
     } else if (!strcmp("ContentStream", pStateName)) {
         
-        pState = new ODi_ContentStream_ListenerState(m_pAbiDocument, m_pGsfInfile,
+        pState = new ODi_ContentStream_ListenerState(m_pAbiDocument,
                                                     m_pStyles,
                                                     m_fontFaceDecls,
 						     *m_pElementStack,
@@ -465,9 +465,7 @@ ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
 
     } else if (!strcmp("ContentStreamAnnotationMatcher", pStateName)) {
         
-        pState = new ODi_ContentStreamAnnotationMatcher_ListenerState(m_pAbiDocument, m_pGsfInfile,
-                                                                      m_pStyles,
-                                                                      *m_pElementStack,
+        pState = new ODi_ContentStreamAnnotationMatcher_ListenerState(*m_pElementStack,
                                                                       m_rAbiData);
         
     } else if (!strcmp("TextContent", pStateName)) {

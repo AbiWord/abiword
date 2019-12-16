@@ -36,20 +36,11 @@
  * Constructor
  */
 ODi_ContentStreamAnnotationMatcher_ListenerState::ODi_ContentStreamAnnotationMatcher_ListenerState (
-    PD_Document* pDocument,
-    GsfInfile* pGsfInfile,
-    ODi_Office_Styles* pStyles,
     ODi_ElementStack& rElementStack,
     ODi_Abi_Data& rAbiData  )
     : ODi_ListenerState("ContentStreamAnnotationMatcher", rElementStack),
-      m_pAbiDocument (pDocument),
-      m_pGsfInfile(pGsfInfile),
-      m_pStyles(pStyles),
       m_rAbiData(rAbiData)
 {
-    UT_ASSERT_HARMLESS(m_pAbiDocument);
-    UT_ASSERT_HARMLESS(m_pStyles);
-    UT_ASSERT_HARMLESS(m_pGsfInfile);
 }
 
 
