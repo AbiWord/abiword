@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
+ * Copyright (C) 2019 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -20,6 +23,7 @@
 #ifndef AP_UNIXDIALOG_FORMATFRAME_H
 #define AP_UNIXDIALOG_FORMATFRAME_H
 
+#include "xap_UnixDialog.h"
 #include "ap_Dialog_FormatFrame.h"
 
 class XAP_UnixFrame;
@@ -28,7 +32,9 @@ class XAP_UnixFrame;
 
 class GR_UnixCairoGraphics;
 
-class AP_UnixDialog_FormatFrame: public AP_Dialog_FormatFrame
+class AP_UnixDialog_FormatFrame
+  : public AP_Dialog_FormatFrame
+  , public XAP_UnixDialog
 {
 public:
 	AP_UnixDialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -64,7 +70,6 @@ protected:
 	GR_UnixCairoGraphics	* 		m_pPreviewWidget;
 
 	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
 	GtkWidget * m_wApplyButton;
 	GtkWidget * m_wCloseButton;
 

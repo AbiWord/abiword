@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -48,8 +49,6 @@ AP_UnixDialog_Replace::AP_UnixDialog_Replace(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
-	m_windowMain = NULL;
-
 	m_comboFind = NULL;
 	m_comboReplace = NULL;
 	m_checkbuttonMatchCase = NULL;
@@ -142,13 +141,6 @@ static void s_findreplace_clicked(GtkWidget * /*btn*/, GtkWidget * dlg)
 static void s_replaceall_clicked(GtkWidget * /*btn*/, GtkWidget * dlg)
 {
 	gtk_dialog_response (GTK_DIALOG(dlg), AP_UnixDialog_Replace::BUTTON_REPLACE_ALL);
-}
-
-static void s_delete_clicked(GtkWidget * widget,
-							 gpointer,
-							 gpointer * /*dlg*/)
-{
-	abiDestroyWidget(widget);
 }
 
 /*****************************************************************/
@@ -354,6 +346,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 		gtk_widget_hide (m_buttonReplaceAll);
 	}
 
+	connectBasicSignals();
 	g_signal_connect(G_OBJECT(m_windowMain), "response", 
 					 G_CALLBACK(s_response_triggered), this);
 
@@ -396,11 +389,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 					   "destroy",
 					   G_CALLBACK(s_destroy_clicked),
 					   (gpointer) this);
-	g_signal_connect(G_OBJECT(m_windowMain),
-					   "delete_event",
-					   G_CALLBACK(s_delete_clicked),
-					   (gpointer) this);
-	
+
 	gtk_widget_queue_resize (m_windowMain);
 
 	g_object_unref(G_OBJECT(builder));

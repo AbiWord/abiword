@@ -115,11 +115,6 @@ static void s_types_dblclicked(GtkTreeView *treeview,
 	me->event_Apply ();
 }
 
-static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * /*me*/ )
-{
-    abiDestroyWidget( wid ) ;// will emit signals for us
-}
-
 static void s_destroy_clicked(GtkWidget * /*wid*/, AP_UnixDialog_Stylist * me )
 {
    me->event_Close();
@@ -144,7 +139,6 @@ XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFact
 AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
 	: AP_Dialog_Stylist(pDlgFactory,id), 
-	  m_windowMain(NULL),
 	  m_wStyleList(NULL),
 	  m_wRenderer(NULL),
 	  m_wModel(NULL),
@@ -451,6 +445,8 @@ void  AP_UnixDialog_Stylist::_populateWindowData(void)
 
 void  AP_UnixDialog_Stylist::_connectSignals(void)
 {
+	connectBasicSignals();
+
 	g_signal_connect(G_OBJECT(m_windowMain), "response", 
 					 G_CALLBACK(s_response_triggered), this);
 	// the catch-alls
@@ -458,9 +454,5 @@ void  AP_UnixDialog_Stylist::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_windowMain),
 			   "destroy",
 			   G_CALLBACK(s_destroy_clicked),
-			   (gpointer) this);
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 }

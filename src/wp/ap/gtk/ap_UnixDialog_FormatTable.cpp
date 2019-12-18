@@ -1,7 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009, 2019 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -211,7 +212,6 @@ AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFac
 										             XAP_Dialog_Id id)
 	: AP_Dialog_FormatTable(pDlgFactory,id)
 {
-	m_windowMain = NULL;
 	m_wPreviewArea = NULL;
 	m_pPreviewWidget = NULL;
 	m_wApplyButton = NULL;
@@ -496,25 +496,14 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 	dlg->event_Close();
 }
 
-
-static void s_delete_clicked(GtkWidget * widget,
-			     gpointer,
-			     gpointer * /*dlg*/)
-{
-	abiDestroyWidget(widget);
-}
-
 void AP_UnixDialog_FormatTable::_connectSignals(void)
 {
-	// the catch-alls
+	connectBasicSignals();
+	// The catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
 	g_signal_connect(G_OBJECT(m_windowMain),
 							"destroy",
 							G_CALLBACK(s_destroy_clicked),
-							reinterpret_cast<gpointer>(this));
-	g_signal_connect(G_OBJECT(m_windowMain),
-							"delete_event",
-							G_CALLBACK(s_delete_clicked),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wApplyButton),

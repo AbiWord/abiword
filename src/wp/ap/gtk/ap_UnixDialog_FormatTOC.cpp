@@ -1,7 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  * Copyright (C) 2004 Martin Sevior
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009, 2019 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,11 +44,6 @@ ABI_W_POP
 #include "ap_Dialog_Id.h"
 #include "ap_UnixDialog_FormatTOC.h"
 
-
-static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_FormatTOC * /*me*/ )
-{
-    abiDestroyWidget( wid ) ;// will emit signals for us
-}
 
 static void s_destroy_clicked(GtkWidget * /*wid*/, AP_UnixDialog_FormatTOC * me )
 {
@@ -183,7 +179,6 @@ XAP_Dialog * AP_UnixDialog_FormatTOC::static_constructor(XAP_DialogFactory * pFa
 AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
 	: AP_Dialog_FormatTOC(pDlgFactory,id), 
-	  m_windowMain(NULL),
 	  m_wApply(NULL),
 	  m_wClose(NULL),
 	  m_wLabelChoose(NULL),
@@ -800,6 +795,8 @@ void  AP_UnixDialog_FormatTOC::_populateWindowData(void)
 
 void  AP_UnixDialog_FormatTOC::_connectSignals(void)
 {
+	connectBasicSignals();
+
 	g_signal_connect(G_OBJECT(m_windowMain), "response", 
 					 G_CALLBACK(s_response_triggered), this);
 	// the catch-alls
@@ -807,10 +804,6 @@ void  AP_UnixDialog_FormatTOC::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_windowMain),
 			   "destroy",
 			   G_CALLBACK(s_destroy_clicked),
-			   (gpointer) this);
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 	g_signal_connect(G_OBJECT(_getWidget("lbChangeHeadingStyle")),
 					  "clicked",

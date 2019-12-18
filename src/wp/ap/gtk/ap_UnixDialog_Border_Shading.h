@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2010 Maleesh Prasan
@@ -20,6 +21,7 @@
 #ifndef AP_UNIXDIALOG_BORDER_SHADING_H
 #define AP_UNIXDIALOG_BORDER_SHADING_H
 
+#include "xap_UnixDialog.h"
 #include "ap_Dialog_Border_Shading.h"
 
 
@@ -28,7 +30,9 @@ class GR_UnixCairoGraphics;
 
 /*****************************************************************/
 
-class AP_UnixDialog_Border_Shading: public AP_Dialog_Border_Shading
+class AP_UnixDialog_Border_Shading
+	: public AP_Dialog_Border_Shading
+	, public XAP_UnixDialog
 {
 public:
 	AP_UnixDialog_Border_Shading(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -73,7 +77,6 @@ protected:
 	GR_UnixCairoGraphics	* 		m_pPreviewWidget;
 
 	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
 	GtkWidget * m_wApplyButton;
 	GtkWidget * m_wCloseButton;
 

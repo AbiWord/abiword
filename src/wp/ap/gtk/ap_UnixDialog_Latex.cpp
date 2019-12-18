@@ -37,14 +37,6 @@
 #include <goffice/goffice.h>
 #endif
 
-
-static gboolean s_delete_clicked(GtkWidget * /*widget*/, GdkEvent * /*event*/, AP_UnixDialog_Latex * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_WindowDelete();
-	return TRUE;
-}
-
 static void s_close_clicked(GtkWidget * /*widget*/,AP_UnixDialog_Latex * dlg)
 {
 	UT_ASSERT(dlg);
@@ -72,8 +64,7 @@ AP_UnixDialog_Latex::AP_UnixDialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Di
   AP_Dialog_Latex(pDlgFactory,id),
   m_wClose(NULL), 
   m_wInsert(NULL),
-  m_wText(NULL),
-  m_windowMain(NULL)
+  m_wText(NULL)
 {
   UT_DEBUGMSG(("Constructing Latex dialog %p \n",this));
 }
@@ -224,9 +215,7 @@ void AP_UnixDialog_Latex::constructDialog(void)
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_sWindowName.utf8_str());
 
-	g_signal_connect(G_OBJECT(m_windowMain), "delete_event",
-					   G_CALLBACK(s_delete_clicked),
-					   reinterpret_cast<gpointer>(this));
+	connectBasicSignals();
 	g_signal_connect(G_OBJECT(m_windowMain), "destroy",
 					   G_CALLBACK(s_destroy_clicked),
 					   reinterpret_cast<gpointer>(this));

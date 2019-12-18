@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2010 Maleesh Prasan
+ * Copyright (C) 2019 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -214,7 +217,6 @@ AP_UnixDialog_Border_Shading::AP_UnixDialog_Border_Shading(XAP_DialogFactory * p
 										             XAP_Dialog_Id id)
 	: AP_Dialog_Border_Shading(pDlgFactory,id)
 {
-	m_windowMain = NULL;
 	m_wPreviewArea = NULL;
 	m_pPreviewWidget = NULL;
 	m_wApplyButton = NULL;
@@ -592,22 +594,12 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 	dlg->event_Close();
 }
 
-static void s_delete_clicked(GtkWidget * widget,
-			     gpointer,
-			     gpointer * /*dlg*/)
-{
-	abiDestroyWidget(widget);
-}
-
 void AP_UnixDialog_Border_Shading::_connectSignals(void)
 {
+	connectBasicSignals();
 	g_signal_connect(G_OBJECT(m_windowMain),
 							"destroy",
 							G_CALLBACK(s_destroy_clicked),
-							reinterpret_cast<gpointer>(this));
-	g_signal_connect(G_OBJECT(m_windowMain),
-							"delete_event",
-							G_CALLBACK(s_delete_clicked),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wApplyButton),

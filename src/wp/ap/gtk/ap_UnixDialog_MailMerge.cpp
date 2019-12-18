@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
+ * Copyright (C) 2019 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -87,7 +89,7 @@ XAP_Dialog * AP_UnixDialog_MailMerge::static_constructor(XAP_DialogFactory * pFa
 
 AP_UnixDialog_MailMerge::AP_UnixDialog_MailMerge(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_MailMerge(pDlgFactory,id), m_windowMain(NULL)
+	: AP_Dialog_MailMerge(pDlgFactory,id)
 {
 }
 
@@ -124,13 +126,6 @@ static void s_destroy_clicked(GtkWidget * /*widget*/,
 							  AP_UnixDialog_MailMerge * dlg)
 {
 	dlg->event_Close();
-}
-
-static void s_delete_clicked(GtkWidget * widget,
-							 gpointer,
-							 gpointer * /*dlg*/)
-{
-	abiDestroyWidget(widget);
 }
 
 static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_MailMerge * dlg)
@@ -182,6 +177,7 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 
 	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
+	connectBasicSignals();
 	g_signal_connect_after(G_OBJECT(m_treeview),
 						   "cursor-changed",
 						   G_CALLBACK(s_types_clicked),
@@ -198,10 +194,6 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 	g_signal_connect(G_OBJECT(m_windowMain),
 			   "destroy",
 			   G_CALLBACK(s_destroy_clicked),
-			   (gpointer) this);
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 
 	g_object_unref(G_OBJECT(builder));

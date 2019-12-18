@@ -1,7 +1,7 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009, 2019 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,7 +54,6 @@ AP_UnixDialog_Lists::AP_UnixDialog_Lists(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_Lists(pDlgFactory,id)
 {
-	m_wMainWindow = NULL;
 	Current_Dialog = this;
 	m_pPreviewWidget = NULL;
 	m_pAutoUpdateLists = NULL;
@@ -180,7 +179,7 @@ static gboolean s_update (int /*unused*/)
 void AP_UnixDialog_Lists::closeClicked(void)
 {
 	setAnswer(AP_Dialog_Lists::a_QUIT);	
-	abiDestroyWidget(m_wMainWindow); // emit the correct signals
+	abiDestroyWidget(m_windowMain); // emit the correct signals
 }
 
 void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
@@ -203,7 +202,7 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 	// *** this is how we add the gc for Lists Preview ***
 
 	// Now Display the dialog, so m_wPreviewArea->window exists
-	gtk_widget_show(m_wMainWindow);	
+	gtk_widget_show(m_windowMain);	
 	UT_ASSERT(m_wPreviewArea && XAP_HAS_NATIVE_WINDOW(m_wPreviewArea));
 
 	// make a new Unix GC
@@ -237,18 +236,18 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 {
 	static std::pointer_to_unary_function<int, gboolean> s_update_fun = std::ptr_fun(s_update);
 	_constructWindow ();
-	UT_ASSERT (m_wMainWindow);
+	UT_ASSERT (m_windowMain);
 	clearDirty();
 
-	abiSetupModelessDialog(GTK_DIALOG(m_wMainWindow), pFrame, this, BUTTON_APPLY);
-	connectFocusModelessOther (GTK_WIDGET (m_wMainWindow), m_pApp, &s_update_fun);
+	abiSetupModelessDialog(GTK_DIALOG(m_windowMain), pFrame, this, BUTTON_APPLY);
+	connectFocusModelessOther (GTK_WIDGET (m_windowMain), m_pApp, &s_update_fun);
 
 	// Populate the dialog
 	updateDialog();
 	m_bDontUpdate = false;
 
 	// Now Display the dialog
-	gtk_widget_show(m_wMainWindow);
+	gtk_widget_show(m_windowMain);
 
 	// *** this is how we add the gc for Lists Preview ***
 
@@ -314,7 +313,7 @@ void AP_UnixDialog_Lists::previewExposed(void)
 
 void AP_UnixDialog_Lists::destroy(void)
 {
-	UT_ASSERT (m_wMainWindow);
+	UT_ASSERT (m_windowMain);
 	if(isModal())
 	{
 		setAnswer(AP_Dialog_Lists::a_QUIT);
@@ -327,8 +326,8 @@ void AP_UnixDialog_Lists::destroy(void)
 
 		m_glFonts.clear();
 		modeless_cleanup();
-		abiDestroyWidget(m_wMainWindow);
-		m_wMainWindow = NULL;
+		abiDestroyWidget(m_windowMain);
+		m_windowMain = NULL;
 		DELETEP(m_pAutoUpdateLists);
 		DELETEP (m_pPreviewWidget);
 	}
@@ -386,19 +385,19 @@ bool AP_UnixDialog_Lists::isPageLists(void)
 
 void AP_UnixDialog_Lists::activate (void)
 {
-	UT_ASSERT (m_wMainWindow);
+	UT_ASSERT (m_windowMain);
 	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), getWindowName());
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), getWindowName());
 	m_bDontUpdate = false;
 	updateDialog();
-	XAP_gtk_window_raise(m_wMainWindow);
+	XAP_gtk_window_raise(m_windowMain);
 }
 
 void AP_UnixDialog_Lists::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
-	UT_ASSERT(m_wMainWindow);
+	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), getWindowName());
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), getWindowName());
 	m_bDontUpdate = false;
 	updateDialog();
 	previewExposed();
@@ -574,8 +573,8 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow(void)
 	GtkWidget *vbox1;
 
 	ConstructWindowName();
-	m_wMainWindow = abiDialogNew ( "list dialog", TRUE, getWindowName() );	
-	vbox1 = gtk_dialog_get_content_area(GTK_DIALOG(m_wMainWindow));
+	m_windowMain = abiDialogNew ( "list dialog", TRUE, getWindowName() );	
+	vbox1 = gtk_dialog_get_content_area(GTK_DIALOG(m_windowMain));
 
 	contents = _constructWindowContents();
 	gtk_widget_show (contents);
@@ -586,22 +585,22 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow(void)
 	if(!isModal())
 	{
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_Close, s);
-		m_wClose = abiAddButton ( GTK_DIALOG(m_wMainWindow), s, BUTTON_CLOSE ) ;
+		m_wClose = abiAddButton ( GTK_DIALOG(m_windowMain), s, BUTTON_CLOSE ) ;
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_Apply, s);
-		m_wApply = abiAddButton ( GTK_DIALOG(m_wMainWindow), s, BUTTON_APPLY ) ;
+		m_wApply = abiAddButton ( GTK_DIALOG(m_windowMain), s, BUTTON_APPLY ) ;
 	}
 	else
 	{
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
-		m_wApply = abiAddButton ( GTK_DIALOG(m_wMainWindow), s, BUTTON_OK ) ;
+		m_wApply = abiAddButton ( GTK_DIALOG(m_windowMain), s, BUTTON_OK ) ;
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
-		m_wClose = abiAddButton ( GTK_DIALOG(m_wMainWindow), s, BUTTON_CANCEL ) ;
+		m_wClose = abiAddButton ( GTK_DIALOG(m_windowMain), s, BUTTON_CANCEL ) ;
 	}
 
 	gtk_widget_grab_default (m_wClose);
 	_connectSignals ();
 
-	return (m_wMainWindow);
+	return (m_windowMain);
 }
 
 static void addToStore(GtkListStore * store, const XAP_StringSet * pSS,
@@ -858,7 +857,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_grid_attach(GTK_GRID(grid1), style_lb, 0, 1, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_SetDefault,s);
-	customized_cb = gtk_dialog_add_button (GTK_DIALOG(m_wMainWindow), s.c_str(), BUTTON_RESET);
+	customized_cb = gtk_dialog_add_button (GTK_DIALOG(m_windowMain), s.c_str(), BUTTON_RESET);
 	GtkWidget *img = gtk_image_new_from_icon_name("document-revert", GTK_ICON_SIZE_BUTTON);
 	gtk_button_set_image(GTK_BUTTON(customized_cb), img);
 	gtk_widget_show (customized_cb);
@@ -1152,15 +1151,9 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 	dlg->destroy();
 }
 
-static void s_delete_clicked(GtkWidget * widget,
-			     gpointer,
-			     gpointer * /*dlg*/)
-{
-	abiDestroyWidget(widget); // will emit the proper signals for us
-}
-
 void AP_UnixDialog_Lists::_connectSignals(void)
 {
+    connectBasicSignals();
 	g_signal_connect (G_OBJECT (m_wApply), "clicked",
 						G_CALLBACK (s_applyClicked), this);
 	g_signal_connect (G_OBJECT (m_wClose), "clicked",
@@ -1203,13 +1196,9 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 					   "draw",
 					   G_CALLBACK(s_preview_draw),
 					   static_cast<gpointer>(this));
-	g_signal_connect(G_OBJECT(m_wMainWindow),
+	g_signal_connect(G_OBJECT(m_windowMain),
 					 "destroy",
 					 G_CALLBACK(s_destroy_clicked),
-					 static_cast<gpointer>(this));
-	g_signal_connect(G_OBJECT(m_wMainWindow),
-					 "delete_event",
-					 G_CALLBACK(s_delete_clicked),
 					 static_cast<gpointer>(this));
 }
 

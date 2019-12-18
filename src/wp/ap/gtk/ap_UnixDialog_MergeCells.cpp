@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2019 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -90,7 +92,6 @@ AP_UnixDialog_MergeCells::AP_UnixDialog_MergeCells(XAP_DialogFactory * pDlgFacto
 										             XAP_Dialog_Id id)
 	: AP_Dialog_MergeCells(pDlgFactory,id)
 {
-	m_windowMain = NULL;
 }
 
 AP_UnixDialog_MergeCells::~AP_UnixDialog_MergeCells(void)
@@ -296,16 +297,10 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 }
 
 
-static void s_delete_clicked(GtkWidget * widget,
-			     gpointer,
-			     gpointer * /*dlg*/)
-{
-	abiDestroyWidget(widget);
-}
-
 void AP_UnixDialog_MergeCells::_connectSignals(void)
 {
-  g_signal_connect(G_OBJECT(m_windowMain), "response", 
+	connectBasicSignals();
+	g_signal_connect(G_OBJECT(m_windowMain), "response",
 		   G_CALLBACK(s_response), this);
 
 	// the catch-alls
@@ -313,10 +308,6 @@ void AP_UnixDialog_MergeCells::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_windowMain),
 			   "destroy",
 			   G_CALLBACK(s_destroy_clicked),
-			   static_cast<gpointer>(this));
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
 			   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wMergeLeft),

@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
+ * Copyright (C) 2019 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,13 +22,16 @@
 #ifndef AP_UNIXDIALOG_MAILMERGE_H
 #define AP_UNIXDIALOG_MAILMERGE_H
 
+#include "xap_UnixDialog.h"
 #include "ap_Dialog_MailMerge.h"
 
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_MailMerge: public AP_Dialog_MailMerge
+class AP_UnixDialog_MailMerge
+  : public AP_Dialog_MailMerge
+  , public XAP_UnixDialog
 {
 public:
 	AP_UnixDialog_MailMerge(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -51,7 +56,6 @@ private:
 	// private construction functions
 	GtkWidget *  _constructWindow(void);
 
-	GtkWidget * m_windowMain;
 	GtkWidget * m_entry;
 	GtkWidget * m_treeview;
 };

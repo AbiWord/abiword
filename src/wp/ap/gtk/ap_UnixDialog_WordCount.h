@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2005,2011 Hubert Figuiere
@@ -23,6 +24,7 @@
 
 #include <string>
 
+#include "xap_UnixDialog.h"
 #include "ap_Dialog_WordCount.h"
 #include "ut_timer.h"
 
@@ -30,7 +32,9 @@ class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_WordCount: public AP_Dialog_WordCount
+class AP_UnixDialog_WordCount
+	: public AP_Dialog_WordCount
+	, public XAP_UnixDialog
 {
 public:
 	AP_UnixDialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -60,7 +64,6 @@ protected:
 	static void                     autoupdateWC(UT_Worker * pTimer);
 
 	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
 
 	// Labels for the Word Count data
 	GtkWidget * m_labelWCount;

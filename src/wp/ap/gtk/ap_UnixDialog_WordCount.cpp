@@ -1,6 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2005 Hubert Figuiere
+ * Copyright (C) 2005, 2019 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,12 +38,6 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 {
 	UT_ASSERT(dlg);
 	dlg->event_OK();
-}
-
-static void s_delete_clicked(GtkWidget * widget,
-							 gpointer, gpointer)
-{
-	abiDestroyWidget(widget);
 }
 
 XAP_Dialog * AP_UnixDialog_WordCount::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -245,15 +240,15 @@ void AP_UnixDialog_WordCount::constructDialog(void)
 	localizeDialog();
 
 	ConstructWindowName();
+
+	connectBasicSignals();
+
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_WindowName);
 
    	g_signal_connect(G_OBJECT(m_windowMain), "response", 
 					 G_CALLBACK(s_response), this);
 	g_signal_connect(G_OBJECT(m_windowMain), "destroy",
 					   G_CALLBACK(s_destroy_clicked),
-					   reinterpret_cast<gpointer>(this));
-	g_signal_connect(G_OBJECT(m_windowMain), "delete_event",
-					   G_CALLBACK(s_delete_clicked),
 					   reinterpret_cast<gpointer>(this));
 
 	gtk_widget_show_all (m_windowMain);

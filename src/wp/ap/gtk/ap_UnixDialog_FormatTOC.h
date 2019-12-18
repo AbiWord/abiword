@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  * Copyright (C) 2004 Martin Sevior
@@ -21,13 +22,17 @@
 #ifndef AP_UNIXDIALOG_FORMATTOC_H
 #define AP_UNIXDIALOG_FORMATTOC_H
 
+
+#include "xap_UnixDialog.h"
 #include "ap_Dialog_FormatTOC.h"
 
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_FormatTOC: public AP_Dialog_FormatTOC
+class AP_UnixDialog_FormatTOC
+	: public AP_Dialog_FormatTOC
+	, public XAP_UnixDialog
 {
 public:
 	AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -64,7 +69,6 @@ private:
 
 	void 			_setHasHeadingSensitivity(bool bSensitive);
 
-	GtkWidget * m_windowMain;
 	GtkWidget * m_wApply;
 	GtkWidget * m_wClose;
 	GtkWidget * m_wLabelChoose;

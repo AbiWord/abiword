@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -20,13 +21,16 @@
 #ifndef AP_UNIXDIALOG_SPLITCELLS_H
 #define AP_UNIXDIALOG_SPLITCELLS_H
 
+#include "xap_UnixDialog.h"
 #include "ap_Dialog_SplitCells.h"
 
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_SplitCells: public AP_Dialog_SplitCells
+class AP_UnixDialog_SplitCells
+  : public AP_Dialog_SplitCells
+  , public XAP_UnixDialog
 {
 public:
 	AP_UnixDialog_SplitCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -55,7 +59,6 @@ protected:
 	void					_storeWindowData(void);
 	void                     _connectSignals(void);
 	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
 	GtkWidget * m_wContents;
 
 	GtkWidget * m_wSplitLeft;

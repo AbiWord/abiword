@@ -20,13 +20,16 @@
 #ifndef AP_UNIXDIALOG_STYLIST_H
 #define AP_UNIXDIALOG_STYLIST_H
 
+#include "xap_UnixDialog.h"
 #include "ap_Dialog_Stylist.h"
 
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_Stylist: public AP_Dialog_Stylist
+class AP_UnixDialog_Stylist
+  : public AP_Dialog_Stylist
+  , public XAP_UnixDialog
 {
 public:
 	AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -51,7 +54,6 @@ private:
 	void            _connectSignals(void);
 	void            _fillTree(void);
 
-	GtkWidget * m_windowMain;
 	GtkWidget * m_wStyleList;
 	GtkCellRenderer * m_wRenderer;
 	GtkTreeStore * m_wModel;

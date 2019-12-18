@@ -1,8 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
-
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009, 2019 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -74,7 +73,6 @@ XAP_Dialog * XAP_UnixDialog_Insert_Symbol::static_constructor(XAP_DialogFactory 
 XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id id)
 	: XAP_Dialog_Insert_Symbol(pDlgFactory,id),
-	m_windowMain(NULL),
 	m_SymbolMap(NULL)
 {
 	m_areaCurrentSym = NULL;
@@ -301,13 +299,6 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 			      XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->event_WindowDelete();
-}
-
-static void s_delete_clicked(GtkWidget * widget,
-							 gpointer,
-							 XAP_UnixDialog_Insert_Symbol * /*dlg*/)
-{
-	abiDestroyWidget(widget);
 }
 
 static void s_new_font(GtkWidget * /*widget*/, XAP_UnixDialog_Insert_Symbol * dlg)
@@ -709,6 +700,8 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 
 void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 {
+	connectBasicSignals();
+
 	g_signal_connect(G_OBJECT(m_windowMain),
 					 "response",
 					 G_CALLBACK(s_dlg_response),
@@ -728,11 +721,6 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 			   "destroy",
 			   G_CALLBACK(s_destroy_clicked),
 			   static_cast<gpointer>(this));
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   static_cast<gpointer>(this));
-
 
 	// The event to choose the Symbol!
 	g_signal_connect(G_OBJECT(m_SymbolMap),

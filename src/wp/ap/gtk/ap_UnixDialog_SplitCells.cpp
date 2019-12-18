@@ -107,7 +107,6 @@ XAP_Dialog * AP_UnixDialog_SplitCells::static_constructor(XAP_DialogFactory * pF
 AP_UnixDialog_SplitCells::AP_UnixDialog_SplitCells(XAP_DialogFactory * pDlgFactory,
 										             XAP_Dialog_Id id)
 	: AP_Dialog_SplitCells(pDlgFactory,id),
-	  m_windowMain(NULL),
 	  m_wContents(NULL),
 	  m_wSplitLeft(NULL),
 	  m_wSplitHoriMid(NULL),
@@ -368,15 +367,9 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 }
 
 
-static void s_delete_clicked(GtkWidget * widget,
-			     gpointer,
-			     gpointer * /*dlg*/)
-{
-	abiDestroyWidget(widget);
-}
-
 void AP_UnixDialog_SplitCells::_connectSignals(void)
 {
+  connectBasicSignals();
   g_signal_connect(G_OBJECT(m_windowMain), "response", 
 		   G_CALLBACK(s_response), this);
 
@@ -385,10 +378,6 @@ void AP_UnixDialog_SplitCells::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_windowMain),
 			   "destroy",
 			   G_CALLBACK(s_destroy_clicked),
-			   static_cast<gpointer>(this));
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
 			   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wSplitLeft),

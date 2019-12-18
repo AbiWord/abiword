@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2019 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,6 +25,7 @@
 #include <list>
 #include <string>
 
+#include "xap_UnixDialog.h"
 #include "xap_Dlg_Insert_Symbol.h"
 #include <gdk/gdkkeysyms.h>
 
@@ -33,7 +36,9 @@ class GR_CairoGraphics;
 
 /*****************************************************************/
 
-class XAP_UnixDialog_Insert_Symbol : public XAP_Dialog_Insert_Symbol
+class XAP_UnixDialog_Insert_Symbol
+	: public XAP_Dialog_Insert_Symbol
+	, public XAP_UnixDialog
 {
 public:
 	XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -78,7 +83,6 @@ private:
 	void        _setScrolledWindow (void);
 
 	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
 	GtkWidget * m_SymbolMap;
 	GtkWidget * m_fontcombo;
 	GtkAdjustment * m_vadjust;
