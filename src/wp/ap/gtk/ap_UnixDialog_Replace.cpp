@@ -48,15 +48,15 @@ XAP_Dialog * AP_UnixDialog_Replace::static_constructor(XAP_DialogFactory * pFact
 AP_UnixDialog_Replace::AP_UnixDialog_Replace(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
+	, m_comboFind(nullptr)
+	, m_comboReplace(nullptr)
+	, m_checkbuttonMatchCase(nullptr)
+	, m_checkbuttonWholeWord(nullptr)
+	, m_checkbuttonReverseFind(nullptr)
+	, m_buttonFind(nullptr)
+	, m_buttonFindReplace(nullptr)
+	, m_buttonReplaceAll(nullptr)
 {
-	m_comboFind = NULL;
-	m_comboReplace = NULL;
-	m_checkbuttonMatchCase = NULL;
-	m_checkbuttonWholeWord = NULL;
-	m_checkbuttonReverseFind = NULL;
-	m_buttonFind = NULL;
-	m_buttonFindReplace = NULL;
-	m_buttonReplaceAll = NULL;
 }
 
 AP_UnixDialog_Replace::~AP_UnixDialog_Replace(void)

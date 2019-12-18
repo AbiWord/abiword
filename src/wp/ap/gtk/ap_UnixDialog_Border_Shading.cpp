@@ -216,27 +216,27 @@ XAP_Dialog * AP_UnixDialog_Border_Shading::static_constructor(XAP_DialogFactory 
 AP_UnixDialog_Border_Shading::AP_UnixDialog_Border_Shading(XAP_DialogFactory * pDlgFactory,
 										             XAP_Dialog_Id id)
 	: AP_Dialog_Border_Shading(pDlgFactory,id)
+	, m_wPreviewArea(nullptr)
+	, m_pPreviewWidget(nullptr)
+	, m_wApplyButton(nullptr)
+	, m_wBorderColorButton(nullptr)
+	, m_wLineLeft(nullptr)
+	, m_wLineRight(nullptr)
+	, m_wLineTop(nullptr)
+	, m_wLineBottom(nullptr)
+	, m_wBorderThickness(nullptr)
+	, m_wBorderStyle(nullptr)
+	, m_wShadingOffset(nullptr)
+	, m_wShadingEnable(nullptr)
+	, m_iBorderThicknessConnect(0)
+	, m_iBorderStyleConnect(0)
+	, m_iShadingOffsetConnect(0)
+	, m_iShadingEnableConnect(0)
+	, m_iLineLeftConnect(0)
+	, m_iLineRightConnect(0)
+	, m_iLineTopConnect(0)
+	, m_iLineBotConnect(0)
 {
-	m_wPreviewArea = NULL;
-	m_pPreviewWidget = NULL;
-	m_wApplyButton = NULL;
-	m_wBorderColorButton = NULL;
-	m_wLineLeft = NULL;
-	m_wLineRight = NULL;
-	m_wLineTop = NULL;
-	m_wLineBottom = NULL;
-	m_wBorderThickness = NULL;
-	m_wBorderStyle = NULL;
-	m_wShadingOffset = NULL;
-	m_wShadingEnable = NULL;
-	m_iBorderThicknessConnect = 0;
-	m_iBorderStyleConnect = 0;
-	m_iShadingOffsetConnect = 0;
-	m_iShadingEnableConnect = 0;
-	m_iLineLeftConnect = 0;
-	m_iLineRightConnect = 0;
-	m_iLineTopConnect = 0;
-	m_iLineBotConnect = 0;
 }
 
 AP_UnixDialog_Border_Shading::~AP_UnixDialog_Border_Shading(void)

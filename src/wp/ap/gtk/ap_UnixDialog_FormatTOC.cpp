@@ -178,7 +178,7 @@ XAP_Dialog * AP_UnixDialog_FormatTOC::static_constructor(XAP_DialogFactory * pFa
 
 AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
-	: AP_Dialog_FormatTOC(pDlgFactory,id), 
+	: AP_Dialog_FormatTOC(pDlgFactory, id),
 	  m_wApply(NULL),
 	  m_wClose(NULL),
 	  m_wLabelChoose(NULL),

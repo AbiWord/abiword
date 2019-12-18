@@ -211,20 +211,20 @@ XAP_Dialog * AP_UnixDialog_FormatTable::static_constructor(XAP_DialogFactory * p
 AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFactory,
 										             XAP_Dialog_Id id)
 	: AP_Dialog_FormatTable(pDlgFactory,id)
+	, m_wPreviewArea(nullptr)
+	, m_pPreviewWidget(nullptr)
+	, m_wApplyButton(nullptr)
+	, m_wBorderColorButton(nullptr)
+	, m_wLineLeft(nullptr)
+	, m_wLineRight(nullptr)
+	, m_wLineTop(nullptr)
+	, m_wLineBottom(nullptr)
+	, m_wApplyToMenu(nullptr)
+	, m_wSelectImageButton(nullptr)
+	, m_wNoImageButton(nullptr)
+	, m_wBorderThickness(nullptr)
+	, m_iBorderThicknessConnect(0)
 {
-	m_wPreviewArea = NULL;
-	m_pPreviewWidget = NULL;
-	m_wApplyButton = NULL;
-	m_wBorderColorButton = NULL;
-	m_wLineLeft = NULL;
-	m_wLineRight = NULL;
-	m_wLineTop = NULL;
-	m_wLineBottom = NULL;
-	m_wApplyToMenu = NULL;	
-	m_wSelectImageButton = NULL;
-	m_wNoImageButton = NULL;
-	m_wBorderThickness = NULL;
-	m_iBorderThicknessConnect = 0;
 }
 
 AP_UnixDialog_FormatTable::~AP_UnixDialog_FormatTable(void)

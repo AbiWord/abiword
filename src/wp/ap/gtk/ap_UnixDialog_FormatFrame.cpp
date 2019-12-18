@@ -215,25 +215,25 @@ XAP_Dialog * AP_UnixDialog_FormatFrame::static_constructor(XAP_DialogFactory * p
 
 AP_UnixDialog_FormatFrame::AP_UnixDialog_FormatFrame(XAP_DialogFactory * pDlgFactory,
 										             XAP_Dialog_Id id)
-	: AP_Dialog_FormatFrame(pDlgFactory,id)
-{
-	m_wPreviewArea = NULL;
-	m_pPreviewWidget = NULL;
-	m_wApplyButton = NULL;
-	m_wBorderColorButton = NULL;
-	m_wLineLeft = NULL;
-	m_wLineRight = NULL;
-	m_wLineTop = NULL;
-	m_wLineBottom = NULL;
-	m_wSetImageButton = NULL;
-	m_wSelectImageButton = NULL;
-	m_wNoImageButton = NULL;
-	m_wBorderThickness = NULL;
-	m_iBorderThicknessConnect = 0;
-	m_wWrapButton = NULL;
-	m_wPosParagraph =  NULL;
-	m_wPosColumn = NULL;
-	m_wPosPage = NULL;
+	: AP_Dialog_FormatFrame(pDlgFactory, id)
+	, m_wPreviewArea(nullptr)
+	, m_pPreviewWidget(nullptr)
+	, m_wApplyButton(nullptr)
+	, m_wBorderColorButton(nullptr)
+	, m_wLineLeft(nullptr)
+	, m_wLineRight(nullptr)
+	, m_wLineTop(nullptr)
+	, m_wLineBottom(nullptr)
+	, m_wSetImageButton(nullptr)
+	, m_wSelectImageButton(nullptr)
+	, m_wNoImageButton(nullptr)
+	, m_wBorderThickness(nullptr)
+	, m_iBorderThicknessConnect(0)
+	, m_wWrapButton(nullptr)
+	, m_wPosParagraph(nullptr)
+	, m_wPosColumn(nullptr)
+	, m_wPosPage(nullptr)
+	{
 //
 // These are hardwired into the GUI.
 //

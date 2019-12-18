@@ -53,13 +53,13 @@ static AP_UnixDialog_Lists * Current_Dialog;
 AP_UnixDialog_Lists::AP_UnixDialog_Lists(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_Lists(pDlgFactory,id)
+	, m_pPreviewWidget(nullptr)
+	, m_pAutoUpdateLists(nullptr)
+	, m_bManualListStyle(true)
+    , m_bDontUpdate(false)
+	, m_bAutoUpdate_happening_now(false)
 {
 	Current_Dialog = this;
-	m_pPreviewWidget = NULL;
-	m_pAutoUpdateLists = NULL;
-	m_bManualListStyle = true;
-	m_bDontUpdate = false;
-	m_bAutoUpdate_happening_now = false;
 }
 
 XAP_Dialog * AP_UnixDialog_Lists::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
