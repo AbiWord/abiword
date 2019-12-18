@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
@@ -387,7 +387,13 @@ void XAP_UnixDialog_Insert_Symbol::Symbolarea_exposed(void )
 void XAP_UnixDialog_Insert_Symbol::setSymbolMap_size(UT_uint32 width, UT_uint32 height)
 {
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_return_if_fail(iDrawSymbol);
+	if (!iDrawSymbol) {
+		// We can be called before the XAP_Draw_Symbol is created.
+		// Just move on.
+		UT_DEBUGMSG(("XAP_UnixDialog_Insert_Symbol::setSymbolMap_size() before XAP_Draw_Symbol created\n"));
+		return;
+	}
+
 	UT_return_if_fail(m_windowMain);
 	UT_return_if_fail(m_SymbolMap);
 
