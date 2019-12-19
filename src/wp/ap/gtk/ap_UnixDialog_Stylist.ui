@@ -1,60 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="3.20"/>
   <object class="GtkDialog" id="ap_UnixDialog_Stylist">
-    <property name="border_width">5</property>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="default_width">235</property>
+    <property name="visible">1</property>
+    <property name="border-width">5</property>
     <property name="title" translatable="yes">Style List</property>
-    <property name="type_hint">normal</property>
-    <property name="window_position">mouse</property>
+    <property name="window-position">mouse</property>
+    <property name="default-width">235</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="visible">1</property>
         <property name="orientation">vertical</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area1">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="visible">1</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="btClose">
                 <property name="label">gtk-close</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_action_appearance">False</property>
-                <property name="use_stock">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="can-default">1</property>
+                <property name="use-stock">1</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
+            <property name="pack-type">end</property>
           </packing>
         </child>
         <child>
           <object class="GtkScrolledWindow" id="TreeViewContainer">
-            <property name="height_request">236</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="height-request">236</property>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
+            <property name="expand">1</property>
             <property name="position">1</property>
           </packing>
         </child>

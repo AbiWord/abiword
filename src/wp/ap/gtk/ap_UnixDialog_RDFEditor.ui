@@ -1,115 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.12"/>
+  <requires lib="gtk+" version="3.20"/>
   <object class="GtkImage" id="showall">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="visible">1</property>
     <property name="stock">gtk-info</property>
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_RDFEditor">
-    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Execute SPARQL RDF Query</property>
-    <property name="default_width">800</property>
-    <property name="default_height">600</property>
-    <property name="type_hint">dialog</property>
-    <child>
-      <placeholder/>
-    </child>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="type-hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox2">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="visible">1</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="buttonarea">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="visible">1</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="btShowAll">
                 <property name="label" translatable="yes">Update</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="receives-default">1</property>
                 <property name="image">showall</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="fill">0</property>
                 <property name="position">3</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="btClose">
                 <property name="label">gtk-close</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="can-default">1</property>
+                <property name="receives-default">1</property>
+                <property name="use-stock">1</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="fill">0</property>
                 <property name="position">4</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
+            <property name="pack-type">end</property>
           </packing>
         </child>
         <child>
           <object class="GtkBox" id="topvbox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="visible">1</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkMenuBar" id="menubar">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="visible">1</property>
                 <child>
                   <object class="GtkMenuItem" id="filemenuitem">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="visible">1</property>
                     <property name="label" translatable="yes">_File</property>
-                    <property name="use_underline">True</property>
+                    <property name="use-underline">1</property>
                     <child type="submenu">
                       <object class="GtkMenu" id="filemenu">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="visible">1</property>
                         <child>
                           <object class="GtkImageMenuItem" id="miopen">
                             <property name="label" translatable="yes">Open...</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="action_name">rdf.importrdfxml</property>
-                            <property name="use_underline">True</property>
-                            <property name="use_stock">False</property>
+                            <property name="visible">1</property>
+                            <property name="action-name">rdf.importrdfxml</property>
+                            <property name="use-underline">1</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="misave">
                             <property name="label" translatable="yes">Save...</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="action_name">rdf.exportrdfxml</property>
-                            <property name="use_underline">True</property>
-                            <property name="use_stock">False</property>
+                            <property name="visible">1</property>
+                            <property name="action-name">rdf.exportrdfxml</property>
+                            <property name="use-underline">1</property>
                           </object>
                         </child>
                       </object>
@@ -118,42 +89,34 @@
                 </child>
                 <child>
                   <object class="GtkMenuItem" id="editmenuitem">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="visible">1</property>
                     <property name="label" translatable="yes">Triple</property>
-                    <property name="use_underline">True</property>
+                    <property name="use-underline">1</property>
                     <child type="submenu">
                       <object class="GtkMenu" id="editmenu">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="visible">1</property>
                         <child>
                           <object class="GtkImageMenuItem" id="minew">
                             <property name="label" translatable="yes">New</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="action_name">rdf.newtriple</property>
-                            <property name="use_underline">True</property>
-                            <property name="use_stock">False</property>
+                            <property name="visible">1</property>
+                            <property name="action-name">rdf.newtriple</property>
+                            <property name="use-underline">1</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="micopy">
                             <property name="label" translatable="yes">Copy</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="action_name">rdf.copytriple</property>
-                            <property name="use_underline">True</property>
-                            <property name="use_stock">False</property>
+                            <property name="visible">1</property>
+                            <property name="action-name">rdf.copytriple</property>
+                            <property name="use-underline">1</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="midelete">
                             <property name="label" translatable="yes">Delete</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="action_name">rdf.deletetriple</property>
-                            <property name="use_underline">True</property>
-                            <property name="use_stock">False</property>
+                            <property name="visible">1</property>
+                            <property name="action-name">rdf.deletetriple</property>
+                            <property name="use-underline">1</property>
                           </object>
                         </child>
                       </object>
@@ -161,124 +124,103 @@
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkButtonBox" id="hbuttonbox1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="border_width">5</property>
-                <property name="layout_style">start</property>
+                <property name="visible">1</property>
+                <property name="border-width">5</property>
+                <property name="layout-style">start</property>
                 <child>
                   <object class="GtkButton" id="btnew">
                     <property name="label">gtk-new</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="action_name">rdf.newtriple</property>
-                    <property name="use_stock">True</property>
-                    <property name="image_position">bottom</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
+                    <property name="receives-default">1</property>
+                    <property name="action-name">rdf.newtriple</property>
+                    <property name="use-stock">1</property>
+                    <property name="image-position">bottom</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
+                    <property name="fill">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkButton" id="btcopy">
                     <property name="label">Copy</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="action_name">rdf.copytriple</property>
-                    <property name="use_stock">True</property>
-                    <property name="image_position">bottom</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
+                    <property name="receives-default">1</property>
+                    <property name="action-name">rdf.copytriple</property>
+                    <property name="use-stock">1</property>
+                    <property name="image-position">bottom</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
+                    <property name="fill">0</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkButton" id="btdel">
                     <property name="label">gtk-delete</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="action_name">rdf.deletetriple</property>
-                    <property name="use_stock">True</property>
-                    <property name="image_position">bottom</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
+                    <property name="receives-default">1</property>
+                    <property name="action-name">rdf.deletetriple</property>
+                    <property name="use-stock">1</property>
+                    <property name="image-position">bottom</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
+                    <property name="fill">0</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="restrictxmlidhidew">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="visible">1</property>
                 <child>
                   <object class="GtkLabel" id="lbRestrict">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="xpad">5</property>
+                    <property name="visible">1</property>
+                    <property name="margin-left">5</property>
+                    <property name="margin-right">5</property>
                     <property name="label" translatable="yes">Restrict to RDF Link:</property>
                     <property name="xalign">0</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkComboBox" id="selectedxmlid">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
+                    <property name="expand">1</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="padding">3</property>
                 <property name="position">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow1">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="border_width">5</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="border-width">5</property>
                 <child>
                   <object class="GtkTreeView" id="resultsView">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="reorderable">True</property>
-                    <property name="rules_hint">True</property>
-                    <property name="search_column">0</property>
-                    <property name="hover_expand">True</property>
-                    <property name="enable_grid_lines">both</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
+                    <property name="reorderable">1</property>
+                    <property name="rules-hint">1</property>
+                    <property name="search-column">0</property>
+                    <property name="hover-expand">1</property>
+                    <property name="enable-grid-lines">both</property>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection" id="treeview-selection1"/>
                     </child>
@@ -286,44 +228,34 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
+                <property name="expand">1</property>
                 <property name="position">3</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="hbox1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="border_width">5</property>
-                <child>
-                  <placeholder/>
-                </child>
+                <property name="visible">1</property>
+                <property name="border-width">5</property>
                 <child>
                   <object class="GtkLabel" id="status">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="visible">1</property>
                     <property name="justify">right</property>
-                    <property name="single_line_mode">True</property>
+                    <property name="single-line-mode">1</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="pack_type">end</property>
+                    <property name="fill">0</property>
+                    <property name="pack-type">end</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">4</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
+            <property name="expand">1</property>
             <property name="position">1</property>
           </packing>
         </child>

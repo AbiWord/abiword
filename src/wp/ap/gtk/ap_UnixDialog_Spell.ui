@@ -1,201 +1,176 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.18.3 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.0"/>
+  <requires lib="gtk+" version="3.20"/>
   <object class="GtkDialog" id="ap_UnixDialog_Spell">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="border_width">5</property>
+    <property name="visible">1</property>
+    <property name="border-width">5</property>
     <property name="title" translatable="yes">dialog2</property>
-    <property name="window_position">center-on-parent</property>
-    <property name="type_hint">dialog</property>
+    <property name="window-position">center-on-parent</property>
+    <property name="type-hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox3">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="visible">1</property>
         <property name="orientation">vertical</property>
         <property name="spacing">12</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="hbuttonbox1">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="visible">1</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="btClose">
                 <property name="label">gtk-close</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_stock">True</property>
+                <property name="use-action-appearance">0</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="can-default">1</property>
+                <property name="use-stock">1</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
+            <property name="pack-type">end</property>
           </packing>
         </child>
         <child>
           <object class="GtkGrid" id="grid1">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="vexpand">True</property>
-            <property name="row_spacing">6</property>
-            <property name="column_spacing">12</property>
+            <property name="visible">1</property>
+            <property name="vexpand">1</property>
+            <property name="row-spacing">6</property>
+            <property name="column-spacing">12</property>
             <child>
               <object class="GtkLabel" id="lbNotInDict">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="visible">1</property>
                 <property name="label" translatable="yes">[Not in Dictionary:]</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
                 <property name="width">3</property>
               </packing>
             </child>
             <child>
               <object class="GtkButtonBox" id="buttonbox1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="visible">1</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
-                <property name="layout_style">start</property>
+                <property name="layout-style">start</property>
                 <child>
                   <object class="GtkButton" id="btAdd">
                     <property name="label">gtk-add</property>
-                    <property name="use_action_appearance">False</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
+                    <property name="use-action-appearance">0</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
                     <property name="valign">start</property>
-                    <property name="use_stock">True</property>
+                    <property name="use-stock">1</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
+                    <property name="expand">1</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkButton" id="btIgnore">
                     <property name="label" translatable="yes">_Ignore</property>
-                    <property name="use_action_appearance">False</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
+                    <property name="use-action-appearance">0</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
                     <property name="valign">start</property>
-                    <property name="use_underline">True</property>
+                    <property name="use-underline">1</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
+                    <property name="expand">1</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkButton" id="btIgnoreAll">
                     <property name="label" translatable="yes">Ignore All</property>
-                    <property name="use_action_appearance">False</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
+                    <property name="use-action-appearance">0</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
                     <property name="valign">start</property>
-                    <property name="use_underline">True</property>
+                    <property name="use-underline">1</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
+                    <property name="expand">1</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="lbChangeTo">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="visible">1</property>
                 <property name="label" translatable="yes">[Change to:]</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="eChange">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hexpand">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="hexpand">1</property>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="btChange">
                 <property name="label" translatable="yes">_Change</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_underline">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="use-underline">1</property>
               </object>
               <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow5">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">never</property>
-                <property name="shadow_type">in</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="hexpand">1</property>
+                <property name="vexpand">1</property>
+                <property name="hscrollbar-policy">never</property>
+                <property name="vscrollbar-policy">never</property>
+                <property name="shadow-type">in</property>
                 <child>
                   <object class="GtkTextView" id="txWrong">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="editable">False</property>
-                    <property name="wrap_mode">word</property>
-                    <property name="cursor_visible">False</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
+                    <property name="editable">0</property>
+                    <property name="wrap-mode">word</property>
+                    <property name="cursor-visible">0</property>
                   </object>
                 </child>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow6">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="shadow_type">in</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="shadow-type">in</property>
                 <child>
                   <object class="GtkTreeView" id="tvSuggestions">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="headers_visible">False</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
+                    <property name="headers-visible">0</property>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection" id="treeview-selection1"/>
                     </child>
@@ -203,29 +178,26 @@
                 </child>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">3</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="btChangeAll">
                 <property name="label" translatable="yes">Change All</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_underline">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="valign">start</property>
+                <property name="use-underline">1</property>
               </object>
               <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">3</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>

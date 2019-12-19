@@ -1,281 +1,239 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.18.3 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.0"/>
+  <requires lib="gtk+" version="3.20"/>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="upper">100000</property>
     <property name="value">1</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_HdrFtr">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="border_width">5</property>
+    <property name="visible">1</property>
+    <property name="border-width">5</property>
     <property name="title" translatable="yes">Format Header/Footers</property>
-    <property name="resizable">False</property>
-    <property name="window_position">center-on-parent</property>
-    <property name="type_hint">normal</property>
+    <property name="resizable">0</property>
+    <property name="window-position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbDialog">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="visible">1</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="aaDialog">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="visible">1</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="btCancel">
                 <property name="label">gtk-cancel</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_stock">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="can-default">1</property>
+                <property name="use-stock">1</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">0</property>
+                <property name="fill">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="btOK">
                 <property name="label">gtk-ok</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="use_stock">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="can-default">1</property>
+                <property name="use-stock">1</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="fill">0</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
+            <property name="pack-type">end</property>
           </packing>
         </child>
         <child>
           <object class="GtkGrid" id="grContent">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="border_width">5</property>
-            <property name="row_spacing">6</property>
-            <property name="column_spacing">12</property>
+            <property name="visible">1</property>
+            <property name="border-width">5</property>
+            <property name="row-spacing">6</property>
+            <property name="column-spacing">12</property>
             <child>
               <object class="GtkLabel" id="lbHeaderProperties">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="visible">1</property>
                 <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
-                <property name="use_markup">True</property>
+                <property name="use-markup">1</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="cbHeaderFacingPages">
                 <property name="label" translatable="yes">Different header on facing pages</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="margin_left">18</property>
-                <property name="use_underline">True</property>
-                <property name="xalign">0</property>
-                <property name="draw_indicator">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="margin-left">18</property>
+                <property name="use-underline">1</property>
+                <property name="draw-indicator">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="cbHeaderFirstPage">
                 <property name="label" translatable="yes">Different header on first page</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="margin_left">18</property>
-                <property name="use_underline">True</property>
-                <property name="xalign">0</property>
-                <property name="draw_indicator">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="margin-left">18</property>
+                <property name="use-underline">1</property>
+                <property name="draw-indicator">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="cbHeaderLastPage">
                 <property name="label" translatable="yes">Different header on last page</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="margin_left">18</property>
-                <property name="use_underline">True</property>
-                <property name="xalign">0</property>
-                <property name="draw_indicator">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="margin-left">18</property>
+                <property name="use-underline">1</property>
+                <property name="draw-indicator">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">3</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="lbFooterProperties">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_top">12</property>
+                <property name="visible">1</property>
+                <property name="margin-top">12</property>
                 <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
-                <property name="use_markup">True</property>
+                <property name="use-markup">1</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">4</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="cbFooterFacingPages">
                 <property name="label" translatable="yes">Different footer on facing pages</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="margin_left">18</property>
-                <property name="use_underline">True</property>
-                <property name="xalign">0</property>
-                <property name="draw_indicator">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="margin-left">18</property>
+                <property name="use-underline">1</property>
+                <property name="draw-indicator">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">5</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="cbFooterFirstPage">
                 <property name="label" translatable="yes">Different footer on first page</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="margin_left">18</property>
-                <property name="use_underline">True</property>
-                <property name="xalign">0</property>
-                <property name="draw_indicator">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="margin-left">18</property>
+                <property name="use-underline">1</property>
+                <property name="draw-indicator">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">6</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">6</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="cbFooterLastPage">
                 <property name="label" translatable="yes">Different footer on last page</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="margin_left">18</property>
-                <property name="use_underline">True</property>
-                <property name="xalign">0</property>
-                <property name="draw_indicator">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="margin-left">18</property>
+                <property name="use-underline">1</property>
+                <property name="draw-indicator">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">7</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">7</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="lbPageNumberProperties">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_top">12</property>
+                <property name="visible">1</property>
+                <property name="margin-top">12</property>
                 <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
-                <property name="use_markup">True</property>
+                <property name="use-markup">1</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">8</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">8</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="lbRestartPageNumbers">
                 <property name="label" translatable="yes">Restart page numbers on new sections</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="margin_left">18</property>
-                <property name="use_underline">True</property>
-                <property name="xalign">0</property>
-                <property name="draw_indicator">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="margin-left">18</property>
+                <property name="use-underline">1</property>
+                <property name="draw-indicator">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">9</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">9</property>
                 <property name="width">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="lbRestartNumbering">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">18</property>
+                <property name="visible">1</property>
+                <property name="margin-left">18</property>
                 <property name="label" translatable="yes">Restart numbering at:</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">10</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">10</property>
               </packing>
             </child>
             <child>
               <object class="GtkSpinButton" id="sbRestartNumberingAt">
-                <property name="width_request">62</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="invisible_char">●</property>
+                <property name="width-request">62</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="invisible-char">●</property>
                 <property name="adjustment">adjustment1</property>
-                <property name="climb_rate">1</property>
-                <property name="numeric">True</property>
+                <property name="climb-rate">1</property>
+                <property name="numeric">1</property>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">10</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">10</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>

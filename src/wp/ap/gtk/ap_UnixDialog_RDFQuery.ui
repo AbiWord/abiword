@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.12"/>
+  <requires lib="gtk+" version="3.20"/>
   <object class="GtkImage" id="execute">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="visible">1</property>
     <property name="stock">gtk-refresh</property>
   </object>
   <object class="GtkImage" id="showall">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="visible">1</property>
     <property name="stock">gtk-info</property>
   </object>
   <object class="GtkTextBuffer" id="sparqlq">
@@ -26,178 +24,138 @@ where {
 }</property>
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_RDFQuery">
-    <property name="can_focus">False</property>
-    <property name="border_width">5</property>
+    <property name="border-width">5</property>
     <property name="title" translatable="yes">Execute SPARQL RDF Query</property>
-    <property name="default_width">800</property>
-    <property name="default_height">600</property>
-    <property name="type_hint">dialog</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="type-hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox2">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="visible">1</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="buttonarea">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="visible">1</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="btShowAll">
                 <property name="label" translatable="yes">Show All RDF</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="receives-default">1</property>
                 <property name="image">showall</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="fill">0</property>
                 <property name="position">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="btExecute">
                 <property name="label" translatable="yes">Execute Query</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="receives-default">1</property>
                 <property name="image">execute</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="fill">0</property>
                 <property name="position">3</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="btClose">
                 <property name="label">gtk-close</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
+                <property name="can-default">1</property>
+                <property name="receives-default">1</property>
+                <property name="use-stock">1</property>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="fill">0</property>
                 <property name="position">4</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
+            <property name="pack-type">end</property>
           </packing>
         </child>
         <child>
           <object class="GtkBox" id="vbox1">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="visible">1</property>
             <property name="orientation">vertical</property>
             <child>
-              <placeholder/>
-            </child>
-            <child>
               <object class="GtkPaned" id="vpaned1">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="scrolledwindow2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
                     <child>
                       <object class="GtkTextView" id="query">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="visible">1</property>
+                        <property name="can-focus">1</property>
                         <property name="buffer">sparqlq</property>
                       </object>
                     </child>
                   </object>
-                  <packing>
-                    <property name="resize">True</property>
-                    <property name="shrink">True</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkScrolledWindow" id="scrolledwindow1">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
                     <child>
                       <object class="GtkTreeView" id="resultsView">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="reorderable">True</property>
-                        <property name="rules_hint">True</property>
-                        <property name="search_column">0</property>
-                        <property name="hover_expand">True</property>
-                        <property name="enable_grid_lines">both</property>
+                        <property name="visible">1</property>
+                        <property name="can-focus">1</property>
+                        <property name="reorderable">1</property>
+                        <property name="rules-hint">1</property>
+                        <property name="search-column">0</property>
+                        <property name="hover-expand">1</property>
+                        <property name="enable-grid-lines">both</property>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection" id="treeview-selection2"/>
                         </child>
                       </object>
                     </child>
                   </object>
-                  <packing>
-                    <property name="resize">True</property>
-                    <property name="shrink">True</property>
-                  </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
+                <property name="expand">1</property>
                 <property name="padding">3</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="hbox1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="border_width">5</property>
-                <child>
-                  <placeholder/>
-                </child>
+                <property name="visible">1</property>
+                <property name="border-width">5</property>
                 <child>
                   <object class="GtkLabel" id="status">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="visible">1</property>
                     <property name="justify">right</property>
-                    <property name="single_line_mode">True</property>
+                    <property name="single-line-mode">1</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="pack_type">end</property>
+                    <property name="fill">0</property>
+                    <property name="pack-type">end</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
+            <property name="expand">1</property>
             <property name="position">1</property>
           </packing>
         </child>
