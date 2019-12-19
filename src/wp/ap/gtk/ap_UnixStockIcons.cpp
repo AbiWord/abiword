@@ -24,8 +24,6 @@
 #include "ap_Strings.h"
 #include "ap_Menu_Id.h"
 
-static const gchar * abi_stock_get_gtk_stock_id 	(const gchar *abi_stock_id);
-
 /*
  * Built-in stock icon definitions.
  * Menus are identified by IDs, so that's needed too.
@@ -279,7 +277,7 @@ abi_stock_from_toolbar_id (const gchar *toolbar_id)
  * Map AbiWord stock id to gtk counterpart.
  * Returned string is static.
  */
-static const gchar *
+const gchar *
 abi_stock_get_gtk_stock_id (const gchar * abi_stock_id)
 {
 	gint i;

@@ -133,5 +133,6 @@ ABI_W_POP
 
 void		  abi_stock_init 				(void);
 gchar * 	  abi_stock_from_toolbar_id 	(const gchar *toolbar_id);
+const gchar* abi_stock_get_gtk_stock_id(const gchar * abi_stock_id);
 
 #endif /* AP_UNIXSTOCKICONS_H */

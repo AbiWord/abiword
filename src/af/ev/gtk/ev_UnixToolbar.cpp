@@ -1109,48 +1109,50 @@ bool EV_UnixToolbar::synthesize(void)
 				GdkPixbuf 		*pixbuf;
 				GtkWidget		*combo;
 				GOColorGroup 	*cg;
+
+				const gchar* abi_stock_id;
 				const gchar		*action_name;
+				XAP_String_Id label_id;
+				const gchar* color_group;
+				GCallback callback;
 
 				UT_ASSERT (g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon") != 0);
 
-			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
-					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-					std::string sClear;
-					pSS->getValueUTF8(XAP_STRING_ID_TB_ClearForeground,sClear);
-
+				if (pAction->getItemType() == EV_TBIT_ColorFore) {
 					action_name = "dlgColorPickerFore";
-					pixbuf
-						= gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
-												   ABIWORD_COLOR_FORE,
-												   GTK_ICON_SIZE_LARGE_TOOLBAR,
-												   GTK_ICON_LOOKUP_USE_BUILTIN,
-												   NULL);
-					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
-					combo = go_combo_color_new (pixbuf, sClear.c_str(), 0, cg);
-
-					wd->m_widget = combo;
-					g_signal_connect (G_OBJECT (combo), "color-changed",
-									  G_CALLBACK (s_fore_color_changed), wd);
-				}
-				else {
-					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-					std::string sClear;
-					pSS->getValueUTF8(XAP_STRING_ID_TB_ClearBackground,sClear);
-
+					abi_stock_id = ABIWORD_COLOR_FORE;
+					label_id = XAP_STRING_ID_TB_ClearForeground;
+					color_group = "fore_color_group";
+					callback = G_CALLBACK(s_fore_color_changed);
+				} else {
 					action_name = "dlgColorPickerBack";
-					pixbuf
-						= gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
-												   ABIWORD_COLOR_BACK,
-												   GTK_ICON_SIZE_LARGE_TOOLBAR,
-												   GTK_ICON_LOOKUP_USE_BUILTIN,
-												   NULL);
-					cg = go_color_group_fetch ("back_color_group", m_wToolbar);
-					combo = go_combo_color_new (pixbuf, sClear.c_str(), 0, cg);
-
-					wd->m_widget = combo;
-					g_signal_connect (G_OBJECT (combo), "color-changed",
-									  G_CALLBACK (s_back_color_changed), wd);
+					abi_stock_id = ABIWORD_COLOR_BACK;
+					label_id = XAP_STRING_ID_TB_ClearBackground;
+					color_group = "back_color_group";
+					callback = G_CALLBACK(s_back_color_changed);
 				}
+				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+				std::string sClear;
+				pSS->getValueUTF8(label_id, sClear);
+
+				GError* err = nullptr;
+				pixbuf
+					= gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
+											   abi_stock_get_gtk_stock_id(abi_stock_id),
+											   GTK_ICON_SIZE_LARGE_TOOLBAR,
+											   GTK_ICON_LOOKUP_USE_BUILTIN,
+											   &err);
+				if (err) {
+					UT_DEBUGMSG(("err: %s\n", err->message));
+					g_error_free(err);
+				}
+				UT_ASSERT(pixbuf);
+				cg = go_color_group_fetch (color_group, m_wToolbar);
+				combo = go_combo_color_new (pixbuf, sClear.c_str(), 0, cg);
+
+				wd->m_widget = combo;
+				g_signal_connect (G_OBJECT (combo), "color-changed",
+								  callback, wd);
 				go_combo_box_set_relief (GO_COMBO_BOX (combo), GTK_RELIEF_NONE);
 				go_combo_color_set_instant_apply (GO_COMBO_COLOR (combo), TRUE);
 				if (pixbuf) {
