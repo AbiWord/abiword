@@ -1,6 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiWord
  * Copyright (C) 2002 Dom Lachowicz and others
- * Copyright (C) 2004, 2009 Hubert Figuiere
+ * Copyright (C) 2004, 2009, 2019 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,13 +45,41 @@ AP_App::AP_App (HINSTANCE hInstance, const char * szAppName)
   : XAP_App_BaseClass ( hInstance, szAppName )
 #else
 AP_App::AP_App (const char * szAppName)
-  : XAP_App_BaseClass ( szAppName )
+  : XAP_App_BaseClass(szAppName, "com.abisource.AbiWord")
 #endif
 {
 }
 
 AP_App::~AP_App ()
 {
+}
+
+XAP_Frame* AP_App::openFile(const char* uri, const char* file)
+{
+	XAP_Frame*  pFrame = newFrame();
+
+	UT_Error error = pFrame->loadDocument(uri, IEFT_Unknown, true);
+
+	if (UT_IS_IE_SUCCESS(error)) {
+		if (error == UT_IE_TRY_RECOVER) {
+			pFrame->showMessageBox(AP_STRING_ID_MSG_OpenRecovered,
+								   XAP_Dialog_MessageBox::b_O,
+								   XAP_Dialog_MessageBox::a_OK);
+		}
+	} else {
+		// TODO we crash if we just delete this without putting something
+		// TODO in it, so let's go ahead and open an untitled document
+		// TODO for now.  this would cause us to get 2 untitled documents
+		// TODO if the user gave us 2 bogus pathnames....
+
+		// Because of the incremental loader, we should not crash anymore;
+		// I've got other things to do now though.
+		pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+		pFrame->raise();
+
+		errorMsgBadFile (pFrame, file ? file : uri, error);
+	}
+	return pFrame;
 }
 
 /*!
@@ -76,36 +105,10 @@ bool AP_App::openCmdLineFiles(const AP_Args * args)
 		char * uri = NULL;
 
 		uri = UT_go_shell_arg_to_uri (file);
+		XAP_Frame* pFrame = openFile(uri);
+		g_free(uri);
 
-		XAP_Frame * pFrame = newFrame();
-
-		UT_Error error = pFrame->loadDocument (uri, IEFT_Unknown, true);
-		g_free (uri);
-
-		if (UT_IS_IE_SUCCESS(error))
-		{
-			kWindowsOpened++;
-			if (error == UT_IE_TRY_RECOVER) {
-				pFrame->showMessageBox(AP_STRING_ID_MSG_OpenRecovered,
-                           XAP_Dialog_MessageBox::b_O,
-                           XAP_Dialog_MessageBox::a_OK);
-			}
-		}
-		else
-		{
-			// TODO we crash if we just delete this without putting something
-			// TODO in it, so let's go ahead and open an untitled document
-			// TODO for now.  this would cause us to get 2 untitled documents
-			// TODO if the user gave us 2 bogus pathnames....
-
-			// Because of the incremental loader, we should not crash anymore;
-			// I've got other things to do now though.
-			kWindowsOpened++;
-			pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
-			pFrame->raise();
-
-			errorMsgBadFile (pFrame, file, error);
-		}
+		kWindowsOpened++;
 
 		if (args->m_sMerge) {
 			PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());

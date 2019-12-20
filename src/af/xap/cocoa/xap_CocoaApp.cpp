@@ -52,7 +52,7 @@
 
 /*****************************************************************/
 
-XAP_CocoaApp::XAP_CocoaApp(const char * szAppName)
+XAP_CocoaApp::XAP_CocoaApp(const char * szAppName, const char* /*app_id*/)
 	: XAP_App(szAppName), 
 	m_dialogFactory(this), 
 	m_controlFactory(),

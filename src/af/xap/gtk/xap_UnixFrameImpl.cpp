@@ -1,8 +1,8 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2002 William Lachance
+ * Copyright (C) 2019 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1373,7 +1373,7 @@ XAP_DialogFactory * XAP_UnixFrameImpl::_getDialogFactory(void)
 
 GtkWidget *  XAP_UnixFrameImpl::_createInternalWindow (void)
 {
-	return gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	return gtk_application_window_new(static_cast<XAP_UnixApp*>(XAP_App::getApp())->getGtkApp());
 }
 
 // TODO: split me up into smaller pieces/subfunctions

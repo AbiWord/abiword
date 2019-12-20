@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2019 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +31,7 @@
 #include "ut_types.h"
 #include "ut_bytebuf.h"
 #include "ap_App.h"
+#include "ap_Args.h"
 #include "ap_UnixPrefs.h"
 #include "ap_UnixClipboard.h"
 #include "pt_Types.h"
@@ -107,7 +110,14 @@ public:
 
 	virtual XAP_UnixClipboard * getClipboard () override { return m_pClipboard; }
 
-protected:	// JCA: Why in the hell we have so many (any) protected
+	void _appActivate();
+	void _appOpen(GFile* files[], gint n_files);
+	void setArgs(std::unique_ptr<AP_Args>&& args)
+	{
+		m_args = std::move(args);
+	}
+protected:
+	// JCA: Why in the hell we have so many (any) protected
 		// variables?
 	XAP_StringSet *			m_pStringSet;
 	AP_UnixClipboard *		m_pClipboard;
@@ -120,6 +130,8 @@ protected:	// JCA: Why in the hell we have so many (any) protected
 	XAP_Frame *				m_pFrameSelection;
 	UT_ByteBuf				m_selectionByteBuf;
 	PD_DocumentRange		m_cacheDocumentRangeOfSelection;
+private:
+	std::unique_ptr<AP_Args> m_args;
 };
 
 // HACK What follows is an ugly hack. It is neccessitated by the

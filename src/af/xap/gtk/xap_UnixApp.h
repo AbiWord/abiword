@@ -1,7 +1,7 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2019 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,7 +51,7 @@ class XAP_UnixClipboard;
 class ABI_EXPORT XAP_UnixApp : public XAP_App
 {
 public:
-	XAP_UnixApp(const char* szAppName);
+	XAP_UnixApp(const char* szAppName, const char* app_id);
 	virtual ~XAP_UnixApp();
 
 	virtual const char * getDefaultEncoding () const override
@@ -108,6 +108,8 @@ public:
     char **                          getTmpFile(void)
 	{ return &m_szTmpFile;}
 	void                            removeTmpFile(void);
+	GtkApplication* getGtkApp() const
+	{ return m_gtkApp; }
 protected:
 	void							_setAbiSuiteLibDir();
 
@@ -120,6 +122,7 @@ protected:
 										 // operations with the server).
 
     char *                     m_szTmpFile;
+    GtkApplication* m_gtkApp;
 };
 
 #endif /* XAP_UNIXAPP_H */

@@ -1,22 +1,21 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
- * 
+ * Copyright (C) 2009, 2019 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -1207,6 +1206,44 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 #include <clutter-gtk/clutter-gtk.h>
 #endif
 
+/**
+ * activate signale callback for the GApplication
+ */
+static void s_activate(GApplication*, gpointer user_data)
+{
+	static_cast<AP_UnixApp*>(user_data)->_appActivate();
+}
+
+static void s_open(GApplication*, gpointer files, gint n_files, gchar* /*hint*/,
+				   gpointer user_data)
+{
+	static_cast<AP_UnixApp*>(user_data)->_appOpen(static_cast<GFile**>(files), n_files);
+}
+
+/**
+ * Activate event handler called from signal.
+ */
+void AP_UnixApp::_appActivate()
+{
+	openCmdLineFiles(m_args.get());
+}
+
+void AP_UnixApp::_appOpen(GFile* files[], gint n_files)
+{
+	if (!files) {
+		return;
+	}
+	for (gint i = 0; i < n_files; i++) {
+		char* uri = g_file_get_uri(files[i]);
+		if (uri) {
+			openFile(uri);
+			g_free(uri);
+		} else {
+			UT_DEBUGMSG(("can't get uri for file to open"));
+		}
+	}
+}
+
 /*****************************************************************/
 
 int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
@@ -1250,15 +1287,15 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 #endif
 		// gtk_init_check() modifies argv/argc if --display is specified
 		XAP_Args XArgs = XAP_Args(argc, argv);
-		AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
+		std::unique_ptr<AP_Args> Args(new AP_Args(&XArgs, szAppName, pMyUnixApp));
 		if (have_display > 0) {
-			Args.addOptions(gtk_get_option_group(TRUE));
-			Args.parseOptions();
+			Args->addOptions(gtk_get_option_group(TRUE));
+			Args->parseOptions();
 		}
 		else {
 			// no display, but we still need to at least parse our own arguments, damnit, for --to, --to-png, and --print
-			Args.addOptions(gtk_get_option_group(FALSE));
-			Args.parseOptions();
+			Args->addOptions(gtk_get_option_group(FALSE));
+			Args->parseOptions();
 		}
 
 		// if the initialize fails, we don't have icons, fonts, etc.
@@ -1292,28 +1329,23 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		// Step 2: Handle all non-window args.
     
 		bool windowlessArgsWereSuccessful = true;
-		if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful )) {
+		if (!Args->doWindowlessArgs(windowlessArgsWereSuccessful)) {
 			delete pMyUnixApp;
 			return (windowlessArgsWereSuccessful ? 0 : -1);
 		}
 
 		if (have_display) {
 
-			// Step 3: Create windows as appropriate.
-			// if some args are botched, it returns false and we should
-			// continue out the door.
-			// We used to check for bShowApp here.  It shouldn't be needed
-			// anymore, because doWindowlessArgs was supposed to bail already. -PL
+			// Step 3: This will be the Gtk GUI starting.
+			// All the work is done in the activate signal of the GApplication
+			// after it starts running.
+			pMyUnixApp->setArgs(std::move(Args));
+			g_signal_connect(pMyUnixApp->getGtkApp(), "activate",
+							 G_CALLBACK(s_activate), pMyUnixApp);
+			g_signal_connect(pMyUnixApp->getGtkApp(), "open",
+							 G_CALLBACK(s_open), pMyUnixApp);
 
-			if (pMyUnixApp->openCmdLineFiles(&Args))
-			{
-				// turn over control to gtk
-				gtk_main();
-			}
-			else
-			{
-				UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
-			}
+			g_application_run(G_APPLICATION(pMyUnixApp->getGtkApp()), argc, argv);
 		}
 		else {
 			fprintf(stderr, "No DISPLAY: this may not be what you want.\n");

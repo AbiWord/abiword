@@ -1,26 +1,26 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ * Copyright (C) 2019 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
 /*
- * Port to Maemo Development Platform 
+ * Port to Maemo Development Platform
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
@@ -71,11 +71,13 @@ static CairoNull_Graphics * nullgraphics = NULL;
 
 /*****************************************************************/
 
-XAP_UnixApp::XAP_UnixApp(const char * szAppName)
+XAP_UnixApp::XAP_UnixApp(const char * szAppName, const char* app_id)
 	: XAP_App(szAppName),
 	  m_dialogFactory(this),
 	  m_controlFactory(),
-	  m_szTmpFile(NULL)
+	  m_szTmpFile(NULL),
+	  // XXX maybe we need better flags as we handle command line
+	  m_gtkApp(gtk_application_new(app_id, G_APPLICATION_FLAGS_NONE))
 {
 	int fc_inited = FcInit();
 	UT_UNUSED(fc_inited); // TODO actually deal with the error here
@@ -171,8 +173,7 @@ void XAP_UnixApp::shutdown()
 
 void XAP_UnixApp::reallyExit()
 {
-	
-	gtk_main_quit();
+	g_application_quit(G_APPLICATION(m_gtkApp));
 }
 
 XAP_DialogFactory * XAP_UnixApp::getDialogFactory()

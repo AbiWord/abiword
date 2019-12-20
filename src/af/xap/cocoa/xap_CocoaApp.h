@@ -48,7 +48,7 @@ class EV_CocoaMenuBar;
 class XAP_CocoaApp : public XAP_App
 {
 public:
-	XAP_CocoaApp(const char* szAppName);
+	XAP_CocoaApp(const char* szAppName, const char* app_id);
 	virtual ~XAP_CocoaApp();
 
 	virtual const char * 					getDefaultEncoding () const;
