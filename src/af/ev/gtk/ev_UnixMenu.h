@@ -1,7 +1,7 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 2019 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,8 +22,9 @@
 #ifndef EV_UNIXMENU_H
 #define EV_UNIXMENU_H
 
+#include <vector>
+
 #include "ut_types.h"
-#include "ut_vector.h"
 #include "xap_Types.h"
 #include "ev_Menu.h"
 
@@ -37,7 +38,6 @@ class XAP_Frame;
 class EV_UnixMenu : public EV_Menu
 {
 public:
-	class _wd;
 
 	EV_UnixMenu(XAP_UnixApp * pUnixApp,
 		    XAP_Frame * pFrame,
@@ -46,10 +46,10 @@ public:
 	virtual ~EV_UnixMenu();
 
 	bool				synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup);
-	bool				menuEvent(XAP_Menu_Id id);
+	bool				menuEvent(XAP_Menu_Id id) const;
 	virtual bool		refreshMenu(AV_View * pView) = 0;
 
- 	XAP_Frame * 	getFrame();
+	XAP_Frame * 	getFrame() const;
 
 protected:
 	bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
@@ -64,16 +64,32 @@ protected: // FIXME! These variables should be private.
 	GtkAccelGroup * 	m_accelGroup;
 
 	// actual GTK menu widgets
-	UT_GenericVector<GtkWidget*> m_vecMenuWidgets;
+	std::vector<GtkWidget*> m_vecMenuWidgets;
+	class _wd
+	{
+	public:
+		_wd(EV_UnixMenu * pUnixMenu, XAP_Menu_Id id);
+		~_wd();
+		static void s_onActivate(GtkWidget * widget, gpointer callback_data);
+		static void s_onMenuItemSelect(GtkWidget * /*widget*/, gpointer data);
+		static void s_onMenuItemDeselect(GtkWidget * /*widget*/, gpointer data);
+		static void s_onInitMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data);
+		static void s_onDestroyMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data);
+		static void s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data);
+
+		EV_UnixMenu* m_pUnixMenu;
+		XAP_Menu_Id	m_id;
+	};
+
+	std::vector<_wd*> m_vecCallbacks;
 private:
-        void _convertStringToAccel(const char *s, guint &accel_key, GdkModifierType &ac_mods);
-        GtkWidget * s_createNormalMenuEntry(const XAP_Menu_Id id,
-											bool isCheckable,
-											bool isRadio,
-											bool isPopup,
-											const char *szLabelName,
-											const char *szMnemonicName);
-	UT_GenericVector<_wd*>           m_vecCallbacks;
+	void _convertStringToAccel(const char *s, guint &accel_key, GdkModifierType &ac_mods);
+	GtkWidget * s_createNormalMenuEntry(const XAP_Menu_Id id,
+										bool isCheckable,
+										bool isRadio,
+										bool isPopup,
+										const char *szLabelName,
+										const char *szMnemonicName);
 };
 
 #endif /* EV_UNIXMENU_H */

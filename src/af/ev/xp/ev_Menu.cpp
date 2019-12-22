@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -149,7 +150,7 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 bool EV_Menu::invokeMenuMethod(AV_View * pView,
 							   EV_EditMethod * pEM,
 							   UT_UCSChar * pData,
-							   UT_uint32 dataLength)
+							   UT_uint32 dataLength) const
 {
 	UT_ASSERT(pView);
 	UT_return_val_if_fail(pEM, false);
@@ -173,7 +174,7 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 
 bool EV_Menu::invokeMenuMethod(AV_View * pView,
 							   EV_EditMethod * pEM,
-							   const UT_String& stScriptName)
+							   const UT_String& stScriptName) const
 {
 	UT_return_val_if_fail(pEM,false);
 	EV_EditMethodType t = pEM->getType();
@@ -195,7 +196,7 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 /* replace _ev_GetLabelName () */
 /* this version taken from ev_UnixMenu.cpp */
 const char ** EV_Menu::getLabelName(XAP_App * pApp, 
-									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel)
+									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel) const
 {
 	static const char * data[2] = {NULL, NULL};
 

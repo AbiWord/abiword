@@ -1,24 +1,24 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ * Copyright (C) 2019 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
- 
+
 /*
  * Port to Maemo Development Platform
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
@@ -43,6 +43,7 @@ ABI_W_POP
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
+#include "ut_std_vector.h"
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
 #include "ev_UnixMenu.h"
@@ -56,7 +57,6 @@ ABI_W_POP
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
-#include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
 #include "ap_Menu_Id.h"
 // hack, icons are in wp
@@ -67,103 +67,95 @@ ABI_W_POP
 
 /*****************************************************************/
 
-class EV_UnixMenu::_wd								// a private little class to help
-{										// us remember all the widgets that
-public:									// we create...
-	_wd(EV_UnixMenu * pUnixMenu, XAP_Menu_Id id)
-	{
-		m_pUnixMenu = pUnixMenu;
-		m_id = id;
-	}
-	
-	~_wd(void)
-	{
-	}
+EV_UnixMenu::_wd::_wd(EV_UnixMenu* pUnixMenu, XAP_Menu_Id id)
+	: m_pUnixMenu(pUnixMenu)
+	, m_id(id)
+{
+}
 
-	static void s_onActivate(GtkWidget * widget, gpointer callback_data)
-	{
-		// Do not do anything when a radio menu item is unchecked, see bug
-		// 13734
-		if (GTK_IS_RADIO_MENU_ITEM(widget) && !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)))
-			return;
+EV_UnixMenu::_wd::~_wd(void)
+{
+}
 
-		// this is a static callback method and does not have a 'this' pointer.
-		// map the user_data into an object and dispatch the event.
+void EV_UnixMenu::_wd::s_onActivate(GtkWidget * widget, gpointer callback_data)
+{
+	// Do not do anything when a radio menu item is unchecked, see bug
+	// 13734
+	if (GTK_IS_RADIO_MENU_ITEM(widget) && !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)))
+		return;
 
-		_wd * wd = static_cast<_wd *>(callback_data);
-		UT_return_if_fail(wd);
+	// this is a static callback method and does not have a 'this' pointer.
+	// map the user_data into an object and dispatch the event.
 
-		wd->m_pUnixMenu->menuEvent(wd->m_id);
-	}
+	_wd * wd = static_cast<_wd *>(callback_data);
+	UT_return_if_fail(wd);
 
-	static void s_onMenuItemSelect(GtkWidget * /*widget*/, gpointer data)
-	{
-		UT_ASSERT(data);
+	wd->m_pUnixMenu->menuEvent(wd->m_id);
+}
 
-		_wd * wd = static_cast<_wd *>(data);
-		UT_return_if_fail(wd && wd->m_pUnixMenu);
+void EV_UnixMenu::_wd::s_onMenuItemSelect(GtkWidget * /*widget*/, gpointer data)
+{
+	UT_ASSERT(data);
 
-		// WL_REFACTOR: redundant code
-		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
-		UT_return_if_fail(pFrame);
-		EV_Menu_Label * pLabel = wd->m_pUnixMenu->getLabelSet()->getLabel(wd->m_id);
-		if (!pLabel)
-		{
-			pFrame->setStatusMessage(NULL);
-			return;
-		}
+	_wd * wd = static_cast<_wd *>(data);
+	UT_return_if_fail(wd && wd->m_pUnixMenu);
 
-		const char * szMsg = pLabel->getMenuStatusMessage();
-		if (!szMsg || !*szMsg)
-			szMsg = "TODO This menu item doesn't have a StatusMessage defined.";	
-		pFrame->setStatusMessage(szMsg);
-	}
-	
-	static void s_onMenuItemDeselect(GtkWidget * /*widget*/, gpointer data)
-	{
-		UT_ASSERT(data);
-
-		_wd * wd = static_cast<_wd *>(data);
-		UT_return_if_fail(wd && wd->m_pUnixMenu);
-
-		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
-		UT_return_if_fail(pFrame);
-
+	// WL_REFACTOR: redundant code
+	XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
+	UT_return_if_fail(pFrame);
+	EV_Menu_Label * pLabel = wd->m_pUnixMenu->getLabelSet()->getLabel(wd->m_id);
+	if (!pLabel) {
 		pFrame->setStatusMessage(NULL);
+		return;
 	}
 
-	static void s_onInitMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data)
-	{
-		_wd * wd = static_cast<_wd *>(callback_data);
-		UT_return_if_fail(wd);
-		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
-	}
+	const char * szMsg = pLabel->getMenuStatusMessage();
+	if (!szMsg || !*szMsg)
+		szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
+	pFrame->setStatusMessage(szMsg);
+}
 
-	static void s_onDestroyMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data)
-	{
-		_wd * wd = static_cast<_wd *>(callback_data);
-		UT_return_if_fail(wd);
+void EV_UnixMenu::_wd::s_onMenuItemDeselect(GtkWidget * /*widget*/, gpointer data)
+{
+	UT_ASSERT(data);
 
-		// we always clear the status bar when a menu goes away, so we don't
-		// leave a message behind
-		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
-		UT_return_if_fail(pFrame);
-		pFrame->setStatusMessage(NULL);
-	}
+	_wd * wd = static_cast<_wd *>(data);
+	UT_return_if_fail(wd && wd->m_pUnixMenu);
 
-	// GTK wants to run popup menus asynchronously, but we want synchronous,
-	// so we need to do a gtk_main_quit() on our own to show we're done
-	// with our modal work.
-	static void s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data)
-	{
-		// do the grunt work
-		s_onDestroyMenu(menuItem, callback_data);
-		gtk_main_quit();
-	}
+	XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
+	UT_return_if_fail(pFrame);
 
-	EV_UnixMenu *		m_pUnixMenu;
-	XAP_Menu_Id			m_id;
-};
+	pFrame->setStatusMessage(NULL);
+}
+
+void EV_UnixMenu::_wd::s_onInitMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data)
+{
+	_wd * wd = static_cast<_wd *>(callback_data);
+	UT_return_if_fail(wd);
+	wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
+}
+
+void EV_UnixMenu::_wd::s_onDestroyMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data)
+{
+	_wd * wd = static_cast<_wd *>(callback_data);
+	UT_return_if_fail(wd);
+
+	// we always clear the status bar when a menu goes away, so we don't
+	// leave a message behind
+	XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
+	UT_return_if_fail(pFrame);
+	pFrame->setStatusMessage(NULL);
+}
+
+// GTK wants to run popup menus asynchronously, but we want synchronous,
+// so we need to do a gtk_main_quit() on our own to show we're done
+// with our modal work.
+void EV_UnixMenu::_wd::s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data)
+{
+	// do the grunt work
+	s_onDestroyMenu(menuItem, callback_data);
+	gtk_main_quit();
+}
 
 
 /*****************************************************************/
@@ -298,26 +290,22 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 	: EV_Menu(pUnixApp, pUnixApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	  m_pUnixApp(pUnixApp),
 	  m_pFrame(pFrame),
-	  // there are 189 callbacks at the moment. This is a large vector, but we do not want
-	  // it to grow too fast (it has the lifespan of the application, and so we do not
-	  // want too much empty space in it)
-	  m_vecCallbacks(189,4, true)
+	  m_accelGroup(gtk_accel_group_new())
 {
-	m_accelGroup = gtk_accel_group_new();
 }
 
 EV_UnixMenu::~EV_UnixMenu()
 {
 	m_vecMenuWidgets.clear();
-	UT_VECTOR_PURGEALL(_wd *,m_vecCallbacks);
+	UT_std_vector_purgeall(m_vecCallbacks);
 }
 
-XAP_Frame * EV_UnixMenu::getFrame()
+XAP_Frame * EV_UnixMenu::getFrame() const
 {
 	return m_pFrame;
 }
 
-bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
+bool EV_UnixMenu::menuEvent(XAP_Menu_Id id) const
 {
 	// user selected something from the menu.
 	// invoke the appropriate function.
@@ -332,7 +320,7 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
 		return false;
-	
+
 	const EV_EditMethodContainer * pEMC = m_pUnixApp->getEditMethodContainer();
 	UT_return_val_if_fail(pEMC, false);
 
@@ -416,8 +404,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 	// create a GTK menu from the info provided.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
-	
-	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
+
+	size_t nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
 	// we keep a stack of the widgets so that we can properly
@@ -427,7 +415,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 
 	GSList *group = NULL; // for radio button groups.
 
-	for (UT_uint32 k = 0; (k < nrLabelItemsInLayout); k++)
+	for (size_t k = 0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		UT_continue_if_fail(pLayoutItem);
@@ -479,7 +467,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				  UT_ASSERT(w);
 			}
 
-			m_vecMenuWidgets.addItem(w);			
+			m_vecMenuWidgets.push_back(w);
 			break;
 		}
 		case EV_MLF_BeginSubMenu:
@@ -498,11 +486,10 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				GtkWidget * w = gtk_menu_item_new_with_mnemonic(buf);
 				//gtk_object_set_user_data(GTK_OBJECT(w), this);
 				gtk_widget_show(w);
-								
+
 				// create callback info data for action handling
-				_wd * wd = new _wd(this, id);
-				UT_ASSERT(wd);
-				m_vecCallbacks.addItem(wd);
+				_wd* wd = new _wd(this, id);
+				m_vecCallbacks.push_back(wd);
 
 				// find parent menu item
 				GtkWidget * wParent = stack.top();
@@ -599,7 +586,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				stack.push(wsub);
 
 				// item is created, add to vector
-				m_vecMenuWidgets.addItem(w);
+				m_vecMenuWidgets.push_back(w);
 				break;
 			}			
 			
@@ -608,7 +595,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 			// have no children
 			GtkWidget * w = gtk_menu_item_new();
 			UT_ASSERT(w);
-			m_vecMenuWidgets.addItem(w);
+			m_vecMenuWidgets.push_back(w);
 			break;
 		}
 		case EV_MLF_EndSubMenu:
@@ -621,11 +608,11 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 			group = NULL;
 
 			// item is created (albeit empty in this case), add to vector
-			m_vecMenuWidgets.addItem(w);
+			m_vecMenuWidgets.push_back(w);
 			break;
 		}
 		case EV_MLF_Separator:
-		{				
+		{
 			GtkWidget * w = gtk_separator_menu_item_new();
 			gtk_widget_set_sensitive(w, FALSE);
 			group = NULL; // assuming there is no separator inside a radio button menus list
@@ -637,13 +624,13 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 			gtk_menu_shell_append(GTK_MENU_SHELL(wParent),w);
 
 			// item is created, add to class vector
-			m_vecMenuWidgets.addItem(w);
+			m_vecMenuWidgets.push_back(w);
 			break;
 		}
 
 		case EV_MLF_BeginPopupMenu:
 		case EV_MLF_EndPopupMenu:
-			m_vecMenuWidgets.addItem(NULL);	// reserve slot in vector so indexes will be in sync
+			m_vecMenuWidgets.push_back(NULL);	// reserve slot in vector so indexes will be in sync
 			break;
 			
 		default:
@@ -680,7 +667,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
-	UT_sint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
+	size_t nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
@@ -693,7 +680,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	gint nPositionInThisMenu = -1;
 	GSList *group = NULL; // for radio button groups
 	
-	for (UT_sint32 k = 0; k < nrLabelItemsInLayout; ++k)
+	for (size_t k = 0; k < nrLabelItemsInLayout; ++k)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
@@ -718,7 +705,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			}
 
 			// must have an entry for each and every layout item in the vector
-			UT_ASSERT((k < m_vecMenuWidgets.getItemCount() - 1));
+			UT_ASSERT((k < m_vecMenuWidgets.size() - 1));
 
 			// Get the dynamic label
 			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pFrame, pAction, pLabel);
@@ -727,7 +714,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 			// First we check to make sure the item exists.  If it does not,
 			// we create it and continue on.
-			if (!gtk_bin_get_child(GTK_BIN(GTK_WIDGET(m_vecMenuWidgets.getNthItem(k)))))
+			if (!gtk_bin_get_child(GTK_BIN(m_vecMenuWidgets[k])))
 			{
 				// This should be the only place refreshMenu touches
 				// callback hooks, since this handles the case a widget doesn't
@@ -754,18 +741,13 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					UT_ASSERT(wParent);
 
 					// bury in parent
-					gtk_menu_shell_insert(GTK_MENU_SHELL(gtk_menu_item_get_submenu(GTK_MENU_ITEM(wParent))), 
+					gtk_menu_shell_insert(GTK_MENU_SHELL(gtk_menu_item_get_submenu(GTK_MENU_ITEM(wParent))),
 										  w, (nPositionInThisMenu+1));
-					
+
 					// we do NOT add a new item, we point the existing index at our new widget
 					// (update the pointers)
-					GtkWidget* old = NULL;
-					GtkWidget *oldItem = GTK_WIDGET(m_vecMenuWidgets.getNthItem(k));
-					if (m_vecMenuWidgets.setNthItem(k, w, &old))
-					{
-						UT_DEBUGMSG(("Could not update dynamic menu widget vector item %d.\n", k));
-						UT_ASSERT(0);
-					}
+					GtkWidget *oldItem = m_vecMenuWidgets[k];
+					m_vecMenuWidgets[k] = w;
 					gtk_widget_destroy(oldItem);
 					break;
 				}
@@ -789,7 +771,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				// if no dynamic label, all we need to do
 				// is enable/disable and/or check/uncheck it.
 
-				GtkWidget * item = m_vecMenuWidgets.getNthItem(k);
+				GtkWidget * item = m_vecMenuWidgets[k];
 				UT_ASSERT(item);
 
 				// check boxes 
@@ -806,7 +788,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			}
 
 			// Get the item
-			GtkWidget * item = m_vecMenuWidgets.getNthItem(k);
+			GtkWidget * item = m_vecMenuWidgets[k];
 
 			// if item is null, there is no widget for it, so ignore its attributes for
 			// this pass
@@ -828,12 +810,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				// have no children
 				GtkWidget * w = gtk_menu_item_new();
 				UT_ASSERT(w);
-				GtkWidget* blah = NULL;
-				if(m_vecMenuWidgets.setNthItem(k, w, &blah))
-				{
-					UT_DEBUGMSG(("Could not update dynamic menu widget vector item %d.\n", k));
-					UT_ASSERT(0);
-				}
+				m_vecMenuWidgets[k] = w;
 				break;
 			}
 
@@ -879,7 +856,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 			// we need to nest sub menus to have some sort of context so
 			// we can parent menu items
-			GtkWidget * item = m_vecMenuWidgets.getNthItem(k);
+			GtkWidget * item = m_vecMenuWidgets[k];
 			UT_ASSERT(item);
 
 			bool bEnable = true;
@@ -927,15 +904,9 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
  */
 bool EV_UnixMenu::_doAddMenuItem(UT_uint32 layout_pos)
 {
-	if (layout_pos > 0)
-	{
-		UT_sint32 err = m_vecMenuWidgets.insertItemAt(NULL, layout_pos);
-
-		if (err != 0) {
-			UT_DEBUGMSG(("Error [%d] inserting NULL item in a ut_vector.\n", err));
-		}
-
-		return (err == 0);
+	if (layout_pos > 0) {
+		m_vecMenuWidgets.insert(m_vecMenuWidgets.begin() + layout_pos, nullptr);
+		return true;
 	}
 
 	return false;
@@ -1029,7 +1000,6 @@ EV_UnixMenuPopup::EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
 
 EV_UnixMenuPopup::~EV_UnixMenuPopup()
 {
-	UT_VECTOR_PURGEALL(_wd *,m_vecCallbacks);
 }
 
 GtkWidget * EV_UnixMenuPopup::getMenuHandle() const
@@ -1049,7 +1019,7 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 					   G_CALLBACK(_wd::s_onInitMenu), wd);
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",
 					   G_CALLBACK(_wd::s_onDestroyPopupMenu), wd);
-	m_vecCallbacks.addItem(wd);
+	m_vecCallbacks.push_back(wd);
 	synthesizeMenu(m_wMenuPopup, true);
 
 	return true;
@@ -1115,7 +1085,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 	// create callback info data for action handling
 	_wd * wd = new _wd(this, id);
 	UT_ASSERT(wd);
-	m_vecCallbacks.addItem(wd);
+	m_vecCallbacks.push_back(wd);
 	// connect callbacks
 	g_signal_connect(G_OBJECT(w), "activate", G_CALLBACK(_wd::s_onActivate), wd);
 	g_object_set_data(G_OBJECT(w), "wd", wd);
