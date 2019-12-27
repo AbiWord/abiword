@@ -727,7 +727,7 @@ bool PP_AttrProp::areAlreadyPresent(const gchar ** attributes, const gchar ** pr
 
 			if((!p[1] || !*p[1]) && getProperty(p[0],szValue) && szValue && *szValue)
 				return false;
-			else if(p[1] && p[1])
+			else if(p[1] && *p[1])
 			{
 				if (!getProperty(p[0],szValue))
 					return false;		// item not present
