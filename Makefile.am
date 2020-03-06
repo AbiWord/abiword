@@ -15,7 +15,7 @@ desktop_DATA = com.abisource.AbiWord.desktop
 mimedir = @ABIWORD_DATADIR@/mime-info
 mime_DATA = abiword.keys
 
-appdatadir = $(datarootdir)/appdata
+appdatadir = $(datarootdir)/metainfo
 appdata_DATA = com.abisource.AbiWord.appdata.xml
 
 pkgconfigdir = $(libdir)/pkgconfig
