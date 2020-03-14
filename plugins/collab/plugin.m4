@@ -177,7 +177,7 @@ if test "$enable_collab_backend_sugar" = "yes"; then
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_SUGAR"
 fi
 if test "$enable_collab_backend_service" = "yes"; then
-	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SERVICE -DSOUP24"
+	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SERVICE -DSOUP24 -DASIO_ENABLE_BOOST"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_SERVICE"
 fi
 if test "$enable_collab_backend_sipsimple" = "yes"; then
