@@ -182,7 +182,7 @@ public:
 	virtual void insertEquation(const librevenge::RVNGPropertyList & /* propList */) override {}
 
 protected:
-	virtual UT_Error _loadFile(GsfInput * input);
+	virtual UT_Error _loadFile(GsfInput * input) override;
     UT_Error							_appendSection(int numColumns, const float, const float);
 //    UT_Error							_appendSpan(const guint32 textAttributeBits, const char *fontName, const float fontSize, UT_uint32 listTag = 0);
     UT_Error                            _appendListSpan(UT_uint32 listTag);
@@ -240,14 +240,14 @@ public:
     IE_Imp_MSWorks_Sniffer();
     virtual ~IE_Imp_MSWorks_Sniffer();
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-    virtual UT_Confidence_t recognizeContents (GsfInput * input);
-	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+    virtual UT_Confidence_t recognizeContents(GsfInput * input) override;
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
     virtual bool getDlgLabels (const char ** szDesc,
 			       const char ** szSuffixList,
-			       IEFileType * ft);
+			       IEFileType * ft) override;
     virtual UT_Error constructImporter (PD_Document * pDocument,
-					IE_Imp ** ppie);
+					IE_Imp ** ppie) override;
 };
 
 #endif

@@ -39,16 +39,16 @@ public:
 	AbiWordPerfectGraphicsInputStream(GsfInput *input);
 	~AbiWordPerfectGraphicsInputStream();
 
-	virtual bool isStructured();
-	virtual unsigned subStreamCount();
-	virtual const char* subStreamName(unsigned);
-	bool existsSubStream(const char*);
-	virtual librevenge::RVNGInputStream* getSubStreamByName(const char*);
-	virtual librevenge::RVNGInputStream* getSubStreamById(unsigned);
-	virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-	virtual int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
-	virtual long tell();
-	virtual bool isEnd();
+	virtual bool isStructured() override;
+	virtual unsigned subStreamCount() override;
+	virtual const char* subStreamName(unsigned) override;
+	virtual bool existsSubStream(const char*) override;
+	virtual librevenge::RVNGInputStream* getSubStreamByName(const char*) override;
+	virtual librevenge::RVNGInputStream* getSubStreamById(unsigned) override;
+	virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead) override;
+	virtual int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType) override;
+	virtual long tell() override;
+	virtual bool isEnd() override;
 
 private:
 

@@ -35,19 +35,19 @@ public:
 	IE_Imp_WordPerfectGraphics_Sniffer();
 	virtual ~IE_Imp_WordPerfectGraphics_Sniffer();
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-	virtual UT_Confidence_t recognizeContents (GsfInput * input);
-	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
-	virtual bool getDlgLabels (const char ** szDesc,
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+	virtual UT_Confidence_t recognizeContents(GsfInput * input) override;
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
+	virtual bool getDlgLabels(const char ** szDesc,
 			const char ** szSuffixList,
-			IEGraphicFileType *ft);
-	virtual UT_Error constructImporter(IE_ImpGraphic **ppieg);
+			IEGraphicFileType *ft) override;
+	virtual UT_Error constructImporter(IE_ImpGraphic **ppieg) override;
 };
 
 class IE_Imp_WordPerfectGraphics : public IE_ImpGraphic
 {
 public:
-  virtual UT_Error	importGraphic(GsfInput *input, FG_ConstGraphicPtr& pfg);
+  virtual UT_Error	importGraphic(GsfInput *input, FG_ConstGraphicPtr& pfg) override;
 };
 
 #endif /* IE_IMP_WPG_H */
