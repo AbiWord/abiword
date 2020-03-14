@@ -1501,7 +1501,7 @@ const char* XAP_EncodingManager::CodepageFromCharset(const char *charset) const
 {
     bool is_default;
     const char* ret = search_map(charset_name_to_MSCodepagename_map,charset,&is_default);
-    UT_DEBUGMSG(("Belcon:in XAP_EncodingManager::CodepageFromCharset,charset=%s,ret=%s,is_default=%d\n",charset,ret,is_default));
+    UT_DEBUGMSG(("Belcon:in XAP_EncodingManager::CodepageFromCharset,charset=%s,ret=%s,is_default=%d\n", charset, ret ? ret : "(null)", is_default));
     return is_default ? charset : ret;
 }
 
