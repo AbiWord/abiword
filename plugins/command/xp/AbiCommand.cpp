@@ -695,6 +695,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
                 while (g_main_context_pending(nullptr)) {
                     g_main_context_iteration(nullptr, false);
                 }
+                sleep( 1 );
                 --runForSeconds;
             }
         }
