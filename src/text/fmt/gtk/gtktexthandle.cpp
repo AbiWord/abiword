@@ -54,7 +54,6 @@ struct FvTextHandlePrivate
   gulong draw_signal_id;
   gulong event_signal_id;
   gulong style_updated_id;
-  gulong composited_changed_id;
   guint realized : 1;
   guint mode : 2;
 };
@@ -313,8 +312,7 @@ _fv_text_handle_update_window_state (FvTextHandle         *handle,
 
 static void
 _fv_text_handle_update_window (FvTextHandle         *handle,
-                               FvTextHandlePosition  pos,
-                               gboolean              recreate)
+                               FvTextHandlePosition  pos)
 {
   FvTextHandlePrivate *priv;
   HandleWindow *handle_window;
@@ -325,27 +323,14 @@ _fv_text_handle_update_window (FvTextHandle         *handle,
   if (!handle_window->window)
     return;
 
-  if (recreate)
-    {
-      gdk_window_destroy (handle_window->window);
-      handle_window->window = _fv_text_handle_create_window (handle, pos);
-    }
-
   _fv_text_handle_update_window_state (handle, pos);
 }
 
 static void
 _fv_text_handle_update_windows (FvTextHandle *handle)
 {
-  _fv_text_handle_update_window (handle, FV_TEXT_HANDLE_POSITION_SELECTION_START, FALSE);
-  _fv_text_handle_update_window (handle, FV_TEXT_HANDLE_POSITION_SELECTION_END, FALSE);
-}
-
-static void
-_fv_text_handle_composited_changed (FvTextHandle *handle)
-{
-  _fv_text_handle_update_window (handle, FV_TEXT_HANDLE_POSITION_SELECTION_START, TRUE);
-  _fv_text_handle_update_window (handle, FV_TEXT_HANDLE_POSITION_SELECTION_END, TRUE);
+  _fv_text_handle_update_window (handle, FV_TEXT_HANDLE_POSITION_SELECTION_START);
+  _fv_text_handle_update_window (handle, FV_TEXT_HANDLE_POSITION_SELECTION_END);
 }
 
 static void
@@ -364,10 +349,6 @@ fv_text_handle_constructed (GObject *object)
     g_signal_connect (priv->parent, "event",
                       G_CALLBACK (fv_text_handle_widget_event),
                       object);
-  priv->composited_changed_id =
-    g_signal_connect_swapped (priv->parent, "composited-changed",
-                              G_CALLBACK (_fv_text_handle_composited_changed),
-                              object);
   priv->style_updated_id =
     g_signal_connect_swapped (priv->parent, "style-updated",
                               G_CALLBACK (_fv_text_handle_update_windows),
@@ -395,9 +376,6 @@ fv_text_handle_finalize (GObject *object)
 
   if (g_signal_handler_is_connected (priv->parent, priv->event_signal_id))
     g_signal_handler_disconnect (priv->parent, priv->event_signal_id);
-
-  if (g_signal_handler_is_connected (priv->parent, priv->composited_changed_id))
-    g_signal_handler_disconnect (priv->parent, priv->composited_changed_id);
 
   if (g_signal_handler_is_connected (priv->parent, priv->style_updated_id))
     g_signal_handler_disconnect (priv->parent, priv->style_updated_id);
