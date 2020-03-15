@@ -693,8 +693,8 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
             {
                 cerr << "runForSeconds:" << runForSeconds << endl;
                 while (g_main_context_pending(nullptr)) {
-                	g_main_context_iteration(nullptr, false);
-		}
+                    g_main_context_iteration(nullptr, false);
+                }
                 --runForSeconds;
             }
         }
@@ -1801,8 +1801,9 @@ AbiCommand::nullUpdate (void)
 	{
 		UT_uint32 i = 0;
 
-		for (i = 0; i < 5; i++)
-			gtk_main_iteration ();
+		for (i = 0; i < 5; i++) {
+			g_main_context_iteration(nullptr, false);
+		}
 	}
 }
 
