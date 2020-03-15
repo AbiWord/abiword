@@ -49,7 +49,7 @@ protected:
 	GdkPixbuf *            pixbufForByteBuf (UT_ByteBuf * pBB);
 	GdkPixbuf *            _loadXPM(UT_ByteBuf * pBB);
 
-	bool					_run_gtk_main(XAP_Frame * pFrame,
+	bool					_run_main_loop(XAP_Frame * pFrame,
 										  GtkWidget * filetypes_pulldown);
 	void 					_notifyError_OKOnly(XAP_Frame * pFrame,
 												XAP_String_Id sid);

@@ -300,8 +300,9 @@ emit_selected (AbiTable *table)
 {
 	gtk_widget_hide(GTK_WIDGET(table->window));
 
-	while (gtk_events_pending())
-		gtk_main_iteration();
+	while (g_main_context_pending(nullptr)) {
+		g_main_context_iteration(nullptr, false);
+	}
 
 	if (table->selected_rows > 0 && table->selected_cols > 0)
 		g_signal_emit (G_OBJECT (table),

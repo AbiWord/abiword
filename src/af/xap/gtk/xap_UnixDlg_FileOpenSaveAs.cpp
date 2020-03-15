@@ -2,26 +2,26 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009-2016 Hubert Figuiere
- * 
+ * Copyright (C) 2009-2020 Hubert Figuiere
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
 /*
- * Port to Maemo Development Platform 
+ * Port to Maemo Development Platform
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
@@ -103,7 +103,7 @@ XAP_UnixDialog_FileOpenSaveAs::~XAP_UnixDialog_FileOpenSaveAs(void)
 
 static void s_dialog_response(GtkWidget * /* widget */,
 						gint answer,
-						XAP_Dialog_FileOpenSaveAs::tAnswer * ptr, bool bQuit = true)
+						XAP_Dialog_FileOpenSaveAs::tAnswer * ptr)
 {
 	switch (answer)
 	{
@@ -114,8 +114,6 @@ static void s_dialog_response(GtkWidget * /* widget */,
 				*ptr = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
 			else
 				*ptr = XAP_Dialog_FileOpenSaveAs::a_OK;
-			if (bQuit)
-				gtk_main_quit();
 			break;
 		default:
 			// do nothing
@@ -135,7 +133,6 @@ static void s_delete_clicked(GtkWidget 	* /*widget*/,
 {
 	XAP_UnixDialog_FileOpenSaveAs *dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *>(data);
 	dlg->onDeleteCancel();
-	gtk_main_quit();
 }
 
 static gint s_preview_draw(GtkWidget * /* widget */,
@@ -180,7 +177,7 @@ static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer *
 	// the closing of the dialog for us. Now we don't want to close the dialog 
 	// twice, hence the last 'false' parameter.
 	// Hardly elegant, but none of this code is :/ It fixes bug #11647 too - MARCM.
-	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer, false);
+	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer);
 }
 
 static void file_selection_changed  (GtkTreeSelection  * /*selection*/,
@@ -192,7 +189,7 @@ static void file_selection_changed  (GtkTreeSelection  * /*selection*/,
   dlg->previewPicture();
 }
 
-bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
+bool XAP_UnixDialog_FileOpenSaveAs::_run_main_loop(XAP_Frame * pFrame,
 													 GtkWidget * filetypes_pulldown)
 {
 	/*
@@ -224,23 +221,28 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	{
 		while (1)
 		{
-			gtk_main();
-			if (m_answer == a_CANCEL)			// The easy way out
+			auto answer = gtk_dialog_run(GTK_DIALOG(m_FC));
+			switch (answer) {
+			case GTK_RESPONSE_CANCEL: 	// The easy way out
 				return false;
-
-			char *uri = gtk_file_chooser_get_uri(m_FC);
-			if (uri) {
-				m_finalPathnameCandidate = uri;
-				g_free(uri);
+				break;
+			case GTK_RESPONSE_ACCEPT: {
+				char *uri = gtk_file_chooser_get_uri(m_FC);
+				if (uri) {
+					m_finalPathnameCandidate = uri;
+					g_free(uri);
+				}
+				UT_ASSERT(!m_finalPathnameCandidate.empty());
+				return true;
+				break;
 			}
-			UT_ASSERT(!m_finalPathnameCandidate.empty());
-			return (m_answer == a_OK);
+			}
 		}
 	} else {
 		while(1)
 		{
-			gtk_main();
-			if (m_answer == a_CANCEL)			// The easy way out
+			auto answer = gtk_dialog_run(GTK_DIALOG(m_FC));
+			if (answer == GTK_RESPONSE_CANCEL)			// The easy way out
 				return false;
 	
 			// Give us a filename we can mangle
@@ -824,9 +826,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	gtk_widget_show(GTK_WIDGET(m_FC));
 	gtk_grab_add(GTK_WIDGET(m_FC));
-	
-	bool bResult = _run_gtk_main(pFrame,filetypes_pulldown);
-	
+
+	bool bResult = _run_main_loop(pFrame, filetypes_pulldown);
+
 	if (bResult)
 	{
 		UT_ASSERT(!m_finalPathnameCandidate.empty());

@@ -692,9 +692,9 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
             while( runForSeconds >= 0 )
             {
                 cerr << "runForSeconds:" << runForSeconds << endl;
-                while(gtk_events_pending())
-                    gtk_main_iteration ();
-                sleep( 1 );
+                while (g_main_context_pending(nullptr)) {
+                	g_main_context_iteration(nullptr, false);
+		}
                 --runForSeconds;
             }
         }

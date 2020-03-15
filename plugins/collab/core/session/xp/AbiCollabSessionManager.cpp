@@ -1573,14 +1573,15 @@ bool AbiCollabSessionManager::_nullUpdate()
 	}
 	Sleep(10);
 #elif defined(TOOLKIT_GTK_ALL)
-		for (UT_sint32 i = 0; (i < 10) && gtk_events_pending(); i++)
-			gtk_main_iteration ();
+		for (UT_sint32 i = 0; (i < 10) && g_main_context_pending(nullptr); i++) {
+			g_main_context_iteration(nullptr, false);
+		}
 		usleep(1000*10);
 #elif defined(TOOLKIT_COCOA)
 #warning _nullUpdate needs implementation for Cocoa
-#else 
+#else
 #error unknown platform
-#endif	
+#endif
 	return caughtQuit;
 }
 
