@@ -357,172 +357,172 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_colorRDFAnchors[8] = UT_RGBColor(7,18,195);
 	m_colorRDFAnchors[9] = UT_RGBColor(255,0,0);	// catch-all
 
-	
+
 	// initialize prefs cache
-	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
+	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, m_bCursorBlink);
 
-   	const gchar * pszTmpColor = NULL;
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForShowPara), &pszTmpColor))
+	std::string tmpColor;
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForShowPara, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorShowPara);
+		UT_parseColor(tmpColor.c_str(), m_colorShowPara);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForSquiggle, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorSpellSquiggle);
+		UT_parseColor(tmpColor.c_str(), m_colorSpellSquiggle);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForGrammarSquiggle, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorGrammarSquiggle);
+		UT_parseColor(tmpColor.c_str(), m_colorGrammarSquiggle);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForMargin, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorMargin);
+		UT_parseColor(tmpColor.c_str(), m_colorMargin);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForFieldOffset), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForFieldOffset, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorFieldOffset);
+		UT_parseColor(tmpColor.c_str(), m_colorFieldOffset);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForImage), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForImage, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorImage);
+		UT_parseColor(tmpColor.c_str(), m_colorImage);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForHyperLink), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForHyperLink, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorHyperLink);
+		UT_parseColor(tmpColor.c_str(), m_colorHyperLink);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForHdrFtr), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForHdrFtr, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorHdrFtr);
+		UT_parseColor(tmpColor.c_str(), m_colorHdrFtr);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForColumnLine), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForColumnLine, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorColumnLine);
+		UT_parseColor(tmpColor.c_str(), m_colorColumnLine);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision1), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision1, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[0]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[0]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision2), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision2, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[1]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[1]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision3), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision3, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[2]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[2]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision4), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision4, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[3]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[3]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision5), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision5, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[4]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[4]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision6), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision6, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[5]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[5]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision7), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision7, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[6]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[6]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision8), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision8, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[7]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[7]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision9), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision9, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[8]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[8]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision10), &pszTmpColor))
+	if (pApp->getPrefsValue(XAP_PREF_KEY_ColorForRevision10, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRevisions[9]);
+		UT_parseColor(tmpColor.c_str(), m_colorRevisions[9]);
 	}
 
 
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation1), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation1, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[0]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[0]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation2), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation2, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[1]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[1]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation3), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation3, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[2]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[2]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation4), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation4, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[3]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[3]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation5), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation5, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[4]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[4]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation6), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation6, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[5]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[5]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation7), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation7, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[6]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[6]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation8), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation8, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[7]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[7]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation9), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation9, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[8]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[8]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation10), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForAnnotation10, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorAnnotations[9]);
+		UT_parseColor(tmpColor.c_str(), m_colorAnnotations[9]);
 	}
 
 	///////////////////
 	///////////////////
-	
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor1), &pszTmpColor))
+
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor1, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[0]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[0]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor2), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor2, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[1]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[1]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor3), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor3, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[2]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[2]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor4), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor4, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[3]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[3]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor5), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor5, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[4]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[4]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor6), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor6, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[5]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[5]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor7), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor7, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[6]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[6]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor8), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor8, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[7]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[7]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor9), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor9, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[8]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[8]);
 	}
-	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor10), &pszTmpColor))
+	if (pApp->getPrefsValue(AP_PREF_KEY_ColorForRDFAnchor10, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorRDFAnchors[9]);
+		UT_parseColor(tmpColor.c_str(), m_colorRDFAnchors[9]);
 	}
 
 	///////////////////
@@ -535,25 +535,25 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	// Get View Mode
 	if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		const char * szViewMode = NULL;
-		pApp->getPrefsValue(static_cast<const char *>(AP_PREF_KEY_LayoutMode),&szViewMode);
-		if(strcmp(szViewMode,"1") == 0)
+		std::string viewMode;
+		pApp->getPrefsValue(AP_PREF_KEY_LayoutMode, viewMode);
+		if(viewMode == "1")
 		{
 			setViewMode(VIEW_PRINT);
 		}
-		if(strcmp(szViewMode,"2") == 0)
+		if(viewMode == "2")
 		{
 			setViewMode(VIEW_NORMAL);
 		}
-		if(strcmp(szViewMode,"3") == 0)
+		if(viewMode == "3")
 		{
 			setViewMode(VIEW_WEB);
 		}
 		setCursorWait();
 	}
 
-	pApp->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, &m_bDefaultDirectionRtl);
-	pApp->getPrefsValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs, &m_bUseHebrewContextGlyphs);
+	pApp->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, m_bDefaultDirectionRtl);
+	pApp->getPrefsValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs, m_bUseHebrewContextGlyphs);
 	/*
 		If the default direction indicated by the preferences is different
 		than the direction with which we were compiled, we need to modify
@@ -1766,19 +1766,18 @@ UT_RGBColor FV_View::getColorSelBackground ()
   static UT_RGBColor bgcolor (192, 192, 192);
 
   XAP_Frame * pFrame = 0;
-  
+
   if ((pFrame = static_cast<XAP_Frame*>(getParentData())) != NULL)
     return pFrame->getColorSelBackground ();
-  
+
   if (!m_bgColorInitted) {
-    const gchar * pszTmpColor = NULL;
-    if (XAP_App::getApp()->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForSelBackground), &pszTmpColor))
-      {
-	UT_parseColor(pszTmpColor, bgcolor);
-      }
-    m_bgColorInitted = true;
+	  std::string tmpColor;
+	  if (XAP_App::getApp()->getPrefsValue(XAP_PREF_KEY_ColorForSelBackground, tmpColor)) {
+		  UT_parseColor(tmpColor.c_str(), bgcolor);
+	  }
+	  m_bgColorInitted = true;
   }
-  
+
   return bgcolor;
 }
 
@@ -13306,17 +13305,17 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth() const
 	if(iWindowWidth == 0)
 	{
 	// Get fall-back defaults for zoom from prefs
-		const gchar * szZoom = NULL;
-		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  static_cast<const gchar**>(&szZoom));
-		UT_DEBUGMSG(("!!!! Zoom percentage  %s \n",szZoom));
-		if(szZoom)
+		std::string zoom;
+		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage, zoom);
+		UT_DEBUGMSG(("!!!! Zoom percentage  %s \n", zoom.c_str()));
+		if (!zoom.empty())
 		{
-			iZoom = atoi(szZoom);
-			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
+			iZoom = atoi(zoom.c_str());
+			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) {
 				iZoom = 100;
-			else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) 
+			} else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) {
 				iZoom = 100;
+			}
 			return iZoom;
 		}
 		return getGraphics()->getZoomPercentage();
@@ -13356,17 +13355,16 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight() const
 	if(iWindowHeight == 0)
 	{
 	// Get fall-back defaults for zoom from prefs
-		const gchar * szZoom = NULL;
-		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  static_cast<const gchar**>(&szZoom));
-		if(szZoom)
-		{
-			iZoom = atoi(szZoom);
-			UT_DEBUGMSG(("!!!! Zoom percentage  %s \n",szZoom));
-			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
+		std::string zoom;
+		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage, zoom);
+		if (!zoom.empty()) {
+			iZoom = atoi(zoom.c_str());
+			UT_DEBUGMSG(("!!!! Zoom percentage  %s \n", zoom.c_str()));
+			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) {
 				iZoom = 100;
-			else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) 
+			} else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) {
 				iZoom = 100;
+			}
 			return iZoom;
 		}
 		return getGraphics()->getZoomPercentage();

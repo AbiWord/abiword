@@ -390,7 +390,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	// now that we have program name, try to get other flag (allows overriding default value)
 	// Note: we allow overriding, otherwise if we don't adhere to user's setting
 	//       then the use BMP or not menu should be greyed to note it has no effect
-	prefsScheme->getValueBool(ABIPAINT_PREF_KEY_bLeaveImageAsPNG, &bLeaveImageAsPNG);
+	prefsScheme->getValueBool(ABIPAINT_PREF_KEY_bLeaveImageAsPNG, bLeaveImageAsPNG);
 
 
 //

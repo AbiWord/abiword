@@ -136,24 +136,16 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 		{
 			xp =  (gchar*)UT_XML_Decode(_t[k].m_szValue);
 		}
-		
+
 		UT_DEBUGMSG(("DEFAULT %s |%s|%s|\n", _t[k].m_szKey, _t[k].m_szValue, xp));
-		bool bOK = pScheme->setValue(_t[k].m_szKey, xp);
+		pScheme->setValue(_t[k].m_szKey, xp);
 		if(bDelete)
 			FREEP(xp);
-		if (!bOK)
-		{
-			goto Failed;
-		}
 	}
 	addScheme(pScheme);					// set the builtin scheme in the base class
 	overlaySystemPrefs();				// so that the base class parser can overlay it.
-	
+
 	return setCurrentScheme(szBuiltinSchemeName);
-	
-Failed:
-	DELETEP(pScheme);
-	return false;
 }
 
 void AP_Prefs::overlaySystemPrefs(void)

@@ -74,11 +74,12 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_bGuide = false;
 	m_yGuide = 0;
 	
-	const gchar * szRulerUnits;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		m_dim = UT_determineDimension(szRulerUnits);
-	else
+	std::string rulerUnits;
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
+		m_dim = UT_determineDimension(rulerUnits.c_str());
+	} else {
 		m_dim = DIM_IN;
+	}
 
 	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
@@ -1953,11 +1954,11 @@ void AP_LeftRuler::_prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet *
 	AP_LeftRuler *pLeftRuler = static_cast<AP_LeftRuler *>(data);
 	UT_ASSERT( data && pPrefs );
 
-	const gchar *pszBuffer;
-	pPrefs->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
+	std::string buffer;
+	pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits, buffer);
 
 	// or should I just default to inches or something?
-	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
+	UT_Dimension dim = UT_determineDimension(buffer.c_str(), DIM_none);
 	UT_ASSERT( dim != DIM_none );
 
 	if ( dim != pLeftRuler->getDimension() )

@@ -1,6 +1,7 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (c) 2020 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,18 +19,12 @@
  * 02110-1301 USA.
  */
 
-#ifndef XAP_PREFS_H
-#define XAP_PREFS_H
+#pragma once
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
 #include "ut_vector.h"
-#include "ut_hash.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_xml.h"
@@ -75,7 +70,8 @@ class ABI_EXPORT XAP_FontSettings
 {
   public:
 	XAP_FontSettings()
-		:m_bInclude(false){};
+		: m_bInclude(false)
+	{}
 
 	const std::vector<std::string> & getFonts() const
 		{return m_vecFonts;}
@@ -101,41 +97,39 @@ class ABI_EXPORT XAP_FontSettings
 class ABI_EXPORT XAP_PrefsScheme
 {
 public:
+	// map because we want the keys to be sorted.
+	typedef std::map<std::string, std::string> MapType;
+
 	XAP_PrefsScheme(XAP_Prefs *pPrefs, const gchar * szSchemeName);
 	~XAP_PrefsScheme(void);
 
-	const gchar *	getSchemeName(void) const;
-	bool				setSchemeName(const gchar * szNewSchemeName);
-	// The idea of the tick is that some object can cache a preference
-	// value if it makes a performance difference.  It should also save
-	// a copy of the tick count and the scheme pointer.  If the scheme
-	// pointer and the tick count are the same, the cached preference
-	// value is current.  If either is changed, the object can refresh
-	// its cached value.  The scheme pointer can be different because
-	// the preference scheme has changed.  The tick count bumps up once
-	// every time any preference value in the scheme is changed.
-    UT_uint32			getTickCount() {return m_uTick;}
+	const std::string& getSchemeName(void) const;
+	void setSchemeName(const gchar * szNewSchemeName);
 
-	bool				setValue(const gchar * szKey, const gchar * szValue);
-	bool				setValueBool(const gchar * szKey, bool bValue);
-	bool				setValueInt(const gchar * szKey, const int nValue);
+	void setValue(const std::string& key, const std::string& value);
+	void setValueBool(const std::string& key, bool bValue);
+	void setValueInt(const std::string& key, int nValue);
 
 	// the get*Value*() functions return the answer in the last
 	// argument; they return error information as the function
 	// return value.
-	bool				getValue(const gchar * szKey, const gchar ** pszValue) const;
-	bool                getValue(const gchar* szKey, std::string &szValue) const;
-	bool				getValueInt(const gchar * szKey, int& nValue) const;
-	bool				getValueBool(const gchar * szKey, bool * pbValue) const;
-	bool				getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue);
+	bool getValue(const std::string& key, std::string &value) const;
+	bool getValueInt(const std::string& key, int& nValue) const;
+	bool getValueBool(const std::string& key, bool& pbValue) const;
+
+	MapType::const_iterator begin() const
+	{
+		return m_hash.begin();
+	}
+	MapType::const_iterator end() const
+	{
+		return m_hash.end();
+	}
 
 protected:
-	gchar *			m_szName;
-	UT_GenericStringMap<gchar*> m_hash;
-	UT_GenericVector<const gchar*> m_sortedKeys;
-	bool				m_bValidSortedKeys;
-	XAP_Prefs *			m_pPrefs;
-	UT_uint32			m_uTick;   // ticks up every time setValue() or setValueBool() is called
+	std::string	m_szName;
+	MapType m_hash;
+	XAP_Prefs* m_pPrefs;
 };
 
 /*****************************************************************/
@@ -160,10 +154,9 @@ public:
 	XAP_PrefsScheme *		getCurrentScheme(bool bCreate = false);
 	bool					setCurrentScheme(const gchar * szSchemeName);
 
-	bool					getPrefsValue(const gchar * szKey, const gchar ** pszValue, bool bAllowBuiltin = true) const;
-	bool					getPrefsValue(const gchar* szKey, std::string &stValue, bool bAllowBuiltin = true) const;
-	bool					getPrefsValueBool(const gchar * szKey, bool * pbValue, bool bAllowBuiltin = true) const;
-	bool					getPrefsValueInt(const gchar * szKey, int& nValue, bool bAllowBuiltin = true) const;
+	bool getPrefsValue(const std::string& key, std::string& value, bool bAllowBuiltin = true) const;
+	bool getPrefsValueBool(const std::string& key, bool& pbValue, bool bAllowBuiltin = true) const;
+	bool getPrefsValueInt(const std::string& key, int& nValue, bool bAllowBuiltin = true) const;
 
 	bool					getAutoSavePrefs(void) const;
 	void					setAutoSavePrefs(bool bAuto);
@@ -200,7 +193,7 @@ public:
 	XAP_FontSettings &      getFontSettings () {return m_fonts;}
 
 	// a only-to-be-used-by XAP_PrefsScheme::setValue
-	void					_markPrefChange	( const gchar *szKey );
+	void _markPrefChange(const std::string& key);
 protected:
 	void					_pruneRecent(void);
 	XAP_PrefsScheme * 		_getNthScheme(UT_uint32 k,
@@ -283,5 +276,3 @@ private:
 #define XAP_PREF_DEFAULT_UseEnvLocale		"1"
 
 #define XAP_PREF_LIMIT_MaxRecent			9
-
-#endif /* XAP_PREFS_H */

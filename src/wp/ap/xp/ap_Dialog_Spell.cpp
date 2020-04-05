@@ -180,13 +180,12 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
    UT_return_val_if_fail (pApp, false);
    XAP_Prefs * pPrefs = pApp->getPrefs();
    UT_return_val_if_fail (pPrefs, false);
-   
-   XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-   UT_return_val_if_fail (pPrefsScheme, false);		  
-   
-   bool b = false;
-   pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck), &b);
 
+   XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+   UT_return_val_if_fail (pPrefsScheme, false);
+
+   bool b = false;
+   pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoSpellCheck, b);
 
    // Yes, I know. This is a bit anal. But it works, and I'm too tired
    // to rethink the iterator behaviour to match the requirement right

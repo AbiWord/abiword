@@ -5940,11 +5940,12 @@ UT_BidiCharType fp_Run::getVisDirection() const
 		else
 		{
 			bool b;
-			XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_DefaultDirectionRtl), &b);
-			if(b)
+			XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, b);
+			if (b) {
 				return UT_BIDI_RTL;
-			else
+			} else {
 				return UT_BIDI_LTR;
+			}
 		}
 	}
 	else

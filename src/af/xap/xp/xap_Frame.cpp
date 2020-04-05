@@ -203,45 +203,44 @@ bool XAP_Frame::initialize(const char * /*szKeyBindingsKey*/, const char * /*szK
 	// select which menu bar we should use
 	//////////////////////////////////////////////////////////////////
 
-	const char * szMenuLayoutName = NULL;
-	if ((pApp->getPrefsValue(szMenuLayoutKey,
-				 static_cast<const gchar**>(&szMenuLayoutName))) &&
-	    (szMenuLayoutName) && (*szMenuLayoutName))
+	std::string menuLayoutName;
+	if (pApp->getPrefsValue(szMenuLayoutKey, menuLayoutName) &&
+	    !menuLayoutName.empty()) {
 		;
-	else
-		szMenuLayoutName = szMenuLayoutDefaultValue;
-	m_pFrameImpl->m_szMenuLayoutName = g_strdup(szMenuLayoutName);
-	
+	} else {
+		menuLayoutName = szMenuLayoutDefaultValue;
+	}
+	m_pFrameImpl->m_szMenuLayoutName = g_strdup(menuLayoutName.c_str());
+
 	//////////////////////////////////////////////////////////////////
 	// select language for menu labels
 	//////////////////////////////////////////////////////////////////
 
-	const char * szMenuLabelSetName = NULL;
-	if ((pApp->getPrefsValue(szMenuLabelSetKey,
-				 static_cast<const gchar**>(&szMenuLabelSetName))) &&
-	    (szMenuLabelSetName) && (*szMenuLabelSetName))
+	std::string menuLabelSetName;
+	if (pApp->getPrefsValue(szMenuLabelSetKey, menuLabelSetName) &&
+	    !menuLabelSetName.empty()) {
 		;
-	else
-		szMenuLabelSetName = szMenuLabelSetDefaultValue;
-	m_pFrameImpl->m_szMenuLabelSetName = g_strdup(szMenuLabelSetName);
-	
+	} else {
+		menuLabelSetName = szMenuLabelSetDefaultValue;
+	}
+	m_pFrameImpl->m_szMenuLabelSetName = g_strdup(menuLabelSetName.c_str());
+
 	//////////////////////////////////////////////////////////////////
 	// select which toolbars we should display
 	//////////////////////////////////////////////////////////////////
 
-	const char * szToolbarLayouts = NULL;
-	if ((pApp->getPrefsValue(szToolbarLayoutsKey,
-							 static_cast<const gchar**>(&szToolbarLayouts))) &&
-	    (szToolbarLayouts) && (*szToolbarLayouts))
+	std::string toolbarLayouts;
+	if (pApp->getPrefsValue(szToolbarLayoutsKey, toolbarLayouts) &&
+	    !toolbarLayouts.empty()) {
 		;
-	else
-		szToolbarLayouts = szToolbarLayoutsDefaultValue;
-
+	} else {
+		toolbarLayouts = szToolbarLayoutsDefaultValue;
+	}
 	// take space-delimited list and call addItem() for each name in the list.
-	
+
 	{
 		char * szTemp;
-		szTemp = g_strdup(szToolbarLayouts);
+		szTemp = g_strdup(toolbarLayouts.c_str());
 		UT_ASSERT(szTemp);
 		for (char * p=strtok(szTemp," "); (p); p=strtok(NULL," "))
 		{
@@ -251,7 +250,7 @@ bool XAP_Frame::initialize(const char * /*szKeyBindingsKey*/, const char * /*szK
 		}
 		g_free(szTemp);
 	}
-	
+
 	//////////////////////////////////////////////////////////////////
 	// select language for the toolbar labels.
 	// i'm not sure if it would ever make sense to
@@ -260,24 +259,23 @@ bool XAP_Frame::initialize(const char * /*szKeyBindingsKey*/, const char * /*szK
 	// all toolbars will have the same language.
 	//////////////////////////////////////////////////////////////////
 
-	const char * szToolbarLabelSetName = NULL;
-	if ((pApp->getPrefsValue(szToolbarLabelSetKey,
-				 static_cast<const gchar**>(&szToolbarLabelSetName))) &&
-	    (szToolbarLabelSetName) && (*szToolbarLabelSetName))
+	std::string toolbarLabelSetName;
+	if (pApp->getPrefsValue(szToolbarLabelSetKey, toolbarLabelSetName) &&
+	    !toolbarLabelSetName.empty()) {
 		;
-	else
-		szToolbarLabelSetName = szToolbarLabelSetDefaultValue;
-	m_pFrameImpl->m_szToolbarLabelSetName = g_strdup(szToolbarLabelSetName);
-	
+	} else {
+		toolbarLabelSetName = szToolbarLabelSetDefaultValue;
+	}
+	m_pFrameImpl->m_szToolbarLabelSetName = g_strdup(toolbarLabelSetName.c_str());
+
 	//////////////////////////////////////////////////////////////////
 	// select the appearance of the toolbar buttons
 	//////////////////////////////////////////////////////////////////
 
-	const char * szToolbarAppearance = NULL;
-	pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,
-			    static_cast<const gchar**>(&szToolbarAppearance));
-	UT_ASSERT((szToolbarAppearance) && (*szToolbarAppearance));
-	m_pFrameImpl->m_szToolbarAppearance = g_strdup(szToolbarAppearance);
+	std::string toolbarAppearance;
+	pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, toolbarAppearance);
+	UT_ASSERT(!toolbarAppearance.empty());
+	m_pFrameImpl->m_szToolbarAppearance = g_strdup(toolbarAppearance.c_str());
 
 	//////////////////////////////////////////////////////////////////
 	// select the auto save options
@@ -286,7 +284,7 @@ bool XAP_Frame::initialize(const char * /*szKeyBindingsKey*/, const char * /*szK
 	bool autosave = true;
 
 	pApp->getPrefsValue(XAP_PREF_KEY_AutoSaveFileExt, m_stAutoSaveExt);
-	pApp->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, &autosave);
+	pApp->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, autosave);
 
 	if (autosave)
 		_createAutoSaveTimer();
@@ -316,38 +314,32 @@ bool XAP_Frame::initialize(const char * /*szKeyBindingsKey*/, const char * /*szK
 	else if( g_ascii_strcasecmp( stTmp.c_str(), "Width" ) == 0 )
 	{
 		m_zoomType = z_PAGEWIDTH;
-		const gchar * szZoom = NULL;
-		pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  static_cast<const gchar**>(&szZoom));
-		if(szZoom)
-		{
-			iZoom = atoi(szZoom);
-			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
+		std::string zoom;
+		pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage, zoom);
+		if (!zoom.empty()) {
+			iZoom = atoi(zoom.c_str());
+			if (iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) {
 				iZoom = 100;
-			else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) 
+			} else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) {
 				iZoom = 100;
-		}
-		else
-		{
+			}
+		} else {
 			iZoom = 100;
 		}
 	}
 	else if( g_ascii_strcasecmp( stTmp.c_str(), "Page" ) == 0 )
 	{
 		m_zoomType = z_WHOLEPAGE;
-		const gchar * szZoom = NULL;
-		pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  static_cast<const gchar**>(&szZoom));
-		if(szZoom)
-		{
-			iZoom = atoi(szZoom);
-			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
+		std::string zoom;
+		pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage, zoom);
+		if (!zoom.empty()) {
+			iZoom = atoi(zoom.c_str());
+			if (iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) {
 				iZoom = 100;
-			else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) 
+			} else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) {
 				iZoom = 100;
-		}
-		else
-		{
+			}
+		} else {
 			iZoom = 100;
 		}
 	}
@@ -356,7 +348,7 @@ bool XAP_Frame::initialize(const char * /*szKeyBindingsKey*/, const char * /*szK
 		iZoom = atoi( stTmp.c_str() );
 
 		// These limits are defined in xap_Dlg_Zoom.h
-		if ((iZoom <= XAP_DLG_ZOOM_MAXIMUM_ZOOM) && (iZoom >= XAP_DLG_ZOOM_MINIMUM_ZOOM)) 
+		if ((iZoom <= XAP_DLG_ZOOM_MAXIMUM_ZOOM) && (iZoom >= XAP_DLG_ZOOM_MINIMUM_ZOOM))
 		{
 			m_zoomType = z_PERCENT;
 			XAP_Frame::setZoomPercentage( iZoom );

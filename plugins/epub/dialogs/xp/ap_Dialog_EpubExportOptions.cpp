@@ -59,16 +59,13 @@ void AP_Dialog_EpubExportOptions::getEpubExportDefaults(
 
     if (pPrefs == NULL) return;
 
-    const gchar * szValue = NULL;
-    bool haveValue = pPrefs->getPrefsValue(EPUB_EXPORT_SCHEME_NAME, &szValue);
+    std::string value;
+    bool haveValue = pPrefs->getPrefsValue(EPUB_EXPORT_SCHEME_NAME, value);
 
-    if (haveValue && szValue) {
-        const char * pref = (const char *) szValue;
-
-        exp_opt->bEpub2 = strstr(pref, "EPUB2") != NULL;
-        exp_opt->bSplitDocument = strstr(pref, "split-document") != NULL;
-        exp_opt->bRenderMathMLToPNG = strstr(pref, "mathml-to-png") != NULL;
-      
+    if (haveValue && !value.empty()) {
+        exp_opt->bEpub2 = strstr(value.c_str(), "EPUB2") != NULL;
+        exp_opt->bSplitDocument = strstr(value.c_str(), "split-document") != NULL;
+        exp_opt->bRenderMathMLToPNG = strstr(value.c_str(), "mathml-to-png") != NULL;
     }
 }
 

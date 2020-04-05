@@ -1309,13 +1309,11 @@ void FL_DocLayout::setView(FV_View* pView)
 			// keep updating itself
 			pPrefs->addListener ( _prefsListener, this );
 			bool b;
-			if (m_pPrefs->getPrefsValueBool(static_cast<const gchar *>("DebugFlash"),&b)  &&  b == true)
-			{
+			if (m_pPrefs->getPrefsValueBool("DebugFlash", b) && b) {
 				addBackgroundCheckReason(bgcrDebugFlash);
 			}
-			m_pPrefs->getPrefsValueBool(static_cast<const gchar *>("AutoGrammarCheck"),&b);
-			if (b)
-			{
+			m_pPrefs->getPrefsValueBool("AutoGrammarCheck", b);
+			if (b) {
 				addBackgroundCheckReason(bgcrGrammar);
 				m_bAutoGrammarCheck = true;
 				m_iGrammarCount = 0;
@@ -2976,12 +2974,12 @@ void FL_DocLayout::updateColor()
 	{
 		XAP_App * pApp = pView->getApp();
 		XAP_Prefs * pPrefs = pApp->getPrefs();
-		const gchar * pszTransparentColor = NULL;
-		pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
+		std::string transparentColor;
+		pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForTransparent, transparentColor);
 //
 // Save the new preference color
 //
-		strncpy(m_szCurrentTransparentColor,pszTransparentColor,9);
+		strncpy(m_szCurrentTransparentColor, transparentColor.c_str(), 9);
 	}
 //
 // Now loop through the document and update the Background color
@@ -3931,23 +3929,23 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
     // (b = !b)
 	bool changed = false;
 #ifdef ENABLE_SPELL
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_SpellCheckCaps), &b );
+	pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckCaps, b);
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckCaps());
 	pDocLayout->m_bSpellCheckCaps = b;
 
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_SpellCheckNumbers), &b );
+	pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckNumbers, b);
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckNumbers());
 	pDocLayout->m_bSpellCheckNumbers = b;
 
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_SpellCheckInternet), &b );
+	pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckInternet, b);
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckInternet());
 	pDocLayout->m_bSpellCheckInternet = b;
 
 	// auto spell
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck), &b );
+	pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoSpellCheck, b);
 	changed = changed || (b != pDocLayout->m_bAutoSpellCheck);
 	if(b != pDocLayout->m_bAutoSpellCheck || (pDocLayout->m_iGraphicTick < 2))
 	{
@@ -3956,7 +3954,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	}
 
 	// grammar check
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoGrammarCheck), &b );
+	pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoGrammarCheck, b);
 	changed = changed || (b != pDocLayout->m_bAutoSpellCheck);
 	if(b != pDocLayout->m_bAutoGrammarCheck || (pDocLayout->m_iGraphicTick < 2))
 	{
@@ -3973,7 +3971,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 		if(pFrame)
 		{
-			pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_AutoSaveFile), &b );
+			pPrefs->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, b);
 			changed = (b != pFrame->isBackupRunning());
 			if(changed)
 			{
@@ -4004,15 +4002,14 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		;
 	}
 
-	pPrefs->getPrefsValueBool( static_cast<const gchar *>(XAP_PREF_KEY_SmartQuotesEnable), &b );
-	
-	
+	pPrefs->getPrefsValueBool(XAP_PREF_KEY_SmartQuotesEnable, b);
+
+
 	pDocLayout->_toggleAutoSmartQuotes( b );
-	
-	const gchar * pszTransparentColor = NULL;
-	pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
-	if(strcmp(pszTransparentColor,pDocLayout->m_szCurrentTransparentColor) != 0)
-	{
+
+	std::string transparentColor;
+	pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForTransparent, transparentColor);
+	if (transparentColor != pDocLayout->m_szCurrentTransparentColor) {
 		if(pDocLayout->getView() && (pDocLayout->getView()->getPoint() > 0))
 		{
 			pDocLayout->updateColor();
@@ -4021,7 +4018,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 
 	// Display Annotations
 
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	pPrefs->getPrefsValueBool(AP_PREF_KEY_DisplayAnnotations, b);
 	changed = changed || (b != pDocLayout->m_bDisplayAnnotations);
 	if(b != pDocLayout->m_bDisplayAnnotations || (pDocLayout->m_iGraphicTick < 2))
 	{
@@ -4036,7 +4033,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 
 	// Display RDF Anchors
 
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayRDFAnchors), &b );
+	pPrefs->getPrefsValueBool(AP_PREF_KEY_DisplayRDFAnchors, b);
 	changed = changed || (b != pDocLayout->m_bDisplayRDFAnchors);
 	if(b != pDocLayout->m_bDisplayRDFAnchors || (pDocLayout->m_iGraphicTick < 2))
 	{
@@ -4656,21 +4653,21 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 			gint nInnerQuoteStyleIndex = 1; // Default to English
 			bool bUseCustomQuotes = false;
 			bool bOK2 = true;
-			
+
 			// 1st - See if we should use custom quotes
 			if (m_pPrefs)
 			{
-				bOK2 = m_pPrefs->getPrefsValueBool( static_cast<const gchar *>(XAP_PREF_KEY_CustomSmartQuotes), &bUseCustomQuotes );
+				bOK2 = m_pPrefs->getPrefsValueBool(XAP_PREF_KEY_CustomSmartQuotes, bUseCustomQuotes );
 				if (bOK2 && bUseCustomQuotes)
 				{
-					bool bOK1 = m_pPrefs->getPrefsValueInt( static_cast<const gchar *>(XAP_PREF_KEY_OuterQuoteStyle), nOuterQuoteStyleIndex );
+					bool bOK1 = m_pPrefs->getPrefsValueInt(XAP_PREF_KEY_OuterQuoteStyle, nOuterQuoteStyleIndex);
 					if (!bOK1)
 					{
 						nOuterQuoteStyleIndex = 0; // English if bad
 					}
 					else
 					{
-						bool bOK = m_pPrefs->getPrefsValueInt( static_cast<const gchar *>(XAP_PREF_KEY_InnerQuoteStyle), nInnerQuoteStyleIndex );
+						bool bOK = m_pPrefs->getPrefsValueInt(XAP_PREF_KEY_InnerQuoteStyle, nInnerQuoteStyleIndex);
 						if (!bOK)
 						{
 							nInnerQuoteStyleIndex = 1; // English if bad

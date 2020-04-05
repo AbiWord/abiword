@@ -40,9 +40,9 @@ bool XAP_AppImpl::openHelpURL(const char * url)
 }
 
 
-inline static void _catPath(std::string& st, const char* st2)
+inline static void _catPath(std::string& st, const std::string& st2)
 {
-	if (st.size() > 0)
+	if (!st.empty())
 	{
 		if (st[st.size() - 1] != '/')
 			st += '/';
@@ -73,11 +73,11 @@ std::string XAP_AppImpl::localizeHelpUrl (const char * pathBeforeLang,
 	UT_return_val_if_fail(pPrefs, "");
 
 	const char* abiSuiteLibDir = pApp->getAbiSuiteLibDir();
-	const gchar* abiSuiteLocString = NULL;
+	std::string abiSuiteLocString;
 	std::string url;
 
 	// evil...
-	pPrefs->getPrefsValue("StringSet", &abiSuiteLocString);
+	pPrefs->getPrefsValue("StringSet", abiSuiteLocString);
 
 	// 1st try file on user's computer (local file), if not exist try remote help
 	std::string path(abiSuiteLibDir);
@@ -110,9 +110,9 @@ std::string XAP_AppImpl::localizeHelpUrl (const char * pathBeforeLang,
 		// HACK: Not all help files are localized. 
 		// HACK: Hard code the available translations here instead of 404-ing.
 		if (!(
-			!strcmp(abiSuiteLocString, "en-US") ||
-			!strcmp(abiSuiteLocString, "fr-FR") ||
-			!strcmp(abiSuiteLocString, "pl-PL")
+			abiSuiteLocString == "en-US" ||
+			abiSuiteLocString == "fr-FR" ||
+			abiSuiteLocString == "pl-PL"
 			))
 			_catPath(url, "en-US");
 		else

@@ -372,12 +372,11 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * /*pFrame*/,const char *sz, gchar * pRet)
 {
 	UT_Dimension PreferedUnits = DIM_none;
-	const gchar * pszRulerUnits = NULL;
+	std::string rulerUnits;
 
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
-	{
-		PreferedUnits = UT_determineDimension(static_cast<const char *>(pszRulerUnits));
-	};
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
+		PreferedUnits = UT_determineDimension(rulerUnits.c_str());
+	}
 	strncpy(pRet, static_cast<const gchar *>(UT_reformatDimensionString(PreferedUnits,sz)), 25);
 }
 

@@ -53,6 +53,7 @@ ABI_W_POP
 #include "ut_debugmsg.h"
 #include "ut_path.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_misc.h"
 #include "ut_locale.h"
 #include "ut_sleep.h"
@@ -190,11 +191,9 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 {
 	UT_ASSERT(pDefaultStringSet);
 
-	const char * szDirectory = NULL;
-	getPrefsValueDirectory(true,
-			       static_cast<const gchar*>(AP_PREF_KEY_StringSetDirectory),
-			       static_cast<const gchar**>(&szDirectory));
-	UT_return_val_if_fail((szDirectory) && (*szDirectory), NULL);
+	std::string directory;
+	getPrefsValueDirectory(true, AP_PREF_KEY_StringSetDirectory, directory);
+	UT_return_val_if_fail(!directory.empty(), NULL);
 
 	UT_String szPathVariant[4];
 	char * p_strbuf = strdup("");
@@ -213,9 +212,10 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 
 	if (p_modifier) {
 		// fo_BA@xxx.strings
-		szPathVariant[cur_id] = szDirectory;
-		if (szDirectory[strlen(szDirectory)-1]!='/')
+		szPathVariant[cur_id] = directory;
+		if (directory[directory.size() - 1] != '/') {
 			szPathVariant[cur_id] += "/";
+		}
 		szPathVariant[cur_id] += p_strbuf;
 		szPathVariant[cur_id] += ".strings";
 
@@ -223,9 +223,10 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 
 		// fo@xxx.strings
 		if (szStringSet && strlen(szStringSet) > 2) {
-			szPathVariant[cur_id] = szDirectory;
-			if (szDirectory[strlen(szDirectory)-1]!='/')
+			szPathVariant[cur_id] = directory;
+			if (directory[directory.size() - 1] != '/') {
 				szPathVariant[cur_id] += "/";
+			}
 			szPathVariant[cur_id] += p_strbuf[0];
 			szPathVariant[cur_id] += p_strbuf[1];
 			if (three_letters)
@@ -239,20 +240,22 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 		// trim modifier part
 		*p_modifier = 0;
 	}
-	
+
 	// fo_BA.strings
-	UT_String szPath = szDirectory;
-	if (szDirectory[szPath.size()-1]!='/')
+	UT_String szPath = directory;
+	if (directory[szPath.size() -1 ] != '/') {
 		szPath += "/";
+	}
 	szPath += p_strbuf;
 	szPath += ".strings";
 
 	// fo.strings
 	UT_String szFallbackPath;
 	if (szStringSet && strlen(szStringSet) > 2) {
-		szFallbackPath = szDirectory;
-		if (szDirectory[szFallbackPath.size()-1]!='/')
+		szFallbackPath = directory;
+		if (directory[szFallbackPath.size() - 1] != '/') {
 			szFallbackPath += "/";
+		}
 		szFallbackPath += p_strbuf[0];
 		szFallbackPath += p_strbuf[1];
 		if (three_letters)
@@ -329,36 +332,31 @@ bool AP_UnixApp::initialize(bool has_display)
     // the initialization could be properly localized before being
     // reported to the user)
     //////////////////////////////////////////////////////////////////
-	
-    {	
+
+    {
 		// Loading default string set for untranslated messages
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this, 
-													static_cast<const gchar*>(AP_PREF_DEFAULT_StringSet));
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,
+													AP_PREF_DEFAULT_StringSet);
 		UT_ASSERT(pBuiltinStringSet);
 
 		// try loading strings by preference
-		const char * szStringSet = NULL;
-		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
-							  static_cast<const gchar**>(&szStringSet)))
-			   && (szStringSet)
-			   && (*szStringSet)
-			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
-		{
-			m_pStringSet = loadStringsFromDisk(szStringSet, pBuiltinStringSet);
+		std::string stringSet;
+		if (getPrefsValue(AP_PREF_KEY_StringSet, stringSet)
+			&& !stringSet.empty()
+			&& stringSet == AP_PREF_DEFAULT_StringSet) {
+			m_pStringSet = loadStringsFromDisk(stringSet.c_str(), pBuiltinStringSet);
 		}
 
 		// try loading fallback strings for the language, e.g. es-ES for es-AR
-		if (m_pStringSet == NULL) 
-		{
-			const char *szFallbackStringSet = UT_getFallBackStringSetLocale(szStringSet);
+		if (m_pStringSet == NULL) {
+			const char *szFallbackStringSet = UT_getFallBackStringSetLocale(stringSet.c_str());
 			if (szFallbackStringSet)
 				m_pStringSet = loadStringsFromDisk(szFallbackStringSet, pBuiltinStringSet);
 		}
 
 		// load the builtin string set
 		// this is the default
-		if (m_pStringSet == NULL) 
-		{
+		if (m_pStringSet == NULL) {
 			m_pStringSet = pBuiltinStringSet;
 		}
     }
@@ -404,21 +402,19 @@ bool AP_UnixApp::initialize(bool has_display)
     /// Build a labelset so the plugins can add themselves to something ///
     ///////////////////////////////////////////////////////////////////////
 
-	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_StringSet, static_cast<const gchar**>(&szMenuLabelSetName))
-		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
-	{
+	std::string menuLabelSetName;
+	if (getPrefsValue(AP_PREF_KEY_StringSet, menuLabelSetName) && !menuLabelSetName.empty()) {
 		;
+	} else {
+		menuLabelSetName = AP_PREF_DEFAULT_StringSet;
 	}
-	else
-		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
 
-	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
+	getMenuFactory()->buildMenuLabelSet(menuLabelSetName.c_str());
 
 	abi_register_builtin_plugins();
 
 	bool bLoadPlugins = true;
-	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
+	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins, bLoadPlugins);
 	if(bLoadPlugins || !bFound)
 		loadAllPlugins();
 	//
@@ -477,29 +473,23 @@ bool AP_UnixApp::shutdown(void)
   \todo support meaningful return values.
 */
 bool AP_UnixApp::getPrefsValueDirectory(bool bAppSpecific,
-										const gchar * szKey, const gchar ** pszValue) const
+										const std::string& key, std::string& value) const
 {
-    if (!m_prefs)
+	if (!m_prefs)
 		return false;
 
-    const gchar * psz = NULL;
-    if (!m_prefs->getPrefsValue(szKey,&psz))
+	if (!m_prefs->getPrefsValue(key, value) || value.empty()) {
 		return false;
+	}
 
-    if (*psz == '/')
-    {
-		*pszValue = psz;
+	if (value[0] == '/')  {
 		return true;
-    }
+	}
 
-    const gchar * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
+	const gchar * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
 
-    static gchar buf[1024];
-    UT_ASSERT((strlen(dir) + strlen(psz) + 2) < sizeof(buf));
-	
-    sprintf(buf,"%s/%s",dir,psz);
-    *pszValue = buf;
-    return true;
+	value = UT_std_string_sprintf("%s/%s", dir, value.c_str());
+	return true;
 }
 
 /*!

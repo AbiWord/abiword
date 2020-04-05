@@ -36,22 +36,23 @@ AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XA
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoginsertable")
 {
 	m_answer = a_OK;
-	
+
 	/* Default values for the dialog box*/
 	m_numRows = 2;
 	m_numCols = 5;
 	m_columnWidth = static_cast<float>(0.7);	// In DIM_IN
-	
-	/* Use default units*/
-	const gchar * szRulerUnits;
-	if (getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		m_dim = UT_determineDimension(szRulerUnits);
-	else
-		m_dim = DIM_IN;
 
-	// The default m_columnWidth is in inches, convert 
+	/* Use default units*/
+	std::string rulerUnits;
+	if (getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
+		m_dim = UT_determineDimension(rulerUnits.c_str());
+	} else {
+		m_dim = DIM_IN;
+	}
+
+	// The default m_columnWidth is in inches, convert
 	// if the user default unit is different
-	if (m_dim != DIM_IN)								
+	if (m_dim != DIM_IN)
 		m_columnWidth = static_cast<float>(UT_convertInchesToDimension(m_columnWidth, m_dim));
 }
 

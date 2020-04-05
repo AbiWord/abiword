@@ -69,8 +69,8 @@ XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFac
       m_appendDefaultSuffixFunctor( getAppendDefaultSuffixFunctorUsing_IE_Exp_preferredSuffixForFileType() )
 
 {
-	const gchar * savedir = nullptr;
-	if (getApp()->getPrefsValue(XAP_PREF_KEY_DefaultSaveDirectory, &savedir) && strlen(savedir)) {
+	std::string savedir;
+	if (getApp()->getPrefsValue(XAP_PREF_KEY_DefaultSaveDirectory, savedir) && !savedir.empty()) {
 		m_persistPathname = savedir;
 	}
 }

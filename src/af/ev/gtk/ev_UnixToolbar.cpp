@@ -844,17 +844,18 @@ static void setDragIcon(GtkWidget * wwd, GtkImage * img)
 */
 GtkToolbarStyle EV_UnixToolbar::getStyle(void)
 {
-	const gchar * szValue = NULL;
-	m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
-	UT_ASSERT((szValue) && (*szValue));
-	
-	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
-	if (g_ascii_strcasecmp(szValue,"text")==0)
-		style = GTK_TOOLBAR_TEXT;
-	else if (g_ascii_strcasecmp(szValue,"both")==0)
-		style = GTK_TOOLBAR_BOTH;
+	std::string value;
+	m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, value);
+	UT_ASSERT(!value.empty());
 
-	return style;	
+	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
+	if (value == "text") {
+		style = GTK_TOOLBAR_TEXT;
+	} else if (value == "both") {
+		style = GTK_TOOLBAR_BOTH;
+	}
+
+	return style;
 }
 
 bool EV_UnixToolbar::synthesize(void)

@@ -166,9 +166,8 @@ public:
 	bool						isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
 	void						suggestWord(UT_GenericVector<UT_UCSChar*> * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord);
     XAP_Prefs *						getPrefs() const;
-	bool						getPrefsValue(const gchar * szKey, const gchar ** pszValue) const;
-	bool						getPrefsValue(const gchar* szKey, std::string &stValue) const;
-	bool						getPrefsValueBool(const gchar * szKey, bool * pbValue) const;
+	bool getPrefsValue(const std::string& key, std::string& value) const;
+	bool getPrefsValueBool(const std::string& key, bool& pbValue) const;
 
 	static XAP_App *				getApp();
 

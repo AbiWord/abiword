@@ -84,11 +84,12 @@ void AP_Dialog_Tab::_storeWindowData()
 
 void AP_Dialog_Tab::_populateWindowData(void)
 {
-	const gchar * szRulerUnits;
-	if (getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		m_dim = UT_determineDimension(szRulerUnits);
-	else
+	std::string rulerUnits;
+	if (getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
+		m_dim = UT_determineDimension(rulerUnits.c_str());
+	} else {
 		m_dim = DIM_IN;
+	}
 
 	UT_return_if_fail (m_pFrame); // needs to be set from runModal for some of the event_'s to work
 

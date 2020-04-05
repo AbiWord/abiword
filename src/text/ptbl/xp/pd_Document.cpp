@@ -207,7 +207,7 @@ PD_Document::PD_Document()
 	  m_iLastAuthorInt(-1),
 	  m_iStruxCount(0)
 {
-	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
+	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles, m_bLockedStyles);
 	UT_ASSERT(isOrigUUID());
 #ifdef PT_TEST
 	m_pDoc = this;
@@ -6305,7 +6305,7 @@ bool PD_Document::setAttrProp(const PP_PropertyVector & ppAttr)
 		// now set default properties, starting with dominant
 		// direction
 		bool bRTL = false;
-		XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&bRTL);
+		XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, bRTL);
 
 		PP_PropertyVector props = {
 			"dom-dir", bRTL ? "rtl" : "ltr"

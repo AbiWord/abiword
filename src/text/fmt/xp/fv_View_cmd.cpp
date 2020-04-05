@@ -3034,16 +3034,15 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 	{
 		bool bLang = false, bMarker = false;
 
-		XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
-											 &bLang);
+		XAP_App::getApp()->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, bLang);
 
 		const UT_LangRecord * pLR = NULL;
 	
 		if(bLang)
 		{
 			pLR = XAP_App::getApp()->getKbdLanguage();
-		
-			XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+
+			XAP_App::getApp()->getPrefsValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis, bMarker);
 		}
 
 		if(bMarker && pLR)

@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -596,23 +596,22 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 	UT_uint32 iTB,iLay;
 	for(iTB=0; iTB< numTB;iTB++)
 	{
-		UT_String sTBBase = XAP_PREF_KEY_ToolbarNumEntries;
-		const char * szCurName =  s_ttTable[iTB].m_name;
-		sTBBase +=szCurName;
-		const gchar * szNrEntries = NULL;
+		std::string sTBBase = XAP_PREF_KEY_ToolbarNumEntries;
+		const char * szCurName = s_ttTable[iTB].m_name;
+		sTBBase += szCurName;
+		std::string nrEntries;
 		UT_uint32 NrEntries = 0;
 //
 // Get Number of entries if the correct key exists. Otherwise use defaults.
 //
-		pScheme->getValue((const gchar *)sTBBase.c_str(),&szNrEntries);
-		if(szNrEntries && *szNrEntries)
-		{	
+		pScheme->getValue(sTBBase, nrEntries);
+		if(!nrEntries.empty()) {
 			pVec = new XAP_Toolbar_Factory_vec(szCurName);
 			m_vecTT.addItem(pVec);
-			NrEntries = atoi(szNrEntries);
+			NrEntries = atoi(nrEntries.c_str());
 //
 // Loop through this toolbar definition and restore it from the preferences
-//		
+//
 			for(iLay =0; iLay< NrEntries;iLay++)
 			{
 //
@@ -622,14 +621,11 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 				sTBBase += szCurName;
 				sprintf(buf,"%d",iLay);
 				sTBBase += buf;
-				const gchar * szCurId = NULL;
-				pScheme->getValue((const gchar *)sTBBase.c_str(),&szCurId);
-				if(szCurId == NULL)
-				{
+				std::string sCurId;
+				if (!pScheme->getValue(sTBBase, sCurId) || sCurId.empty()) {
 					continue;
 				}
-				UT_return_val_if_fail (szCurId && *szCurId, false);
-				XAP_Toolbar_Id curId = (XAP_Toolbar_Id) atoi(szCurId);
+				XAP_Toolbar_Id curId = (XAP_Toolbar_Id) atoi(sCurId.c_str());
 //
 // Here we should check whether the ID exists or not
 // 
@@ -645,11 +641,10 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 				sTBBase += szCurName;
 				sprintf(buf,"%d",iLay);
 				sTBBase += buf;
-				const gchar * szCurFlag = NULL;
-				pScheme->getValue((const gchar *)sTBBase.c_str(),&szCurFlag);
-				if(szCurFlag != NULL)
-				{
-					EV_Toolbar_LayoutFlags curFlag = (EV_Toolbar_LayoutFlags) atoi(szCurFlag);
+				std::string sCurFlag;
+				pScheme->getValue(sTBBase, sCurFlag);
+				if (!sCurFlag.empty()) {
+					EV_Toolbar_LayoutFlags curFlag = (EV_Toolbar_LayoutFlags) atoi(sCurFlag.c_str());
 //
 // Build element and add it into the Toolbar layout
 //

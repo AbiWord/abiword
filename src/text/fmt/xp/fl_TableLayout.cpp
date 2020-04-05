@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -1212,12 +1212,13 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty("table-margin-right", (const gchar *&)pszRightOffset);
 	pSectionAP->getProperty("table-margin-bottom", (const gchar *&)pszBottomOffset);
 
-	const gchar * szRulerUnits;
+	std::string rulerUnits;
 	UT_Dimension dim;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		dim = UT_determineDimension(szRulerUnits);
-	else
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
+		dim = UT_determineDimension(rulerUnits.c_str());
+	} else {
 		dim = DIM_IN;
+	}
 
 	UT_String defaultOffset;
 	switch(dim)
@@ -2571,10 +2572,10 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty("cell-margin-top", (const gchar *&)pszTopOffset);
 	pSectionAP->getProperty("cell-margin-right", (const gchar *&)pszRightOffset);
 	pSectionAP->getProperty("cell-margin-bottom", (const gchar *&)pszBottomOffset);
-	const gchar * szRulerUnits;
+	std::string rulerUnits;
 	UT_Dimension dim;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		dim = UT_determineDimension(szRulerUnits);
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits))
+		dim = UT_determineDimension(rulerUnits.c_str());
 	else
 		dim = DIM_IN;
 

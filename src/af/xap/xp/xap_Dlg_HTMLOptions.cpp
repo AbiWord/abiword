@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiSource Application Framework
  * Copyright (C) 2002 AbiSource, Inc.
@@ -240,58 +240,60 @@ void XAP_Dialog_HTMLOptions::restoreDefaults ()
 	XAP_Dialog_HTMLOptions::getHTMLDefaults (m_exp_opt, m_app);
 }
 
-void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP_App * app)
+void XAP_Dialog_HTMLOptions::getHTMLDefaults(XAP_Exp_HTMLOptions* exp_opt, XAP_App* app)
 {
 	UT_ASSERT(exp_opt);
 
-	if (exp_opt == NULL) return;
+	if (exp_opt == NULL) {
+		return;
+	}
 
-	exp_opt->bIs4             = false;
-	exp_opt->bIsAbiWebDoc     = false;
-	exp_opt->bDeclareXML      = true;
-	exp_opt->bAllowAWML       = true;
-	exp_opt->bEmbedCSS        = true;
-	exp_opt->bAbsUnits        = false;
-	exp_opt->bScaleUnits      = false;
-	exp_opt->iCompact         = 0;
-	exp_opt->bEmbedImages     = false;
-        exp_opt->bMathMLRenderPNG = false;
-	exp_opt->bSplitDocument   = false;
-	if (app == NULL) return;
+	exp_opt->bIs4 = false;
+	exp_opt->bIsAbiWebDoc = false;
+	exp_opt->bDeclareXML = true;
+	exp_opt->bAllowAWML = true;
+	exp_opt->bEmbedCSS = true;
+	exp_opt->bAbsUnits = false;
+	exp_opt->bScaleUnits = false;
+	exp_opt->iCompact = 0;
+	exp_opt->bEmbedImages = false;
+	exp_opt->bMathMLRenderPNG = false;
+	exp_opt->bSplitDocument = false;
+	if (app == NULL) {
+		return;
+	}
 
-        const XAP_Prefs * pPrefs = app->getPrefs ();
+	const XAP_Prefs * pPrefs = app->getPrefs ();
+	if (pPrefs == NULL) {
+		return;
+	}
 
-	if (pPrefs == NULL) return;
+	std::string pref;
+	bool haveValue = pPrefs->getPrefsValue(XAP_PREF_KEY_HTMLExportOptions, pref);
 
-	const gchar * szValue = NULL;
-	bool haveValue = pPrefs->getPrefsValue (XAP_PREF_KEY_HTMLExportOptions, &szValue);
+	if (haveValue && !pref.empty())	{
+		exp_opt->bIs4 = (strstr(pref.c_str(), "HTML4") == NULL) ? false : true;
+		exp_opt->bIsAbiWebDoc = (strstr(pref.c_str(), "PHTML") == NULL) ? false : true;
+		exp_opt->bDeclareXML = (strstr(pref.c_str(), "?xml") == NULL) ? false : true;
+		exp_opt->bAllowAWML = (strstr(pref.c_str(), "xmlns:awml") == NULL) ? false : true;
+		exp_opt->bEmbedCSS = (strstr(pref.c_str(), "+CSS") == NULL) ? false : true;
+		exp_opt->bAbsUnits = (strstr(pref.c_str(), "+AbsUnits") == NULL) ? false : true;
+		exp_opt->bScaleUnits = (strstr(pref.c_str(), "+ScaleUnits") == NULL) ? false : true;
 
-	if (haveValue && szValue)
-		{
-			const char * pref = (const char *) szValue;
-
-			exp_opt->bIs4         = (strstr (pref, "HTML4")       == NULL) ? false : true;
-			exp_opt->bIsAbiWebDoc = (strstr (pref, "PHTML")       == NULL) ? false : true;
-			exp_opt->bDeclareXML  = (strstr (pref, "?xml")        == NULL) ? false : true;
-			exp_opt->bAllowAWML   = (strstr (pref, "xmlns:awml")  == NULL) ? false : true;
-			exp_opt->bEmbedCSS    = (strstr (pref, "+CSS")        == NULL) ? false : true;
-			exp_opt->bAbsUnits    = (strstr (pref, "+AbsUnits")   == NULL) ? false : true;
-			exp_opt->bScaleUnits  = (strstr (pref, "+ScaleUnits")   == NULL) ? false : true;
-
-			const char * p = strstr (pref, "Compact:");
-			if(p)
-			{
-				p += 8;
-				exp_opt->iCompact = atoi(p);
-			}
-			
-			exp_opt->bLinkCSS           = (strstr (pref, "LinkCSS")     == NULL) ? false : true;
-			exp_opt->bClassOnly         = (strstr (pref, "ClassOnly")   == NULL) ? false : true;
-			exp_opt->bEmbedImages       = (strstr (pref, "data:base64") == NULL) ? false : true;
-                        exp_opt->bMathMLRenderPNG   = (strstr (pref, "+MathMLPNG")  == NULL) ? false : true;
-			exp_opt->bSplitDocument     = (strstr (pref, "+SplitDoc")   == NULL) ? false : true;
-
-
-			if (exp_opt->bIs4) exp_opt->bIsAbiWebDoc = false;
+		const char * p = strstr(pref.c_str(), "Compact:");
+		if (p) {
+			p += 8;
+			exp_opt->iCompact = atoi(p);
 		}
+
+		exp_opt->bLinkCSS = (strstr(pref.c_str(), "LinkCSS") == NULL) ? false : true;
+		exp_opt->bClassOnly = (strstr(pref.c_str(), "ClassOnly") == NULL) ? false : true;
+		exp_opt->bEmbedImages = (strstr(pref.c_str(), "data:base64") == NULL) ? false : true;
+		exp_opt->bMathMLRenderPNG = (strstr(pref.c_str(), "+MathMLPNG") == NULL) ? false : true;
+		exp_opt->bSplitDocument = (strstr(pref.c_str(), "+SplitDoc") == NULL) ? false : true;
+
+		if (exp_opt->bIs4) {
+			exp_opt->bIsAbiWebDoc = false;
+		}
+	}
 }

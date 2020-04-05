@@ -204,7 +204,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
   UT_return_val_if_fail ( pPrefs, EV_TIS_Gray );
 
   bool b = true ;
-  pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
+  pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoSpellCheck, b);
 
   // if there are no loaded dictionaries and we are spell checking
   // as we type

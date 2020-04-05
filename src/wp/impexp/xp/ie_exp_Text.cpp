@@ -71,7 +71,7 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt = false;
-	XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
+	XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, bAlwaysPrompt);
 
 	m_bIsEncoded = bAlwaysPrompt | bEncoded;
 

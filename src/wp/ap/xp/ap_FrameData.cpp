@@ -51,39 +51,39 @@ AP_FrameData::AP_FrameData()
 	m_bIsFullScreen = false;
 
 	bool b;
-	const gchar *str;
+        std::string str;
 
-	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_InsertMode, &b))
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_InsertMode, b))
 		m_bInsertMode = b;
 
-	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_RulerVisible, &b))
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_RulerVisible, b))
 		m_bShowRuler = b;
 
 #if XAP_SIMPLE_TOOLBAR		
 	m_bShowBar[0] = true;
 #else		
-	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_StandardBarVisible, &b))
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_StandardBarVisible, b))
 		m_bShowBar[0] = b;
 
-	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_FormatBarVisible, &b))
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_FormatBarVisible, b))
 		m_bShowBar[1] = b;
 
-	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_TableBarVisible, &b))
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_TableBarVisible, b))
 		m_bShowBar[2] = b;
 
-	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_ExtraBarVisible, &b))
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_ExtraBarVisible, b))
 		m_bShowBar[3] = b;
 #endif		
 
-	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_StatusBarVisible, &b))
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_StatusBarVisible, b))
 		m_bShowStatusBar = b;
 
-	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_ParaVisible, &b))
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_ParaVisible, b))
 		m_bShowPara = b;
 
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_LayoutMode, &str))
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_LayoutMode, str))
 	{
-		int i = atoi ((const char *)str);
+		int i = atoi(str.c_str());
 		switch (i)
 		{
 			case 3:  m_pViewMode = VIEW_WEB;    break;

@@ -63,8 +63,8 @@ public:
 	virtual GR_Graphics *           newDefaultScreenGraphics() const override;
 
 	virtual bool					shutdown(void);
-	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
-									       const gchar * szKey, const gchar ** pszValue) const;
+	virtual bool getPrefsValueDirectory(bool bAppSpecific, const std::string& key,
+										std::string& value) const;
 	virtual const XAP_StringSet *	                getStringSet(void) const override;
 	virtual const char *			        getAbiSuiteAppDir(void) const override;
 	virtual const std::string&			getAbiSuiteAppUIDir(void) const override;

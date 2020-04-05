@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998, 1999 AbiSource, Inc.
  * Copyright (C) 2004 Hubert Figuiere
@@ -323,7 +323,7 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 // Set Smooth Scrolling
 //
 	bool bEnableSmooth = true;
-	getPrefsValueBool(XAP_PREF_KEY_EnableSmoothScrolling, &bEnableSmooth);
+	getPrefsValueBool(XAP_PREF_KEY_EnableSmoothScrolling, bEnableSmooth);
 	if(bEnableSmooth)
 		setEnableSmoothScrolling(true);
 	else
@@ -336,13 +336,12 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	UT_srandom(t);
 
 	// Input mode initilization, taken out of the XAP_Frame
-	const char * szBindings = NULL;
+	std::string bindings;
 	EV_EditBindingMap * pBindingMap = NULL;
 
-	if ((getPrefsValue(szKeyBindingsKey,
-				 static_cast<const gchar**>(&szBindings))) && 
-	    (szBindings) && (*szBindings))
-		pBindingMap = m_pApp->getBindingMap(szBindings);
+	if (getPrefsValue(szKeyBindingsKey, bindings) && !bindings.empty()) {
+		pBindingMap = m_pApp->getBindingMap(bindings.c_str());
+	}
 	if (!pBindingMap)
 		pBindingMap = m_pApp->getBindingMap(szKeyBindingsDefaultValue);
 	UT_ASSERT(pBindingMap);
@@ -353,22 +352,20 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 		UT_ASSERT(m_pInputModes);
 	}
 	bool bResult;
-	bResult = m_pInputModes->createInputMode(szBindings,pBindingMap);
+	bResult = m_pInputModes->createInputMode(bindings.c_str(), pBindingMap);
 	UT_ASSERT(bResult);
-	bResult = m_pInputModes->setCurrentMap(szBindings);
+	bResult = m_pInputModes->setCurrentMap(bindings.c_str());
 	UT_ASSERT(bResult);
 	UT_UNUSED(bResult); // TODO deal with the error
 
 	// check if the prefs are set to use specific graphics class
-	const char * pszGraphics = NULL;
-	if(getPrefsValue(XAP_PREF_KEY_DefaultGraphics, &pszGraphics))
-	{
+	std::string graphics;
+	if (getPrefsValue(XAP_PREF_KEY_DefaultGraphics, graphics)) {
 		UT_uint32 iID = 0;
 
 		// please leave this in hex format (the constants are defined in gr_Graphics.h as hex)
-		sscanf(pszGraphics,"%x", &iID);
-		if(iID != 0)
-		{
+		sscanf(graphics.c_str(),"%x", &iID);
+		if (iID != 0) {
 			UT_DEBUGMSG(("Graphics %d requested as default\n", iID));
 
 			// first of all, check that it is registered
@@ -929,28 +926,22 @@ XAP_Prefs * XAP_App::getPrefs() const
 	return m_prefs;
 }
 
-bool XAP_App::getPrefsValue(const gchar * szKey, const gchar ** pszValue) const
+bool XAP_App::getPrefsValue(const std::string& key, std::string & stValue) const
 {
-	if (!m_prefs)
+	if (!m_prefs) {
 		return false;
+	}
 
-	return m_prefs->getPrefsValue(szKey,pszValue);
+	return m_prefs->getPrefsValue(key, stValue);
 }
 
-bool XAP_App::getPrefsValue(const gchar * szKey, std::string & stValue) const
+bool XAP_App::getPrefsValueBool(const std::string& key, bool& bValue) const
 {
-	if (!m_prefs)
+	if (!m_prefs) {
 		return false;
+	}
 
-	return m_prefs->getPrefsValue(szKey,stValue);
-}
-
-bool XAP_App::getPrefsValueBool(const gchar * szKey, bool * pbValue) const
-{
-	if (!m_prefs)
-		return false;
-
-	return m_prefs->getPrefsValueBool(szKey,pbValue);
+	return m_prefs->getPrefsValueBool(key, bValue);
 }
 
 void XAP_App::rememberFocussedFrame( void * pJustFocussedFrame)
@@ -1176,7 +1167,7 @@ void XAP_App::setKbdLanguage(const char * pszLang)
 
 		// ensure that the change is shown in our status bar
 	    bool bChangeLang = false;
-		getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, &bChangeLang);
+		getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, bChangeLang);
 
 		if(bChangeLang && m_pKbdLang)
 		{

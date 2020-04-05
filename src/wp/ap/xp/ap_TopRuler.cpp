@@ -88,11 +88,12 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_bGuide = false;
 	m_xGuide = 0;
 
-	const gchar * szRulerUnits;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		m_dim = UT_determineDimension(szRulerUnits);
-	else
+	std::string rulerUnits;
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
+		m_dim = UT_determineDimension(rulerUnits.c_str());
+	} else {
 		m_dim = DIM_IN;
+	}
 
 	// set the default to be the fixed size
 	m_iHeight = s_iFixedHeight;
@@ -1209,7 +1210,7 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	UT_sint32 widthPrevPagesInRow = pView->getWidthPrevPagesInRow(pView->getCurrentPageNumber()-1);
 
 	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, bRTL);
 
 	if(bRTL)
 	{
@@ -1332,7 +1333,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// draw a dark-gray bar over the left margin
 
 	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, bRTL);
 
 	UT_sint32 xAbsRight = pInfo->u.c.m_xaLeftMargin + (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap) * pInfo->m_iNumColumns - pInfo->u.c.m_xColumnGap;
 
@@ -1678,7 +1679,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 
 	UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 	bool bRTLglobal;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
+	XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, bRTLglobal);
 
 	fl_BlockLayout * pBL = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	UT_return_val_if_fail(pBL,false);
@@ -2599,7 +2600,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 
 
 	bool bRTLglobal;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
+	XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, bRTLglobal);
 
 	fl_BlockLayout *pBlock1 = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	
@@ -3460,7 +3461,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 							// a right edge of the rightmost column.
 
 	bool bRTLglobal;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
+	XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, bRTLglobal);
 
 	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	
@@ -4224,7 +4225,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	UT_sint32 xAbsLeft = xFixed + ixMargin + xOrigin - m_xScrollOffset;
 
 	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, bRTL);
 
 	if(bRTL)
 	{
@@ -4855,11 +4856,11 @@ void AP_TopRuler::_prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet* /
 	AP_TopRuler *pTopRuler = static_cast<AP_TopRuler *>(data);
 	UT_return_if_fail ( data && pPrefs );
 
-	const gchar *pszBuffer;
-	pPrefs->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
+	std::string buffer;
+	pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits, buffer);
 
 	// or should I just default to inches or something?
-	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
+	UT_Dimension dim = UT_determineDimension(buffer.c_str(), DIM_none);
 	UT_ASSERT_HARMLESS( dim != DIM_none );
 
 	if ( dim != pTopRuler->getDimension() )

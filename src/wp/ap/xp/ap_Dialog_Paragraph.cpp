@@ -60,16 +60,16 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	m_pFrame = NULL;
 
 	// determine unit system to use in this dialog
-	const gchar * szRulerUnits;
+	std::string rulerUnits;
 	UT_return_if_fail (m_pApp);
 
 	XAP_Prefs* pPrefs = m_pApp->getPrefs();
 	UT_return_if_fail (pPrefs);
 
 	const bool bHasRulerUnits =
-		pPrefs->getPrefsValue((gchar*)AP_PREF_KEY_RulerUnits, &szRulerUnits);
+		pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits);
 
-	m_dim = bHasRulerUnits ? UT_determineDimension(szRulerUnits) : DIM_IN;
+	m_dim = bHasRulerUnits ? UT_determineDimension(rulerUnits.c_str()) : DIM_IN;
 
 
 	_addPropertyItem (id_MENU_ALIGNMENT,		sControlData(align_UNDEF));

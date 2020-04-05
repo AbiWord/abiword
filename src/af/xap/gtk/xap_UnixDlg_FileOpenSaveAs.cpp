@@ -283,7 +283,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_main_loop(XAP_Frame * pFrame,
 				
 				bool wantSuffix = true;
 				XAP_Prefs *pPrefs= XAP_App::getApp()->getPrefs();
-				pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_UseSuffix), &wantSuffix);
+				pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseSuffix, wantSuffix);
 				UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
 
 				if (nFileType > 0 && getDialogId() != XAP_DIALOG_ID_FILE_SAVE_IMAGE) // 0 means autodetect

@@ -1,20 +1,21 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; ident-tabs-mode:t; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ * Copyright (c) 2020 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -43,13 +44,6 @@ struct xmlToIdMapping {
 	const char *m_name;
 	int m_type;
 };
-
-static  UT_sint32 compareStrings(const void * ppS1, const void * ppS2)
-{
-	const char * sz1 = static_cast<const char *>(ppS1);
-	const char * sz2 = static_cast<const char *>(ppS2);
-	return g_ascii_strcasecmp(sz1, sz2);
-}
 
 enum
 {
@@ -81,183 +75,96 @@ static struct xmlToIdMapping s_Tokens[] =
 /*****************************************************************/
 
 XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const gchar * szSchemeName)
-	: m_hash(41)
+	: m_szName(szSchemeName ? szSchemeName : "")
+    , m_pPrefs(pPrefs)
 {
-	m_pPrefs = pPrefs;
-	m_uTick = 0;
-	m_bValidSortedKeys = false;
-
-	if (szSchemeName && *szSchemeName)
-		m_szName = g_strdup(szSchemeName);
-	else
-		m_szName = NULL;
 }
 
 XAP_PrefsScheme::~XAP_PrefsScheme(void)
 {
-	FREEP(m_szName);
-
-	// loop through and g_free the values
-	UT_GenericVector<gchar*> * pVec = m_hash.enumerate ();
-
-	UT_uint32 cnt = pVec->size();
-
-	for (UT_uint32 i = 0 ; i < cnt; i++)
-	  {
-	    char * val = pVec->getNthItem (i);
-	    FREEP(val);
-	  }
-
-	DELETEP(pVec);
 }
 
-const gchar * XAP_PrefsScheme::getSchemeName(void) const
+const std::string& XAP_PrefsScheme::getSchemeName(void) const
 {
 	return m_szName;
 }
 
-bool XAP_PrefsScheme::setSchemeName(const gchar * szNewSchemeName)
+void XAP_PrefsScheme::setSchemeName(const gchar* szNewSchemeName)
 {
-	FREEP(m_szName);
-	return (NULL != (m_szName = g_strdup(szNewSchemeName)));
+	m_szName = (szNewSchemeName ? szNewSchemeName : "");
 }
 
-bool XAP_PrefsScheme::setValue(const gchar * szKey, const gchar * szValue)
+void XAP_PrefsScheme::setValue(const std::string& key, const std::string& value)
 {
-	++m_uTick;
-	gchar * pEntry = m_hash.pick(szKey);
-	if (pEntry)
-	{
-		if (strcmp(szValue,pEntry) == 0)
-			return true;				// equal values, no changes required
-		
-		m_hash.set (szKey, g_strdup (szValue));
-		FREEP(pEntry);
+	auto iter = m_hash.find(key);
+	if (iter == m_hash.end()) {
+		m_hash.insert({key, value});
+	} else {
+		if (iter->second == value) {
+			return;
+		}
+		iter->second = value;
 	}
-	else
-	{
-		// otherwise, need to add a new entry
-		m_hash.insert(szKey, g_strdup(szValue));
-		m_bValidSortedKeys = false;
-	}
-
-	m_pPrefs->_markPrefChange( szKey );
-
-	return true;
+	m_pPrefs->_markPrefChange(key);
 }
 
-bool XAP_PrefsScheme::setValueBool(const gchar * szKey, bool bValue)
+void XAP_PrefsScheme::setValueBool(const std::string& key, bool bValue)
 {
-	return setValue(szKey, reinterpret_cast<const gchar*>((bValue) ? "1" : "0"));
+	setValue(key, (bValue) ? "1" : "0");
 }
 
-bool XAP_PrefsScheme::setValueInt(const gchar * szKey, const int nValue)
+void XAP_PrefsScheme::setValueInt(const std::string& key, int nValue)
 {
 	gchar szValue[32];
-	sprintf(szValue, "%d", nValue);
-	return setValue(szKey, szValue);
+	snprintf(szValue, 32, "%d", nValue);
+	setValue(key, szValue);
 }
 
-bool XAP_PrefsScheme::getValue(const gchar * szKey, const gchar ** pszValue) const
+bool XAP_PrefsScheme::getValue(const std::string& key, std::string &value) const
 {
-	gchar *pEntry = m_hash.pick(szKey);
-	if (!pEntry)
+    auto iter = m_hash.find(key);
+    if (iter == m_hash.end()) {
+        return false;
+    }
+
+    value = iter->second;
+	return true;
+}
+
+bool XAP_PrefsScheme::getValueInt(const std::string& key, int& nValue) const
+{
+    std::string value;
+	if (!getValue(key, value)) {
 		return false;
+    }
 
-	if (pszValue)
-		*pszValue = pEntry;
+	nValue = atoi(value.c_str());
 	return true;
 }
 
-bool XAP_PrefsScheme::getValue(const char* szKey, std::string &stValue) const
+bool XAP_PrefsScheme::getValueBool(const std::string& key, bool& bValue) const
 {
-	const char *pEntry = m_hash.pick(szKey);
-	if (!pEntry)
+	bValue = false;				// assume something
+
+	std::string value;
+	if (!getValue(key, value) || value.empty()) {
 		return false;
+    }
 
-	stValue = pEntry;
-	return true;
-}
-
-bool XAP_PrefsScheme::getValueInt(const gchar * szKey, int& nValue) const
-{
-	const gchar * szValue = NULL;
-	if (!getValue(szKey,&szValue))
-		return false;				// bogus keyword ??
-
-	if (!szValue || !*szValue)
-		return false;				// no value for known keyword ??
-		
-	nValue = atoi(szValue);
-	return true;
-}
-
-bool XAP_PrefsScheme::getValueBool(const gchar * szKey, bool * pbValue) const
-{
-	*pbValue = false;				// assume something
-	
-	const gchar * szValue = NULL;
-	if (!getValue(szKey,&szValue))
-		return false;				// bogus keyword ??
-
-	if (!szValue || !*szValue)
-		return false;				// no value for known keyword ??
-
-	switch (szValue[0])
+	switch (value[0])
 	{
 	case '1':
 	case 't':
 	case 'T':
 	case 'y':
 	case 'Y':
-		*pbValue = true;
+		bValue = true;
 		return true;
 
 	default:
-		*pbValue = false;
+		bValue = false;
 		return true;
 	}
-}
-
-bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue)
-{
-	if (k >= static_cast<UT_uint32>(m_hash.size()))
-		return false;
-//
-// Output prefs in alphabetic Order.
-//
-
-	if (!m_bValidSortedKeys) {
-		UT_GenericVector<const UT_String*> * vecD = m_hash.keys();
-		UT_GenericVector<const char*> vecKeys(vecD->getItemCount(), 4, true);
-		UT_sint32 i=0;
-		m_sortedKeys.clear();
-		for(i=0; i< vecD->getItemCount(); i++)
-		{
-			m_sortedKeys.addItem(vecD->getNthItem(i)->c_str());
-		}
-		m_sortedKeys.qsort(compareStrings);
-		m_bValidSortedKeys = true;
-		delete vecD;
-	}	
-		
-	const char * szKey = NULL;
-	const char * szValue = NULL;
-	szKey = m_sortedKeys.getNthItem(k);
-	szValue = m_hash.pick(szKey);
-	if(szValue && *szValue)
-	{
-		*pszKey = szKey;
-		*pszValue = szValue;
-		return true;
-	}
-	else
-	{
-		*pszKey = NULL;
-		*pszValue = NULL;
-		return false;
-	}
-	return false;
 }
 
 /*****************************************************************/
@@ -558,8 +465,9 @@ XAP_PrefsScheme * XAP_Prefs::getScheme(const gchar * szSchemeName) const
 			UT_ASSERT_HARMLESS(p);
 			continue;
 		}
-		if (strcmp(static_cast<const char*>(szSchemeName),static_cast<const char*>(p->getSchemeName())) == 0)
+		if (p->getSchemeName() == szSchemeName) {
 			return p;
+		}
 	}
 
 	return NULL;
@@ -578,8 +486,9 @@ XAP_PrefsScheme * XAP_Prefs::getPluginScheme(const gchar * szSchemeName) const
 			UT_ASSERT_HARMLESS(p);
 			continue;
 		}
-		if (strcmp(static_cast<const char*>(szSchemeName),static_cast<const char*>(p->getSchemeName())) == 0)
+		if (p->getSchemeName() == szSchemeName) {
 			return p;
+		}
 	}
 
 	return NULL;
@@ -588,14 +497,13 @@ XAP_PrefsScheme * XAP_Prefs::getPluginScheme(const gchar * szSchemeName) const
 bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 {
 	const gchar * szBuiltinSchemeName = getBuiltinSchemeName();
-	const gchar * szThisSchemeName = pNewScheme->getSchemeName();
-	
-	if (strcmp(static_cast<const char*>(szThisSchemeName), static_cast<const char*>(szBuiltinSchemeName)) == 0)
-	{
+	const std::string& thisSchemeName = pNewScheme->getSchemeName();
+
+	if (thisSchemeName == szBuiltinSchemeName) {
 		UT_ASSERT(m_builtinScheme == NULL);
 		m_builtinScheme = pNewScheme;
 	}
-	
+
 	return (m_vecSchemes.addItem(pNewScheme) == 0);
 }
 
@@ -606,29 +514,23 @@ bool XAP_Prefs::addPluginScheme(XAP_PrefsScheme * pNewScheme)
 
 XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(bool bCreate)
 {
-	if (bCreate)
-	{
-		// the builtin scheme is not updatable, 
+	if (bCreate) {
+		// the builtin scheme is not updatable,
 		// so we may need to create one that is
-		if ( !strcmp(static_cast<const char*>(m_currentScheme->getSchemeName()), "_builtin_") ) 
-		{
-	
+		if (m_currentScheme->getSchemeName() == "_builtin_") {
 
-		const gchar new_name[] = "_custom_";
+			const gchar* new_name = "_custom_";
 
-			if (setCurrentScheme(new_name))
-			{
+			if (setCurrentScheme(new_name))	{
 				// unused _custom_ scheme is lying around, so recycle it
 				UT_ASSERT_HARMLESS(UT_TODO);
 
 				// HYP: reset the current scheme's hash table contents?
 				// ALT: replace the existing scheme with new empty one
-			}
-			else
-			{
+			} else {
 				// we need to create it
 				XAP_PrefsScheme * pNewScheme = new XAP_PrefsScheme(this, new_name);
-				UT_ASSERT(pNewScheme);	
+				UT_ASSERT(pNewScheme);
 				addScheme(pNewScheme);
 				setCurrentScheme(new_name);
 			}
@@ -658,87 +560,65 @@ bool XAP_Prefs::setCurrentScheme(const gchar * szSchemeName)
 static const gchar DEBUG_PREFIX[] = "DeBuG";  // case insensitive
 static const gchar NO_PREF_VALUE[] = "";
 
-bool XAP_Prefs::getPrefsValue(const gchar * szKey, const gchar ** pszValue, bool bAllowBuiltin) const
+bool XAP_Prefs::getPrefsValue(const std::string& key, std::string& value, bool bAllowBuiltin) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
+	UT_return_val_if_fail(m_currentScheme, false);
 
-	UT_return_val_if_fail(m_currentScheme,false);
-
-	if (m_currentScheme->getValue(szKey,pszValue))
-		return true;
-	if (bAllowBuiltin && m_builtinScheme->getValue(szKey,pszValue))
-		return true;
-	// It is legal for there to be arbitrary preference tags that start with 
-	// "Debug", and Abi apps won't choke.  The idea is that developers can use
-	// these to selectively trigger development-time behaviors.
-	if (g_ascii_strncasecmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
-	{
-		*pszValue = NO_PREF_VALUE;
+	if (m_currentScheme->getValue(key, value)) {
 		return true;
 	}
-
-	return false;
-}
-
-bool XAP_Prefs::getPrefsValue(const gchar * szKey, std::string & stValue, bool bAllowBuiltin) const
-{
-	// a convenient routine to get a name/value pair from the current scheme
-
-	UT_return_val_if_fail(m_currentScheme,false);
-
-	if (m_currentScheme->getValue(szKey,stValue))
+	if (bAllowBuiltin && m_builtinScheme->getValue(key, value)) {
 		return true;
-	if (bAllowBuiltin && m_builtinScheme->getValue(szKey,stValue))
-		return true;
+	}
 	// It is legal for there to be arbitrary preference tags that start with
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use
 	// these to selectively trigger development-time behaviors.
-	if (g_ascii_strncasecmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
-	{
-		stValue = NO_PREF_VALUE;
+	if (g_ascii_strncasecmp(key.c_str(), DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0) {
+		value = NO_PREF_VALUE;
 		return true;
 	}
 
 	return false;
 }
 
-bool XAP_Prefs::getPrefsValueBool(const gchar * szKey, bool * pbValue, bool bAllowBuiltin) const
+bool XAP_Prefs::getPrefsValueBool(const std::string& key, bool& bValue, bool bAllowBuiltin) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
+	UT_return_val_if_fail(m_currentScheme, false);
 
-	UT_return_val_if_fail(m_currentScheme,false);
-
-	if (m_currentScheme->getValueBool(szKey,pbValue))
+	if (m_currentScheme->getValueBool(key, bValue)) {
 		return true;
-	if (bAllowBuiltin && m_builtinScheme->getValueBool(szKey,pbValue))
+	}
+	if (bAllowBuiltin && m_builtinScheme->getValueBool(key, bValue)) {
 		return true;
-	// It is legal for there to be arbitrary preference tags that start with 
+	}
+	// It is legal for there to be arbitrary preference tags that start with
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use
 	// these to selectively trigger development-time behaviors.
-	if (g_ascii_strncasecmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
-	{
-		*pbValue = false;
+	if (g_ascii_strncasecmp(key.c_str(), DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0) {
+		bValue = false;
 		return true;
 	}
 
 	return false;
 }
 
-bool XAP_Prefs::getPrefsValueInt(const gchar * szKey, int& nValue, bool bAllowBuiltin) const
+bool XAP_Prefs::getPrefsValueInt(const std::string &key, int& nValue, bool bAllowBuiltin) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
+	UT_return_val_if_fail(m_currentScheme, false);
 
-	UT_return_val_if_fail(m_currentScheme,false);
-
-	if (m_currentScheme->getValueInt(szKey,nValue))
+	if (m_currentScheme->getValueInt(key, nValue)) {
 		return true;
-	if (bAllowBuiltin && m_builtinScheme->getValueInt(szKey,nValue))
+	}
+	if (bAllowBuiltin && m_builtinScheme->getValueInt(key, nValue)) {
 		return true;
-	// It is legal for there to be arbitrary preference tags that start with 
+	}
+	// It is legal for there to be arbitrary preference tags that start with
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use
 	// these to selectively trigger development-time behaviors.
-	if (g_ascii_strncasecmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
-	{
+	if (g_ascii_strncasecmp(key.c_str(), DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0) {
 		nValue = -1;
 		return true;
 	}
@@ -971,15 +851,13 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 					goto IgnoreThisScheme;
 				}
 
-				if (!pNewScheme->setSchemeName(a[1]))
-					goto MemoryError;
+				pNewScheme->setSchemeName(a[1]);
 
 				UT_DEBUGMSG(("Found Preferences scheme [%s].\n",a[1]));
 			}
 			else
 			{
-				if (!pNewScheme->setValue(a[0],a[1]))
-					goto MemoryError;
+				pNewScheme->setValue(a[0], a[1]);
 			}
 
 			a += 2;
@@ -1016,15 +894,13 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 					goto IgnoreThisScheme;
 				}
 
-				if (!pNewScheme->setSchemeName(a[1]))
-					goto MemoryError;
+				pNewScheme->setSchemeName(a[1]);
 
 				UT_DEBUGMSG(("Found Preferences Plugin scheme [%s].\n",a[1]));
 			}
 			else
 			{
-				if (!pNewScheme->setValue(a[0],a[1]))
-					goto MemoryError;
+				pNewScheme->setValue(a[0], a[1]);
 			}
 
 			a += 2;
@@ -1348,7 +1224,7 @@ bool XAP_Prefs::savePrefsFile(void)
 					"\t    autosaveprefs=\"%d\"\n"
 					"\t    useenvlocale=\"%d\"\n"
 					"\t/>\n"),
-				m_currentScheme->getSchemeName(),
+				m_currentScheme->getSchemeName().c_str(),
 				static_cast<UT_uint32>(m_bAutoSavePrefs),
 				static_cast<UT_uint32>(m_bUseEnvLocale));
 
@@ -1366,7 +1242,7 @@ bool XAP_Prefs::savePrefsFile(void)
 				continue;
 			}
 
-			const gchar * szThisSchemeName = p->getSchemeName();
+			const std::string& thisSchemeName = p->getSchemeName();
 			bool bIsBuiltin = (p == m_builtinScheme);
 
 			if (bIsBuiltin)
@@ -1382,14 +1258,9 @@ bool XAP_Prefs::savePrefsFile(void)
 						szBuiltinSchemeName);
 			}
 
-			fprintf(fp,"\n\t<Scheme\n\t\tname=\"%s\"\n",szThisSchemeName);
+			fprintf(fp, "\n\t<Scheme\n\t\tname=\"%s\"\n", thisSchemeName.c_str());
 
-			const gchar * szKey;
-			const gchar * szValue;
-			UT_uint32 j;
-
-			for (j=0;(p->getNthValue(j, &szKey, &szValue)) ; j++)
-			{
+			for (auto entry : *p) {
 				bool need_print;
 				need_print = false;
 				if (bIsBuiltin)
@@ -1401,12 +1272,11 @@ bool XAP_Prefs::savePrefsFile(void)
 				{
 					// for non-builtin sets, we only print the values which are different
 					// from the builtin set.
-					const gchar * szBuiltinValue = NO_PREF_VALUE;
-					m_builtinScheme->getValue(szKey,&szBuiltinValue);
-					if (strcmp(static_cast<const char*>(szValue),static_cast<const char*>(szBuiltinValue)) != 0 ||
+					std::string builtinValue = NO_PREF_VALUE;
+					m_builtinScheme->getValue(entry.first, builtinValue);
+					if (entry.second != builtinValue ||
 						// Always print debug values
-					strncmp(static_cast<const char*>(szKey), static_cast<const char*>(DEBUG_PREFIX),
-						sizeof(DEBUG_PREFIX) - 1) == 0)
+						strncmp(entry.first.c_str(), DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
 					{
 						need_print = true;
 					}
@@ -1420,9 +1290,9 @@ bool XAP_Prefs::savePrefsFile(void)
 					// UTF-8 the next time the application reads the
 					// prefs file.
 					UT_GrowBuf gb;
-					UT_decodeUTF8string(szValue, strlen(szValue), &gb);
+					UT_decodeUTF8string(entry.second.c_str(), entry.second.size(), &gb);
 					UT_uint32 length = gb.getLength();
-					fprintf(fp,"\t\t%s=\"",szKey);
+					fprintf(fp, "\t\t%s=\"", entry.first.c_str());
 					for (UT_uint32 udex=0; udex<length; ++udex)
 					{
 						UT_UCSChar ch = *(gb.getPointer(udex));
@@ -1461,25 +1331,20 @@ bool XAP_Prefs::savePrefsFile(void)
 				continue;
 			}
 
-			const gchar * szThisSchemeName = p->getSchemeName();
-			fprintf(fp,"\n\t<Plugin\n\t\tname=\"%s\"\n",szThisSchemeName);
+			const std::string& thisSchemeName = p->getSchemeName();
+			fprintf(fp, "\n\t<Plugin\n\t\tname=\"%s\"\n", thisSchemeName.c_str());
 
-			const gchar * szKey;
-			const gchar * szValue;
-			UT_uint32 j;
-
-			for (j=0;(p->getNthValue(j, &szKey, &szValue)) ; j++)
-			{
-					// szValue is UTF-8.  Convert to Unicode and then
+			for (auto entry : *p) {
+					// the value is UTF-8.  Convert to Unicode and then
 					// do XML-encoding of XML-special characters and
 					// non-ASCII characters.  The printed value
 					// strings will get XML parsing and conversion to
 					// UTF-8 the next time the application reads the
 					// prefs file.
 					UT_GrowBuf gb;
-					UT_decodeUTF8string(szValue, strlen(szValue), &gb);
+					UT_decodeUTF8string(entry.second.c_str(), entry.second.size(), &gb);
 					UT_uint32 length = gb.getLength();
-					fprintf(fp,"\t\t%s=\"",szKey);
+					fprintf(fp, "\t\t%s=\"", entry.first.c_str());
 					for (UT_uint32 udex=0; udex<length; ++udex)
 					{
 						UT_UCSChar ch = *(gb.getPointer(udex));
@@ -1502,7 +1367,7 @@ bool XAP_Prefs::savePrefsFile(void)
 					}
 					fputs("\"\n", fp);
 			}
-				
+
 			fprintf(fp,"\t\t/>\n");
 		}
 		// end Plugin preferences
@@ -1610,10 +1475,10 @@ void XAP_Prefs::_startElement_SystemDefaultFile(const gchar *name, const gchar *
 
 			// we ignore "name=<schemename>" just incase they copied and
 			// pasted a user-profile into the system file.
-			
-			if (strcmp(static_cast<const char*>(a[0]), "name") != 0)
-				if (!m_builtinScheme->setValue(a[0],a[1]))
-					goto MemoryError;
+
+			if (strcmp(a[0], "name") != 0) {
+				m_builtinScheme->setValue(a[0], a[1]);
+			}
 
 			a += 2;
 		}
@@ -1622,13 +1487,6 @@ void XAP_Prefs::_startElement_SystemDefaultFile(const gchar *name, const gchar *
 	{
 		UT_DEBUGMSG(("Ignoring tag [%s] in system default preferences file.\n",name));
 	}
-
-	return;								// success
-
-MemoryError:
-	UT_DEBUGMSG(("Memory error parsing preferences file.\n"));
-	m_parserState.m_parserStatus = false;			// cause parser driver to bail
-	return;
 }
 
 /*****************************************************************/
@@ -1681,19 +1539,14 @@ void XAP_Prefs::removeListener ( PrefsListener pFunc, void *data )
 	}
 }
 
-void XAP_Prefs::_markPrefChange( const gchar *szKey )
+void XAP_Prefs::_markPrefChange(const std::string& key)
 {
-	if ( m_bInChangeBlock )
-	{
-		m_ahashChanges.insert(szKey);
-
+	if (m_bInChangeBlock) {
+		m_ahashChanges.insert(key);
 		// notify later
-	}
-	else
-	{
+	} else {
 		XAP_PrefsChangeSet changes;
-		changes.insert(szKey);
-
+		changes.insert(key);
 		_sendPrefsSignal(changes);
 	}
 }

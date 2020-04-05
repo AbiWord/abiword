@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -480,7 +480,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 	bool			b;
 	gint			n = 0;
 	XAP_Prefs		*pPrefs = 0;
-	const gchar	*pszBuffer = 0;
+	std::string buffer;
 	m_bInitialPop = true;
 	// TODO: move this logic when we get a PrefsListener API and turn this
 	//		 dialog into an app-specific
@@ -489,42 +489,52 @@ void AP_Dialog_Options::_populateWindowData(void)
 	UT_return_if_fail ( pPrefs );
 
 	// ------------ Spell
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_AutoSpellCheck,&b))
-		_setSpellCheckAsType (b);
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoSpellCheck, b)) {
+		_setSpellCheckAsType(b);
+	}
 
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_SpellCheckCaps,&b))
-		_setSpellUppercase (b);
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckCaps, b)) {
+		_setSpellUppercase(b);
+	}
 
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_SpellCheckNumbers,&b))
-		_setSpellNumbers (b);
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckNumbers, b)) {
+		_setSpellNumbers(b);
+	}
 
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_AutoGrammarCheck,&b))
-		_setGrammarCheck (b);
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoGrammarCheck, b)) {
+		_setGrammarCheck(b);
+	}
 
 	// ------------ Smart Quotes
-	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_SmartQuotesEnable,&b))
-		_setSmartQuotes (b);
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_SmartQuotesEnable, b)) {
+		_setSmartQuotes(b);
+	}
 
-	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_CustomSmartQuotes,&b))
-		_setCustomSmartQuotes (b);
-		
-	if (pPrefs->getPrefsValueInt((gchar*)XAP_PREF_KEY_OuterQuoteStyle, n))
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_CustomSmartQuotes, b)) {
+		_setCustomSmartQuotes(b);
+	}
+
+	if (pPrefs->getPrefsValueInt(XAP_PREF_KEY_OuterQuoteStyle, n)) {
 		_setOuterQuoteStyle(n);
-		
-	if (pPrefs->getPrefsValueInt((gchar*)XAP_PREF_KEY_InnerQuoteStyle, n))
+	}
+
+	if (pPrefs->getPrefsValueInt(XAP_PREF_KEY_InnerQuoteStyle, n)) {
 		_setInnerQuoteStyle(n);
+	}
 
 	// ------------ Prefs
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
 
 	// ------------ View
-	if (pPrefs->getPrefsValue((gchar*)AP_PREF_KEY_RulerUnits,&pszBuffer))
-		_setViewRulerUnits (UT_determineDimension(pszBuffer));
+	if (pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits, buffer)) {
+		_setViewRulerUnits(UT_determineDimension(buffer.c_str()));
+	}
 
 
-#if !defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_RulerVisible,&b))
-		_setViewShowRuler (b);
+#if !defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN)
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_RulerVisible, b)) {
+		_setViewShowRuler(b);
+	}
 	UT_uint32 i;
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		if (pPrefs->getPrefsValueBool((gchar*)m_pApp->getToolbarFactory()->prefKeyForToolbar(i),&b)) {
@@ -532,66 +542,81 @@ void AP_Dialog_Options::_populateWindowData(void)
 		}
 	}
 
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_StatusBarVisible,&b))
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_StatusBarVisible, b)) {
 		_setViewShowStatusBar (b);
-#endif	
+	}
+#endif
 
 
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_InsertModeToggle,&b))
-		_setEnableOverwrite (b);
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_InsertModeToggle, b)) {
+		_setEnableOverwrite(b);
+	}
 
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_ParaVisible,&b))
-		_setViewUnprintable (b);
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_ParaVisible, b)) {
+		_setViewUnprintable(b);
+	}
 
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_CursorBlink,&b))
-		_setViewCursorBlink (b);
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_CursorBlink, b)) {
+		_setViewCursorBlink(b);
+	}
 
 #if defined(TOOLKIT_GTK_ALL)
-	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_EnableSmoothScrolling,&b))
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_EnableSmoothScrolling, b)) {
 		_setEnableSmoothScrolling(b);
+	}
 #endif
-	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_AutoLoadPlugins,&b))
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins, b)) {
 		_setAutoLoadPlugins(b);
+	}
 
 	// TODO: JOAQUIN FIX THIS
-	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_AutoSaveFile,&b))
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, b)) {
 		_setAutoSaveFile (b);
+	}
 
 	std::string stBuffer;
-	if (pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFileExt, stBuffer))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFileExt, stBuffer)) {
 		_setAutoSaveFileExt(stBuffer);
+	}
 
-	if (pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stBuffer))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stBuffer)) {
 		_setAutoSaveFilePeriod(stBuffer);
+	}
 
 	//Just for win32
-	if (pPrefs->getPrefsValue(AP_PREF_KEY_StringSet, stBuffer))
+	if (pPrefs->getPrefsValue(AP_PREF_KEY_StringSet, stBuffer)) {
 		_setUILanguage(stBuffer);
+	}
 
 	// ------------ Screen Color
 
-	const gchar * pszColorForTransparent = NULL;
-	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForTransparent, &pszColorForTransparent))
-		_setColorForTransparent(pszColorForTransparent);
+	std::string colorForTransparent;
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForTransparent, colorForTransparent)) {
+		_setColorForTransparent(colorForTransparent.c_str());
+	}
 
 
 	// ------------ the page tab number
 	int which = getInitialPageNum ();
-	if ((which == -1) && pPrefs->getPrefsValue((gchar*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
-		_setNotebookPageNum (atoi(pszBuffer));
-	else
-	  _setNotebookPageNum(which);
+	if ((which == -1) && pPrefs->getPrefsValue(AP_PREF_KEY_OptionsTabNumber, buffer)) {
+		_setNotebookPageNum(atoi(buffer.c_str()));
+	} else {
+		_setNotebookPageNum(which);
+	}
 
 	//------------- other
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&b))
-		_setOtherDirectionRtl (b);
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, b)) {
+		_setOtherDirectionRtl(b);
+	}
 
-	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard,&b))
-		_setLanguageWithKeyboard (b);
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, b)) {
+		_setLanguageWithKeyboard(b);
+	}
 
-	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,&b))
-		_setDirMarkerAfterClosingParenthesis (b);
-	
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis, b)) {
+		_setDirMarkerAfterClosingParenthesis(b);
+	}
+
 	// enable/disable controls
 	_initEnableControls();
 	m_bInitialPop = false;
@@ -689,7 +714,7 @@ void AP_Dialog_Options::_initEnableControls()
 void AP_Dialog_Options::_event_SetDefaults(void)
 {
 	XAP_Prefs		*pPrefs;
-	const gchar	*old_name;
+	std::string old_name;
 	int currentPage;
 
 	pPrefs = m_pApp->getPrefs();
@@ -715,6 +740,6 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 	// TODO then changes something, we should create a new
 	// TODO scheme and fill in the new value.  --jeff
 	_setNotebookPageNum( currentPage );
-	pPrefs->setCurrentScheme(old_name);
+	pPrefs->setCurrentScheme(old_name.c_str());
 }
 

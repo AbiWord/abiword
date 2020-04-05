@@ -2261,12 +2261,13 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty("page-margin-header", (const gchar *&)pszHeaderMargin);
 
 
-	const gchar * szRulerUnits;
+	std::string rulerUnits;
 	UT_Dimension dim;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		dim = UT_determineDimension(szRulerUnits);
-	else
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
+		dim = UT_determineDimension(rulerUnits.c_str());
+	} else {
 		dim = DIM_IN;
+	}
 
 	UT_UTF8String defaultMargin = fp_PageSize::getDefaultPageMargin(dim);
 
@@ -2415,10 +2416,10 @@ void fl_DocSectionLayout::setPaperColor(void)
 	{
 		XAP_App * pApp = pView->getApp();
 		XAP_Prefs * pPrefs = pApp->getPrefs();
-		const gchar * pszTransparentColor = NULL;
-		pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
+		std::string transparentColor;
+		pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForTransparent, transparentColor);
 		m_sPaperColor.clear();
-		m_sScreenColor = pszTransparentColor;
+		m_sScreenColor = transparentColor;
 	}
 	else
 	{

@@ -5872,7 +5872,7 @@ void FV_View::_prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet* /*phC
 	FV_View *pView = static_cast<FV_View *>(data);
 	bool b;
 	UT_ASSERT(data && pPrefs);
-	if ( pPrefs->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_CursorBlink), &b) && b != pView->m_bCursorBlink )
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_CursorBlink, b) && b != pView->m_bCursorBlink)
 	{
 		UT_DEBUGMSG(("FV_View::_prefsListener m_bCursorBlink=%s m_bCursorIsOn=%s\n",
 					 pView->m_bCursorBlink ? "TRUE" : "FALSE",
@@ -5884,82 +5884,82 @@ void FV_View::_prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet* /*phC
 
 
 	// Update colors
-   	const gchar * pszTmpColor = NULL;
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForShowPara), &pszTmpColor))
+	std::string tmpColor;
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForShowPara, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorShowPara);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorShowPara);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForSquiggle, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorSpellSquiggle);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorSpellSquiggle);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForGrammarSquiggle, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorGrammarSquiggle);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorGrammarSquiggle);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForMargin, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorMargin);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorMargin);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForFieldOffset), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForFieldOffset, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorFieldOffset);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorFieldOffset);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForImage), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForImage, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorImage);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorImage);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForHyperLink), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForHyperLink, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorHyperLink);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorHyperLink);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForHdrFtr), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForHdrFtr, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorHdrFtr);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorHdrFtr);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForColumnLine), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForColumnLine, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorColumnLine);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorColumnLine);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision1), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision1, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[0]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[0]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision2), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision2, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[1]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[1]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision3), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision3, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[2]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[2]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision4), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision4, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[3]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[3]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision5), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision5, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[4]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[4]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision6), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision6, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[5]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[5]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision7), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision7, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[6]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[6]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision8), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision8, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[7]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[7]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision9), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision9, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[8]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[8]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision10), &pszTmpColor))
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForRevision10, tmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorRevisions[9]);
+		UT_parseColor(tmpColor.c_str(), pView->m_colorRevisions[9]);
 	}
 	pView->m_bgColorInitted = false; // force refresh/update on next getColorSelBackground () call
 	//
@@ -5970,8 +5970,8 @@ void FV_View::_prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet* /*phC
 
 	// FIXME:jskov: is it necessary to do something here to cause a full redraw?
 	if (!pView->m_bWarnedThatRestartNeeded &&
-		(( (pPrefs->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_DefaultDirectionRtl), &b) && b != pView->m_bDefaultDirectionRtl))
-		 || ((pPrefs->getPrefsValueBool(static_cast<const gchar*>(XAP_PREF_KEY_UseHebrewContextGlyphs), &b) && b != pView->m_bUseHebrewContextGlyphs)))
+		(( (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, b) && b != pView->m_bDefaultDirectionRtl))
+		 || ((pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs, b) && b != pView->m_bUseHebrewContextGlyphs)))
 		)
 	{
 		/*	It is possible to change this at runtime, but it may impact the
@@ -6186,26 +6186,23 @@ bool FV_View::_makePointLegal(void)
 
 bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
-	
 	// see if prefs specify we should set language based on kbd layout
 	UT_return_val_if_fail(m_pApp, false);
 	bool bSetLang = false;
-	m_pApp->getPrefsValueBool(static_cast<const gchar*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
-							  &bSetLang);
+	m_pApp->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, bSetLang);
 
 	const UT_LangRecord * pLR = NULL;
 
 	if(bSetLang)
 		pLR = m_pApp->getKbdLanguage();
 
-	
 	bool bResult = true;
 	// So this gets rid of the annoying cursor flash at the beginning
 	// of the line upon character insertion, but it's the wrong thing to
 	// do.  The right thing to do is to either delay calculation, or to
 	// not make the wrong number come up; disabling the caret is wrong. -PL
 	GR_Painter caretDisablerPainter(m_pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
-	
+
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
 	// Signal PieceTable Change

@@ -1547,8 +1547,9 @@ Defun1(toggleAutoSpell)
 
 	bool b = false;
 
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck), &b);
-	return pPrefsScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck), !b);
+	pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoSpellCheck, b);
+	pPrefsScheme->setValueBool(AP_PREF_KEY_AutoSpellCheck, !b);
+	return true;
 }
 #endif
 
@@ -2112,18 +2113,15 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 			return false;
 		}
 
-		const gchar * ftype = 0;
+		std::string ftype;
 
 		// fetch the default save format
-		pPrefs->getPrefsValue (static_cast<const gchar *>(AP_PREF_KEY_DefaultSaveFormat), &ftype, true);
-		if (ftype)
-		{
+		pPrefs->getPrefsValue(AP_PREF_KEY_DefaultSaveFormat, ftype, true);
+		if (!ftype.empty()) {
 			// load the default file format
-			dflFileType = IE_Exp::fileTypeForSuffix (ftype);
-			UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
-		}
-		else
-		{
+			dflFileType = IE_Exp::fileTypeForSuffix(ftype.c_str());
+			UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype.c_str(), dflFileType));
+		} else {
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 	  }
@@ -5917,8 +5915,7 @@ Defun(insertClosingParenthesis)
 
 	bool bLang = false, bMarker = false;
 
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
-							  &bLang);
+	pPrefs->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, bLang);
 
 	const UT_LangRecord * pLR = NULL;
 	
@@ -5926,7 +5923,7 @@ Defun(insertClosingParenthesis)
 	{
 		pLR = pApp->getKbdLanguage();
 		
-		pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+		pPrefs->getPrefsValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis, bMarker);
 	}
 
 	if(bMarker && pLR)
@@ -5972,18 +5969,17 @@ Defun(insertOpeningParenthesis)
 
 	bool bLang = false, bMarker = false;
 
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
-							  &bLang);
+	pPrefs->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, bLang);
 
 	const UT_LangRecord * pLR = NULL;
-	
+
 	if(bLang)
 	{
 		pLR = pApp->getKbdLanguage();
-		
-		pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+
+		pPrefs->getPrefsValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis, bMarker);
 	}
-	
+
 	if(bMarker && pLR)
 	{
 		UT_return_val_if_fail(pCallData->m_dataLength == 1, false);
@@ -9360,11 +9356,10 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 	// respect units set in the dialogue constructer from prefs
 	UT_Dimension orig_uprefs = DIM_IN;
-	const gchar * szRulerUnits;
-	if (pApp->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-	{
+	std::string rulerUnits;
+	if (pApp->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
 		// we only allow in, cm, mm in the dlg
-		UT_Dimension units = UT_determineDimension(szRulerUnits);
+		UT_Dimension units = UT_determineDimension(rulerUnits.c_str());
 		if(units == DIM_CM || units == DIM_MM || units == DIM_IN)
 		{
 			orig_uprefs = units;
@@ -10763,12 +10758,12 @@ Defun1(toggleDisplayAnnotations)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_val_if_fail(pScheme, false);
 	bool b = false;
-	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	pScheme->getValueBool(AP_PREF_KEY_DisplayAnnotations, b);
 	b = !b;
 	UT_DEBUGMSG(("toggleDisplayAnnotations: Changing annotation display to %s\n",(b ? "true" : "false")));
 	gchar szBuffer[2] = {0,0};
 	szBuffer[0] = ((b)==true ? '1' : '0');
-	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations),szBuffer);
+	pScheme->setValue(AP_PREF_KEY_DisplayAnnotations, szBuffer);
 	return true ;
 }
 
@@ -10819,12 +10814,12 @@ Defun1(toggleRDFAnchorHighlight)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_val_if_fail(pScheme, false);
 	bool b = false;
-	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayRDFAnchors), &b );
+	pScheme->getValueBool(AP_PREF_KEY_DisplayRDFAnchors, b);
 	b = !b;
 	UT_DEBUGMSG(("toggleRDFAnchorHighlight: Changing annotation display to %s\n",(b ? "true" : "false")));
 	gchar szBuffer[2] = {0,0};
 	szBuffer[0] = ((b)==true ? '1' : '0');
-	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_DisplayRDFAnchors),szBuffer);
+	pScheme->setValue(AP_PREF_KEY_DisplayRDFAnchors, szBuffer);
 	return true ;
 }
 
@@ -11289,11 +11284,10 @@ Defun1(dlgFmtPosImage)
 	const gchar* szTitle = 0;
 	const gchar* szDescription = 0;
 	pDialog->setInHdrFtr(false);
-	const char * pszRulerUnits = NULL;
+	std::string rulerUnits;
 	UT_Dimension dim = DIM_IN;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
-	{
-		dim = UT_determineDimension(pszRulerUnits);
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
+		dim = UT_determineDimension(rulerUnits.c_str());
 	}
 	pDialog->setPreferedUnits(dim);
 
@@ -11521,11 +11515,10 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 	UT_sint32 iHeight,iWidth;
 
 	// set units in the dialog.
-	const char * pszRulerUnits = NULL;
+	std::string rulerUnits;
 	UT_Dimension dim = DIM_IN;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
-	{
-		dim = UT_determineDimension(pszRulerUnits);
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, rulerUnits)) {
+		dim = UT_determineDimension(rulerUnits.c_str());
 	}
 	pDialog->setPreferedUnits(dim);
 
@@ -13079,8 +13072,9 @@ Defun1(cycleInputMode)
 
 	// this edit method may get ignored entirely
 	bool b;
-	if (pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_KeyBindingsCycle), &b) && !b)
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_KeyBindingsCycle, b) && !b) {
 		return false;
+	}
 
 	const char * szCurrentInputMode = pApp->getInputMode();
 	UT_return_val_if_fail (szCurrentInputMode, false);
@@ -13116,7 +13110,7 @@ Defun1(toggleInsertMode)
 
 	// this edit method may get ignored entirely
 	bool b;
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_InsertModeToggle, &b) && !b) {
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_InsertModeToggle, b) && !b) {
         // if we are in insert mode, just return, otherwise give a chance
         // to toggle it, or one might get stick to overwrite.
         if(pFrameData->m_bInsertMode) {

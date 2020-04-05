@@ -348,7 +348,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
   UT_return_val_if_fail (pPrefs, EV_MIS_Gray);
 
   bool b = true ;
-  pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
+  pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoSpellCheck, b);
 
   // if there are no loaded dictionaries and we are spell checking
   // as we type
@@ -947,7 +947,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 	switch (id)
 	  {
 	  case AP_MENU_ID_TOOLS_AUTOSPELL:
-	    pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck), &b);
+	    pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoSpellCheck, b);
 	    s = (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 	    break;
 
@@ -1836,7 +1836,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ToggleAnnotations)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_val_if_fail(pScheme, EV_MIS_Gray);
 	bool b = false;
-	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	pScheme->getValueBool(AP_PREF_KEY_DisplayAnnotations, b);
 	return (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 }
 
@@ -1852,7 +1852,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ToggleRDFAnchorHighlight)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_val_if_fail(pScheme, EV_MIS_Gray);
 	bool b = false;
-	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayRDFAnchors), &b );
+	pScheme->getValueBool(AP_PREF_KEY_DisplayRDFAnchors, b);
 	return (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 }
 
