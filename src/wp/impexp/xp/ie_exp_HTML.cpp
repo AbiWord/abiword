@@ -226,8 +226,8 @@ UT_Error IE_Exp_HTML::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bu
 
 void IE_Exp_HTML::_buildStyleTree()
 {
-    const PD_Style * p_pds = 0;
-    const gchar * szStyleName = 0;
+    const PD_Style * p_pds = nullptr;
+    const gchar * szStyleName = nullptr;
 
     UT_GenericVector<PD_Style*> * pStyles = NULL;
     getDoc()->enumStyles(pStyles);
@@ -241,11 +241,12 @@ void IE_Exp_HTML::_buildStyleTree()
 
         szStyleName = p_pds->getName();
 
-        if (p_pds == 0) continue;
+        if (p_pds == nullptr)
+            continue;
 
         PT_AttrPropIndex api = p_pds->getIndexAP();
 
-        const PP_AttrProp * pAP_style = 0;
+        const PP_AttrProp * pAP_style = nullptr;
         bool bHaveProp = getDoc()->getAttrProp(api, &pAP_style);
 
         if (bHaveProp && pAP_style /* && p_pds->isUsed () */) // can't trust ->isUsed() :-(

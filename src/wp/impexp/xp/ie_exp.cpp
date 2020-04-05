@@ -71,7 +71,7 @@ public:
 		if (graphics)
 			{
 				FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc, graphics);
-				FV_View * printView = new FV_View(XAP_App::getApp(), 0, pDocLayout);
+				FV_View * printView = new FV_View(XAP_App::getApp(), nullptr, pDocLayout);
 				
 				printView->getLayout()->fillLayouts();
 				printView->getLayout()->formatAll();
@@ -107,7 +107,7 @@ IE_ExpSniffer::~IE_ExpSniffer ()
 UT_UTF8String IE_ExpSniffer::getPreferredSuffix()
 {
 	const char * szDummy;
-	const char * szSuffixes = 0;
+	const char * szSuffixes = nullptr;
 	IEFileType ieftDummy;
 	
 	if (!getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
@@ -146,7 +146,7 @@ void IE_Exp::unregisterExporter (IE_ExpSniffer * s)
 	m_sniffers.deleteNthItem (ndx-1);
 
 	// Refactor the indexes
-	IE_ExpSniffer * pSniffer = 0;
+	IE_ExpSniffer * pSniffer = nullptr;
 	UT_uint32 size  = m_sniffers.size();
 	UT_uint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
@@ -159,7 +159,7 @@ void IE_Exp::unregisterExporter (IE_ExpSniffer * s)
 
 void IE_Exp::unregisterAllExporters ()
 {
-	IE_ExpSniffer * pSniffer = 0;
+	IE_ExpSniffer * pSniffer = nullptr;
 	UT_uint32 size = m_sniffers.size();
 
 	for (UT_uint32 i = 0; i < size; i++)
@@ -176,9 +176,9 @@ void IE_Exp::unregisterAllExporters ()
 
 IE_Exp::IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity)
 	: m_error(false), m_pDocument(pDocument),
-	  m_pDocRange (0), m_pByteBuf(0),
-	  m_fp(0), m_bOwnsFp(false), m_fidelity(fidelity),
-	  m_fieldUpdater(0)
+	  m_pDocRange(nullptr), m_pByteBuf(nullptr),
+	  m_fp(nullptr), m_bOwnsFp(false), m_fidelity(fidelity),
+	  m_fieldUpdater(nullptr)
 {
 	m_pDocument->invalidateCache();
 }
@@ -256,7 +256,7 @@ bool IE_Exp::_closeFile(void)
 			res = gsf_output_close(m_fp);
 
 		g_object_unref(G_OBJECT(m_fp));
-		m_fp = 0;
+		m_fp = nullptr;
 
 		if (!res) {
 			// then remove the unwritten file
@@ -553,7 +553,7 @@ IEFileType IE_Exp::fileTypeForDescription(const char * szDescription)
 		IE_ExpSniffer * pSniffer = m_sniffers.getNthItem(k);
 
 		const char * szDummy;
-		const char * szDescription2 = 0;
+		const char * szDescription2 = nullptr;
 
 		if (pSniffer->getDlgLabels(&szDescription2,&szDummy,&ieft))
 		{
@@ -591,7 +591,7 @@ IE_ExpSniffer * IE_Exp::snifferForFileType(IEFileType ieft)
 	}
 
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 
 /*! 
@@ -604,12 +604,12 @@ IE_ExpSniffer * IE_Exp::snifferForFileType(IEFileType ieft)
 const char * IE_Exp::suffixesForFileType(IEFileType ieft)
 {
 	const char * szDummy;
-	const char * szSuffixes = 0;
+	const char * szSuffixes = nullptr;
 	IEFileType ieftDummy;
 
 	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
 
-	UT_return_val_if_fail (pSniffer != NULL, 0);
+	UT_return_val_if_fail(pSniffer != NULL, nullptr);
 
 	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
 	{
@@ -621,7 +621,7 @@ const char * IE_Exp::suffixesForFileType(IEFileType ieft)
 	}
 
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 
 /*! 
@@ -649,7 +649,7 @@ UT_UTF8String IE_Exp::preferredSuffixForFileType(IEFileType ieft)
 const char * IE_Exp::descriptionForFileType(IEFileType ieft)
 {
 	const char * szDummy;
-	const char * szDescription = 0;
+	const char * szDescription = nullptr;
 	IEFileType ieftDummy;
 
 	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
@@ -664,7 +664,7 @@ const char * IE_Exp::descriptionForFileType(IEFileType ieft)
 	}
 
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 
 UT_Error IE_Exp::constructExporter(PD_Document * pDocument,

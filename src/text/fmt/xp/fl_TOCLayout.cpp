@@ -698,7 +698,7 @@ void fl_TOCLayout::_createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPositio
 	}
 
 	markAllRunsDirty();
-	setNeedsReformat(0);
+	setNeedsReformat(nullptr);
 	setNeedsRedraw();
 }
 
@@ -950,7 +950,7 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool /*bDontRecurs
 // text from a previous block coming into this block
 //
 	markAllRunsDirty();
-	setNeedsReformat(0);
+	setNeedsReformat(nullptr);
 	setNeedsRedraw();
 
 }
@@ -2252,7 +2252,7 @@ void fl_TOCLayout::collapse(void)
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 	_purgeLayout();
-	setNeedsReformat(0);
+	setNeedsReformat(nullptr);
 }
 
 

@@ -220,8 +220,8 @@ public:
 
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_Dialog_MessageBox * pDialog);
 
-	UT_Error	    backup(const char* stExt = 0, UT_sint32 iEFT = -1);
-	std::string       makeBackupName (const char * szExt = 0);
+	UT_Error	    backup(const char* stExt = nullptr, UT_sint32 iEFT = -1);
+	std::string       makeBackupName(const char * szExt = nullptr);
 
 	bool                        isStatusBarShown(void) const { return m_bShowStatusbar;}
 	bool                        isMenuBarShown(void) const { return m_bShowMenubar;}

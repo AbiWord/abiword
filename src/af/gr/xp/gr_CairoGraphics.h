@@ -180,7 +180,7 @@ public:
 
 	virtual GR_Capability  getCapability() override {return GRCAP_SCREEN_ONLY;}
 
-	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0) override;
+	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = nullptr) override;
 
 	virtual void		   drawChars(const UT_UCSChar* pChars,
 									 int iCharOffset, int iLength,
@@ -191,7 +191,7 @@ public:
 									 UT_sint32 xoff, UT_sint32 yoff) override;
 
 	virtual UT_uint32      measureString(const UT_UCSChar* s, int iOffset,
-										 int num,  UT_GrowBufElement* pWidths, UT_uint32 * height = 0) override;
+										 int num,  UT_GrowBufElement* pWidths, UT_uint32 * height = nullptr) override;
 
 	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily,
 										  const char * pszLang);

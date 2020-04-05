@@ -178,7 +178,7 @@ public:
 	virtual  bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 						const unsigned char * pData,
 						UT_uint32 lenData,
-						const char * szEncoding = 0);
+						const char * szEncoding = nullptr);
 
 	PD_Document *           getDoc() const;
 

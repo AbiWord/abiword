@@ -175,19 +175,19 @@ AP_UnixDialog_RDFEditor::static_constructor( XAP_DialogFactory *pFactory,
 AP_UnixDialog_RDFEditor::AP_UnixDialog_RDFEditor( XAP_DialogFactory *pDlgFactory,
                                                   XAP_Dialog_Id 	 id )
 	: AP_Dialog_RDFEditor   (pDlgFactory, id)
-    , m_wDialog 	   (0)
-    , m_btClose 	   (0)
-    , m_btShowAll      (0)
-    , m_resultsView    (0)
-	, m_resultsModel   (0)
-    , m_status         (0)
-    , m_anewtriple     (0)
-    , m_acopytriple    (0)
-    , m_adeletetriple  (0)
-    , m_aimportrdfxml  (0)
-    , m_aexportrdfxml  (0)
-    , m_selectedxmlid  (0)
-    , m_restrictxmlidhidew (0)
+    , m_wDialog(nullptr)
+    , m_btClose(nullptr)
+    , m_btShowAll(nullptr)
+    , m_resultsView(nullptr)
+    , m_resultsModel(nullptr)
+    , m_status(nullptr)
+    , m_anewtriple(nullptr)
+    , m_acopytriple(nullptr)
+    , m_adeletetriple(nullptr)
+    , m_aimportrdfxml(nullptr)
+    , m_aexportrdfxml(nullptr)
+    , m_selectedxmlid(nullptr)
+    , m_restrictxmlidhidew(nullptr)
 {
 }
 
@@ -216,7 +216,7 @@ AP_UnixDialog_RDFEditor::addStatement( const PD_RDFStatement& stc )
     
     GtkTreeStore* m = m_resultsModel;
     GtkTreeIter iter;
-    gtk_tree_store_append( m, &iter, 0 );
+    gtk_tree_store_append(m, &iter, nullptr);
     gtk_tree_store_set( m, &iter,
                         C_SUBJ_COLUMN, st.getSubject().  toString().c_str(),
                         C_PRED_COLUMN, st.getPredicate().toString().c_str(),
@@ -421,7 +421,7 @@ AP_UnixDialog_RDFEditor::onCellEdited( GtkCellRendererText * /*cell*/,
 static std::string tostr( GsfInput* gsf )
 {
     gsf_off_t sz = gsf_input_size( gsf );
-    guint8 const * d =  gsf_input_read( gsf, sz, 0 );
+    guint8 const * d = gsf_input_read(gsf, sz, nullptr);
     std::string ret = std::string((char*)d);
     return ret;
 }
@@ -438,7 +438,7 @@ AP_UnixDialog_RDFEditor::onImportRDFXML()
     if( afp.run( getActiveFrame() ) )
     {
         xxx_UT_DEBUGMSG(("onImportRDFXML() path: %s", afp.getPath().utf8_str()));
-        GError* err = 0;
+        GError* err = nullptr;
         GsfInput* gsf = UT_go_file_open( afp.getPath().c_str(), &err );
         std::string rdfxml = tostr( gsf );
         g_object_unref (G_OBJECT (gsf));
@@ -468,7 +468,7 @@ AP_UnixDialog_RDFEditor::onExportRDFXML()
     {
         xxx_UT_DEBUGMSG(("onExportRDFXML() path: %s\n", afp.getPath().utf8_str()));
         std::string rdfxml = toRDFXML( getModel() );
-        GError* err = 0;
+        GError* err = nullptr;
         GsfOutput* gsf = UT_go_file_create( afp.getPath().c_str(), &err );
         gsf_output_write( gsf, rdfxml.size(), (const guint8*)rdfxml.data() );
         gsf_output_close( gsf );
@@ -539,7 +539,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     m_resultsModel = m;
 
     int colid = 0;
-    GtkCellRenderer* ren = 0;
+    GtkCellRenderer* ren = nullptr;
 
     colid = C_SUBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
@@ -547,7 +547,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM,  GINT_TO_POINTER(colid));
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
-                           (gpointer)this, 0, GConnectFlags(0));
+                           (gpointer)this, nullptr, GConnectFlags(0));
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Subject, text);
     w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
@@ -560,7 +560,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM, GINT_TO_POINTER(colid) );
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
-                           (gpointer)this, 0, GConnectFlags(0));
+                           (gpointer)this, nullptr, GConnectFlags(0));
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Predicate, text);
     w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
@@ -573,7 +573,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM, GINT_TO_POINTER(colid) );
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
-                           (gpointer)this, 0, GConnectFlags(0));
+                           (gpointer)this, nullptr, GConnectFlags(0));
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Object, text);
     w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );

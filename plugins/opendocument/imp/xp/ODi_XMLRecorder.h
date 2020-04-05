@@ -68,7 +68,7 @@ public:
         {
             delete []m_pName;
             UT_uint32 i=0;
-            while (m_ppAtts[i]!=0) {
+            while (m_ppAtts[i] != nullptr) {
                 delete [](m_ppAtts[i]);
                 i++;
             }

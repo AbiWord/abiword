@@ -353,7 +353,8 @@ static struct xmlToIdMapping s_Tokens[] =
 
 static SectionClass s_class_query (const char * class_value)
 {
-	if ( class_value == 0) return sc_other;
+	if (class_value == nullptr)
+		return sc_other;
 	if (*class_value == 0) return sc_other;
 
 	SectionClass sc = sc_other;
@@ -386,7 +387,8 @@ static void s_append_font_family (UT_UTF8String & style, const char * face)
 		}
 
 	char * value = g_strdup (face);
-	if (value == 0) return;
+	if (value == nullptr)
+		return;
 
 	char * ptr = value;
 	while (*ptr)
@@ -502,7 +504,8 @@ static void s_append_color (UT_UTF8String & style, const char * color, const cha
 	if (*color == 0) return;
 
 	char * value = g_strdup (color);
-	if (value == 0) return;
+	if (value == nullptr)
+		return;
 
 	int length = 0;
 
@@ -658,7 +661,7 @@ UT_Error IE_Imp_XHTML::_loadFile(GsfInput * input)
 			
 	setParser (parser);
 	e = IE_Imp_XML::_loadFile(input);
-	setParser(0);
+	setParser(nullptr);
 	delete parser;
 
 	// m_parseState = _PS_Sec; // no point having another sections the end
@@ -807,18 +810,18 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			const std::string & classVal = PP_getAttribute("class", atts);
 			SectionClass sc = childOfSection () ? sc_other : s_class_query (classVal.c_str());
 			if (sc == sc_other)
-				m_divClasses.push_back (0);
+				m_divClasses.push_back(nullptr);
 			else
 				m_divClasses.push_back (s_section_classes[sc]);
 
 			/* <div> elements can specify block-level styles; concatenate and stack...
 			 */
-			UT_UTF8String * prev = 0;
+			UT_UTF8String * prev = nullptr;
 			if (m_divStyles.getItemCount ())
 				{
 					prev = m_divStyles.getLastItem ();
 				}
-			UT_UTF8String * style = 0;
+			UT_UTF8String * style = nullptr;
 			if (prev)
 				style = new UT_UTF8String(*prev);
 			else
@@ -1202,7 +1205,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			pfg = importImage (szSrc.c_str());
 		}
 
-		if (pfg == 0) {
+		if (pfg == nullptr) {
             break;
 		}
 
@@ -1236,7 +1239,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 				utf8val = s_parseCSStyle (utf8val, CSS_MASK_IMAGE);
 				UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 			}
-		if (!szWidth.empty() && (strstr (utf8val.utf8_str (), "width") == 0))
+		if (!szWidth.empty() && (strstr(utf8val.utf8_str(), "width") == nullptr))
 			{
 				UT_Dimension units = UT_determineDimension (szWidth.c_str(), DIM_PX);
 				double d = UT_convertDimensionless (szWidth.c_str());
@@ -1256,7 +1259,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 					utf8val += tmp;
 				}
 			}
-		if (!szHeight.empty() && (strstr (utf8val.utf8_str (), "height") == 0))
+		if (!szHeight.empty() && (strstr(utf8val.utf8_str(), "height") == nullptr))
 			{
 				UT_Dimension units = UT_determineDimension (szHeight.c_str(), DIM_PX);
 				double d = UT_convertDimensionless (szHeight.c_str());
@@ -1276,8 +1279,8 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 						utf8val += tmp;
 					}
 			}
-		if ((strstr (utf8val.utf8_str (), "width")  == 0) ||
-			(strstr (utf8val.utf8_str (), "height") == 0))
+		if ((strstr(utf8val.utf8_str(), "width") == nullptr) ||
+			(strstr(utf8val.utf8_str(), "height") == nullptr))
 		{
 			float width  = static_cast<float>(pfg->getWidth ());
 			float height = static_cast<float>(pfg->getHeight ());
@@ -1285,7 +1288,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 	   		{
 				UT_DEBUGMSG(("missing width or height; reverting to image defaults\n"));
 #if 0
-				if(strstr (utf8val.utf8_str (), "width")  != 0)
+				if (strstr(utf8val.utf8_str(), "width") != nullptr)
 				{
 					float rat = height/width;
 					float fwidth = UT_convertToInches(szWidth.c_str());
@@ -1533,9 +1536,9 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 		 */
 		requireSection ();
 		// m_parseState = _PS_Sec; // no point having two sections at the end
-		newBlock ("Normal", 0, 0);
+		newBlock("Normal", nullptr, nullptr);
 		m_parseState = _PS_Sec; // no point having two sections at the end
-		newBlock ("Normal", 0, 0);
+		newBlock("Normal", nullptr, nullptr);
 
 		m_parseState = _PS_Init;
 		return;
@@ -1548,7 +1551,7 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 
 			if (m_divStyles.getItemCount ())
 				{
-					UT_UTF8String * prev = 0;
+					UT_UTF8String * prev = nullptr;
 					prev = m_divStyles.getLastItem ();
 					DELETEP(prev);
 				}
@@ -1831,7 +1834,7 @@ FG_ConstGraphicPtr IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 	if (strncmp (szData, "image/", 6))
 		{
 			UT_DEBUGMSG(("importDataURLImage: URL-embedded data does not appear to be an image...\n"));
-			return 0;
+			return nullptr;
 		}
 	const char * b64bufptr = static_cast<const char *>(szData);
 
@@ -1840,16 +1843,16 @@ FG_ConstGraphicPtr IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 	if (b64length == 0)
 		{
 			UT_DEBUGMSG(("importDataURLImage: URL-embedded data has no data?\n"));
-			return 0;
+			return nullptr;
 		}
 
 	size_t binmaxlen = ((b64length >> 2) + 1) * 3;
 	size_t binlength = binmaxlen;
 	char * binbuffer = static_cast<char *>(g_try_malloc (binmaxlen));
-	if (binbuffer == 0)
+	if (binbuffer == nullptr)
 		{
 			UT_DEBUGMSG(("importDataURLImage: out of memory\n"));
-			return 0;
+			return nullptr;
 		}
 	char * binbufptr = binbuffer;
 
@@ -1857,7 +1860,7 @@ FG_ConstGraphicPtr IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 		{
 			UT_DEBUGMSG(("importDataURLImage: error decoding Base64 data - I assume that's what it is...\n"));
 			FREEP(binbuffer);
-			return 0;
+			return nullptr;
 		}
 	binlength = binmaxlen - binlength;
 
@@ -1870,7 +1873,7 @@ FG_ConstGraphicPtr IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 	if (IE_ImpGraphic::loadGraphic (pBB, IEGFT_Unknown, pfg) != UT_OK || !pfg)
 		{
 			UT_DEBUGMSG(("unable to construct image importer!\n"));
-			return 0;
+			return nullptr;
 		}
 	UT_DEBUGMSG(("image loaded successfully\n"));
 
@@ -1883,7 +1886,7 @@ FG_ConstGraphicPtr IE_Imp_XHTML::importImage (const gchar * szSrc)
 
 	char * relative_file = UT_go_url_resolve_relative(m_szFileName, szFile);
 	if(!relative_file)
-		return 0;
+		return nullptr;
 
 	UT_DEBUGMSG(("found image reference (%s) - loading... \n", relative_file));
 
@@ -1894,7 +1897,7 @@ FG_ConstGraphicPtr IE_Imp_XHTML::importImage (const gchar * szSrc)
 		{
 			UT_DEBUGMSG(("unable to import image\n"));
 			g_free(relative_file);
-			return 0;
+			return nullptr;
 		}
 
 	g_free(relative_file);
@@ -1923,7 +1926,7 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 		}
 
 
-	UT_UTF8String * div_style = 0;
+	UT_UTF8String * div_style = nullptr;
 	if (m_divStyles.getItemCount ())
 		div_style = m_divStyles.getLastItem ();
 
@@ -1978,7 +1981,7 @@ bool IE_Imp_XHTML::requireBlock ()
 {
 	if (m_parseState == _PS_Block) return true;
 
-	return m_bWhiteSignificant ? newBlock ("Plain Text", 0, 0) : newBlock ("Normal", 0, 0);
+	return m_bWhiteSignificant ? newBlock("Plain Text", nullptr, nullptr) : newBlock("Normal", nullptr, nullptr);
 }
 
 /* forces document into section state; returns false on failure
@@ -2268,7 +2271,7 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 	UT_HashColor color;
 	UT_UTF8String sLineHeight;
 
-	const char * verbatim = 0;
+	const char * verbatim = nullptr;
 
 	if (css_mask & CSS_MASK_INLINE)
 		{

@@ -133,7 +133,7 @@ public:
 	virtual bool fireUpdate() override
 		{
 			FL_DocLayout *pDocLayout = new FL_DocLayout(m_doc,m_pGraphics);
-			FV_View printView(XAP_App::getApp(),0,pDocLayout);
+			FV_View printView(XAP_App::getApp(), nullptr, pDocLayout);
 			//pDocLayout->setView (&printView);
 			pDocLayout->fillLayouts();
 			pDocLayout->formatAll();
@@ -409,7 +409,7 @@ bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 		
 		// create a new layout and view object for the doc
 		FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
-		FV_View printView(XAP_App::getApp(),0,pDocLayout);
+		FV_View printView(XAP_App::getApp(), nullptr, pDocLayout);
 		pDocLayout->setView (&printView);
 		pDocLayout->fillLayouts();
 		pDocLayout->formatAll();
@@ -500,7 +500,7 @@ bool AP_Convert::printFirstPage(GR_Graphics * pGraphics,PD_Document * pDoc)
 		// create a new layout and view object for the doc
 
 	FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
-	FV_View printView(XAP_App::getApp(),0,pDocLayout);
+	FV_View printView(XAP_App::getApp(), nullptr, pDocLayout);
 	pDocLayout->setView (&printView);
 	pDocLayout->fillLayouts();
 	pDocLayout->formatAll();

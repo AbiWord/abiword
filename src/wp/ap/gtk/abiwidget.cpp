@@ -145,7 +145,7 @@ enum {
 };
 
 // our parent class
-static GtkBinClass * parent_class = 0;
+static GtkBinClass * parent_class = nullptr;
 
 static gboolean s_abi_widget_map_cb(GObject * w, gpointer p);
 
@@ -178,7 +178,7 @@ return GET_CLASS (w)->p (w, str, x, y); \
 #define EM_VOID__BOOL(n, p) \
 static gboolean EM_NAME(n) (AbiWidget * w)\
 { \
-return abi_widget_invoke_ex (w, #n, 0, 0, 0); \
+return abi_widget_invoke_ex(w, #n, nullptr, 0, 0); \
 }\
 extern "C" gboolean PUBLIC_EM_NAME(p) (AbiWidget * w)\
 { \
@@ -188,7 +188,7 @@ return GET_CLASS (w)->p (w); \
 #define EM_INT_INT__BOOL(n, p) \
 static gboolean EM_NAME(n) (AbiWidget * w, gint32 x, gint32 y) \
 { \
-return abi_widget_invoke_ex (w, #n, 0, x, y); \
+return abi_widget_invoke_ex(w, #n, nullptr, x, y); \
 } \
 extern "C" gboolean PUBLIC_EM_NAME(p) (AbiWidget * w, gint32 x, gint32 y) \
 { \
@@ -946,7 +946,7 @@ static void _abi_widget_releaseListener(AbiWidget *widget)
 		return;
 	
 	DELETEP(private_data->m_pViewListener);
-	private_data->m_pViewListener = 0;
+	private_data->m_pViewListener = nullptr;
 }
 
 static bool _abi_widget_bindListenerToView(AbiWidget *widget, AV_View * pView)
@@ -1451,7 +1451,7 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 	iPage--;
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
-		return FALSE;
+		return nullptr;
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 
 	GR_UnixCairoGraphics  * pVG = static_cast<GR_UnixCairoGraphics *>(pView->getGraphics());
@@ -1773,7 +1773,7 @@ static gboolean s_abi_widget_map_cb(GObject * /*w*/, gpointer p)
 {
 	UT_DEBUGMSG(("s_abi_widget_map_cb()\n"));
 	
-	UT_return_val_if_fail (p != 0, true);
+	UT_return_val_if_fail(p != nullptr, true);
 	AbiWidget* abi = reinterpret_cast<AbiWidget*>(p);
 
 	if (abi->priv->m_bMappedToScreen)
@@ -1912,7 +1912,7 @@ static void abi_widget_set_prop (GObject  *object,
 								 const GValue *arg,
 								 GParamSpec * /*pspec*/)
 {
-	UT_return_if_fail (object != 0);
+	UT_return_if_fail(object != nullptr);
 
 	AbiWidget * abi = ABI_WIDGET (object);
 	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
@@ -2400,7 +2400,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class, gpointer)
 								  g_param_spec_string("content",
 													   NULL,
 													   NULL,
-													   FALSE,
+													   nullptr,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
 	g_object_class_install_property(gobject_class,
@@ -2408,7 +2408,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class, gpointer)
 								  g_param_spec_string("selection",
 													   NULL,
 													   NULL,
-													   FALSE,
+													   nullptr,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
 	g_object_class_install_property(gobject_class,
@@ -2463,7 +2463,7 @@ abi_widget_turn_on_cursor(AbiWidget * abi)
 {
 	if (abi->priv->m_pFrame)
 	{
-		UT_return_if_fail (abi != 0);
+		UT_return_if_fail(abi != nullptr);
 		FV_View * pV = static_cast<FV_View*>(abi->priv->m_pFrame->getCurrentView());
 		if (pV)
 			pV->focusChange(AV_FOCUS_HERE);
@@ -2509,7 +2509,7 @@ abi_widget_new (void)
 	AbiWidget * abi;
 	UT_DEBUGMSG(("Constructing AbiWidget \n"));
 	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
-	abi_widget_construct (abi, 0);
+	abi_widget_construct(abi, nullptr);
 
 	return GTK_WIDGET (abi);
 }
@@ -2527,7 +2527,7 @@ abi_widget_new_with_file (const gchar * file)
 {
 	AbiWidget * abi;
 
-	UT_return_val_if_fail (file != 0, 0);
+	UT_return_val_if_fail(file != nullptr, nullptr);
 
 	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
 	abi_widget_construct (abi, file);
@@ -2601,24 +2601,24 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	UT_DEBUGMSG(("abi_widget_invoke_ex, methodname: %s\n", mthdName));
 
 	// lots of conditional returns - code defensively
-	UT_return_val_if_fail (w != 0, FALSE);
-	UT_return_val_if_fail (mthdName != 0, FALSE);
+	UT_return_val_if_fail(w != nullptr, FALSE);
+	UT_return_val_if_fail(mthdName != nullptr, FALSE);
 
 	// get the method container
 	XAP_App *pApp = XAP_App::getApp();
 	container = pApp->getEditMethodContainer();
-	UT_return_val_if_fail (container != 0, FALSE);
+	UT_return_val_if_fail(container != nullptr, FALSE);
 
 	// get a handle to the actual EditMethod
 	method = container->findEditMethodByName (mthdName);
-	UT_return_val_if_fail (method != 0, FALSE);
+	UT_return_val_if_fail(method != nullptr, FALSE);
 
 	// get a valid frame
-	UT_return_val_if_fail (w->priv->m_pFrame != 0, FALSE);
+	UT_return_val_if_fail(w->priv->m_pFrame != nullptr, FALSE);
 
 	// obtain a valid view
 	view = w->priv->m_pFrame->getCurrentView();
-	UT_return_val_if_fail (view != 0, FALSE);
+	UT_return_val_if_fail(view != nullptr, FALSE);
 	xxx_UT_DEBUGMSG(("Data to invoke %s \n",data));
 
 	// construct the call data
@@ -2695,7 +2695,7 @@ static FV_View*
 _get_fv_view(AbiWidget* w)
 {
 	AV_View* v = w->priv->m_pFrame->getCurrentView();
-	UT_return_val_if_fail(v!=0, NULL);
+	UT_return_val_if_fail(v != nullptr, NULL);
 	return static_cast<FV_View*>( v );
 }
 

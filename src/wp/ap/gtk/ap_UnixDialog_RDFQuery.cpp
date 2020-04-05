@@ -109,14 +109,14 @@ AP_UnixDialog_RDFQuery::static_constructor(XAP_DialogFactory *pFactory,
 AP_UnixDialog_RDFQuery::AP_UnixDialog_RDFQuery(XAP_DialogFactory *pDlgFactory,
 									   XAP_Dialog_Id 	 id)
 	: AP_Dialog_RDFQuery   (pDlgFactory, id)
-    , m_wDialog 	   (0)
-    , m_btClose 	   (0)
-    , m_btExecute      (0)
-    , m_btShowAll      (0)
-    , m_query          (0)
-    , m_resultsView    (0)
-	, m_resultsModel   (0)
-    , m_status         (0)
+    , m_wDialog(nullptr)
+    , m_btClose(nullptr)
+    , m_btExecute(nullptr)
+    , m_btShowAll(nullptr)
+    , m_query(nullptr)
+    , m_resultsView(nullptr)
+    , m_resultsModel(nullptr)
+    , m_status(nullptr)
 {
 }
 
@@ -170,7 +170,7 @@ AP_UnixDialog_RDFQuery::setupBindingsView( std::map< std::string, std::string >&
     typedef std::list< std::pair< std::string, GtkTreeViewColumn* > > cols_t;
     cols_t cols;
     
-    GtkCellRenderer* ren = 0;
+    GtkCellRenderer* ren = nullptr;
     int colid = 0;
     for( std::map< std::string, std::string >::iterator iter = b.begin();
          iter != b.end(); ++iter, ++colid )
@@ -233,7 +233,7 @@ AP_UnixDialog_RDFQuery::addBinding( std::map< std::string, std::string >& b )
     
     GtkTreeStore* m = m_resultsModel;
     GtkTreeIter giter;
-    gtk_tree_store_append( m, &giter, 0 );
+    gtk_tree_store_append(m, &giter, nullptr);
 
     std::map< std::string, std::string >::iterator iter = b.begin();
     std::map< std::string, std::string >::iterator  end = b.end();
@@ -321,7 +321,7 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
     m_resultsModel = m;
 
     int colid = 0;
-    GtkCellRenderer* ren = 0;
+    GtkCellRenderer* ren = nullptr;
 
     colid = C_SUBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();

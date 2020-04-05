@@ -340,7 +340,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 										  const PP_PropertyVector & properties);
 
 	bool					insertStrux(PT_DocPosition dpos,
-										PTStruxType pts, pf_Frag_Strux ** ppfs_ret = 0);
+										PTStruxType pts, pf_Frag_Strux ** ppfs_ret = nullptr);
 	bool					deleteStrux(PT_DocPosition dpos,
 										PTStruxType pts,
 										bool bRecordChange);
@@ -396,7 +396,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 
-	bool					appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = 0);
+	bool					appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = nullptr);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const PP_PropertyVector & attributes);
 	bool                    appendLastStruxFmt(PTStruxType pts, const PP_PropertyVector & attrs, const PP_PropertyVector & props,
 											   bool bSkipEmbededSections);
@@ -409,7 +409,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					appendStyle(const PP_PropertyVector & attributes);
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux* sdh, const PP_PropertyVector & attributes);
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-												  const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = 0);
+												  const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = nullptr);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
 	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 												   const PP_PropertyVector & attributes);
@@ -425,7 +425,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset( PL_Listener * pListener,
                                                 PD_DocumentRange * pDocRange,
-                                                PL_ListenerCoupleCloser* closer = 0 );
+                                                PL_ListenerCoupleCloser* closer = nullptr);
 	bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	bool					removeListener(PL_ListenerId listenerId);
 	bool					signalListeners(UT_uint32 iSignal) const;

@@ -30,10 +30,10 @@
 GR_RSVGVectorImage::GR_RSVGVectorImage(const char* name) 
 	: GR_CairoVectorImage(),
 	  m_data(new UT_ByteBuf),
-	  m_graphics(0),
-	  m_surface(0), 
-	  m_image_surface(0), 
-	  m_svg(0), 
+	  m_graphics(nullptr),
+	  m_surface(nullptr),
+	  m_image_surface(nullptr),
+	  m_svg(nullptr),
 	  m_scaleX(1.0), 
 	  m_scaleY(1.0), 
 	  m_needsNewSurface(false),
@@ -84,7 +84,7 @@ bool GR_RSVGVectorImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
 	result = rsvg_handle_write(m_svg, pBB->getPointer(0), pBB->getLength(), NULL);
 	if (!result) {
 		g_object_unref(G_OBJECT(m_svg));
-		m_svg = 0;
+		m_svg = nullptr;
 		
 		return false;
 	}
@@ -93,7 +93,7 @@ bool GR_RSVGVectorImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
 	
 	if (!result) {
 		g_object_unref(G_OBJECT(m_svg));
-		m_svg = 0;
+		m_svg = nullptr;
 		
 		return false;
 	}
@@ -131,22 +131,22 @@ void GR_RSVGVectorImage::reset()
 	if (m_svg) 
 	{
 		g_object_unref(G_OBJECT(m_svg));
-		m_svg = 0;
+		m_svg = nullptr;
 	}
 	
 	if (m_surface) 
     {
 		cairo_surface_destroy(m_surface);
-		m_surface = 0;
+		m_surface = nullptr;
 	}
 
 	if (m_image_surface) {
 		cairo_surface_destroy(m_image_surface);
-		m_image_surface = 0;
+		m_image_surface = nullptr;
 	}
 	
 	m_scaleX = m_scaleY = 1.0;
-	m_graphics = 0;
+	m_graphics = nullptr;
 	m_needsNewSurface = false;
 	memset(&m_size, 0, sizeof(RsvgDimensionData));
 	DELETEP(m_rasterImage);
@@ -186,10 +186,10 @@ void GR_RSVGVectorImage::createImageSurface() {
 	if (!m_needsNewSurface)
 		return;
 
-	if (m_image_surface != 0) 
+	if (m_image_surface != nullptr)
     { // get rid of any previous surface
 		cairo_surface_destroy(m_image_surface);
-		m_image_surface = 0;
+		m_image_surface = nullptr;
 	}
 
 	m_image_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
@@ -204,9 +204,9 @@ void GR_RSVGVectorImage::createSurface(cairo_t* cairo) {
 	if (!m_needsNewSurface && cairo == m_graphics)
 		return; // already have a similar surface for this graphics at this size
 	
-	if (m_surface != 0) { // get rid of any previous surface
+	if (m_surface != nullptr) { // get rid of any previous surface
 		cairo_surface_destroy(m_surface);
-		m_surface = 0;
+		m_surface = nullptr;
 	}
 	
 	m_surface = cairo_surface_create_similar(cairo_get_target(cairo), 

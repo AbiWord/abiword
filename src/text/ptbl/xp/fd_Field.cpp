@@ -33,7 +33,7 @@
 fd_Field::fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, 
                    FieldType fieldType, const gchar *pParam)
     : m_fragObject(fO),m_pPieceTable(pt),
-      m_updateCount(0), m_iFieldType(fieldType), m_pParameter(0)
+      m_updateCount(0), m_iFieldType(fieldType), m_pParameter(nullptr)
 {
 	m_pBlock = NULL;
 	m_szValue = NULL;

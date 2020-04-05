@@ -59,19 +59,19 @@ public:
     virtual PD_RDFContact*  createContact(PD_DocumentRDFHandle /*rdf*/,
 										  PD_ResultBindings_t::iterator /*it*/) override
     {
-        return 0;
+        return nullptr;
     }
     virtual PD_RDFEvent*    createEvent(PD_DocumentRDFHandle /*rdf*/,
 										PD_ResultBindings_t::iterator /*it*/) override
     {
-        return 0;
+        return nullptr;
     }
     virtual PD_RDFLocation* createLocation(PD_DocumentRDFHandle /*rdf*/,
 										   PD_ResultBindings_t::iterator /*it*/,
 										   bool isGeo84 = false) override
     {
 		UT_UNUSED(isGeo84);
-        return 0;
+        return nullptr;
     }
 };
 PD_SemanticItemFactory *PD_DocumentRDF::s_SemanticItemFactory;
@@ -902,7 +902,7 @@ public:
     virtual const PP_AttrProp* getAP(void) override
     {
         UT_DEBUGMSG(("ERROR: getAP() is not valid for a start-end position rdf model\n"));
-        return 0;
+        return nullptr;
     }
     virtual UT_Error setAP( PP_AttrProp* newAP ) override
     {
@@ -936,7 +936,7 @@ public:
         for( ; frag != endFrag; frag = frag->getNext() )
         {
             PT_AttrPropIndex api = frag->getIndexAP();
-            const PP_AttrProp * pAP = 0;
+            const PP_AttrProp * pAP = nullptr;
             m_doc->getAttrProp( api, &pAP );
             m_APList.push_back( pAP );
         }
@@ -1003,8 +1003,8 @@ public:
         void setup_pocol()
         {
             UT_DEBUGMSG(("SI... statement iter++/setup_pocol(top)\n" ));
-            const gchar * szName  = 0;
-            const gchar * szValue = 0;
+            const gchar* szName = nullptr;
+            const gchar* szValue = nullptr;
             const PP_AttrProp* AP = *m_apiter;
             if( AP->getNthProperty( m_apPropertyNumber, szName, szValue) )
             {
@@ -1200,7 +1200,7 @@ public:
 /****************************************/
 
 PD_RDFModelIterator::PD_RDFModelIterator()
-    : m_AP( 0 )
+    : m_AP(nullptr)
     , m_end( true )
     , m_apPropertyNumber( 0 )
 {
@@ -1225,8 +1225,8 @@ void
 PD_RDFModelIterator::setup_pocol()
 {
     xxx_UT_DEBUGMSG(("MI statement iter++/setup_pocol(top) apn:%d\n", m_apPropertyNumber ));
-    const gchar * szName  = 0;
-    const gchar * szValue = 0;
+    const gchar* szName = nullptr;
+    const gchar* szValue = nullptr;
     if( m_AP->getNthProperty( m_apPropertyNumber, szName, szValue) )
     {
         xxx_UT_DEBUGMSG(("MI statement iter++/setup_pocol szName :%s\n", szName ));
@@ -1276,8 +1276,8 @@ PD_RDFModelIterator::moveToNextSubject()
         m_end = true;
         return *this;
     }
-    const gchar * szName  = 0;
-    const gchar * szValue = 0;
+    const gchar* szName = nullptr;
+    const gchar* szValue = nullptr;
     m_AP->getNthProperty( m_apPropertyNumber, szName, szValue );
     m_subject = szName;
     m_current = PD_RDFStatement( m_subject, PD_URI(), PD_Object() );
@@ -1899,7 +1899,7 @@ static void set( EVCard* c, const char* k, const std::string& v )
     EVCardAttribute* a = e_vcard_get_attribute( c, k );
     if( !a )
     {
-        a = e_vcard_attribute_new( 0, k );
+        a = e_vcard_attribute_new(nullptr, k);
         e_vcard_append_attribute( c, a );
     }
     
@@ -3186,7 +3186,7 @@ UT_Error PD_DocumentRDF::setAP( PP_AttrProp* newAP )
     PT_AttrPropIndex newAPI = 0;
     bool success = m_varset.addIfUniqueAP( newAP, &newAPI );
     // addIfUniqueAP() eats it
-    newAP = 0;
+    newAP = nullptr;
     
     if(!success)
     {
@@ -3264,8 +3264,8 @@ PD_DocumentRDF::apGetAllSubjects( const PP_AttrProp* AP, PD_URIList& ret )
     size_t count = AP->getPropertyCount();
     for( size_t i = 0; i<count; ++i )
     {
-        const gchar * szName = 0;
-        const gchar * szValue = 0;
+        const gchar* szName = nullptr;
+        const gchar* szValue = nullptr;
         if( AP->getNthProperty( i, szName, szValue) )
         {
             std::string subj = szName;
@@ -3298,7 +3298,7 @@ PD_DocumentRDF::getArcsOut( const PD_URI& s )
 POCol&
 PD_DocumentRDF::apGetArcsOut( const PP_AttrProp* AP, POCol& ret, const PD_URI& s )
 {
-    const gchar* szValue = 0;
+    const gchar* szValue = nullptr;
 	if(AP->getProperty(s.toString(), szValue))
     {
         ret = decodePOCol(szValue);
@@ -3319,7 +3319,7 @@ PD_DocumentRDF::apGetArcsOut( const PP_AttrProp* AP, POCol& ret, const PD_URI& s
 PD_ObjectList&
 PD_DocumentRDF::apGetObjects( const PP_AttrProp* AP, PD_ObjectList& ret, const PD_URI& s, const PD_URI& p )
 {
-    const gchar* szValue = 0;
+    const gchar* szValue = nullptr;
 	if(AP->getProperty(s.toString(), szValue))
     {
         POCol l = decodePOCol(szValue);
@@ -3349,8 +3349,8 @@ PD_DocumentRDF::apGetSubjects( const PP_AttrProp* AP, PD_URIList& ret, const PD_
     size_t count = AP->getPropertyCount();
     for( size_t i = 0; i<count; ++i )
     {
-        const gchar * szName = 0;
-        const gchar * szValue = 0;
+        const gchar* szName = nullptr;
+        const gchar* szValue = nullptr;
         if( AP->getNthProperty( i, szName, szValue) )
         {
             POCol l = decodePOCol( szValue );
@@ -3372,7 +3372,7 @@ PD_DocumentRDF::apGetSubjects( const PP_AttrProp* AP, PD_URIList& ret, const PD_
  */
 bool PD_DocumentRDF::apContains( const PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o )
 {
-    const gchar* szValue = 0;
+    const gchar* szValue = nullptr;
 	if(AP->getProperty(s.toString(), szValue))
     {
         POCol l = decodePOCol(szValue);
@@ -3491,7 +3491,7 @@ PD_DocumentRDF::getPieceTable(void) const
 void
 RDFAnchor::setup( const PP_AttrProp* pAP )
 {
-    const gchar * v = 0;
+    const gchar * v = nullptr;
     // if(pAP->getAttribute("this-is-an-rdf-anchor", v) && v)
     //     UT_DEBUGMSG(("RDFAnchor() is-rdf-a:%s\n",v));
     // if(pAP->getAttribute(PT_RDF_END, v) && v)
@@ -3662,7 +3662,7 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
     //
     for( ; curr > searchBackThisFar; )
     {
-        pf_Frag* pf = 0;
+        pf_Frag* pf = nullptr;
         PT_BlockOffset boffset;
 
         if( pt->getFragFromPosition( curr, &pf, &boffset ) )
@@ -3694,7 +3694,7 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
                     && objectTypes.count(pOb->getObjectType()))
                 {
                     pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
-                    const char* v = 0;
+                    const char* v = nullptr;
                     if( pAP->getAttribute(PT_XMLID, v) && v)
                     {
                         std::string xmlid = v;
@@ -3755,7 +3755,7 @@ PD_DocumentRDF::addXMLIDsForObjects( std::set< std::string >& ret, std::list< pf
         if( pOb->getObjectType() == PTO_Bookmark )
         {
             pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
-            const char* v = 0;
+            const char* v = nullptr;
             if( pAP->getAttribute(PT_XMLID, v) && v)
             {
                 std::string xmlid = v;
@@ -3928,7 +3928,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::set< std::string >& ret,
     //
     for( ; curr > searchBackThisFar; )
     {
-        pf_Frag* pf = 0;
+        pf_Frag* pf = nullptr;
         PT_BlockOffset boffset;
 
         if( pt->getFragFromPosition( curr, &pf, &boffset ) )
@@ -3958,7 +3958,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::set< std::string >& ret,
                 if(pOb->getObjectType() == PTO_Bookmark)
                 {
                     pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
-                    const char* v = 0;
+                    const char* v = nullptr;
                     if( pAP->getAttribute(PT_XMLID, v) && v)
                     {
                         std::string xmlid = v;
@@ -4427,7 +4427,7 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
 
     for( ; curr < eod; ++curr )
     {
-        pf_Frag* pf = 0;
+        pf_Frag* pf = nullptr;
         PT_BlockOffset boffset;
         pf_Frag_Strux* psdh;
         if( pt->getStruxOfTypeFromPosition( curr, PTX_Block, &psdh ) && psdh )
@@ -4465,7 +4465,7 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
                     const PP_AttrProp * pAP = NULL;
                     pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
 
-                    const gchar * v = 0;
+                    const gchar * v = nullptr;
                     if(!pAP->getAttribute(PT_XMLID, v) || !v)
                     {
                     }
@@ -4534,8 +4534,8 @@ PD_DocumentRDF::apDumpModel( const PP_AttrProp* AP, const std::string& headerMsg
     UT_DEBUGMSG(("PD_DocumentRDF::DUMPMODEL() API:%d COUNT:%ld\n", m_indexAP, (long)count));
     for( size_t i = 0; i < count; ++i )
     {
-        const gchar * szName = 0;
-        const gchar * szValue = 0;
+        const gchar * szName = nullptr;
+        const gchar * szValue = nullptr;
         if( AP->getNthProperty( i, szName, szValue) )
         {
 //            UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() szName :%s\n", szName ));
@@ -4676,7 +4676,7 @@ RDFModel_SPARQLLimited::update()
 
         POCol l;
         const gchar* szName = s.toString().c_str();
-        const gchar* szValue = 0;
+        const gchar* szValue = nullptr;
         if( AP->getProperty( szName, szValue) )
         {
             l = decodePOCol(szValue);
@@ -5246,7 +5246,7 @@ PD_DocumentRDFMutation::PD_DocumentRDFMutation( PD_DocumentRDF* rdf )
     , m_rolledback(false)
     , m_committed(false)
     , m_handlingAbiCollabNotification( false )
-    , m_pAP( 0 )
+    , m_pAP(nullptr)
 {
     m_pAP = m_rdf->getAP()->cloneWithReplacements(PP_NOPROPS, PP_NOPROPS, false);
     m_crRemoveAP = new PP_AttrProp();
@@ -5272,7 +5272,7 @@ bool PD_DocumentRDFMutation::apAdd( PP_AttrProp* AP, const PD_URI& s, const PD_U
 {
     POCol l;
     const std::string szName = s.toString();
-    const gchar* szValue = 0;
+    const gchar* szValue = nullptr;
 	if( AP->getProperty( szName, szValue) )
     {
         l = decodePOCol(szValue);
@@ -5294,8 +5294,8 @@ void PD_DocumentRDFMutation::apRemove( PP_AttrProp*& AP, const PD_URI& s, const 
 	size_t propCount = AP->getPropertyCount();
     for( size_t i = 0; i<propCount; ++i )
     {
-        const gchar * szName = 0;
-        const gchar * szValue = 0;
+        const gchar * szName = nullptr;
+        const gchar * szValue = nullptr;
         
         if( !AP->getNthProperty( i, szName, szValue))
         {
@@ -5492,8 +5492,8 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
 	size_t propCount = existingAP->getPropertyCount();
     for( size_t i = 0; i<propCount; ++i )
     {
-        const gchar * szExistingName = 0;
-        const gchar * szExistingValue = 0;
+        const gchar * szExistingName = nullptr;
+        const gchar * szExistingValue = nullptr;
         
         if( !existingAP->getNthProperty( i, szExistingName, szExistingValue))
         {
@@ -5502,7 +5502,7 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
             continue;
         }
 
-        const gchar* szPropertiesToRemove = 0;
+        const gchar* szPropertiesToRemove = nullptr;
         if( remove_->getProperty( szExistingName, szPropertiesToRemove ))
         {
             POCol existingProps = decodePOCol(szExistingValue);
@@ -5555,8 +5555,8 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
 	propCount = add_->getPropertyCount();
     for( size_t i = 0; i<propCount; ++i )
     {
-        const gchar * szName = 0;
-        const gchar * szValue = 0;
+        const gchar * szName = nullptr;
+        const gchar * szValue = nullptr;
         
         if( !add_->getNthProperty( i, szName, szValue))
         {
@@ -5649,7 +5649,7 @@ UT_Error PD_DocumentRDFMutation::commit()
         PT_AttrPropIndex crAPI = 0;
         success = m_varset.addIfUniqueAP( crAP, &crAPI );
         // addIfUniqueAP() eats it
-        crAP = 0;
+        crAP = nullptr;
 
         if( !success )
         {
@@ -5662,7 +5662,7 @@ UT_Error PD_DocumentRDFMutation::commit()
         UT_uint32 iXID = 0;
         PX_ChangeRecord* pcr = new PX_ChangeRecord( PX_ChangeRecord::PXT_ChangeDocRDF,
                                                     pos, crAPI, iXID );
-        doc->notifyListeners( 0, pcr );
+        doc->notifyListeners(nullptr, pcr);
         delete pcr;
 //        UT_DEBUGMSG(("PD_DocumentRDF::commit(done) rdf:%p\n", m_rdf));
     }

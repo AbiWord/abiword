@@ -32,9 +32,9 @@ class ABI_EXPORT IE_FileInfo
 public:
 	IE_FileInfo ();
 
-	void setFileInfo (const char * psz_MIME_TypeOrPseudo = 0,
-					  const char * psz_PreferredExporter = 0,
-					  const char * psz_PreferredImporter = 0);
+	void setFileInfo(const char * psz_MIME_TypeOrPseudo = nullptr,
+					  const char * psz_PreferredExporter = nullptr,
+					  const char * psz_PreferredImporter = nullptr);
 
 	const UT_UTF8String & PreferredImporter () const { return m_PreferredImporter; }
 	const UT_UTF8String & PreferredExporter () const { return m_PreferredExporter; }

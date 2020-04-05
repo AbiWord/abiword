@@ -72,7 +72,7 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
 	size_t size = last - first + 1;
 	
 	for (size_t i = 0; i < size; ++i)
-		m_labelTable.addItem(0);
+		m_labelTable.addItem(nullptr);
 }
 
 

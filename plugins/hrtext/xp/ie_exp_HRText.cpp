@@ -67,7 +67,7 @@ ABI_PLUGIN_DECLARE("HRText")
 // completely generic code to allow this to be a plugin
 
 // we use a reference-counted sniffer
-static IE_Exp_HRText_Sniffer * m_sniffer = 0;
+static IE_Exp_HRText_Sniffer * m_sniffer = nullptr;
 
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
@@ -91,17 +91,17 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	UT_ASSERT (m_sniffer);
 
 	IE_Exp::unregisterExporter (m_sniffer);
 	delete m_sniffer;
-	m_sniffer = 0;
+	m_sniffer = nullptr;
 
 	return 1;
 }
@@ -149,7 +149,7 @@ bool IE_Exp_HRText_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 
 IE_Exp_HRText::IE_Exp_HRText(PD_Document * pDocument)
-	: IE_Exp(pDocument), m_pListener(0)
+	: IE_Exp(pDocument), m_pListener(nullptr)
 {
   m_error = UT_OK;
 }
@@ -566,7 +566,7 @@ bool s_HRText_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;						// we don't need it.
 
 	switch (pcrx->getStruxType())
 	{

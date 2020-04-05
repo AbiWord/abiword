@@ -428,7 +428,7 @@ pf_Frag_Object::~pf_Frag_Object()
 	    m_pObjectSubclass = NULL;
 	}
 	delete m_pField;
-	m_pField = 0;
+	m_pField = nullptr;
 }
 
 bool pf_Frag_Object::_isContentEqual(const pf_Frag &f2) const
@@ -485,5 +485,5 @@ po_Bookmark * pf_Frag_Object::getBookmark() const
 	if(m_objectType == PTO_Bookmark)
 		return static_cast<po_Bookmark*>(m_pObjectSubclass);
 	else
-		return 0;
+		return nullptr;
 }

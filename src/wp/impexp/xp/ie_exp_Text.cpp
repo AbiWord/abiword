@@ -60,7 +60,7 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Exp(pDocument),
 	  m_pListener(NULL),
 	  m_bIsEncoded(false),
-	  m_szEncoding(0),
+	  m_szEncoding(nullptr),
 	  m_bExplicitlySetEncoding(false),
 	  m_bIs16Bit(false),
 	  m_bUnicode(false),
@@ -86,7 +86,7 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, const char * encoding)
   : IE_Exp(pDocument),
     m_pListener(NULL),
     m_bIsEncoded(false),
-    m_szEncoding(0),
+    m_szEncoding(nullptr),
     m_bExplicitlySetEncoding(false),
     m_bIs16Bit(false),
     m_bUnicode(false),
@@ -401,7 +401,7 @@ void Text_Listener::_genBOM(void)
 void Text_Listener::_genLineBreak(void)
 {
 	char *pMB = static_cast<char *>(m_mbLineBreak);
-	const UT_UCSChar *pWC = 0;
+	const UT_UCSChar *pWC = nullptr;
 	int mbLen = 0;
 
 	// TODO Old Mac should use "\r".  Mac OSX should Use U+2028 or U+2029.
@@ -785,7 +785,7 @@ bool Text_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 {
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *>(pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;						// we don't need it.
 
 	switch (pcrx->getStruxType())
 	{
@@ -836,14 +836,14 @@ bool Text_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 
 			if (bHaveProp && pAP)
 			{
-				szValue = PP_evalProperty ("margin-top", 0, pAP, 0, m_pDocument, true);
+				szValue = PP_evalProperty("margin-top", nullptr, pAP, nullptr, m_pDocument, true);
 				if(szValue)
 				{
 					double inches = UT_convertToInches(szValue);
 					if (!m_bFirstWrite && (inches > 0.01))
 						m_pie->write(static_cast<const char *>(m_mbLineBreak),m_iLineBreakLen);
 				}
-				szValue = PP_evalProperty ("margin-bottom", 0, pAP, 0, m_pDocument, true);
+				szValue = PP_evalProperty("margin-bottom", nullptr, pAP, nullptr, m_pDocument, true);
 				if(szValue)
 				{
 					double inches = UT_convertToInches(szValue);

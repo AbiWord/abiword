@@ -91,7 +91,7 @@ public:
 	virtual bool pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData,
 										UT_uint32 lenData,
-										const char * szEncoding = 0) override;
+										const char * szEncoding = nullptr) override;
 
 	virtual bool appendStrux(PTStruxType pts, const PP_PropertyVector & attributes) override;
 	virtual bool appendFmt(const PP_PropertyVector & vecAttributes) override;

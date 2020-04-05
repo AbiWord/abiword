@@ -592,7 +592,7 @@ PT_AttrPropIndex ie_Table::getTableAPI(void) const
  */
 const char * ie_Table::getTableProp(const char * pProp) const
 {
-	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
+	UT_return_val_if_fail(!m_sLastTable.empty(), nullptr);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,NULL);
 	return pPT->getTableProp(pProp);
@@ -604,7 +604,7 @@ const char * ie_Table::getTableProp(const char * pProp) const
  */
 const char * ie_Table::getCellProp(const char * pProp) const
 {
-	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
+	UT_return_val_if_fail(!m_sLastTable.empty(), nullptr);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,NULL);
 	return pPT->getCellProp(pProp);
@@ -1992,14 +1992,14 @@ bool ie_imp_table_control::NewRow(void)
 
 CellHelper::CellHelper () :
 	m_style(""),
-	m_pfsCell(0),
+	m_pfsCell(nullptr),
 	m_bottom(0),
 	m_left(0),
 	m_right(0),
 	m_top(0),
 	m_rowspan(0),
 	m_colspan(0),
-	m_next(0),
+	m_next(nullptr),
 	m_tzone(tz_body),
 	m_sCellProps("")
 {
@@ -2019,7 +2019,7 @@ IE_Imp_TableHelper::IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux *
 	m_style_tzone(""),
 	m_style(""),
 	m_pfsInsertionPoint(pfsInsertionPoint),
-	m_pfsTableStart(0),
+	m_pfsTableStart(nullptr),
 	m_pfsTableEnd(pfsInsertionPoint),
 	m_pfsCellPoint(NULL),
 	m_rows(0),
@@ -2033,7 +2033,7 @@ IE_Imp_TableHelper::IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux *
 	m_cols_max(0),
 	m_col_next(0),
 	m_row_next(0),
-	m_current(0),
+	m_current(nullptr),
 	m_tzone(tz_body),
 	m_bBlockInsertedForCell(false),
 	m_bCaptionOn(false)
@@ -2610,7 +2610,7 @@ IE_Imp_TableHelperStack::IE_Imp_TableHelperStack (void) :
 	m_pDocument(NULL),
 	m_count(0),
 	m_max(0),
-	m_stack(0)
+	m_stack(nullptr)
 {
 	UT_DEBUGMSG(("TableHelperStack created document = %p \n",m_pDocument)); 
 }
@@ -2634,25 +2634,25 @@ void IE_Imp_TableHelperStack::clear ()
 
 bool IE_Imp_TableHelperStack::push (const char * style)
 {
-	if (m_stack == 0)
+	if (m_stack == nullptr)
 		{
 			m_stack = reinterpret_cast<IE_Imp_TableHelper **>(g_try_malloc (16 * sizeof (IE_Imp_TableHelper *)));
-			if (m_stack == 0)
+			if (m_stack == nullptr)
 				return false;
 			m_count = 0;
 			m_max = 16;
 		}
 	else if (m_count == m_max)
 		{
-			IE_Imp_TableHelper ** more = 0;
+			IE_Imp_TableHelper ** more = nullptr;
 			more = reinterpret_cast<IE_Imp_TableHelper **>(g_try_realloc (m_stack, (m_max + 16) * sizeof (IE_Imp_TableHelper *)));
-			if (more == 0)
+			if (more == nullptr)
 				return false;
 			m_max += 16;
 			m_stack = more;
 		}
 
-	IE_Imp_TableHelper * th = 0;
+	IE_Imp_TableHelper * th = nullptr;
 
 	// TODO: not sure this needs to happen...
 	try
@@ -2667,10 +2667,10 @@ bool IE_Imp_TableHelperStack::push (const char * style)
 		}
     catch(...)
 		{
-			th = 0;
+			th = nullptr;
 		}
 
-	if (th == 0)
+	if (th == nullptr)
 		return false;
 	m_count++;
 	m_stack[m_count] = th;
@@ -2709,7 +2709,7 @@ IE_Imp_TableHelper * IE_Imp_TableHelperStack::top(void) const
 bool IE_Imp_TableHelperStack::tableEnd()
 {
 	IE_Imp_TableHelper * th = top ();
-	if (th == 0)
+	if (th == nullptr)
 		return false;
 
 	bool okay = th->tableEnd ();
@@ -2724,7 +2724,7 @@ bool IE_Imp_TableHelperStack::tableEnd()
 bool IE_Imp_TableHelperStack::theadStart (const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
-	if (th == 0)
+	if (th == nullptr)
 		return false;
 
 	return th->theadStart (style);
@@ -2733,7 +2733,7 @@ bool IE_Imp_TableHelperStack::theadStart (const char * style) const
 bool IE_Imp_TableHelperStack::tfootStart (const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
-	if (th == 0)
+	if (th == nullptr)
 		return false;
 
 	return th->tfootStart (style);
@@ -2742,7 +2742,7 @@ bool IE_Imp_TableHelperStack::tfootStart (const char * style) const
 bool IE_Imp_TableHelperStack::tbodyStart (const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
-	if (th == 0)
+	if (th == nullptr)
 		return false;
 
 	return th->tbodyStart (style);
@@ -2751,7 +2751,7 @@ bool IE_Imp_TableHelperStack::tbodyStart (const char * style) const
 bool IE_Imp_TableHelperStack::trStart (const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
-	if (th == 0)
+	if (th == nullptr)
 		return false;
 
 	return th->trStart (style);
@@ -2760,7 +2760,7 @@ bool IE_Imp_TableHelperStack::trStart (const char * style) const
 bool IE_Imp_TableHelperStack::tdStart (UT_sint32 rowspan, UT_sint32 colspan, const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
-	if (th == 0)
+	if (th == nullptr)
 		return false;
 
 	return th->tdStart (rowspan, colspan, style,NULL);
@@ -2770,7 +2770,7 @@ bool IE_Imp_TableHelperStack::tdStart (UT_sint32 rowspan, UT_sint32 colspan, con
 bool IE_Imp_TableHelperStack::tdEnd (void) const
 {
 	IE_Imp_TableHelper * th = top ();
-	if (th == 0)
+	if (th == nullptr)
 		return false;
 
 	return th->tdEnd();

@@ -23,7 +23,7 @@
 
 AP_RDFContactGTK::AP_RDFContactGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it )
     : AP_RDFSemanticItemGTKInjected< AP_RDFContact >( rdf, it )
-    , w_jabberID(0)
+    , w_jabberID(nullptr)
 {
 }
     

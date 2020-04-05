@@ -346,7 +346,7 @@ bool FG_GraphicVector::setVector_SVG(const UT_ConstByteBufPtr & pBB)
 	UT_sint32 layoutWidth;
 	UT_sint32 layoutHeight;
 
-	return UT_SVG_getDimensions(pBB, 0, m_iWidth, m_iHeight, layoutWidth, layoutHeight);
+	return UT_SVG_getDimensions(pBB, nullptr, m_iWidth, m_iHeight, layoutWidth, layoutHeight);
 }
 
 const UT_ConstByteBufPtr& FG_GraphicVector::getBuffer(void) const

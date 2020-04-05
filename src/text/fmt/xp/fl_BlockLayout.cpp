@@ -197,8 +197,8 @@ fl_BlockLayout::fl_BlockLayout(pf_Frag_Strux* sdh,
 #ifdef ENABLE_SPELL
  	  m_pSpellSquiggles(NULL),
 	  m_pGrammarSquiggles(NULL),
-	  m_nextToSpell(0),
-	  m_prevToSpell(0),
+	  m_nextToSpell(nullptr),
+	  m_prevToSpell(nullptr),
 #endif
 	  m_bListItem(false),
 	  m_szStyle(NULL),
@@ -244,7 +244,7 @@ fl_BlockLayout::fl_BlockLayout(pf_Frag_Strux* sdh,
 	UT_ASSERT(m_pDoc);
 	setAttrPropIndex(indexAP);
 
-	const PP_AttrProp * pAP = 0;
+	const PP_AttrProp * pAP = nullptr;
 	getAP(pAP);
     UT_ASSERT_HARMLESS(pAP);
 
@@ -10080,14 +10080,14 @@ void	fl_BlockLayout::StartList( const gchar * style, pf_Frag_Strux* prevSDH)
 	// attributes and properties are the default values
 	//
 	FL_ListType lType2;
-	PD_Style* pStyle = 0;
-	const gchar* szDelim     = 0;
-	const gchar* szDec       = 0;
-	const gchar* szStart     = 0;
-	const gchar* szAlign     = 0;
-	const gchar* szIndent    = 0;
-	const gchar* szFont      = 0;
-	const gchar* szListStyle = 0;
+	PD_Style* pStyle = nullptr;
+	const gchar* szDelim = nullptr;
+	const gchar* szDec = nullptr;
+	const gchar* szStart = nullptr;
+	const gchar* szAlign = nullptr;
+	const gchar* szIndent = nullptr;
+	const gchar* szFont = nullptr;
+	const gchar* szListStyle = nullptr;
 	UT_uint32 startv, level, currID;
 
 	// TODO -- this mixture of float and double is a mess, we should
@@ -10343,9 +10343,9 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	sprintf(buf, "%i", curlevel);
 	sprintf(pszStart,"%i",start);
 
-	strncpy( pszAlign, UT_convertInchesToDimensionString(DIM_IN, Align, 0), sizeof(pszAlign));
+	strncpy(pszAlign, UT_convertInchesToDimensionString(DIM_IN, Align, nullptr), sizeof(pszAlign));
 
-	strncpy( pszIndent, UT_convertInchesToDimensionString(DIM_IN, indent, 0), sizeof(pszIndent));
+	strncpy(pszIndent, UT_convertInchesToDimensionString(DIM_IN, indent, nullptr), sizeof(pszIndent));
 
 	const PP_PropertyVector attribs = {
 		"listid", lid,
@@ -10470,7 +10470,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 				fAlign = static_cast<float>(UT_convertToInches(szAlign));
 				fAlign *= level;
 				strncpy( align,
-								UT_convertInchesToDimensionString(DIM_IN, fAlign, 0),
+								UT_convertInchesToDimensionString(DIM_IN, fAlign, nullptr),
 								sizeof(align));
 				sprintf(indent, "%s", szIndent);
 			}
@@ -10479,10 +10479,10 @@ void	fl_BlockLayout::StopListInBlock(void)
 				fAlign =  static_cast<float>(LIST_DEFAULT_INDENT) * level;
 				fIndent = static_cast<float>(-LIST_DEFAULT_INDENT_LABEL);
 				strncpy( align,
-								UT_convertInchesToDimensionString(DIM_IN, fAlign, 0),
+								UT_convertInchesToDimensionString(DIM_IN, fAlign, nullptr),
 								sizeof(align));
 				strncpy( indent,
-								UT_convertInchesToDimensionString(DIM_IN, fIndent, 0),
+								UT_convertInchesToDimensionString(DIM_IN, fIndent, nullptr),
 								sizeof(indent));
 			}
 

@@ -274,7 +274,7 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet *labels, const UT_String &label)
 {
 	const UT_GenericVector<EV_Menu_Label *> * labels_table = labels->getAllLabels();
-	const EV_Menu_Label *l = 0;
+	const EV_Menu_Label *l = nullptr;
 
 	UT_return_val_if_fail(labels_table, 0);
 	UT_uint32 size_labels = labels_table->size();

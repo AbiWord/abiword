@@ -1405,27 +1405,27 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
 		pSpanAP = pInSpanAP;
 	}
 
-    if (bHaveSpanProps && (0 != pSpanAP)) 
+    if (bHaveSpanProps && (nullptr != pSpanAP))
 	{
         pDeepestAP = pSpanAP;
     }
-    else if (bHaveBlockProps  && (0 != pBlockAP)) 
+    else if (bHaveBlockProps  && (nullptr != pBlockAP))
 	{
         pDeepestAP = pBlockAP;
     }
-    else if (bHaveSectionProps && (0 != pSectionAP)) 
+    else if (bHaveSectionProps && (nullptr != pSectionAP))
 	{
         pDeepestAP = pSectionAP;
     }
     
     if (NULL != pDeepestAP) 
 	{
-		const gchar * styleSzValue = 0;
+		const gchar * styleSzValue = nullptr;
 		bool have_style  = pDeepestAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, 
 													 styleSzValue);
         if (!have_style) 
 		{
-            if (bHaveBlockProps && (0 != pBlockAP)) 
+            if (bHaveBlockProps && (nullptr != pBlockAP))
 			{
                 have_style = pBlockAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, 
 													 styleSzValue);
@@ -1433,7 +1433,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
         }
         if (!have_style) 
 		{
-            if (bHaveSectionProps && (0 != pSectionAP)) 
+            if (bHaveSectionProps && (nullptr != pSectionAP))
 			{
                 have_style = pSectionAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, 													   styleSzValue);
             }
@@ -1465,7 +1465,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
 	// export the generated ODT+CT move identifier
     if ( pBlockAP )
 	{
-		const gchar * szDeltaMoveID = 0;
+		const gchar * szDeltaMoveID = nullptr;
 		bool haveAttr = pBlockAP->getAttribute("delta:move-id", szDeltaMoveID );
 		if ( haveAttr )
 		{
@@ -1483,7 +1483,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
 	}
 #ifdef DEBUG
 	{
-		const gchar * t = 0;
+		const gchar * t = nullptr;
 		if( pBlockAP )
 		{
 			if( pBlockAP->getAttribute("baz", t ) )
@@ -4364,7 +4364,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 {
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;						// we don't need it.
 
 	m_posDoc = pcrx->getPosition();
 	switch (pcrx->getStruxType())

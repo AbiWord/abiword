@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 // ut_stringbuf.h
 //
@@ -179,10 +179,10 @@ private:
 
 template <typename char_type>
 UT_StringImpl<char_type>::UT_StringImpl()
-	:	m_psz(0),
-		m_pEnd(0),
+	:	m_psz(nullptr),
+		m_pEnd(nullptr),
 		m_size(0),
-		m_utf8string(0)
+		m_utf8string(nullptr)
 {
 }
 
@@ -191,7 +191,7 @@ UT_StringImpl<char_type>::UT_StringImpl(const UT_StringImpl<char_type>& rhs)
 	:	m_psz(new char_type[rhs.capacity()]),
 		m_pEnd(m_psz + rhs.size()),
 		m_size(rhs.capacity()),
-		m_utf8string(0)
+		m_utf8string(nullptr)
 {
 	copy(m_psz, rhs.m_psz, rhs.capacity());
 }
@@ -201,7 +201,7 @@ UT_StringImpl<char_type>::UT_StringImpl(const char_type* sz, size_t n)
 :	m_psz(new char_type[n+1]),
 	m_pEnd(m_psz + n),
 	m_size(n+1),
-	m_utf8string(0)
+	m_utf8string(nullptr)
 {
 	copy(m_psz, sz, n);
 	m_psz[n] = 0;
@@ -212,7 +212,7 @@ UT_StringImpl<char_type>::UT_StringImpl(const std::basic_string<char_type> &s)
 :	m_psz(new char_type[s.size()+1]),
 	m_pEnd(m_psz + s.size()),
 	m_size(s.size()+1),
-	m_utf8string(0)
+	m_utf8string(nullptr)
 {
 	// string is terminated here, so we know
 	strcpy(m_psz, s.c_str());
@@ -249,7 +249,7 @@ void UT_StringImpl<char_type>::assign(const char_type* sz, size_t n)
 		m_psz[n] = 0;
 		m_pEnd = m_psz + n;
 		delete[] m_utf8string;
-		m_utf8string = 0;
+		m_utf8string = nullptr;
 	} else {
 		clear();
 	}
@@ -295,13 +295,13 @@ void UT_StringImpl<char_type>::clear()
 	if (m_psz)
 	{
 		delete[] m_psz;
-		m_psz = 0;
-		m_pEnd = 0;
+		m_psz = nullptr;
+		m_pEnd = nullptr;
 		m_size = 0;
 	}
 	if(m_utf8string) {
 		delete[] m_utf8string;
-		m_utf8string = 0;
+		m_utf8string = nullptr;
 	}
 }
 
@@ -350,7 +350,7 @@ void UT_StringImpl<char_type>::grow_common(size_t n, bool bCopy)
 		m_pEnd = m_psz + nCurSize;
 		m_size = n;
 		delete[] m_utf8string;
-		m_utf8string = 0;
+		m_utf8string = nullptr;
 	}
 }
 

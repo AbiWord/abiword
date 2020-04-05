@@ -217,13 +217,13 @@ public:
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
-										pf_Frag_Strux ** ppfs_ret = 0);
+										pf_Frag_Strux ** ppfs_ret = nullptr);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
 										const PP_PropertyVector & attributes,
 										const PP_PropertyVector & properties,
-										pf_Frag_Strux ** ppfs_ret = 0
+										pf_Frag_Strux ** ppfs_ret = nullptr
 										);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
@@ -272,7 +272,7 @@ public:
 	// the document.
 
 	PD_Document *			getDocument(void);
-	bool					appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = 0);
+	bool					appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = nullptr);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const PP_PropertyVector & attributes);
 	bool                    appendLastStruxFmt(PTStruxType pts, const PP_PropertyVector & attrs, const PP_PropertyVector & props,
 											   bool bSkipEmbededSections);
@@ -287,7 +287,7 @@ public:
 
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 												  const PP_PropertyVector & attributes,
-                                                  pf_Frag_Strux ** ppfs_ret = 0);
+                                                  pf_Frag_Strux ** ppfs_ret = nullptr);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
 	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 												   const PP_PropertyVector & attributes);
@@ -300,7 +300,7 @@ public:
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset( PL_Listener * pListener,
 											    PD_DocumentRange * pDocRange,
-                                                PL_ListenerCoupleCloser* closer = 0 );
+                                                PL_ListenerCoupleCloser* closer = nullptr);
 
 	bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);

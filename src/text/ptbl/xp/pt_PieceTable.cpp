@@ -1120,7 +1120,7 @@ pf_Frag_Strux* pt_PieceTable::_getBlockFromPosition(PT_DocPosition pos) const
 {
     pf_Frag* pf;
     PT_BlockOffset offset;
-    pf_Frag_Strux* ret = 0;
+    pf_Frag_Strux* ret = nullptr;
     
     if(!getFragFromPosition( pos, &pf, &offset ))
     {
@@ -1135,7 +1135,7 @@ pf_Frag_Strux* pt_PieceTable::_getBlockFromPosition(PT_DocPosition pos) const
     // otherwise search backwards for the block.
     if(!_getStruxOfTypeFromPosition( pos, PTX_Block, &ret ))
     {
-        return 0;
+        return nullptr;
     }
     return ret;
     

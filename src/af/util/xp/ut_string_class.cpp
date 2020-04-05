@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 // ut_string_class.cpp
 
 // A simple string class for use where templates are not
@@ -1277,7 +1277,8 @@ UT_UCS4String::UT_UCS4String(const char * _utf8_str, size_t bytelength /* 0 == z
 	:	pimpl(new UT_StringImpl<UT_UCS4Char>)
 {
 	if (bytelength == 0) {
-		if (_utf8_str == 0 || *_utf8_str == '\0') return;
+		if (_utf8_str == nullptr || *_utf8_str == '\0')
+			return;
 		bytelength = strlen (_utf8_str);
 	}
 	_loadUtf8(_utf8_str, bytelength);
@@ -1298,7 +1299,8 @@ UT_UCS4String::UT_UCS4String(const char * _utf8_str, size_t bytelength /* 0 == z
 	:	pimpl(new UT_StringImpl<UT_UCS4Char>)
 {
 	if (bytelength == 0) {
-		if (_utf8_str == 0 || *_utf8_str == '\0') return;
+		if (_utf8_str == nullptr || *_utf8_str == '\0')
+			return;
 		bytelength = strlen (_utf8_str);
 	}
 	UT_UCS4Char ucs4a = UT_Unicode::UTF8_to_UCS4 (_utf8_str, bytelength);
@@ -1410,7 +1412,7 @@ const char* UT_UCS4String::utf8_str()
 
 const UT_UCS4Char* UT_UCS4String::begin() const
 {
-	return pimpl->size() ? pimpl->data() : 0;
+	return pimpl->size() ? pimpl->data() : nullptr;
 }
 
 const UT_UCS4Char* UT_UCS4String::end() const

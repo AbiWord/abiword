@@ -107,7 +107,7 @@ bool IE_Exp_AbiWord_1_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 
 IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate, bool isCompressed)
-	: IE_Exp_XML(pDocument), m_bIsTemplate(isTemplate), m_bIsCompressed(isCompressed), m_pListener(0)
+	: IE_Exp_XML(pDocument), m_bIsTemplate(isTemplate), m_bIsCompressed(isCompressed), m_pListener(nullptr)
 {
 	m_error = 0;
 
@@ -499,7 +499,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInHyperlink = false;
 	m_bOpenChar = false;
 	m_apiLastSpan = 0;
-	m_pCurrentField = 0;
+	m_pCurrentField = nullptr;
 	m_iInTable = 0;
 	m_iInCell = 0;
 	m_iBlockLevel = 0;
@@ -574,7 +574,7 @@ s_AbiWord_1_Listener::getObjectKey(const PT_AttrPropIndex& api, const gchar* key
 			return value;
 	}
 
-	return 0;
+	return nullptr;
 }
 
 
@@ -787,7 +787,7 @@ bool s_AbiWord_1_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 {
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;						// we don't need it.
 	PT_AttrPropIndex api = pcr->getIndexAP();
 	const gchar* image_name = getObjectKey(api, static_cast<const gchar*>(PT_STRUX_IMAGE_DATAID));
 	if (image_name)

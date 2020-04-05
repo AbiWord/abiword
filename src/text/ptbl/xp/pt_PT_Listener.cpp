@@ -60,7 +60,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 	// walk document and for each fragment, send a notification
 	// to each layout.
   
-	fl_ContainerLayout* sfh = 0;
+	fl_ContainerLayout* sfh = nullptr;
 	PT_DocPosition sum = 0;
 	UT_uint32 blockOffset = 0;
 	pf_Frag_Strux * pfs2 = NULL;
@@ -116,7 +116,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 		case pf_Frag::PFT_Strux:
 			{
 				pfs2 = static_cast<pf_Frag_Strux *> (pf);
-				sfh = 0;
+				sfh = nullptr;
 			        if(bListensOnly)
 				{
 					pfs2->setFmtHandle(listenerId,sfh);
@@ -311,7 +311,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
 {
     xxx_UT_DEBUGMSG(("_tellListenerSubsetWalkRange(top) listener %p startpos %d endpos %d\n",
                  pListener, rangeStartPos, rangeEndPos ));
-	fl_ContainerLayout* sfh = 0;
+	fl_ContainerLayout* sfh = nullptr;
 	UT_uint32 blockOffset = 0;
 
 	pf_Frag * pf1 = NULL;
@@ -364,7 +364,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                 {
                     pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
                     pf_Frag_Strux* sdh = pfs;
-                    sfh = 0;
+                    sfh = nullptr;
                     PX_ChangeRecord * pcr = NULL;
                     bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
                     if(!bStatus1) {

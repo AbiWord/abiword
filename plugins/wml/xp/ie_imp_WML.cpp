@@ -232,7 +232,7 @@ static struct xmlToIdMapping s_Tokens[] =
 
 void IE_Imp_WML::openTable(const gchar **atts)
 {
-	const gchar * wml_columns = 0;
+	const gchar * wml_columns = nullptr;
 	wml_columns = _getXMLPropValue ("columns", atts);
 
 	if (wml_columns)

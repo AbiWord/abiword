@@ -353,7 +353,7 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
 
   UT_uint32 tokenIndex = _mapNameToToken(name, s_Tokens, TokenTableSize);
 
-  const gchar *pVal = 0;
+  const gchar *pVal = nullptr;
 
   switch (tokenIndex)
   {

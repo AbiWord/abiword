@@ -47,8 +47,8 @@ ABI_PLUGIN_DECLARE("OpenXML")
 
 // completely generic C-interface code to allow this to be a plugin
 
-static IE_Imp_OpenXML_Sniffer* pImp_sniffer = 0;
-static IE_Exp_OpenXML_Sniffer* pExp_sniffer = 0;
+static IE_Imp_OpenXML_Sniffer* pImp_sniffer = nullptr;
+static IE_Exp_OpenXML_Sniffer* pExp_sniffer = nullptr;
 
 
 /**
@@ -84,11 +84,11 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
  */
 ABI_BUILTIN_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-  mi->name    = 0;
-  mi->desc    = 0;
-  mi->version = 0;
-  mi->author  = 0;
-  mi->usage   = 0;
+  mi->name = nullptr;
+  mi->desc = nullptr;
+  mi->version = nullptr;
+  mi->author = nullptr;
+  mi->usage = nullptr;
   
   IE_Imp::unregisterImporter (pImp_sniffer);
   DELETEP(pImp_sniffer);

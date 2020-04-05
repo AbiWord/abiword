@@ -8465,7 +8465,7 @@ Defun1(formatPainter)
   pNewDoc->newDocument();
 
   FL_DocLayout *pDocLayout = new FL_DocLayout(pNewDoc, pView->getGraphics());
-  FV_View pPasteView (XAP_App::getApp(), 0, pDocLayout);
+  FV_View pPasteView(XAP_App::getApp(), nullptr, pDocLayout);
   pDocLayout->setView (&pPasteView);
   pDocLayout->fillLayouts();
   pDocLayout->formatAll();
@@ -8802,7 +8802,7 @@ UT_return_val_if_fail(pDialog, false);
 		if(!canQuickPrint)
 		{
 				pDocLayout = new FL_DocLayout(doc,pGraphics);
-				pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
+				pPrintView = new FV_View(XAP_App::getApp(), nullptr, pDocLayout);
 				pPrintView->getLayout()->fillLayouts();
 				pPrintView->getLayout()->formatAll();
 				pPrintView->getLayout()->recalculateTOCFields();
@@ -8930,7 +8930,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	if(!pGraphics->canQuickPrint() || (pView->getViewMode() != VIEW_PRINT))
 	{
 			pDocLayout = new FL_DocLayout(doc,pGraphics);
-			pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
+			pPrintView = new FV_View(XAP_App::getApp(), nullptr, pDocLayout);
 			pPrintView->setViewMode(VIEW_PRINT);
 			pPrintView->getLayout()->fillLayouts();
 			pPrintView->getLayout()->formatAll();
@@ -10607,7 +10607,7 @@ Defun1(insFile)
 
 	    // create a new layout and view object for the doc
 	    FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
-	    FV_View copyView(pApp,0,pDocLayout);
+	    FV_View copyView(pApp, nullptr, pDocLayout);
 
 	    pDocLayout->setView (&copyView);
 	    pDocLayout->fillLayouts();
@@ -10861,7 +10861,7 @@ Defun1(rdfQuery)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = AP_DIALOG_ID_RDF_QUERY;
-	AP_Dialog_RDFQuery* dialog = 0;
+	AP_Dialog_RDFQuery* dialog = nullptr;
 	return s_doRDFQueryDlg( pView, id, dialog );
 }
 
@@ -10907,7 +10907,7 @@ Defun1(rdfEditor)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = AP_DIALOG_ID_RDF_EDITOR;
-	AP_Dialog_RDFEditor* dialog = 0;
+	AP_Dialog_RDFEditor* dialog = nullptr;
 	return s_doRDFEditorDlg( pView, id, dialog, false );
 }
 
@@ -10973,7 +10973,7 @@ Defun1(rdfQueryXMLIDs)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	AP_Dialog_RDFQuery* dialog = 0;
+	AP_Dialog_RDFQuery* dialog = nullptr;
 	XAP_Dialog_Id id = AP_DIALOG_ID_RDF_QUERY;
 
 	bool rc = s_doRDFQueryDlg( pView, id, dialog );
@@ -11281,8 +11281,8 @@ Defun1(dlgFmtPosImage)
 
 	const PP_AttrProp* pAP = NULL;
 	pPosObj->getAP(pAP);
-	const gchar* szTitle = 0;
-	const gchar* szDescription = 0;
+	const gchar* szTitle = nullptr;
+	const gchar* szDescription = nullptr;
 	pDialog->setInHdrFtr(false);
 	std::string rulerUnits;
 	UT_Dimension dim = DIM_IN;
@@ -11577,7 +11577,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
     pView->cmdSelect(pos,pos+1);
 	PP_PropertyVector props_in;
 
-	const PP_AttrProp * pAP = 0;
+	const PP_AttrProp * pAP = nullptr;
 	pView->getAttributes (&pAP);
 	pDialog->setInHdrFtr(bInHdrFtr);
 	  
@@ -11588,8 +11588,8 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 	  const std::string & szWidth = PP_getAttribute("width", props_in);
 	  const std::string & szHeight = PP_getAttribute("height", props_in);
 
-	  const gchar* szTitle = 0;
-	  const gchar* szDescription = 0;
+	  const gchar* szTitle = nullptr;
+	  const gchar* szDescription = nullptr;
 	  pDialog->setInHdrFtr(bInHdrFtr);
 	  if (pAP) {
 		  pAP->getAttribute ("title", szTitle);
@@ -14129,7 +14129,7 @@ Defun1(rdfAnchorEditTriples)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = AP_DIALOG_ID_RDF_EDITOR;
-	AP_Dialog_RDFEditor* dialog = 0;
+	AP_Dialog_RDFEditor* dialog = nullptr;
 	return s_doRDFEditorDlg( pView, id, dialog, true );
 }
 Defun1(rdfAnchorQuery)
@@ -14137,7 +14137,7 @@ Defun1(rdfAnchorQuery)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	return rdfQueryXMLIDs( pView, 0 );
+	return rdfQueryXMLIDs(pView, nullptr);
 }
 
 Defun1(rdfAnchorEditSemanticItem)

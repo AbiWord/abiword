@@ -35,7 +35,7 @@ UT_Worker::~UT_Worker ()
  * Protected constructor for this base-class
  */
 UT_Worker::UT_Worker ()
-  : m_pInstanceData(0), m_pCallback(0)
+  : m_pInstanceData(nullptr), m_pCallback(nullptr)
 {
 }
 
@@ -126,7 +126,7 @@ UT_Worker * UT_WorkerFactory::static_constructor ( UT_WorkerCallback cb,
 						   UT_WorkerFactory::ConstructMode & outMode )
 {
 
-  UT_Worker * tmp = 0;
+  UT_Worker * tmp = nullptr;
   
   // give preference to CAN_USE_IDLE
 
@@ -150,6 +150,6 @@ UT_Worker * UT_WorkerFactory::static_constructor ( UT_WorkerCallback cb,
   }
 
 
-  UT_ASSERT(tmp != 0);
+  UT_ASSERT(tmp != nullptr);
   return tmp;
 }

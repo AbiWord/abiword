@@ -56,7 +56,7 @@ XAP_Dialog * AP_UnixDialog_New::static_constructor(XAP_DialogFactory * pFactory,
 
 AP_UnixDialog_New::AP_UnixDialog_New(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-  : AP_Dialog_New(pDlgFactory,id), m_pFrame(0)
+  : AP_Dialog_New(pDlgFactory,id), m_pFrame(nullptr)
 {
 }
 

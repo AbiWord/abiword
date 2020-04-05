@@ -467,7 +467,7 @@ bool ABI_Collab_Export::change(fl_ContainerLayout* /*sfh*/,
 
 				// reset glob state
 				DELETEP(m_pGlobPacket);
-				m_pGlobPacket = 0;
+				m_pGlobPacket = nullptr;
 				return true;
 				
 			} 

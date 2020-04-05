@@ -460,7 +460,7 @@ static char * fgets(char *s, int count, GsfInput * stream)
 			if (gsf_input_eof(stream)) {
 				break;
 			} else {
-				return 0;
+				return nullptr;
 			}
 		}
 		*p++ = ch;
@@ -469,7 +469,7 @@ static char * fgets(char *s, int count, GsfInput * stream)
 		}
 	}
 	if (s == p) {
-		return 0;
+		return nullptr;
 	}
 	*p = 0;
 	return s;

@@ -186,7 +186,7 @@ bool s_RTF_ListenerGetProps::populateStrux(pf_Frag_Strux* /*sdh*/,
 {
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;			// we don't need it.
 
 	switch (pcrx->getStruxType())
 	{

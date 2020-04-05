@@ -63,17 +63,17 @@
 #endif
 
 XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl)
-	: m_pDoc(0),
-	  m_pView(0),
-	  m_pViewListener(0),
+	: m_pDoc(nullptr),
+	  m_pView(nullptr),
+	  m_pViewListener(nullptr),
 	  m_lid(static_cast<AV_ListenerId>(-1)),
-	  m_pScrollObj(0),
+	  m_pScrollObj(nullptr),
 	  m_nView(0),
 	  m_iUntitled(0),
-	  m_pScrollbarViewListener(0),
+	  m_pScrollbarViewListener(nullptr),
 	  m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	  m_zoomType(z_PAGEWIDTH),
-	  m_pData(0),
+	  m_pData(nullptr),
 	  m_bHideMenuScroll(false),
 	  m_iIdAutoSaveTimer(0),
 	  m_iAutoSavePeriod(0),
@@ -101,16 +101,16 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl)
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
 	: m_pDoc(REFP(f->m_pDoc)),
-	m_pView(0),
-	m_pViewListener(0),
+	m_pView(nullptr),
+	m_pViewListener(nullptr),
 	m_lid(static_cast<AV_ListenerId>(-1)),
-	m_pScrollObj(0),
+	m_pScrollObj(nullptr),
 	m_nView(0),
 	m_iUntitled(f->m_iUntitled),
-	m_pScrollbarViewListener(0),
+	m_pScrollbarViewListener(nullptr),
 	m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	m_zoomType(f->m_zoomType),
-	m_pData(0),
+	m_pData(nullptr),
 	m_bHideMenuScroll(f->m_bHideMenuScroll),
 	m_iIdAutoSaveTimer(0),
 	m_iAutoSavePeriod(f->m_iAutoSavePeriod),
@@ -166,7 +166,7 @@ XAP_Frame::~XAP_Frame(void)
 	if (m_iIdAutoSaveTimer != 0)
 	{
 		UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
-		if (timer != 0)
+		if (timer != nullptr)
 		{
 			UT_DEBUGMSG(("Stopping Autosave timer [%d]\n", m_iIdAutoSaveTimer));
 			timer->stop();

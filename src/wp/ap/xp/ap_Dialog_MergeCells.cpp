@@ -126,7 +126,7 @@ void AP_Dialog_MergeCells::autoUpdateMC(UT_Worker * pTimer)
 
 	if (pDialog->m_bDestroy_says_stopupdating != true)
 	{
-		FV_View * pView = 0;
+		FV_View * pView = nullptr;
 		PD_Document * pDoc = NULL;
 
 		if (XAP_Frame * pFrame = pDialog->getApp()->getLastFocussedFrame())
@@ -154,7 +154,7 @@ void AP_Dialog_MergeCells::autoUpdateMC(UT_Worker * pTimer)
  */
 void AP_Dialog_MergeCells::setAllSensitivities(void)
 {
-	FV_View * pView = 0;
+	FV_View * pView = nullptr;
 
 	if (XAP_Frame * pFrame = getApp()->getLastFocussedFrame())
 	{
@@ -302,7 +302,7 @@ void AP_Dialog_MergeCells::_generateSrcDest(void)
  */
 void AP_Dialog_MergeCells::onMerge(void)
 {
-	FV_View * pView = 0;
+	FV_View * pView = nullptr;
 
 	if (XAP_Frame * pFrame = getApp()->getLastFocussedFrame())
 	{

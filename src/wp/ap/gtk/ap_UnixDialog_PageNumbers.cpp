@@ -161,7 +161,7 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 
 GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 {
-	GtkWidget * window;	
+	GtkWidget * window = nullptr;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	GtkBuilder * builder = newDialogBuilderFromResource("ap_UnixDialog_PageNumbers.ui");

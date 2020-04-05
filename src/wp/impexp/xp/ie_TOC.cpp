@@ -148,7 +148,7 @@ bool TOC_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 {
   UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
   const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-  *psfh = 0;
+  *psfh = nullptr;
   
   // resets all TOC foo
   _commitTOCData();
@@ -166,7 +166,7 @@ bool TOC_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 	bool bHaveProp = mDocument->getAttrProp (pcr->getIndexAP(), &pAP);
 
 	if (bHaveProp) {
-	  const gchar * szValue = 0;
+	  const gchar * szValue = nullptr;
 	  bool bHaveStyle  = pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME,  szValue);
 	  
 	  if (bHaveStyle) {
@@ -239,7 +239,7 @@ bool IE_TOCHelper::docHasTOC() const
 bool IE_TOCHelper::_tocNameLevelHelper(const UT_UTF8String & style_name,
 				       const char * base_name) const
 {
-  PD_Style * style = 0;
+  PD_Style * style = nullptr;
   mDoc->getStyle (style_name.utf8_str(), &style);
   UT_sint32 iLoop = 0;
   

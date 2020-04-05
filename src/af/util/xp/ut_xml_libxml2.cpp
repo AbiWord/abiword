@@ -52,9 +52,10 @@ static void _startElement (void * userData, const gchar * name, const gchar ** a
 
   /* libxml2 can supply atts == 0, which is a little at variance to what is expected...
    */
-  static const gchar * ptr = 0;
+  static const gchar * ptr = nullptr;
   const gchar ** new_atts = atts;
-  if (atts == 0) new_atts = &ptr;
+  if (atts == nullptr)
+    new_atts = &ptr;
 
   pXML->startElement (reinterpret_cast<const char *>(name), reinterpret_cast<const char **>(new_atts));
 }
@@ -155,7 +156,8 @@ UT_Error UT_XML::parse (const char * szFilename)
 	UT_ASSERT (m_pListener || m_pExpertListener);
 	UT_ASSERT (szFilename);
 	
-	if ((szFilename == 0) || ((m_pListener == 0) && (m_pExpertListener == 0))) return UT_ERROR;
+	if ((szFilename == nullptr) || ((m_pListener == nullptr) && (m_pExpertListener == nullptr)))
+		return UT_ERROR;
 	if (!reset_all ()) return UT_OUTOFMEM;
 	
 	UT_Error ret = UT_OK;
@@ -176,7 +178,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 	m_bStopped = false;
 	
 	xmlSAXHandler hdl;
-	xmlParserCtxtPtr ctxt = 0;
+	xmlParserCtxtPtr ctxt = nullptr;
 	
 	memset(&hdl, 0, sizeof(hdl));
 	
@@ -253,10 +255,12 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   if (!m_bSniffing)
     {
       UT_ASSERT (m_pListener || m_pExpertListener);
-      if ((m_pListener == 0) && (m_pExpertListener == 0)) return UT_ERROR;
+      if ((m_pListener == nullptr) && (m_pExpertListener == nullptr))
+        return UT_ERROR;
     }
   UT_ASSERT (buffer);
-  if (buffer == 0 || length == 0) return UT_ERROR;
+  if (buffer == nullptr || length == 0)
+    return UT_ERROR;
 
   if (!reset_all ()) return UT_OUTOFMEM;
 

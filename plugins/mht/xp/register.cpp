@@ -40,11 +40,11 @@ ABI_PLUGIN_DECLARE("HTML")
  */
 
 #ifdef XHTML_MULTIPART_SUPPORTED
-static IE_Imp_MHT_Sniffer * m_mht_sniffer = 0;
+static IE_Imp_MHT_Sniffer * m_mht_sniffer = nullptr;
 #endif
 
 #ifdef XHTML_HTML_TIDY_SUPPORTED
-static IE_Imp_Tidy_Sniffer * m_tidy_sniffer = 0;
+static IE_Imp_Tidy_Sniffer * m_tidy_sniffer = nullptr;
 #endif
 
 ABI_FAR_CALL
@@ -86,18 +86,18 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 #ifdef XHTML_MULTIPART_SUPPORTED
 	if (m_mht_sniffer)
 		{
 			IE_Imp::unregisterImporter (m_mht_sniffer);
 			delete m_mht_sniffer;
-			m_mht_sniffer = 0;
+			m_mht_sniffer = nullptr;
 		}
 #endif
 #ifdef XHTML_HTML_TIDY_SUPPORTED
@@ -105,7 +105,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 		{
 			IE_Imp::unregisterImporter (m_tidy_sniffer);
 			delete m_tidy_sniffer;
-			m_tidy_sniffer = 0;
+			m_tidy_sniffer = nullptr;
 		}
 #endif
 	return 1;

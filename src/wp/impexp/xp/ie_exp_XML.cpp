@@ -21,7 +21,7 @@
 #include "ut_debugmsg.h"
 
 IE_Exp_XML::IE_Exp_XML(PD_Document * pDocument):
-	IE_Exp (pDocument), m_zip(0), m_xml(0)
+	IE_Exp(pDocument), m_zip(nullptr), m_xml(nullptr)
 {
 }
 
@@ -48,11 +48,11 @@ void IE_Exp_XML::closeHandle()
 {
 	if (m_xml) {
 		g_object_unref(m_xml);
-		m_xml = 0;
+		m_xml = nullptr;
 	}
 	if (m_zip) {
 		g_object_unref(m_zip);
-		m_zip = 0;
+		m_zip = nullptr;
 	}
 }
 

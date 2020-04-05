@@ -92,7 +92,7 @@ void XAP_UnixDialog_PluginManager::event_DeactivateAll ()
 
 void XAP_UnixDialog_PluginManager::event_Deactivate ()
 {  
-	XAP_Module * pModule = 0;
+	XAP_Module * pModule = nullptr;
 
 	GtkTreeSelection * selection;
 	GtkTreeIter iter;
@@ -254,7 +254,7 @@ void XAP_UnixDialog_PluginManager::_updatePluginList ()
 
 void XAP_UnixDialog_PluginManager::_refresh ()
 {
-	XAP_Module * pModule = 0;
+	XAP_Module * pModule = nullptr;
 	
 	GtkTreeSelection * selection;
 	GtkTreeIter iter;

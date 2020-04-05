@@ -26,8 +26,8 @@ AP_Dialog_InsertHyperlink::AP_Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFac
 					   XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoghyperlink"),
 	m_answer(a_CANCEL),
-	m_pHyperlink(0),
-	m_pHyperlinkTitle(0)
+	m_pHyperlink(nullptr),
+	m_pHyperlinkTitle(nullptr)
 {
 }
 

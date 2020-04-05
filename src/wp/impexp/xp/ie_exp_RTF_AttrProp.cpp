@@ -95,14 +95,14 @@ s_RTF_AttrPropAdapter_AP::~s_RTF_AttrPropAdapter_AP()
 
 const gchar * s_RTF_AttrPropAdapter_Style::getAttribute(const gchar * szName) const 
 {
-    const gchar * szValue = 0;
+    const gchar * szValue = nullptr;
     m_pStyle->getAttribute(szName, szValue);
     return szValue;
 }
 
 const gchar * s_RTF_AttrPropAdapter_Style::getProperty(const gchar * szName) const 
 {
-    const gchar * szValue = 0;
+    const gchar * szValue = nullptr;
     m_pStyle->getProperty(szName, szValue);
     return szValue;
 }

@@ -1289,7 +1289,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 				pStyle->getPropertyExpand(szName,szValue);
 				if (szValue == NULL)
 				{
-					paraValues[i] = 0;
+					paraValues[i] = nullptr;
 					continue;
 				}
 				else

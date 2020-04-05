@@ -73,7 +73,7 @@ ABI_PLUGIN_DECLARE("MSWrite")
 #endif
 
 // we use a reference-counted sniffer
-static IE_Imp_MSWrite_Sniffer *m_sniffer = 0;
+static IE_Imp_MSWrite_Sniffer *m_sniffer = nullptr;
 
 /**********************************************************************
  * Plugin Registration                                                *
@@ -98,11 +98,11 @@ int abi_plugin_register (XAP_ModuleInfo *mi)
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo *mi)
 {
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	UT_ASSERT(m_sniffer);
 
@@ -293,7 +293,7 @@ IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 	  mDefaultCodepage("CP1252"),
 	  hasHeader(false),
 	  hasFooter(false),
-	  wri_fonts(0),
+	  wri_fonts(nullptr),
 	  wri_fonts_count(0),
 	  pic_nr(0),
 	  lf(false)

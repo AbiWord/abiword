@@ -111,7 +111,7 @@ char * AP_Dialog_MarkRevisions::getComment1(bool utf8)
 	// now we run this string through fribidi
 	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
 	{
-		UT_UCS4Char *pStr2 = 0;
+		UT_UCS4Char *pStr2 = nullptr;
 		UT_uint32 iLen = UT_UCS4_strlen(pC);
 
 		pStr2  = (UT_UCS4Char *)UT_calloc( iLen + 1, sizeof(UT_UCS4Char));

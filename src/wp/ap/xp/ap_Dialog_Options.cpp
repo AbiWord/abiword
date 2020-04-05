@@ -58,7 +58,7 @@
 AP_Dialog_Options::AP_Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_TabbedDialog_NonPersistent(pDlgFactory,id, "interface/dialogpreferences"),
 	  m_answer(a_OK),
-	  m_pFrame(0),	// needs to be set from runModal for some of the event_'s to work
+	  m_pFrame(nullptr),	// needs to be set from runModal for some of the event_'s to work
 	  m_bInitialPop(false)
 {
 }
@@ -479,8 +479,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 {
 	bool			b;
 	gint			n = 0;
-	XAP_Prefs		*pPrefs = 0;
+	XAP_Prefs* pPrefs = nullptr;
 	std::string buffer;
+
 	m_bInitialPop = true;
 	// TODO: move this logic when we get a PrefsListener API and turn this
 	//		 dialog into an app-specific

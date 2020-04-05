@@ -392,7 +392,7 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 		case PCT_JoinSessionRequestResponseEvent:
 		{
 			JoinSessionRequestResponseEvent* jsre = static_cast<JoinSessionRequestResponseEvent*>( packet );
-			PD_Document* pDoc = 0;
+			PD_Document* pDoc = nullptr;
 			if (AbiCollabSessionManager::deserializeDocument(&pDoc, jsre->m_sZABW, false) == UT_OK)
 			{
 				if (pDoc)

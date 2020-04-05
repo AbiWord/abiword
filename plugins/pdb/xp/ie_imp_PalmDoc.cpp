@@ -152,7 +152,7 @@ IE_Imp_PalmDoc::~IE_Imp_PalmDoc()
 IE_Imp_PalmDoc::IE_Imp_PalmDoc(PD_Document * pDocument)
 	: IE_Imp(pDocument)
 {
-	m_pdfp = 0;
+	m_pdfp = nullptr;
 	m_numRecords = 0;
 	m_fileSize = 0;
 	m_buf = new buffer;

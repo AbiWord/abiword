@@ -84,7 +84,7 @@ public:
                         UT_sint32 n = 0 );
     void setDefaultFiletype( const std::string desc,
                              const std::string ext = "" );
-    bool run( XAP_Frame * pFrame = 0 );
+    bool run(XAP_Frame * pFrame = nullptr);
 
     const std::string & getPath() const;
     IEFileType getType();

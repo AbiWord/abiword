@@ -300,7 +300,7 @@ void AP_UnixDialog_CollaborationJoin::eventOpen()
 	// see if we selected a row that has a document that we can still join
 	
 	// get the row data
-	gpointer doc_handle = 0;
+	gpointer doc_handle = nullptr;
 	guint handler_idx = 0;	
 	guint buddy_idx = 0;	
 

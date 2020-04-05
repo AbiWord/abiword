@@ -76,7 +76,7 @@ public:
 	virtual	~IE_Imp_Object();
 
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0) override;
+										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = nullptr) override;
 	const UT_ByteBufPtr & getByteBuf(void) const {return m_pByteBuf;}
 
 protected:

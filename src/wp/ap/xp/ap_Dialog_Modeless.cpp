@@ -58,7 +58,7 @@ AP_Dialog_Modeless::AP_Dialog_Modeless( XAP_DialogFactory * pDlgFactory,
                                         XAP_Dialog_Id id,
                                         const char * helpUrl )
 	: XAP_Dialog_Modeless( pDlgFactory, id, helpUrl )
-    , m_pView(0)
+    , m_pView(nullptr)
     , m_answer( a_CLOSE )
 {
 }

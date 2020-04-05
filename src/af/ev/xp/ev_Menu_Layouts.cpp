@@ -63,7 +63,7 @@ EV_Menu_Layout::EV_Menu_Layout(const UT_String &stName, UT_uint32 nrLayoutItems)
 	  m_iMaxId(0)
 {
 	for (UT_uint32 i = 0; i < nrLayoutItems; i++)
-		m_layoutTable.addItem(0);
+		m_layoutTable.addItem(nullptr);
 }
 
 EV_Menu_Layout::~EV_Menu_Layout()

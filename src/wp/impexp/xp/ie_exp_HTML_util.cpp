@@ -156,7 +156,7 @@ const char * s_prop_list[] = {
 	"vertical-align",	"baseline",
 	"widows",			"2",
 	"width",			"auto",
-	0, 0
+	nullptr, nullptr
 };
 const UT_uint32 s_PropListLen = G_N_ELEMENTS(s_prop_list) - 2; /* don't include the zeros */
 
@@ -168,7 +168,7 @@ const UT_uint32 s_PropListLen = G_N_ELEMENTS(s_prop_list) - 2; /* don't include 
 */
 bool is_CSS (const char * prop_name, const char ** prop_default)
 {
-	if (prop_name == 0)
+	if (prop_name == nullptr)
 		return false;
 	if (*prop_name == 0)
 		return false;
@@ -538,7 +538,7 @@ void IE_Exp_HTML_DataExporter::encodeDataBase64(const gchar* szDataId,
     
     
     char buffer[75];
-	char * bufptr = 0;
+	char * bufptr = nullptr;
 	size_t buflen;
 	size_t imglen = pByteBuf->getLength ();
 	const char * imgptr = reinterpret_cast<const char *>(pByteBuf->getPointer (0));

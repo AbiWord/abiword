@@ -53,7 +53,7 @@ XAP_Dialog_Print::XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_nFirstPage = 0;
 	m_nLastPage = 0;
 
-	m_pageSize = 0;
+	m_pageSize = nullptr;
 	m_answer = a_VOID;
 }
 

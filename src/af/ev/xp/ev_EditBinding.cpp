@@ -345,7 +345,7 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 		m_iLastMouseNo = n_emb;
 		class ev_EB_MouseTable * p = m_pebMT[n_emb];
 		if (!p)
-			return 0;					// no bindings of anykind for this mouse button
+			return nullptr;				// no bindings of anykind for this mouse button
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb);
@@ -357,7 +357,7 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 		if (eb & EV_EKP_NAMEDKEY)		// a NVK
 		{
 			if (!m_pebNVK)
-				return 0;				// no bindings of anykind for nvk keys
+				return nullptr;			// no bindings of anykind for nvk keys
 			
 			UT_uint32 n_nvk = EV_NVK_ToNumber(eb);
 			UT_uint32 n_ems = EV_EMS_ToNumber(eb);
@@ -366,7 +366,7 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 		else							// not a NVK -- regular char
 		{
 			if (!m_pebChar)
-				return 0;				// no bindings of anykind for non-nvk keys
+				return nullptr;			// no bindings of anykind for non-nvk keys
 
 			UT_uint32 n_evk = EV_EVK_ToNumber(eb);
 			if (n_evk >= 256) 
@@ -388,7 +388,7 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 		}
 	}
 	UT_ASSERT(0);
-	return 0;
+	return nullptr;
 }
 
 bool EV_EditBindingMap::setBinding(EV_EditBits eb, const char * szMethodName)
@@ -505,7 +505,7 @@ bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb);
-		p->m_peb[n_emo][n_ems][n_emc] = 0;
+		p->m_peb[n_emo][n_ems][n_emc] = nullptr;
 		return true;
 	}
 	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
@@ -516,7 +516,7 @@ bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 				return false;
 			UT_uint32 n_nvk = EV_NVK_ToNumber(eb);
 			UT_uint32 n_ems = EV_EMS_ToNumber(eb);
-			m_pebNVK->m_peb[n_nvk][n_ems] = 0;
+			m_pebNVK->m_peb[n_nvk][n_ems] = nullptr;
 			return true;
 		}
 		else							// a non-nvk -- regular char
@@ -526,12 +526,12 @@ bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 			UT_uint32 n_evk = EV_EVK_ToNumber(eb);
 			UT_ASSERT(n_evk < 256);		// TODO see note [1] above.
 			UT_uint32 n_ems = EV_EMS_ToNumberNoShift(eb);
-			m_pebChar->m_peb[n_evk][n_ems] = 0;
+			m_pebChar->m_peb[n_evk][n_ems] = nullptr;
 			return true;
 		}
 	}
 	UT_ASSERT(0);
-	return 0;
+	return false;
 }
 
 void EV_EditBindingMap::resetAll()

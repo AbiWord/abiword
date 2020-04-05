@@ -449,7 +449,7 @@ void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP, const std::string
     const gchar* pValue = NULL;
 
     UT_UTF8String generatedID;
-    const gchar* xmlid = 0;
+    const gchar* xmlid = nullptr;
     if(pAP && pAP->getProperty(PT_XMLID,pValue) && pValue && *pValue)
     {
         xmlid = pValue;
@@ -542,7 +542,7 @@ void ODe_Text_Listener::endAnnotation( const std::string& name )
 void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
     UT_UTF8String output;
     bool ok;
-    const gchar* pValue = 0;
+    const gchar* pValue = nullptr;
     UT_uint8 outlineLevel;
     UT_UTF8String str;
     
@@ -754,7 +754,7 @@ void ODe_Text_Listener::openBookmark(const PP_AttrProp* pAP) {
                 output+= escape;
                 output+="\" ";
 
-                const char* xmlid = 0;
+                const char* xmlid = nullptr;
                 if( pAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
                 {
                     appendAttribute( output, "xml:id", xmlid );
@@ -1564,7 +1564,7 @@ void ODe_Text_Listener::_openParagraphDelayed(){
             output += "\" text:outline-level=\"";
             output += str;
             output += "\" ";
-            const char* xmlid = 0;
+            const char* xmlid = nullptr;
             if( m_delayedAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
             {
                 appendAttribute( output, "xml:id", xmlid );
@@ -1577,7 +1577,7 @@ void ODe_Text_Listener::_openParagraphDelayed(){
             output += "<text:p text:style-name=\"";
             output += ODe_Style_Style::convertStyleToNCName(escape).escapeXML();
             output += "\" ";
-            const char* xmlid = 0;
+            const char* xmlid = nullptr;
             if( m_delayedAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
             {
                 appendAttribute( output, "xml:id", xmlid );

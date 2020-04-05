@@ -43,10 +43,10 @@ UT_svg::UT_svg(GR_Graphics* pG,ParseMode ePM) :
 	m_bIsText(false),
 	m_bIsTSpan(false),
 	m_bHasTSpan(false),
-	cb_userdata(0),
-	cb_start(0),
-	cb_end(0),
-	cb_text(0)
+	cb_userdata(nullptr),
+	cb_start(nullptr),
+	cb_end(nullptr),
+	cb_text(nullptr)
 {
 	// flags like m_bIsText need to be set in _recognizeContent()
 }
@@ -71,13 +71,14 @@ const char * UT_svg::getAttribute (const char * name,const char ** atts)
   if (*name == 0)
     {
       UT_DEBUGMSG(("SVG: UT_svg::getAttribute passed empty string as name!"));
-      return (0);
+      return nullptr;
     }
-  if (*atts == 0) return (0); // no attributes?
+  if (*atts == nullptr)
+    return nullptr; // no attributes?
 
   char c = *name;
   const char ** attr = atts;
-  const char * attr_value = 0;
+  const char * attr_value = nullptr;
 
   while (*attr)
     {
@@ -151,7 +152,7 @@ static void _css_length (const char *str,GR_Graphics* pG,
 
    	if (dim != DIM_PX && dim != DIM_none)
 	{
-		if (pG == 0)
+		if (pG == nullptr)
 		{
 			*iDisplayLength = static_cast<UT_sint32>((UT_convertToInches(str) * 72.0) + 0.05);
 		}
@@ -310,7 +311,8 @@ void UT_svg::charData (const gchar * str, int len) // non-terminated string
 {
 	if (m_bContinue == false) return;
 
-	if ((m_ePM!=pm_parse) || (cb_text==0)) return;
+	if ((m_ePM != pm_parse) || (cb_text == nullptr))
+		return;
 
 	if ((m_bIsText && (m_bHasTSpan==false)) || m_bIsTSpan)
 	{
@@ -590,7 +592,7 @@ static bool BNF_number (const char ** pptr, float * number) // number
 {
 	const char * ptr = *pptr;
 	const char * number_start = ptr;
-	const char * number_end = 0;
+	const char * number_end = nullptr;
 
 	bool bValid = false;
 
@@ -720,7 +722,8 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 {
   bool bParseError = false;
 
-  if (transformAttribute == 0) return !bParseError;
+  if (transformAttribute == nullptr)
+    return !bParseError;
 
   UT_ASSERT(currentMatrix);
 

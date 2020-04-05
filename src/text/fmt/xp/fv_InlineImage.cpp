@@ -1021,12 +1021,12 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	//
 	// Fixme Put in code to insert image here.
 	//
-	  const gchar* szDataID = 0;
-	  const gchar* szTitle = 0;
-	  const gchar* szDescription = 0;
-	  const  gchar* szWidth = 0;
-	  const  gchar * szHeight = 0;
-	  const gchar * szEmbed= NULL;
+	  const gchar* szDataID = nullptr;
+	  const gchar* szTitle = nullptr;
+	  const gchar* szDescription = nullptr;
+	  const gchar* szWidth = nullptr;
+	  const gchar* szHeight = nullptr;
+	  const gchar* szEmbed = nullptr;
 	  if(!m_bDoingCopy)
 	  {
 	    bool bFound = m_pImageAP->getAttribute("dataid",szDataID);

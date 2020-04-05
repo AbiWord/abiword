@@ -33,10 +33,10 @@
 
 ABI_PLUGIN_DECLARE("WordPerfect")
 
-static IE_Imp_WordPerfect_Sniffer * m_ImpSniffer = 0;
+static IE_Imp_WordPerfect_Sniffer * m_ImpSniffer = nullptr;
 
 #ifdef HAVE_LIBWPS
-static IE_Imp_MSWorks_Sniffer * m_MSWorks_ImpSniffer = 0;
+static IE_Imp_MSWorks_Sniffer * m_MSWorks_ImpSniffer = nullptr;
 #endif
 
 ABI_FAR_CALL
@@ -78,22 +78,22 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name    = 0;
-	mi->desc    = 0;
-	mi->version = 0;
-	mi->author  = 0;
-	mi->usage   = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	UT_ASSERT (m_ImpSniffer);
 
 	IE_Imp::unregisterImporter (m_ImpSniffer);
 	delete m_ImpSniffer;
-	m_ImpSniffer = 0;
+	m_ImpSniffer = nullptr;
 	
 #ifdef HAVE_LIBWPS
 	IE_Imp::unregisterImporter (m_MSWorks_ImpSniffer);
 	delete m_MSWorks_ImpSniffer;
-	m_MSWorks_ImpSniffer = 0;
+	m_MSWorks_ImpSniffer = nullptr;
 #endif
 
 	return 1;

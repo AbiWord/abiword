@@ -155,14 +155,14 @@ extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 */
 AP_UnixApp::AP_UnixApp(const char * szAppName)
     : AP_App(szAppName),
-	  m_pStringSet(0),
-	  m_pClipboard(0),
+	  m_pStringSet(nullptr),
+	  m_pClipboard(nullptr),
 	  m_bHasSelection(false),
 	  m_bSelectionInFlux(false),
 	  m_cacheDeferClear(0),
-	  m_pViewSelection(0),
-	  m_cacheSelectionView(0),
-	  m_pFrameSelection(0)
+	  m_pViewSelection(nullptr),
+	  m_cacheSelectionView(nullptr),
+	  m_pFrameSelection(nullptr)
 {
 }
 

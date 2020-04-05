@@ -618,15 +618,15 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
         case id_BUTTON_APPLY:
         case id_BUTTON_CANCEL:
         case id_BUTTON_OK:
-            return 0;
+            return nullptr;
 
         default:
             UT_ASSERT ( "Unknown Widget" );
-            return 0;
+            return nullptr;
     }
 
     UT_ASSERT ( UT_SHOULD_NOT_HAPPEN );
-    return 0;
+    return nullptr;
 }
 
 void AP_UnixDialog_Options::_controlEnable ( tControl id, bool value )

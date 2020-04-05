@@ -474,7 +474,7 @@ class ABI_EXPORT PD_RDFSemanticItem
      * ??? maybe not ??? importFromDataComplete() calls also insert() which links the
      * ??? semanticItem with the document object m_rdf.
      */
-     virtual void importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange = 0 ) = 0;
+     virtual void importFromData(std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange = nullptr) = 0;
 
     /**
      * Export to a file in whatever format is the most useful for the
@@ -595,7 +595,7 @@ class ABI_EXPORT PD_RDFSemanticItem
      virtual void importFromDataComplete( std::istream& iss,
                                           PD_DocumentRDFHandle rdf,
                                           PD_DocumentRDFMutationHandle m,
-                                          PD_DocumentRange * pDocRange = 0 );
+                                          PD_DocumentRange * pDocRange = nullptr);
 
      std::string bindingAsString( PD_ResultBindings_t::iterator& it, const std::string k );
      std::string optionalBindingAsString( PD_ResultBindings_t::iterator& it, const std::string k );
@@ -1066,7 +1066,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     PD_RDFContacts  getContacts( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
     PD_RDFEvents    getEvents( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
     PD_RDFLocations getLocations( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
-    void selectXMLIDs( const std::set< std::string >& xmlids, FV_View* pView = 0 ) const;
+    void selectXMLIDs(const std::set<std::string>& xmlids, FV_View* pView = nullptr) const;
 
 
     void showEditorWindow( const PD_RDFSemanticItems& cl );

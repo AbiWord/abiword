@@ -353,7 +353,7 @@ void AbiCollabSessionManager::loadProfile()
 	if (contents)
 	{
 		xmlDocPtr reader = xmlReadMemory(reinterpret_cast<const char*>(contents), 
-							strlen(reinterpret_cast<const char*>(contents)), 0, "UTF-8", 0);
+							strlen(reinterpret_cast<const char*>(contents)), nullptr, "UTF-8", 0);
 		if (reader)
 		{
 			xmlNode* node = xmlDocGetRootElement(reader);
@@ -514,7 +514,7 @@ void AbiCollabSessionManager::storeProfile()
 			FREEP(s);
 
 			char *uri = UT_go_filename_to_uri(profile.utf8_str());
-			GError* error = 0;
+			GError* error = nullptr;
 			GsfOutput* out = UT_go_file_create (uri, &error);
 			if (out)
 			{

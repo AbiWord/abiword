@@ -123,7 +123,7 @@ private:
 	public:
 		sControlData (UT_sint32 data);
 		sControlData (tCheckState data);
-		sControlData (gchar * data = 0); // default is empty string
+		sControlData(gchar * data = nullptr); // default is empty string
 
 		sControlData (const sControlData & rhs);
 

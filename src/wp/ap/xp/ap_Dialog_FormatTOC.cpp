@@ -56,7 +56,7 @@
 AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
 	  m_pDoc(NULL),
-	  m_pAutoUpdater(0),
+	  m_pAutoUpdater(nullptr),
 	  m_iTick(0),
 	  m_pAP(NULL),
 	  m_bTOCFilled(false),
@@ -181,7 +181,7 @@ std::string AP_Dialog_FormatTOC::getNewStyle(const std::string & sProp) const
 void AP_Dialog_FormatTOC::updateDialog(void)
 {
 	XAP_Frame * pFrame = getActiveFrame();
-	if (pFrame == 0)
+	if (pFrame == nullptr)
 	{
 		setSensitivity(false);
 		return;

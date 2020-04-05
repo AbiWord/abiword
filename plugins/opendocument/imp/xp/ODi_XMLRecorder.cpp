@@ -47,12 +47,12 @@ void ODi_XMLRecorder::startElement (const gchar* pName,
     strcpy(pCall->m_pName, pName);
     
     count=0;
-    while (ppAtts[count] != 0) {
+    while (ppAtts[count] != nullptr) {
         count++;
     }
 
     pCall->m_ppAtts = new gchar*[count+1];
-    pCall->m_ppAtts[count] = 0;
+    pCall->m_ppAtts[count] = nullptr;
    
     for (i=0; i<count; i++) {
         pCall->m_ppAtts[i] = new gchar[strlen(ppAtts[i])+1];

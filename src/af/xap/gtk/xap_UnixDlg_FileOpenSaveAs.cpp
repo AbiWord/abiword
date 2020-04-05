@@ -91,7 +91,7 @@ XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory
 
 XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id id)
-  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FC(0), m_preview(0), m_bSave(true)
+  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FC(nullptr), m_preview(nullptr), m_bSave(true)
 {
 }
 
@@ -1112,8 +1112,8 @@ GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::pixbufForByteBuf (UT_ByteBuf * pBB)
 	}
 	else
 	{
-		GError * err = 0;
-		GdkPixbufLoader * ldr = 0;
+		GError * err = nullptr;
+		GdkPixbufLoader * ldr = nullptr;
 
 		ldr = gdk_pixbuf_loader_new ();
 		if (!ldr)

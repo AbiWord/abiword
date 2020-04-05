@@ -520,7 +520,7 @@ bool OO_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 				fl_ContainerLayout* * psfh)
 {
    const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-   *psfh = 0;							// we don't need it.
+   *psfh = nullptr;							// we don't need it.
     
    switch (pcrx->getStruxType())
    {
@@ -1172,7 +1172,7 @@ void OO_StylesWriter::map(const PP_AttrProp * pAP, UT_UTF8String & styleAtts, UT
 
 
 IE_Exp_OpenWriter::IE_Exp_OpenWriter (PD_Document * pDoc)
-  : IE_Exp (pDoc), m_oo(0)
+  : IE_Exp (pDoc), m_oo(nullptr)
 {
 }
 

@@ -123,7 +123,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
-				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
+				invokeKeyboardMethod(pView, pEM, nullptr, 0); // no char data to offer
 				return true;
 
 			case EV_EEMR_INCOMPLETE:

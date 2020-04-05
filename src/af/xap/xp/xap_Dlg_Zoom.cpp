@@ -43,7 +43,7 @@ XAP_Dialog_Zoom::XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_zoomPercent = 100;
 
 	m_zoomPreview = NULL;
-	m_pFrame = 0 ;
+	m_pFrame = nullptr;
 }
 
 XAP_Dialog_Zoom::~XAP_Dialog_Zoom(void)

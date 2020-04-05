@@ -127,7 +127,7 @@ void AP_Dialog_SplitCells::autoUpdateMC(UT_Worker * pTimer)
 
 	if (pDialog->m_bDestroy_says_stopupdating != true)
 	{
-		FV_View * pView = 0;
+		FV_View * pView = nullptr;
 		PD_Document * pDoc = NULL;
 
 		if (XAP_Frame * pFrame = pDialog->getApp()->getLastFocussedFrame())
@@ -155,7 +155,7 @@ void AP_Dialog_SplitCells::autoUpdateMC(UT_Worker * pTimer)
  */
 void AP_Dialog_SplitCells::setAllSensitivities(void)
 {
-	FV_View * pView = 0;
+	FV_View * pView = nullptr;
 
 	if (XAP_Frame * pFrame = getApp()->getLastFocussedFrame())
 	{
@@ -271,7 +271,7 @@ void AP_Dialog_SplitCells::setSplitType(AP_CellSplitType iSplitType)
  */
 void AP_Dialog_SplitCells::onSplit(void)
 {
-	FV_View * pView = 0;
+	FV_View * pView = nullptr;
 
 	if (XAP_Frame * pFrame = getApp()->getLastFocussedFrame())
 	{

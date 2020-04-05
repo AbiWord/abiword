@@ -72,7 +72,7 @@ AP_Dialog_Modal::getView() const
 	}
     
     if( !pFrame )
-        return 0;
+        return nullptr;
 
     FV_View* pView = (FV_View *)pFrame->getCurrentView();
     return pView;

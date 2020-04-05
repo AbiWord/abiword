@@ -128,7 +128,7 @@ public:
 	virtual const char * getDefaultEncoding () const = 0 ;
 
 	virtual bool					initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
-	virtual bool					rememberFrame(XAP_Frame* pFrame, XAP_Frame* pCloneOf = 0);
+	virtual bool					rememberFrame(XAP_Frame* pFrame, XAP_Frame* pCloneOf = nullptr);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual bool					forgetClones(XAP_Frame * pFrame);
 	virtual bool					getClones(UT_GenericVector<XAP_Frame*> *pvClonesCopy, XAP_Frame * pFrame);
@@ -144,7 +144,7 @@ public:
 	UT_sint32					findFrame(const char * szFilename) const;
 
 	void						enumerateFrames(UT_Vector & v) const;
-    std::list< AD_Document* >   getDocuments( const AD_Document * pExclude = 0 ) const;
+    std::list< AD_Document* >   getDocuments(const AD_Document * pExclude = nullptr) const;
 	void						enumerateDocuments(UT_Vector & v, const AD_Document * pExclude) const;
 	const char *					getApplicationTitleForTitleBar() const;
 	const char *					getApplicationName() const;
@@ -179,8 +179,8 @@ public:
 	virtual const char *				getUserPrivateDirectory() const = 0;
 	virtual const char *				getAbiSuiteLibDir() const;
 	virtual const char *				getAbiSuiteAppDir() const = 0;
-	virtual bool					findAbiSuiteLibFile(std::string & path, const char * filename, const char * subdir = 0);
-	virtual bool					findAbiSuiteAppFile(std::string & path, const char * filename, const char * subdir = 0); // doesn't check user-dir
+	virtual bool					findAbiSuiteLibFile(std::string & path, const char * filename, const char * subdir = nullptr);
+	virtual bool					findAbiSuiteAppFile(std::string & path, const char * filename, const char * subdir = nullptr); // doesn't check user-dir
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool					canPasteFromClipboard() = 0;
@@ -211,7 +211,7 @@ public:
 	virtual	bool					setGeometry(UT_sint32 x, UT_sint32 y,
 									UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
 	virtual	bool					getGeometry(UT_sint32 *x, UT_sint32 *y,
-									UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
+									UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = nullptr);
 	virtual void 					parseAndSetGeometry(const char *string);
 	XAP_Menu_Factory *				getMenuFactory(void) const { return m_pMenuFactory; }
 	XAP_Toolbar_Factory *				getToolbarFactory(void) const { return m_pToolbarFactory; }

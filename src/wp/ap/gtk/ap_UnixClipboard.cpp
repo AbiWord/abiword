@@ -73,12 +73,12 @@ static const char * rtfszFormatsAccepted[] = {
   AP_CLIPBOARD_TXT_RTF,
   AP_CLIPBOARD_APPLICATION_RTF,
   AP_CLIPBOARD_APPLICATION_ODT,
-  0 } ;
+  nullptr } ;
 
 static const char * htmlszFormatsAccepted[] = {
   AP_CLIPBOARD_TXT_HTML,
   AP_CLIPBOARD_APPLICATION_XHTML,
-  0 } ;
+  nullptr } ;
 
 static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_GOChart,
@@ -97,7 +97,7 @@ static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_WMF,
   AP_CLIPBOARD_IMAGE_SVG,
   AP_CLIPBOARD_IMAGE_SVG_XML,
-  0 } ;
+  nullptr } ;
 
 std::vector<const char*> vec_DynamicFormatsAccepted;
 

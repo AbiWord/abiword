@@ -49,12 +49,12 @@
 
 #ifdef USE_STATIC_MAP
 //initialize the static members of the class
-UT_UCS4Char * fp_Line::s_pPseudoString = 0;
-UT_uint32   * fp_Line::s_pMapOfRunsL2V = 0;
-UT_uint32   * fp_Line::s_pMapOfRunsV2L = 0;
-UT_Byte     * fp_Line::s_pEmbeddingLevels = 0;
+UT_UCS4Char* fp_Line::s_pPseudoString = nullptr;
+UT_uint32* fp_Line::s_pMapOfRunsL2V = nullptr;
+UT_uint32* fp_Line::s_pMapOfRunsV2L = nullptr;
+UT_Byte* fp_Line::s_pEmbeddingLevels = nullptr;
 UT_sint32     fp_Line::s_iMapOfRunsSize = 0;
-fp_Line     * fp_Line::s_pMapOwner = 0;
+fp_Line* fp_Line::s_pMapOwner = nullptr;
 #else
 //make sure that any references to the static members are renamed to their non-static versions
 #define s_iMapOfRunsSize m_iMapOfRunsSize
@@ -146,26 +146,26 @@ fp_Line::~fp_Line()
 	if(!s_iClassInstanceCounter) //this is the last/only instance of the class Line
 	{
 		delete[] s_pMapOfRunsL2V;
-		s_pMapOfRunsL2V = 0;
+		s_pMapOfRunsL2V = nullptr;
 
 		delete[] s_pMapOfRunsV2L;
-		s_pMapOfRunsV2L = 0;
+		s_pMapOfRunsV2L = nullptr;
 
 		delete[] s_pPseudoString;
-		s_pPseudoString = 0;
+		s_pPseudoString = nullptr;
 
 		delete[] s_pEmbeddingLevels;
-		s_pEmbeddingLevels = 0;
+		s_pEmbeddingLevels = nullptr;
 	}
 #else
 	delete[] m_pMapOfRunsL2V;
-	m_pMapOfRunsL2V = 0;
+	m_pMapOfRunsL2V = nullptr;
 	delete[] m_pMapOfRunsV2L;
-	m_pMapOfRunsV2L = 0;
+	m_pMapOfRunsV2L = nullptr;
 	delete[] m_pPseudoString;
-	m_pPseudoString = 0;
+	m_pPseudoString = nullptr;
 	delete[] s_pEmbeddingLevels;
-	m_pEmbeddingLevels = 0;
+	m_pEmbeddingLevels = nullptr;
 #endif
 	setScreenCleared(true);
 	xxx_UT_DEBUGMSG(("Line %x delete refCount %d \n",this,getRefCount()));
@@ -4390,7 +4390,7 @@ fp_Run * fp_Line::getLastVisRun()
 fp_Run * fp_Line::getFirstVisRun()
 {
 	if(!m_iRunsRTLcount)
-		return(0);
+		return nullptr;
 
 	_createMapOfRuns();
 	return m_vecRuns.getNthItem(s_pMapOfRunsV2L[0]);

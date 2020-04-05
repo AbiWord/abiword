@@ -2203,7 +2203,7 @@ void FV_View::_moveInsPtNextPrevPage(bool bNext)
 
 	// TODO when moving to the prev page, we should move to its end, not begining
 	// try to locate next/prev page
-	fp_Page* pPage = 0;
+	fp_Page* pPage = nullptr;
 
 	if (pOldPage)
 	{
@@ -2395,7 +2395,7 @@ fp_Page *FV_View::_getCurrentPage(void) const
 	fl_BlockLayout* pOldBlock;
 	fp_Run* pOldRun;
 	_findPositionCoords(iOldPoint, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pOldBlock, &pOldRun);
-	UT_return_val_if_fail ( pOldRun, 0 );
+	UT_return_val_if_fail(pOldRun, nullptr);
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_Page* pOldPage = pOldLine->getPage();
 	return pOldPage;
@@ -4143,7 +4143,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		
 		height = 0;
 		if(ppBlock)
-			*ppBlock = 0;
+			*ppBlock = nullptr;
 		return;
 	}
 
@@ -4173,7 +4173,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 		height = 0;
 		if(ppBlock)
-			*ppBlock = 0;
+			*ppBlock = nullptr;
 		return;
 	}
 
@@ -4216,7 +4216,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 			height = 0;
 			if(ppBlock)
-				*ppBlock = 0;
+				*ppBlock = nullptr;
 			return;
 		}
 	}
@@ -4281,7 +4281,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 			height = 0;
 			if(ppBlock)
-			  *ppBlock = 0;
+			  *ppBlock = nullptr;
 			return;
 		}
 		
@@ -5432,7 +5432,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 
 		fl_BlockLayout *pBL;
 		fl_SectionLayout *pSL = m_pLayout->getFirstSection();
-		fp_Run * pRun = 0;
+		fp_Run * pRun = nullptr;
 		bool bFound = false;
 
 		//find the first of the two bookmarks
@@ -5750,9 +5750,9 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 
 	// TODO these should really be static members, so we can properly
 	// clean up
-	static fl_BlockLayout * s_pLastBL = 0;
+	static fl_BlockLayout * s_pLastBL = nullptr;
 	static fl_PartOfBlockPtr s_pLastPOB;
-	static const UT_GenericVector<UT_UCSChar*>* s_pvCachedSuggestions = 0;
+	static const UT_GenericVector<UT_UCSChar*>* s_pvCachedSuggestions = nullptr;
 
 	// can we use the cached suggestions?
 	if (pBL != s_pLastBL || pPOB != s_pLastPOB)
@@ -5767,7 +5767,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 				FREEP(sug);
 			}
 
-			s_pLastBL = 0;
+			s_pLastBL = nullptr;
 			s_pLastPOB.reset();
 			DELETEP(s_pvCachedSuggestions);
 		}
@@ -5826,7 +5826,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		// lookup suggestions
 
 		// create an empty vector
-		UT_GenericVector<UT_UCSChar*>* pvFreshSuggestions = 0;
+		UT_GenericVector<UT_UCSChar*>* pvFreshSuggestions = nullptr;
 		UT_ASSERT(!pvFreshSuggestions);
 
 		pvFreshSuggestions = new UT_GenericVector<UT_UCSChar*>();

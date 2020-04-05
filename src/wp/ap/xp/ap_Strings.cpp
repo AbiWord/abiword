@@ -47,9 +47,9 @@ AP_BuiltinStringSet::AP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguag
 
 	static const gchar * s_a[] =
 	{
-		dcl(__FIRST__,0)			// bogus entry for zero
+		dcl(__FIRST__, nullptr)			// bogus entry for zero
 #include "ap_String_Id.h"
-		dcl(__LAST__,0)				// bogus entry for end
+		dcl(__LAST__, nullptr)			// bogus entry for end
 	};
 
 	m_arrayAP = s_a;
@@ -200,7 +200,7 @@ AP_DiskStringSet::AP_DiskStringSet(XAP_App * pApp)
 	: XAP_DiskStringSet(pApp),
 	  m_vecStringsAP(AP_STRING_ID__LAST__ - AP_STRING_ID__FIRST__ + 1, 4, true)
 {
-	setValue(AP_STRING_ID__FIRST__,0);			// bogus zero element
+	setValue(AP_STRING_ID__FIRST__, nullptr);		// bogus zero element
 }
 
 AP_DiskStringSet::~AP_DiskStringSet(void)
@@ -240,7 +240,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 		{
 			if (p && *p)
 			{
-				UT_UCS4Char  *fbdStr2 = 0;
+				UT_UCS4Char *fbdStr2 = nullptr;
 				fbdStr2  = new UT_UCS4Char [kLimit + 1];
 				UT_return_val_if_fail (fbdStr2, false);
 

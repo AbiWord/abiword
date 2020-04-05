@@ -35,7 +35,7 @@
 class ABI_EXPORT UT_HTML : public UT_XML
 {
 public:
-	UT_HTML (const char * szEncoding = 0);
+	UT_HTML (const char * szEncoding = nullptr);
 
 	~UT_HTML ();
 

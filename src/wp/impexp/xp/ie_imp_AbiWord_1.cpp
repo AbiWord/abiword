@@ -189,7 +189,7 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
   {
 	  m_refMap->purgeData();
 	  delete m_refMap;
-	  m_refMap = 0;
+	  m_refMap = nullptr;
   }
 }
 

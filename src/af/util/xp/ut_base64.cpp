@@ -289,7 +289,8 @@ bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char
 {
 	if (b64len == 0) return true; // ??
 
-	if ((binptr == 0) || (b64ptr == 0)) return false;
+	if ((binptr == nullptr) || (b64ptr == nullptr))
+		return false;
 
 	bool decoded = true;
 	bool padding = false;

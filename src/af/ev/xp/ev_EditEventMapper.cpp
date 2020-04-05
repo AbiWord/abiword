@@ -30,7 +30,7 @@ EV_EditEventMapper::EV_EditEventMapper(EV_EditBindingMap * pebm)
 	UT_ASSERT(pebm);
 	m_pebmTopLevel = pebm;
 
-	m_pebmInProgress = 0;
+	m_pebmInProgress = nullptr;
 }
 
 EV_EditEventMapperResult EV_EditEventMapper::Mouse(EV_EditBits eb,
@@ -47,7 +47,7 @@ EV_EditEventMapperResult EV_EditEventMapper::Mouse(EV_EditBits eb,
 		EV_EditEventMapperResult r = (  (m_pebmInProgress==m_pebmTopLevel)
 									  ? EV_EEMR_BOGUS_START
 									  : EV_EEMR_BOGUS_CONT);
-		m_pebmInProgress = 0;
+		m_pebmInProgress = nullptr;
 		return r;
 	}
 
@@ -61,12 +61,12 @@ EV_EditEventMapperResult EV_EditEventMapper::Mouse(EV_EditBits eb,
 
 	case EV_EBT_METHOD:
 		*ppEM = peb->getMethod();
-		m_pebmInProgress = 0;
+		m_pebmInProgress = nullptr;
 		return EV_EEMR_COMPLETE;
 
 	default:
 		UT_ASSERT(0);
-		m_pebmInProgress = 0;
+		m_pebmInProgress = nullptr;
 		return EV_EEMR_BOGUS_START;
 	}
 }
@@ -85,7 +85,7 @@ EV_EditEventMapperResult EV_EditEventMapper::Keystroke(EV_EditBits eb,
 		EV_EditEventMapperResult r = (  (m_pebmInProgress==m_pebmTopLevel)
 									  ? EV_EEMR_BOGUS_START
 									  : EV_EEMR_BOGUS_CONT);
-		m_pebmInProgress = 0;
+		m_pebmInProgress = nullptr;
 		return r;
 	}
 
@@ -99,12 +99,12 @@ EV_EditEventMapperResult EV_EditEventMapper::Keystroke(EV_EditBits eb,
 
 	case EV_EBT_METHOD:
 		*ppEM = peb->getMethod();
-		m_pebmInProgress = 0;
+		m_pebmInProgress = nullptr;
 		return EV_EEMR_COMPLETE;
 
 	default:
 		UT_ASSERT(0);
-		m_pebmInProgress = 0;
+		m_pebmInProgress = nullptr;
 		return EV_EEMR_BOGUS_START;
 	}
 }

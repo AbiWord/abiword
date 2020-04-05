@@ -59,7 +59,8 @@ bool XAP_Dialog_PluginManager::deactivateAllPlugins () const
 	const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 
 	UT_ASSERT (pVec);
-	if (pVec == 0) return false;
+	if (pVec == nullptr)
+		return false;
 
 	while (UT_sint32 size = pVec->size ())
 	{

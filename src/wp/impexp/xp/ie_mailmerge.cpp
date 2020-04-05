@@ -42,7 +42,7 @@ IE_MailMerge::~IE_MailMerge ()
 }
 
 IE_MailMerge::IE_MailMerge ()
-	: m_pListener (0)
+	: m_pListener(nullptr)
 {
 }
 
@@ -55,7 +55,7 @@ IE_MergeSniffer::~IE_MergeSniffer()
 
 bool IE_MailMerge::fireMergeSet ()
 {
-	PD_Document * pDoc = 0;
+	PD_Document * pDoc = nullptr;
 	
 	pDoc = m_pListener->getMergeDocument ();
 	if (pDoc) {
@@ -178,7 +178,7 @@ IEMergeType IE_MailMerge::fileTypeForDescription(const char * szDescription)
 		IE_MergeSniffer * pSniffer = s_sniffers.at(k);
 		
 		const char * szDummy;
-		const char * szDescription2 = 0;
+		const char * szDescription2 = nullptr;
 		
 		if (pSniffer->getDlgLabels(&szDescription2,&szDummy,&ieft))
 		{
@@ -244,13 +244,13 @@ IE_MergeSniffer * IE_MailMerge::snifferForFileType(IEMergeType ieft)
 	}
 	
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 
 const char * IE_MailMerge::suffixesForFileType(IEMergeType ieft)
 {
 	const char * szDummy;
-	const char * szSuffixes = 0;
+	const char * szSuffixes = nullptr;
 	IEMergeType ieftDummy;
 
 	IE_MergeSniffer * pSniffer = snifferForFileType(ieft);
@@ -265,13 +265,13 @@ const char * IE_MailMerge::suffixesForFileType(IEMergeType ieft)
 	}
 
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 
 const char * IE_MailMerge::descriptionForFileType(IEMergeType ieft)
 {
 	const char * szDummy;
-	const char * szDescription = 0;
+	const char * szDescription = nullptr;
 	IEMergeType ieftDummy;
 
 	IE_MergeSniffer * pSniffer = snifferForFileType(ieft);
@@ -286,7 +286,7 @@ const char * IE_MailMerge::descriptionForFileType(IEMergeType ieft)
 	}
 
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 
 static UT_Confidence_t s_confidence_heuristic ( UT_Confidence_t content_confidence, 
@@ -327,7 +327,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 		}
 		
 		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
-		IE_MergeSniffer * best_sniffer = 0;
+		IE_MergeSniffer * best_sniffer = nullptr;
 		
 		for (UT_uint32 k=0; k < nrElements; k++)
 		{
@@ -423,7 +423,7 @@ class ABI_EXPORT IE_MailMerge_XML_Listener : public IE_MailMerge,
 public:
 	
 	IE_MailMerge_XML_Listener ()
-		: IE_MailMerge(), UT_XML::Listener(), mAcceptingText(false), mLooping(true), m_vecHeaders(0)
+		: IE_MailMerge(), UT_XML::Listener(), mAcceptingText(false), mLooping(true), m_vecHeaders(nullptr)
 		{
 		}
 	
@@ -546,8 +546,8 @@ public:
 	
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 											   UT_uint32 /*iNumbytes*/) override {
-		if (strstr(szBuf, "http://www.abisource.com/mailmerge/1.0") != 0 &&
-			strstr(szBuf, "merge-set") != 0)
+		if (strstr(szBuf, "http://www.abisource.com/mailmerge/1.0") != nullptr &&
+			strstr(szBuf, "merge-set") != nullptr)
 			return UT_CONFIDENCE_PERFECT;
 		return UT_CONFIDENCE_ZILCH;
 	}
@@ -740,7 +740,7 @@ public:
 		delim[0] = m_delim;
 		delim[1] = '\0';
 
-		if (strstr(szBuf, delim) != 0)
+		if (strstr(szBuf, delim) != nullptr)
 			return UT_CONFIDENCE_SOSO;
 		return UT_CONFIDENCE_ZILCH;
 	}

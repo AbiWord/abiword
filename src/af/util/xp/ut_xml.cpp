@@ -36,7 +36,7 @@
 #include "ut_misc.h"
 
 DefaultReader::DefaultReader () :
-  in(0)
+  in(nullptr)
 {
 }
 
@@ -68,12 +68,12 @@ UT_uint32 DefaultReader::readBytes (char * buffer, UT_uint32 length)
 void DefaultReader::closeFile (void)
 {
   if (in) fclose (in);
-  in = 0;
+  in = nullptr;
 }
 
 UT_XML_BufReader::UT_XML_BufReader (const char * buffer, UT_uint32 length) :
   m_buffer(buffer),
-  m_bufptr(0),
+  m_bufptr(nullptr),
   m_length(length)
 {
   // 
@@ -86,14 +86,16 @@ UT_XML_BufReader::~UT_XML_BufReader ()
 
 bool UT_XML_BufReader::openFile (const char * /*szFilename*/)
 {
-  if ((m_buffer == 0) || (m_length == 0)) return false;
+  if ((m_buffer == nullptr) || (m_length == 0))
+	return false;
   m_bufptr = m_buffer;
   return true;
 }
 
 UT_uint32 UT_XML_BufReader::readBytes (char * buffer, UT_uint32 length)
 {
-  if ((buffer == 0) || (length == 0)) return 0;
+  if ((buffer == nullptr) || (length == 0))
+    return 0;
 
   UT_uint32 bytes = (m_buffer + m_length) - m_bufptr;
   if (bytes > length) bytes = length;
@@ -105,25 +107,25 @@ UT_uint32 UT_XML_BufReader::readBytes (char * buffer, UT_uint32 length)
 
 void UT_XML_BufReader::closeFile ()
 {
-  m_bufptr = 0;
+  m_bufptr = nullptr;
 }
 
 UT_XML::UT_XML () :
   m_is_chardata(true),
-  m_chardata_buffer(0),
+  m_chardata_buffer(nullptr),
   m_chardata_length(0),
   m_chardata_max(0),
   m_iMinorErrors(0),
   m_iRecoveredErrors(0),
-  m_namespace(0),
+  m_namespace(nullptr),
   m_nslength(0),
   m_bSniffing(false),
   m_bValid(false),
-  m_xml_type(0),
+  m_xml_type(nullptr),
   m_bStopped(false),
-  m_pListener(0),
-  m_pExpertListener(0),
-  m_pReader(0)
+  m_pListener(nullptr),
+  m_pExpertListener(nullptr),
+  m_pReader(nullptr)
 {
 }
 
@@ -138,16 +140,18 @@ bool UT_XML::grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint3
 {
   if (length + require + 1 <= max) return true;
 
-  if (buffer == 0)
+  if (buffer == nullptr)
     {
       buffer = static_cast<char *>(g_try_malloc (require + 1));
-      if (buffer == 0) return false;
+      if (buffer == nullptr)
+        return false;
       buffer[0] = 0;
       max = require + 1;
       return true;
     }
   char * more = static_cast<char *>(g_try_realloc (buffer, max + require + 1));
-  if (more == 0) return false;
+  if (more == nullptr)
+    return false;
   buffer = more;
   max += require + 1;
   return true;
@@ -287,7 +291,8 @@ void UT_XML::cdataSection (bool start)
 void UT_XML::defaultData (const char * buffer, int length)
 {
   if (m_bStopped) return;
-  if (m_pExpertListener == 0) return;
+  if (m_pExpertListener == nullptr)
+    return;
 
   if (m_chardata_length && m_is_chardata) flush_all ();
 
@@ -319,7 +324,8 @@ bool UT_XML::sniff (const UT_ByteBuf * pBB, const char * xml_type)
   UT_ASSERT (pBB);
   UT_ASSERT (xml_type);
 
-  if ((pBB == 0) || (xml_type == 0)) return false;
+  if ((pBB == nullptr) || (xml_type == nullptr))
+    return false;
 
   const char * buffer = reinterpret_cast<const char *>(pBB->getPointer (0));
   UT_uint32 length = pBB->getLength ();
@@ -332,7 +338,8 @@ bool UT_XML::sniff (const char * buffer, UT_uint32 length, const char * xml_type
   UT_ASSERT (buffer);
   UT_ASSERT (xml_type);
 
-  if ((buffer == 0) || (xml_type == 0)) return false;
+  if ((buffer == nullptr) || (xml_type == nullptr))
+    return false;
 
   m_bSniffing = true; // This *must* be reset to false before returning
   m_bValid = true;
@@ -351,7 +358,8 @@ UT_Error UT_XML::parse (const UT_ByteBuf * pBB)
   UT_ASSERT (m_pListener || m_pExpertListener);
   UT_ASSERT (pBB);
 
-  if ((pBB == 0) || ((m_pListener == 0) && (m_pExpertListener == 0))) return UT_ERROR;
+  if ((pBB == nullptr) || ((m_pListener == nullptr) && (m_pExpertListener == nullptr)))
+    return UT_ERROR;
   if (!reset_all ()) return UT_OUTOFMEM;
 
   const char * buffer = reinterpret_cast<const char *>(pBB->getPointer (0));

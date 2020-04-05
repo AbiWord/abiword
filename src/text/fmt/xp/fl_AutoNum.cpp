@@ -78,7 +78,7 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						const gchar * lDecimal,
 						PD_Document * pDoc,
 						FV_View * pView)
-	:	m_pParent(0),
+	:	m_pParent(nullptr),
 		m_pDoc(pDoc),
 		m_pView(pView),
 		m_List_Type(lType),
@@ -91,7 +91,7 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 		m_bDirty(false),
 		m_ioffset(0),
 		m_bWordMultiStyle(true),
-		m_pParentItem(0)
+		m_pParentItem(nullptr)
 {
 	// Set in Block???
 	memset(m_pszDelim, 0, 80);

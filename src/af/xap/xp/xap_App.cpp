@@ -289,7 +289,7 @@ bool XAP_App::unRegisterEmbeddable(const char *uid)
 GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * szObjectType)
 {
      GR_EmbedManager * pCur = NULL;
-	 if (szObjectType && szObjectType != 0)
+	 if (szObjectType && szObjectType != nullptr)
        pCur =  m_mapEmbedManagers[szObjectType];
      if(pCur != NULL)
      {
@@ -401,7 +401,7 @@ bool XAP_App::addListener(AV_Listener * pListener,
 	UT_DEBUGMSG(("Asked to register pListener %p \n",pListener));
 	
 	for (k=0; k<kLimit; k++)
-		if (m_vecPluginListeners.getNthItem(k) == 0)
+		if (m_vecPluginListeners.getNthItem(k) == nullptr)
 		{
 			static_cast<void>(m_vecPluginListeners.setNthItem(k,pListener,NULL));
 			goto ClaimThisK;
@@ -1602,7 +1602,7 @@ bool XAP_App::retrieveState()
 		if(p)
 		{
 			// remove extension
-			p = 0;
+			p = nullptr;
 			AD_Document * pDoc = pFrame->getCurrentDoc();
 
 			if(pDoc)

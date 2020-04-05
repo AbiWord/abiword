@@ -237,7 +237,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_pDoc(pLayout->getDocument()),
 		m_pG(m_pLayout->getGraphics()),
 		m_pParentData(pParentData),
-		m_pAutoScrollTimer(0),
+		m_pAutoScrollTimer(nullptr),
 		m_xLastMouse(0),
 		m_yLastMouse(0),
 		m_bCursorIsOn(false),
@@ -252,8 +252,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bReverseFind(false),
 		m_bWholeWord(false),
 		m_bMatchCase(false),
-		m_sFind(0),
-		m_sReplace(0),
+		m_sFind(nullptr),
+		m_sReplace(nullptr),
 		m_bShowPara(false),
 #ifdef EMBEDDED_TARGET
 		m_viewMode(VIEW_NORMAL),
@@ -1062,7 +1062,7 @@ void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool /*useClipb
   	PD_Document * pDoc = new PD_Document();
   	pDoc->newDocument();
 	FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc, m_pG);
-	FV_View * pCopyLinkView = new FV_View(XAP_App::getApp(), 0, pDocLayout);
+	FV_View * pCopyLinkView = new FV_View(XAP_App::getApp(), nullptr, pDocLayout);
 	
 	/* assign the view to the doclayout */
 	pDocLayout->setView(pCopyLinkView);
@@ -1238,11 +1238,11 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	{
 		return false;
 	}
-	const gchar* szDataID = 0;
-	const gchar* szTitle = 0;
-	const gchar* szDescription = 0;
-	const  gchar* szWidth = 0;
-	const  gchar * szHeight = 0;
+	const gchar* szDataID = nullptr;
+	const gchar* szTitle = nullptr;
+	const gchar* szDescription = nullptr;
+	const gchar* szWidth = nullptr;
+	const gchar* szHeight = nullptr;
     bool bFound = pAP->getAttribute(PT_STRUX_IMAGE_DATAID,szDataID);
 	if(!bFound)
 	{
@@ -1265,9 +1265,9 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	sProps += "; height:";
 	sProps += szHeight;
 
-	if(szTitle ==  0)
+	if (szTitle ==  nullptr)
 		szTitle = "";
-	if(szDescription == 0)
+	if (szDescription == nullptr)
 		szDescription = "";
 
 	const PP_PropertyVector attributes = {
@@ -1765,7 +1765,7 @@ UT_RGBColor FV_View::getColorSelBackground ()
 {
   static UT_RGBColor bgcolor (192, 192, 192);
 
-  XAP_Frame * pFrame = 0;
+  XAP_Frame * pFrame = nullptr;
 
   if ((pFrame = static_cast<XAP_Frame*>(getParentData())) != NULL)
     return pFrame->getColorSelBackground ();
@@ -1785,7 +1785,7 @@ UT_RGBColor FV_View::getColorSelForeground () const
 {
   static UT_RGBColor fgcolor (255, 255, 255);
 
-  XAP_Frame * pFrame = 0;
+  XAP_Frame * pFrame = nullptr;
   
   if ((pFrame = static_cast<XAP_Frame*>(getParentData())) != NULL)
     return pFrame->getColorSelForeground ();
@@ -4951,10 +4951,10 @@ bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** 
  */
 bool FV_View::getAllAttrProp(const PP_AttrProp *& pSpanAP, const PP_AttrProp *& pBlockAP, const PP_AttrProp *& pSectionAP, const PP_AttrProp *& pDocAP) const
 {
-	pDocAP     = m_pDoc->getAttrProp();
-	pSectionAP = 0;
-	pBlockAP   = 0;
-	pSpanAP    = 0;
+	pDocAP = m_pDoc->getAttrProp();
+	pSectionAP = nullptr;
+	pBlockAP = nullptr;
+	pSpanAP = nullptr;
 
 	if(getLayout()->getFirstSection() == NULL)
 	{
@@ -5034,8 +5034,8 @@ bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue,
 
 	UT_UTF8String szValue_current;
 
-	const PP_AttrProp *      pSpanAP = 0;
-	const PP_AttrProp * prev_pSpanAP = 0;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * prev_pSpanAP = nullptr;
 
 	while (position < posEnd)
 	{
@@ -5112,9 +5112,9 @@ bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue,
 
 	bool bLeftSide = true; // looking to the left of the cursor, I think... does this work with bidi? [TODO: ??]
 
-	const PP_AttrProp * pSectionAP = 0;
-	const PP_AttrProp * pBlockAP   = 0;
-	const PP_AttrProp * pSpanAP    = 0;
+	const PP_AttrProp * pSectionAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSpanAP = nullptr;
 
 	pBlock->getAP(pBlockAP);
 
@@ -5125,7 +5125,7 @@ bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue,
 
 	bExplicitlyDefined = false;
 
-	const gchar * szPropValue = 0;
+	const gchar * szPropValue = nullptr;
 
 	if (pSpanAP)
 	{
@@ -5937,11 +5937,11 @@ void FV_View::changeListStyle(const fl_AutoNumPtr & pAuto,
 	pAuto->setListType(lType);
 	sprintf(pszStart, "%i" , startv);
 	strncpy( pszAlign,
-					UT_convertInchesToDimensionString(DIM_IN, Align, 0),
+					UT_convertInchesToDimensionString(DIM_IN, Align, nullptr),
 					sizeof(pszAlign));
 
 	strncpy( pszIndent,
-					UT_convertInchesToDimensionString(DIM_IN, Indent, 0),
+					UT_convertInchesToDimensionString(DIM_IN, Indent, nullptr),
 					sizeof(pszIndent));
 
 	PP_PropertyVector props = {
@@ -9851,7 +9851,7 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 		if( pRun && pRun->getType() != FPRUN_HYPERLINK )
 		{
 			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(3 reset) run.x:%d\n", pRun->getX() ));
-			pRun = 0;
+			pRun = nullptr;
 		}
 	}
 	if(pRun && pRun->getHyperlink() != NULL)
@@ -10239,12 +10239,12 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				{
 					pHyperRun = pHyperRun->getPrevRun();
 					if( pHyperRun && pHyperRun->getType() != FPRUN_HYPERLINK )
-						pHyperRun = 0;
+						pHyperRun = nullptr;
 				}
 			}
 			else
 			{
-				pHyperRun = 0;
+				pHyperRun = nullptr;
 			}
 		}
 
@@ -10272,7 +10272,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				else
 				{
 					// We found a run that is not under the mouse
-					pHyperRun = 0;
+					pHyperRun = nullptr;
 				}
 			}
 		}
@@ -13124,15 +13124,15 @@ bool FV_View::insertFootnote(bool bFootnote)
 	bool bDirection;
 	_findPositionCoords(FrefStart, false, x, y, x2, y2, height, bDirection,&pBL,&pRun);
 
-	UT_ASSERT(pBL != 0);
-	UT_ASSERT(pRun != 0);
+	UT_ASSERT(pBL != nullptr);
+	UT_ASSERT(pRun != nullptr);
 
 	UT_DebugOnly<bool> bWidthChange = pRun->recalcWidth();
 	xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pRun->getType(),bWidthChange));
 	pBL->setNeedsReformat(pBL);
 
 	pBL = _findBlockAtPosition(FanchStart);
-	UT_ASSERT(pBL != 0);
+	UT_ASSERT(pBL != nullptr);
 
 	if (pBL->getFirstRun()->getNextRun())
 	{
@@ -14152,7 +14152,7 @@ UT_uint32 FV_View::getWidthPrevPagesInRow(UT_uint32 iPageNumber) const
 		diff = 0;
 	if (iFirstPageInRow != static_cast<UT_sint32>(iPageNumber))
 	{
-		fp_Page * pPage = 0;
+		fp_Page * pPage = nullptr;
 		
 		if (m_pLayout->getNthPage(iFirstPageInRow))
 		{

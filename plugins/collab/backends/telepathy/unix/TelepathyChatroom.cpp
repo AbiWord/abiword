@@ -239,7 +239,7 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 
 		DBusError error;
 		dbus_error_init (&error);
-		const char* packet_data = 0;
+		const char* packet_data = nullptr;
 		int packet_size = 0;
 		if (dbus_message_get_args(message, &error,
 					DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE, &packet_data, &packet_size,

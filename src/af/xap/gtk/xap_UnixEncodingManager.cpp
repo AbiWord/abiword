@@ -398,7 +398,7 @@ g_i18n_get_language_list (const gchar *category_name)
 
 XAP_EncodingManager *XAP_EncodingManager::get_instance()
 {
-	if (_instance == 0)
+	if (_instance == nullptr)
 	{
 		UT_DEBUGMSG(("Building XAP_EncodingManager\n"));
 		_instance = new XAP_UnixEncodingManager();

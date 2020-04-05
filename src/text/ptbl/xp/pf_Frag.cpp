@@ -205,13 +205,13 @@ pf_Frag_Strux* pf_Frag::getNextStrux(PTStruxType t) const
     {
         pf_Frag* pf = it.value();
         if( !pf )
-            return 0;
+            return nullptr;
         if( isStuxType( pf, t ))
         {
             return static_cast<pf_Frag_Strux*>(pf);
         }
     }
-    return 0;
+    return nullptr;
 }
 
 pf_Frag_Strux*
@@ -227,13 +227,13 @@ pf_Frag::tryDownCastStrux(PTStruxType t) const
         if( eStruxType == t )
             return pfs;
     }
-    return 0;
+    return nullptr;
 }
 
 pf_Frag_Strux* tryDownCastStrux( pf_Frag* pf, PTStruxType t)
 {
     if( !pf )
-        return 0;
+        return nullptr;
     return pf->tryDownCastStrux( t );
 }
 
@@ -252,7 +252,7 @@ pf_Frag::getXMLID() const
     m_pPieceTable->getAttrProp( getIndexAP() ,&pAP );
     if( !pAP )
         return ret;
-    const char* v = 0;
+    const char* v = nullptr;
     
     if(getType() == pf_Frag::PFT_Object)
     {

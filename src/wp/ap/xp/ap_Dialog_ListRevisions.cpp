@@ -32,7 +32,7 @@
 AP_Dialog_ListRevisions::AP_Dialog_ListRevisions(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogselectrevision"), m_answer(a_CANCEL),
-    m_iId(0), m_pDoc(NULL), m_pSS (0)
+    m_iId(0), m_pDoc(NULL), m_pSS(nullptr)
 {
 	m_pSS = XAP_App::getApp()->getStringSet();
 }
@@ -111,7 +111,7 @@ AP_Dialog_ListRevisions::getNthItemTimeT(UT_uint32 n) const
 
 const char * AP_Dialog_ListRevisions::getNthItemTime(UT_uint32 n) const
 {
-	UT_return_val_if_fail(m_pDoc,0);
+	UT_return_val_if_fail(m_pDoc, nullptr);
 
 	// TODO the date should be properly localised
     time_t tT = getNthItemTimeT(n);
@@ -159,7 +159,7 @@ char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n, bool utf8) const
 		// now we run this string through fribidi
 		if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
 		{
-			UT_UCS4Char * pStr2 = 0;
+			UT_UCS4Char * pStr2 = nullptr;
 			UT_uint32 iLen = UT_UCS4_strlen(pC);
 
 			pStr2  = (UT_UCS4Char *)UT_calloc( iLen + 1, sizeof(UT_UCS4Char));

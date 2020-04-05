@@ -38,8 +38,8 @@ ABI_PLUGIN_DECLARE("Applix")
 #define PLUGIN_NAME "AbiApplix::AW"
 
 // we use a reference-counted sniffer
-static IE_Imp_Applix_Sniffer * m_impSniffer = 0;
-static IE_Exp_Applix_Sniffer * m_expSniffer = 0;
+static IE_Imp_Applix_Sniffer * m_impSniffer = nullptr;
+static IE_Exp_Applix_Sniffer * m_expSniffer = nullptr;
 
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
@@ -69,22 +69,22 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	UT_ASSERT (m_impSniffer);
 	UT_ASSERT (m_expSniffer);
 
 	IE_Imp::unregisterImporter (m_impSniffer);
 	delete m_impSniffer;
-	m_impSniffer = 0;
+	m_impSniffer = nullptr;
 
 	IE_Exp::unregisterExporter (m_expSniffer);
 	delete m_expSniffer;	
-	m_expSniffer = 0;
+	m_expSniffer = nullptr;
 
 	return 1;
 }

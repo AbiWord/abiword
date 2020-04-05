@@ -32,7 +32,7 @@
 #define MIN_CHUNK			256
 
 UT_ByteBuf::UT_ByteBuf(UT_uint32 iChunk)
-  : m_pBuf(0), m_iSize(0), m_iSpace(0)
+  : m_pBuf(nullptr), m_iSize(0), m_iSpace(0)
 {
 	if (iChunk < MIN_CHUNK)
 		iChunk = DEFAULT_CHUNK;
@@ -153,7 +153,7 @@ const UT_Byte * UT_ByteBuf::getPointer(UT_uint32 position) const
 	// return a read-only pointer to the buffer
 	
 	if (!m_pBuf || !m_iSize)
-		return 0;
+		return nullptr;
 	UT_ASSERT(position < m_iSize);
 	return m_pBuf+position;
 }

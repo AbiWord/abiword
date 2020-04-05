@@ -283,7 +283,7 @@ bool ODe_AbiDocListener::populateStrux(pf_Frag_Strux* /*sdh*/,
     // }
     
     
-    *psfh = 0;                          // we don't need it.
+    *psfh = nullptr;                     // we don't need it.
 
     PT_AttrPropIndex api = pcr->getIndexAP();
     //const gchar* image_name =
@@ -1278,7 +1278,7 @@ const gchar* ODe_AbiDocListener::_getObjectKey(const PT_AttrPropIndex& api,
             return value;
     }
 
-    return 0;
+    return nullptr;
 }
 
 

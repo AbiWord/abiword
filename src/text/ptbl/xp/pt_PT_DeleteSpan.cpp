@@ -238,9 +238,9 @@ static pf_Frag_Text* findLastTextFragOfBlock( pf_Frag_Strux* pfblock )
  */
 pf_Frag_Strux* pt_PieceTable::inSameBlock( PT_DocPosition startpos, PT_DocPosition endpos )
 {    
-    pf_Frag_Strux* ret = 0;
+    pf_Frag_Strux* ret = nullptr;
     pf_Frag_Strux* startBlock = _getBlockFromPosition( startpos );
-    pf_Frag_Strux* endBlock   = 0;
+    pf_Frag_Strux* endBlock = nullptr;
     if(!_getStruxOfTypeFromPosition( endpos, PTX_Block, &endBlock ))
     {
         return ret;
@@ -620,7 +620,7 @@ pf_Frag* pt_PieceTable::getEndOfBlock( PT_DocPosition currentpos, PT_DocPosition
 
         if( pf->getType() == pf_Frag::PFT_EndOfDoc )
         {
-            return 0;
+            return nullptr;
         }
         
         if( pf->getType() == pf_Frag::PFT_Strux )
@@ -639,7 +639,7 @@ pf_Frag* pt_PieceTable::getEndOfBlock( PT_DocPosition currentpos, PT_DocPosition
                 
         pos = pf->getPos() + pf->getLength();
     }
-    return 0;
+    return nullptr;
 }
 
 /**
@@ -2108,7 +2108,7 @@ pt_PieceTable::_deleteComplexSpanHAR( pf_Frag_Object *pO,
 
                     bResult2 =
                         _deleteObjectWithNotify(posComrade,pOb,0,1,
-                                                pfsContainer2,0,0);
+                                                pfsContainer2, nullptr, nullptr);
 		    UT_ASSERT(bResult2);
 
                     // now adjusting the positional variables
@@ -2167,7 +2167,7 @@ pt_PieceTable::_deleteComplexSpanHAR( pf_Frag_Object *pO,
                     {
                         bResult2 =
                             _deleteObjectWithNotify(posComrade,pOb,0,1,
-                                                    pfsContainer2,0,0);
+                                                    pfsContainer2, nullptr, nullptr);
 			UT_ASSERT(bResult2);
                     }
                     else
@@ -2641,7 +2641,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 
 									bResult2 =
 											_deleteObjectWithNotify(posComrade,pOb,0,1,
-										  							pfsContainer2,0,0);
+																	pfsContainer2, nullptr, nullptr);
 									UT_ASSERT(bResult2);
 
 									// now adjusting the positional variables
@@ -2679,7 +2679,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 
 									bResult2 =
 											_deleteObjectWithNotify(posComrade,pOb,0,1,
-										  							pfsContainer2,0,0);
+																	pfsContainer2, nullptr, nullptr);
 									if(posComrade < dpos1 + length)
 										length--;
 									break;

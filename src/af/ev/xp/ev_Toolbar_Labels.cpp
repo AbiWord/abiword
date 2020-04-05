@@ -65,7 +65,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
 	{
         UT_uint32 iOldLen = 0;
-        UT_UCS4Char *fbdStr = 0, *fbdStr2 = 0;
+        UT_UCS4Char *fbdStr = nullptr, *fbdStr2 = nullptr;
 
 		const char * encoding = (XAP_EncodingManager::get_instance()->getNativeSystemEncodingName()) ?
 		  XAP_EncodingManager::get_instance()->getNativeSystemEncodingName() :

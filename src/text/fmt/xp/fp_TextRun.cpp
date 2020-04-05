@@ -932,7 +932,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		}
 
 		UT_sint32 iNextDir = iDirection == UT_BIDI_RTL ? UT_BIDI_LTR : UT_BIDI_RTL; //if this is last run we will anticipate the next to have *different* direction
-		fp_Run * pRun = 0;	 //will use 0 as indicator that there is no need to deal with the second caret
+		fp_Run * pRun = nullptr;	 //will use 0 as indicator that there is no need to deal with the second caret
 
 		if(offset == getLength()) //this is the end of the run
 		{

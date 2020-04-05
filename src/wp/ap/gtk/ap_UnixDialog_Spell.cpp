@@ -624,7 +624,7 @@ AP_UnixDialog_Spell::_convertToMB (const UT_UCSChar *wword,
 UT_UCSChar * 
 AP_UnixDialog_Spell::_convertFromMB (const char *word)
 {
-	UT_UCS4Char * str = 0;
+	UT_UCS4Char * str = nullptr;
 	UT_UCS4String ucs4(word);
 	UT_UCS4_cloneString(&str, ucs4.ucs4_str());
 	return str;

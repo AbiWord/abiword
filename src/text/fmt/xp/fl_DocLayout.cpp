@@ -2500,8 +2500,8 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 */
 fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLookOnlyBefore) const
 {
-	fl_BlockLayout* pBL = NULL;
-	fl_ContainerLayout* sfh = 0;
+	fl_BlockLayout* pBL = nullptr;
+	fl_ContainerLayout* sfh = nullptr;
 
 	PT_DocPosition posEOD;
 	bool bRes;
@@ -2669,8 +2669,8 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLook
 
 fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos) const
 {
-	fl_BlockLayout* pBL = NULL;
-	fl_ContainerLayout* sfh = 0;
+	fl_BlockLayout* pBL = nullptr;
+	fl_ContainerLayout* sfh = nullptr;
 
 	PT_DocPosition posBOD;
 	bool bRes;

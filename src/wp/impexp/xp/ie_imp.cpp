@@ -44,7 +44,7 @@ static std::vector<std::string> 	IE_IMP_MimeClasses;
 static std::vector<std::string> 	IE_IMP_Suffixes;
 
 #include "ie_imp_XML.h"
-IE_Imp_XML * abi_ie_imp_xml_instance = 0;
+IE_Imp_XML * abi_ie_imp_xml_instance = nullptr;
 
 /*****************************************************************/
 /*****************************************************************/
@@ -250,7 +250,7 @@ void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 	IE_IMP_Sniffers.deleteNthItem (ndx-1);
 
 	// Refactor the indexes
-	IE_ImpSniffer * pSniffer = 0;
+	IE_ImpSniffer * pSniffer = nullptr;
 	UT_uint32 size  = IE_IMP_Sniffers.size();
 	UT_uint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
@@ -267,7 +267,7 @@ void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 
 void IE_Imp::unregisterAllImporters ()
 {
-	IE_ImpSniffer * pSniffer = 0;
+	IE_ImpSniffer * pSniffer = nullptr;
 	UT_uint32 size = IE_IMP_Sniffers.size();
 
 	for (UT_uint32 i = 0; i < size; i++)
@@ -565,7 +565,7 @@ IEFileType IE_Imp::fileTypeForDescription(const char * szDescription)
 		IE_ImpSniffer * pSniffer = static_cast<IE_ImpSniffer *>(IE_IMP_Sniffers.getNthItem(k));
 
 		const char * szDummy;
-		const char * szDescription2 = 0;
+		const char * szDescription2 = nullptr;
 
 		if (pSniffer->getDlgLabels(&szDescription2,&szDummy,&ieft))
 		{
@@ -638,7 +638,7 @@ IE_ImpSniffer * IE_Imp::snifferForFileType(IEFileType ieft)
 	}
 
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 
 /*! 
@@ -651,12 +651,12 @@ IE_ImpSniffer * IE_Imp::snifferForFileType(IEFileType ieft)
 const char * IE_Imp::suffixesForFileType(IEFileType ieft)
 {
 	const char * szDummy;
-	const char * szSuffixes = 0;
+	const char * szSuffixes = nullptr;
 	IEFileType ieftDummy;
 
 	IE_ImpSniffer * pSniffer = snifferForFileType(ieft);
 
-	UT_return_val_if_fail(pSniffer != NULL, 0);
+	UT_return_val_if_fail(pSniffer != NULL, nullptr);
 
 	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
 	{
@@ -668,7 +668,7 @@ const char * IE_Imp::suffixesForFileType(IEFileType ieft)
 	}
 
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 
 /*! 
@@ -681,7 +681,7 @@ const char * IE_Imp::suffixesForFileType(IEFileType ieft)
 const char * IE_Imp::descriptionForFileType(IEFileType ieft)
 {
 	const char * szDummy;
-	const char * szDescription = 0;
+	const char * szDescription = nullptr;
 	IEFileType ieftDummy;
 
 	IE_ImpSniffer * pSniffer = snifferForFileType(ieft);
@@ -696,7 +696,7 @@ const char * IE_Imp::descriptionForFileType(IEFileType ieft)
 	}
 
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 
 static UT_Confidence_t s_confidence_heuristic ( UT_Confidence_t content_confidence, 
@@ -793,7 +793,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	if (ieft == IEFT_Unknown && input)
 	{
 		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
-		IE_ImpSniffer * best_sniffer = 0;
+		IE_ImpSniffer * best_sniffer = nullptr;
 
 		gchar *filename = g_ascii_strdown(gsf_input_name (input), -1);
 

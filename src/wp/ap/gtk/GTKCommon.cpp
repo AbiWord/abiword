@@ -281,8 +281,8 @@ void selectIter( GtkTreeView* tv, GtkTreeIter* iter )
 void scrollToIter( GtkTreeView* tv, GtkTreeIter* iter, int colnum, gboolean start_editing )
 {
     GtkTreeModel*      model = gtk_tree_view_get_model( tv );
-    GtkTreePath*       path = 0;
-    GtkTreeViewColumn* focus_column = 0;
+    GtkTreePath* path = nullptr;
+    GtkTreeViewColumn* focus_column = nullptr;
     if( colnum >= 0 )
     {
         focus_column = gtk_tree_view_get_column( tv, colnum );
@@ -378,9 +378,9 @@ struct FileTypeArray
     
 public:
     FileTypeArray( int len )
-        : szDescList(0)
-        , szSuffixList(0)
-        , nTypeList(0)
+        : szDescList(nullptr)
+        , szSuffixList(nullptr)
+        , nTypeList(nullptr)
     {
         szDescList   = static_cast<const char **>(UT_calloc(len + 1, sizeof(char *)));
         szSuffixList = static_cast<const char **>(UT_calloc(len + 1, sizeof(char *)));

@@ -619,7 +619,7 @@ bool IE_Imp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 */
 UT_Error IE_Imp_Text::_loadFile(GsfInput * fp)
 {
-	ImportStream *pStream = 0;
+	ImportStream *pStream = nullptr;
 	UT_Error error;
 
 	// First we try to determine the encoding.
@@ -656,7 +656,7 @@ Cleanup:
 */
 IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
   : IE_Imp(pDocument),
-    m_szEncoding(0),
+    m_szEncoding(nullptr),
     m_bExplicitlySetEncoding(false),
     m_bIsEncoded(false),
     m_bIs16Bit(false),
@@ -681,7 +681,7 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 
 IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, const char * encoding)
   : IE_Imp(pDocument),
-    m_szEncoding(0),
+    m_szEncoding(nullptr),
     m_bExplicitlySetEncoding(false),
     m_bIsEncoded(false),
     m_bIs16Bit(false),
@@ -689,7 +689,7 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, const char * encoding)
 	m_bBigEndian(false),
 	m_bBlockDirectionPending(true),
 	m_bFirstBlockData(true),
-	m_pBlock(0)
+	m_pBlock(nullptr)
 {
   m_bIsEncoded = ((encoding != NULL) && (strlen(encoding) > 0));
   

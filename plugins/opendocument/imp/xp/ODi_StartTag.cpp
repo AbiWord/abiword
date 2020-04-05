@@ -68,7 +68,7 @@ void ODi_StartTag::set(const gchar* pName, const gchar** ppAtts) {
     i=0;
     
     
-    while (ppAtts[i] != 0) {
+    while (ppAtts[i] != nullptr) {
         
         if (i >= m_attributeMemSize) {
             _growAttributes();

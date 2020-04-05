@@ -1067,7 +1067,7 @@ UT_UCS4Char * UT_UCS4_strstr(const UT_UCS4Char * phaystack, const UT_UCS4Char * 
  foundneedle:
 	return const_cast<UT_UCS4Char *>(haystack);
  ret0:
-	return 0;
+	return nullptr;
 }
 
 UT_sint32 UT_UCS4_strcmp(const UT_UCS4Char* left, const UT_UCS4Char* right)
@@ -1234,7 +1234,7 @@ UT_UCS4Char * UT_UCS4_stristr(const UT_UCS4Char * phaystack, const UT_UCS4Char *
  foundneedle:
 	return const_cast<UT_UCS4Char *>(haystack);
  ret0:
-	return 0;
+	return nullptr;
 }
 /****************************************************************************/
 
@@ -1487,7 +1487,7 @@ static const char * s_pass_value (const char *& csstr)
 static const char * s_pass_string (const char *& csstr_ptr)
 {
 	if (*csstr_ptr == 0) 
-		return 0;
+		return nullptr;
 	
 	const char * csstr = csstr_ptr;
 	
@@ -1563,7 +1563,7 @@ static void s_pass_whitespace (const char *& csstr)
 void UT_parse_attributes(const char * attributes,
 						 std::map<std::string, std::string> & map)
 {
-	if ( attributes == 0) 
+	if (attributes == nullptr)
 		return;
 	if (*attributes == 0) 
 		return;
@@ -1612,7 +1612,7 @@ void UT_parse_attributes(const char * attributes,
 void UT_parse_properties(const char * properties,
 									std::map<std::string, std::string> & map)
 {
-	if ( properties == 0) 
+	if (properties == nullptr)
 		return;
 	if (*properties == 0) 
 		return;

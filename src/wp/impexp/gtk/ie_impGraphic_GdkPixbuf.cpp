@@ -372,8 +372,8 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf(const UT_ConstByteBufPtr &
 	}
 	else
 	{
-		GError * err = 0;
-		GdkPixbufLoader * ldr = 0;
+		GError * err = nullptr;
+		GdkPixbufLoader * ldr = nullptr;
 
 		ldr = gdk_pixbuf_loader_new ();
 		if (!ldr)

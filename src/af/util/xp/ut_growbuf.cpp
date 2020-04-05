@@ -30,7 +30,7 @@
 #define MIN_CHUNK			256
 
 UT_GrowBuf::UT_GrowBuf(UT_uint32 iChunk)
-  : m_pBuf(0), m_iSize(0), m_iSpace(0)
+  : m_pBuf(nullptr), m_iSize(0), m_iSpace(0)
 {
 	if (iChunk < MIN_CHUNK)
 		iChunk = DEFAULT_CHUNK;
@@ -169,7 +169,7 @@ UT_GrowBufElement * UT_GrowBuf::getPointer(UT_uint32 position) const
 	// return a read-only pointer to the buffer
 	
 	if (!m_pBuf || !m_iSize)
-		return 0;
+		return nullptr;
 	UT_ASSERT(position < m_iSize);
 	return m_pBuf+position;
 }
@@ -196,7 +196,7 @@ bool UT_GrowBuf::overwrite(UT_uint32 position, UT_GrowBufElement * pValue, UT_ui
 
 void UT_GrowBuf::truncate(UT_uint32 position)
 {
-	if ((m_pBuf == 0) && (position == 0))
+	if ((m_pBuf == nullptr) && (position == 0))
 		return;
 
 	if (position < m_iSize)

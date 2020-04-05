@@ -443,8 +443,8 @@ void PP_RevisionAttr::_init(const gchar *r)
 	UT_sint32 iId;
 	PP_RevisionType eType;
 	gchar * pProps, * pAttrs,
-		     * cl_brace = 0, * op_brace = 0,
-		     * cl_brace2 = 0;
+		     * cl_brace = nullptr, * op_brace = nullptr,
+		     * cl_brace2 = nullptr;
 
 	char * t = strtok(s,",");
 
@@ -1536,13 +1536,13 @@ PP_RevisionType PP_RevisionAttr::getType() const
 
 UT_uint32 PP_RevisionAttr::getHighestRevisionNumberWithAttribute( const gchar * attrName ) const
 {
-    const PP_Revision* r = 0;
+    const PP_Revision* r = nullptr;
 
     for( UT_uint32 raIdx = 0;
          raIdx < getRevisionsCount() && (r = getNthRevision( raIdx ));
          raIdx++ )
     {
-        if( UT_getAttribute( r, attrName, 0 ))
+        if (UT_getAttribute(r, attrName, nullptr))
             return r->getId();
     }
     return 0;
@@ -1566,12 +1566,12 @@ const PP_Revision *
 PP_RevisionAttr::getLowestDeletionRevision() const
 {
     if( !getRevisionsCount() )
-        return 0;
+        return nullptr;
 
     UT_uint32 rmax = getRevisionsCount();
     const PP_Revision* last  = getNthRevision( rmax-1 );
     if( last->getType() != PP_REVISION_DELETION )
-        return 0;
+        return nullptr;
     
     for( long idx = rmax - 1; idx >= 0; --idx )
     {
@@ -1582,7 +1582,7 @@ PP_RevisionAttr::getLowestDeletionRevision() const
         }
         last = p;
     }
-    return 0;
+    return nullptr;
 }
 
 
@@ -1590,14 +1590,14 @@ std::string UT_getLatestAttribute( const PP_AttrProp* pAP,
                                    const char* name,
                                    const char* def )
 {
-    const char* t = 0;
+    const char* t = nullptr;
     std::string ret = def;
     bool ok = false;
     
-    if( const char* revisionString = UT_getAttribute( pAP, "revision", 0 ))
+    if (const char* revisionString = UT_getAttribute(pAP, "revision", nullptr))
     {
         PP_RevisionAttr ra( revisionString );
-        const PP_Revision* r = 0;
+        const PP_Revision* r = nullptr;
             
         for( int raIdx = ra.getRevisionsCount()-1;
              raIdx >= 0 && (r = ra.getNthRevision( raIdx ));

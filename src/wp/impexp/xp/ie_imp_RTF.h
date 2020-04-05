@@ -604,7 +604,7 @@ public:
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData,
                                         UT_uint32 lenData,
-                                        const char * szEncoding = 0) override;
+                                        const char * szEncoding = nullptr) override;
 	UT_sint32 get_vecWord97ListsCount(void) const
         { return m_vecWord97Lists.size();}
 	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) const

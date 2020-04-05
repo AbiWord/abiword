@@ -587,7 +587,7 @@ bool Passepartout_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *>(pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;							// we don't need it.
 
 	switch (pcrx->getStruxType())
 	{

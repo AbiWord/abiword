@@ -57,7 +57,7 @@ AP_Dialog_Lists::getWindowTitleStringId()
 
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 :	AP_Dialog_Modeless(pDlgFactory, id, "interface/dialoglists"),
-	m_pView(0),
+	m_pView(nullptr),
 	m_Answer(a_CLOSE),
 	m_isListAtPoint(false),
 	m_previousListExistsAtPoint(false),
@@ -81,9 +81,9 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_bResumeList(0),
 	m_bisCustomized(0),
 	m_bguiChanged(false),
-	m_paragraphPreview(0),
-	m_pListsPreview(0),
-	m_pFakeDoc(0),
+	m_paragraphPreview(nullptr),
+	m_pListsPreview(nullptr),
+	m_pFakeDoc(nullptr),
 	m_bDirty(false),
 	m_bIsModal(false),
 	m_iCurrentLevel(0),
@@ -317,11 +317,11 @@ void AP_Dialog_Lists::Apply(void)
 		m_OutProps.addItem((void *) "field-font");
 		m_OutProps.addItem((void *) m_pszFont.c_str());
 		m_OutProps.addItem((void *) "margin-left");
-		m_Output[2] =	UT_convertInchesToDimensionString(DIM_IN, m_fAlign, 0);
+		m_Output[2] = UT_convertInchesToDimensionString(DIM_IN, m_fAlign, nullptr);
 		m_OutProps.addItem((void *) m_Output[2].c_str());
 
 		m_OutProps.addItem((void *) "text-indent");
-		m_Output[3] = UT_convertInchesToDimensionString(DIM_IN, m_fIndent, 0);
+		m_Output[3] = UT_convertInchesToDimensionString(DIM_IN, m_fIndent, nullptr);
 		m_OutProps.addItem((void *) m_Output[3].c_str());
 		m_Answer = a_OK;
 		return;

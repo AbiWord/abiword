@@ -394,7 +394,7 @@ pf_Fragments::insert(pf_Frag* new_piece)
 pf_Fragments::Iterator
 pf_Fragments::insertRoot(pf_Frag* new_piece)
 {
-	Iterator it_null(this, 0);
+	Iterator it_null(this, nullptr);
 	return insertRight(new_piece, it_null);
 }
 
@@ -412,7 +412,7 @@ pf_Fragments::insertRight(pf_Frag* new_piece, Iterator it)
 
 	UT_ASSERT(m_nSize == 0 || it.is_valid());
 	
-	Node* pNewNode = new Node(Node::red, new_piece, m_pLeaf, m_pLeaf, 0);
+	Node* pNewNode = new Node(Node::red, new_piece, m_pLeaf, m_pLeaf, nullptr);
 	xxx_UT_DEBUGMSG(("!!!!!! New node created %p item %p \n",pNewNode,pNewNode->item));
 	new_piece->setLeftTreeLength(0);
 	
@@ -462,7 +462,7 @@ pf_Fragments::insertLeft(pf_Frag* new_piece, Iterator it)
 
 	UT_ASSERT(m_nSize == 0 || it.is_valid());
 	
-	Node* pNewNode = new Node(Node::red, new_piece, m_pLeaf, m_pLeaf, 0);
+	Node* pNewNode = new Node(Node::red, new_piece, m_pLeaf, m_pLeaf, nullptr);
 
 	new_piece->setLeftTreeLength(0);
 	
@@ -746,7 +746,7 @@ pf_Fragments::find(PT_DocPosition orig_pos) const
 	{
 	  verifyDoc();
 	}
-	return Iterator(this, 0);
+	return Iterator(this, nullptr);
 }
 
 /*
@@ -863,7 +863,7 @@ pf_Fragments::_prev(const Node* pn) const
 					pn = pn->parent;
 			}
 
-			return 0;
+			return nullptr;
 		}
 	}
 
@@ -880,8 +880,8 @@ const pf_Fragments::Node*
 pf_Fragments::_next(const Node* pn) const
 {
 	UT_ASSERT(pn != NULL);
-	if(pn == 0)
-	  return 0;
+	if (pn == nullptr)
+	  return nullptr;
 	if (pn && pn != m_pLeaf)
 	{
 		if (pn && pn->right != m_pLeaf)
@@ -907,11 +907,11 @@ pf_Fragments::_next(const Node* pn) const
 				}
 				else
 				{
-				       return 0;
+				       return nullptr;
 				}
 			}
 
-			return 0;
+			return nullptr;
 		}
 	}
 
@@ -930,7 +930,7 @@ pf_Fragments::_first() const
 	Node* pn = m_pRoot;
 	
 	if (pn == m_pLeaf)
-		return 0;
+		return nullptr;
 
 	while(pn->left != m_pLeaf)
 		pn = pn->left;
@@ -944,7 +944,7 @@ pf_Fragments::_first()
 	Node* pn = m_pRoot;
 	
 	if (pn == m_pLeaf)
-		return 0;
+		return nullptr;
 
 	while(pn->left != m_pLeaf)
 		pn = pn->left;
@@ -958,7 +958,7 @@ pf_Fragments::_last() const
 	Node* pn = m_pRoot;
 	
 	if (pn == m_pLeaf)
-		return 0;
+		return nullptr;
 
 	while(pn->right != m_pLeaf)
 		pn = pn->right;
@@ -972,7 +972,7 @@ pf_Fragments::_last()
 	Node* pn = m_pRoot;
 	
 	if (pn == m_pLeaf)
-		return 0;
+		return nullptr;
 
 	while(pn->right != m_pLeaf)
 		pn = pn->right;
@@ -1158,7 +1158,7 @@ pf_Fragments::_countBlackNodes(const Iterator it) const
 
 		pn = pn->parent;
 	}
-	while (pn != 0);
+	while (pn != nullptr);
 
 	return retval;
 }

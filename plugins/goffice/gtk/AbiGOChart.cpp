@@ -59,7 +59,7 @@ class AbiGO_LocaleTransactor
 };
 
 AbiGO_LocaleTransactor::AbiGO_LocaleTransactor (int category, const char * locale)
-  : mCategory (category), mOldLocale (0)
+  : mCategory (category), mOldLocale(nullptr)
 {
 	mOldLocale = g_strdup(setlocale(category, NULL));
 	go_setlocale (category, locale);

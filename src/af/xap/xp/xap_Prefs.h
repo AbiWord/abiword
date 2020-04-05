@@ -176,7 +176,7 @@ public:
 	{ return m_bIgnoreThisOne;}
 
 	bool					setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
-	bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
+	bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = nullptr);
 
 	virtual void			fullInit(void) = 0;
 	virtual bool			loadBuiltinPrefs(void) = 0;
@@ -184,7 +184,7 @@ public:
 	virtual const char *	getPrefsPathname(void) const = 0;
 
 	void					addListener	  ( PrefsListener pFunc, void *data );
-	void					removeListener ( PrefsListener pFunc, void *data = 0 );
+	void					removeListener(PrefsListener pFunc, void *data = nullptr);
 	void					startBlockChange();
 	void					endBlockChange();
 

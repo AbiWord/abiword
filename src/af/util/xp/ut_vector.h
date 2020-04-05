@@ -103,7 +103,7 @@ public:
 	    UT_ASSERT_HARMLESS(n<m_iCount);
 
 	    if(n >= m_iCount || !m_pEntries) {
-			return 0;
+			return static_cast<T>(0);
 		}
 	    return m_pEntries[n];
 	}
@@ -348,7 +348,7 @@ UT_sint32 UT_GenericVector<T>::setNthItem(UT_sint32 ndx, T pNew, T* ppOld)
 
 	if (ppOld)
 	{
-		*ppOld = (ndx < old_iSpace) ? m_pEntries[ndx] : 0;
+		*ppOld = (ndx < old_iSpace) ? m_pEntries[ndx] : static_cast<T>(0);
 	}
 
 	m_pEntries[ndx] = pNew;
@@ -387,7 +387,7 @@ void UT_GenericVector<T>::deleteNthItem(UT_sint32 n)
 
 	memmove(&m_pEntries[n], &m_pEntries[n+1], (m_iCount - (n + 1)) * sizeof(T));
 
-	m_pEntries[m_iCount-1] = 0;
+	m_pEntries[m_iCount-1] = static_cast<T>(0);
 	m_iCount--;
 
 	return;

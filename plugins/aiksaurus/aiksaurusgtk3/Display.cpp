@@ -39,7 +39,7 @@ namespace AiksaurusGTK_impl
         // meanings to create a really nice look.  We'll also set up
         // an initial size (the usize call) so that it won't start
         // out all squnched together.
-        d_scroller = gtk_scrolled_window_new(0, 0);
+        d_scroller = gtk_scrolled_window_new(nullptr, nullptr);
         gtk_widget_set_size_request(d_scroller, 360, 240);
         gtk_scrolled_window_set_policy(
             GTK_SCROLLED_WINDOW(d_scroller),
@@ -57,7 +57,7 @@ namespace AiksaurusGTK_impl
         gtk_widget_set_name(d_white, "wbg");
         gtk_container_add(GTK_CONTAINER(d_scroller), d_white);
 
-        d_layout = 0;
+        d_layout = nullptr;
     }
 
 

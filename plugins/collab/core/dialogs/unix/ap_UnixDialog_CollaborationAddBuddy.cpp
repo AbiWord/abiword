@@ -151,7 +151,7 @@ void AP_UnixDialog_CollaborationAddBuddy::event_Ok()
 	GtkTreeIter iter;
 	if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(m_wAccount), &iter))
 	{
-		gpointer handler = 0;
+		gpointer handler = nullptr;
 		gtk_tree_model_get(m_model, &iter, HANDLER_COLUMN, &handler, -1);
 		
 		if (handler)

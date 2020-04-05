@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiSource Program Utilities
  *
@@ -48,14 +48,14 @@ public:
 	/* returns resource corresponding to href; sets m_current to the result
 	 * returns 0 if none is found
 	 */
-	XAP_Resource * resource (const char * href, bool bInternal, UT_uint32 * index = 0);
+	XAP_Resource * resource(const char * href, bool bInternal, UT_uint32 * index = nullptr);
 	XAP_Resource * current () const
 	{
 		return m_current;
 	}
 	void clear_current ()
 	{
-		m_current = 0;
+		m_current = nullptr;
 	}
 
 	/* resource objects are created/destroyed via ref/unref
@@ -70,7 +70,7 @@ public:
 
 	XAP_Resource * operator[] (UT_uint32 i) const
 	{
-		return (i < m_resource_count) ? m_resource[i] : 0;
+		return (i < m_resource_count) ? m_resource[i] : nullptr;
 	}
 
 	class ABI_EXPORT Writer : public XAP_InternalResource::Writer

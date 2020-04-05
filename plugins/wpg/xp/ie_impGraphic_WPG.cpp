@@ -150,7 +150,7 @@ const char * AbiWordPerfectGraphicsInputStream::subStreamName(unsigned id)
 		{
 			if ((int)id >= gsf_infile_num_children(m_ole))
 			{
-				return 0;
+				return nullptr;
 			}
 			std::map<unsigned, std::string>::iterator i = m_substreams.lower_bound(id);
 			if (i == m_substreams.end() || m_substreams.key_comp()(id, i->first))
@@ -161,7 +161,7 @@ const char * AbiWordPerfectGraphicsInputStream::subStreamName(unsigned id)
 			return i->second.c_str();
 		}
 	
-	return 0;
+	return nullptr;
 }
 
 bool AbiWordPerfectGraphicsInputStream::existsSubStream(const char * name)
@@ -241,7 +241,7 @@ bool AbiWordPerfectGraphicsInputStream::isEnd()
 	return gsf_input_eof(m_input);
 }
 
-static IE_Imp_WordPerfectGraphics_Sniffer * m_ImpSniffer = 0;
+static IE_Imp_WordPerfectGraphics_Sniffer * m_ImpSniffer = nullptr;
 
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
@@ -266,17 +266,17 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name    = 0;
-	mi->desc    = 0;
-	mi->version = 0;
-	mi->author  = 0;
-	mi->usage   = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	UT_ASSERT (m_ImpSniffer);
 
 	IE_ImpGraphic::unregisterImporter (m_ImpSniffer);
 	delete m_ImpSniffer;
-	m_ImpSniffer = 0;
+	m_ImpSniffer = nullptr;
 	
 	return 1;
 }

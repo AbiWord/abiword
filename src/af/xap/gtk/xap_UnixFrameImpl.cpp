@@ -287,7 +287,7 @@ s_loadImage (const UT_ConstByteBufPtr & bytes, FV_View * pView, XAP_Frame * pF, 
 static void
 s_loadDocument (const UT_UTF8String & file, XAP_Frame * pFrame)
 {
-	XAP_Frame * pNewFrame = 0;
+	XAP_Frame * pNewFrame = nullptr;
 	if (pFrame->isDirty() || pFrame->getFilename() ||
 		(pFrame->getViewNumber() > 0))
 		pNewFrame = XAP_App::getApp()->newFrame ();
@@ -325,7 +325,7 @@ static void s_pasteFile(const UT_UTF8String & file, XAP_Frame * pFrame)
 		GR_Graphics *pGraphics = pView->getGraphics();
 	    // create a new layout and view object for the doc
 	    FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
-	    FV_View copyView(pApp,0,pDocLayout);
+	    FV_View copyView(pApp, nullptr, pDocLayout);
 
 	    pDocLayout->setView (&copyView);
 	    pDocLayout->fillLayouts();
@@ -434,7 +434,7 @@ s_drag_data_get_cb (GtkWidget        * /*widget*/,
 	char *formatList[2];
 
 	formatList[0] = targetName;
-	formatList[1] = 0;
+	formatList[1] = nullptr;
 
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(XAP_App::getApp ());
 	XAP_Frame * pFrame = pApp->getLastFocussedFrame();

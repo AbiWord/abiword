@@ -63,7 +63,7 @@ bool AV_View::addListener(AV_Listener * pListener,
 	// see if we can recycle a cell in the vector.
 	
 	for (k=0; k<kLimit; k++)
-		if (m_vecListeners.getNthItem(k) == 0)
+		if (m_vecListeners.getNthItem(k) == nullptr)
 		{
 			static_cast<void>(m_vecListeners.setNthItem(k,pListener,NULL));
 			goto ClaimThisK;

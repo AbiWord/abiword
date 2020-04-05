@@ -96,7 +96,7 @@ bool XAP_StringSet::getValueUTF8(XAP_String_Id id, std::string & s) const
 
 void XAP_StringSet::setEncoding(const gchar * inEncoding)
 {
-  UT_return_if_fail(inEncoding != 0);
+  UT_return_if_fail(inEncoding != nullptr);
   m_encoding = inEncoding;
 }
 
@@ -154,7 +154,7 @@ XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
 {
 	m_pFallbackStringSet = NULL;
 
-	XAP_DiskStringSet::setValue(XAP_STRING_ID__FIRST__,0);			// bogus zero element
+	XAP_DiskStringSet::setValue(XAP_STRING_ID__FIRST__, nullptr);			// bogus zero element
 }
 
 XAP_DiskStringSet::~XAP_DiskStringSet(void)

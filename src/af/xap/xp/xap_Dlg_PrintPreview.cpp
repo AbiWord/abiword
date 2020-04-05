@@ -29,7 +29,7 @@
 #include "xap_DialogFactory.h"
 
 XAP_Dialog_PrintPreview::XAP_Dialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_szDocumentTitle(0), m_szDocumentPathname(0), m_szPaperSize(0)
+  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_szDocumentTitle(nullptr), m_szDocumentPathname(nullptr), m_szPaperSize(nullptr)
 {
 }
 

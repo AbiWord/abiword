@@ -622,6 +622,7 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wunused-value \
    -Wunused-variable \
    -Wwrite-strings \
+   -Wzero-as-null-pointer-constant \
 ], [], [$ax_compiler_flags_test])
 AC_LANG_POP
 

@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -917,7 +917,8 @@ void s_cell_border_style (PP_PropertyMap::Line & line, const PP_PropertyMap::Lin
 PP_PropertyMap::Line fp_CellContainer::getBottomStyle (const fl_TableLayout * table) const
 {
 	PP_PropertyMap::Line line(m_lineBottom);
-	if (table == 0) return line;
+	if (table == nullptr)
+		return line;
 	const PP_PropertyMap::Line & table_line = table->getBottomStyle ();
 	s_cell_border_style (line, table_line, table);
 	return line;
@@ -926,7 +927,8 @@ PP_PropertyMap::Line fp_CellContainer::getBottomStyle (const fl_TableLayout * ta
 PP_PropertyMap::Line fp_CellContainer::getLeftStyle (const fl_TableLayout * table) const
 {
 	PP_PropertyMap::Line line(m_lineLeft);
-	if (table == 0) return line;
+	if (table == nullptr)
+		return line;
 	const PP_PropertyMap::Line & table_line = table->getLeftStyle ();
 	s_cell_border_style (line, table_line, table);
 	return line;
@@ -935,7 +937,8 @@ PP_PropertyMap::Line fp_CellContainer::getLeftStyle (const fl_TableLayout * tabl
 PP_PropertyMap::Line fp_CellContainer::getRightStyle (const fl_TableLayout * table) const
 {
 	PP_PropertyMap::Line line(m_lineRight);
-	if (table == 0) return line;
+	if (table == nullptr)
+		return line;
 	const PP_PropertyMap::Line & table_line = table->getRightStyle ();
 	s_cell_border_style (line, table_line, table);
 	return line;
@@ -944,7 +947,8 @@ PP_PropertyMap::Line fp_CellContainer::getRightStyle (const fl_TableLayout * tab
 PP_PropertyMap::Line fp_CellContainer::getTopStyle (const fl_TableLayout * table) const
 {
 	PP_PropertyMap::Line line(m_lineTop);
-	if (table == 0) return line;
+	if (table == nullptr)
+		return line;
 	const PP_PropertyMap::Line & table_line = table->getTopStyle ();
 	s_cell_border_style (line, table_line, table);
 	return line;

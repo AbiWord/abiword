@@ -178,7 +178,7 @@ PD_Document::PD_Document()
 	: AD_Document(),
 	  m_docPageSize("A4"),
 	  m_ballowListUpdates(false),
-	  m_pPieceTable(0),
+	  m_pPieceTable(nullptr),
       m_hDocumentRDF( new PD_DocumentRDF( this )),
 	  m_lastOpenedType(IEFT_Bogus), // used to be: IE_Imp::fileTypeForSuffix(".abw"))
 	  m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
@@ -2611,7 +2611,7 @@ const pf_Frag_Strux*  PD_Document::getLastSectionSDH(void) const
 	const pf_Frag_Strux * pfSecLast = NULL;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_return_val_if_fail (currentFrag,0);
+		UT_return_val_if_fail(currentFrag, nullptr);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 		     const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
@@ -2634,7 +2634,7 @@ pf_Frag_Strux*  PD_Document::getLastSectionMutableSDH(void)
 	pf_Frag_Strux * pfSecLast = NULL;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_return_val_if_fail (currentFrag,0);
+		UT_return_val_if_fail(currentFrag, nullptr);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
@@ -2670,7 +2670,7 @@ pf_Frag_Strux*  PD_Document::getLastStruxOfType(PTStruxType pts )
 	}
 	while (!bFound && currentFrag!=m_pPieceTable->getFragments().getFirst())
 	{
-		UT_return_val_if_fail (currentFrag,0);
+		UT_return_val_if_fail(currentFrag, nullptr);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 		     pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
@@ -2806,7 +2806,7 @@ pf_Frag_Strux* PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_return_val_if_fail (currentFrag,0);
+		UT_return_val_if_fail(currentFrag, nullptr);
 		PT_AttrPropIndex indexAP = 0;
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
@@ -3196,7 +3196,7 @@ pf_Frag_Strux* PD_Document::getEndTableStruxFromTableSDH(pf_Frag_Strux* tableSDH
 	UT_sint32 depth =0;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_return_val_if_fail (currentFrag,0);
+		UT_return_val_if_fail(currentFrag, nullptr);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
@@ -3229,7 +3229,7 @@ pf_Frag_Strux* PD_Document::getEndCellStruxFromCellSDH(pf_Frag_Strux* cellSDH)
 	currentFrag = currentFrag->getNext();
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_return_val_if_fail (currentFrag,0);
+		UT_return_val_if_fail(currentFrag, nullptr);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux*>(currentFrag);
@@ -3470,7 +3470,7 @@ pf_Frag_Strux* PD_Document::getCellSDHFromRowCol(pf_Frag_Strux* tableSDH,
 	currentFrag = currentFrag->getNext();
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_return_val_if_fail (currentFrag,0);
+		UT_return_val_if_fail(currentFrag, nullptr);
 		if(currentFrag->getType() == pf_Frag::PFT_Strux)
 		{
 			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
@@ -3949,7 +3949,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 	// see if we can recycle a cell in the vector.
 
 	for (k=0; k<kLimit; k++)
-		if (m_vecListeners.getNthItem(k) == 0)
+		if (m_vecListeners.getNthItem(k) == nullptr)
 		{
 			m_vecListeners.setNthItem(k,pListener,NULL);
 			goto ClaimThisK;
@@ -4147,7 +4147,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
 		if (pListener)
 		{
-			fl_ContainerLayout* sfh = 0;
+			fl_ContainerLayout* sfh = nullptr;
 			if (pfs && (pListener->getType() < PTL_CollabExport))
 				sfh = pfs->getFmtHandle(lid);
 
@@ -4919,8 +4919,8 @@ bool PD_Document::getNextStrux(pf_Frag_Strux* sdh,
 
 pf_Frag * PD_Document::getFragFromPosition(PT_DocPosition docPos) const
 {
-	pf_Frag * pf = 0;
-	m_pPieceTable->getFragFromPosition(docPos,&pf,0);
+	pf_Frag * pf = nullptr;
+	m_pPieceTable->getFragFromPosition(docPos, &pf, nullptr);
 	return pf;
 }
 
@@ -5225,7 +5225,7 @@ bool PD_Document::getDataItemData(PD_DataItemHandle pHandle,
 	if (pszName)
 	{
 		UT_ASSERT_HARMLESS(UT_TODO);
-		*pszName = 0;
+		*pszName = nullptr;
 		//*pszName = pHashEntry->pszLeft;
 	}
 
@@ -5457,7 +5457,7 @@ pf_Frag_Strux* PD_Document::getPrevNumberedHeadingStyle(pf_Frag_Strux* sdh)
 			if(pStyle != NULL)
 			{
 				szStyleName = pStyle->getName();
-				if(strstr(szStyleName,"Numbered Heading") != 0)
+				if (strstr(szStyleName, "Numbered Heading") != nullptr)
 				{
 					bFound = true;
 					break;
@@ -5466,7 +5466,7 @@ pf_Frag_Strux* PD_Document::getPrevNumberedHeadingStyle(pf_Frag_Strux* sdh)
 				UT_uint32 i = 0;
 				while(pBasedOn != NULL && i < 10 && !bFound)
 				{
-					if(strstr(pBasedOn->getName(),"Numbered Heading") != 0)
+					if (strstr(pBasedOn->getName(), "Numbered Heading") != nullptr)
 					{
 						bFound = true;
 					}
@@ -5550,7 +5550,7 @@ pf_Frag_Strux* PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_Doc
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
-			UT_return_val_if_fail (pAP,0);
+			UT_return_val_if_fail(pAP, nullptr);
 			const gchar * pszStyleName = NULL;
 			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
@@ -5599,7 +5599,7 @@ pf_Frag_Strux* PD_Document::findForwardStyleStrux(const gchar * szStyle, PT_DocP
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
-			UT_return_val_if_fail (pAP, 0);
+			UT_return_val_if_fail(pAP, nullptr);
 			const gchar * pszStyleName = NULL;
 			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
@@ -8289,8 +8289,8 @@ PD_XMLIDCreator::rebuildCache()
         while(pf)
         {
             PT_AttrPropIndex api = pf->getIndexAP();
-            const PP_AttrProp* pAP = 0;
-            const gchar * v = 0;
+            const PP_AttrProp* pAP = nullptr;
+            const gchar * v = nullptr;
             
             if( m_doc->getAttrProp( api, &pAP ))
             {

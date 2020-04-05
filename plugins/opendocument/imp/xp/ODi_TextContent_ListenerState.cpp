@@ -1723,7 +1723,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         std::string props;
         const ODi_Style_Style* pStyle;
         m_bContentWritten = false;
-        const gchar* xmlid = 0;
+        const gchar* xmlid = nullptr;
 
         xmlid = UT_getAttribute ("xml:id", ppParagraphAtts);
         

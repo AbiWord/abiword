@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiSource Program Utilities
  * 
@@ -32,8 +32,8 @@
 #include "xap_ResourceManager.h"
 
 XAP_ResourceManager::XAP_ResourceManager () :
-	m_current(0),
-	m_resource(0),
+	m_current(nullptr),
+	m_resource(nullptr),
 	m_resource_count(0),
 	m_resource_max(0),
 	m_id_number(0)
@@ -98,22 +98,27 @@ const UT_UTF8String XAP_ResourceManager::new_id (bool bInternal)
  */
 XAP_Resource * XAP_ResourceManager::resource (const char * href, bool bInternal, UT_uint32 * index)
 {
-	m_current = 0;
+	m_current = nullptr;
 
-	if ( href == 0) return 0;
-	if (*href == 0) return 0;
+	if (href == nullptr)
+		return nullptr;
+	if (*href == 0)
+		return nullptr;
 
 	if (bInternal)
 		{
-			if (*href == '/') return 0;
+			if (*href == '/')
+				return nullptr;
 			if (*href == '#') href++;
 		}
 	else
 		{
-			if (*href == '#') return 0;
+			if (*href == '#')
+				return nullptr;
 			if (*href == '/') href++;
 		}
-	if (*href != 'r') return 0;
+	if (*href != 'r')
+		return nullptr;
 
 	for (UT_uint32 i = 0; i < m_resource_count; i++)
 		if (m_resource[i]->bInternal == bInternal)
@@ -132,7 +137,8 @@ XAP_Resource * XAP_ResourceManager::resource (const char * href, bool bInternal,
  */
 bool XAP_ResourceManager::ref (const char * href)
 {
-	if ( href == 0) return false;
+	if (href == nullptr)
+		return false;
 	if (*href == 0) return false;
 
 	bool bInternal = false;
@@ -147,7 +153,7 @@ bool XAP_ResourceManager::ref (const char * href)
 		}
 	if (!grow ()) return false;
 
-	XAP_Resource * r = 0;
+	XAP_Resource * r = nullptr;
 	try
 		{
 			if (bInternal)
@@ -157,9 +163,10 @@ bool XAP_ResourceManager::ref (const char * href)
 		}
 	catch (...)
 		{
-			r = 0;
+			r = nullptr;
 		}
-	if (r == 0) return false;
+	if (r == nullptr)
+		return false;
 
 	m_resource[m_resource_count++] = r;
 	return true;
@@ -170,7 +177,8 @@ bool XAP_ResourceManager::ref (const char * href)
  */
 void XAP_ResourceManager::unref (const char * href)
 {
-	if ( href == 0) return;
+	if (href == nullptr)
+		return;
 	if (*href == 0) return;
 
 	bool bInternal = false;
@@ -179,7 +187,8 @@ void XAP_ResourceManager::unref (const char * href)
 
 	UT_uint32 index;
 	XAP_Resource * match = resource (href, bInternal, &index);
-	if (match == 0) return;
+	if (match == nullptr)
+		return;
 
 	if (match->unref () > 0) return;
 
@@ -242,15 +251,17 @@ bool XAP_ResourceManager::grow ()
 {
 	if (m_resource_count < m_resource_max) return true;
 
-	if (m_resource == 0)
+	if (m_resource == nullptr)
 		{
 			m_resource = static_cast<XAP_Resource **>(g_try_malloc (8 * sizeof (XAP_Resource *)));
-			if (m_resource == 0) return false;
+			if (m_resource == nullptr)
+				return false;
 			m_resource_max = 8;
 			return true;
 		}
 	XAP_Resource ** more = static_cast<XAP_Resource **>(g_try_realloc (m_resource, (m_resource_max + 8) * sizeof (XAP_Resource *)));
-	if (more == 0) return false;
+	if (more == nullptr)
+		return false;
 	m_resource = more;
 	m_resource_max += 8;
 	return true;

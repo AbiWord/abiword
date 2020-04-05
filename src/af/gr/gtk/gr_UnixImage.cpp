@@ -330,7 +330,7 @@ bool GR_UnixImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
 	UT_ASSERT(!m_image);
 
 	
-	GError * err = 0;
+	GError * err = nullptr;
 	GdkPixbufLoader * ldr = gdk_pixbuf_loader_new ();	
 
 	if (!ldr)

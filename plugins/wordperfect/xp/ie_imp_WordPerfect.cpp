@@ -189,7 +189,7 @@ const char * AbiWordperfectInputStream::subStreamName(unsigned id)
 		{
 			if ((int)id >= gsf_infile_num_children(m_ole))
 			{
-				return 0;
+				return nullptr;
 			}
 			std::map<unsigned, std::string>::iterator i = m_substreams.lower_bound(id);
 			if (i == m_substreams.end() || m_substreams.key_comp()(id, i->first))
@@ -200,7 +200,7 @@ const char * AbiWordperfectInputStream::subStreamName(unsigned id)
 			return i->second.c_str();
 		}
 	
-	return 0;
+	return nullptr;
 }
 
 bool AbiWordperfectInputStream::existsSubStream(const char * name)

@@ -114,7 +114,7 @@ public:
 // completely generic code to allow this to be a plugin
 
 // we use a reference-counted sniffer
-static IE_Exp_S5_Sniffer * m_sniffer = 0;
+static IE_Exp_S5_Sniffer * m_sniffer = nullptr;
 
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
@@ -138,17 +138,17 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	UT_return_val_if_fail (m_sniffer, 0);
 
 	IE_Exp::unregisterExporter (m_sniffer);
 	delete m_sniffer;
-	m_sniffer = 0;
+	m_sniffer = nullptr;
 
 	return 1;
 }
@@ -215,7 +215,7 @@ UT_Error IE_Exp_S5::_writeDocument(void)
 
     // break on pages
     pDocLayout = new FL_DocLayout(getDoc(), layout_graphics);
-    layoutView = new FV_View(XAP_App::getApp(),0,pDocLayout);
+    layoutView = new FV_View(XAP_App::getApp(), nullptr, pDocLayout);
     layoutView->getLayout()->fillLayouts();
     layoutView->getLayout()->formatAll();
     layoutView->getLayout()->recalculateTOCFields();

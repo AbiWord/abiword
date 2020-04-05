@@ -101,7 +101,7 @@ public:
 
 private:
 
-    void _insertBookmark (const gchar * name, const gchar * type, const gchar* xmlid = 0 );
+    void _insertBookmark (const gchar * name, const gchar * type, const gchar* xmlid = nullptr);
     void _flush ();
     void _startParagraphElement (const gchar* pName,
                                  const gchar** ppParagraphAtts,

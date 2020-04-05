@@ -61,7 +61,7 @@
  */
 IE_Imp_OpenDocument::IE_Imp_OpenDocument (PD_Document * pDocument)
   : IE_Imp (pDocument),
-    m_pGsfInfile (0),
+    m_pGsfInfile(nullptr),
     m_sPassword (""),
     m_pStreamListener(NULL),
     m_pAbiData(NULL)
@@ -533,8 +533,8 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
         "  ?subj odfcommon:path ?fileName  \n"
         " } \n";
 
-    librdf_uri*   base_uri = 0;
-    librdf_query* query = librdf_new_query( args.world, "sparql", 0,
+    librdf_uri* base_uri = nullptr;
+    librdf_query* query = librdf_new_query(args.world, "sparql", nullptr,
                                             (unsigned char*)query_string,
                                             base_uri );
     librdf_query_results* results = librdf_query_execute( query, model );

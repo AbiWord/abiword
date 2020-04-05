@@ -28,7 +28,7 @@
 
 class PD_Document;
 
-ABI_EXPORT const char* UT_getAttribute( const PP_AttrProp* pAP, const char* name, const char* def = 0 );
+ABI_EXPORT const char* UT_getAttribute(const PP_AttrProp* pAP, const char* name, const char* def = nullptr);
 /**
  * Like UT_getAttribute(name,atts,def) but check for a revision attribute and
  * if found first look for the most recent value of atts in the revision.

@@ -91,7 +91,7 @@ public:
     virtual void openEndnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) override;
     virtual void closeEndnote(ODe_ListenerAction& rAction) override;
 
-    virtual void openAnnotation(const PP_AttrProp* pAP, const std::string& name, PD_Document* doc = 0) override;
+    virtual void openAnnotation(const PP_AttrProp* pAP, const std::string& name, PD_Document* doc = nullptr) override;
     virtual void closeAnnotation(const std::string& name) override;
     virtual void endAnnotation(const std::string& name) override;
 

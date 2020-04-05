@@ -45,7 +45,7 @@
 
 IE_Exp_XSL_FO::IE_Exp_XSL_FO(PD_Document * pDocument)
 	: IE_Exp(pDocument),
-	  m_pListener(0),
+	  m_pListener(nullptr),
 	  m_error(UT_OK)
 {
 }
@@ -1074,7 +1074,7 @@ bool s_XSL_FO_Listener::populateStrux(pf_Frag_Strux* sdh,
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;							// we don't need it.
 
 	PT_AttrPropIndex api = pcr->getIndexAP();
 
@@ -1463,7 +1463,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 	_closeLink();
 
 	UT_UTF8String buf;
-	const PP_AttrProp* pAP = 0;
+	const PP_AttrProp* pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api, &pAP), bList = false;
 	const gchar* szValue = NULL;
 
@@ -1563,7 +1563,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		_openListItem();
 	}
 
-	const PP_AttrProp* pAP = 0;
+	const PP_AttrProp* pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
 	UT_UTF8String buf = "inline";
 

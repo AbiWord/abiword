@@ -123,7 +123,7 @@ int  XAP_comboBoxGetActiveInt(GtkComboBox * combo)
 
 std::string XAP_comboBoxGetActiveText(GtkComboBox * combo)
 {
-    char* value = 0;
+	char* value = nullptr;
 	GtkTreeIter iter;
 	gtk_combo_box_get_active_iter(combo, &iter);
 	GtkTreeModel *store = gtk_combo_box_get_model(combo);

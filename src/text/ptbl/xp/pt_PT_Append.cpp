@@ -131,7 +131,7 @@ pf_Frag_Strux* pt_PieceTable::_findLastStruxOfType( pf_Frag * pfStart,
             if( stopConditionsEnd !=
                 std::find( stopConditionsBegin, stopConditionsEnd, eStruxType ))
             {
-                return 0;
+                return nullptr;
             }
             
 			if(bSkipEmbededSections)
@@ -218,7 +218,7 @@ pf_Frag_Strux* pt_PieceTable::_findLastStruxOfType( pf_Frag * pfStart,
 			pf = pf->getPrev();
 	}
 
-	return 0;
+	return nullptr;
 }
 
 

@@ -125,7 +125,7 @@ UT_Error IE_Imp_XML::_loadFile(GsfInput * input)
 		{
 			UT_DEBUGMSG(("Problem reading document\n"));
 			if(m_error != UT_IE_SKIPINVALID)
-				m_szFileName = 0;
+				m_szFileName = nullptr;
 		}
 	
 	return m_error;
@@ -133,7 +133,7 @@ UT_Error IE_Imp_XML::_loadFile(GsfInput * input)
 
 UT_Error IE_Imp_XML::importFile(const char * data, UT_uint32 length)
 {
-	m_szFileName = 0;
+	m_szFileName = nullptr;
 
 	UT_XML default_xml;
 	UT_XML * parser = &default_xml;
@@ -151,7 +151,7 @@ UT_Error IE_Imp_XML::importFile(const char * data, UT_uint32 length)
 	{
 		UT_DEBUGMSG(("Problem reading document\n"));
 		if(m_error != UT_IE_SKIPINVALID)
-			m_szFileName = 0;
+			m_szFileName = nullptr;
 	}
 
 	return m_error;

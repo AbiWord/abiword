@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
@@ -101,21 +101,22 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 {
 	UT_ASSERT (szFilename);
 
-	if ( szFilename == 0) return false;
+	if (szFilename == nullptr)
+		return false;
 	if (*szFilename == 0) return false;
 
 	XAP_MODULE_MANAGER_LOAD_LOG("loading", szFilename)
 
 	// check to see if plugin is already loaded
 	
-	XAP_Module* pModuleLoop = 0;
+	XAP_Module* pModuleLoop = nullptr;
 	const UT_GenericVector<class XAP_Module *> *pVec = enumModules();
 	
 	for (UT_sint32 i = 0; i < pVec->size(); i++)
 	{
 		pModuleLoop = (XAP_Module *)pVec->getNthItem (i);
 
-		char * moduleName = 0;
+		char * moduleName = nullptr;
 		if(pModuleLoop && pModuleLoop->getModuleName(&moduleName))
 		{
 			if (!strcmp(UT_basename(szFilename), UT_basename(moduleName)))
@@ -129,23 +130,24 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 	}
 
 
-	XAP_Module * pModule = 0;
+	XAP_Module * pModule = nullptr;
 	UT_TRY
 	{
 		pModule = new MODULE_CLASS;
 	}
 	UT_CATCH (...)
 	{
-		pModule = 0;
+		pModule = nullptr;
 	}
-	if (pModule == 0) return false;
+	if (pModule == nullptr)
+		return false;
 
 	if (!pModule->load (szFilename))
 	{		
 		UT_DEBUGMSG (("Failed to load module %s\n", szFilename));
 		XAP_MODULE_MANAGER_LOAD_LOG("failed to load", szFilename)
 		
-		char * errorMsg = 0;
+		char * errorMsg = nullptr;
 		if (pModule->getErrorMsg (&errorMsg))
 		{	
 			UT_DEBUGMSG (("Reason: %s\n", errorMsg));
@@ -166,7 +168,7 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 		UT_DEBUGMSG (("Failed to register module %s\n", szFilename));
 		XAP_MODULE_MANAGER_LOAD_LOG("failed to register", szFilename)
 		
-		char * errorMsg = 0;
+		char * errorMsg = nullptr;
 		if (pModule->getErrorMsg (&errorMsg))
 		{	
 			UT_DEBUGMSG (("Reason: %s\n", errorMsg?errorMsg:"unknown"));
@@ -204,16 +206,17 @@ bool XAP_ModuleManager::loadPreloaded (XAP_Plugin_Registration fnRegister,
 
 	if (!(fnRegister && fnDeregister && fnSupportsVersion)) return false;
 
-	XAP_Module * pModule = 0;
+	XAP_Module * pModule = nullptr;
 	UT_TRY
 		{
 			pModule = new MODULE_CLASS;
 		}
 	UT_CATCH (...)
 		{
-			pModule = 0;
+			pModule = nullptr;
 		}
-	if (pModule == 0) return false;
+	if (pModule == nullptr)
+		return false;
 
 	if (!pModule->setSymbols (fnRegister, fnDeregister, fnSupportsVersion)) // huh?
 		{		
@@ -261,7 +264,8 @@ bool XAP_ModuleManager::loadPreloaded (XAP_Plugin_Registration fnRegister,
 void XAP_ModuleManager::unloadModule (XAP_Module * pModule)
 {
 	UT_ASSERT (pModule);
-	if (pModule == 0) return;
+	if (pModule == nullptr)
+		return;
 
 	UT_ASSERT (pModule->getCreator () == this);
 	if (pModule->getCreator () != this) return;

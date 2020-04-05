@@ -31,7 +31,7 @@
 
 AP_Dialog_MailMerge::AP_Dialog_MailMerge(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
-	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogmailmerge"),  m_pFrame(0)
+	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogmailmerge"), m_pFrame(nullptr)
 {
 }
 

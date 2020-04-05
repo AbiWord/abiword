@@ -126,7 +126,7 @@ s_WML_Listener::s_WML_Listener(PD_Document * pDocument,
 	m_iCards(1),
 	m_iTableDepth(0),
 	mTableHelper(pDocument),
-	m_toc(0),
+	m_toc(nullptr),
 	m_heading_count(0)
 {
 	m_pie->write("<!DOCTYPE wml PUBLIC \"-//PHONE.COM//DTD WML 1.1//EN\"\n");
@@ -350,7 +350,7 @@ void s_WML_Listener::_closeBlock(void)
 
 bool s_WML_Listener::_styleDescendsFrom(const char * style_name, const char * base_name)
 {
-	PD_Style * style = 0;
+	PD_Style * style = nullptr;
 	m_pDocument->getStyle (style_name, &style);
 	UT_sint32 iLoop = 0;
 
@@ -431,10 +431,10 @@ void s_WML_Listener::_emitTOC (PT_AttrPropIndex api) {
 	int level3_depth = 0;
 	int level4_depth = 0;
 
-	const PP_AttrProp * pAP = 0;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 	bool bEmitHeading = true;
-	const gchar * szValue = 0;
+	const gchar * szValue = nullptr;
 	std::string tocHeadingUTF8;
 
 	_closeSpan();
@@ -595,7 +595,7 @@ bool s_WML_Listener::populateStrux(pf_Frag_Strux* sdh,
 {
 	UT_ASSERT_HARMLESS(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;							// we don't need it.
 
 	switch (pcrx->getStruxType())
 	{
@@ -809,7 +809,7 @@ void s_WML_Listener::_handleEmbedded(PT_AttrPropIndex api)
 		return;
 	}
 
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
@@ -978,7 +978,7 @@ void s_WML_Listener::_handleMath(PT_AttrPropIndex api)
 		return;
 	}
 
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
@@ -1071,8 +1071,8 @@ void s_WML_Listener::_handleImage(PT_AttrPropIndex api, bool bPos)
 	m_pie->write(buf.utf8_str());
 	m_pie->write("\"");
 
-	const gchar * szWidth = 0;
-	const gchar * szHeight = 0;
+	const gchar * szWidth = nullptr;
+	const gchar * szHeight = nullptr;
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
 	if(pAP->getProperty("width", szWidth) && szWidth && *szWidth)

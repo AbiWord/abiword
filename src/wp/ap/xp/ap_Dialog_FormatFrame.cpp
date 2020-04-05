@@ -446,14 +446,14 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 
 	if (pDoc->getStruxOfTypeFromPosition(pos, PTX_SectionFrame, &sdh))
 		if (PT_AttrPropIndex api = pDoc->getAPIFromSDH(sdh)) {
-			const PP_AttrProp * pAP = 0;
+			const PP_AttrProp * pAP = nullptr;
 			if (pDoc->getAttrProp(api, &pAP))
 				if (pAP) {
 					m_bSensitive = true;
 
 #define REPLACE_CELL_PROPERTY(X) \
 	do { \
-		const gchar * prop = 0; \
+		const gchar * prop = nullptr; \
 		if (pAP->getProperty(X, prop)) \
 			PP_addOrSetAttribute(X, prop, m_vecProps); \
 		else \

@@ -58,7 +58,7 @@
  * Constructor
  */
 IE_Exp_OpenDocument::IE_Exp_OpenDocument (PD_Document * pDoc)
-  : IE_Exp (pDoc), m_odt(0)
+  : IE_Exp (pDoc), m_odt(nullptr)
 {
 }
 

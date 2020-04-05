@@ -153,7 +153,7 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	else
 	{
 			m_pPrintLayout = new FL_DocLayout(m_pView->getDocument(),m_pPrintGraphics);
-			m_pPrintView = new FV_View(XAP_App::getApp(),0,m_pPrintLayout);
+			m_pPrintView = new FV_View(XAP_App::getApp(), nullptr, m_pPrintLayout);
 			m_pPrintView->getLayout()->fillLayouts();
 			m_pPrintView->getLayout()->formatAll();
 			m_pPrintView->getLayout()->recalculateTOCFields();

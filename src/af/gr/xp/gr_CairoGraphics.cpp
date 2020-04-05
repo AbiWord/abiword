@@ -2769,22 +2769,22 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 		pango_font_description_set_family(d, pszFontFamily);
 		pango_font_description_set_size(d, (int)((double)PANGO_SCALE * UT_convertToPoints(pszFontSize)));
 
-		if ((fm = find_field(style_map, G_N_ELEMENTS(style_map), pszFontStyle)) != 0)
+		if ((fm = find_field(style_map, G_N_ELEMENTS(style_map), pszFontStyle)) != nullptr)
 			{
 				pango_font_description_set_style(d, (PangoStyle)fm->value);				
 			}
 
-		if ((fm = find_field(variant_map, G_N_ELEMENTS(variant_map), pszFontVariant)) != 0)
+		if ((fm = find_field(variant_map, G_N_ELEMENTS(variant_map), pszFontVariant)) != nullptr)
 			{
 				pango_font_description_set_variant(d, (PangoVariant)fm->value);				
 			}
 
-		if ((fm = find_field(weight_map, G_N_ELEMENTS(weight_map), pszFontWeight)) != 0)
+		if ((fm = find_field(weight_map, G_N_ELEMENTS(weight_map), pszFontWeight)) != nullptr)
 			{
 				pango_font_description_set_weight(d, (PangoWeight)fm->value);				
 			}
 
-		if ((fm = find_field(stretch_map, G_N_ELEMENTS(stretch_map), pszFontStretch)) != 0)
+		if ((fm = find_field(stretch_map, G_N_ELEMENTS(stretch_map), pszFontStretch)) != nullptr)
 			{
 				pango_font_description_set_stretch(d, (PangoStretch)fm->value);				
 			}

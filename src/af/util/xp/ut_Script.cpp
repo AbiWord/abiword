@@ -118,7 +118,7 @@ void UT_ScriptLibrary::unregisterScript ( UT_ScriptSniffer * s )
 	mSniffers->deleteNthItem (ndx-1);
   
 	// Refactor the indexes
-	UT_ScriptSniffer * pSniffer = 0;
+	UT_ScriptSniffer * pSniffer = nullptr;
 	UT_sint32 size  = mSniffers->size();
 	UT_sint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
@@ -131,7 +131,7 @@ void UT_ScriptLibrary::unregisterScript ( UT_ScriptSniffer * s )
 
 void UT_ScriptLibrary::unregisterAllScripts ()
 {
-	UT_ScriptSniffer * pSniffer = 0;
+	UT_ScriptSniffer * pSniffer = nullptr;
 	UT_sint32 size = mSniffers->size();
   
 	for (UT_sint32 i = 0; i < size; i++)
@@ -209,7 +209,7 @@ UT_ScriptIdType	UT_ScriptLibrary::typeForSuffix(const char * szSuffix)
 
 const char * UT_ScriptLibrary::suffixesForType(UT_ScriptIdType ieft)
 {
-	const char * szSuffixes = 0;
+	const char * szSuffixes = nullptr;
   
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
@@ -235,7 +235,7 @@ const char * UT_ScriptLibrary::suffixesForType(UT_ScriptIdType ieft)
     }
   
 	// The passed in filetype is invalid.
-	return 0;
+	return nullptr;
 }
 	
 UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,

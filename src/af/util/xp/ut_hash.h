@@ -309,7 +309,7 @@ template <class T> class hash_slot
 {
 public:
 	hash_slot()
-		: m_value(0) { }
+		: m_value(static_cast<T>(0)) { }
 
 	void make_deleted()
 		{
@@ -318,7 +318,7 @@ public:
 			m_key.die();
 		}
 	void make_empty()
-		{ m_value = 0; }
+		{ m_value = static_cast<T>(0); }
 
 	const T value() const
 		{ return m_value; }
@@ -337,7 +337,7 @@ public:
 		}
 
 	bool empty() const
-		{ return (m_value == 0); }
+		{ return (m_value == static_cast<T>(0)); }
 
 	bool deleted() const
 		{
@@ -380,7 +380,7 @@ UT_GenericStringMap<T>::UT_GenericStringMap(size_t expected_cardinality)
 	m_nSlots(_Recommended_hash_size(expected_cardinality)),
 	reorg_threshold(compute_reorg_threshold(m_nSlots)),
 	flags(0),
-	m_list(0)
+	m_list(nullptr)
 {
 	m_pMapping = new hash_slot<T>[m_nSlots];
 }
@@ -434,13 +434,13 @@ const gchar ** UT_GenericStringMap<T>::list()
 template <class T>
 T UT_GenericStringMap<T>::pick(const char* k) const
 {
-	hash_slot<T>*		sl = 0;
+	hash_slot<T>*		sl = nullptr;
 	bool			key_found = false;
 	size_t			slot;
 	size_t			hashval;
 
-	sl = find_slot(k, SM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
-	return key_found ? sl->value() : 0;
+	sl = find_slot(k, SM_LOOKUP, slot, key_found, hashval, nullptr, nullptr, nullptr, 0);
+	return key_found ? sl->value() : nullptr;
 }
 
 template <class T>
@@ -472,7 +472,7 @@ bool UT_GenericStringMap<T>::contains(const UT_String& k, T v) const
 
 	// DOM: TODO: make this call work
 	/*sl =*/ find_slot (k, SM_LOOKUP, slot, key_found,
-			hashval, v, &v_found, 0, 0);
+			hashval, v, &v_found, nullptr, 0);
 	return v_found;
 }
 
@@ -497,7 +497,7 @@ bool UT_GenericStringMap<T>::insert(const UT_String& key, T value)
 	size_t		hashval = 0;
 
 	hash_slot<T>* sl = find_slot(key, SM_INSERT, slot, key_found,
-				  hashval, 0, 0, 0, 0);
+				  hashval, nullptr, nullptr, nullptr, 0);
 
 	if(key_found)
 		return false;
@@ -541,7 +541,7 @@ void UT_GenericStringMap<T>::set(const UT_String& key, T value)
 	size_t		hashval = 0;
 
 	hash_slot<T>* sl = find_slot(key, SM_LOOKUP, slot, key_found,
-							  hashval, 0, 0, 0, 0);
+							  hashval, nullptr, nullptr, nullptr, 0);
 
 	if (!sl || !key_found) // TODO: should we insert or just return?
 	{
@@ -684,9 +684,9 @@ void UT_GenericStringMap<T>::assign_slots(hash_slot<T>* p, size_t old_num_slot)
 									  target_slot,
 									  kf,
 									  hv,
-									  0,
-									  0,
-									  NULL,
+									  nullptr,
+									  nullptr,
+									  nullptr,
 									  p->m_key.hashval());
 			sl->assign(p);
 		}
@@ -776,7 +776,7 @@ UT_GenericStringMap<T>::find_slot(const char *k,
 
 	int delta = (nSlot ? (m_nSlots - nSlot) : 1);
 	hash_slot<T>* tmp_sl = sl;
-	sl = 0;
+	sl = nullptr;
 	size_t s = 0;
 	key_found = false;
 
@@ -887,7 +887,7 @@ UT_GenericStringMap<T>::_first(UT_Cursor& c) const
 	}
 
 	c._set_index(-1);
-	return 0;
+	return static_cast<T>(0);
 }
 
 template <class T>
@@ -937,7 +937,7 @@ UT_GenericStringMap<T>::_next(UT_Cursor& c) const
 	}
 
 	c._set_index(-1);
-	return 0;
+	return static_cast<T>(0);
 }
 
 
@@ -960,7 +960,7 @@ UT_GenericStringMap<T>::_prev(UT_Cursor& c) const
 	}
 
 	c._set_index(-1);
-	return 0;
+	return static_cast<T>(0);
 }
 
 

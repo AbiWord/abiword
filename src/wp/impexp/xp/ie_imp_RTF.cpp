@@ -965,7 +965,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet,
 	m_family = fontFamily;
 	m_charSet = charSet;
 	m_codepage = codepage;
-	m_szEncoding = 0;
+	m_szEncoding = nullptr;
 	m_pitch = pitch;
 	if (panose)
 		memcpy(m_panose, panose, 10*sizeof(unsigned char));
@@ -1179,7 +1179,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_bgcolourNumber = 0;
 	m_styleNumber = -1;
 	m_listTag = 0;
-	m_szLang = 0;
+	m_szLang = nullptr;
 	m_dir = UT_BIDI_UNSET;
 	m_dirOverride = UT_BIDI_UNSET;
 	m_Hidden = false;
@@ -2378,8 +2378,8 @@ void IE_Imp_RTF::HandleAnnotation(void)
 	const char * ann_attrs[5] = {NULL,NULL,NULL,NULL,NULL};
 	ann_attrs[0] = "annotation-id";
 	ann_attrs[1] = sAnnNum.c_str();
-	ann_attrs[2] = 0;
-	ann_attrs[3] = 0;
+	ann_attrs[2] = nullptr;
+	ann_attrs[3] = nullptr;
 	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	UT_sint32 i = 0;
 	if(m_pAnnotation->m_sAuthor.size() > 0)
@@ -3809,7 +3809,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 			xmlField = NULL;
 			isXML = false;
 			
-			instr = strtok(0, " \\{}");
+			instr = strtok(nullptr, " \\{}");
 			if (instr == NULL)  // ignore empty hyperlinks
 				break;
 
@@ -6333,7 +6333,7 @@ bool IE_Imp_RTF::buildCharacterProps(std::string & propBuffer)
 		propBuffer += UT_std_string_sprintf("; list-tag:%d",m_currentRTFState.m_charProps.m_listTag);
 	}
 
-	if(m_currentRTFState.m_charProps.m_szLang != 0)
+	if (m_currentRTFState.m_charProps.m_szLang != nullptr)
 	{
 		propBuffer += "; lang:";
 		propBuffer += m_currentRTFState.m_charProps.m_szLang;
@@ -8366,11 +8366,11 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	else
 	{
 		pLevel->m_listDelim = "%L";
-		if(strstr(szLevelText.c_str(),"u-3913") != 0)
+		if (strstr(szLevelText.c_str(),"u-3913") != nullptr)
 		{
 			pLevel->m_RTFListType = 23; // Bulleted List
 		}
-		if(strstr(szLevelText.c_str(),"u-3880") != 0)
+		if (strstr(szLevelText.c_str(),"u-3880") != nullptr)
 		{
 			pLevel->m_RTFListType = 23 + IMPLIES_LIST; // IMPLIES List
 		}

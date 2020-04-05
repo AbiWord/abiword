@@ -45,7 +45,7 @@ using std::make_pair;
 
 librdf_world* getWorld()
 {
-    static librdf_world* world = 0;
+    static librdf_world* world = nullptr;
     if( !world )
     {
         world = librdf_new_world();
@@ -123,7 +123,7 @@ struct abiwordContext
         if( !storage || !librdf_storage_get_instance(storage) )
         {
             UT_DEBUGMSG(("problem getting abiwordContext from RDF storage!\n"));
-            return 0;
+            return nullptr;
         }
         
         abiwordContext* ret = (abiwordContext*)librdf_storage_get_instance(storage);
@@ -161,9 +161,9 @@ struct abiwordFindStreamContext
                               librdf_node* context_node )
         : m_storage( storage )
         , m_context(c)
-        , m_query(0)
-        , m_statement(0)
-        , m_context_node(0)
+        , m_query(nullptr)
+        , m_statement(nullptr)
+        , m_context_node(nullptr)
         , m_done(false)
         , m_queryIsSubjectOnly(false)
     {
@@ -216,7 +216,7 @@ struct abiwordFindStreamContext
         if(m_statement)
         {
             librdf_free_statement(m_statement);
-            m_statement = 0;
+            m_statement = nullptr;
         }
 
         PD_RDFModelIterator e = m_context->m_model->end();
@@ -497,7 +497,7 @@ static librdf_stream*
 abiword_storage_find_statements( librdf_storage* storage,
                                  librdf_statement* statement )
 {
-    return abiword_storage_find_statements_with_context( storage, statement, 0 );
+    return abiword_storage_find_statements_with_context(storage, statement, nullptr);
 }
 
 static int
@@ -569,13 +569,13 @@ static librdf_stream*
 abiword_storage_context_serialise( librdf_storage* storage,
                                    librdf_node* context_node ) 
 {
-    return abiword_storage_find_statements_with_context( storage, 0, context_node );
+    return abiword_storage_find_statements_with_context(storage, nullptr, context_node);
 }
 
 static librdf_stream*
 abiword_storage_serialise(librdf_storage* storage)
 {
-    return abiword_storage_find_statements_with_context( storage, 0, 0 );
+    return abiword_storage_find_statements_with_context(storage, nullptr, nullptr);
 }
 
 
@@ -638,13 +638,13 @@ static librdf_model* getRedlandModel( PD_RDFModelHandle abimodel )
     xxx_UT_DEBUGMSG(("getRedlandModel() storage: %p\n", storage));
     if( !storage )
     {
-        return 0;
+        return nullptr;
     }
     abiwordContext* ac = abiwordContext::get( storage );
     ac->setModel( abimodel );
     xxx_UT_DEBUGMSG(("getRedlandModel(2) storage: %p abimodel: %p\n", storage, abimodel.get()));
     
-    librdf_model* model = 0;
+    librdf_model* model = nullptr;
     /*int rc = */librdf_storage_open( storage, model );
     model = librdf_new_model( getWorld(), storage, NULL );
     
@@ -694,9 +694,9 @@ PD_RDFQuery::executeQuery( const std::string& sparql_query_string )
     }
     
     librdf_model* rdfmodel = getRedlandModel( m_model );
-    librdf_uri*   base_uri = 0;
+    librdf_uri*   base_uri = nullptr;
     librdf_query* query = librdf_new_query( getWorld(),
-                                            "sparql", 0,
+                                            "sparql", nullptr,
                                             (unsigned char*)sparql_query_string.c_str(),
                                             base_uri );
     librdf_query_results* results = librdf_query_execute( query, rdfmodel );
@@ -714,8 +714,8 @@ PD_RDFQuery::executeQuery( const std::string& sparql_query_string )
         xxx_UT_DEBUGMSG(("have query result, loop...\n"));
         
         std::map< std::string, std::string > x;
-        const char ** names = 0;
-        librdf_node** values = 0;
+        const char ** names = nullptr;
+        librdf_node** values = nullptr;
         int bc = librdf_query_results_get_bindings_count( results );
         if( !bc )
             continue;

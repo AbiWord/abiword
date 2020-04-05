@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiSource Program Utilities
  * 
@@ -41,7 +41,7 @@ XAP_Resource::XAP_Resource (const char * resource_name, bool resource_internal) 
 
 XAP_InternalResource::XAP_InternalResource (const char * resource_id) :
 	XAP_Resource(resource_id,true),
-	m_buffer(0),
+	m_buffer(nullptr),
 	m_buffer_length(0),
 	m_content_type("")
 {
@@ -63,7 +63,8 @@ const char * XAP_InternalResource::buffer (const char * new_buffer, UT_uint32 ne
 {
 	clear ();
 
-	if ((new_buffer == 0) || (new_buffer_length == 0)) return 0;
+	if ((new_buffer == nullptr) || (new_buffer_length == 0))
+		return nullptr;
 
 	UT_uint32 buffer_length = new_buffer_length;
 	if (base64_encoded) buffer_length -= buffer_length >> 2;
@@ -74,9 +75,10 @@ const char * XAP_InternalResource::buffer (const char * new_buffer, UT_uint32 ne
 		}
 	catch (...)
 		{
-			m_buffer = 0;
+			m_buffer = nullptr;
 		}
-	if (m_buffer == 0) return m_buffer;
+	if (m_buffer == nullptr)
+		return m_buffer;
 
 	if (!base64_encoded)
 		{

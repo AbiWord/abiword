@@ -262,11 +262,11 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 
 ABI_BUILTIN_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi) 
 {
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	LoadBindings_RemoveFromMethods ();
 	return 1;
@@ -372,7 +372,7 @@ static bool SaveBindings_invoke(AV_View * /*v*/, EV_EditMethodCallData* d)
 		targetFilename += "keybindings-";
 		targetFilename += curMapName;
 		targetFilename += "-";
-		targetFilename += UT_UTF8String_sprintf( "%u", time(0) ).utf8_str();
+		targetFilename += UT_UTF8String_sprintf("%u", time(nullptr)).utf8_str();
 		targetFilename += ".xml";
 	}
 	UT_DEBUGMSG(("Saving current keybindings %s to %s\n", curMapName, targetFilename.c_str()));
@@ -998,7 +998,7 @@ const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
 	EV_EditVirtualKey evk = eb & ~EV_EKP_NAMEDKEY;
 	if (evk < G_N_ELEMENTS(s_Abi_NVKTable))
 		return s_Abi_NVKTable[evk];
-	return 0;
+	return nullptr;
 }
 
 EV_EditBits EV_NamedVirtualKey::getEB(const char * szName)

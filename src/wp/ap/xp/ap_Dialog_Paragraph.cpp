@@ -1152,7 +1152,7 @@ bool AP_Dialog_Paragraph::_wasChanged(tControl item)
 
 void AP_Dialog_Paragraph::_addPropertyItem (tControl index, const sControlData & control_data)
 {
-	sControlData * pDataCopy = 0;
+	sControlData * pDataCopy = nullptr;
 
 	try
 		{
@@ -1160,17 +1160,17 @@ void AP_Dialog_Paragraph::_addPropertyItem (tControl index, const sControlData &
 		}
 	catch(...)
 		{
-			pDataCopy = 0;
+			pDataCopy = nullptr;
 		}
 	UT_return_if_fail (pDataCopy);
 
-	m_vecProperties.setNthItem (static_cast<UT_uint32>(index), pDataCopy, 0);
+	m_vecProperties.setNthItem (static_cast<UT_uint32>(index), pDataCopy, nullptr);
 }
 
 AP_Dialog_Paragraph::sControlData::sControlData (UT_sint32 data) :
 	m_siData(data),
 	m_csData(check_INDETERMINATE),
-	m_szData(0),
+	m_szData(nullptr),
 	m_bChanged(false)
 {
 	// 
@@ -1179,7 +1179,7 @@ AP_Dialog_Paragraph::sControlData::sControlData (UT_sint32 data) :
 AP_Dialog_Paragraph::sControlData::sControlData (tCheckState data) :
 	m_siData(0),
 	m_csData(data),
-	m_szData(0),
+	m_szData(nullptr),
 	m_bChanged(false)
 {
 	// 
@@ -1200,7 +1200,7 @@ AP_Dialog_Paragraph::sControlData::sControlData (gchar * data) :
 AP_Dialog_Paragraph::sControlData::sControlData (const sControlData & rhs) :
 	m_siData(rhs.m_siData),
 	m_csData(rhs.m_csData),
-	m_szData(rhs.m_szData ? new gchar[SPIN_BUF_TEXT_SIZE] : 0),
+	m_szData(rhs.m_szData ? new gchar[SPIN_BUF_TEXT_SIZE] : nullptr),
 	m_bChanged(false)
 {
 	if (m_szData)
@@ -1227,7 +1227,7 @@ AP_Dialog_Paragraph::sControlData & AP_Dialog_Paragraph::sControlData::operator=
 						}
 					catch(...)
 						{
-							m_szData = 0;
+							m_szData = nullptr;
 						}
 				}
 			UT_return_val_if_fail (m_szData, *this);
@@ -1252,7 +1252,7 @@ bool AP_Dialog_Paragraph::sControlData::setData (const gchar * data)
 				}
 			catch(...)
 				{
-					m_szData = 0;
+					m_szData = nullptr;
 				}
 			UT_return_val_if_fail (m_szData, false);
 

@@ -53,15 +53,15 @@ public:
 	virtual const DocTreeItem* getDocTreeItems() const override
 	{
 		const std::vector<DocHandle*>& docHandles = getDocHandles();
-		DocTreeItem* first = 0;
-		DocTreeItem* prev = 0;
+		DocTreeItem* first = nullptr;
+		DocTreeItem* prev = nullptr;
 		for (std::vector<DocHandle*>::const_iterator pos = docHandles.begin(); pos != docHandles.end(); pos++)
 		{
 			DocTreeItem* item = new DocTreeItem();
 			item->m_type = DOCTREEITEM_TYPE_DOCUMENT;
 			item->m_docHandle = *pos;
-			item->m_child = 0;
-			item->m_next = 0;
+			item->m_child = nullptr;
+			item->m_next = nullptr;
 
 			if (!first)
 				first = item;

@@ -116,8 +116,8 @@ UT_iconv_t auto_iconv::getHandle ()
 // everything below this line is extern "C"
 //
 
-static const char * s_ucs2_internal = 0;
-static const char * s_ucs4_internal = 0;
+static const char * s_ucs2_internal = nullptr;
+static const char * s_ucs4_internal = nullptr;
 
 static const char * s_ucs2_list[] = {
 	"UCS-2-INTERNAL",
@@ -130,7 +130,7 @@ static const char * s_ucs2_list[] = {
 	"UCS2",
 	"UCS-2",
 	"UTF-16",
-	0
+	nullptr
 };
 
 static const char * s_ucs4_list[] = {
@@ -145,7 +145,7 @@ static const char * s_ucs4_list[] = {
 	"UCS-4",
 	"UTF32",
 	"UTF-32",
-	0
+	nullptr
 };
 
 static void s_internal_init ()
@@ -154,8 +154,8 @@ static void s_internal_init ()
 
 	UT_iconv_t handle = UT_ICONV_INVALID;
 
-	s_ucs2_internal = 0;
-	s_ucs4_internal = 0;
+	s_ucs2_internal = nullptr;
+	s_ucs4_internal = nullptr;
 
 	const char ** pszEnc = s_ucs2_list;
 	while (*pszEnc)
@@ -187,7 +187,7 @@ static void s_internal_init ()
 			pszEnc++;
 		}
 	UT_ASSERT(s_ucs2_internal);
-	if (s_ucs2_internal == 0)
+	if (s_ucs2_internal == nullptr)
 		{
 			s_ucs2_internal = s_ucs2_list[0];
 			UT_DEBUGMSG(("WARNING! this test failed to determine correct UCS-2 setting!\n"));
@@ -224,7 +224,7 @@ static void s_internal_init ()
 			pszEnc++;
 		}
 	UT_ASSERT(s_ucs4_internal);
-	if (s_ucs4_internal == 0)
+	if (s_ucs4_internal == nullptr)
 		{
 			s_ucs4_internal = s_ucs4_list[0];
 			UT_DEBUGMSG(("WARNING! this test failed to determine correct UCS-4 setting!\n"));
@@ -249,7 +249,7 @@ const char * ucs2Internal ()
   return "UCS2";
 #else
   // general case, found by hub and dom
-	if (s_ucs2_internal == 0) 
+	if (s_ucs2_internal == nullptr)
 		s_internal_init ();
 	return s_ucs2_internal;
 #endif
@@ -272,7 +272,7 @@ const char * ucs4Internal ()
   return "UCS4";
 #else
   // general case, found by hub and dom
-	if (s_ucs4_internal == 0) 
+	if (s_ucs4_internal == nullptr)
 		s_internal_init ();
 	return s_ucs4_internal;
 #endif

@@ -77,19 +77,20 @@ bool IE_Exp_HTML_HeaderFooterListener::populateStrux(pf_Frag_Strux* sdh,
 {
     /* Housekeeping and prep */
     UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
-    *psfh = 0; // we don't need it.
+    *psfh = nullptr; // we don't need it.
     const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
     PT_AttrPropIndex api = pcr->getIndexAP();
     switch (pcrx->getStruxType())
     {
     case PTX_SectionHdrFtr:
     {
-        const PP_AttrProp * pAP = 0;
+        const PP_AttrProp * pAP = nullptr;
         bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
 
-        if (!bHaveProp || (pAP == 0)) return true;
+        if (!bHaveProp || (pAP == nullptr))
+            return true;
 
-        const gchar * szType = 0;
+        const gchar * szType = nullptr;
         pAP->getAttribute("type", szType);
         /* // */
 

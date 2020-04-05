@@ -1973,17 +1973,17 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	const gchar * szFontDecoration = _getStyleProp(pADStyle,&apa,"text-decoration");
 	if (szFontDecoration && *szFontDecoration)
 	{
-		if (strstr(szFontDecoration,"underline") != 0)
+		if (strstr(szFontDecoration,"underline") != nullptr)
 			_rtf_keyword("ul");
-		if (strstr(szFontDecoration,"overline") != 0)
+		if (strstr(szFontDecoration,"overline") != nullptr)
 			_rtf_keyword("ol");
-		if (strstr(szFontDecoration,"line-through") != 0)
+		if (strstr(szFontDecoration,"line-through") != nullptr)
 			_rtf_keyword("strike");
-		if (strstr(szFontDecoration,"topline") != 0)
+		if (strstr(szFontDecoration,"topline") != nullptr)
 		{
 			_rtf_keyword("abitopline"); // abiword extension
 		}
-		if (strstr(szFontDecoration,"bottomline") != 0)
+		if (strstr(szFontDecoration,"bottomline") != nullptr)
 		{
 			_rtf_keyword("abibotline"); // abiword extension
 		}

@@ -56,7 +56,7 @@ public:
     virtual bool pasteFromBuffer(PD_DocumentRange * pDocRange,
 				const unsigned char * pData,
 				UT_uint32 lenData,
-				const char * szEncoding = 0) override;
+				const char * szEncoding = nullptr) override;
 
  protected:
     virtual UT_Error _loadFile(GsfInput * input) override;

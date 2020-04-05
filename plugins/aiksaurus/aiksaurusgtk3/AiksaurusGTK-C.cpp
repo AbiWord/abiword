@@ -22,21 +22,21 @@
 #include "AiksaurusGTK.h"
 #include <new>
 
-static AiksaurusGTK *instance = 0;
+static AiksaurusGTK *instance = nullptr;
 
 int AiksaurusGTK_init()
 {
     if (!instance)
         instance = new(std::nothrow) AiksaurusGTK;
 
-    return (instance != 0);
+    return (instance != nullptr);
 }
 
 
 void AiksaurusGTK_destroy()
 {
     delete instance;
-    instance = 0;
+    instance = nullptr;
 }
 
 

@@ -124,10 +124,10 @@ public:
 		pf_Frag* value();
 
 		bool is_valid() const
-		{ return m_pNode != 0; }
+		{ return m_pNode != nullptr; }
 
 	private:
-		Iterator(const pf_Fragments* owner, Node* node = 0) : m_pOwner(owner), m_pNode(node) {}
+		Iterator(const pf_Fragments* owner, Node* node = nullptr) : m_pOwner(owner), m_pNode(node) {}
 		const Node* getNode() const { return m_pNode; }
 		Node* getNode() { return m_pNode; }
 

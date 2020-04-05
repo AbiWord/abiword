@@ -49,11 +49,11 @@ XAP_Dialog * AP_UnixDialog_MarkRevisions::static_constructor(XAP_DialogFactory *
 AP_UnixDialog_MarkRevisions::AP_UnixDialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_MarkRevisions(pDlgFactory,id)
-    , mRadio1(0)
-    , mRadio2(0)
-    , mEntryLbl(0)
-    , mComment(0)
-    , mButtonOK(0)
+    , mRadio1(nullptr)
+    , mRadio2(nullptr)
+    , mEntryLbl(nullptr)
+    , mComment(nullptr)
+    , mButtonOK(nullptr)
 {
 }
 
@@ -90,7 +90,7 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
 {
   const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-  GtkWidget* w = 0;
+  GtkWidget* w = nullptr;
   GtkWidget *dialog1;
   GtkWidget *dialog_vbox1;
   std::string s;

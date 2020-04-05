@@ -41,15 +41,15 @@
 /*** Also look at xap_Frame.cpp, half the XAP_FrameImpl seems to be there!!! ***/
 
 XAP_FrameImpl::XAP_FrameImpl(XAP_Frame *pFrame) :
-	m_pMouse(0),
-	m_pKeyboard(0),
+	m_pMouse(nullptr),
+	m_pKeyboard(nullptr),
 	m_iFrameMode(XAP_NormalFrame),
 	m_ViewAutoUpdaterID(0),
 	m_ViewAutoUpdater(NULL),
-	m_szToolbarLabelSetName(0),
-	m_szToolbarAppearance(0),
-	m_szMenuLayoutName(0),
-	m_szMenuLabelSetName(0),
+	m_szToolbarLabelSetName(nullptr),
+	m_szToolbarAppearance(nullptr),
+	m_szMenuLayoutName(nullptr),
+	m_szMenuLabelSetName(nullptr),
 	m_pFrame(pFrame)
 {
 }

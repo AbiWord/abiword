@@ -65,7 +65,7 @@ static void s_online_toggled (GtkCellRendererToggle * /*cell*/,
 	GtkTreeIter iter;
 	
 	gboolean online = false;
-	gpointer handler = 0;	
+	gpointer handler = nullptr;
 
 	// get the toggled state
 	if (gtk_tree_model_get_iter(model, &iter, path))
@@ -256,7 +256,7 @@ AccountHandler* AP_UnixDialog_CollaborationAccounts::_getSelectedAccountHandler(
 	GtkTreeIter iter;
 	GtkTreeSelection* selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_wAccountsTree));
 
-	bool hasSelection = gtk_tree_selection_get_selected (selection, 0, &iter);
+	bool hasSelection = gtk_tree_selection_get_selected (selection, nullptr, &iter);
 	if (!hasSelection)
 		return NULL;
 

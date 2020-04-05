@@ -949,7 +949,7 @@ bool fl_DocListener::change(fl_ContainerLayout* sfh,
 	{
 	case PX_ChangeRecord::PXT_GlobMarker:
 	{
-		UT_ASSERT(sfh == 0);							// globs are not strux-relative
+		UT_ASSERT(sfh == nullptr);							// globs are not strux-relative
 		const PX_ChangeRecord_Glob * pcrg = static_cast<const PX_ChangeRecord_Glob *> (pcr);
 		switch (pcrg->getFlags())
 		{
@@ -2054,7 +2054,7 @@ bool fl_DocListener::insertStrux(fl_ContainerLayout* sfh,
 			   UT_DEBUGMSG(("Doing Insert Strux Table Into Prev Block \n"));
 			   xxx_UT_DEBUGMSG(("Doing Insert Table Correctly \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
-			   bool bResult = (pCLSL->bl_doclistener_insertTable(pCL,FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles) != 0);
+			   bool bResult = (pCLSL->bl_doclistener_insertTable(pCL, FL_SECTION_TABLE, pcrx, sdh, lid, pfnBindHandles) != nullptr);
 			   return bResult;
 		   }
 		case PTX_SectionFrame:				// we are inserting a section.
@@ -2066,7 +2066,7 @@ bool fl_DocListener::insertStrux(fl_ContainerLayout* sfh,
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 			   UT_DEBUGMSG(("Doing Insert Strux Frame Into Prev Block \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
-			   bool bResult = (pCLSL->bl_doclistener_insertFrame(pCL,FL_SECTION_FRAME, pcrx,sdh,lid,pfnBindHandles) != 0);
+			   bool bResult = (pCLSL->bl_doclistener_insertFrame(pCL, FL_SECTION_FRAME, pcrx, sdh, lid, pfnBindHandles) != nullptr);
 			   return bResult;
 		   }
 		case PTX_EndFrame:				// we are inserting an endFrame.
@@ -2437,7 +2437,7 @@ bool fl_DocListener::insertStrux(fl_ContainerLayout* sfh,
 			   UT_return_val_if_fail(pCL != NULL,false); 
 			   UT_DEBUGMSG(("Doing Insert Strux Frame Into Prev Looped Block \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
-			   bool bResult = (pCLSL->bl_doclistener_insertFrame(pCL,FL_SECTION_FRAME, pcrx,sdh,lid,pfnBindHandles) != 0);
+			   bool bResult = (pCLSL->bl_doclistener_insertFrame(pCL, FL_SECTION_FRAME, pcrx, sdh, lid, pfnBindHandles) != nullptr);
 			   return bResult;
 		   }
 		case PTX_SectionTable:	  // we are inserting a Table as the first layout into a frame. This is valid

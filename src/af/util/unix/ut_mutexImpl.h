@@ -33,7 +33,7 @@ class UT_MutexImpl
 public:
 
 	UT_MutexImpl ()
-		: mMutex ( 0 )
+		: mMutex(nullptr)
 		{
 #if GLIB_CHECK_VERSION(2,32,0)
 			mMutex = &mStaticMutex;

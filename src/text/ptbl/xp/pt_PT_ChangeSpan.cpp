@@ -464,7 +464,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 		bool bRes = _insertFmtMarkFragWithNotify(ptc,dpos1,attributes,lProps);
 		UT_uint32 endUndoPos = m_history.getUndoPos();
 		// Won't be a persistant change if it's just a toggle
-		PX_ChangeRecord *pcr=0;
+		PX_ChangeRecord *pcr = nullptr;
 		m_history.getUndo(&pcr,true);
 		if (pcr && (startUndoPos != endUndoPos) )
 		{

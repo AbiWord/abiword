@@ -103,7 +103,7 @@ public:
 	Text_Listener(PD_Document * pDocument,
 					IE_Exp_Text * pie,
 					bool bToClipboard = false,
-					const char *szEncoding = 0,
+					const char *szEncoding = nullptr,
 					bool bIs16Bit = false,
  				    bool m_bUnicode = false,
 					bool bUseBOM = false,

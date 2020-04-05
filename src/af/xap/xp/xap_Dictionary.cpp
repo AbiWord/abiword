@@ -50,7 +50,7 @@ XAP_Dictionary::XAP_Dictionary(const char * szFilename)
 	UT_ASSERT(szFilename && *szFilename);
 	m_szFilename = g_strdup(szFilename);
 
-	m_fp = 0;
+	m_fp = nullptr;
 	m_bDirty = false;
 }
 
@@ -89,7 +89,7 @@ bool XAP_Dictionary::_openFile(const char * mode)
 	// TODO add code to make a backup of the original file, if it exists.
 	
 	m_fp = fopen(m_szFilename,mode);
-	return (m_fp != 0);
+	return (m_fp != nullptr);
 }
 
 UT_uint32 XAP_Dictionary::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
@@ -115,7 +115,7 @@ bool XAP_Dictionary::_closeFile(void)
 {
 	if (m_fp)
 		fclose(m_fp);
-	m_fp = 0;
+	m_fp = nullptr;
 	return true;
 }
 
@@ -397,7 +397,7 @@ UT_uint32 XAP_Dictionary::countCommonChars( UT_UCSChar *pszHaystack,UT_UCSChar *
     for(i=0; i< lenNeedle; i++)
     {
       oneChar[0] = pszNeedle[i];
-      if(UT_UCS4_strstr(pszHaystack,oneChar) != 0)
+      if (UT_UCS4_strstr(pszHaystack,oneChar) != nullptr)
       {
 	  score++;
       }

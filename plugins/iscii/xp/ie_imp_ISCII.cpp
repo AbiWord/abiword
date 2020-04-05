@@ -370,7 +370,7 @@ bool IE_Imp_ISCII_Sniffer::getDlgLabels(const char ** pszDesc,
 IE_Imp_ISCII::IE_Imp_ISCII(PD_Document * pDocument)
 	: IE_Imp_Text(pDocument, false)
 {
-	_setEncoding(0);
+	_setEncoding(nullptr);
 }
 
 /*!

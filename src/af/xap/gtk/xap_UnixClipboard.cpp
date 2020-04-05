@@ -31,14 +31,14 @@ GtkClipboard * XAP_UnixClipboard::gtkClipboardForTarget(XAP_UnixClipboard::_T_Al
 		return m_clip;
 	else if (XAP_UnixClipboard::TAG_PrimaryOnly == get)
 		return m_primary;
-	return 0;
+	return nullptr;
 }
 
 static AV_View * viewFromApp(XAP_App * pApp)
 {
 	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
 	if ( !pFrame ) 
-		return 0 ;
+		return nullptr ;
 	return pFrame->getCurrentView () ;
 }
 
@@ -127,7 +127,7 @@ void XAP_UnixClipboard::common_get_func(GtkClipboard * /*clipboard*/,
 			
 			if(which_clip.hasFormat(format_name))
             {
-				guchar * data = 0;
+				guchar * data = nullptr;
 				UT_uint32 data_len = 0;
 
 				guchar **pdata = &data;
@@ -260,7 +260,7 @@ bool XAP_UnixClipboard::getTextData(T_AllowGet tFrom, void ** ppData,
 	
 	static const char * txtFormatList [] = {
 		"text/plain",
-		0
+		nullptr
 	};
 	
 	return _getDataFromFakeClipboard(tFrom, txtFormatList, ppData, pLen, &pszFormatFound);

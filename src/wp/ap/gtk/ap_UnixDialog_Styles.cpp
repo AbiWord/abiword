@@ -971,7 +971,7 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons()
 {
 	GtkWidget *buttonOK;
 	GtkWidget *cancelButton;
-	GtkWidget *shortCutButton = 0;
+	GtkWidget *shortCutButton = nullptr;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	cancelButton = abiAddButton(GTK_DIALOG(m_wModifyDialog),
@@ -1195,7 +1195,7 @@ void AP_UnixDialog_Styles::event_styleType(void)
 	g_snprintf(static_cast<gchar *>(m_styleType),40,"%s",psz);
 	const gchar * pszSt = "P";
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter,s);
-	if(strstr(m_styleType, s.c_str()) != 0)
+	if (strstr(m_styleType, s.c_str()) != nullptr)
 		pszSt = "C";
 	PP_addOrSetAttribute("type", pszSt, m_vecAllAttribs);
 }

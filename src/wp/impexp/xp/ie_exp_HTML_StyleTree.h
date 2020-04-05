@@ -95,7 +95,7 @@ public:
     void print(StyleListener * listener) const;
 
     const IE_Exp_HTML_StyleTree * operator[] (UT_uint32 i) const {
-        return (i < m_count) ? m_list[i] : 0;
+        return (i < m_count) ? m_list[i] : nullptr;
     }
 
     UT_uint32 count() const {

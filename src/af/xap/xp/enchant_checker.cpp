@@ -39,16 +39,16 @@
 static UT_UCS4Char *
 utf8_to_utf32(const char *word8)
 {
-	UT_UCS4Char * ucs4 = 0;
+	UT_UCS4Char * ucs4 = nullptr;
 	UT_UCS4_cloneString (&ucs4, UT_UCS4String (word8).ucs4_str());
 	return ucs4;
 }
 
 static size_t s_enchant_broker_count = 0;
-static EnchantBroker * s_enchant_broker = 0;
+static EnchantBroker * s_enchant_broker = nullptr;
 
 EnchantChecker::EnchantChecker()
-	: m_dict(0)
+	: m_dict(nullptr)
 {
 	if (s_enchant_broker_count == 0)
 	{
@@ -81,7 +81,7 @@ EnchantChecker::~EnchantChecker()
 	s_enchant_broker_count--;
 	if (s_enchant_broker_count == 0) {
 		enchant_broker_free (s_enchant_broker);
-		s_enchant_broker = 0;
+		s_enchant_broker = nullptr;
 	}
 }
 
@@ -108,8 +108,8 @@ EnchantChecker::_checkWord (const UT_UCSChar * ucszWord, size_t len)
 std::unique_ptr<std::vector<UT_UCSChar*>>
 EnchantChecker::_suggestWord (const UT_UCSChar *ucszWord, size_t len)
 {
-	UT_return_val_if_fail (m_dict, 0);
-	UT_return_val_if_fail (ucszWord && len, 0);
+	UT_return_val_if_fail(m_dict, nullptr);
+	UT_return_val_if_fail(ucszWord && len, nullptr);
 
 	std::unique_ptr<std::vector<UT_UCSChar*>> pvSugg(new std::vector<UT_UCSChar*>());
 

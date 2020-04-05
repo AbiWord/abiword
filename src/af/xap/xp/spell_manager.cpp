@@ -184,7 +184,7 @@ void SpellChecker::correctWord (const UT_UCSChar * /*toCorrect*/, size_t /*toCor
  * and destroying instances of the ISpellChecker class
  */
 /* private */ SpellManager::SpellManager ()
-  : m_map (NBUCKETS), m_lastDict(0), m_nLoadedDicts(0)
+  : m_map (NBUCKETS), m_lastDict(nullptr), m_nLoadedDicts(0)
 {
 	m_missingHashs += "-none-";
 }
@@ -225,14 +225,14 @@ SpellManager::instance ()
 SpellChecker *
 SpellManager::requestDictionary (const char * szLang)
 {
-	SpellCheckerClass * checker = 0;
+	SpellCheckerClass * checker = nullptr;
 
 	// Don't try to load hashes we know are missing
 	if (strstr(m_missingHashs.c_str(), szLang))
-		return 0;
+		return nullptr;
 
 	// first look up the entry in the hashtable
-	if (m_map.contains (szLang, 0))
+	if (m_map.contains(szLang, nullptr))
 	{
 		return static_cast<SpellCheckerClass *>(const_cast<void *>(m_map.pick (szLang)));
 	}

@@ -470,7 +470,7 @@ s_mapPageIdToString (UT_uint16 id)
 		default:
 			UT_DEBUGMSG(("Unknow page size: please submit this document with a bug report\n"));
 			UT_ASSERT_HARMLESS( 0 );
-			return 0;
+			return nullptr;
 	}
 }
 
@@ -724,7 +724,7 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (GsfInput * input)
 UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 															 UT_uint32 iNumbytes)
 {
-	const char * magic	= 0;
+	const char * magic	= nullptr;
 	int magicoffset = 0;
 
 	magic = "Microsoft Word 6.0 Document";
@@ -2600,7 +2600,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
 		}
 	}
 	
-	propsArray[iOff++] = 0;
+	propsArray[iOff++] = nullptr;
 	UT_return_val_if_fail(iOff <= sizeof(propsArray), 1);
 	
 

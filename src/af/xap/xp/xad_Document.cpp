@@ -52,7 +52,7 @@ AD_Document::AD_Document() :
 #ifdef ENABLE_RESOURCE_MANAGER
 	m_pResourceManager(new XAP_ResourceManager),
 #else
-	m_pResourceManager(0),
+	m_pResourceManager(nullptr),
 #endif
 	m_iRefCount(1),
 	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
@@ -237,7 +237,7 @@ void AD_Document::setEncodingName(const char *szEncodingName)
 
 const char * AD_Document::getEncodingName(void) const
 {
-	return m_szEncodingName.size() ? m_szEncodingName.c_str() : 0;
+	return m_szEncodingName.size() ? m_szEncodingName.c_str() : nullptr;
 }
 
 void AD_Document::purgeHistory()

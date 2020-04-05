@@ -4406,7 +4406,7 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL,isTOC);
 
 	// now get the run at the position and the hyperlink run
-	fp_HyperlinkRun * pH1 = 0;
+	fp_HyperlinkRun * pH1 = nullptr;
 
 	fl_BlockLayout *pBlock = _findBlockAtPosition(pos);
 	PT_DocPosition curPos = pos - pBlock->getPosition(false);
@@ -4808,8 +4808,8 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	bool bRet;
 
 	PT_DocPosition posStart = 0, posEnd = 0;
-	fl_BlockLayout* pBL1 = 0;
-	fl_BlockLayout* pBL2 = 0;
+	fl_BlockLayout* pBL1 = nullptr;
+	fl_BlockLayout* pBL2 = nullptr;
 	getCmdInsertRangeVariables( posStart, posEnd, pBL1, pBL2 );
 	
 	if(pBL1 != pBL2)
@@ -4891,8 +4891,8 @@ FV_View::cmdInsertXMLID( const std::string& xmlid )
 	UT_Error ret;
 
 	PT_DocPosition posStart = 0, posEnd = 0;
-	fl_BlockLayout* pBL1 = 0;
-	fl_BlockLayout* pBL2 = 0;
+	fl_BlockLayout* pBL1 = nullptr;
+	fl_BlockLayout* pBL2 = nullptr;
 	getCmdInsertRangeVariables( posStart, posEnd, pBL1, pBL2 );
 	UT_DEBUGMSG(("fv_View::cmdInsertXMLID: posStart:%d posEnd:%d\n", posStart, posEnd ));
 

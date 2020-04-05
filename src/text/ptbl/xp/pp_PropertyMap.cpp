@@ -252,18 +252,20 @@ extern "C" {
 
 const char * PP_PropertyMap::abi_property_name (AbiPropertyIndex index)
 {
-	return (index < abi__count) ? AbiPropertyName[index] : 0;
+	return (index < abi__count) ? AbiPropertyName[index] : nullptr;
 }
 
 bool PP_PropertyMap::abi_property_lookup (const char * name, AbiPropertyIndex & index)
 {
-	if ( name == 0) return false;
+	if (name == nullptr)
+		return false;
 	if (*name == 0) return false;
 
 	void * result = bsearch (name, AbiPropertyName,
 							 static_cast<size_t>(abi__count), sizeof (char *), s_str_compare);
 
-	if (result == 0) return false;
+	if (result == nullptr)
+		return false;
 
 	const char * const * css_name = reinterpret_cast<const char * const *>(result);
 
@@ -276,7 +278,8 @@ PP_PropertyMap::TypeColor PP_PropertyMap::color_type (const char * property)
 {
 	TypeColor color = color__unset;
 
-	if (property == 0) return color; // erk!
+	if (property == nullptr)
+		return color; // erk!
 
 	if (strcmp (property, "inherit") == 0)
 		color = color_inherit;
@@ -292,7 +295,8 @@ PP_PropertyMap::TypeLineStyle PP_PropertyMap::linestyle_type (const char * prope
 {
 	TypeLineStyle linestyle = linestyle__unset;
 
-	if ( property == 0) return linestyle; // erk!
+	if (property == nullptr)
+		return linestyle; // erk!
 	if (*property == 0) return linestyle; // erk!
 
 	unsigned char u = static_cast<unsigned char>(*property);
@@ -328,7 +332,8 @@ PP_PropertyMap::TypeThickness PP_PropertyMap::thickness_type (const char * prope
 {
 	TypeThickness thickness = thickness__unset;
 
-	if (property == 0) return thickness; // erk!
+	if (property == nullptr)
+		return thickness; // erk!
 
 	if (strcmp (property, "inherit") == 0)
 		thickness = thickness_inherit;
@@ -342,7 +347,8 @@ PP_PropertyMap::TypeBackground PP_PropertyMap::background_type (const char * pro
 {
 	TypeBackground background = background__unset;
 
-	if ( property == 0) return background; // erk!
+	if (property == nullptr)
+		return background; // erk!
 	if (*property == 0) return background; // erk!
 
 	unsigned char u = static_cast<unsigned char>(*property);
@@ -382,7 +388,8 @@ static const char * s_linestyle[4] = {
 
 const char * PP_PropertyMap::linestyle_for_CSS (const char * property)
 {
-	if (property == 0) return s_linestyle[0];
+	if (property == nullptr)
+		return s_linestyle[0];
 
 	unsigned char u = static_cast<unsigned char>(*property);
 	if (!isdigit (static_cast<int>(u))) return property;

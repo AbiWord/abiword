@@ -62,7 +62,7 @@ GDict_exec (const char * search)
       const char *args[3];
       args[0] = "--noapplet"; // definitely needed for kde users, for example
       args[1] = search;
-      args[2] = 0;
+      args[2] = nullptr;
       
       exit ( execvp ( "gnome-dictionary", (char **) args ) );
       // TODO: be smarter with warnings and such
@@ -70,7 +70,7 @@ GDict_exec (const char * search)
   else if ( pid > 0 )
     {
       // parent
-      waitpid ( pid, 0, WNOHANG );
+      waitpid(pid, nullptr, WNOHANG);
     }
   else
     {
@@ -84,9 +84,9 @@ GDict_exec (const char * search)
 #include <libgdict/gdict-defbox.h>
 
 // i hate global state, but it's so much easier here...
-static GtkWidget * gdict_dlg    = 0;
-static GtkWidget * gdict_entry  = 0;
-static GtkWidget * gdict_defbox = 0;
+static GtkWidget * gdict_dlg = nullptr;
+static GtkWidget * gdict_entry = nullptr;
+static GtkWidget * gdict_defbox = nullptr;
 
 static void
 lookup_button_cb (GtkButton *button, GtkWidget * defbox)
@@ -106,7 +106,7 @@ lookup_button_cb (GtkButton *button, GtkWidget * defbox)
 static void
 entry_activate_cb (GtkEditable *editable, GtkWidget* defbox)
 {
-  gchar *text = 0;
+  gchar *text = nullptr;
   
   text = gtk_editable_get_chars (editable, 0, -1);
   
@@ -121,13 +121,13 @@ static void
 close_cb (GtkWidget * w, gpointer data)
 {
   gtk_widget_destroy(gdict_defbox);
-  gdict_defbox = 0;
+  gdict_defbox = nullptr;
 
   gtk_widget_destroy(gdict_entry);
-  gdict_entry  = 0;
+  gdict_entry = nullptr;
 
   gtk_widget_destroy(gdict_dlg);
-  gdict_dlg    = 0;
+  gdict_dlg = nullptr;
 }
 
 static void
@@ -391,11 +391,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-    mi->name = 0;
-    mi->desc = 0;
-    mi->version = 0;
-    mi->author = 0;
-    mi->usage = 0;
+    mi->name = nullptr;
+    mi->desc = nullptr;
+    mi->version = nullptr;
+    mi->author = nullptr;
+    mi->usage = nullptr;
 
     GDict_removeFromMenus () ;
 

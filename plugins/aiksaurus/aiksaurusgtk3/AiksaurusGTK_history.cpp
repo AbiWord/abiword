@@ -91,7 +91,7 @@ AiksaurusGTK_history::tip_back() const
 	if (d_back_tip_ptr)
 	{
 		delete[] d_back_tip_ptr;
-		d_back_tip_ptr = 0;
+		d_back_tip_ptr = nullptr;
 	}
 
 	d_back_tip_ptr = AiksaurusGTK_strConcat(backto, backone);

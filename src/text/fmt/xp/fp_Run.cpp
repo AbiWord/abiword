@@ -97,10 +97,10 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 			   FP_RUN_TYPE iType) : 
 	fp_ContainerObject(FP_CONTAINER_RUN, pBL->getSectionLayout()),
 	m_iType (iType),
-	m_pLine(0),
+	m_pLine(nullptr),
 	m_pBL(pBL),
-	m_pNext(0),
-	m_pPrev(0),
+	m_pNext(nullptr),
+	m_pPrev(nullptr),
 	m_iX(0),
 	m_iOldX(0),
 	m_iY(0),
@@ -111,12 +111,12 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iOffsetFirst(iOffsetFirst),
 	m_iLen(iLen),
 	m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
-	m_pField(0),
+	m_pField(nullptr),
 	m_iDirection(UT_BIDI_WS), //by default all runs are whitespace
 	m_iVisDirection(UT_BIDI_UNSET),
 	m_eRefreshDrawBuffer(GRSR_Unknown), // everything
 	m_pColorHL(255,255,255,true), // set highlight colour to transparent
-	m_pFont(0),
+	m_pFont(nullptr),
 	m_bRecalcWidth(false),
 	m_fDecorations(0),
 	m_iLineWidth(0),
@@ -125,7 +125,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_imaxUnderline(0),
 	m_iminOverline(0),
 	m_iOverlineXoff(0),
-	m_pHyperlink(0),
+	m_pHyperlink(nullptr),
 	m_eVisibility(FP_VISIBLE),
 	m_bIsCleared(true),
 	m_FillType(NULL,this,FG_FILL_TRANSPARENT),
@@ -677,9 +677,9 @@ void fp_Run::unlinkFromRunList()
 	if (m_pNext)
 	{
 		m_pNext->setPrevRun(m_pPrev);
-		setNextRun(0);
+		setNextRun(nullptr);
 	}
-	setPrevRun(0);
+	setPrevRun(nullptr);
 }
 
 void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
@@ -1043,7 +1043,7 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 	getLine()->getFillType().setIgnoreLineLevel(true);
 	if(getLine()->getContainer() != NULL)
 	{
-		if(getLine()->getContainer()->getPage() != 0)
+		if (getLine()->getContainer()->getPage() != nullptr)
 		{
 			UT_Rect clip(0,0,0,0);
 			if(isSelectionDraw())
@@ -2151,7 +2151,7 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	}
 	getLine()->getOffsets(this, xoff, yoff);
 
-	fp_Run * pRun = 0;
+	fp_Run * pRun = nullptr;
 	UT_sint32 iNextDir = getVisDirection();
 
 	if (iOffset == (getBlockOffset() + getLength()))  //#TF is this the right-most logical element of the run?
@@ -3945,7 +3945,7 @@ fp_FieldData fp_FieldFmts[] = {
 fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen)
 	:	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_FIELD),
 		m_iFieldType(FPFIELD_start),
-		m_pParameter(0),
+		m_pParameter(nullptr),
 		m_fPosition(TEXT_POSITION_NORMAL)
 {
 	fd_Field * fd;

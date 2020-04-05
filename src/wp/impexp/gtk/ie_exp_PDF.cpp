@@ -115,7 +115,7 @@ public:
 
 	print_graphics = new GR_CairoPrintGraphics(cr, dpi);
     pDocLayout = new FL_DocLayout(getDoc(), print_graphics);
-    printView = new FV_View(XAP_App::getApp(), 0, pDocLayout);
+    printView = new FV_View(XAP_App::getApp(), nullptr, pDocLayout);
     printView->getLayout()->fillLayouts();
     printView->getLayout()->formatAll();
     printView->getLayout()->recalculateTOCFields();

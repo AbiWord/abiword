@@ -88,6 +88,6 @@ IE_Imp_GraphicAsDocument::~IE_Imp_GraphicAsDocument()
 }
 
 IE_Imp_GraphicAsDocument::IE_Imp_GraphicAsDocument(PD_Document * pDocument)
-  : IE_Imp(pDocument), m_pGraphicImporter(0)
+  : IE_Imp(pDocument), m_pGraphicImporter(nullptr)
 {
 }

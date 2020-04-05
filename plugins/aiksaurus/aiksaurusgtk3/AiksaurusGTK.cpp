@@ -64,7 +64,7 @@ namespace AiksaurusGTK_impl
 
 
     DialogImpl::DialogImpl()
-        : d_window_ptr(0),
+        : d_window_ptr(nullptr),
           d_title("Aiksaurus"),
           d_showreplacebar(true)
     {
@@ -93,7 +93,7 @@ namespace AiksaurusGTK_impl
     gint DialogImpl::_closeDialog(GtkWidget *, GdkEventAny *, gpointer data)
     {
         DialogImpl* di = static_cast<DialogImpl*>(data);
-        di->d_window_ptr = 0;
+        di->d_window_ptr = nullptr;
         gtk_main_quit();
         return 0;
     }
@@ -134,7 +134,7 @@ namespace AiksaurusGTK_impl
             }
             else
             {
-                d_replacebar_ptr = 0;
+                d_replacebar_ptr = nullptr;
             }
 
             //gtk_container_add(GTK_CONTAINER(d_window_ptr), d_layout_ptr);

@@ -58,7 +58,7 @@ void IE_ImpGraphic::unregisterImporter (IE_ImpGraphicSniffer * s)
 	IE_IMP_GraphicSniffers.deleteNthItem (ndx-1);
 
 	// Refactor the indexes
-	IE_ImpGraphicSniffer * pSniffer = 0;
+	IE_ImpGraphicSniffer * pSniffer = nullptr;
 	UT_uint32 size  = IE_IMP_GraphicSniffers.size();
 	UT_uint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
@@ -75,7 +75,7 @@ void IE_ImpGraphic::unregisterImporter (IE_ImpGraphicSniffer * s)
 
 void IE_ImpGraphic::unregisterAllImporters ()
 {
-	IE_ImpGraphicSniffer * pSniffer = 0;
+	IE_ImpGraphicSniffer * pSniffer = nullptr;
 	UT_uint32 size = IE_IMP_GraphicSniffers.size();
 
 	for (UT_uint32 i = 0; i < size; i++)
@@ -364,8 +364,8 @@ UT_Error IE_ImpGraphic::constructImporterWithDescription(const char * szDesc, IE
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		const char * szDescription = 0;
-		const char * szSuffixList  = 0;
+		const char * szDescription = nullptr;
+		const char * szSuffixList  = nullptr;
 
 		IEGraphicFileType ft = 0;
 

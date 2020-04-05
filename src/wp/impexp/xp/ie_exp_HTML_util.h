@@ -64,7 +64,7 @@ extern const char * s_Header[2];
 
 UT_UTF8String s_string_to_url (const UT_String & str);
 UT_UTF8String s_string_to_url (const UT_UTF8String & str);
-bool is_CSS (const char * prop_name, const char ** prop_default = 0);
+bool is_CSS (const char * prop_name, const char ** prop_default = nullptr);
 void s_removeWhiteSpace (const char * text, std::string& utf8str,
                            bool bLowerCase = true);
 // Returns alpha-numeric contents of string

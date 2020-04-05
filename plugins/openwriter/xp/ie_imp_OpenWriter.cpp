@@ -163,7 +163,7 @@ private:
     m_pageAtts[propCtr++] = "pagetype";
     m_pageAtts[propCtr++] = ps.getPredefinedName();
 
-    m_pageAtts[propCtr] = 0; 
+    m_pageAtts[propCtr] = nullptr;
 
     // will go as props into the <section> tag
     val = UT_getAttribute ("fo:margin-left", props);
@@ -708,7 +708,7 @@ const OO_Style * IE_Imp_OpenWriter::mapStyleObj (const gchar * name) const
  * Create a new OpenWriter importer object
  */
 IE_Imp_OpenWriter::IE_Imp_OpenWriter (PD_Document * pDocument)
-  : IE_Imp (pDocument), m_pSSListener(0), m_oo (0), m_bOpenDocument(false)
+  : IE_Imp(pDocument), m_pSSListener(nullptr), m_oo(nullptr), m_bOpenDocument(false)
 {
 }
 
@@ -1012,10 +1012,10 @@ class OpenWriter_StylesStream_Listener : public OpenWriter_Stream_Listener
 {
 public:
   OpenWriter_StylesStream_Listener ( IE_Imp_OpenWriter * importer, bool bOpenDocument )
-    : OpenWriter_Stream_Listener ( importer ), m_ooStyle (0), m_bOpenDocument(bOpenDocument)
+    : OpenWriter_Stream_Listener(importer), m_ooStyle(nullptr), m_bOpenDocument(bOpenDocument)
   {
   }
-  
+
   virtual ~OpenWriter_StylesStream_Listener ()
   {
     m_styleNameMap.purgeData();
@@ -1146,7 +1146,7 @@ public:
 	}
 
 	// must be last
-	atts[propCtr] = 0;
+	atts[propCtr] = nullptr;
 	getDocument()->appendStyle(PP_std_copyProps(atts));
       }
 
@@ -1273,7 +1273,7 @@ public:
 	  const gchar * props[3];
 	  props[0] = "props";
 	  props[1] = abi_sty->getAbiStyle ();
-	  props[2] = 0;
+	  props[2] = nullptr;
 	  
 	  _insureInBlock((const gchar **)props);
 	}
@@ -1281,7 +1281,7 @@ public:
 	  const gchar * props[3];
 	  props[0] = "style";
 	  props[1] = oo_sty.utf8_str();
-	  props[2] = 0;
+	  props[2] = nullptr;
 
 	  _insureInBlock((const gchar **)props);
 	}
@@ -1301,9 +1301,9 @@ public:
 	if(abi_sty && *abi_sty) {
 	  props[0] = "props";
 	  props[1] = abi_sty;
-	  props[2] = 0;
+	  props[2] = nullptr;
 	} else {
-	  props[0] = 0;
+	  props[0] = nullptr;
 	}
 	  
 	_pushInlineFmt(props);

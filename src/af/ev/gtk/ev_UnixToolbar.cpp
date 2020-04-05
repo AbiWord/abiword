@@ -361,7 +361,7 @@ public:									// we create...
 		wd->m_pUnixToolbar->setCurrentEvent(event);
 		if (!wd->m_blockSignal)
 		{
-			wd->m_pUnixToolbar->toolbarEvent(wd, 0, 0);
+			wd->m_pUnixToolbar->toolbarEvent(wd, nullptr, 0);
 		}
 	};
 
@@ -722,7 +722,7 @@ bool EV_UnixToolbar::toolbarEvent(_wd 				* wd,
 	// make sure we ignore presses on "down" group buttons
 	if (pAction->getItemType() == EV_TBIT_GroupButton)
 	{
-		const char * szState = 0;
+		const char * szState = nullptr;
 		EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 
 		if (EV_TIS_ShouldBeToggled(tis))
@@ -1257,7 +1257,7 @@ void EV_UnixToolbar::_releaseListener(void)
 	if (!m_pViewListener)
 		return;
 	DELETEP(m_pViewListener);
-	m_pViewListener = 0;
+	m_pViewListener = nullptr;
 	m_lid = 0;
 }
 	
@@ -1305,7 +1305,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		{
 		case EV_TLF_Normal:
 			{
-				const char * szState = 0;
+				const char * szState = nullptr;
 				std::string sLoc;
 				EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 

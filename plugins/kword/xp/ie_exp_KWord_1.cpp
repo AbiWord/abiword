@@ -115,7 +115,7 @@ static const UT_Dimension kword_1_unit = DIM_MM;
 /*****************************************************************/
 
 IE_Exp_KWord_1::IE_Exp_KWord_1(PD_Document * pDocument)
-	: IE_Exp(pDocument), m_pListener(0)
+	: IE_Exp(pDocument), m_pListener(nullptr)
 {
 	m_error = UT_OK;
 }
@@ -287,7 +287,7 @@ bool s_KWord_1_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;							// we don't need it.
 
 	switch (pcrx->getStruxType())
 	{
@@ -976,7 +976,7 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 	if (bHaveProp && pAP)
 	{
 		// query and output properties
-		const gchar * szValue = 0;
+		const gchar * szValue = nullptr;
 
 		if (pAP->getProperty("color", szValue))
 		{

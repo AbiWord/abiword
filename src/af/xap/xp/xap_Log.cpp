@@ -5,12 +5,12 @@
 #include "xav_View.h"
 #include "ev_EditMethod.h"
 
-XAP_Log *XAP_Log::m_pInstance = 0;
+XAP_Log *XAP_Log::m_pInstance = nullptr;
 
 class ABI_EXPORT XAP_LogDestructor
 {
 public:
-	XAP_LogDestructor() : t_(0) {}
+	XAP_LogDestructor() : t_(nullptr) {}
 	~XAP_LogDestructor() { delete t_; }
 	void control(XAP_Log *t) { t_ = t; }
 private:
@@ -28,7 +28,7 @@ XAP_Log::XAP_Log(const std::string &logfile)
 
 XAP_Log::~XAP_Log()
 {
-	if (m_pOutput != 0)
+	if (m_pOutput != nullptr)
 	{
 		fprintf(m_pOutput, "</logger>\n");
 		fclose(m_pOutput);
@@ -37,17 +37,17 @@ XAP_Log::~XAP_Log()
 
 void XAP_Log::log(const std::string &method_name, AV_View * /*pAV_View*/, EV_EditMethodCallData *pCallData)
 {
-	UT_ASSERT(m_pOutput != 0);
+	UT_ASSERT(m_pOutput != nullptr);
 	fprintf(m_pOutput, "\t<event name=\"%s\"", method_name.c_str());
 
-	if (pCallData != 0)
+	if (pCallData != nullptr)
 	{
 		fprintf(m_pOutput, ">\n\t\t<calldata x=\"%d\" y=\"%d\"",
 				pCallData->m_xPos,
 				pCallData->m_yPos);
 		
 		// the pCallData->m_bAllocatedData flag is not set when it should
-		if (pCallData->m_pData != 0)
+		if (pCallData->m_pData != nullptr)
 		{
 			fprintf(m_pOutput, ">");
 			UT_UCSChar *orig_data;
@@ -83,7 +83,7 @@ void XAP_Log::log(const std::string &method_name, AV_View * /*pAV_View*/, EV_Edi
 
 XAP_Log *XAP_Log::get_instance()
 {
-	if (m_pInstance == 0)
+	if (m_pInstance == nullptr)
 	{
 		m_pInstance = new XAP_Log("fixme_log.txt");
 		g_pLogDestructor.control(m_pInstance);

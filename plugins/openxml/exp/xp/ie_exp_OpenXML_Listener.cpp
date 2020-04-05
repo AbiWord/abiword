@@ -1241,7 +1241,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 	UT_ConstByteBufPtr pByteBuf;
 
 	UT_uint32 k = 0;
-	while (pdoc->enumDataItems (k, 0, &szName, pByteBuf, &mimeType))
+	while (pdoc->enumDataItems(k, nullptr, &szName, pByteBuf, &mimeType))
 	{
 		k++;
 

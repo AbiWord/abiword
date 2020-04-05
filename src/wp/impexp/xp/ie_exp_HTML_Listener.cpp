@@ -46,7 +46,7 @@ m_bInFootnote(false),
 m_bInHeading(false),
  m_bInTextbox(false),
 m_bSkipSection(false),
-m_pCurrentField(0),
+m_pCurrentField(nullptr),
 m_currentFieldType(""),
 m_bookmarkName(""),
 m_apiLastSpan(0),
@@ -302,7 +302,7 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
     // }
 
 
-    *psfh = 0; // we don't need it.
+    *psfh = nullptr; // we don't need it.
 
     PT_AttrPropIndex api = pcr->getIndexAP();
     //const gchar* image_name =
@@ -845,16 +845,16 @@ void IE_Exp_HTML_Listener::_openSpan(PT_AttrPropIndex api)
         styleName = tree->class_name().c_str();
     }
 
-	const gchar * szP_FontWeight = 0;
-	const gchar * szP_FontStyle = 0;
-	const gchar * szP_FontSize = 0;
-	const gchar * szP_FontFamily = 0;
-	const gchar * szP_TextDecoration = 0;
-	const gchar * szP_TextPosition = 0;
-	const gchar * szP_TextTransform = 0;
-	const gchar * szP_Color = 0;
-	const gchar * szP_BgColor = 0;
-	const gchar * szP_Display = 0;
+	const gchar * szP_FontWeight = nullptr;
+	const gchar * szP_FontStyle = nullptr;
+	const gchar * szP_FontSize = nullptr;
+	const gchar * szP_FontFamily = nullptr;
+	const gchar * szP_TextDecoration = nullptr;
+	const gchar * szP_TextPosition = nullptr;
+	const gchar * szP_TextTransform = nullptr;
+	const gchar * szP_Color = nullptr;
+	const gchar * szP_BgColor = nullptr;
+	const gchar * szP_Display = nullptr;
 
 	pAP->getProperty("font-weight", szP_FontWeight);
 	pAP->getProperty("font-style", szP_FontStyle);
@@ -1054,12 +1054,12 @@ void IE_Exp_HTML_Listener::_openBlock(PT_AttrPropIndex api)
         styleName = tree->class_name().c_str();
     }
 
-	const gchar * szP_TextAlign = 0;
-	const gchar * szP_MarginBottom = 0;
-	const gchar * szP_MarginTop = 0;
-	const gchar * szP_MarginLeft = 0;
-	const gchar * szP_MarginRight = 0;
-	const gchar * szP_TextIndent = 0;
+	const gchar * szP_TextAlign = nullptr;
+	const gchar * szP_MarginBottom = nullptr;
+	const gchar * szP_MarginTop = nullptr;
+	const gchar * szP_MarginLeft = nullptr;
+	const gchar * szP_MarginRight = nullptr;
+	const gchar * szP_TextIndent = nullptr;
 
 	pAP->getProperty("text-align", szP_TextAlign);
 	pAP->getProperty("margin-bottom", szP_MarginBottom);
@@ -1068,11 +1068,11 @@ void IE_Exp_HTML_Listener::_openBlock(PT_AttrPropIndex api)
 
 	if (pAP->getProperty("margin-left", szP_MarginLeft))
 		if (strstr(szP_MarginLeft, "0.0000"))
-			szP_MarginLeft = 0;
+			szP_MarginLeft = nullptr;
 
 	if (pAP->getProperty("text-indent", szP_TextIndent))
 		if (strstr(szP_TextIndent, "0.0000"))
-			szP_TextIndent = 0;
+			szP_TextIndent = nullptr;
 
 	UT_UTF8String style;
 	bool first = true;
@@ -1441,10 +1441,10 @@ void IE_Exp_HTML_Listener::_openTable(PT_AttrPropIndex api, bool recursiveCall)
 	}
 
 #if 0
-	const gchar * pszLeftOffset = 0;
-	const gchar * pszTopOffset = 0;
-	const gchar * pszRightOffset = 0;
-	const gchar * pszBottomOffset = 0;
+	const gchar * pszLeftOffset = nullptr;
+	const gchar * pszTopOffset = nullptr;
+	const gchar * pszRightOffset = nullptr;
+	const gchar * pszBottomOffset = nullptr;
 
 	pSectionAP->getProperty ("cell-margin-left",   pszLeftOffset);
 	pSectionAP->getProperty ("cell-margin-top",    pszTopOffset);
@@ -2383,7 +2383,8 @@ void IE_Exp_HTML_Listener::_insertPosImage(PT_AttrPropIndex api)
 {
     const PP_AttrProp * pAP = NULL;
     bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
-    if (!bHaveProp || (pAP == 0)) return;
+    if (!bHaveProp || (pAP == nullptr))
+        return;
 
     const gchar * pszDataID = NULL;
     if (pAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&) pszDataID) && pszDataID)
@@ -2483,7 +2484,7 @@ void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)
         pAP = NULL;
     }
 
-    const gchar *pValue = 0;
+    const gchar *pValue = nullptr;
     bool hasHeading = true; // AbiWord's default
     ok = pAP->getProperty("toc-has-heading", pValue);
     if (ok && pValue)
@@ -2679,7 +2680,7 @@ void IE_Exp_HTML_Listener::_openTextbox(PT_AttrPropIndex api)
             "left-color", "border-left-color",
             "background-color", "background-color",
             NULL, NULL}; // [AbiWord property name, CSS21 property name]
-        const gchar * tempProp = 0;
+        const gchar * tempProp = nullptr;
         UT_UTF8String style;
 
         for (unsigned short int propIdx = 0; propIdx < 18; propIdx += 2) 
@@ -2749,7 +2750,7 @@ const gchar* IE_Exp_HTML_Listener::_getObjectKey(const PT_AttrPropIndex& api,
             return value;
     }
 
-    return 0;
+    return nullptr;
 }
 
 /**
@@ -2836,7 +2837,7 @@ void IE_Exp_HTML_Listener::_handleImage(PT_AttrPropIndex api,
         extension = ".png";
     }
 
-    const gchar * szTitle = 0;
+    const gchar * szTitle = nullptr;
     UT_UTF8String title;
     pAP->getAttribute("title", szTitle);
     if (szTitle) {
@@ -2844,7 +2845,7 @@ void IE_Exp_HTML_Listener::_handleImage(PT_AttrPropIndex api,
         title.escapeXML();
     }
 
-    const gchar * szAlt = 0;
+    const gchar * szAlt = nullptr;
     UT_UTF8String alt;
     pAP->getAttribute("alt", szAlt);
     if (szAlt) {
@@ -2882,8 +2883,8 @@ void IE_Exp_HTML_Listener::_handleImage(PT_AttrPropIndex api,
     }
 
 
-    const gchar * szWidth = 0;
-    const gchar * szHeight = 0;
+    const gchar * szWidth = nullptr;
+    const gchar * szHeight = nullptr;
     double widthPercentage = 0;
     UT_UTF8String style = "";
     if (!getPropertySize(pAP, !bIsPositioned ? "width" : "frame-width",
@@ -2999,8 +3000,8 @@ void IE_Exp_HTML_Listener::_handleAnnotationData(PT_AttrPropIndex api)
         pAP = NULL;
     }
     
-    const gchar *szTitle = 0;
-    const gchar *szAuthor = 0;
+    const gchar *szTitle = nullptr;
+    const gchar *szAuthor = nullptr;
     if (pAP)
     {
         pAP->getProperty("annotation-title", szTitle);
@@ -3041,7 +3042,7 @@ void IE_Exp_HTML_Listener::_makeStylesheet(PT_AttrPropIndex api)
 		"page-margin-right", "padding-right",
 		NULL, NULL};
 	for (unsigned short int propIdx = 0; propIdx < 8; propIdx += 2) {
-		szValue = PP_evalProperty(marginProps[propIdx], 0, 0, pAP, 
+		szValue = PP_evalProperty(marginProps[propIdx], nullptr, nullptr, pAP,
 								 m_pDocument, true);
 		bodyStyle += UT_UTF8String_sprintf("%s : %s;\n", 
 										 marginProps[propIdx + 1], szValue);
@@ -3049,13 +3050,14 @@ void IE_Exp_HTML_Listener::_makeStylesheet(PT_AttrPropIndex api)
 
 	
 
-	PD_Style * pStyle = 0;
+	PD_Style * pStyle = nullptr;
 	m_pDocument->getStyle("Normal", &pStyle);
 	UT_UTF8String value;
 	for (UT_uint32 i = 0; i < pStyle->getPropertyCount(); i++) {
 		pStyle->getNthProperty(i, szName, szValue);
 
-		if ((szName == 0) || (szValue == 0)) continue; // paranoid? moi?
+		if ((szName == nullptr) || (szValue == nullptr))
+			continue; // paranoid? moi?
 		if ((*szName == 0) || (*szValue == 0)) continue;
 
 		if (strstr(szName, "margin")) continue;
@@ -3084,7 +3086,7 @@ void IE_Exp_HTML_Listener::_makeStylesheet(PT_AttrPropIndex api)
 
 		bodyStyle += UT_UTF8String_sprintf("%s:%s;\n", szName, value.utf8_str());
 	}
-	szValue = PP_evalProperty("background-color", 0, 0, pAP, m_pDocument, true);
+	szValue = PP_evalProperty("background-color", nullptr, nullptr, pAP, m_pDocument, true);
 	if (szValue && *szValue && !IS_TRANSPARENT_COLOR(szValue)) {
 		value= UT_colorToHex(szValue, true);
 

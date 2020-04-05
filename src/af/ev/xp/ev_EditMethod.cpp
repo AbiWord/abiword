@@ -35,7 +35,7 @@
 /*****************************************************************/
 
 EV_EditMethodCallData::EV_EditMethodCallData()
-	:  m_pData(0),
+	:  m_pData(nullptr),
 	   m_dataLength(0),
 	   m_bAllocatedData(false),
 	   m_xPos(0),
@@ -44,7 +44,7 @@ EV_EditMethodCallData::EV_EditMethodCallData()
 }
 
 EV_EditMethodCallData::EV_EditMethodCallData(const UT_String& stScriptName)
-	: m_pData(0),
+	: m_pData(nullptr),
 	  m_dataLength(0),
 	  m_bAllocatedData(false),
 	  m_xPos(0),
@@ -119,17 +119,17 @@ EV_EditMethod::EV_EditMethod(const char * szName, EV_EditMethod_pFn fn, EV_EditM
 							 const char * szDescription)
 	: m_szName(szName),
 	  m_fn(fn),
-	  m_CtxtFn(0),
+	  m_CtxtFn(nullptr),
 	  m_emt(emt),
 	  m_szDescription(szDescription),
-	  m_context(0)
+	  m_context(nullptr)
 {
 }
 
 EV_EditMethod::EV_EditMethod(const char * szName, EV_EditMethod_pCtxtFn fn, EV_EditMethodType emt,
 							 const char * szDescription, void * context)
 	: m_szName(szName),
-	  m_fn(0),
+	  m_fn(nullptr),
 	  m_CtxtFn(fn),
 	  m_emt(emt),
 	  m_szDescription(szDescription),
@@ -222,7 +222,7 @@ static int ev_compar (const void * a, const void * b)
 EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName) const
 {
 	if (!szName)
-		return 0;
+		return nullptr;
 
 	EV_EditMethod *mthd = NULL;
 
@@ -268,7 +268,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 			return pem;
 	}
 
-	return 0;
+	return nullptr;
 }
 
 /*****************************************************************/

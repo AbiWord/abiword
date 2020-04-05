@@ -583,7 +583,7 @@ abi_table_init (AbiTable* table, gpointer)
 
 	table->area = GTK_DRAWING_AREA(gtk_drawing_area_new());
 
-	table->handlers = 0;
+	table->handlers = nullptr;
 	table->window_label = GTK_LABEL(gtk_label_new(text));
 	g_free(text);
 	table->szTable = NULL;

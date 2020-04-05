@@ -375,7 +375,7 @@ const gchar * UT_Language::getCodeFromCode(const gchar * szName)
 		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 					 "language to the tables\n", szName));
-		return 0;
+		return nullptr;
 	}
 }
 
@@ -421,7 +421,7 @@ const UT_LangRecord * UT_Language::getLangRecordFromCode(const gchar * szCode)
 		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 					 "language to the tables\n", szCode));
-		return 0;
+		return nullptr;
 	}
 
 	return e;

@@ -92,7 +92,7 @@ bool IE_ImpGraphicWMF_Sniffer::getDlgLabels(const char ** pszDesc,
 UT_Error IE_ImpGraphicWMF_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_WMF();
-	if (*ppieg == 0)
+	if (*ppieg == nullptr)
 		return UT_IE_NOMEMORY;
 
 	return UT_OK;
@@ -196,9 +196,9 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(const UT_ConstByteBufPtr & pBBwm
 
 	wmf_error_t err;
 
-	wmf_svg_t* ddata = 0;
+	wmf_svg_t* ddata = nullptr;
 
-	wmfAPI* API = 0;
+	wmfAPI* API = nullptr;
 	wmfD_Rect bbox;
 
 	wmfAPI_Options api_options;
@@ -331,9 +331,9 @@ UT_Error IE_ImpGraphic_WMF::convertGraphic(const UT_ConstByteBufPtr & pBBwmf,
 {
 	wmf_error_t err;
 
-	wmf_gd_t * ddata = 0;
+	wmf_gd_t * ddata = nullptr;
 
-	wmfAPI * API = 0;
+	wmfAPI * API = nullptr;
 	wmfAPI_Options api_options;
 
 	wmfD_Rect bbox;
@@ -479,7 +479,7 @@ static int AbiWord_WMF_read (void * context)
 {
 	bbuf_read_info * info = (bbuf_read_info *) context;
 
-	const UT_Byte* pByte = 0;
+	const UT_Byte* pByte = nullptr;
 
 	if (info->pos == info->len)
 		return EOF;
@@ -535,7 +535,7 @@ static int AbiWord_WMF_function (void * context,char * buffer,int length)
 ABI_PLUGIN_DECLARE("WMF")
 
 // we use a reference-counted sniffer
-static IE_ImpGraphicWMF_Sniffer * m_impSniffer = 0;
+static IE_ImpGraphicWMF_Sniffer * m_impSniffer = nullptr;
 
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
@@ -559,17 +559,17 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	UT_ASSERT (m_impSniffer);
 
 	IE_ImpGraphic::unregisterImporter (m_impSniffer);
 	delete m_impSniffer;
-	m_impSniffer = 0;
+	m_impSniffer = nullptr;
 
 	return 1;
 }

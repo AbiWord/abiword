@@ -290,11 +290,11 @@ abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_BUILTIN_FAR_CALL int
 abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	Presentation_RemoveFromMethods ();
 
@@ -431,7 +431,7 @@ Presentation::~Presentation (void)
 bool Presentation::_loadPresentationBindings(AV_View * pView)
 {
   EV_EditMethodContainer * pEMC = m_pApp->getEditMethodContainer();
-  g_return_val_if_fail (pEMC != 0, FALSE);
+  g_return_val_if_fail(pEMC != nullptr, FALSE);
   if(m_pApp->getBindingMap("Presentation") != NULL)
   {
       return true;
@@ -443,7 +443,7 @@ bool Presentation::_loadPresentationBindings(AV_View * pView)
   data_path += "Presentation.xml";
 
   EV_EditMethod * pLoadB = pEMC->findEditMethodByName ("com.abisource.abiword.loadbindings.fromURI");
-  g_return_val_if_fail (pLoadB != 0, false);
+  g_return_val_if_fail(pLoadB != nullptr, false);
   EV_EditMethodCallData calldata(data_path.c_str(),data_path.size());
   calldata.m_xPos = 0;
   calldata.m_yPos = 0;
@@ -453,7 +453,7 @@ bool Presentation::_loadPresentationBindings(AV_View * pView)
 bool Presentation::start(AV_View * view)
 {
   EV_EditMethodContainer * pEMC = m_pApp->getEditMethodContainer();
-  g_return_val_if_fail (pEMC != 0, FALSE);
+  g_return_val_if_fail(pEMC != nullptr, FALSE);
   m_pView = static_cast<FV_View *>(view);
   m_sPrevBindings = m_pApp->getInputMode();
   _loadPresentationBindings(view);
@@ -462,7 +462,7 @@ bool Presentation::start(AV_View * view)
     return false;
   // get a handle to the actual EditMethod
   EV_EditMethod * pFullScreen = pEMC->findEditMethodByName ("viewFullScreen");
-  g_return_val_if_fail (pFullScreen != 0, false);
+  g_return_val_if_fail(pFullScreen != nullptr, false);
   const char * sz ="";
   EV_EditMethodCallData calldata(sz,0);
   calldata.m_xPos = 0;
@@ -499,7 +499,7 @@ bool Presentation::end(void)
   if(m_sPrevBindings.size() == 0)
     return false;
   EV_EditMethodContainer * pEMC = m_pApp->getEditMethodContainer();
-  g_return_val_if_fail (pEMC != 0, FALSE);
+  g_return_val_if_fail(pEMC != nullptr, FALSE);
   UT_sint32 i = m_pApp->setInputMode(m_sPrevBindings.c_str());
   if(i <=0 )
     return false;
@@ -507,7 +507,7 @@ bool Presentation::end(void)
   // get a handle to the actual EditMethod
 
   EV_EditMethod * pFullScreen = pEMC->findEditMethodByName ("viewFullScreen");
-  g_return_val_if_fail (pFullScreen != 0, false);
+  g_return_val_if_fail(pFullScreen != nullptr, false);
   const char * sz ="";
   EV_EditMethodCallData calldata(sz,0);
   calldata.m_xPos = 0;

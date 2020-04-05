@@ -106,7 +106,7 @@ static LmHandlerResult chat_handler(LmMessageHandler* /*handler*/,
 	LmMessageNode* node = lm_message_get_node(m);
 	if (strcmp(node->name, "message") == 0)
 	{
-		for (LmMessageNode* child = node->children; child != 0; child = child->next)
+		for (LmMessageNode* child = node->children; child != nullptr; child = child->next)
 		{
 			if (strcmp(child->name, "body") == 0)
 			{

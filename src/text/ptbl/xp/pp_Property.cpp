@@ -416,7 +416,8 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 		return NULL;
 	}
 
-	if (pDoc == 0) bExpandStyles = false;
+	if (pDoc == nullptr)
+		bExpandStyles = false;
 
 	const PP_Property * pProp = PP_lookupProperty(pszName);
 	if (!pProp)
@@ -559,7 +560,7 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 	if (szValue == NULL)
 		if (bExpandStyles)
 		{
-			PD_Style * pStyle = 0;
+			PD_Style * pStyle = nullptr;
 
 			if (pDoc->getStyle ("Normal", &pStyle))
 			{

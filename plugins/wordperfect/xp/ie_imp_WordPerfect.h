@@ -102,7 +102,7 @@ public:
     virtual ~IE_Imp_WordPerfect();
 
     virtual bool pasteFromBuffer(PD_DocumentRange * pDocRange,
-				 const UT_uint8 * pData, UT_uint32 lenData, const char * szEncoding = 0) override;
+				 const UT_uint8 * pData, UT_uint32 lenData, const char * szEncoding = nullptr) override;
 
 	virtual void setDocumentMetaData(const librevenge::RVNGPropertyList &propList) override;
 

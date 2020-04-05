@@ -44,7 +44,7 @@ public:
 };
 
 PD_Bookmark::PD_Bookmark( PD_Document* pDoc, PT_AttrPropIndex api )
-    : m_pAP( 0 )
+    : m_pAP(nullptr)
     , m_isEnd( true )
 {
     pDoc->getAttrProp(api,&m_pAP);
@@ -96,8 +96,8 @@ PL_ListenerCoupleCloser::shouldClose( const std::string& id,
 
 
 PL_ListenerCoupleCloser::PL_ListenerCoupleCloser()
-    : m_pDocument(0)
-    , m_delegate(0)
+    : m_pDocument(nullptr)
+    , m_delegate(nullptr)
     , m_AfterContentListener(this)
     , m_BeforeContentListener(this)
     , m_NullContentListener(this)

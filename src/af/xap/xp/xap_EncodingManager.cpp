@@ -95,10 +95,10 @@ const char* XAP_EncodingManager::getNativeUnicodeEncodingName() const
     return "UTF-8"; /* this will definitely work*/
 }
 
-static const char * UCS2BEName = 0;
-static const char * UCS2LEName = 0;
-static const char * UCS4BEName = 0;
-static const char * UCS4LEName = 0;
+static const char * UCS2BEName = nullptr;
+static const char * UCS2LEName = nullptr;
+static const char * UCS4BEName = nullptr;
+static const char * UCS4LEName = nullptr;
 
 /*!
  * Returns the name this system uses for UCS-2, big endian
@@ -1260,26 +1260,26 @@ void XAP_EncodingManager::initialize()
 		"UCS-2-BE",			// older libiconv
 		"UNICODEBIG",		// older glibc
 		"UNICODE-1-1",		// in libiconv source
-		0 };
+		nullptr };
 	static const char * (szUCS2LENames[]) = {
 		"UTF-16LE",			// superset
 		"UTF-16-LE",		// my guess
 		"UCS-2LE",			// preferred
 		"UCS-2-LE",			// older libiconv
 		"UNICODELITTLE",	// older glibc
-		0 };
+		nullptr };
 
 	// UCS-4 Encoding Names
 	static const char * (szUCS4BENames[]) = {
 		"UCS-4BE",			// preferred
 		"UCS-4-BE",			// older libiconv (??)
-		0 };
+		nullptr };
 	static const char * (szUCS4LENames[]) = {
 		"UCS-4LE",			// preferred
 		"UCS-4-LE",			// older libiconv (??)
-		0 };
+		nullptr };
 
-	const char ** p = 0;
+	const char ** p = nullptr;
 	UT_iconv_t iconv_handle = UT_ICONV_INVALID;
 
 	for (p = szUCS2BENames; *p; ++p)
@@ -1618,7 +1618,7 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 
 	for (size_t j = 0; j < 5; ++j)
 		ptrs[j] = buf[j].c_str();
-	ptrs[5] = 0;
+	ptrs[5] = nullptr;
 	
     return ptrs;
 }

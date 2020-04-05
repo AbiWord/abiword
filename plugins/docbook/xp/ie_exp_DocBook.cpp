@@ -374,7 +374,7 @@ void s_DocBook_Listener :: _closeSpan(void)
 	
 	if (pAP)
 	{
-		const gchar * szValue = 0;
+		const gchar * szValue = nullptr;
 
 		if (pAP->getProperty(static_cast<const gchar *>("text-position"), szValue))
 		{
@@ -512,7 +512,7 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 
 	if (bHaveProp && pAP)
 	{
-		const gchar * szValue = 0;
+		const gchar * szValue = nullptr;
 
 		if (pAP->getAttribute(static_cast<const gchar *>(PT_STYLE_ATTRIBUTE_NAME), szValue))
 		{	
@@ -758,7 +758,7 @@ void s_DocBook_Listener :: _openSection (PT_AttrPropIndex api, int sub, const UT
 	UT_UTF8String section = "section", escaped = "";
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	const gchar * szValue = 0;
+	const gchar * szValue = nullptr;
 
 	if(content.length())
 	{
@@ -804,7 +804,7 @@ void s_DocBook_Listener :: _openSpan(PT_AttrPropIndex api)
 	
 	if (bHaveProp && pAP)
 	{
-		const gchar * szValue = 0;
+		const gchar * szValue = nullptr;
 
 		if ((pAP->getAttribute(static_cast<const gchar *>("revision"), szValue)))
 		{
@@ -1222,7 +1222,7 @@ void s_DocBook_Listener::_handleDocument(void)
 	UT_UTF8String buf("book");
 	PT_AttrPropIndex docApi = m_pDocument->getAttrPropIndex();
 	const PP_AttrProp * pDAP = NULL;
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 
 	m_pDocument->getAttrProp (docApi, &pDAP);
 
@@ -1439,7 +1439,7 @@ void s_DocBook_Listener::_handleRevisions(void)
 void s_DocBook_Listener::_handleImage(PT_AttrPropIndex api)
 {
 	UT_UTF8String buf(""), escaped("");
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -1544,7 +1544,7 @@ void s_DocBook_Listener::_handleImage(PT_AttrPropIndex api)
 void s_DocBook_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 {
 	UT_UTF8String buf(""), escaped("");
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -1639,7 +1639,7 @@ void s_DocBook_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 void s_DocBook_Listener::_handleMath(PT_AttrPropIndex api)
 {
 	UT_UTF8String buf(""), escaped("");
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -1717,7 +1717,7 @@ void s_DocBook_Listener::_handleMath(PT_AttrPropIndex api)
 void s_DocBook_Listener::_handleEmbedded(PT_AttrPropIndex api)
 {
 	UT_UTF8String buf(""), escaped("");
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -1782,7 +1782,7 @@ void s_DocBook_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_At
 	UT_UTF8String buf(""), escaped("");
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	const gchar * szValue = 0, * szStyle = 0;
+	const gchar * szValue = nullptr, * szStyle = nullptr;
 
 	if(!m_bInParagraph)
 		_openBlock(false);
@@ -1856,7 +1856,7 @@ void s_DocBook_Listener::_handleTOC(PT_AttrPropIndex api)
 {
 	std::string buf;
 	UT_UTF8String content("toc");
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
@@ -1890,7 +1890,7 @@ void s_DocBook_Listener::_handleTOC(PT_AttrPropIndex api)
 void s_DocBook_Listener::_handleHyperlink(PT_AttrPropIndex api)
 {
 	UT_UTF8String buf(""), escaped("");
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
@@ -1931,7 +1931,7 @@ void s_DocBook_Listener::_handleHyperlink(PT_AttrPropIndex api)
 void s_DocBook_Listener::_handleBookmark(PT_AttrPropIndex api)
 {
 	UT_UTF8String buf(""), escaped("");
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
@@ -1952,7 +1952,7 @@ void s_DocBook_Listener::_handleBookmark(PT_AttrPropIndex api)
 void s_DocBook_Listener::_handleHdrFtr(PT_AttrPropIndex api)
 {
 	UT_UTF8String buf("abi-");  //prefix the type to prevent confusion on import (e.g. if there's a 'footer' style)
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
@@ -1966,7 +1966,7 @@ void s_DocBook_Listener::_handleHdrFtr(PT_AttrPropIndex api)
 void s_DocBook_Listener::_handleFootnote(PT_AttrPropIndex api)
 {
 	UT_UTF8String buf("footnote id=\"footnote-id-");  //make it an NCNAME to prevent validation errors
-	const gchar* szValue = 0;
+	const gchar* szValue = nullptr;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
@@ -2025,7 +2025,7 @@ bool s_DocBook_Listener::populateStrux(pf_Frag_Strux* sdh,
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-	*psfh = 0;							// we don't need it.
+	*psfh = nullptr;							// we don't need it.
 
 	switch (pcrx->getStruxType())
 	{
@@ -2242,8 +2242,8 @@ UT_Error IE_Exp_DocBook::_writeDocument(void)
 void s_DocBook_Listener::_handleDataItems(void)
 {
 	// Lifted from HTML listener
- 	const char * szName = 0;
-    std::string mimeType;
+	const char * szName = nullptr;
+	std::string mimeType;
 	UT_ConstByteBufPtr pByteBuf;
 
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf,

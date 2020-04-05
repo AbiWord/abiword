@@ -149,10 +149,10 @@ convertNativeToRedlandModel(
                 world, (unsigned char *)subject.toString().c_str() );
             librdf_node* rpredicate = librdf_new_node_from_uri_string(
                 world, (unsigned char *)predicate.toString().c_str() );
-            librdf_node* robject = 0;
+            librdf_node* robject = nullptr;
             if( object.isLiteral() )
             {
-                librdf_uri* datatype_uri = 0;
+                librdf_uri* datatype_uri = nullptr;
                 UT_DEBUGMSG(("literal hasxsdt:%d dt:%s\n",
                              object.hasXSDType(), object.getXSDType().c_str() ));
                 if( object.hasXSDType() )
@@ -162,7 +162,7 @@ convertNativeToRedlandModel(
                         (const unsigned char*)object.getXSDType().c_str() );
                 }
 
-                const char *xml_language = 0;
+                const char *xml_language = nullptr;
                 robject =  librdf_new_node_from_typed_literal(
                     world,
                     (unsigned char *)object.toString().c_str(),
@@ -200,7 +200,7 @@ convertNativeToRedlandModel(
                 librdf_free_node( rpredicate );
                 librdf_free_node( robject );
                 UT_DEBUGMSG(("writeRDF() failed to add triple to redland model\n"));
-                return 0;
+                return nullptr;
             }
         }
     }
@@ -209,15 +209,15 @@ convertNativeToRedlandModel(
 
 
 RDFArguments::RDFArguments()
-    : world(0)
-    , storage(0)
-    , model(0)
-    , parser(0)
+    : world(nullptr)
+    , storage(nullptr)
+    , model(nullptr)
+    , parser(nullptr)
 {
     world   = getWorld();
-    storage = librdf_new_storage( world, "memory", "/", 0 );
-    model   = librdf_new_model(   world, storage, 0 );
-    parser  = librdf_new_parser(  world, 0, 0, 0 );
+    storage = librdf_new_storage(world, "memory", "/", nullptr);
+    model = librdf_new_model(world, storage, nullptr);
+    parser = librdf_new_parser(world, nullptr, nullptr, nullptr);
 
     UT_DEBUGMSG(("RDFArguments() w:%p s:%p m:%p p:%p\n",
                  world, storage, model, parser ));
@@ -238,8 +238,8 @@ void dumpModelToTest( RDFArguments& args )
 
     // Convert redland model to RDF/XML
     librdf_serializer* serializer = librdf_new_serializer(
-        args.world, "rdfxml", 0, 0 );
-    librdf_uri* base_uri = 0;
+        args.world, "rdfxml", nullptr, nullptr);
+    librdf_uri* base_uri = nullptr;
     size_t data_sz = 0;
     // It seems from reading the redland source that "data" is allocated using
     // malloc() and handed back to us to take care of.
@@ -267,7 +267,7 @@ std::string toString( librdf_uri *node )
 
 std::string toString( librdf_node *node )
 {
-    unsigned char* z = 0;
+    unsigned char* z = nullptr;
     std::string s;
     librdf_node_type t = librdf_node_get_type( node );
     switch( t )
@@ -321,8 +321,8 @@ toRDFXML( const std::list< PD_RDFModelHandle >& ml )
     // Convert redland model to RDF/XML
     //
     librdf_serializer* serializer = librdf_new_serializer(
-        args.world, "rdfxml", 0, 0 );
-    librdf_uri* base_uri = 0;
+        args.world, "rdfxml", nullptr, nullptr);
+    librdf_uri* base_uri = nullptr;
     size_t data_sz = 0;
     // It seems from reading the redland source that "data" is allocated using
     // malloc() and handed back to us to take care of.

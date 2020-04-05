@@ -61,9 +61,10 @@ static void _startElement (void * userData, const gchar * name, const gchar ** a
 
 	/* libxml2 can supply atts == 0, which is a little at variance to what is expected...
 	 */
-	const gchar * ptr = 0;
+	const gchar * ptr = nullptr;
 	const gchar ** new_atts = atts;
-	if (atts == 0) new_atts = &ptr;
+	if (atts == nullptr)
+		new_atts = &ptr;
 
 	pXML->startElement (reinterpret_cast<const char *>(name),
 						reinterpret_cast<const char **>(new_atts));
@@ -114,7 +115,8 @@ static void _fatalErrorSAXFunc (void * /*ctx*/, const char *msg, ...)
 
 UT_Error UT_HTML::parse (const char * szFilename)
 {
-	if ((szFilename == 0) || (m_pListener == 0)) return UT_ERROR;
+	if ((szFilename == nullptr) || (m_pListener == nullptr))
+		return UT_ERROR;
 
 	if (!reset_all ()) return UT_OUTOFMEM;
 
@@ -136,7 +138,7 @@ UT_Error UT_HTML::parse (const char * szFilename)
 	m_bStopped = false;
 
 	htmlSAXHandler hdl;
-	htmlParserCtxtPtr ctxt = 0;
+	htmlParserCtxtPtr ctxt = nullptr;
 
 	memset (&hdl, 0, sizeof (hdl));
 
@@ -182,7 +184,7 @@ UT_Error UT_HTML::parse (const char * szFilename)
 			if (ret == UT_OK)
 				if (!m_bStopped)
 					{
-						if (htmlParseChunk (ctxt, 0, 0, 1))
+						if (htmlParseChunk(ctxt, nullptr, 0, 1))
 							{
 								UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n",
 											  szFilename, xmlSAX2GetLineNumber(ctxt),
@@ -209,7 +211,8 @@ UT_Error UT_HTML::parse (const char * szFilename)
 
 UT_Error UT_HTML::parse (const char * buffer, UT_uint32 length)
 {
-	if ((buffer == 0) || (length < 6) || (m_pListener == 0)) return UT_ERROR;
+	if ((buffer == nullptr) || (length < 6) || (m_pListener == nullptr))
+		return UT_ERROR;
 
 	UT_XML::Reader * reader = m_pReader;
 

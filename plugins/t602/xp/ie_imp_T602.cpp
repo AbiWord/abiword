@@ -54,7 +54,7 @@ ABI_PLUGIN_DECLARE("T602")
 
 // completely generic code to allow this to be a plugin
 
-static IE_Imp_T602_Sniffer * m_sniffer = 0;
+static IE_Imp_T602_Sniffer * m_sniffer = nullptr;
 
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
@@ -82,17 +82,17 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name    = 0;
-	mi->desc    = 0;
-	mi->version = 0;
-	mi->author  = 0;
-	mi->usage   = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	UT_ASSERT (m_sniffer);
 
 	IE_Imp::unregisterImporter (m_sniffer);
 	delete m_sniffer;
-	m_sniffer = 0;
+	m_sniffer = nullptr;
 
 	return 1;
 }

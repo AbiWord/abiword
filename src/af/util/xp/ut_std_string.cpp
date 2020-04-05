@@ -245,7 +245,7 @@ std::string& UT_tolower(std::string& s)
 
 std::string UT_XML_cloneNoAmpersands( const std::string& src )
 {
-    gchar* rszDest = 0;
+    gchar* rszDest = nullptr;
 
     bool rc = UT_XML_cloneNoAmpersands( rszDest, src.c_str() );
     if( !rc )
@@ -542,7 +542,7 @@ std::string toTimeString( time_t TT )
 {
     const int bufmaxlen = 1025;
     char buf[bufmaxlen];
-    struct tm* TM = 0;
+    struct tm* TM = nullptr;
     std::string format = "%y %b %e %H:%M";
 
 //    TM = gmtime( &TT );

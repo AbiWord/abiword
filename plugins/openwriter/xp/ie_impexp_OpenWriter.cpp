@@ -42,8 +42,8 @@ ABI_PLUGIN_DECLARE("OpenWriter")
 // completely generic C-interface code to allow this to be a plugin
 
 // we use a reference-counted sniffer
-static IE_Imp_OpenWriter_Sniffer * m_imp_sniffer = 0;
-static IE_Exp_OpenWriter_Sniffer * m_exp_sniffer = 0;
+static IE_Imp_OpenWriter_Sniffer * m_imp_sniffer = nullptr;
+static IE_Exp_OpenWriter_Sniffer * m_exp_sniffer = nullptr;
 
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
@@ -68,19 +68,19 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-  mi->name    = 0;
-  mi->desc    = 0;
-  mi->version = 0;
-  mi->author  = 0;
-  mi->usage   = 0;
+  mi->name = nullptr;
+  mi->desc = nullptr;
+  mi->version = nullptr;
+  mi->author = nullptr;
+  mi->usage = nullptr;
   
   IE_Imp::unregisterImporter (m_imp_sniffer);
   delete m_imp_sniffer;
-  m_imp_sniffer = 0;
+  m_imp_sniffer = nullptr;
 
   IE_Exp::unregisterExporter (m_exp_sniffer);
   delete m_exp_sniffer;
-  m_exp_sniffer = 0;
+  m_exp_sniffer = nullptr;
 
   return 1;
 }
