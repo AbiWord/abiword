@@ -616,6 +616,7 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wunreachable-code-loop-increment \
    -Wunused \
    -Wunused-const-variable \
+   -Wunused-label \
    -Wunused-local-typedef \
    -Wunused-private-field \
    -Wunused-value \
