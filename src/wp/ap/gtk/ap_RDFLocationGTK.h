@@ -26,8 +26,10 @@
 #include "ap_RDFSemanticItemGTKInjected.h"
 
 #ifdef WITH_CHAMPLAIN
+ABI_W_NO_DEPRECATED
 #include <champlain/champlain.h>
 #include <champlain-gtk/champlain-gtk.h>
+ABI_W_POP
 #include <clutter-gtk/clutter-gtk.h>
 #endif
 
