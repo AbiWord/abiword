@@ -196,113 +196,84 @@ void XAP_Prefs::setUseEnvLocale(bool bUse)
 
 /*****************************************************************/
 
-UT_sint32 XAP_Prefs::getMaxRecent(void) const
+UT_uint32 XAP_Prefs::getMaxRecent(void) const
 {
-	return m_iMaxRecent;
+	return m_maxRecent;
 }
 
-void XAP_Prefs::setMaxRecent(UT_sint32 k)
+void XAP_Prefs::setMaxRecent(UT_uint32 k)
 {
-	UT_ASSERT_HARMLESS(k<=XAP_PREF_LIMIT_MaxRecent);
+	UT_ASSERT_HARMLESS(k <= XAP_PREF_LIMIT_MaxRecent);
 
-	if (k > XAP_PREF_LIMIT_MaxRecent)
+	if (k > XAP_PREF_LIMIT_MaxRecent) {
 		k = XAP_PREF_LIMIT_MaxRecent;
-
-	m_iMaxRecent = k;
-}
-
-UT_sint32 XAP_Prefs::getRecentCount(void) const
-{
-	return m_vecRecent.getItemCount();
-}
-
-const char * XAP_Prefs::getRecent(UT_sint32 k) const
-{
-	// NB: k is one-based
-	UT_return_val_if_fail(k <= m_iMaxRecent, NULL);
-
-	const char * pRecent = NULL;
-	
-	if (k <= m_vecRecent.getItemCount())
-	{
-		pRecent = reinterpret_cast<const char *>(m_vecRecent.getNthItem(k - 1));
 	}
 
-	return pRecent;
+	m_maxRecent = k;
 }
-	
+
+UT_uint32 XAP_Prefs::getRecentCount(void) const
+{
+	return m_vecRecent.size();
+}
+
+const char* XAP_Prefs::getRecent(UT_uint32 k) const
+{
+	// NB: k is one-based
+	UT_return_val_if_fail(k > 0, nullptr);
+	UT_return_val_if_fail(k <= m_maxRecent, nullptr);
+
+	if (k <= m_vecRecent.size()) {
+		return m_vecRecent.at(k - 1).c_str();
+	}
+
+	return nullptr;
+}
+
 void XAP_Prefs::addRecent(const char * szRecent)
 {
-	char * sz;
-	bool bFound = false;
-
 	UT_return_if_fail(szRecent);
 
-	if (m_iMaxRecent == 0)
+	if (m_maxRecent == 0) {
 		return;		// NOOP
+	}
 
-	if(m_bIgnoreThisOne)
-	{
+	if(m_bIgnoreThisOne) {
 		m_bIgnoreThisOne = false;
 		return;
 	}
-	// was it already here? 
-	for (UT_sint32 i=0; i<m_vecRecent.getItemCount(); i++)
-	{
-		sz = m_vecRecent.getNthItem(i);
-		UT_continue_if_fail(sz);
-
-		if ((sz==szRecent) || !strcmp(sz, szRecent))
-		{
+	// was it already here?
+	for (auto iter = m_vecRecent.begin(); iter != m_vecRecent.end(); ++iter) {
+		if (*iter == szRecent) {
 			// yep, we're gonna move it up
-			m_vecRecent.deleteNthItem(i);
-			bFound = true;
+			m_vecRecent.erase(iter);
 			break;
 		}
 	}
 
-	if (!bFound)
-	{
-		// nope.  make a new copy to store
-		sz = g_strdup(szRecent);
-	}
-
-	m_vecRecent.insertItemAt(sz, 0);
+	m_vecRecent.insert(m_vecRecent.begin(), szRecent);
 	_pruneRecent();
 }
 
-void XAP_Prefs::removeRecent(UT_sint32 k)
+void XAP_Prefs::removeRecent(UT_uint32 k)
 {
-	UT_return_if_fail(k>0);
-	UT_return_if_fail(k<=getRecentCount());
+	UT_return_if_fail(k > 0);
+	UT_return_if_fail(k <= getRecentCount());
 
-	char * sz = m_vecRecent.getNthItem(k-1);
-	FREEP(sz);
-
-	m_vecRecent.deleteNthItem(k-1);
+	m_vecRecent.erase(m_vecRecent.begin() + (k - 1));
 }
 
 void XAP_Prefs::_pruneRecent(void)
 {
-	UT_sint32 i;
-	UT_sint32 count = getRecentCount();
+	UT_uint32 count = getRecentCount();
 
-	if (m_iMaxRecent == 0)
-	{
-		// nuke the whole thing
-		for (i = count; i > 0 ; i--)
-		{
-			char * sz = m_vecRecent.getNthItem(i-1);
-			FREEP(sz);
-		}
-
+	if (m_maxRecent == 0) {
 		m_vecRecent.clear();
-	}
-	else if (count > m_iMaxRecent)
-	{
-		// prune entries past m_iMaxRecent
-		for (i = count; i > m_iMaxRecent; i--)
+	} else if (count > m_maxRecent) {
+		// prune entries past m_maxRecent
+		for (UT_uint32 i = count; i > m_maxRecent; i--) {
 			removeRecent(i);
+		}
 	}
 }
 /*****************************************************************/
@@ -348,7 +319,6 @@ bool XAP_Prefs::getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, 
 void XAP_Prefs::log(const char * where, const char * what, XAPPrefsLog_Level level)
 {
 	UT_return_if_fail(where && what);
-	char b[50];
 
 	time_t t = time(NULL);
 
@@ -359,60 +329,55 @@ void XAP_Prefs::log(const char * where, const char * what, XAPPrefsLog_Level lev
 	UT_UTF8String sDashdash = "--";
 	UT_UTF8String sDash = "-";
 
-	while(strstr(sWhat.utf8_str(), "--"))
-	{
+	while(strstr(sWhat.utf8_str(), "--")) {
 		sWhat.escape(sDashdash, sDash);
 	}
-	
-	while(strstr(sWhere.utf8_str(), "--"))
-	{
+
+	while(strstr(sWhere.utf8_str(), "--")) {
 		sWhere.escape(sDashdash, sDash);
 	}
 
+	char b[50];
 	strftime(b, 50, "<!-- [%c] ", localtime(&t));
+	std::string s(b);
 
-	UT_UTF8String * s = new UT_UTF8String(b);
-	UT_return_if_fail(s);
+	switch(level) {
+	case Warning:
+		s += "warning: ";
+		break;
 
-	switch(level)
-	{
-		case Warning:
-			*s += "warning: ";
-			break;
-
-		case Error:
-			*s += "error:   ";
-			break;
-		case Log:
-		default:
-			*s += "message: ";
+	case Error:
+		s += "error:   ";
+		break;
+	case Log:
+	default:
+		s += "message: ";
 	}
 
 	sWhere.escapeXML();
 	sWhat.escapeXML();
-	
-	*s += sWhere;
-	*s += " - ";
-	*s += sWhat;
-	*s += " -->";
 
-	m_vecLog.addItem(s);
+	s += sWhere.utf8_str();
+	s += " - ";
+	s += sWhat.utf8_str();
+	s += " -->";
+
+	m_vecLog.push_back(s);
 }
 
 
 /*****************************************************************/
 
-XAP_Prefs::XAP_Prefs() 
+XAP_Prefs::XAP_Prefs()
+	: m_bAutoSavePrefs(atoi(XAP_PREF_DEFAULT_AutoSavePrefs) ? true : false)
+	, m_bUseEnvLocale(atoi(XAP_PREF_DEFAULT_UseEnvLocale) ? true : false)
+	, m_currentScheme(nullptr)
+	, m_builtinScheme(nullptr)
+	, m_maxRecent(atoi(XAP_PREF_DEFAULT_MaxRecent))
+	, m_bInChangeBlock(false)
+	, m_bIgnoreThisOne(false)
+	, m_geom({0, 0, 0, 0, 0})
 {
-	m_bAutoSavePrefs = (atoi(XAP_PREF_DEFAULT_AutoSavePrefs) ? true : false);
-	m_bUseEnvLocale = (atoi(XAP_PREF_DEFAULT_UseEnvLocale) ? true : false);
-	m_currentScheme = NULL;
-	m_builtinScheme = NULL;
-	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);
-	m_bInChangeBlock = false;
-	m_bIgnoreThisOne = false;
-	memset(&m_geom, 0, sizeof(m_geom));
-
 	// NOTE: since constructors cannot report g_try_malloc
 	// NOTE: failures (and since it is virtual back
 	// NOTE: to the application), our creator must call
@@ -425,43 +390,38 @@ XAP_Prefs::XAP_Prefs()
 
 XAP_Prefs::~XAP_Prefs(void)
 {
-	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecSchemes);
-	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecPluginSchemes);
-	UT_VECTOR_FREEALL(char *, m_vecRecent);
-	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecLog);
+	UT_std_vector_purgeall(m_vecSchemes);
+	UT_std_vector_purgeall(m_vecPluginSchemes);
 }
 
 /*****************************************************************/
 
-XAP_PrefsScheme * XAP_Prefs::_getNthScheme(UT_uint32 k, const UT_GenericVector<XAP_PrefsScheme *> &vecSchemes) const
+XAP_PrefsScheme* XAP_Prefs::_getNthScheme(UT_uint32 k, const std::vector<XAP_PrefsScheme *> &vecSchemes) const
 {
-	UT_uint32 kLimit = vecSchemes.getItemCount();
-	if (k < kLimit)
-		return vecSchemes.getNthItem(k);
-	else
-		return NULL;
+	UT_uint32 kLimit = vecSchemes.size();
+	if (k < kLimit) {
+		return vecSchemes.at(k);
+	}
+	return nullptr;
 }
 
-XAP_PrefsScheme * XAP_Prefs::getNthScheme(UT_uint32 k) const
+XAP_PrefsScheme* XAP_Prefs::getNthScheme(UT_uint32 k) const
 {
 	return _getNthScheme(k, m_vecSchemes);
 }
 
-XAP_PrefsScheme * XAP_Prefs::getNthPluginScheme(UT_uint32 k) const
+XAP_PrefsScheme* XAP_Prefs::getNthPluginScheme(UT_uint32 k) const
 {
 	return _getNthScheme(k, m_vecPluginSchemes);
 }
 
-XAP_PrefsScheme * XAP_Prefs::getScheme(const gchar * szSchemeName) const
+XAP_PrefsScheme* XAP_Prefs::getScheme(const gchar * szSchemeName) const
 {
-	UT_uint32 kLimit = m_vecSchemes.getItemCount();
-	UT_uint32 k;
+	UT_uint32 kLimit = m_vecSchemes.size();
 
-	for (k=0; k<kLimit; k++)
-	{
+	for (UT_uint32 k = 0; k < kLimit; k++) {
 		XAP_PrefsScheme * p = getNthScheme(k);
-		if(!p)
-		{
+		if (!p) {
 			UT_ASSERT_HARMLESS(p);
 			continue;
 		}
@@ -473,16 +433,13 @@ XAP_PrefsScheme * XAP_Prefs::getScheme(const gchar * szSchemeName) const
 	return NULL;
 }
 
-XAP_PrefsScheme * XAP_Prefs::getPluginScheme(const gchar * szSchemeName) const
+XAP_PrefsScheme* XAP_Prefs::getPluginScheme(const gchar * szSchemeName) const
 {
-	UT_uint32 kLimit = m_vecPluginSchemes.getItemCount();
-	UT_uint32 k;
+	UT_uint32 kLimit = m_vecPluginSchemes.size();
 
-	for (k=0; k<kLimit; k++)
-	{
+	for (UT_uint32 k = 0; k < kLimit; k++) {
 		XAP_PrefsScheme * p = getNthPluginScheme(k);
-		if(!p)
-		{
+		if (!p) {
 			UT_ASSERT_HARMLESS(p);
 			continue;
 		}
@@ -494,7 +451,7 @@ XAP_PrefsScheme * XAP_Prefs::getPluginScheme(const gchar * szSchemeName) const
 	return NULL;
 }
 
-bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
+void XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 {
 	const gchar * szBuiltinSchemeName = getBuiltinSchemeName();
 	const std::string& thisSchemeName = pNewScheme->getSchemeName();
@@ -504,12 +461,17 @@ bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 		m_builtinScheme = pNewScheme;
 	}
 
-	return (m_vecSchemes.addItem(pNewScheme) == 0);
+	m_vecSchemes.push_back(pNewScheme);
 }
 
-bool XAP_Prefs::addPluginScheme(XAP_PrefsScheme * pNewScheme)
+void XAP_Prefs::addPluginScheme(XAP_PrefsScheme * pNewScheme)
 {
-	return (m_vecPluginSchemes.addItem(pNewScheme) == 0);
+	m_vecPluginSchemes.push_back(pNewScheme);
+}
+
+XAP_PrefsScheme * XAP_Prefs::getCurrentScheme() const
+{
+	return m_currentScheme;
 }
 
 XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(bool bCreate)
@@ -863,8 +825,8 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 			a += 2;
 		}
 
-		if (!addScheme(pNewScheme))
-			goto MemoryError;
+		addScheme(pNewScheme);
+
 		pNewScheme = NULL;				// we don't own it anymore
 		break;
 		}
@@ -906,8 +868,8 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 			a += 2;
 		}
 
-		if (!addPluginScheme(pNewScheme))
-			goto MemoryError;
+		addPluginScheme(pNewScheme);
+
 		pNewScheme = NULL;				// we don't own it anymore
 		break;
 		}
@@ -919,35 +881,25 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 		// <Recent max="4" name1="v1" name2="v2" ... />
 
 		const gchar ** a = atts;
-		while (*a)
-		{
+		while (*a) {
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (strcmp(static_cast<const char*>(a[0]), "max") == 0)
-			{
-				m_iMaxRecent = atoi(static_cast<const char*>(a[1]));
-			}
-			else if (strncmp(static_cast<const char*>(a[0]), "name", 4) == 0)
-			{
-				// NOTE: taking advantage of the fact that gchar == char
-				UT_ASSERT((sizeof(gchar) == sizeof(char)));
-				gchar * sz;
-
+			if (strcmp(a[0], "max") == 0) {
+				m_maxRecent = atoi(a[1]);
+			} else if (strncmp(a[0], "name", 4) == 0) {
 				// see bug 10709 - Non-URI paths aren't displayed correctly in the file menu
 				// this provides a seamless migration
 
-				char * uri;
-				if (UT_go_path_is_uri (a[1]))
-				  uri = g_strdup (a[1]);
-				else
-				  uri = UT_go_filename_to_uri (a[1]);
+				std::string recent;
+				if (UT_go_path_is_uri(a[1])) {
+					recent = a[1];
+				} else {
+					gchar* uri = UT_go_filename_to_uri(a[1]);
+					recent = uri;
+					g_free (uri);
+				}
 
-				sz = g_strdup(uri);
-
-				g_free (uri);
-
-				// NOTE: we keep the copied string in the vector
-				m_vecRecent.addItem(sz);
+				m_vecRecent.push_back(recent);
 			}
 
 			a += 2;
@@ -1228,7 +1180,7 @@ bool XAP_Prefs::savePrefsFile(void)
 				static_cast<UT_uint32>(m_bAutoSavePrefs),
 				static_cast<UT_uint32>(m_bUseEnvLocale));
 
-		UT_uint32 kLimit = m_vecSchemes.getItemCount();
+		UT_uint32 kLimit = m_vecSchemes.size();
 		UT_uint32 k;
 
 		const gchar * szBuiltinSchemeName = getBuiltinSchemeName();
@@ -1321,12 +1273,10 @@ bool XAP_Prefs::savePrefsFile(void)
 		}
 
 		// add Plugin Scheme (plugin specific preferences) if they exist
-		kLimit = m_vecPluginSchemes.getItemCount();
-		for (k=0; k<kLimit; k++)
-		{
+		kLimit = m_vecPluginSchemes.size();
+		for (k = 0; k < kLimit; k++) {
 			XAP_PrefsScheme * p = getNthPluginScheme(k);
-			if(!p)
-			{
+			if (!p) {
 				UT_ASSERT_HARMLESS(p);
 				continue;
 			}
@@ -1372,44 +1322,41 @@ bool XAP_Prefs::savePrefsFile(void)
 		}
 		// end Plugin preferences
 
-		fprintf(fp,"\n\t<Recent\n\t\tmax=\"%d\"\n",
-				static_cast<UT_uint32>(m_iMaxRecent));
+		fprintf(fp,"\n\t<Recent\n\t\tmax=\"%u\"\n", m_maxRecent);
 
-		kLimit = m_vecRecent.getItemCount();
+		kLimit = m_vecRecent.size();
 
 		for (k=0; k<kLimit; k++)
 		{
-			const char * szRecent = getRecent(k+1);
-			UT_UTF8String utf8string( szRecent );
-			utf8string.escapeXML();
+			const char* szRecent = getRecent(k + 1);
+			if (!szRecent) {
+				UT_DEBUGMSG(("getRecent returned nullptr\n"));
+				continue;
+			}
+			auto entry = UT_escapeXML(szRecent);
 
-			fprintf(fp,"\t\tname%d=\"%s\"\n",k+1,utf8string.utf8_str());
+			fprintf(fp, "\t\tname%d=\"%s\"\n", k + 1, entry.c_str());
 		}
-				
+
 		fprintf(fp,"\t\t/>\n");
 
 		fprintf(fp,"\n\t<Geometry\n");
-		fprintf(fp,"\t\twidth=\"%u\"\n", m_geom.m_width); 
-		fprintf(fp,"\t\theight=\"%u\"\n", m_geom.m_height); 
-		fprintf(fp,"\t\tposx=\"%d\"\n", m_geom.m_posx); 
-		fprintf(fp,"\t\tposy=\"%d\"\n", m_geom.m_posy); 
-		fprintf(fp,"\t\tflags=\"%d\"\n", m_geom.m_flags); 
+		fprintf(fp,"\t\twidth=\"%u\"\n", m_geom.m_width);
+		fprintf(fp,"\t\theight=\"%u\"\n", m_geom.m_height);
+		fprintf(fp,"\t\tposx=\"%d\"\n", m_geom.m_posx);
+		fprintf(fp,"\t\tposy=\"%d\"\n", m_geom.m_posy);
+		fprintf(fp,"\t\tflags=\"%d\"\n", m_geom.m_flags);
 		fprintf(fp,"\t\t/>\n");
 	}
-	
-	{
-		// now the log
-		fprintf(fp, "\n\t<Log>\n");
 
-		UT_uint32 kLimit = m_vecLog.getItemCount();
-		for (UT_uint32 k = 0; k < kLimit; ++k)
-		{
-			UT_UTF8String * s = (UT_UTF8String *) m_vecLog.getNthItem(k);
-			fprintf(fp,"\t%s\n", s->utf8_str());
-		}
-	
-		fprintf(fp, "\t</Log>\n");
+	// now the log
+	fprintf(fp, "\n\t<Log>\n");
+
+	for (auto line : m_vecLog) {
+		fprintf(fp,"\t%s\n", line.c_str());
 	}
+
+	fprintf(fp, "\t</Log>\n");
 
 	{
 		fprintf(fp, "\n\t<Fonts include=\"%d\">\n", m_fonts.getIncludeFlag());

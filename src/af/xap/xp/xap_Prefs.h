@@ -24,7 +24,6 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
-#include "ut_vector.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_xml.h"
@@ -78,16 +77,16 @@ class ABI_EXPORT XAP_FontSettings
 
 	void addFont (const char * pFace)
 		{
-			m_vecFonts.push_back (pFace);
+			m_vecFonts.push_back(pFace);
 		}
 
-	bool haveFontsToExclude () const {return (!m_bInclude && m_vecFonts.size());}
-	bool haveFontsToInclude () const {return (m_bInclude && m_vecFonts.size());}
+	bool haveFontsToExclude() const {return (!m_bInclude && m_vecFonts.size());}
+	bool haveFontsToInclude() const {return (m_bInclude && m_vecFonts.size());}
 
 	bool isOnExcludeList (const char * name) const;
 
-	void setIncludeFlag (bool bInclude) {m_bInclude = bInclude;}
-	bool getIncludeFlag () const {return m_bInclude;}
+	void setIncludeFlag(bool bInclude) {m_bInclude = bInclude;}
+	bool getIncludeFlag() const {return m_bInclude;}
 
   private:
 	std::vector<std::string> m_vecFonts;
@@ -149,9 +148,10 @@ public:
 	XAP_PrefsScheme *		getNthPluginScheme(UT_uint32 k) const;
 	XAP_PrefsScheme *		getScheme(const gchar * szSchemeName) const;
 	XAP_PrefsScheme *		getPluginScheme(const gchar * szSchemeName) const;
-	bool					addScheme(XAP_PrefsScheme * pNewScheme);
-	bool					addPluginScheme(XAP_PrefsScheme * pNewScheme);
-	XAP_PrefsScheme *		getCurrentScheme(bool bCreate = false);
+	void addScheme(XAP_PrefsScheme* pNewScheme);
+	void addPluginScheme(XAP_PrefsScheme* pNewScheme);
+	XAP_PrefsScheme* getCurrentScheme() const;
+	XAP_PrefsScheme* getCurrentScheme(bool bCreate);
 	bool					setCurrentScheme(const gchar * szSchemeName);
 
 	bool getPrefsValue(const std::string& key, std::string& value, bool bAllowBuiltin = true) const;
@@ -164,12 +164,12 @@ public:
 	bool					getUseEnvLocale(void) const;
 	void					setUseEnvLocale(bool bUse);
 
-	UT_sint32				getMaxRecent(void) const;
-	void					setMaxRecent(UT_sint32 k);
-	UT_sint32				getRecentCount(void) const;
-	const char *			getRecent(UT_sint32 k) const;		// one-based
-	void					addRecent(const char * szRecent);
-	void					removeRecent(UT_sint32 k);			// one-based
+	UT_uint32 getMaxRecent(void) const;
+	void setMaxRecent(UT_uint32 k);
+	UT_uint32 getRecentCount(void) const;
+	const char* getRecent(UT_uint32 k) const;		// one-based
+	void addRecent(const char * szRecent);
+	void removeRecent(UT_uint32 k);			// one-based
 	void                    setIgnoreNextRecent(void)
 		{ m_bIgnoreThisOne = true;}
 	bool                    isIgnoreRecent(void)
@@ -197,19 +197,19 @@ public:
 protected:
 	void					_pruneRecent(void);
 	XAP_PrefsScheme * 		_getNthScheme(UT_uint32 k,
-										  const UT_GenericVector<XAP_PrefsScheme *> &vecSchemes) const;
+										  const std::vector<XAP_PrefsScheme *> &vecSchemes) const;
 
 	bool					m_bAutoSavePrefs; /* save on any changes or only when user asks */
 	bool					m_bUseEnvLocale; /* use POSIX env vars to set locale */
 
-	UT_GenericVector<XAP_PrefsScheme *>	m_vecSchemes;		/* vector of XAP_PrefsScheme */
-	UT_GenericVector<XAP_PrefsScheme *>	m_vecPluginSchemes;	/* vector of XAP_PrefsScheme */
+	std::vector<XAP_PrefsScheme*> m_vecSchemes;
+	std::vector<XAP_PrefsScheme*> m_vecPluginSchemes;
 	XAP_PrefsScheme *		m_currentScheme;
 	XAP_PrefsScheme *		m_builtinScheme;
 
-	UT_sint32				m_iMaxRecent;
-	UT_GenericVector<char*>	m_vecRecent;		/* vector of (char *) */
-	UT_GenericVector<UT_UTF8String *> m_vecLog; /* vector of UT_UTF8String */
+	UT_uint32 m_maxRecent;
+	std::vector<std::string> m_vecRecent;
+	std::vector<std::string> m_vecLog;
 
 	XAP_FontSettings        m_fonts;
 

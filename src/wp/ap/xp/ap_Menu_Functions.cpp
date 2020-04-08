@@ -126,7 +126,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 
 	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_FILE_RECENT_1);
 
-	UT_sint32 ndx = (id - AP_MENU_ID_FILE_RECENT_1 + 1);
+	UT_uint32 ndx = (id - AP_MENU_ID_FILE_RECENT_1 + 1);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail (pPrefs, NULL);

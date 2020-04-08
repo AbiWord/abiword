@@ -3121,7 +3121,7 @@ Defun1(newWindow)
 	return (pClone ? true : false);
 }
 
-static bool _openRecent(AV_View* pAV_View, UT_sint32 ndx)
+static bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 {
 	XAP_Frame * pFrame = NULL;
 	if (pAV_View) {

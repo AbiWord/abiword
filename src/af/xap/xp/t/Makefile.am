@@ -1,3 +1,4 @@
 
 EXTRA_DIST = \
-	xap_Dlg_DocComparison.t.cpp
+	xap_Prefs.t.cpp \
+	$(NULL)
