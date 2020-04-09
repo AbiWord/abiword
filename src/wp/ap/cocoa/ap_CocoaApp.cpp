@@ -1,9 +1,9 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2002-2005 Francis James Franklin
- * Copyright (C) 2001-2005, 2009 Hubert Figuiere
+ * Copyright (C) 2001-2020 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_math.h"
 #include "ut_misc.h"
 #include "ut_png.h"
@@ -274,15 +275,12 @@ bool AP_CocoaApp::initialize(void)
 		// see if we should load an alternative set from the disk
 	    
 //		const char * szDirectory = NULL;
-		const char * szStringSet = NULL;
-	    
-		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
-							  (const gchar**)&szStringSet))
-			   && (szStringSet)
-			   && (*szStringSet)
-			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
+		std::string stringSet;
+
+		if (getPrefsValue(AP_PREF_KEY_StringSet, stringSet)
+			&& !stringSet.empty() && (stringSet != AP_PREF_DEFAULT_StringSet))
 		{
-#if 0			
+#if 0
 			getPrefsValueDirectory(true,
 								   (const gchar*)AP_PREF_KEY_StringSetDirectory,
 								   (const gchar**)&szDirectory);
@@ -291,11 +289,11 @@ bool AP_CocoaApp::initialize(void)
 			std::string szPathname = szDirectory;
 			if (szDirectory[szPathname.size()-1]!='/')
 				szPathname += "/";
-			szPathname += szStringSet;
+			szPathname += stringSet;
 			szPathname += ".strings";
 #endif
 
-			NSString* stringSet = [resources stringByAppendingPathComponent:[NSString stringWithFormat:@"AbiWord/strings/%s%@",szStringSet,@".strings"]];
+			NSString* stringSet = [resources stringByAppendingPathComponent:[NSString stringWithFormat:@"AbiWord/strings/%s%@", stringSet.c_str(), @".strings"]];
 
 			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
 			UT_ASSERT(pDiskStringSet);
@@ -333,32 +331,27 @@ bool AP_CocoaApp::initialize(void)
     /// Build a labelset so the plugins can add themselves to something ///
     ///////////////////////////////////////////////////////////////////////
 
-	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_StringSet, (const gchar**)&szMenuLabelSetName)
-		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
-	{
+	std::string menuLabelSetName;
+	if (getPrefsValue(AP_PREF_KEY_StringSet, menuLabelSetName) && !menuLabelSetName.empty()) {
 		;
-	}
-	else {
-		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
+	} else {
+		menuLabelSetName = AP_PREF_DEFAULT_StringSet;
 	}
 	FREEP(m_szMenuLabelSetName);
-	m_szMenuLabelSetName = g_strdup(szMenuLabelSetName);
+	m_szMenuLabelSetName = g_strdup(szMenuLabelSetName.c_str());
 	UT_ASSERT(m_szMenuLabelSetName);
 	if (!m_szMenuLabelSetName)
 		return false;
 	
 	getMenuFactory()->buildMenuLabelSet(m_szMenuLabelSetName);
-	const char * szMenuLayoutName = NULL;
-	if ((getPrefsValue(AP_PREF_KEY_MenuLayout, static_cast<const gchar**>(&szMenuLayoutName))) &&
-	    (szMenuLayoutName) && (*szMenuLayoutName)) {
+	std::string menuLayoutName;
+	if (getPrefsValue(AP_PREF_KEY_MenuLayout, menuLayoutName) && !menuLayoutName.empty()) {
 		;
-	}
-	else {
-		szMenuLayoutName = AP_PREF_DEFAULT_MenuLayout;
+	} else {
+		menuLayoutName = AP_PREF_DEFAULT_MenuLayout;
 	}
 	FREEP(m_szMenuLayoutName);
-	m_szMenuLayoutName = g_strdup(szMenuLayoutName);
+	m_szMenuLayoutName = g_strdup(menuLayoutName.c_str());
 	UT_ASSERT(m_szMenuLayoutName);
 	if (!m_szMenuLayoutName)
 		return false;
@@ -373,7 +366,7 @@ bool AP_CocoaApp::initialize(void)
 	abi_register_builtin_plugins();
 
 	bool bLoadPlugins = true;
-	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
+	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins, bLoadPlugins);
 	if(bLoadPlugins || !bFound)
 	{
 		XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
@@ -442,28 +435,22 @@ bool AP_CocoaApp::shutdown(void)
   \todo support meaningful return values.
 */
 bool AP_CocoaApp::getPrefsValueDirectory(bool bAppSpecific,
-										const gchar * szKey, const gchar ** pszValue) const
+										 const gchar * szKey, std::string& value) const
 {
     if (!m_prefs)
 		return false;
 
-    const gchar * psz = NULL;
-    if (!m_prefs->getPrefsValue(szKey,&psz))
-		return false;
+    if (!m_prefs->getPrefsValue(szKey, value)) {
+        return false;
+    }
 
-    if (*psz == '/')
-    {
-		*pszValue = psz;
-		return true;
+    if (valur[0] == '/') {
+        return true;
     }
 
     const gchar * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
 
-    static gchar buf[1024];
-    UT_ASSERT((strlen(dir) + strlen(psz) + 2) < sizeof(buf));
-	
-    snprintf(buf, 1024, "%s/%s",dir,psz);
-    *pszValue = buf;
+    value = UT_std_string_sprintf("%s/%s", dir, value.c_str());
     return true;
 }
 

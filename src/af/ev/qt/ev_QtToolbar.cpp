@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 /* AbiWord
  * Copyright (C) 2004-2006 Tomas Frydrych <dr.tomas@yahoo.co.uk>
  * Copyright (C) 2009 Hubert Figuiere
@@ -73,14 +73,14 @@ EV_QtToolbar::~EV_QtToolbar(void)
 
 Qt::ToolButtonStyle EV_QtToolbar::getStyle(void)
 {
-	const gchar * szValue = NULL;
-	m_pQtApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
-	UT_ASSERT((szValue) && (*szValue));
+	std::sting value;
+	m_pQtApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, value);
+	UT_ASSERT(!value.empty());
 
 	Qt::ToolButtonStyle style = Qt::ToolButtonIconOnly;
-	if (g_ascii_strcasecmp(szValue,"text")==0)
+	if (g_ascii_strcasecmp(value.c_str(),"text")==0)
 		style = Qt::ToolButtonTextOnly;
-	else if (g_ascii_strcasecmp(szValue,"both")==0)
+	else if (g_ascii_strcasecmp(value.c_str(),"both")==0)
 		style = Qt::ToolButtonTextBesideIcon;
 
 	return style;

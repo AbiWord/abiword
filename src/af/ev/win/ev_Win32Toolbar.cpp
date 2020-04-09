@@ -511,21 +511,21 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	bool bIcons = true;
 	bool bText = false;
-	const gchar * szValue = NULL;
-	m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
-	UT_return_val_if_fail((szValue) && (*szValue),false);
+	std::string value;
+	m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, value);
+	UT_return_val_if_fail(!value.empty());
 
-	if (g_ascii_strcasecmp(szValue,"icon") == 0)
+	if (g_ascii_strcasecmp(value.c_str(), "icon") == 0)
 	{
 		bIcons = true;
 		bText = false;
 	}
-	else if (g_ascii_strcasecmp(szValue,"text") == 0)
+	else if (g_ascii_strcasecmp(value.c_str(), "text") == 0)
 	{
 		bIcons = false;
 		bText = true;
 	}
-	else if (g_ascii_strcasecmp(szValue,"both") == 0)
+	else if (g_ascii_strcasecmp(value.c_str(), "both") == 0)
 	{
 		bIcons = true;
 		bText = true;

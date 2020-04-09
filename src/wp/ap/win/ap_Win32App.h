@@ -67,8 +67,8 @@ public:
 	virtual bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
 	virtual bool					shutdown(void);
-	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
-														   const gchar * szKey, const gchar ** pszValue) const;
+	virtual bool getPrefsValueDirectory(bool bAppSpecific,
+                                            const gchar * szKey, std::string &value) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);

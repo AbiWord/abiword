@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
@@ -200,31 +200,29 @@ bool AP_Win32App::initialize(void)
 
 		// see if we should load an alternate set from the disk
 		
-		const char * szDirectory = NULL;
-		const char * szStringSet = NULL;
+		std::string directory;
+		std::string stringSet;
 
-		if (   (getPrefsValue(AP_PREF_KEY_StringSet,&szStringSet))
-			&& (szStringSet)
-			&& (*szStringSet)
-			&& (g_ascii_strcasecmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
+		if (getPrefsValue(AP_PREF_KEY_StringSet, stringSet)	&& !stringSet.empty()
+			&& (g_ascii_strcasecmp(stringSet.c_str(), AP_PREF_DEFAULT_StringSet) != 0))
 		{
-			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
-			UT_return_val_if_fail ((szDirectory) && (*szDirectory), false);
+			getPrefsValueDirectory(true, AP_PREF_KEY_StringSetDirectory, directory);
+			UT_return_val_if_fail(!directory.empty(), false);
 
-			char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
+			char * szPathname = (char *)UT_calloc(sizeof(char), directory.size() + stringSet.size() + 100);
 			UT_return_val_if_fail (szPathname, false);
 
 			sprintf(szPathname,"%s%s%s.strings",
 					szDirectory,
-					((szDirectory[strlen(szDirectory)-1]=='\\') ? "" : "\\"),
-					szStringSet);
+					((directory[directory.size() - 1] == '\\') ? "" : "\\"),
+					stringSet.c_str());
 
 			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
 			UT_return_val_if_fail (pDiskStringSet, false);
 
 			if (pDiskStringSet->loadStringsFromDisk(szPathname))
 			{
-				pDiskStringSet->setFallbackStringSet(m_pStringSet);
+				pDiskStringSet->setFallbackStringSet(stringSet.c_str());
 				m_pStringSet = pDiskStringSet;
 				UT_Language_updateLanguageNames();
 				UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname));
@@ -287,17 +285,16 @@ bool AP_Win32App::initialize(void)
     /// Build a labelset so the plugins can add themselves to something ///
     ///////////////////////////////////////////////////////////////////////
 
-	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_StringSet, (const gchar**)&szMenuLabelSetName)
-		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
-	{
+	std::string menuLabelSetName;
+	if (getPrefsValue(AP_PREF_KEY_StringSet, menuLabelSetName)
+		&& !menuLabelSetName.empty()) {
 		;
+	} else {
+		menuLabelSetName = AP_PREF_DEFAULT_StringSet;
 	}
-	else
-		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
 
-	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);	
-	
+	getMenuFactory()->buildMenuLabelSet(menuLabelSetName.c_str());
+
 	//////////////////////////////////////////////////////////////////
 	// Check for necessary DLLs now that we can do localized error messages
 	//////////////////////////////////////////////////////////////////
@@ -335,7 +332,7 @@ bool AP_Win32App::initialize(void)
 #endif
 
 	bool bLoadPlugins = true;
-	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
+	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins, bLoadPlugins);
 
 	if(bLoadPlugins || !bFound)
 	{
@@ -413,28 +410,21 @@ bool AP_Win32App::shutdown(void)
 }
 
 bool AP_Win32App::getPrefsValueDirectory(bool bAppSpecific,
-											const gchar * szKey, const gchar ** pszValue) const
+										 const gchar * szKey, std::string& value) const
 {
 	if (!m_prefs)
 		return false;
 
-	const gchar * psz = NULL;
-	if (!m_prefs->getPrefsValue(szKey,&psz))
+	if (!m_prefs->getPrefsValue(szKey, value) || value.empty())
 		return false;
 
-	if ((*psz == '/') || (*psz == '\\'))
-	{
-		*pszValue = psz;
+	if ((value[0] == '/') || (value[0]== '\\')) {
 		return true;
 	}
 
 	const gchar * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
 
-	static gchar buf[1024];
-	UT_return_val_if_fail ((strlen(dir) + strlen(psz) + 2) < sizeof(buf), false);
-	
-	sprintf(buf,"%s\\%s",dir,psz);
-	*pszValue = buf;
+	value = UT_std_string_sprintf("%s\\%s", dir, value.c_str());
 	return true;
 }
 

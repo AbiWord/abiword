@@ -478,17 +478,17 @@ bool EV_CocoaToolbar::synthesize(void)
 	// get toolbar button appearance from the preferences
 	////////////////////////////////////////////////////////////////
 	// TODO
-	const gchar * szValue = NULL;
-	XAP_App::getApp()->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
-	UT_ASSERT((szValue) && (*szValue));
-	
-	if (g_ascii_strcasecmp(szValue, "icon") == 0) {
+	std::string value;
+	XAP_App::getApp()->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, value);
+	UT_ASSERT(!value.empty());
+
+	if (g_ascii_strcasecmp(value.c_str(), "icon") == 0) {
 		[toolbar setDisplayMode:NSToolbarDisplayModeIconOnly];
 	}
-	else if (g_ascii_strcasecmp(szValue, "text") == 0) {
+	else if (g_ascii_strcasecmp(value.c_str(), "text") == 0) {
 		[toolbar setDisplayMode:NSToolbarDisplayModeLabelOnly];
 	}
-	else if (g_ascii_strcasecmp(szValue, "both") == 0) {
+	else if (g_ascii_strcasecmp(value.c_str(), "both") == 0) {
 		[toolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
 	}
 #endif
