@@ -62,7 +62,7 @@ static void s_addToolsToProvider (XAP_CocoaToolProvider * provider)
 		toolbarLabelSetName = szToolbarLabelSetDefaultValue;
 	}
 
-	EV_Toolbar_LabelSet * toolbarLabelSet = AP_CreateToolbarLabelSet(szToolbarLabelSetName);
+	EV_Toolbar_LabelSet * toolbarLabelSet = AP_CreateToolbarLabelSet(toolbarLabelSetName.c_str());
 	UT_ASSERT(toolbarLabelSet);
 	if (!toolbarLabelSet)
 	{

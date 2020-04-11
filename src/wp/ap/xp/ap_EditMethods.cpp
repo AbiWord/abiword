@@ -3803,7 +3803,7 @@ Defun(closeWindow)
 
 	bool close = false;
 
-	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_CloseOnLastDoc), &close);
+	pPrefs->getPrefsValueBool(AP_PREF_KEY_CloseOnLastDoc, close);
 	return s_closeWindow (pAV_View, pCallData, close);
 #else
 	// must, to comply with the HIG

@@ -275,10 +275,10 @@ bool AP_CocoaApp::initialize(void)
 		// see if we should load an alternative set from the disk
 	    
 //		const char * szDirectory = NULL;
-		std::string stringSet;
+		std::string sstringSet;
 
-		if (getPrefsValue(AP_PREF_KEY_StringSet, stringSet)
-			&& !stringSet.empty() && (stringSet != AP_PREF_DEFAULT_StringSet))
+		if (getPrefsValue(AP_PREF_KEY_StringSet, sstringSet)
+			&& !sstringSet.empty() && (sstringSet != AP_PREF_DEFAULT_StringSet))
 		{
 #if 0
 			getPrefsValueDirectory(true,
@@ -289,11 +289,11 @@ bool AP_CocoaApp::initialize(void)
 			std::string szPathname = szDirectory;
 			if (szDirectory[szPathname.size()-1]!='/')
 				szPathname += "/";
-			szPathname += stringSet;
+			szPathname += sstringSet;
 			szPathname += ".strings";
 #endif
 
-			NSString* stringSet = [resources stringByAppendingPathComponent:[NSString stringWithFormat:@"AbiWord/strings/%s%@", stringSet.c_str(), @".strings"]];
+			NSString* stringSet = [resources stringByAppendingPathComponent:[NSString stringWithFormat:@"AbiWord/strings/%s%@", sstringSet.c_str(), @".strings"]];
 
 			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
 			UT_ASSERT(pDiskStringSet);
@@ -338,7 +338,7 @@ bool AP_CocoaApp::initialize(void)
 		menuLabelSetName = AP_PREF_DEFAULT_StringSet;
 	}
 	FREEP(m_szMenuLabelSetName);
-	m_szMenuLabelSetName = g_strdup(szMenuLabelSetName.c_str());
+	m_szMenuLabelSetName = g_strdup(menuLabelSetName.c_str());
 	UT_ASSERT(m_szMenuLabelSetName);
 	if (!m_szMenuLabelSetName)
 		return false;
@@ -444,7 +444,7 @@ bool AP_CocoaApp::getPrefsValueDirectory(bool bAppSpecific,
         return false;
     }
 
-    if (valur[0] == '/') {
+    if (value[0] == '/') {
         return true;
     }
 

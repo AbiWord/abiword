@@ -817,7 +817,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 		UT_ASSERT(pPrefsScheme);
 		
-		pPrefsScheme->getValueBool(XAP_PREF_KEY_ToolPaletteVisible, &visible);
+		pPrefsScheme->getValueBool(XAP_PREF_KEY_ToolPaletteVisible, visible);
 		if (visible) {
 			[s_instance showWindow:sender];
 		}
