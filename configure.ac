@@ -109,7 +109,7 @@ opt_pkgs=''
 # gtk deps
 cairo_req='cairo-pdf cairo-ps pangocairo'
 #
-gtk_req="gtk+-3.0 >= $GTK_VERSION_REQ gtk+-unix-print-3.0 librsvg-2.0 >= 2.16.0"
+gtk_req="gtk+-3.0 >= $GTK_VERSION_REQ gtk+-unix-print-3.0 librsvg-2.0 >= 2.32.0"
 dnl cairo-fc is needed but only available on cairo > 1.10
 dnl http://bugzilla.abisource.com/show_bug.cgi?id=13265
 PKG_CHECK_EXISTS(cairo >= 1.10, [gtk_req="$gtk_req cairo-fc"],[])

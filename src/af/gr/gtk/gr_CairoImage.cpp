@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 /* AbiWord
  * Copyright (C) 2008 Dominic Lachowicz
  * 
@@ -69,43 +69,35 @@ bool GR_RSVGVectorImage::convertToBuffer(UT_ConstByteBufPtr & pBB) const
 
 bool GR_RSVGVectorImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
                                            const std::string& /*mimetype*/,
-										   UT_sint32 iDisplayWidth, 
+										   UT_sint32 iDisplayWidth,
 										   UT_sint32 iDisplayHeight) {
 	reset();
-	
+
 	m_data->append(pBB->getPointer(0), pBB->getLength());
-	
+
 	bool forceScale = (iDisplayWidth != -1 && iDisplayHeight != -1);
-	
+
 	gboolean result;
-	
+
 	m_svg = rsvg_handle_new();
-		
-	result = rsvg_handle_write(m_svg, pBB->getPointer(0), pBB->getLength(), NULL);
+
+	GInputStream* stream = g_memory_input_stream_new_from_data(pBB->getPointer(0), pBB->getLength(), nullptr);
+	result = rsvg_handle_read_stream_sync(m_svg, stream, nullptr, nullptr);
+	g_object_unref(stream);
 	if (!result) {
 		g_object_unref(G_OBJECT(m_svg));
 		m_svg = nullptr;
-		
+
 		return false;
 	}
-	
-	result = rsvg_handle_close(m_svg, NULL);
-	
-	if (!result) {
-		g_object_unref(G_OBJECT(m_svg));
-		m_svg = nullptr;
-		
-		return false;
-	}
-	
+
 	rsvg_handle_get_dimensions(m_svg, &m_size);
-	
+
 	if (!forceScale)
 		setupScale(m_size.width, m_size.height);
 	else
 		setupScale(iDisplayWidth, iDisplayHeight);
 
-	
 	return true;
 }
 
