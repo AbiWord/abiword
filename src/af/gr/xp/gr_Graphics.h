@@ -30,6 +30,7 @@
 #include "ut_units.h"
 #include "ut_bytebuf.h"
 #include "ut_growbuf.h"
+#include "ut_option.h"
 #include "ut_misc.h"
 #include "gr_Image.h"
 #include "gr_Caret.h"
@@ -497,6 +498,7 @@ class ABI_EXPORT GR_Graphics
 
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
 	const UT_Rect *   getClipRect(void) const { return m_pRect.get();}
+	UT_Option<UT_Rect> getClipRectOptional(void) const;
 	virtual void      scroll(UT_sint32, UT_sint32) = 0;
 	virtual void      scroll(UT_sint32 x_dest,
 							 UT_sint32 y_dest,
