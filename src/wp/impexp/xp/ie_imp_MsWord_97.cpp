@@ -5705,7 +5705,19 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				m_pFootnotes[i].ref_pos = pPLCF_ref[i];
 				m_pFootnotes[i].txt_pos = pPLCF_txt[i] + m_iFootnotesStart;
 				m_pFootnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
-				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iFootnotesCount + 1) + i];
+				// idx is an index of int16.
+				size_t idx = 2 * (m_iFootnotesCount + 1) + i;
+				// If you hit this assert, congratulation, you found a buggy file
+				//
+				UT_ASSERT(idx * 2 < ps->fib.lcbPlcffndRef);
+				if (idx * 2 >= ps->fib.lcbPlcffndRef) {
+					bNoteError = true;
+					// We are done with the footnotes here.
+					// This is as graceful as it can be.
+					m_iFootnotesCount--;
+					break;
+				}
+				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[idx];
 				m_pFootnotes[i].type = iType;
 				m_pFootnotes[i].pid = getDoc()->getUID(UT_UniqueId::Footnote);
 				UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: fnote %d, rpos %d, tpos %d, type %d\n",
@@ -5806,7 +5818,19 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				m_pEndnotes[i].ref_pos = pPLCF_ref[i];
 				m_pEndnotes[i].txt_pos = pPLCF_txt[i] + m_iEndnotesStart;
 				m_pEndnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
-				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iEndnotesCount + 1) + i];
+				// idx is an index of int16.
+				size_t idx = 2 * (m_iEndnotesCount + 1) + i;
+				// If you hit this assert, congratulation, you found a buggy file
+				//
+				UT_ASSERT(idx * 2 < ps->fib.lcbPlcfendRef);
+				if (idx * 2 >= ps->fib.lcbPlcfendRef) {
+					bNoteError = true;
+					// We are done with the endnotes here.
+					// This is as graceful as it can be.
+					m_iEndnotesCount--;
+					break;
+				}
+				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[idx];
 				m_pEndnotes[i].type = iType;
 				m_pEndnotes[i].pid = getDoc()->getUID(UT_UniqueId::Endnote);
 				UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: enote %d, rpos %d, tpos %d, type %d\n",
