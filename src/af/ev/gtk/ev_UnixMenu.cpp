@@ -748,7 +748,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					// (update the pointers)
 					GtkWidget *oldItem = m_vecMenuWidgets[k];
 					m_vecMenuWidgets[k] = w;
-					gtk_widget_destroy(oldItem);
+					gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(oldItem)), oldItem);
 					break;
 				}
 				else
@@ -800,7 +800,13 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			if (bRemoveIt)
 			{
 				// wipe it out
-				gtk_widget_destroy(item);
+				GtkContainer* parent = GTK_CONTAINER(gtk_widget_get_parent(item));
+				if (parent) {
+					gtk_container_remove(parent, item);
+				} else {
+					g_object_ref_sink(item);
+					g_object_unref(item);
+				}
 
 				// we must also mark this item in the vector as "removed",
 				// which means setting [k] equal to a fake item as done
@@ -928,7 +934,7 @@ EV_UnixMenuBar::~EV_UnixMenuBar()
 
 void  EV_UnixMenuBar::destroy(void)
 {
-	gtk_widget_destroy(m_wMenuBar);
+	gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(m_wMenuBar)), m_wMenuBar);
 }
 
 bool EV_UnixMenuBar::synthesizeMenuBar()

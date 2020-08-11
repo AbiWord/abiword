@@ -843,7 +843,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	if (m_FC != NULL) {
 		gtk_grab_remove (GTK_WIDGET(m_FC));
-		gtk_widget_destroy (GTK_WIDGET(m_FC));
+		gtk_widget_destroy(GTK_WIDGET(m_FC)); // TOPLEVEL
 		m_FC = NULL;
 		FREEP(szPersistDirectory);
 	}

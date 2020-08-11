@@ -111,8 +111,9 @@ void AP_UnixRuler::_setView(AV_View* pView, GR_UnixCairoGraphics* pG)
     pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 
     GtkWidget* w = gtk_entry_new();
+    g_object_ref_sink(w);
     pG->init3dColors(w);
-    gtk_widget_destroy(w);
+    g_object_unref(w);
 }
 
 void AP_UnixRuler::getWidgetPosition(gint& x, gint& y) const

@@ -145,7 +145,7 @@ void AP_UnixDialog_MergeCells::event_Close(void)
 void AP_UnixDialog_MergeCells::destroy(void)
 {
 	finalize();
-	gtk_widget_destroy(m_windowMain);
+	gtk_widget_destroy(m_windowMain); // TOPLEVEL
 	m_windowMain = NULL;
 }
 void AP_UnixDialog_MergeCells::activate(void)

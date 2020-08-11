@@ -846,7 +846,7 @@ LasemMathView::~LasemMathView(void)
 	if(view!=NULL)
 		g_object_unref(view);
 	if (m_Guru)
-		gtk_widget_destroy (m_Guru);
+		gtk_widget_destroy(m_Guru); // TOPLEVEL
 }
 
 void LasemMathView::loadBuffer(UT_UTF8String & sMathml)

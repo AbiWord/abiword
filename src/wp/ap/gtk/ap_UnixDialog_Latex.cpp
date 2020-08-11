@@ -127,7 +127,7 @@ void AP_UnixDialog_Latex::destroy(void)
 	modeless_cleanup();
 	if (m_windowMain != NULL)
 	{
-		gtk_widget_destroy(m_windowMain);
+		gtk_widget_destroy(m_windowMain); // TOPLEVEL
 		m_windowMain = NULL;
 	}
 }

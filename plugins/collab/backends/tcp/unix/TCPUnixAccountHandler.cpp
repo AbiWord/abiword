@@ -119,8 +119,9 @@ void TCPUnixAccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 	UT_return_if_fail(pEmbeddingParent);
 
 	// this will conveniently destroy all contained widgets as well
-	if (vbox && GTK_IS_WIDGET(vbox))
-		gtk_widget_destroy(vbox);
+	if (vbox && GTK_IS_WIDGET(vbox)) {
+		gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(vbox)), vbox);
+        }
 }
 
 void TCPUnixAccountHandler::loadProperties()

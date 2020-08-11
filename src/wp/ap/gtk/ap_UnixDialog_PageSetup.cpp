@@ -212,7 +212,8 @@ void AP_UnixDialog_PageSetup::event_LandscapeChanged(void)
 	g_signal_handler_unblock(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 
   	/* switch layout XPM image */
-	gtk_widget_destroy(customPreview);
+	gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(customPreview)),
+			     customPreview);
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_radioPageLandscape))) {
 		customPreview = create_pixmap(orient_horizontal_xpm);
 	} else {

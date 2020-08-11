@@ -724,7 +724,7 @@ AP_UnixDialog_RDFEditor::destroy ()
 	UT_DEBUGMSG (("MIQ: AP_UnixDialog_RDFEditor::destroy ()\n"));
 	modeless_cleanup ();
 	if (m_wDialog) {
-		gtk_widget_destroy (m_wDialog);
+		gtk_widget_destroy(m_wDialog); // TOPLEVEL
 		m_wDialog = NULL;
 	}
 }

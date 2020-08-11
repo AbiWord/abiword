@@ -705,7 +705,7 @@ GOChartView::~GOChartView(void)
 	if (m_Image)
 		delete m_Image;
 	if (m_Guru)
-		gtk_widget_destroy (m_Guru);
+		gtk_widget_destroy(m_Guru); // TOPLEVEL
 }
 
 void GOChartView::render(UT_Rect & rec)

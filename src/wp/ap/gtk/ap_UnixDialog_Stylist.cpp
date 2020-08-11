@@ -220,7 +220,7 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 void AP_UnixDialog_Stylist::destroy(void)
 {
 	finalize();
-	gtk_widget_destroy(m_windowMain);
+	gtk_widget_destroy(m_windowMain); // TOPLEVEL
 	m_windowMain = NULL;
 	m_wRenderer = NULL;
 	m_wStyleList = NULL;
@@ -351,7 +351,8 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	if (m_wRenderer)
 	{
 //		g_object_unref (G_OBJECT (m_wRenderer));
-		gtk_widget_destroy (m_wStyleList);
+		gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(m_wStyleList)), m_wStyleList);
+		m_wStyleList = nullptr;
 	}
 
 	GtkTreeIter iter;

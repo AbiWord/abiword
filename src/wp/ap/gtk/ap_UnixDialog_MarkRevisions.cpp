@@ -80,9 +80,7 @@ void AP_UnixDialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 		default:
 			event_Cancel () ; break ;
 	}
-  
-  /*if(mainWindow && GTK_IS_WIDGET(mainWindow))
-    gtk_widget_destroy(mainWindow);*/
+
 	abiDestroyWidget ( mainWindow ) ;
 }
 

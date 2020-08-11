@@ -227,7 +227,7 @@ void AP_UnixDialog_FormatTOC::setSensitivity(bool bSensitive)
 void AP_UnixDialog_FormatTOC::destroy(void)
 {
 	finalize();
-	gtk_widget_destroy(m_windowMain);
+	gtk_widget_destroy(m_windowMain); // TOPLEVEL
 	m_windowMain = NULL;
 }
 

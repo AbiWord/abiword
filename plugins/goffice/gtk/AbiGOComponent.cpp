@@ -295,7 +295,7 @@ AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCall
 		GtkWindow *win = go_component_edit(component);
 		gtk_window_set_transient_for(win, GTK_WINDOW(pFrameImpl->getTopLevelWindow()));
 	}
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_widget_destroy(GTK_WIDGET (dialog)); // TOPLEVEL
 	return result == GTK_RESPONSE_OK;
 }
 

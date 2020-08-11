@@ -44,6 +44,6 @@ std::unique_ptr<UT_RGBColor> XAP_UnixDlg_RunColorChooser(GtkWindow* parent,
 	}
 
 	// do not propagate further
-	gtk_widget_destroy (colordlg);
+	gtk_widget_destroy(colordlg); // TOPLEVEL
 	return std::unique_ptr<UT_RGBColor>(rgb);
 }

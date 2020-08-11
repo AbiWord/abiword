@@ -141,7 +141,7 @@ void AP_UnixDialog_WordCount::destroy(void)
 	m_pAutoUpdateWC->stop();
 	m_answer = AP_Dialog_WordCount::a_CANCEL;	
 	modeless_cleanup();
-	gtk_widget_destroy(m_windowMain);
+	gtk_widget_destroy(m_windowMain); // TOPLEVEL
 	m_windowMain = NULL;
 	DELETEP(m_pAutoUpdateWC);
 }

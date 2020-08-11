@@ -95,8 +95,9 @@ void SIPSimpleUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/
 	UT_DEBUGMSG(("SIPSimpleUnixAccountHandler::removeDialogWidgets\n"));
 
 	// this will conveniently destroy all contained widgets as well
-	if (table && GTK_IS_WIDGET(table))
-		gtk_widget_destroy(table);
+	if (table && GTK_IS_WIDGET(table)) {
+		gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(table)), table);
+	}
 }
 
 void SIPSimpleUnixAccountHandler::loadProperties()

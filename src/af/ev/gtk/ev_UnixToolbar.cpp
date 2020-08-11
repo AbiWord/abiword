@@ -795,7 +795,7 @@ UT_sint32 EV_UnixToolbar::destroy(void)
 //
 // Finally destroy the old toolbar widget
 //
-	gtk_widget_destroy(m_wToolbar);
+	gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(m_wToolbar)), m_wToolbar);
 	return pos;
 }
 

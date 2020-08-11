@@ -51,6 +51,5 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 XAP_UnixFontPreview::~XAP_UnixFontPreview(void)
 {
 	DELETEP(m_gc);
-	gtk_widget_destroy(m_pDrawingArea);
-	gtk_widget_destroy(m_pPreviewWindow);
+	gtk_widget_destroy(m_pPreviewWindow); // TOPLEVEL
 }

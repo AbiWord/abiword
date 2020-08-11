@@ -232,7 +232,7 @@ AP_UnixDialog_Spell::runModal (XAP_Frame * pFrame)
 	            default:
 					m_bCancelled = TRUE;
 		            _purgeSuggestions();
-					gtk_widget_destroy (m_wDialog);
+					gtk_widget_destroy (m_wDialog); // TOPLEVEL
 					return;
             }
 

@@ -1447,7 +1447,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
 					   G_CALLBACK(_fe::delete_event), NULL);
 	// here we connect the "destroy" event to a signal handler.
-	// This event occurs when we call gtk_widget_destroy() on the window,
+	// This event occurs when we call gtk_widget _destroy() on the window,
 	// or if we return 'FALSE' in the "delete_event" callback.
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "destroy",
 					   G_CALLBACK(_fe::destroy), NULL);
@@ -1874,7 +1874,7 @@ void XAP_UnixFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 
 bool XAP_UnixFrameImpl::_close()
 {
-	gtk_widget_destroy(m_wTopLevelWindow);
+	gtk_widget_destroy(m_wTopLevelWindow); // TOPLEVEL
     m_wTopLevelWindow = NULL;
 	return true;
 }

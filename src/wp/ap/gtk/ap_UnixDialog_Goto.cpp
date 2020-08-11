@@ -850,7 +850,7 @@ AP_UnixDialog_Goto::destroy ()
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::destroy ()\n"));
 	modeless_cleanup ();
 	if (m_wDialog) {
-		gtk_widget_destroy (m_wDialog);
+		gtk_widget_destroy(m_wDialog); // TOPLEVEL
 		m_wDialog = NULL;
 	}
 }

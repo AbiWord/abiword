@@ -583,8 +583,13 @@ GtkWidget* abiAddButton(GtkDialog * me, std::string label,
  */
 void abiDestroyWidget(GtkWidget * me)
 {
-  if(me && GTK_IS_WIDGET(me))
-    gtk_widget_destroy(me);
+    if (me) {
+        if (GTK_IS_WINDOW(me)) {
+            gtk_widget_destroy(me); // TOPLEVEL
+        } else if (GTK_IS_WIDGET(me)) {
+            gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(me)), me);
+        }
+    }
 }
 
 /*!
@@ -771,7 +776,7 @@ void messageBoxOK(const char * message)
 
 	gtk_widget_show ( msg ) ;
 	gtk_dialog_run ( GTK_DIALOG(msg) ) ;
-	gtk_widget_destroy ( msg ) ;
+	gtk_widget_destroy ( msg ) ; // TOPLEVEL
 }
 
 /****************************************************************/

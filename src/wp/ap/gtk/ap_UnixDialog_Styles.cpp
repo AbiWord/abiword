@@ -1272,7 +1272,7 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 		m_gbasedOnStyles.clear();
 		m_gfollowedByStyles.clear();
 		m_gStyleType.clear();
-		gtk_widget_destroy(m_wModifyDialog);
+		gtk_widget_destroy(m_wModifyDialog); // TOPLEVEL
 	}
 //
 // Have to delete this now since the destructor is not run till later

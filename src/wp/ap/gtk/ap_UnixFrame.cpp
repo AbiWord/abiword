@@ -383,8 +383,11 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 		{
 			if(pFrameImpl->m_topRuler && GTK_IS_WIDGET(pFrameImpl->m_topRuler))
 			{
-				gtk_widget_destroy( GTK_WIDGET(pFrameImpl->m_topRuler) );
-			}			
+				gtk_container_remove(
+					GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(pFrameImpl->m_topRuler))),
+					GTK_WIDGET(pFrameImpl->m_topRuler));
+				pFrameImpl->m_topRuler = nullptr;
+			}
 			DELETEP(pFrameData->m_pTopRuler);
 		}
 		FV_View * pView = static_cast<FV_View *>(m_pView);
@@ -412,7 +415,10 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 		// delete the actual widgets
 		if(pFrameImpl->m_topRuler && GTK_IS_WIDGET(pFrameImpl->m_topRuler))
 		{
-			gtk_widget_destroy( GTK_WIDGET(pFrameImpl->m_topRuler) );
+			gtk_container_remove(
+				GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(pFrameImpl->m_topRuler))),
+				GTK_WIDGET(pFrameImpl->m_topRuler));
+			pFrameImpl->m_topRuler = nullptr;
 		}
 		DELETEP(pFrameData->m_pTopRuler);
 		pFrameImpl->m_topRuler = NULL;
@@ -438,8 +444,11 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 		{
 			if (pFrameImpl->m_leftRuler && GTK_IS_WIDGET(pFrameImpl->m_leftRuler))
 			{
-				gtk_widget_destroy(GTK_WIDGET(pFrameImpl->m_leftRuler) );
-			}		
+				gtk_container_remove(
+					GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(pFrameImpl->m_leftRuler))),
+					GTK_WIDGET(pFrameImpl->m_leftRuler));
+				pFrameImpl->m_leftRuler = nullptr;
+			}
 			DELETEP(pFrameData->m_pLeftRuler);
 		} 
 		FV_View * pView = static_cast<FV_View *>(m_pView);		
@@ -458,7 +467,10 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 	{
 	    if (pFrameImpl->m_leftRuler && GTK_IS_WIDGET(pFrameImpl->m_leftRuler))
 		{
-			gtk_widget_destroy(GTK_WIDGET(pFrameImpl->m_leftRuler) );
+			gtk_container_remove(
+				GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(pFrameImpl->m_leftRuler))),
+				GTK_WIDGET(pFrameImpl->m_leftRuler));
+			pFrameImpl->m_leftRuler = nullptr;
 		}
 	    DELETEP(pFrameData->m_pLeftRuler);
 	    pFrameImpl->m_leftRuler = NULL;
@@ -514,8 +526,9 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 
 	GR_UnixCairoGraphics *pUnixGraphics = static_cast<GR_UnixCairoGraphics *>(pG);
 	GtkWidget * w = gtk_entry_new();
+	g_object_ref_sink(w);
 	pUnixGraphics->init3dColors(w);
-	gtk_widget_destroy(w);
+	g_object_unref(w);
 
 	ENSUREP_RF(pG);
 	pG->setZoomPercentage(iZoom);

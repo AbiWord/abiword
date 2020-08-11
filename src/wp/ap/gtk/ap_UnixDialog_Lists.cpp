@@ -438,7 +438,7 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 	}
 	else if(type == 2)
 	{
-		//  gtk_widget_destroy(GTK_WIDGET(m_wListStyleNumbered_menu));
+		//  gtk_widget _destroy(GTK_WIDGET(m_wListStyleNumbered_menu));
 //	  	m_wListStyleNumbered_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleNumbered_menu;
 //		_fillNumberedStyleMenu(m_wListStyleNumbered_menu);

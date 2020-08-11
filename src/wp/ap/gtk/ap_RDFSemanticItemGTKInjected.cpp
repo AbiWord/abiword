@@ -118,7 +118,7 @@ void OnSemItemEdited ( GtkDialog* d, gint /*response_id*/,
     UT_DEBUGMSG(("OnSemItemEdited()\n"));
     PD_RDFSemanticItemHandle h = getHandle( d );
     h->updateFromEditorData();
-    gtk_widget_destroy( GTK_WIDGET(d) );
+    gtk_widget_destroy(GTK_WIDGET(d)); // TOPLEVEL
 }
 
 
@@ -147,7 +147,7 @@ void OnSemItemListEdited ( GtkDialog* d, gint response_id,
             c->updateFromEditorData();
         }
     }
-    gtk_widget_destroy( GTK_WIDGET(d) );
+    gtk_widget_destroy(GTK_WIDGET(d)); // TOPLEVEL
 }
 
 
@@ -161,7 +161,7 @@ OnSemanticStylesheetsDialogResponse( GtkWidget* dialog,
                                      GtkTreeView* /*tree*/,
                                      FV_View* /*pView*/)
 {
-    gtk_widget_destroy(dialog);
+    gtk_widget_destroy(dialog); // TOPLEVEL
 }
 
 
@@ -314,7 +314,7 @@ OnInsertReferenceBase( GtkWidget* dialog,
         }
     }
     if( found )
-        gtk_widget_destroy(dialog);
+        gtk_widget_destroy(dialog); // TOPLEVEL
 
 }
 

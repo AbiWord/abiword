@@ -97,5 +97,5 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 		gtk_window_set_transient_for(GTK_WINDOW(dlg), GTK_WINDOW(parent));
 	}
 	gtk_dialog_run(GTK_DIALOG(dlg));
-	gtk_widget_destroy(dlg);
+	gtk_widget_destroy(dlg); // TOPLEVEL
 }

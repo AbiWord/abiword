@@ -229,10 +229,7 @@ void AP_UnixDialog_Tab::runModal (XAP_Frame *pFrame)
 
 	// TODO save state of expander
 
-	// GtkWidget *wDialog = m_wDialog;
-	// m_wDialog = NULL;
-    // gtk_widget_destroy (wDialog);
-    gtk_widget_destroy (m_wDialog);
+	gtk_widget_destroy(m_wDialog); // TOPLEVEL
 	m_wDialog = NULL;
 }
 

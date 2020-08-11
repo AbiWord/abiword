@@ -107,7 +107,9 @@ AiksaurusGTK_picbutton::AiksaurusGTK_picbutton(GtkWidget *window, const char* st
 AiksaurusGTK_picbutton::~AiksaurusGTK_picbutton()
 {
     // TO DO: what if this is null?
-    gtk_widget_destroy(d_menu_ptr);
+    if (d_menu_ptr) {
+        gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(d_menu_ptr)), d_menu_ptr);
+    }
 
     if (d_menu_data_ptr != NULL)
         delete[] d_menu_data_ptr;
@@ -390,8 +392,9 @@ AiksaurusGTK_picbutton::addMenu
 void
 AiksaurusGTK_picbutton::menuCreate()
 {
-    if (d_menu_ptr != NULL)
-        gtk_widget_destroy(d_menu_ptr);
+    if (d_menu_ptr != NULL) {
+        gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(d_menu_ptr)), d_menu_ptr);
+    }
 
     d_menu_ptr = gtk_menu_new();
 

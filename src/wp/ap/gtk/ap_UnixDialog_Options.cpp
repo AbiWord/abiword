@@ -388,7 +388,7 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 #ifdef _DISABLE_GRAMMAR
     // remove anything related to grammar.
     tmp = WID ( "tableGrammar" );
-    gtk_widget_destroy( tmp );
+    gtk_container_remove(gtk_widget_get_parent(tmp), tmp);
     m_checkbuttonGrammarCheck = NULL;
 #else
     tmp = WID ( "lblGrammar" );

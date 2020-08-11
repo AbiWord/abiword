@@ -45,8 +45,9 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	if(m_pPreviewWindow)
 	{
 		DELETEP(m_gc);
-		gtk_widget_destroy(m_pDrawingArea);
-		gtk_widget_destroy(m_pPreviewWindow);
+		gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(m_pDrawingArea)),
+				     m_pDrawingArea);
+		gtk_widget_destroy(m_pPreviewWindow); // TOPLEVEL
 		m_pPreviewWindow = NULL;
 		m_pDrawingArea = NULL;
 	}
@@ -104,8 +105,7 @@ void  AP_UnixPreview_Annotation::destroy(void)
 		return;
 	
 	DELETEP(m_gc);
-	gtk_widget_destroy(m_pDrawingArea);
-	gtk_widget_destroy(m_pPreviewWindow);
+	gtk_widget_destroy(m_pPreviewWindow); // TOPLEVEL
 	m_pPreviewWindow = NULL;
 	m_pDrawingArea = NULL;
 }

@@ -78,7 +78,8 @@ fill_store (XAP_UnixDialog_ClipArt *self)
 
 		GtkWidget *err = gtk_message_dialog_new (GTK_WINDOW (dlg), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", s.c_str());
 		gtk_dialog_run (GTK_DIALOG (err));
-		gtk_widget_destroy (err); err = NULL;
+		gtk_widget_destroy(err); // TOPLEVEL
+		err = NULL;
 
 		gtk_dialog_response(GTK_DIALOG(dlg), GTK_RESPONSE_CANCEL);
 	}

@@ -120,13 +120,13 @@ entry_activate_cb (GtkEditable *editable, GtkWidget* defbox)
 static void
 close_cb (GtkWidget * w, gpointer data)
 {
-  gtk_widget_destroy(gdict_defbox);
+  gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(gdict_defbox), gdic_defbox);
   gdict_defbox = nullptr;
 
-  gtk_widget_destroy(gdict_entry);
+  gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(gdict_entry), gdic_entry);
   gdict_entry = nullptr;
 
-  gtk_widget_destroy(gdict_dlg);
+  gtk_widget_destroy(gdict_dlg); // TOPLEVEL
   gdict_dlg = nullptr;
 }
 

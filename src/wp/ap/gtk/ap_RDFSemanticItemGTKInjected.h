@@ -169,7 +169,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
         // then update the Rdf from that editor.
         GtkWidget* objectEditor = (GtkWidget*)this->createEditor();
         this->updateFromEditorData( m );
-        gtk_widget_destroy( GTK_WIDGET(objectEditor) );
+        gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(objectEditor)), objectEditor);
 
         if (pDocRange)
         {

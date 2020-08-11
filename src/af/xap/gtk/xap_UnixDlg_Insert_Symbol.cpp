@@ -217,7 +217,7 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
     m_InsertS_Font_list.clear();
 	
 	modeless_cleanup();
-	gtk_widget_destroy(m_windowMain);
+	gtk_widget_destroy(m_windowMain); // TOPLEVEL
 	m_windowMain = NULL;
 }
 
@@ -570,7 +570,7 @@ void XAP_UnixDialog_Insert_Symbol::destroy(void)
 	modeless_cleanup();
 	
 	// Just nuke this dialog
-	gtk_widget_destroy(m_windowMain);
+	gtk_widget_destroy(m_windowMain); // TOPLEVEL
 	m_windowMain = NULL;
 }
 
