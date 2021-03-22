@@ -24,9 +24,7 @@
 #include "xap_Dialog.h"
 class XAP_App;
 
-#include <boost/bind.hpp>
 #include <boost/function.hpp>
-
 
 // we return some special values for file types depending
 // on how the derived classes do different things for different

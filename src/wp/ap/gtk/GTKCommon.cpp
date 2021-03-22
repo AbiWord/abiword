@@ -29,7 +29,6 @@
 #include "xap_GtkUtils.h"
 
 #include <boost/function.hpp>
-#include <boost/bind.hpp>
 
 #include <sstream>
 
@@ -449,10 +448,10 @@ UT_runDialog_AskForPathname::run( XAP_Frame * pFrame )
     UT_return_val_if_fail (pDialog, false);
 
     pDialog->setAppendDefaultSuffixFunctor(
-        boost::bind(
-            &UT_runDialog_AskForPathname::appendDefaultSuffixFunctor,
-            this, _1, _2 ));
-    
+        [this] (std::string filename, UT_sint32 n) {
+            return this->UT_runDialog_AskForPathname::appendDefaultSuffixFunctor(filename, n);
+        });
+
     if (!m_suggestedName.empty())
     {
         // if caller wants to suggest a name, use it and seed the
