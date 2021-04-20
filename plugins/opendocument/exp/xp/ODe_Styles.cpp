@@ -51,12 +51,14 @@ ODe_Styles::~ODe_Styles() {
     for (i=0; i<count; i++) {
         delete (*pStyleVector)[i];
     }
-    
+    DELETEP(pStyleVector);
+
     pStyleVector = m_paragraphStyles.enumerate();
     count = pStyleVector->getItemCount();
     for (i=0; i<count; i++) {
         delete (*pStyleVector)[i];
     }
+    DELETEP(pStyleVector);
 }
 
 

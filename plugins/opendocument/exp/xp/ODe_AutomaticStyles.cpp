@@ -41,25 +41,32 @@ ODe_AutomaticStyles::~ODe_AutomaticStyles() {
     
     pStyleVector = m_textStyles.enumerate();
     UT_VECTOR_PURGEALL(ODe_Style_Style*, (*pStyleVector));
-    
+    DELETEP(pStyleVector);
+
     pStyleVector = m_paragraphStyles.enumerate();
     UT_VECTOR_PURGEALL(ODe_Style_Style*, (*pStyleVector));
-    
+    DELETEP(pStyleVector);
+
     pStyleVector = m_sectionStyles.enumerate();
     UT_VECTOR_PURGEALL(ODe_Style_Style*, (*pStyleVector));
-    
+    DELETEP(pStyleVector);
+
     pStyleVector = m_tableStyles.enumerate();
     UT_VECTOR_PURGEALL(ODe_Style_Style*, (*pStyleVector));
-    
+    DELETEP(pStyleVector);
+
     pStyleVector = m_tableColumnStyles.enumerate();
     UT_VECTOR_PURGEALL(ODe_Style_Style*, (*pStyleVector));
-    
+    DELETEP(pStyleVector);
+
     pStyleVector = m_tableRowStyles.enumerate();
     UT_VECTOR_PURGEALL(ODe_Style_Style*, (*pStyleVector));
-    
+    DELETEP(pStyleVector);
+
     pStyleVector = m_tableCellStyles.enumerate();
     UT_VECTOR_PURGEALL(ODe_Style_Style*, (*pStyleVector));
-    
+    DELETEP(pStyleVector);
+
     pStyleVector = m_graphicStyles.enumerate();
     UT_VECTOR_PURGEALL(ODe_Style_Style*, (*pStyleVector));
     DELETEP(pStyleVector);
