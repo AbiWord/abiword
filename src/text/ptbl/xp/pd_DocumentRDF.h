@@ -1113,7 +1113,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
   private:
     PD_RDFLocations& addLocations( PD_RDFLocations& ret,
                                    bool isGeo84,
-                                   const std::string sparql,
+                                   const std::string& sparql,
                                    PD_RDFModelHandle alternateModel );
 };
 

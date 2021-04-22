@@ -5167,7 +5167,7 @@ PD_DocumentRDF::getEvents( PD_RDFModelHandle alternateModel )
 PD_RDFLocations&
 PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
                               bool isGeo84,
-                              const std::string sparql,
+                              const std::string& sparql,
                               PD_RDFModelHandle /*alternateModel*/ )
 {
     PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
