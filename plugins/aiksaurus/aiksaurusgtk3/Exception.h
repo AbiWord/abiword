@@ -30,10 +30,10 @@ namespace AiksaurusGTK_impl
 
         public:
 
-            Exception(const char* description) throw()
+            Exception(const char* description) noexcept
                 : d_description(description) { }
 
-            const char* getDescription() const throw()
+            const char* getDescription() const noexcept
                 { return d_description; }
 
             static const char* CANNOT_ALLOCATE_MEMORY;

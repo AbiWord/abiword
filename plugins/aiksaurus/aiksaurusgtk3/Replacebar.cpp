@@ -27,7 +27,7 @@
 namespace AiksaurusGTK_impl
 {
 
-    Replacebar::Replacebar(DialogMediator& mediator) throw()
+    Replacebar::Replacebar(DialogMediator& mediator) noexcept
         : d_mediator(mediator)
     {
         // Build GUI widgets.
@@ -61,7 +61,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    Replacebar::~Replacebar() throw()
+    Replacebar::~Replacebar() noexcept
     {
 
     }
@@ -87,19 +87,19 @@ namespace AiksaurusGTK_impl
     }
 
 
-    GtkWidget* Replacebar::getReplacebar() throw()
+    GtkWidget* Replacebar::getReplacebar() noexcept
     {
         return d_replacebar_ptr;
     }
 
 
-    const char* Replacebar::getText() const throw()
+    const char* Replacebar::getText() const noexcept
     {
         return XAP_gtk_entry_get_text(GTK_ENTRY(d_replacewith_ptr));
     }
 
 
-    void Replacebar::setText(const char* word) throw()
+    void Replacebar::setText(const char* word) noexcept
     {
         XAP_gtk_entry_set_text(GTK_ENTRY(d_replacewith_ptr), word);
     }

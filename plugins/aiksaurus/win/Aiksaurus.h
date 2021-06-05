@@ -54,26 +54,26 @@ namespace AiksaurusImpl
 
         public:
 
-            Aiksaurus() throw();
-            Aiksaurus(const char * path_meanings, const char * path_words) throw();
+            Aiksaurus() noexcept;
+            Aiksaurus(const char * path_meanings, const char * path_words) noexcept;
 
-            ~Aiksaurus() throw();
+            ~Aiksaurus() noexcept;
 
             // word(): returns current word that is being
             // searched for.  You should not try to delete
             // this string.
-            const char* word() const throw();
+            const char* word() const noexcept;
 
             // error(): empty string if no problems encountered.
             // otherwise, a human-suitable description of the
             // problem will be presented.
             //  + Do not try to delete this string.
-            const char* error() const throw();
+            const char* error() const noexcept;
 
 
             // find(): perform a search for a new word.
             // returns *true* if word is known, *false* otherwise.
-            bool find(const char* word) throw();
+            bool find(const char* word) noexcept;
 
             // next(): return synonyms for the word.
             //  + Do not try to delete this string.
@@ -82,13 +82,13 @@ namespace AiksaurusImpl
             //  + the first two words of any meaning are
             //    titles for that meaning.
             //  + returns an empty string when out of synonyms.
-            const char* next(int& meaning) throw();
+            const char* next(int& meaning) noexcept;
 
             // similar(): repeatdly to return one "nearby word"
             // at a time.  these are not synonyms: they are known
             // words that are alphabetically near the
             // searched-for word.
-            const char* similar() throw();
+            const char* similar() noexcept;
     };
 }
 

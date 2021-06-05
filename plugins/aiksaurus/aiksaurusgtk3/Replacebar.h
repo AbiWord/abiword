@@ -49,21 +49,21 @@ namespace AiksaurusGTK_impl
 
         public:
 
-            Replacebar(DialogMediator& mediator) throw();
+            Replacebar(DialogMediator& mediator) noexcept;
 
             // Warning: You need to call gtk_widget_destroy on getReplacebar(), or
             // destroy whatever widget you put it in.  The destructor will NOT free
             // up the memory used by the GUI widgets.
-            ~Replacebar() throw();
+            ~Replacebar() noexcept;
 
             // getReplacebar(): return layout widget for replace bar.
-            GtkWidget* getReplacebar() throw();
+            GtkWidget* getReplacebar() noexcept;
 
             // getText(): return current text of replace text field.
-            const char* getText() const throw();
+            const char* getText() const noexcept;
 
             // setText(): reset text of replace text field to something new.
-            void setText(const char* str) throw();
+            void setText(const char* str) noexcept;
     };
 
 }
