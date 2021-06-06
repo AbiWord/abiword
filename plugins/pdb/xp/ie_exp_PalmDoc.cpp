@@ -380,7 +380,7 @@ Byte* IE_Exp_PalmDoc::_mem_find(  Byte *t, int t_len,  Byte *m, int m_len )
     for ( i = t_len - m_len + 1; i > 0; --i, ++t )
         if ( *t == *m && !memcmp( t, m, m_len ) )
             return t;
-    return 0;
+    return nullptr;
 }
 
 Word IE_Exp_PalmDoc::_swap_Word( Word r )

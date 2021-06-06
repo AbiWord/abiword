@@ -76,7 +76,7 @@ abiword_document::abiword_document( abiword_garble* abigarble, const string& fil
 		throw string( "failed to open file " ) + mFilename;
 
 	// open file with libxml2
-	mDocument = xmlReadMemory( reinterpret_cast<const char*>(contents), strlen(reinterpret_cast<const char*>(contents)), 0, "UTF-8", XML_PARSE_NOBLANKS | XML_PARSE_NONET );
+	mDocument = xmlReadMemory( reinterpret_cast<const char*>(contents), strlen(reinterpret_cast<const char*>(contents)), nullptr, "UTF-8", XML_PARSE_NOBLANKS | XML_PARSE_NONET );
 	if (!mDocument)
 		throw string( "failed to read file " ) + mFilename;
 }
