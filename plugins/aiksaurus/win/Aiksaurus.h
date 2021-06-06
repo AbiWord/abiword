@@ -57,7 +57,7 @@ namespace AiksaurusImpl
             Aiksaurus() noexcept;
             Aiksaurus(const char * path_meanings, const char * path_words) noexcept;
 
-            ~Aiksaurus() noexcept;
+            ~Aiksaurus();
 
             // word(): returns current word that is being
             // searched for.  You should not try to delete

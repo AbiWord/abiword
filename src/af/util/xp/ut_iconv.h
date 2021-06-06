@@ -43,7 +43,7 @@ class ABI_EXPORT auto_iconv
 
   explicit auto_iconv(UT_iconv_t iconv);
 
-  explicit auto_iconv(const char * in_charset, const char *out_charset) noexcept(false);
+  explicit auto_iconv(const char * in_charset, const char *out_charset);
   ~auto_iconv();
   operator UT_iconv_t();
 

@@ -32,30 +32,29 @@ namespace AiksaurusGTK_impl
             GtkWidget* d_layout;
             std::vector<Meaning*> d_meanings;
 
-            void _handleSelection(GtkWidget* list) noexcept(false);
-            void _handleClick(bool isDoubleClick, const char* text) noexcept(false);
+            void _handleSelection(GtkWidget* list) noexcept;
+            void _handleClick(bool isDoubleClick, const char* text);
 
-            void _resetDisplay() noexcept(false);
+            void _resetDisplay() noexcept;
 
-            void _createMeaning(const std::string& title, std::vector<std::string>& words)
-                noexcept(false);
+            void _createMeaning(const std::string& title, std::vector<std::string>& words);
 
-            void _displayResults(const char* word) noexcept(false);
-            void _displayAlternatives() noexcept(false);
+            void _displayResults(const char* word);
+            void _displayAlternatives();
 
-            void _checkThesaurus() noexcept(false);
+            void _checkThesaurus();
 
-//            static void _initResources() noexcept(false);
+//            static void _initResources() noexcept;
 
         public:
-            Display(DialogMediator& parent) noexcept(false);
-            ~Display() noexcept(false);
+            Display(DialogMediator& parent) noexcept;
+            ~Display();
 
-            const Aiksaurus& getThesaurus() const noexcept(false);
-            GtkWidget* getDisplay() noexcept(false);
+            const Aiksaurus& getThesaurus() const noexcept;
+            GtkWidget* getDisplay() noexcept;
 
-            void search(const char* word) noexcept(false);
-            void showMessage(const char* message) noexcept(false);
+            void search(const char* word);
+            void showMessage(const char* message) noexcept;
     };
 
 }

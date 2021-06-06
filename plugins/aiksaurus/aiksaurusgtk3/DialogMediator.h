@@ -26,10 +26,10 @@ namespace AiksaurusGTK_impl
     class DialogMediator
     {
         public:
-            virtual void eventCancel() noexcept(false) = 0;
-            virtual void eventReplace(const char* replacement) noexcept(false) = 0;
-            virtual void eventSelectWord(const char* word) noexcept(false) = 0;
-            virtual void eventSearch(const char* word) noexcept(false) = 0;
+            virtual void eventCancel() noexcept = 0;
+            virtual void eventReplace(const char* replacement) noexcept = 0;
+            virtual void eventSelectWord(const char* word) noexcept = 0;
+            virtual void eventSearch(const char* word) noexcept = 0;
     };
 }
 

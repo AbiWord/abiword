@@ -54,7 +54,7 @@ namespace AiksaurusGTK_impl
             // Warning: You need to call gtk_widget_destroy on getReplacebar(), or
             // destroy whatever widget you put it in.  The destructor will NOT free
             // up the memory used by the GUI widgets.
-            ~Replacebar() noexcept;
+            ~Replacebar();
 
             // getReplacebar(): return layout widget for replace bar.
             GtkWidget* getReplacebar() noexcept;

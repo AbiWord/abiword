@@ -58,33 +58,33 @@ namespace AiksaurusGTK_impl
             GtkWidget* d_searchbar_ptr;
             GtkWidget* d_searchbar_label_ptr;
 
-            void _updateNavigation() noexcept(false);
+            void _updateNavigation();
 
-            void _setTooltip(GtkWidget* w, const char* str) noexcept(false);
+            void _setTooltip(GtkWidget* w, const char* str) noexcept;
 
-            static void _backClicked(GtkWidget* w, gpointer data) noexcept(false);
-            static void _backMenuClicked(GList* element, gpointer data) noexcept(false);
+            static void _backClicked(GtkWidget* w, gpointer data) noexcept;
+            static void _backMenuClicked(GList* element, gpointer data) noexcept;
 
-            static void _forwardClicked(GtkWidget* w, gpointer data) noexcept(false);
-            static void _forwardMenuClicked(GList* element, gpointer data) noexcept(false);
+            static void _forwardClicked(GtkWidget* w, gpointer data) noexcept;
+            static void _forwardMenuClicked(GList* element, gpointer data) noexcept;
 
-            static void _searchBarChanged(GtkWidget* w, gpointer data) noexcept(false);
-            static void _searchBarShow(GtkWidget* w, gpointer data) noexcept(false);
-            static void _searchBarHide(GtkWidget* w, gpointer data) noexcept(false);
-            static void _searchBarActivate(GtkWidget* w, gpointer d) noexcept(false);
+            static void _searchBarChanged(GtkWidget* w, gpointer data) noexcept;
+            static void _searchBarShow(GtkWidget* w, gpointer data) noexcept;
+            static void _searchBarHide(GtkWidget* w, gpointer data) noexcept;
+            static void _searchBarActivate(GtkWidget* w, gpointer d) noexcept;
 
-            static void _searchClicked(GtkWidget* w, gpointer data) noexcept(false);
+            static void _searchClicked(GtkWidget* w, gpointer data) noexcept;
 
         public:
 
-            Toolbar(DialogMediator& mediator, GtkWidget* window) noexcept(false);
-            ~Toolbar() noexcept(false);
+            Toolbar(DialogMediator& mediator, GtkWidget* window);
+            ~Toolbar();
 
-            GtkWidget* getToolbar() noexcept(false);
-            const char* getText() const noexcept(false);
-            void focus() noexcept(false);
+            GtkWidget* getToolbar() noexcept;
+            const char* getText() const noexcept;
+            void focus() noexcept;
 
-            void search(const char* str) noexcept(false);
+            void search(const char* str);
     };
 
 }

@@ -61,7 +61,7 @@ namespace AiksaurusGTK_impl
     }
 
 
-    Replacebar::~Replacebar() noexcept
+    Replacebar::~Replacebar()
     {
 
     }
