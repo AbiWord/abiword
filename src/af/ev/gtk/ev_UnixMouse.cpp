@@ -302,8 +302,9 @@ void EV_UnixMouse::mouseScroll(AV_View* pView, GdkEventScroll *e)
 	}
 
 	GdkScrollDirection dir = (GdkScrollDirection)0;
-	gdk_event_get_scroll_direction((GdkEvent*)e, &dir);
-	if (dir == GDK_SCROLL_SMOOTH) {
+	// If gdk_event_get_scroll_direction() or it's SCROLL_SMOOTH, we get the deltas
+	// Longer term is to use the gesture. It will be required by Gtk4.
+	if (!gdk_event_get_scroll_direction((GdkEvent*)e, &dir) || (dir == GDK_SCROLL_SMOOTH)) {
 		gdouble delta_x, delta_y;
 		delta_x = delta_y = 0.0;
 		if (gdk_event_get_scroll_deltas((GdkEvent*)e, &delta_x, &delta_y)) {
