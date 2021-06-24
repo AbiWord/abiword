@@ -2,6 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -470,7 +471,7 @@ void IE_Exp_RTF::_rtf_nonascii_hex2 (UT_sint32 d)
 }
 
 /* write a non-ascii char into a string class pointer */
-void IE_Exp_RTF::_rtf_nonascii_hex2 (UT_sint32 d, UT_String & pStr)
+void IE_Exp_RTF::_rtf_nonascii_hex2 (UT_sint32 d, UT_String & pStr) const
 {
 	pStr = "\\'";
 	pStr += UT_String_sprintf("%02x",d);
@@ -2699,7 +2700,7 @@ UT_uint32  IE_Exp_RTF::getOverideCount(void) const
  * Return the the number of the overide that matches the given ID.
  * Returns 0 on failure to find a matching ID.
  */
-UT_uint32 IE_Exp_RTF::getMatchingOverideNum(UT_uint32 ID)
+UT_uint32 IE_Exp_RTF::getMatchingOverideNum(UT_uint32 ID) const
 {
 	UT_uint32 baseid = ID;
 	for (decltype(m_vecOverides)::size_type i = 0; i < getOverideCount(); i++) {

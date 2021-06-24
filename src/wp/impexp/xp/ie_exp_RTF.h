@@ -118,7 +118,7 @@ public:
 	UT_uint32 getMultiLevelCount(void) const;
 	UT_uint32 getSimpleListCount(void) const;
 	UT_uint32 getOverideCount(void)  const;
-	UT_uint32 getMatchingOverideNum(UT_uint32 ID);
+	UT_uint32 getMatchingOverideNum(UT_uint32 ID) const;
 	void exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,const char * pszKeyword);
 	UT_BidiCharType isCharRTL() {return m_CharRTL;}
 	void setCharRTL(UT_BidiCharType t) {m_CharRTL = t;}
@@ -140,7 +140,7 @@ protected:
 	void				_rtf_keyword_space(const char * szKey, UT_sint32 d);
 	void                _rtf_keyword(const char * szKey, const char * szValue);
 	void				_rtf_nonascii_hex2(UT_sint32 d);
-	void				_rtf_nonascii_hex2(UT_sint32 d, UT_String & pStr);
+	void				_rtf_nonascii_hex2(UT_sint32 d, UT_String & pStr) const;
 	void				_rtf_keyword_hex2(const char * szKey, UT_sint32 d);
 	void				_rtf_keyword_ifnotdefault(const char * szKey, const char * szValue, UT_sint32 defaultValue);
 	void				_rtf_keyword_ifnotdefault_twips(const char * szKey, const char * szValue, UT_sint32 defaultValue);
