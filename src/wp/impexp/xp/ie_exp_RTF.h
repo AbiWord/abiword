@@ -112,9 +112,9 @@ public:
 	IE_Exp_RTF(PD_Document * pDocument);
 	IE_Exp_RTF(PD_Document * pDocument,bool atticFormat);
 	virtual ~IE_Exp_RTF();
-	ie_exp_RTF_MsWord97ListMulti * getNthMultiLevel(UT_uint32 i) const;
-	ie_exp_RTF_MsWord97ListSimple * getNthSimple(UT_uint32 i) const;
-	ie_exp_RTF_ListOveride * getNthOveride(UT_uint32 i) const;
+	const ie_exp_RTF_MsWord97ListMulti& getNthMultiLevel(UT_uint32 i) const;
+	const ie_exp_RTF_MsWord97ListSimple& getNthSimple(UT_uint32 i) const;
+	const ie_exp_RTF_ListOveride& getNthOveride(UT_uint32 i) const;
 	UT_uint32 getMultiLevelCount(void) const;
 	UT_uint32 getSimpleListCount(void) const;
 	UT_uint32 getOverideCount(void)  const;
@@ -178,9 +178,9 @@ protected:
 	void                            _write_style_fmt(const PD_Style *);
 	void                            _write_stylesheets(void);
 	void                            _write_listtable(void);
-    void                            _output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti);
-    void                            _output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple);
-    void                            _output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 i);
+    void                            _output_MultiLevelRTF(const ie_exp_RTF_MsWord97ListMulti& pMulti);
+    void                            _output_SimpleListRTF(const ie_exp_RTF_MsWord97ListSimple& pSimple);
+    void                            _output_OveridesRTF(const ie_exp_RTF_ListOveride& pOver, UT_uint32 i);
 	void                            _output_ListRTF(const fl_AutoNumConstPtr & pAuto, UT_uint32 iLevel);
 	void                            _output_LevelText(const fl_AutoNumConstPtr & pAuto, UT_uint32 iLevel,UT_UCSChar bulletsym);
 	void                            _get_LeftRight_Side(UT_String & LeftSide, UT_String & RightSide);
@@ -215,9 +215,9 @@ protected:
 	/* Hash containing styles to be exported. The key is the
 	   AbiWord style name. The value is a NumberedStyle object
 	   (see the cpp file). */
-	UT_Vector                   m_vecMultiLevel;
-	UT_Vector                   m_vecSimpleList;
-	UT_Vector                   m_vecOverides;
+	std::vector<ie_exp_RTF_MsWord97ListMulti> m_vecMultiLevel;
+	std::vector<ie_exp_RTF_MsWord97ListSimple> m_vecSimpleList;
+	std::vector<ie_exp_RTF_ListOveride> m_vecOverides;
 
 	UT_BidiCharType             m_CharRTL;
 	UT_iconv_t                  m_conv;
@@ -279,8 +279,8 @@ class ABI_EXPORT ie_exp_RTF_MsWord97ListMulti : public ie_exp_RTF_MsWord97List
 	bool isSimple(void) const { return false;}
 	bool isMulti(void) const { return true;}
 	void addLevel(UT_uint32 iLevel, ie_exp_RTF_MsWord97List * pMsWord97List);
-	ie_exp_RTF_MsWord97List * getListAtLevel(UT_uint32 iLevel, UT_uint32 nthList);
-	UT_uint32 getMatchingID(UT_uint32 listID);
+	ie_exp_RTF_MsWord97List * getListAtLevel(UT_uint32 iLevel, UT_uint32 nthList) const;
+	UT_uint32 getMatchingID(UT_uint32 listID) const;
  private:
 	UT_Vector * m_vLevels[9];
 };

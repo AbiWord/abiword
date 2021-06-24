@@ -2514,19 +2514,16 @@ void IE_Exp_RTF::_write_listtable(void)
 // OK scan the lists in the document to build up the list info.
 // The first loop just builds a vector of parentless lists.
 //
-	UT_sint32 i,j =0;
 	bool bFoundChild = false;
 	fl_AutoNumConstPtr pAuto;
 	fl_AutoNumConstPtr pInner;
-	ie_exp_RTF_MsWord97ListMulti * pList97 = NULL;
-	for(i=0; i< iCount; i++)
-	{
+	ie_exp_RTF_MsWord97ListMulti* pList97 = nullptr;
+	for (UT_sint32 i = 0; i < iCount; i++) {
 		pAuto = getDoc()->getNthList(i);
 		if (!pAuto->getParent())
 		{
 			bFoundChild = false;
-			for(j =0; (j< iCount) && !bFoundChild; j++)
-			{
+			for (UT_sint32 j = 0; (j < iCount) && !bFoundChild; j++) {
 				pInner = getDoc()->getNthList(j);
 				if(pInner->getParentID() == pAuto->getID())
 //
@@ -2534,7 +2531,7 @@ void IE_Exp_RTF::_write_listtable(void)
 //
 				{
 					xxx_UT_DEBUGMSG(("SEVIOR: Adding %x to multi-level \n",pAuto));
-					m_vecMultiLevel.addItem((void *) new ie_exp_RTF_MsWord97ListMulti(pAuto));
+					m_vecMultiLevel.push_back(ie_exp_RTF_MsWord97ListMulti(pAuto));
 					bFoundChild = true;
 					break;
 				}
@@ -2542,7 +2539,7 @@ void IE_Exp_RTF::_write_listtable(void)
 			if(!bFoundChild)
 			{
 				xxx_UT_DEBUGMSG(("SEVIOR: Adding %x to simple \n",pAuto));
-				m_vecSimpleList.addItem((void *) new ie_exp_RTF_MsWord97ListSimple(pAuto));
+				m_vecSimpleList.push_back(ie_exp_RTF_MsWord97ListSimple(pAuto));
 			}
 		}
 	}
@@ -2550,10 +2547,9 @@ void IE_Exp_RTF::_write_listtable(void)
 // OK now fill the MultiLevel list structure.
 //
 
-	UT_sint32 k;
-	for(k=0; k < m_vecMultiLevel.getItemCount(); k++)
+	for (decltype(m_vecMultiLevel)::size_type k = 0; k < m_vecMultiLevel.size(); k++)
 	{
-		pList97 = (ie_exp_RTF_MsWord97ListMulti *) m_vecMultiLevel.getNthItem(k);
+		pList97 = &m_vecMultiLevel[k];
 //
 // For each level in the list RTF97 structure find the first matching
 // List.
@@ -2577,7 +2573,7 @@ void IE_Exp_RTF::_write_listtable(void)
 			else
 			{
 				bFoundAtPrevLevel = false;
-				for(i=0; i < iCount; i++)
+				for (UT_sint32 i = 0; i < iCount; i++)
 				{
 					pAuto = getDoc()->getNthList(i);
 					pInner = pAuto->getParent();
@@ -2606,19 +2602,19 @@ void IE_Exp_RTF::_write_listtable(void)
 //
 // OK we got the simple and multi-list structures full.
 // Now fill the override structure.
-	for(i=0; i< iCount; i++)
+	for (UT_sint32 i = 0; i < iCount; i++)
 	{
 		pAuto = getDoc()->getNthList(i);
-		ie_exp_RTF_ListOveride * pOver = new ie_exp_RTF_ListOveride(pAuto);
-		pOver->setOverideID(i+1);
-		m_vecOverides.addItem((void *) pOver);
+		ie_exp_RTF_ListOveride pOver(pAuto);
+		pOver.setOverideID(i+1);
+		m_vecOverides.push_back(std::move(pOver));
 	}
 //
 // OK that's everything. Now generate the RTF Header.
 //
 // MultiLevel lists
 //
-	for(k=0; k< m_vecMultiLevel.getItemCount(); k++)
+	for (decltype(m_vecMultiLevel)::size_type k = 0; k < m_vecMultiLevel.size(); k++)
 	{
 		_rtf_nl();
 		_output_MultiLevelRTF(getNthMultiLevel(k));
@@ -2626,8 +2622,7 @@ void IE_Exp_RTF::_write_listtable(void)
 //
 // Simple Lists
 //
-	for(k=0; k< m_vecSimpleList.getItemCount(); k++)
-	{
+	for (decltype(m_vecSimpleList)::size_type k = 0; k < m_vecSimpleList.size(); k++) {
 		_rtf_nl();
 		_output_SimpleListRTF(getNthSimple(k));
 	}
@@ -2642,8 +2637,7 @@ void IE_Exp_RTF::_write_listtable(void)
     _rtf_open_brace();
     _rtf_keyword("*");
     _rtf_keyword("listoverridetable");
-	for(i=0; i< m_vecOverides.getItemCount(); i++)
-	{
+	for (decltype(m_vecOverides)::size_type i = 0; i < m_vecOverides.size(); i++) {
 		_rtf_nl();
 		_output_OveridesRTF(getNthOveride(i),i);
 	}
@@ -2657,25 +2651,25 @@ void IE_Exp_RTF::_write_listtable(void)
 /*!
  * Get ith Multilevel list
  */
-ie_exp_RTF_MsWord97ListMulti * IE_Exp_RTF::getNthMultiLevel(UT_uint32 i) const
+const ie_exp_RTF_MsWord97ListMulti& IE_Exp_RTF::getNthMultiLevel(UT_uint32 i) const
 {
-	return (ie_exp_RTF_MsWord97ListMulti *) m_vecMultiLevel.getNthItem(i);
+	return m_vecMultiLevel[i];
 }
 
 /*!
  * Get ith Simple list
  */
-ie_exp_RTF_MsWord97ListSimple *  IE_Exp_RTF::getNthSimple(UT_uint32 i) const
+const ie_exp_RTF_MsWord97ListSimple& IE_Exp_RTF::getNthSimple(UT_uint32 i) const
 {
-	return (ie_exp_RTF_MsWord97ListSimple *) m_vecSimpleList.getNthItem(i);
+	return m_vecSimpleList[i];
 }
 
 /*!
  * Get ith Overide
  */
-ie_exp_RTF_ListOveride *  IE_Exp_RTF::getNthOveride(UT_uint32 i) const
+const ie_exp_RTF_ListOveride& IE_Exp_RTF::getNthOveride(UT_uint32 i) const
 {
-	return (ie_exp_RTF_ListOveride *) m_vecOverides.getNthItem(i);
+	return m_vecOverides[i];
 }
 
 /*!
@@ -2683,7 +2677,7 @@ ie_exp_RTF_ListOveride *  IE_Exp_RTF::getNthOveride(UT_uint32 i) const
  */
 UT_uint32  IE_Exp_RTF::getMultiLevelCount(void) const
 {
-	return m_vecMultiLevel.getItemCount();
+	return m_vecMultiLevel.size();
 }
 
 /*!
@@ -2691,14 +2685,14 @@ UT_uint32  IE_Exp_RTF::getMultiLevelCount(void) const
  */
 UT_uint32  IE_Exp_RTF::getSimpleListCount(void) const
 {
-	return m_vecSimpleList.getItemCount();
+	return m_vecSimpleList.size();
 }
 /*!
  * Get Number of overides in the document
  */
 UT_uint32  IE_Exp_RTF::getOverideCount(void) const
 {
-	return m_vecOverides.getItemCount();
+	return m_vecOverides.size();
 }
 
 /*!
@@ -2708,13 +2702,10 @@ UT_uint32  IE_Exp_RTF::getOverideCount(void) const
 UT_uint32 IE_Exp_RTF::getMatchingOverideNum(UT_uint32 ID)
 {
 	UT_uint32 baseid = ID;
-	UT_uint32 i=0;
-	for(i=0; i< getOverideCount(); i++)
-	{
-		ie_exp_RTF_ListOveride * pOver = getNthOveride(i);
-		if(pOver->doesOverideMatch(baseid))
-		{
-			return pOver->getOverideID();
+	for (decltype(m_vecOverides)::size_type i = 0; i < getOverideCount(); i++) {
+		const ie_exp_RTF_ListOveride& pOver = getNthOveride(i);
+		if (pOver.doesOverideMatch(baseid)) {
+			return pOver.getOverideID();
 		}
 	}
 	return 0;
@@ -2725,7 +2716,7 @@ UT_uint32 IE_Exp_RTF::getMatchingOverideNum(UT_uint32 ID)
  \param ie_exp_RTF_MsWord97ListMulti * pMulti pointer to a multi-level list
  * structure.
  */
-void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
+void IE_Exp_RTF::_output_MultiLevelRTF(const ie_exp_RTF_MsWord97ListMulti& pMulti)
 {
 	_rtf_open_brace();
 	_rtf_keyword("list");
@@ -2747,7 +2738,7 @@ void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
 	{
 		_rtf_open_brace();
 		_rtf_keyword("listlevel");
-		pList97 = pMulti->getListAtLevel(i,0);
+		pList97 = pMulti.getListAtLevel(i, 0);
 		if(pList97 != NULL)
 		{
 //
@@ -2767,7 +2758,7 @@ void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
 		}
 		_rtf_close_brace();
 	}
-	_rtf_keyword("listid",pMulti->getID());
+	_rtf_keyword("listid", pMulti.getID());
 	_rtf_close_brace();
 }
 
@@ -3109,7 +3100,7 @@ void IE_Exp_RTF::_output_ListRTF(const fl_AutoNumConstPtr & pAuto, UT_uint32 iLe
  \param ie_exp_RTF_MsWord97ListSimple * pSimple pointer to a Simple list
  * structure.
  */
-void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
+void IE_Exp_RTF::_output_SimpleListRTF(const ie_exp_RTF_MsWord97ListSimple& pSimple)
 {
 	_rtf_open_brace();
 	_rtf_keyword("list");
@@ -3124,7 +3115,7 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
 #endif
 	_rtf_keyword("listtemplateid",tempID);
 	_rtf_keyword("listsimple");
-	fl_AutoNumConstPtr pAuto = pSimple->getAuto();
+	fl_AutoNumConstPtr pAuto = pSimple.getAuto();
 	_rtf_open_brace();
 	_rtf_keyword("listlevel");
 //
@@ -3132,7 +3123,7 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
 //
 	_output_ListRTF(pAuto,0);
 	_rtf_close_brace();
-	_rtf_keyword("listid",pSimple->getID());
+	_rtf_keyword("listid", pSimple.getID());
 	_rtf_close_brace();
 }
 
@@ -3140,12 +3131,12 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
  * Actually output the RTF from an Overide
  \param ie_exp_RTF_Overide * pOver pointer to an Overide definition
  */
-void IE_Exp_RTF::_output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 /*iOver*/)
+void IE_Exp_RTF::_output_OveridesRTF(const ie_exp_RTF_ListOveride& pOver, UT_uint32 /*iOver*/)
 {
 	_rtf_open_brace();
 	_rtf_keyword("listoverride");
 	_rtf_keyword("listoverridecount",0);
-	fl_AutoNumConstPtr pAuto = pOver->getAutoNum();
+	fl_AutoNumConstPtr pAuto = pOver.getAutoNum();
 	fl_AutoNumConstPtr pTop = pAuto;
 	while(pTop->getParent())
 	{
@@ -3156,7 +3147,7 @@ void IE_Exp_RTF::_output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 /
 // Strategy: Dump out all the list info for the first list in each level.
 //
 	_output_ListRTF(pAuto,0);
-	_rtf_keyword("ls",pOver->getOverideID());
+	_rtf_keyword("ls", pOver.getOverideID());
 	_rtf_close_brace();
 }
 
@@ -3505,7 +3496,7 @@ void ie_exp_RTF_MsWord97ListMulti::addLevel(UT_uint32 iLevel, ie_exp_RTF_MsWord9
  \param iLevel the level which we want to lists for
  \param nthList the list at the level we want
  */
-ie_exp_RTF_MsWord97List * ie_exp_RTF_MsWord97ListMulti::getListAtLevel(UT_uint32 iLevel, UT_uint32 nthList)
+ie_exp_RTF_MsWord97List * ie_exp_RTF_MsWord97ListMulti::getListAtLevel(UT_uint32 iLevel, UT_uint32 nthList) const
 {
 	if(iLevel > 8)
 	{
@@ -3535,7 +3526,7 @@ ie_exp_RTF_MsWord97List * ie_exp_RTF_MsWord97ListMulti::getListAtLevel(UT_uint32
  \retval the List ID number of the first list on the level that contains
  the ID. Return 0 if there is no match in the structure.
  */
-UT_uint32 ie_exp_RTF_MsWord97ListMulti::getMatchingID(UT_uint32 listID)
+UT_uint32 ie_exp_RTF_MsWord97ListMulti::getMatchingID(UT_uint32 listID) const
 {
 	UT_uint32 i;
 	UT_sint32 j;
