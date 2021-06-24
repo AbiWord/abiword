@@ -26,6 +26,7 @@
 #include "ie_exp_HTML.h"
 
 #include <pd_DocumentRDF.h>
+#include "ut_std_string.h"
 #include "ie_exp_DocRangeListener.h"
 #include "pl_ListenerCoupleCloser.h"
 
@@ -195,8 +196,8 @@ UT_Error IE_Exp_HTML::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bu
     }
 
 	pNewExp->suppressDialog();
-	
-    aerr = pNewExp->writeFile(szTempFileName);
+    std::string url = UT_std_string_sprintf("file://%s", szTempFileName);
+    aerr = pNewExp->writeFile(url.c_str());
     if(aerr != UT_OK)
     {
 	delete pNewExp;
