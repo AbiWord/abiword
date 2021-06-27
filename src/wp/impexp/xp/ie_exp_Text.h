@@ -84,7 +84,7 @@ protected:
  private:
 	PL_Listener *		m_pListener;
 	bool				m_bIsEncoded;
-	const char *		m_szEncoding;
+	std::string m_szEncoding;
 	bool m_bExplicitlySetEncoding;
 	bool				m_bIs16Bit;
 	bool                m_bUnicode;

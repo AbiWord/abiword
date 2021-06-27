@@ -60,7 +60,6 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Exp(pDocument),
 	  m_pListener(NULL),
 	  m_bIsEncoded(false),
-	  m_szEncoding(nullptr),
 	  m_bExplicitlySetEncoding(false),
 	  m_bIs16Bit(false),
 	  m_bUnicode(false),
@@ -86,7 +85,6 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, const char * encoding)
   : IE_Exp(pDocument),
     m_pListener(NULL),
     m_bIsEncoded(false),
-    m_szEncoding(nullptr),
     m_bExplicitlySetEncoding(false),
     m_bIs16Bit(false),
     m_bUnicode(false),
@@ -212,7 +210,7 @@ PL_Listener * IE_Exp_Text::_constructListener(void)
 		}
 	}
 
-	return new Text_Listener(getDoc(),this,(getDocRange()!=NULL),m_szEncoding,
+	return new Text_Listener(getDoc(),this,(getDocRange()!=NULL), m_szEncoding.c_str(),
 							 m_bIs16Bit,m_bUnicode,m_bUseBOM,m_bBigEndian);
 }
 
@@ -228,7 +226,7 @@ PL_Listener * IE_Exp_Text::_constructListener(void)
 UT_Error IE_Exp_Text::_writeDocument(void)
 {
 	// Don't call base method if user cancels encoding dialog
-	if (!(!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding)))
+	if (!(!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding.c_str())))
 		return UT_SAVE_CANCELLED;
 
 	// TODO If we're going to the clipboard and the OS supports unicode, set encoding.
@@ -312,7 +310,7 @@ bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
  */
 void IE_Exp_Text::_setEncoding(const char *szEncoding)
 {
-	m_szEncoding = szEncoding;
+	m_szEncoding = szEncoding ? szEncoding : "";
 
 	// TODO Should BOM use be a user pref?
 	// TODO Does Mac OSX prefer BOMs?
