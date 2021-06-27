@@ -2507,13 +2507,15 @@ void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)
             headingStyle = pProp->getInitial();
     }
 
-    const gchar* szTOCHeading;
-    ok = pAP->getProperty("toc-heading", szTOCHeading);
-    if (!(ok && szTOCHeading))
-    {
-       szTOCHeading = fl_TOCLayout::getDefaultHeading().c_str();
+    std::string szTOCHeading;
+    pValue = nullptr;
+    ok = pAP->getProperty("toc-heading", pValue);
+    if (ok && pValue) {
+        szTOCHeading = pValue;
+    } else {
+        szTOCHeading = fl_TOCLayout::getDefaultHeading();
     }
-    
+
     std::vector<UT_UTF8String> tocItems;
     std::vector<UT_UTF8String> tocItemsUri;
     UT_uint32 tocNum = 0;
@@ -2551,8 +2553,8 @@ void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)
         tocItems.push_back(tocItem);
         tocItemsUri.push_back(tocItemUri);
     }
-    
-    m_pCurrentImpl->insertTOC(szTOCHeading, tocItems, tocItemsUri);
+
+    m_pCurrentImpl->insertTOC(szTOCHeading.c_str(), tocItems, tocItemsUri);
 }
 
 /**
