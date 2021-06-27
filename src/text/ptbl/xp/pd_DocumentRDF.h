@@ -63,7 +63,7 @@ class ABI_EXPORT PD_URI
   public:
     PD_URI( const std::string& v = "" );
     virtual ~PD_URI() {}
-    virtual std::string toString() const;
+    const std::string& toString() const;
     int  length() const
     {
         return m_value.length();

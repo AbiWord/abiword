@@ -541,7 +541,7 @@ PD_URI::PD_URI( const std::string& v )
 /**
  * get a std::string representation
  */
-std::string PD_URI::toString() const
+const std::string& PD_URI::toString() const
 {
     return m_value;
 }
