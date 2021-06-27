@@ -459,10 +459,14 @@ UT_RGBColor::~UT_RGBColor()
 
 UT_RGBColor & UT_RGBColor::operator=(const  UT_RGBColor &c)
 {
-	m_red = c.m_red;
-	m_grn = c.m_grn;
-	m_blu = c.m_blu;
-	m_bIsTransparent = c.m_bIsTransparent;
+    if (&c == this) {
+        return *this;
+    }
+
+    m_red = c.m_red;
+    m_grn = c.m_grn;
+    m_blu = c.m_blu;
+    m_bIsTransparent = c.m_bIsTransparent;
     if(m_patImpl) {
         delete m_patImpl;
     }
