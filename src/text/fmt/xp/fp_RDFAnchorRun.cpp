@@ -178,8 +178,9 @@ void fp_RDFAnchorRun::_lookupProperties( const PP_AttrProp * pSpanAP,
 
 void fp_RDFAnchorRun::_clearScreen(bool /*bFullLineHeightRect*/)
 {
-    if(getWidth() == 0)
-        return;
+	if (getWidth() == 0) {
+		return;
+	}
 
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0;
