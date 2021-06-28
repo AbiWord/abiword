@@ -136,9 +136,10 @@ private:
         StackCell(const StackCell&) = default;
 
         StackCell& operator=(const StackCell& sc) {
-            this->m_deleteWhenPop = sc.m_deleteWhenPop;
-            this->m_pState = sc.m_pState;
-
+            if (this != &sc) {
+                this->m_deleteWhenPop = sc.m_deleteWhenPop;
+                this->m_pState = sc.m_pState;
+            }
             return *this;
         }
 
