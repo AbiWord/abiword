@@ -20,6 +20,7 @@
 #ifndef IE_EXP_XSL_FO_H
 #define IE_EXP_XSL_FO_H
 
+#include "ut_std_string.h"
 #include "ie_exp.h"
 #include "ie_Table.h"
 #include "pl_Listener.h"
@@ -91,7 +92,7 @@ public:
 		return m_pan->getID();
 	}
 
-	UT_UTF8String getNextLabel()
+	std::string getNextLabel()
 	{
 		UT_return_val_if_fail(m_pan,"");
 
@@ -99,7 +100,7 @@ public:
 		{
 			UT_uint32 val = m_iStart + (m_iInc * m_iCount);
 			m_iCount++;
-			return UT_UTF8String_sprintf("%s%d%s", m_sPreText.utf8_str(), val, m_sPostText.utf8_str());
+			return UT_std_string_sprintf("%s%d%s", m_sPreText.utf8_str(), val, m_sPostText.utf8_str());
 		}
 		else
 		{
@@ -196,7 +197,7 @@ public:
 				}
 			}
 
-			return bullet;
+			return bullet.utf8_str();
 		}
 	}
 
@@ -330,9 +331,9 @@ private:
 	UT_uint32			m_iListID;
 
 	ie_Table			mTableHelper;
-	UT_Vector			m_utvDataIDs;
+	std::vector<std::string> m_utvDataIDs;
 	UT_NumberStack		m_utnsTagStack;
-	UT_GenericVector<ListHelper *> m_Lists;
+	std::vector<ListHelper *> m_Lists;
 };
 
 #endif /* IE_EXP_XSL_FO_H */

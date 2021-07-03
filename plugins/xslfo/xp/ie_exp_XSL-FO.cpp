@@ -23,6 +23,7 @@
 #include "ut_debugmsg.h"
 #include "ut_path.h"
 #include "ut_locale.h"
+#include "ut_std_vector.h"
 #include "pt_Types.h"
 #include "ie_impexp_XSL-FO.h"
 #include "ie_exp_XSL-FO.h"
@@ -603,8 +604,7 @@ s_XSL_FO_Listener::~s_XSL_FO_Listener()
 {
 	_closeSection();
 	_handleDataItems();
-	UT_VECTOR_FREEALL(char *, m_utvDataIDs);
-	UT_VECTOR_SPARSEPURGEALL(ListHelper *, m_Lists);
+	UT_std_vector_sparsepurgeall(m_Lists);
 
 	_tagClose(TT_DOCUMENT, "root");
 }
@@ -617,8 +617,8 @@ void s_XSL_FO_Listener::_handleLists(void)
 		if (pAutoNum->isEmpty() == true)
 			continue;
 
-		m_Lists.addItem(new ListHelper);
-		ListHelper * lh = m_Lists[m_Lists.getItemCount() - 1];
+		m_Lists.push_back(new ListHelper);
+		ListHelper * lh = m_Lists.back();
 		(*lh).addList(pAutoNum);
 	}
 }
@@ -655,12 +655,11 @@ void s_XSL_FO_Listener::_handleEmbedded(PT_AttrPropIndex api)
 
 	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("dataid", szValue) && szValue);
 
-	UT_UTF8String buf, img, url;
+	UT_UTF8String img, url;
 
-	buf = "snapshot-png-";
-	buf += szValue;
-	buf.escapeXML();
-	const gchar* dataid = g_strdup(buf.utf8_str());
+	std::string dataid("snapshot-png-");
+	dataid += szValue;
+	dataid = UT_escapeXML(dataid);
 	m_utvDataIDs.push_back(dataid);
 
 	url = UT_go_basename(m_pie->getFileName());
@@ -669,7 +668,7 @@ void s_XSL_FO_Listener::_handleEmbedded(PT_AttrPropIndex api)
 	img = "external-graphic src=\"url('";
 	img += url;
 	img += "_data/";
-	img += buf;
+	img += dataid;
 	img += ".png')\"";
 
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -716,8 +715,8 @@ void s_XSL_FO_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_Att
 				_tagOpen(TT_LISTITEMLABEL, "list-item-label end-indent=\"label-end()\"", false);
 				_tagOpen(TT_BLOCK, "block", false);
 
-				UT_UTF8String label = "";
-				for(UT_sint32 i = 0; i < m_Lists.getItemCount(); i++)
+				std::string label = "";
+				for (std::vector<ListHelper*>::size_type i = 0; i < m_Lists.size(); i++)
 				{
 					ListHelper * lh = m_Lists[i];
 					if(lh && ((*lh).retrieveID() == m_iListID))
@@ -728,7 +727,7 @@ void s_XSL_FO_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_Att
 				}
 
 				if(label.length())
-					m_pie->write(label.utf8_str()); //write out the list label text
+					m_pie->write(label.c_str()); //write out the list label text
 
 				_tagClose(TT_BLOCK, "block", false);
 				_tagClose(TT_LISTITEMLABEL, "list-item-label");
@@ -828,7 +827,7 @@ void s_XSL_FO_Listener::_handleImage(PT_AttrPropIndex api)
 
 	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("dataid", szValue) && szValue);
 
-	const gchar * dataid = g_strdup(szValue);
+	std::string dataid(szValue);
 	m_utvDataIDs.push_back(dataid);
 
 	UT_UTF8String buf, img, url;
@@ -844,7 +843,7 @@ void s_XSL_FO_Listener::_handleImage(PT_AttrPropIndex api)
 	img += buf;
 
     std::string ext;
-    if(m_pDocument->getDataItemFileExtension(dataid, ext, true)) {
+    if (m_pDocument->getDataItemFileExtension(dataid.c_str(), ext, true)) {
         img += ext;
     }
     else {
@@ -883,7 +882,7 @@ void s_XSL_FO_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 
 	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("strux-image-dataid", szValue) && szValue);
 
-	const gchar * dataid = g_strdup(szValue);
+	std::string dataid(szValue);
 	m_utvDataIDs.push_back(dataid);
 
 	UT_UTF8String buf, img, url;
@@ -899,7 +898,7 @@ void s_XSL_FO_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 	img += buf;
 
     std::string ext;
-    if(m_pDocument->getDataItemFileExtension(dataid, ext, true)) {
+    if (m_pDocument->getDataItemFileExtension(dataid.c_str(), ext, true)) {
         img += ext;
     }
     else {
@@ -938,12 +937,11 @@ void s_XSL_FO_Listener::_handleMath(PT_AttrPropIndex api)
 
 	//TODO: investigate mathml exporting
 
-	UT_UTF8String buf, img, url;
+	UT_UTF8String img, url;
 
-	buf = "snapshot-png-";
-	buf += szValue;
-	buf.escapeXML();
-	const gchar * dataid = g_strdup(buf.utf8_str());
+	std::string dataid = "snapshot-png-";
+	dataid += szValue;
+	dataid = UT_escapeXML(dataid);
 	m_utvDataIDs.push_back(dataid);
 
 	url = UT_go_basename(m_pie->getFileName());
@@ -952,26 +950,24 @@ void s_XSL_FO_Listener::_handleMath(PT_AttrPropIndex api)
 	img = "external-graphic src=\"url('";
 	img += url;
 	img += "_data/";
-	img += buf;
+	img += dataid;
 	img += ".png')\"";
-	buf.clear();
 
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
 	if(pAP->getProperty("width", szValue) && szValue)
 	{
 		double dInch = static_cast<double>(atoi(szValue))/UT_LAYOUT_RESOLUTION;
-		UT_UTF8String_sprintf(buf,"%fin",dInch);
+		std::string buf = UT_std_string_sprintf("%fin", dInch);
 
 		img += " content-width=\"";
 		img += buf;
 		img += "\"";
-		buf.clear();
 	}
 	if(pAP->getProperty("height", szValue) && szValue)
 	{
 		double dInch = static_cast<double>(atoi(szValue))/UT_LAYOUT_RESOLUTION;
-		UT_UTF8String_sprintf(buf,"%fin",dInch);
+		std::string buf = UT_std_string_sprintf("%fin", dInch);
 
 		img += " content-height=\"";
 		img += buf;
@@ -1383,11 +1379,11 @@ void s_XSL_FO_Listener::_handleDataItems(void)
 	UT_ConstByteBufPtr pByteBuf;
 
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf, &mimeType)); k++)
-	{	  	  
+	{
 		UT_sint32 loc = -1;
-		for (UT_sint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
+		for (std::vector<std::string>::size_type i = 0; i < m_utvDataIDs.size(); i++)
 		{
-			if(strcmp(reinterpret_cast<const char*>(m_utvDataIDs[i]), szName) == 0)
+			if (m_utvDataIDs[i] == szName)
 			{
 				loc = i;
 				break;
@@ -1396,30 +1392,30 @@ void s_XSL_FO_Listener::_handleDataItems(void)
 
 		if(loc > -1)
 		{
-			UT_UTF8String fname;
+			std::string fname;
 
-			UT_UTF8String_sprintf(fname, "%s_data", m_pie->getFileName());
-			UT_go_directory_create(fname.utf8_str(), NULL);
+			fname = UT_std_string_sprintf("%s_data", m_pie->getFileName());
+			UT_go_directory_create(fname.c_str(), NULL);
 
 			if (mimeType == "image/svg+xml")
-				UT_UTF8String_sprintf(fname, "%s/%d.svg", fname.utf8_str(), loc);
+				fname = UT_std_string_sprintf("%s/%d.svg", fname.c_str(), loc);
 			else if (mimeType == "application/mathml+xml")
-				UT_UTF8String_sprintf(fname, "%s/%d.mathml", fname.utf8_str(), loc);
+				fname = UT_std_string_sprintf("%s/%d.mathml", fname.c_str(), loc);
 			else // raster Image
-			{  
+			{
                 const char * extension = "png";
                 if(mimeType == "image/jpeg") {
                     extension = "jpg";
                 }
 				char * temp = _stripSuffix(UT_go_basename(szName), '_');
 				char * fstripped = _stripSuffix(temp, '.');
-				UT_UTF8String_sprintf(fname, "%s/%s.%s", fname.utf8_str(), fstripped, extension);
+				fname = UT_std_string_sprintf("%s/%s.%s", fname.c_str(), fstripped, extension);
 
 				FREEP(temp);
 				FREEP(fstripped);
 			}
 	  
-			GsfOutput *fp = UT_go_file_create (fname.utf8_str(), NULL);
+			GsfOutput *fp = UT_go_file_create (fname.c_str(), NULL);
 	  
 			if(!fp)
 				continue;
