@@ -1828,7 +1828,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	// FIXME!! Do extensive tests to see if we can remove this line!
 	//
 	bDoFull = true;
-	UT_DEBUGMSG(("Doing DocSection Update layout (section %p)\n",this));
+	xxx_UT_DEBUGMSG(("Doing DocSection Update layout (section %p)\n",this));
 	if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
 	{
 	        UT_sint32 i =0;

@@ -188,7 +188,7 @@ void AP_TopRuler::setView(AV_View * pView)
 	}
 	if(m_pView == NULL)
 	  bNewView = true;
-	UT_DEBUGMSG(("setView is set to %p \n",pView));
+	xxx_UT_DEBUGMSG(("setView is set to %p \n",pView));
 
 	m_pView = pView;
 

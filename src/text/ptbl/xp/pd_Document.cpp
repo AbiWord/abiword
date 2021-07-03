@@ -1306,7 +1306,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos, const UT_UCSChar * pbuf,
 		m_pPieceTable->insertFmtMark(PTC_SetExactly, dpos, p_AttrProp);
 	}
 #if DEBUG
-#if 1
+#if 0
 	UT_uint32 ii = 0;
 	std::string sStr;
 	for(ii=0; ii<length;ii++)

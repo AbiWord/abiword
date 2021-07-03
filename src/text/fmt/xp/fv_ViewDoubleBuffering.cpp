@@ -134,7 +134,7 @@ void FV_ViewDoubleBuffering::callUnifiedDraw()
 		mostExtArgs.bDirtyRunsOnly, false);
 	m_pView->getGraphics()->setClipRect(NULL);
 
-	UT_DEBUGMSG(("ASFRENT: unified _draw call for a total of %d previous calls.\n",  mostExtArgs.callCount));
+	xxx_UT_DEBUGMSG(("ASFRENT: unified _draw call for a total of %d previous calls.\n",  mostExtArgs.callCount));
 }
 
 bool FV_ViewDoubleBuffering::noRecordedDrawCalls()

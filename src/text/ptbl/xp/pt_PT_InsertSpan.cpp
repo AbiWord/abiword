@@ -117,7 +117,7 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		else
 		{
 			// no AP, this is probably OK
-			UT_DEBUGMSG(("pt_PieceTable::insertSpan: no AP\n"));
+			xxx_UT_DEBUGMSG(("pt_PieceTable::insertSpan: no AP\n"));
 			return _realInsertSpan(dpos, p, length, PP_NOPROPS, PP_NOPROPS, pField, bAddChangeRec);
 		}
 	}
