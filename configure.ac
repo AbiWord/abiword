@@ -1198,6 +1198,7 @@ AC_OUTPUT(
   tools/Makefile
   tools/cdump/Makefile
   tools/cdump/xp/Makefile
+  com.abisource.AbiWord.appdata.xml
 )
 
 AC_OUTPUT(

@@ -45,7 +45,6 @@ EXTRA_DIST = \
 	README \
 	ChangeLog \
 	abiword.desktop \
-	$(appdata_DATA) \
 	abiword.keys \
 	abiword.png \
 	libabiword.pc.in \
