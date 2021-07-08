@@ -528,10 +528,11 @@ static void s_append_color (UT_UTF8String & style, const char * color, const cha
 					bValid = false;
 					break;
 				}
-			if (bHexal)
-				if (!isdigit (static_cast<int>(u)))
-					if (((c < 'a') && (c > 'f')) && ((c < 'A') && (c > 'F')))
-						bHexal = false;
+			if (bHexal) {
+				if (!isxdigit(u)) {
+					bHexal = false;
+				}
+			}
 			++ptr;
 			++length;
 		}

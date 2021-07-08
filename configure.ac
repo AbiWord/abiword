@@ -602,6 +602,7 @@ AX_APPEND_COMPILE_FLAGS([ \
    -Wheader-guard \
    -Wimplicit-fallthrough=2 \
    -Wlogical-not-parentheses \
+   -Wlogical-op \
    -Wmisleading-indentation \
    -Wmissing-noreturn \
    -Wno-overloaded-virtual \
