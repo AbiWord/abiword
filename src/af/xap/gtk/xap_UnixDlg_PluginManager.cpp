@@ -364,7 +364,11 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 
 	GtkWidget * btInstall = GTK_WIDGET(gtk_builder_get_object(builder, "btInstall"));
 
+#if defined(FLATPAK_BUILD)
+        gtk_widget_hide(btInstall);
+#else
 	localizeButton(btInstall, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);
+#endif
 
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
@@ -377,9 +381,11 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 													   NULL);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_list), column);
 
+#if !defined(FLATPAK_BUILD)
 	g_signal_connect (G_OBJECT(btInstall), "clicked",
-					  G_CALLBACK(s_load_clicked), 
+					  G_CALLBACK(s_load_clicked),
 					  static_cast<gpointer>(this));
+#endif
 
 	g_signal_connect_after(G_OBJECT(gtk_tree_view_get_selection (GTK_TREE_VIEW (m_list))),
 						   "changed",
