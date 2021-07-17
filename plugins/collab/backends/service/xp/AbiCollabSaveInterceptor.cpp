@@ -318,7 +318,7 @@ void AbiCollabSaveInterceptor::_saveFailed(AbiCollab* pSession)
 	{
 		// TODO: add the document name, error type and perhaps the server name
 		// TODO: offer some kind of solution to the user
-		UT_UTF8String msg("An error occured while saving this document to the web-service!");
+		UT_UTF8String msg("An error occurred while saving this document to the web-service!");
 		XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 	}
 }

@@ -4006,7 +4006,7 @@ void fl_BlockLayout::format()
 	// information for the run).
 	
     	// was previously after breakParagraph. Idea is to make this a less
-		// frequent occurance. So the paragraph get's lines coalessed 
+		// frequent occurrence. So the paragraph gets lines coalessed
         // whenever the height changes. So we don't do this on every key press
         // but on average the paragraph gets coalessed.
 

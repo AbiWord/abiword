@@ -702,7 +702,7 @@ bool ServiceAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std::s
 	std::map<uint64_t, DocumentPermissions>::iterator it = m_permissions.find(connection->doc_id());
 	if (it != m_permissions.end())
 	{
-		printf(">>>>>> copying current RO permisions over...\n");
+		printf(">>>>>> copying current RO permissions over...\n");
 		perms.read_only = (*it).second.read_only;
 		perms.group_read_only = (*it).second.group_read_only;
 		perms.group_read_owner = (*it).second.group_read_owner;

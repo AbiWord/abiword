@@ -353,7 +353,7 @@ int abiword_garble::run() {
 		return 1;
 	} catch (...) {
 
-		fprintf( stderr, "error: unknown exception occured\n" );
+		fprintf( stderr, "error: unknown exception occurred\n" );
 		return 1;
 	}
 }

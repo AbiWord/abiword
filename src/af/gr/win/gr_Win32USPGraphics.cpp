@@ -54,7 +54,7 @@ tScriptGetProperties GR_Win32USPGraphics::fScriptGetProperties = NULL;
 tScriptRecordDigitSubstitution GR_Win32USPGraphics::fScriptRecordDigitSubstitution = NULL;
 
 // some macros to ease logging of critical exceptions
-// all of these macros log the file name and line where the exception occured, plus some
+// all of these macros log the file name and line where the exception occurred, plus some
 // additional information
 
 // log single string

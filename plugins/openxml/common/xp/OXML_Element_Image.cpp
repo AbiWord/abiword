@@ -108,7 +108,7 @@ UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 	OXML_SharedImage sImage = doc->getImageById(getId());
 	if(!sImage)
 	{
-		UT_DEBUGMSG(("SERHAT: Skipping image element in import, since fail occured in import of image data previously\n"));
+		UT_DEBUGMSG(("SERHAT: Skipping image element in import, since fail occurred in import of image data previously\n"));
 		return UT_OK;
 	}
 

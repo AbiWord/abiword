@@ -288,7 +288,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   m_pWordIterator->updateBlock();
 
 			   // If this is the last block, adjust the end length
-			   // accordingly (seeing as the change must have occured
+			   // accordingly (seeing as the change must have occurred
 			   // before the end of the selection).
 			   if (m_bIsSelection && m_pEndBlock == m_pCurrBlock)
 				   m_iEndLength += (m_pWordIterator->getBlockLength() - iOldLength);
@@ -407,7 +407,7 @@ bool AP_Dialog_Spell::changeWordWith(const UT_UCSChar * newword)
    m_pView->updateScreen();
    
    // If this is the last block, adjust the end length accordingly
-   // (seeing as the change must have occured before the end of the
+   // (seeing as the change must have occurred before the end of the
    // selection).
    if (m_bIsSelection && m_pEndBlock == m_pCurrBlock)
 	   m_iEndLength += (iNewLength - m_iWordLength);

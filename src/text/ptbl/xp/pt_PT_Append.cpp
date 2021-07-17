@@ -536,7 +536,7 @@ bool pt_PieceTable::insertSpanBeforeFrag(pf_Frag * pf, const UT_UCSChar * p, UT_
 	m_fragments.insertFragBefore(pf,pftNew);
 
 	// no need to check for the new frag being continguous with the
-	// one on its right -- it cannot be, since the insertion occured in
+	// one on its right -- it cannot be, since the insertion occurred in
 	// oposite order than the fargments have in the buffer
 
 	return true;

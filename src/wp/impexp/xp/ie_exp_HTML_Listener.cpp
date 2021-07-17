@@ -2705,7 +2705,7 @@ void IE_Exp_HTML_Listener::_openTextbox(PT_AttrPropIndex api)
         style += " border: solid;";
 
         // This might need to be updated for textbox (and wrapped-image?) changes that
-        // occured in 2.3. 
+        // occurred in 2.3.
 
         // Get the wrap mode
         if (!pAP->getProperty("wrap-mode", tempProp) || !tempProp || !*tempProp)

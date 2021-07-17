@@ -2759,7 +2759,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			// The answer:
 
 			// That if was put in to guard against an extremely
-			// convoluted crasher that occured once. I forget the
+			// convoluted crasher that occurred once. I forget the
 			// details and you really don't want to know. Something
 			// like calling a _generalUpdate() from an insertStrux
 			// while editting the first header and it had been

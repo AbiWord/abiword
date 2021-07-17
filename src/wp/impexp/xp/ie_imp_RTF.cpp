@@ -444,7 +444,7 @@ bool RTF_msword97_level::ParseLevelText(const std::string & szLevelText,const st
 	{
 		ilength = icurrent;
 	}
-	// Find the occurance of a previous level place holder
+	// Find the occurrence of a previous level place holder
 	for (icurrent = ilength-1; icurrent>=0; icurrent--)
 	{
 		if(-iLevelText[icurrent] >= 0 && (-iLevelText[icurrent] < static_cast<UT_sint32>(iLevel)))
@@ -3243,7 +3243,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* p
 /*!
   Reads a character from the file. Doesn't ignore CR and LF
   \retval pCh the char read
-  \return false if an error occured.
+  \return false if an error occurred.
   \see IE_Imp_RTF::ReadCharFromFile
 */
 bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
@@ -3290,7 +3290,7 @@ bool IE_Imp_RTF::ReadContentFromFile(UT_UTF8String & str)
 /*!
   Reads a character from the file ignoring CR and LF
   \retval pCh the char read
-  \return false if an error occured.
+  \return false if an error occurred.
   \see IE_Imp_RTF::ReadCharFromFileWithCRLF
 */
 bool IE_Imp_RTF::ReadCharFromFile(unsigned char* pCh)
@@ -8807,7 +8807,7 @@ IE_Imp_RTF::s_unEscapeXMLString()
 
 	// We want &7d;&7d; -> &7d;
 	// And         &7d; -> }
-	// as we know there are no occurances of }} in the string
+	// as we know there are no occurrences of }} in the string
 	// we use that as a temporary state to hold the case of two 7d in a row.
 	s = replace_all( s, "&7d;&7d;", "}}" );
 	s = replace_all( s, "&7d;", "}" );

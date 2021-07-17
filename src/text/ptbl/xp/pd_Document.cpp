@@ -3619,7 +3619,7 @@ bool PD_Document::removeStyle(const gchar * pszName)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 //
-// First replace all occurances of pszName with "Normal"
+// First replace all occurrences of pszName with "Normal"
 //
 	PD_Style * pNormal = NULL;
 	PD_Style * pNuke = NULL;
