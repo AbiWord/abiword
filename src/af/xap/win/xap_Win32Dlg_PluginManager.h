@@ -42,7 +42,6 @@ protected:
 	BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL _onDeltaPos(NM_UPDOWN * pnmud);
-	void event_Load();
 	void refreshPluginList();
 	void refreshPluginInfo();
 

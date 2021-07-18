@@ -71,7 +71,6 @@ class XAP_CocoaModule;
 @interface XAP_CocoaDlg_PluginManagerController
     : NSWindowController <XAP_CocoaDialogProtocol, NSTableViewDelegate, NSTableViewDataSource>
 {
-	IBOutlet NSButton *		oInstallBtn;
 	IBOutlet NSButton *		oCloseBtn;
 
 	IBOutlet NSTableView *	oPluginList;
@@ -118,8 +117,6 @@ public:
 	virtual ~XAP_CocoaDialog_PluginManager(void);
 
 	virtual void	runModal (XAP_Frame * pFrame);
-
-	void			event_Load ();
 
 private:
 	XAP_Frame *		m_pFrame;

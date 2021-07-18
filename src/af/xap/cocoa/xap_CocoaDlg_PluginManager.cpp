@@ -63,79 +63,6 @@ XAP_CocoaDialog_PluginManager::~XAP_CocoaDialog_PluginManager(void)
 	// 
 }
 
-void XAP_CocoaDialog_PluginManager::event_Load ()
-{
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	XAP_DialogFactory * pDialogFactory = (XAP_DialogFactory *) m_pFrame->getDialogFactory();
-	
-	XAP_Dialog_FileOpenSaveAs * pDialog = (XAP_Dialog_FileOpenSaveAs *) (pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
-	UT_ASSERT(pDialog);
-	if (!pDialog)
-		return;
-	
-	std::string plugin_path = [[[NSBundle mainBundle] bundlePath] UTF8String];
-//	plugin_path += "/Contents/PlugIns/AbiHack.dylib";
-
-	pDialog->setCurrentPathname(plugin_path);
-	pDialog->setSuggestFilename(false);
-	
-	const char * szDescList[2];
-	const char * szSuffixList[2];
-	IEFileType   nTypeList[2];
-
-	szDescList[0]   = "AbiWord Plugin (.so)";
-	szSuffixList[0] = "*.so";
-	nTypeList[0]    = (IEFileType) 1;
-
-	szDescList[1]   = 0;
-	szSuffixList[1] = 0;
-	nTypeList[1]    = 0;
-	
-	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
-	
-	pDialog->setDefaultFileType((IEFileType) 1);
-
-	// todo: cd to the proper plugin directory
-	
-	pDialog->runModal(m_pFrame);
-	
-	if (pDialog->getAnswer() == XAP_Dialog_FileOpenSaveAs::a_OK)
-	{
-		const std::string & resultPathname = pDialog->getPathname();
-
-		if (!resultPathname.empty())
-		{
-//			bool bIsBundle = false;
-
-//			int length = strlen(szResultPathname);
-//			if (length > 4)
-//				if (strcmp(szResultPathname + length - 4, ".Abi") == 0)
-//					bIsBundle = true;
-
-			bool bActivated = activatePlugin(resultPathname.c_str());
-//			if (bIsBundle)
-//			{
-//				XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
-//				XAP_CocoaPlugin * plugin = [pController loadPlugin:[NSString stringWithUTF8String:szResultPathname]];
-//				[[plugin delegate] pluginActivate];
-//				bActivated =  true; // we don't really know if activation succeeded....
-//			}
-//			else bActivated = activatePlugin(szResultPathname);
-
-			if (!bActivated)
-			{
-				/* error message
-				 */
-				m_pFrame->showMessageBox (pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD),
-										  XAP_Dialog_MessageBox::b_O,
-										  XAP_Dialog_MessageBox::a_OK);
-			}
-		}
-	}
-	pDialogFactory->releaseDialog(pDialog);
-}
-
 void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
@@ -413,8 +340,6 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 	
 	LocalizeControl([self window],		pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE);
 
-	LocalizeControl(oInstallBtn,		pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);
-
 	LocalizeControl(oCloseBtn,			pSS, XAP_STRING_ID_DLG_Close);
 
 	LocalizeControl(oNameLabel,			pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
@@ -445,17 +370,6 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 {
 	UT_UNUSED(sender);
 	[NSApp stopModal];
-}
-
-- (IBAction)installAction:(id)sender
-{
-	UT_UNUSED(sender);
-	_xap->event_Load();
-
-	[self reloadPluginList];
-
-	[oPluginList deselectAll:self];
-	[oPluginList reloadData];
 }
 
 /* NSTableView delegate method

@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 2003 Marc Maurer
  * Copyright (C) 2001-2003 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,9 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
-ABI_W_POP
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "xap_UnixDialogHelper.h"
@@ -148,69 +147,6 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 	}
 }
 
-void XAP_UnixDialog_PluginManager::event_Load ()
-{
-	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(m_pFrame->getDialogFactory());
-
-	XAP_Dialog_FileOpenSaveAs * pDialog
-		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
-	UT_return_if_fail(pDialog);
-
-	// set the intial plugin directory to the user-local plugin directory
-	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()/plugins
-        std::string pluginDir(XAP_App::getApp()->getUserPrivateDirectory());
-	pluginDir += "/";
-	pluginDir += PACKAGE_NAME;
-	pluginDir += "-";
-	pluginDir += ABIWORD_SERIES;
-	pluginDir += "/plugins/";
-	pDialog->setCurrentPathname (pluginDir);
-	pDialog->setSuggestFilename(false);
-
-	UT_uint32 filterCount = 1;
-	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1,
-																	sizeof(char *)));
-	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1,
-																	  sizeof(char *)));
-	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1,
-																 sizeof(IEFileType)));
-
-	szDescList[0] = "AbiWord Plugin (.G_MODULE_SUFFIX)";
-	szSuffixList[0] = "*.G_MODULE_SUFFIX";
-	nTypeList[0] = static_cast<IEFileType>(1);
-	
-	pDialog->setFileTypeList(szDescList, szSuffixList, 
-							 static_cast<const UT_sint32 *>(nTypeList));
-  
-	pDialog->setDefaultFileType(static_cast<IEFileType>(1));
-	
-	pDialog->runModal(m_pFrame);
-	
-	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
-	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
-	
-	if (bOK) {
-		const std::string & resultPathname = pDialog->getPathname();
-		if (!resultPathname.empty()) {
-			if (activatePlugin (resultPathname.c_str())) {
-				// worked!
-				_updatePluginList ();
-			} else {
-				// error message
-				_errorMessage (m_pFrame, 
-							   XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD);
-			}
-		}
-    }
-	
-	FREEP(szDescList);
-	FREEP(szSuffixList);
-	FREEP(nTypeList);
-	
-	pDialogFactory->releaseDialog(pDialog);
-}
-
 /*****************************************************************/
 
 /*!
@@ -308,13 +244,6 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 
 /*****************************************************************/
 
-void XAP_UnixDialog_PluginManager::s_load_clicked (GtkWidget *,
-												   XAP_UnixDialog_PluginManager * dlg)
-{
-	UT_return_if_fail (dlg);
-	dlg->event_Load ();
-}
-
 void XAP_UnixDialog_PluginManager::s_list_clicked(GtkTreeSelection *,
 												  XAP_UnixDialog_PluginManager * dlg)
 {
@@ -362,14 +291,6 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbAuthorLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
 
-	GtkWidget * btInstall = GTK_WIDGET(gtk_builder_get_object(builder, "btInstall"));
-
-#if defined(FLATPAK_BUILD)
-        gtk_widget_hide(btInstall);
-#else
-	localizeButton(btInstall, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);
-#endif
-
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 
@@ -380,12 +301,6 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 													   0,
 													   NULL);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_list), column);
-
-#if !defined(FLATPAK_BUILD)
-	g_signal_connect (G_OBJECT(btInstall), "clicked",
-					  G_CALLBACK(s_load_clicked),
-					  static_cast<gpointer>(this));
-#endif
 
 	g_signal_connect_after(G_OBJECT(gtk_tree_view_get_selection (GTK_TREE_VIEW (m_list))),
 						   "changed",

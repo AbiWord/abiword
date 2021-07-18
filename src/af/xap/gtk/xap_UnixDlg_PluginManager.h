@@ -45,7 +45,6 @@ private:
 
 	void event_DeactivateAll ();
 	void event_Deactivate ();
-	void event_Load ();
 
 	void _updatePluginList ();
 	void _selectFirstEntry ();
