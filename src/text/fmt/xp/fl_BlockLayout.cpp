@@ -2957,7 +2957,7 @@ bool fl_BlockLayout::getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Li
 /*!
  * Calculate the height of the all the text contained by this block
  */
-UT_sint32 fl_BlockLayout::getHeightOfBlock(bool b_withMargins)
+UT_sint32 fl_BlockLayout::getHeightOfBlock(bool b_withMargins) const
 {
 	UT_sint32 iHeight = 0;
 	fp_Line * pCon = static_cast<fp_Line *>(getFirstContainer());

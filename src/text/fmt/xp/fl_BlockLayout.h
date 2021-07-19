@@ -177,7 +177,7 @@ public:
 	bool            getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Line * pLine) const;
 	bool            setFramesOnPage(fp_Line * pLastLine);
 	UT_sint32       getMinWrapWidth(void) const;
-	UT_sint32       getHeightOfBlock(bool b_withMargins = true);
+	UT_sint32       getHeightOfBlock(bool b_withMargins = true) const;
 	fp_Line *       findLineWithFootnotePID(UT_uint32 pid) const;
 	UT_sint32 getMaxNonBreakableRun(void) const;
 	fp_Line* findPrevLineInDocument(fp_Line*) const;
@@ -286,7 +286,7 @@ public:
 	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType,
 							eTabLeader &iLeader ) const;
-	bool    hasUpdatableField(void) { return m_bHasUpdatableField;}
+	bool    hasUpdatableField(void) const { return m_bHasUpdatableField;}
 	void    setUpdatableField(bool bValue) { m_bHasUpdatableField = bValue;}
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
 	inline UT_sint32 getTabsCount(void) const {
@@ -497,7 +497,6 @@ protected:
 											UT_sint32 eor,
 											bool bToggleIP) const;
 
-	UT_uint32				_getLastChar();
 	void					_stuffAllRunsOnALine(void);
 	void					_insertEndOfParagraphRun(void);
 	void					_purgeEndOfParagraphRun(void);
