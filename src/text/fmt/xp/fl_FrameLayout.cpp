@@ -590,7 +590,7 @@ void fl_FrameLayout::_createFrameContainer(void)
           list, otherwise just append it to the end.
   \return The newly created Frame container
 */
-fp_Container* fl_FrameLayout::getNewContainer(fp_Container *)
+fp_Container* fl_FrameLayout::getNewContainer(const fp_Container*)
 {
 	UT_DEBUGMSG(("creating new Frame container\n"));
 	_createFrameContainer();

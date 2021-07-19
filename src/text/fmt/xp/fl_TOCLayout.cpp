@@ -1393,7 +1393,7 @@ void fl_TOCLayout::_createTOCContainer(void)
   Create a new TOC container.
   \return The newly created TOC container
 */
-fp_Container* fl_TOCLayout::getNewContainer(fp_Container *)
+fp_Container* fl_TOCLayout::getNewContainer(const fp_Container*)
 {
 	UT_DEBUGMSG(("creating new TOC Physical container\n"));
 	_createTOCContainer();

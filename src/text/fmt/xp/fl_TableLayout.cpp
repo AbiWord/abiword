@@ -225,7 +225,7 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
           list, otherwise just append it to the end.
   \return The newly created Table container
 */
-fp_Container* fl_TableLayout::getNewContainer(fp_Container * /*pPrevTab*/)
+fp_Container* fl_TableLayout::getNewContainer(const fp_Container* /*pPrevTab*/)
 {
 	UT_ASSERT(getFirstContainer() == NULL);
 	createTableContainer();
@@ -2286,7 +2286,7 @@ fl_SectionLayout * fl_CellLayout::getSectionLayout(void) const
           list, otherwise just append it to the end.
   \return The newly created Cell container
 */
-fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrev)
+fp_Container* fl_CellLayout::getNewContainer(const fp_Container* pPrev)
 {
 //
 // One cell container per cell layout

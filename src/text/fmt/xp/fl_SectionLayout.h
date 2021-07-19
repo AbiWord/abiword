@@ -112,7 +112,7 @@ public:
 
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount) override;
 	fl_BlockLayout *        getFirstBlock(void) const;
-	virtual fp_Container*	getNewContainer(fp_Container * pFirstContainer = NULL) override = 0;
+	virtual fp_Container*	getNewContainer(const fp_Container* pFirstContainer = nullptr) override = 0;
 	virtual FL_DocLayout*		getDocLayout(void) const override;
 	virtual void                markAllRunsDirty(void) override = 0;
 	virtual bool                isCollapsed(void) const override
@@ -240,7 +240,7 @@ public:
 		{ return NULL; }
 
 	virtual void		redrawUpdate(void) override;
-	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) override;
+	virtual fp_Container*		getNewContainer(const fp_Container* pFirstContainer = nullptr) override;
 
 	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
 	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
@@ -421,7 +421,7 @@ public:
 	void                        layout(void);
 	fl_ContainerLayout *        findMatchingContainer( fl_ContainerLayout * pBL);
 	virtual void				redrawUpdate(void) override;
-	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) override;
+	virtual fp_Container*		getNewContainer(const fp_Container* pFirstContainer = nullptr) override;
 	virtual fp_Container*		getFirstContainer() const override;
 	virtual fp_Container*		getLastContainer() const override;
 	fl_HdrFtrShadow *               getFirstShadow(void);
@@ -514,7 +514,7 @@ public:
 	virtual void				updateLayout(bool bDoFull) override;
 	virtual void				redrawUpdate(void) override;
 	fp_Page *                   getPage(void) const { return m_pPage;}
-	virtual fp_Container*		getNewContainer(fp_Container *pFirstContainer = NULL) override;
+	virtual fp_Container*		getNewContainer(const fp_Container* pFirstContainer = nullptr) override;
 	virtual fp_Container*		getFirstContainer() const override;
 	virtual fp_Container*		getLastContainer() const override;
 	void                        layout(void);

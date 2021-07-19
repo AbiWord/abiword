@@ -94,7 +94,7 @@ public:
 
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount) =0;
 
-	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) = 0;
+	virtual fp_Container*		getNewContainer(const fp_Container* pFirstContainer = nullptr) = 0;
 	virtual FL_DocLayout *      getDocLayout(void) const;
 	UT_sint32           getLevelInList(void);
 	virtual void		format(void) = 0;

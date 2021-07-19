@@ -104,7 +104,7 @@ public:
 	virtual fl_SectionLayout *  getSectionLayout(void) const override;
 	bool                     recalculateFields(UT_uint32 iUpdateCount) override;
 	virtual void		     redrawUpdate(void) override;
-	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) override;
+	virtual fp_Container*	 getNewContainer(const fp_Container* = nullptr) override;
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
 	virtual void             setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0) override;

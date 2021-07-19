@@ -115,7 +115,7 @@ public:
 	virtual fl_SectionLayout *  getSectionLayout(void) const override;
 	virtual bool         recalculateFields(UT_uint32 iUpdateCount) override;
 	virtual void		     redrawUpdate(void) override;
-	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) override;
+	virtual fp_Container*	 getNewContainer(const fp_Container* = nullptr) override;
 	virtual fl_DocSectionLayout*	 getDocSectionLayout(void) const override { return m_pDocSL; }
 	bool                     isEndTOCIn(void) const {return m_bHasEndTOC;}
 	void                     setTOCEndIn(void);

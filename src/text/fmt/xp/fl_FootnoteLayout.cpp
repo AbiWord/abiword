@@ -409,7 +409,7 @@ void fl_FootnoteLayout::_createFootnoteContainer(void)
           list, otherwise just append it to the end.
   \return The newly created Footnote container
 */
-fp_Container* fl_FootnoteLayout::getNewContainer(fp_Container *)
+fp_Container* fl_FootnoteLayout::getNewContainer(const fp_Container*)
 {
 	UT_DEBUGMSG(("PLAM: creating new footnote container\n"));
 	_createFootnoteContainer();
@@ -662,7 +662,7 @@ void fl_AnnotationLayout::_createAnnotationContainer(void)
           list, otherwise just append it to the end.
   \return The newly created Annotation container
 */
-fp_Container* fl_AnnotationLayout::getNewContainer(fp_Container *)
+fp_Container* fl_AnnotationLayout::getNewContainer(const fp_Container*)
 {
 	UT_DEBUGMSG(("Creating new Annotation container\n"));
 	_createAnnotationContainer();
@@ -1092,7 +1092,7 @@ void fl_EndnoteLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
           list, otherwise just append it to the end.
   \return The newly created Endnote container
 */
-fp_Container* fl_EndnoteLayout::getNewContainer(fp_Container *)
+fp_Container* fl_EndnoteLayout::getNewContainer(const fp_Container*)
 {
 	UT_DEBUGMSG(("fl_EndnoteLayoutx: creating new Endnote container\n"));
 	_createEndnoteContainer();

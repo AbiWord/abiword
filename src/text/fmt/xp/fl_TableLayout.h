@@ -166,7 +166,7 @@ public:
 	virtual PT_DocPosition      getPosition(bool bActualBlockPosition = false) const override;
 	UT_uint32                   getLength(void);
 	virtual void		        redrawUpdate(void) override;
-	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) override;
+	virtual fp_Container*		getNewContainer(const fp_Container* pFirstContainer = nullptr) override;
 	virtual fl_SectionLayout *  getSectionLayout(void)  const override;
 
 	void                        markForRebuild(void) { m_bNeedsRebuild = true;}
@@ -320,7 +320,7 @@ public:
 	virtual fl_SectionLayout *  getSectionLayout(void)  const override;
 	virtual bool             recalculateFields(UT_uint32 iUpdateCount) override;
 	virtual void		     redrawUpdate(void) override;
-	virtual fp_Container*	 getNewContainer(fp_Container * pFirstContainer = NULL) override;
+	virtual fp_Container*	 getNewContainer(const fp_Container* pFirstContainer = nullptr) override;
 #ifdef FMT_TEST
 	void				     __dump(FILE * fp) const;
 #endif

@@ -4163,7 +4163,7 @@ void fl_BlockLayout::redrawUpdate()
 	//	lookupProperties();
 }
 
-fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
+fp_Container* fl_BlockLayout::getNewContainer(const fp_Container* /* pCon*/)
 {
 	fp_Line* pLine = new fp_Line(getSectionLayout());
 	// TODO: Handle out-of-memory

@@ -79,7 +79,7 @@ public:
 	virtual bool         recalculateFields(UT_uint32 iUpdateCount) override;
 	fl_BlockLayout *         getContainingBlock(void);
 	virtual void		     redrawUpdate(void) override;
-	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) override = 0;
+	virtual fp_Container*	 getNewContainer(const fp_Container* = nullptr) override = 0;
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const override { return m_pDocSL; }
 	void                     setDocSectionLayout(fl_DocSectionLayout * pDSL)
 	  { m_pDocSL = pDSL;}
@@ -120,7 +120,7 @@ public:
 
 	virtual void		     format(void) override;
 	virtual void             collapse(void) override;
-	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) override;
+	virtual fp_Container*	 getNewContainer(const fp_Container* = nullptr) override;
 	UT_uint32                getFootnotePID(void) const
 		{return m_iFootnotePID;}
 protected:
@@ -144,7 +144,7 @@ public:
 
 	virtual void		     format(void) override;
 	virtual void             collapse(void) override;
-	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) override;
+	virtual fp_Container*	 getNewContainer(const fp_Container* = nullptr) override;
 	UT_uint32                getEndnotePID(void) const
 		{return m_iEndnotePID;}
 protected:
@@ -173,7 +173,7 @@ public:
 	fp_AnnotationRun *           getAnnotationRun(void);
 	virtual void		     format(void) override;
 	virtual void             collapse(void) override;
-	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) override;
+	virtual fp_Container*	 getNewContainer(const fp_Container* = nullptr) override;
 	UT_uint32                getAnnotationPID(void) const
 		{return m_iAnnotationPID;}
 	const char *             getAuthor(void) const

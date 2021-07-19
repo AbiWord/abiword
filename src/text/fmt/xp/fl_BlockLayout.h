@@ -153,7 +153,7 @@ public:
 
 	virtual void		redrawUpdate() override;
 	virtual void        updateLayout(bool /*bDoAll*/) override {}
-	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL) override;
+	virtual fp_Container* getNewContainer(const fp_Container* pCon = nullptr) override;
 	FV_View *		getView(void) const {
 		UT_return_val_if_fail( m_pLayout, NULL );
 		return m_pLayout->getView();

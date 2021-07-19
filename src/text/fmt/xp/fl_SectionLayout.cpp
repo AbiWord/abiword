@@ -1522,7 +1522,7 @@ void fl_DocSectionLayout::setLastContainer(fp_Container * pCon)
   This creates a new column or row of same.
 
 */
-fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContainer)
+fp_Container* fl_DocSectionLayout::getNewContainer(const fp_Container* pFirstContainer)
 {
 	fp_Page* pPage = NULL;
 	fp_Column* pLastColumn = static_cast<fp_Column*>(getLastContainer());
@@ -3370,7 +3370,7 @@ fp_Container* fl_HdrFtrSectionLayout::getLastContainer() const
 	return m_pHdrFtrContainer;
 }
 
-fp_Container* fl_HdrFtrSectionLayout::getNewContainer(fp_Container * /*pFirstContainer*/)
+fp_Container* fl_HdrFtrSectionLayout::getNewContainer(const fp_Container* /*pFirstContainer*/)
 {
 	DELETEP(m_pHdrFtrContainer);
 	UT_sint32 iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth(); // why is this different than the next one ?
@@ -5049,7 +5049,7 @@ fp_Container* fl_HdrFtrShadow::getLastContainer() const
 	return m_pPage->getHdrFtrContainer(m_pHdrFtrSL);
 }
 
-fp_Container* fl_HdrFtrShadow::getNewContainer(fp_Container * /*pFirstContainer*/)
+fp_Container* fl_HdrFtrShadow::getNewContainer(const fp_Container* /*pFirstContainer*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
