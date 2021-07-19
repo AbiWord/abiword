@@ -394,23 +394,25 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf(const UT_ConstByteBufPtr &
 			return NULL ;
 		}
 
-		
+
 		gdk_pixbuf_loader_close (ldr, NULL);
 		pixbuf = gdk_pixbuf_loader_get_pixbuf (ldr);
 
 		GdkPixbufFormat * format = gdk_pixbuf_loader_get_format(ldr);
-		gchar ** mime_types = gdk_pixbuf_format_get_mime_types(format);
-		gchar ** current = mime_types;
-		while(*current) {
-			if((strcmp(*current, "image/jpeg") == 0) 
-			   || (strcmp(*current, "image/png") == 0)) {
-				mimetype = *current;
-				break;
+		if (format != nullptr)	{
+			gchar ** mime_types = gdk_pixbuf_format_get_mime_types(format);
+			gchar ** current = mime_types;
+			while (*current) {
+				if ((strcmp(*current, "image/jpeg") == 0)
+				   || (strcmp(*current, "image/png") == 0)) {
+					mimetype = *current;
+					break;
+				}
+				current++;
 			}
-			current++;
+			g_strfreev(mime_types);
 		}
-		g_strfreev(mime_types);
-		
+
 
 		// ref before closing the loader
 		if ( pixbuf )
