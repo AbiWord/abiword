@@ -839,8 +839,8 @@ pf_Fragments::changeSize(int delta)
 	m_nDocumentSize += delta;
 }
 
-const pf_Fragments::Node*
-pf_Fragments::_prev(const Node* pn) const
+pf_Fragments::Node*
+pf_Fragments::_prev(Node* pn) const
 {
 	UT_ASSERT(pn != NULL);
 
@@ -871,13 +871,7 @@ pf_Fragments::_prev(const Node* pn) const
 }
 
 pf_Fragments::Node*
-pf_Fragments::_prev(Node* pn)
-{
-	return const_cast<Node*> (_prev(const_cast<const Node*> (pn)));
-}
-
-const pf_Fragments::Node*
-pf_Fragments::_next(const Node* pn) const
+pf_Fragments::_next(Node* pn) const
 {
 	UT_ASSERT(pn != NULL);
 	if (pn == nullptr)
@@ -919,12 +913,6 @@ pf_Fragments::_next(const Node* pn) const
 }
 
 pf_Fragments::Node*
-pf_Fragments::_next(Node* pn)
-{
-	return const_cast<Node*> (_next(const_cast<const Node*> (pn)));
-}
-
-const pf_Fragments::Node*
 pf_Fragments::_first() const
 {
 	Node* pn = m_pRoot;
@@ -939,35 +927,7 @@ pf_Fragments::_first() const
 }
 
 pf_Fragments::Node*
-pf_Fragments::_first()
-{
-	Node* pn = m_pRoot;
-	
-	if (pn == m_pLeaf)
-		return nullptr;
-
-	while(pn->left != m_pLeaf)
-		pn = pn->left;
-
-	return pn;
-}
-
-const pf_Fragments::Node*
 pf_Fragments::_last() const
-{
-	Node* pn = m_pRoot;
-	
-	if (pn == m_pLeaf)
-		return nullptr;
-
-	while(pn->right != m_pLeaf)
-		pn = pn->right;
-
-	return pn;
-}
-
-pf_Fragments::Node*
-pf_Fragments::_last()
 {
 	Node* pn = m_pRoot;
 	
@@ -1171,8 +1131,8 @@ pf_Fragments::checkInvariants() const
 	// These iterators should be ConstIterators
 	// ConstIterator end(end());
 	// ConstIterator it(begin());
-	Iterator end_(const_cast<pf_Fragments*> (this));
-	Iterator it(const_cast<pf_Fragments*> (this), const_cast<Node*> (_first()));
+	Iterator end_(this);
+	Iterator it(this, _first());
 
 	if (it != end_)
 		nb_blacks = _countBlackNodes(it++);

@@ -78,8 +78,8 @@ public:
 #endif
 	private:
 	  // prevent copy
-	  Node(const Node&);
-	  Node& operator=(const Node&);
+	  Node(const Node&) = delete;
+	  Node& operator=(const Node&) = delete;
 	};
 
 
@@ -90,27 +90,27 @@ public:
 
 		Iterator& operator++()
 		{
-			m_pNode = const_cast<Node*>(m_pOwner->_next(m_pNode));
+			m_pNode = m_pOwner->_next(m_pNode);
 			return *this;
 		}
 
 		Iterator operator++(int)
 		{
 			Iterator tmp(*this);
-			m_pNode = const_cast<Node*>(m_pOwner->_next(m_pNode));
+			m_pNode = m_pOwner->_next(m_pNode);
 			return tmp;
 		}
 
 		Iterator& operator--()
 		{
-			m_pNode = const_cast<Node*>(m_pOwner->_prev(m_pNode));
+			m_pNode = m_pOwner->_prev(m_pNode);
 			return *this;
 		}
 
 		Iterator operator--(int)
 		{
 			Iterator tmp(*this);
-			m_pNode = const_cast<Node*>(m_pOwner->_prev(m_pNode));
+			m_pNode = m_pOwner->_prev(m_pNode);
 			return tmp;
 		}
 
@@ -177,15 +177,10 @@ private:
 	/** same as above BUT keep the fragments (as we don't own them */
 	void delete_tree(Node* node);
 
-	const Node* _next(const Node* pn) const;
-	const Node* _prev(const Node* pn) const;
-	const Node* _first() const;
-	const Node* _last() const;
-
-	Node* _next(Node* pn);
-	Node* _prev(Node* pn);
-	Node* _first();
-	Node* _last();
+	Node* _next(Node* pn) const;
+	Node* _prev(Node* pn) const;
+	Node* _first() const;
+	Node* _last() const;
 
 	Node* m_pLeaf;
 	Node* m_pRoot;
