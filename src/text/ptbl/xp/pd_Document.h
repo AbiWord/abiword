@@ -429,10 +429,10 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	bool					removeListener(PL_ListenerId listenerId);
 	bool					signalListeners(UT_uint32 iSignal) const;
-	bool					notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const;
-	bool					notifyListeners(const pf_Frag_Strux * pfs,
-											pf_Frag_Strux * pfsNew,
-											const PX_ChangeRecord * pcr) const;
+	bool					notifyListeners(const pf_Frag_Strux* pfs, PX_ChangeRecord* pcr) const;
+	bool					notifyListeners(const pf_Frag_Strux* pfs,
+											pf_Frag_Strux* pfsNew,
+											PX_ChangeRecord* pcr) const;
 	void					deferNotifications(void);
 	void					processDeferredNotifications(void);
 	UT_sint32               getAdjustmentForCR(const PX_ChangeRecord * pcr) const;
@@ -788,7 +788,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool                    isVDNDinProgress() const {return m_bVDND;}
 	UT_sint32               getCRNumber() const { return m_iCRCounter; }
 	void					setCRNumber(UT_sint32 iCRCounter) { m_iCRCounter = iCRCounter; }
-	UT_sint32               getNextCRNumber(void);
+	UT_sint32               getNextCRNumber(void) const;
     std::list<AV_View*>     getAllViews() const;
     void                    getAllViews(UT_GenericVector<AV_View *> * vecViews) const;
 	void                    ignoreSignals(void)
@@ -889,7 +889,7 @@ private:
 	UT_GenericVector<pf_Frag *> m_vecSuspectFrags;
 
 	bool                    m_bVDND;
-    UT_sint32               m_iCRCounter;
+    mutable UT_sint32       m_iCRCounter;
 	mutable UT_sint32       m_iUpdateCount;
 	bool                    m_bIgnoreSignals;
 

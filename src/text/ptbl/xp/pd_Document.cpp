@@ -268,7 +268,7 @@ void PD_Document::setMetaDataProp ( const std::string & key,
 	createAndSendDocPropCR(atts,props);
 }
 
-UT_sint32  PD_Document::getNextCRNumber(void)
+UT_sint32 PD_Document::getNextCRNumber(void) const
 {
 	m_iCRCounter++;
 	return m_iCRCounter;
@@ -4118,7 +4118,7 @@ void PD_Document::getAllViews(UT_GenericVector<AV_View *> * vecViews) const
 	}
 }
 
-bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
+bool PD_Document::notifyListeners(const pf_Frag_Strux* pfs, PX_ChangeRecord* pcr) const
 {
 	// notify listeners of a change.
 
@@ -4312,7 +4312,7 @@ static void s_BindHandles(pf_Frag_Strux* sdhNew,
 
 bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 									 pf_Frag_Strux * pfsNew,
-									 const PX_ChangeRecord * pcr) const
+									 PX_ChangeRecord * pcr) const
 {
 	// notify listeners of a new strux.  this is slightly
 	// different from the other one because we need to exchange
@@ -5921,7 +5921,7 @@ void PD_Document::listUpdate(pf_Frag_Strux* sdh )
 	const pf_Frag_Strux * pfs = sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
-	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex,pfs->getXID());
+	PX_ChangeRecord* pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate, pos, pAppIndex, pfs->getXID());
 	notifyListeners(pfs, pcr);
 	delete pcr;
 }
@@ -5936,7 +5936,7 @@ void PD_Document::StopList(pf_Frag_Strux* sdh )
 	const pf_Frag_Strux * pfs = sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
-	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex,pfs->getXID());
+	PX_ChangeRecord* pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList, pos, pAppIndex, pfs->getXID());
 	notifyListeners(pfs, pcr);
 	delete pcr;
 	setHasListStopped(false);
@@ -6108,7 +6108,7 @@ void PD_Document::removeList(const fl_AutoNumPtr & pAutoNum, pf_Frag_Strux* sdh 
 	const pf_Frag_Strux * pfs = sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
-	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex,pfs->getXID());
+	PX_ChangeRecord* pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList, pos, pAppIndex, pfs->getXID());
 	notifyListeners(pfs, pcr);
 	delete pcr;
 	m_mapLists.erase(ID);

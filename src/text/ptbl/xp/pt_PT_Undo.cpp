@@ -51,7 +51,7 @@
 #define DONE()  (bUndo ? m_history.didUndo() : m_history.didRedo());
 #define UNDO_return_val_if_fail(cond,val) if (!(cond)) { UT_ASSERT(cond); m_bDoingTheDo = false; return (val); }
 
-bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
+bool pt_PieceTable::_doTheDo(PX_ChangeRecord* pcr, bool bUndo)
 {
 	// actually do the work of the undo or redo.
 	m_bDoingTheDo = true;

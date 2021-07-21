@@ -73,7 +73,7 @@ PX_ChangeRecord::~PX_ChangeRecord()
 {
 }
 
-bool PX_ChangeRecord::setCRNumber(void) const
+bool PX_ChangeRecord::setCRNumber(void)
 {
   if(m_pDoc == NULL)
   {
@@ -84,14 +84,14 @@ bool PX_ChangeRecord::setCRNumber(void) const
   return true;
 }
 
-PD_Document * PX_ChangeRecord::getDocument(void) const
+const PD_Document* PX_ChangeRecord::getDocument(void) const
 {
   return m_pDoc;
 }
 
-void PX_ChangeRecord::setDocument(const PD_Document * pDoc) const
+void PX_ChangeRecord::setDocument(const PD_Document* pDoc)
 {
-  m_pDoc = const_cast<PD_Document *>(pDoc);
+  m_pDoc = pDoc;
   m_pDoc->getMyUUID()->toBinary(m_MyDocUUID);
 }
 
@@ -125,7 +125,7 @@ bool PX_ChangeRecord::isFromThisDoc(void) const
   return b;
 }
 
-void PX_ChangeRecord::setAdjustment(UT_sint32 iAdj) const
+void PX_ChangeRecord::setAdjustment(UT_sint32 iAdj)
 {
   m_iAdjust = iAdj;
 }

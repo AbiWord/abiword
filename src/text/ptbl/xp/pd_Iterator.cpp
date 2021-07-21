@@ -421,7 +421,7 @@ PD_StruxIterator::PD_StruxIterator(pf_Frag_Strux* sdh,UT_uint32 offset,
 {
 	UT_return_if_fail(m_sdh);
 	m_frag = static_cast<const pf_Frag *>(m_sdh);
-	m_pPT = const_cast<pf_Frag *>(m_frag)->getPieceTable();
+	m_pPT = m_frag->getPieceTable();
 
 	// save the length of this strux, so we can test for out of bounds
 	// condition on the low end

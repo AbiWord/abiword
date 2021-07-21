@@ -201,12 +201,11 @@ void  fd_Field::_throwChangeRec(  PT_DocPosition docPos)
        pf_Frag_Strux* sdh = NULL;
        bool bret = m_pPieceTable->getStruxOfTypeFromPosition(docPos,PTX_Block, &sdh);
        if(bret == true)
-       {    
+       {
              pf_Frag_Strux * pfs = sdh;
 	     PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
-	     const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_UpdateField,docPos,pAppIndex,
-														   pfs->getXID());
+	     PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_UpdateField, docPos, pAppIndex, pfs->getXID());
 	     m_pPieceTable->getDocument()->notifyListeners(pfs, pcr);
 	     delete pcr;
        }
-}		
+}
