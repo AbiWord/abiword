@@ -50,10 +50,8 @@ bool pf_Frag_Text::_isContentEqual(const pf_Frag & f2) const
 	if(getLength() != f2.getLength())
 		return false;
 
-	pf_Frag * pf2 = const_cast<pf_Frag *>(&f2);
-	
 	PD_DocIterator t1(* (m_pPieceTable->getDocument()), getPos());
-	PD_DocIterator t2(* (pf2->getPieceTable()->getDocument()), f2.getPos());
+	PD_DocIterator t2(* (f2.getPieceTable()->getDocument()), f2.getPos());
 
 	UT_uint32 iLen = UT_MIN(getLength(), f2.getLength());
 	UT_uint32 i = 0;

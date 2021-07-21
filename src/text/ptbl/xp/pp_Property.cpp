@@ -335,9 +335,9 @@ void PP_resetInitialBiDiValues(const gchar * pszValue)
 
 void PP_setDefaultFontFamily(const char* pszFamily)
 {
-	static UT_String family(pszFamily);
+	static std::string family(pszFamily ? pszFamily : "");
 	PP_Property* prop = static_cast<PP_Property*>(bsearch ("font-family", _props, G_N_ELEMENTS(_props), sizeof(_props[0]), s_compare));
-	prop->m_pszInitial = const_cast<gchar*>(reinterpret_cast<const gchar*>(family.c_str()));
+	prop->m_pszInitial = family.c_str();
 }
 
 static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, const PD_Document * pDoc)

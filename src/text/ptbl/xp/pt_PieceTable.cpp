@@ -97,17 +97,16 @@ void pt_PieceTable::setPieceTableState(PTState pts)
  * Use this for deleting unneeded strux during doc import. Particularly useful for importing
  * RTF.
  */
-bool pt_PieceTable::deleteStruxNoUpdate(pf_Frag_Strux* sdh)
+bool pt_PieceTable::deleteStruxNoUpdate(pf_Frag_Strux* pfs)
 {
-	const pf_Frag_Strux * pfs = sdh;
-	UT_DEBUGMSG(("SEVIOR: deleting strux no update %p \n",sdh));
+	UT_DEBUGMSG(("SEVIOR: deleting strux no update %p \n", pfs));
 	pf_Frag * pf = pfs->getNext();
 	if(pf != NULL && pf->getType() == pf_Frag::PFT_FmtMark)
 	{
 		getFragments().unlinkFrag(pf);
 		delete pf;
 	}
-	getFragments().unlinkFrag(const_cast<pf_Frag_Strux*>(pfs));
+	getFragments().unlinkFrag(pfs);
 	delete pfs;
 	return true;
 }

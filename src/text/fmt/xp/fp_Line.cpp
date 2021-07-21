@@ -226,12 +226,12 @@ void fp_Line::drawBorders(GR_Graphics * pG)
 {
   if(!getBlock())
       return;
-  fp_Line * pFirst = const_cast<fp_Line *>(getFirstInContainer());
+  const fp_Line* pFirst = getFirstInContainer();
   bool bDrawTop = false;
   bool bDrawBot = false;
   if(!pFirst)
       return;
-  fp_Line * pLast = const_cast<fp_Line *>(getLastInContainer());
+  const fp_Line * pLast = getLastInContainer();
   if(!pLast)
       return;
   if(pFirst->canDrawTopBorder())

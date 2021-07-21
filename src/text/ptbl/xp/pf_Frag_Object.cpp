@@ -439,15 +439,12 @@ bool pf_Frag_Object::_isContentEqual(const pf_Frag &f2) const
 	if(getObjectType() != ((const pf_Frag_Object&)(f2)).getObjectType())
 		return false;
 
-	pf_Frag * pf1 = const_cast<pf_Frag_Object*>(this);
-	pf_Frag * pf2 = const_cast<pf_Frag*>(&f2);
-	
 	if(m_pField)
 	{
-		if(!pf2->getField())
+		if(!f2.getField())
 			return false;
 
-		if(pf1->getField()->getFieldType() != pf2->getField()->getFieldType())
+		if(this->getField()->getFieldType() != f2.getField()->getFieldType())
 			return false;
 	}
 
