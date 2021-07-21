@@ -37,6 +37,7 @@
 #include "fv_View.h"
 #include "gr_Painter.h"
 #include "fp_Run.h"
+#include "fp_AnnotationRun.h"
 /*!
   Create Footnote container
   \param iType Container type

@@ -62,10 +62,10 @@ public:
 	void                    appendTextToBuf(UT_GrowBuf & buf) const;
 	virtual bool			hasLayoutProperties(void) const override;
 	//virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
-	bool					canMergeWithNext(void);
+	bool canMergeWithNext(void) const;
 	void					mergeWithNext(void);
 	virtual bool findFirstNonBlankSplitPoint(fp_RunSplitInfo & splitInfo) override;
-	bool                    isOneItem(fp_Run * pNext);
+	bool isOneItem(const fp_Run* pNext) const;
 	enum
 	{
 		Calculate_full_width = -1

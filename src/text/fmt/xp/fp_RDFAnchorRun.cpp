@@ -21,7 +21,7 @@
  */
 
 
-#include "fp_Run.h"
+#include "fp_RDFAnchorRun.h"
 #include "fl_BlockLayout.h"
 #include "ut_debugmsg.h"
 #include "pd_Document.h"
@@ -267,7 +267,7 @@ UT_sint32 fp_RDFAnchorRun::calcWidth(void)
     return iNewWidth;
 }
 
-const char * fp_RDFAnchorRun::getValue(void)
+const char* fp_RDFAnchorRun::getValue(void) const
 {
   return m_sValue.utf8_str();
 }

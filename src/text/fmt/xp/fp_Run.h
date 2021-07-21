@@ -118,13 +118,10 @@ enum FPRUN_CLEAR_SCREEN
 		fp_ForcedPageBreakRun
 		fp_ImageRun
 		fp_FieldRun
-		fp_FmtMarkRun
 		fp_FieldStartRun
 		fp_FieldEndRun
 		fp_BookmarkRun
 		fp_HyperlinkRun
-		fp_AnnotationRun
-		fp_RDFAnchorRun
 		fp_DummyRun
 
 	As far as the formatter's concerned, each subclass behaves somewhat
@@ -160,7 +157,7 @@ public:
 
 	fp_Run* 		        getNextRun() const					{ return m_pNext; }
 	fp_Run*			        getPrevRun() const					{ return m_pPrev; }
-	bool                    isInSelectedTOC(void);
+	bool isInSelectedTOC(void) const;
 	virtual fp_ContainerObject * getNext(void) const override { return NULL;}
 	virtual fp_ContainerObject * getPrev(void) const override { return NULL;}
 	virtual fp_Container *       getNextContainerInSection(void) const override { return NULL;}
@@ -360,7 +357,7 @@ public:
 #endif
 	void               setMustClearScreen(void)
 	{ m_bMustClearScreen = true;}
-	bool               getMustClearScreen(void)
+	bool getMustClearScreen(void) const
 	{return m_bMustClearScreen;}
 
 protected:
@@ -387,8 +384,8 @@ protected:
 	// use these with great care -- most of the time we need to use
 	// getWidth() and getHeight() which deal with
 	// visibility/hiddenness issues
-	UT_sint32           _getWidth() {return m_iWidth;}
-	UT_sint32           _getHeight(){return m_iHeight;}
+	UT_sint32 _getWidth() const  { return m_iWidth; }
+	UT_sint32 _getHeight() const { return m_iHeight; }
 
 	void				_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
 	void				_setAscent(int iAscent) { m_iAscent = iAscent; }
@@ -404,7 +401,7 @@ protected:
 	void				_setDecorations(unsigned char d) {m_fDecorations = d;}
 
 	void				_orDecorations(unsigned char d) { m_fDecorations |= d; }
-	UT_sint32			_getLineWidth(void) { return m_iLineWidth; }
+	UT_sint32 _getLineWidth(void) const { return m_iLineWidth; }
 	bool				_setLineWidth(UT_sint32 w)
 	                         {
 								 UT_sint32 o = m_iLineWidth;
@@ -445,8 +442,8 @@ protected:
 	};
 
 private:
-	fp_Run(const fp_Run&);			// no impl.
-	void operator=(const fp_Run&);	// no impl.
+	fp_Run(const fp_Run&) = delete;
+	void operator=(const fp_Run&) = delete;
 
 	FP_RUN_TYPE				m_iType;
 	fp_Line*				m_pLine;
@@ -520,7 +517,7 @@ public:
 	virtual bool 			hasLayoutProperties(void) const override;
 	void			       	setTabWidth(UT_sint32);
 	void			       	setLeader(eTabLeader iTabType);
-	eTabLeader			    getLeader(void);
+	eTabLeader getLeader(void) const;
 	void                    setTabType(eTabType iTabType);
 	eTabType                getTabType(void) const;
 	bool                    isTOCTab(void);
@@ -793,75 +790,6 @@ protected:
 };
 
 
-
-class ABI_EXPORT fp_AnnotationRun : public fp_HyperlinkRun
-{
-public:
-	fp_AnnotationRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual ~fp_AnnotationRun();
-	virtual FP_HYPERLINK_TYPE getHyperlinkType(void) const override { return HYPERLINK_ANNOTATION; }
-	UT_uint32 getPID(void) { return m_iPID;}
-	const char * getValue(void);
-    void         recalcValue(void);
-	virtual bool canBreakAfter(void) const override;
-	virtual bool canBreakBefore(void) const override;
-	UT_sint32    getRealWidth(void) const {return m_iRealWidth;}
-    void         cleanDraw(dg_DrawArgs*);
-	UT_sint32    calcWidth(void);
-
- protected:
-	virtual void			_draw(dg_DrawArgs*) override;
-	virtual void			_clearScreen(bool bFullLineHeightRect) override;
-	virtual bool			_recalcWidth(void) override;
-	bool                    _setValue(void);
-	virtual void            _setWidth(UT_sint32 iWidth) override;
-	virtual bool _letPointPass(void) const override;
-	virtual bool _canContainPoint(void) const override;
-    virtual void _lookupProperties(const PP_AttrProp * pSpanAP,
-									const PP_AttrProp * pBlockAP,
-									const PP_AttrProp * pSectionAP,
-								   GR_Graphics * pG) override;
- private:
-	UT_uint32               m_iPID;
-	UT_UTF8String           m_sValue;
-	UT_sint32               m_iRealWidth;
-};
-
-class ABI_EXPORT fp_RDFAnchorRun : public fp_HyperlinkRun
-{
-public:
-	fp_RDFAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual ~fp_RDFAnchorRun();
-	virtual FP_HYPERLINK_TYPE getHyperlinkType(void) const override { return HYPERLINK_RDFANCHOR; }
-	UT_uint32 getPID(void) { return m_iPID;}
-	const char * getValue(void);
-    void         recalcValue(void);
-	virtual bool canBreakAfter(void) const override;
-	virtual bool canBreakBefore(void) const override;
-	UT_sint32    getRealWidth(void) const {return m_iRealWidth;}
-    void         cleanDraw(dg_DrawArgs*);
-	UT_sint32    calcWidth(void);
-
-    std::string  getXMLID();
-
- protected:
-	virtual void			_draw(dg_DrawArgs*) override;
-	virtual void			_clearScreen(bool bFullLineHeightRect) override;
-	virtual bool			_recalcWidth(void) override;
-	bool                    _setValue(void);
-	virtual void            _setWidth(UT_sint32 iWidth) override;
-	virtual bool _letPointPass(void) const override;
-	virtual bool _canContainPoint(void) const override;
-    virtual void _lookupProperties(const PP_AttrProp * pSpanAP,
-									const PP_AttrProp * pBlockAP,
-									const PP_AttrProp * pSectionAP,
-								   GR_Graphics * pG) override;
- private:
-	UT_uint32               m_iPID;
-	UT_UTF8String           m_sValue;
-	UT_sint32               m_iRealWidth;
-};
-
 class ABI_EXPORT fp_ImageRun : public fp_Run
 {
 public:
@@ -874,9 +802,9 @@ public:
 	virtual bool			canBreakBefore(void) const override;
 	const char *            getDataId(void) const;
 	virtual bool 			hasLayoutProperties(void) const override;
-	virtual GR_Image * 				getImage();
+	virtual GR_Image* getImage() const;
 	void                     regenerateImage(GR_Graphics * pG);
-	UT_sint32               getPointHeight(void)
+	UT_sint32 getPointHeight(void) const
 	{ return m_iPointHeight;}
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -1633,40 +1561,6 @@ class ABI_EXPORT fp_FieldMetaDescriptionRun : public fp_FieldMetaRun
 };
 
 // END DOM
-
-class ABI_EXPORT fp_FmtMarkRun : public fp_Run
-{
-public:
-	fp_FmtMarkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst);
-
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC) override;
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection) override;
-	virtual bool			canBreakAfter(void) const override;
-	virtual bool			canBreakBefore(void) const override;
-	virtual bool			isSuperscript(void) const override;
-	virtual bool			isSubscript(void)  const override;
-	virtual bool 			hasLayoutProperties(void) const override {return true;}
-
-protected:
-	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
-											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
-
-	virtual void			_draw(dg_DrawArgs*) override;
-	virtual void			_clearScreen(bool bFullLineHeightRect) override;
-	virtual bool			_letPointPass(void) const override;
-
-private:
-	enum
-	{
-		TEXT_POSITION_NORMAL,
-		TEXT_POSITION_SUPERSCRIPT,
-		TEXT_POSITION_SUBSCRIPT
-	};
-	UT_Byte					m_fPosition;
-};
-
 
 class ABI_EXPORT fp_DummyRun : public fp_Run
 {

@@ -33,6 +33,7 @@
 #include "fb_LineBreaker.h"
 #include "fp_Page.h"
 #include "fp_Run.h"
+#include "fp_AnnotationRun.h"
 #include "fp_Line.h"
 #include "fp_Column.h"
 #include "fp_FootnoteContainer.h"

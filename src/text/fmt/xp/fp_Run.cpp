@@ -227,7 +227,7 @@ const fg_FillType & fp_Run::getFillType(void) const
 	return m_FillType;
 }
 
-bool fp_Run::isInSelectedTOC(void)
+bool fp_Run::isInSelectedTOC(void) const
 {
 	if(getBlock()->isContainedByTOC())
 	{
@@ -2230,7 +2230,7 @@ void fp_TabRun::setLeader(eTabLeader iLeader)
 	m_leader = iLeader;
 }
 
-eTabLeader fp_TabRun::getLeader(void)
+eTabLeader fp_TabRun::getLeader(void) const
 {
 	return m_leader;
 }
@@ -3905,7 +3905,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	pG->setClipRect(pSavedRect.get());
 }
 
-GR_Image * fp_ImageRun::getImage()
+GR_Image* fp_ImageRun::getImage() const
 {
 	return m_pImage;
 }

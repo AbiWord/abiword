@@ -52,6 +52,8 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_AutoLists.h"
+#include "fp_AnnotationRun.h"
+#include "fp_RDFAnchorRun.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
 #include "fg_Graphic.h"

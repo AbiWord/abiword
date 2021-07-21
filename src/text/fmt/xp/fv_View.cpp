@@ -57,6 +57,7 @@
 #include "fp_Column.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "fp_AnnotationRun.h"
 #include "fp_TextRun.h"
 #include "xap_Module.h"
 #include "fg_Graphic.h"

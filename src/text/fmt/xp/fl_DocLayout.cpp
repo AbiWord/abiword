@@ -45,6 +45,7 @@
 #include "fp_Line.h"
 #include "fp_TextRun.h"
 #include "fp_Run.h"
+#include "fp_AnnotationRun.h"
 #include "fp_FrameContainer.h"
 #include "fv_View.h"
 #include "pd_Document.h"

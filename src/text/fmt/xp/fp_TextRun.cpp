@@ -1007,7 +1007,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	}
 }
 
-bool fp_TextRun::canMergeWithNext(void)
+bool fp_TextRun::canMergeWithNext(void) const
 {
 	bool bNextIsFmt = false;
 	if (!getNextRun() ||
@@ -2809,7 +2809,7 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
  * Returns true if this run plus the next can be combined to make 
  * one contiguous item
  */
-bool fp_TextRun::isOneItem(fp_Run * pNext)
+bool fp_TextRun::isOneItem(const fp_Run* pNext) const
 {
 	GR_Itemization I;
 	bool b = getBlock()->itemizeSpan(getBlockOffset(), getLength()+pNext->getLength(),I);

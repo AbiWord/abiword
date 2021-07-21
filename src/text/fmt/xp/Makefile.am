@@ -60,7 +60,9 @@ libxp_la_SOURCES = \
 	fl_TOCLayout.cpp \
 	fl_TOCLayout.h \
 	fp_AnnotationRun.cpp \
+	fp_AnnotationRun.h \
 	fp_RDFAnchorRun.cpp \
+	fp_RDFAnchorRun.h \
 	fp_Column.cpp \
 	fp_Column.h \
 	fp_ContainerObject.cpp \
@@ -76,6 +78,7 @@ libxp_la_SOURCES = \
 	fp_FieldTOCNum.cpp \
 	fp_FieldTOCNum.h \
 	fp_FmtMarkRun.cpp \
+	fp_FmtMarkRun.h \
 	fp_FootnoteContainer.cpp \
 	fp_FootnoteContainer.h \
 	fp_FrameContainer.cpp \

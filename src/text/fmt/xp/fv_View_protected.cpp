@@ -53,6 +53,7 @@
 #include "fp_TableContainer.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "fp_AnnotationRun.h"
 #include "fp_TextRun.h"
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"

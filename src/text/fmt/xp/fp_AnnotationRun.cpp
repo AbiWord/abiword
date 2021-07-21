@@ -1,6 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2007 Martin Sevior
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,7 +21,7 @@
  */
 
 
-#include "fp_Run.h"
+#include "fp_AnnotationRun.h"
 #include "fl_BlockLayout.h"
 #include "ut_debugmsg.h"
 #include "pd_Document.h"
@@ -247,7 +249,7 @@ UT_sint32 fp_AnnotationRun::calcWidth(void)
     return iNewWidth;
 }
 
-const char * fp_AnnotationRun::getValue(void)
+const char* fp_AnnotationRun::getValue(void) const
 {
   return m_sValue.utf8_str();
 }
