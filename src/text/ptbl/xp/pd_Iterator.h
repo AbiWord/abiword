@@ -78,9 +78,10 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 	virtual UT_UCS4Char   operator[](UT_uint32 dpos) override;
 
 	const pf_Frag * getFrag() const {return m_frag;}
+	pf_Frag * getFrag() {return m_frag;}
 
 	void            reset() {m_pos = 0; m_frag = NULL; m_status = UTIter_OK;}
-	void            reset(PT_DocPosition pos, const pf_Frag * pf) // use with great care
+	void            reset(PT_DocPosition pos, pf_Frag * pf) // use with great care
 		             {m_pos = pos; m_frag = pf; _findFrag();}
 
 
@@ -94,7 +95,7 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 	PT_DocPosition  m_pos;
 	PT_DocPosition  m_max_pos;
 
-	const pf_Frag * m_frag;
+	pf_Frag * m_frag;
 
 	UTIterStatus    m_status;
 };

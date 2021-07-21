@@ -4557,7 +4557,9 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 
 					// the above might have resulted in the deletion
 					// of pNewAP -- retrieve it by the index
-					getAttrProp(api, const_cast<const PP_AttrProp **>(&pNewAP));
+					const PP_AttrProp* retrievedAP = nullptr;
+					getAttrProp(api, &retrievedAP);
+					return retrievedAP;
 				}
 				
 				return pNewAP;
@@ -4638,16 +4640,18 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 		pNewAP->explodeStyle(this);
 		pNewAP->prune();
 		pNewAP->markReadOnly();
-					
+
 		PT_AttrPropIndex api;
 		UT_return_val_if_fail(getPieceTable()->getVarSet().addIfUniqueAP(pNewAP, &api), NULL);
 		pAP->setRevisedIndex(api,iId,bShow,bMark,bHiddenRevision);
 
 		// the above might have resulted in the deletion
 		// of pNewAP -- retrieve it by the index
-		getAttrProp(api, const_cast<const PP_AttrProp**>(&pNewAP));
+		const PP_AttrProp* retrievedAP = nullptr;
+		getAttrProp(api, &retrievedAP);
+		return retrievedAP;
 	}
-				
+
 	return pNewAP;
 }
 
@@ -7219,7 +7223,7 @@ bool PD_Document::acceptAllRevisions()
 	beginUserAtomicGlob();	
 	while(t.getStatus() == UTIter_OK)
 	{
-		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
+		pf_Frag* pf = t.getFrag();
 
 		if(!pf)
 		{
@@ -7301,7 +7305,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 	beginUserAtomicGlob();	
 	while(t.getStatus() == UTIter_OK)
 	{
-		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
+		pf_Frag * pf = t.getFrag();
 
 		if(!pf)
 		{
@@ -7402,7 +7406,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 	beginUserAtomicGlob();	
 	while(t.getStatus() == UTIter_OK && iPosStart + iLenProcessed < iPosEnd)
 	{
-		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
+		pf_Frag * pf = t.getFrag();
 		if(!pf)
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
