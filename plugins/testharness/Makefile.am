@@ -13,7 +13,8 @@ testharness_la_LDFLAGS = \
 	-avoid-version \
 	-module \
 	-no-undefined \
-	$(top_builddir)/src/af/tf/xp/libxp.la
+	-L$(top_builddir)/src/af/tf -labiword-@ABIWORD_SERIES@-test \
+	$(null)
 
 testharness_la_SOURCES =
 

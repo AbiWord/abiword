@@ -4,6 +4,20 @@ G_DEBUG=gc-friendly
 export G_DEBUG
 G_SLICE=always-malloc
 export G_SLICE
+ABI_TEST_SRC_DIR=@abs_top_srcdir@
+export ABI_TEST_SRC_DIR
+
+# Suppressions, mostly fontconfig
+cat <<EOF > supp.txt
+leak:FcConfig
+leak:FcPattern
+leak:FcValue
+leak:FcFont
+leak:FcLang
+EOF
+
+LSAN_OPTIONS=suppressions=./supp.txt
+export LSAN_OPTIONS
 
 exec libtool --mode=execute ./AbiWord-test
 

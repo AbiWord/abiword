@@ -1,9 +1,11 @@
 
-SUBDIRS = xp
+AM_CPPFLAGS = \
+	$(AF_CPPFLAGS)
 
-noinst_LTLIBRARIES = libtf.la
+lib_LTLIBRARIES = libabiword-@ABIWORD_SERIES@-test.la
 
-libtf_la_LIBADD = xp/libxp.la
-
-libtf_la_SOURCES = 
+libabiword_@ABIWORD_SERIES@_test_la_SOURCES = \
+	xp/tf_test.cpp \
+	xp/tf_test.h \
+	$(null)
 

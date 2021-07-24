@@ -1142,7 +1142,6 @@ AC_OUTPUT(
   src/af/gr/win/Makefile
   src/af/gr/xp/Makefile
   src/af/tf/Makefile
-  src/af/tf/xp/Makefile
   src/af/util/Makefile
   src/af/util/unix/Makefile
   src/af/util/win/Makefile

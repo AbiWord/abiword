@@ -43,9 +43,11 @@ class TF_Test
     const char *descr, *idstr;
     MainFunc *main;
     TF_Test *next;
-    static TF_Test *first, *last;
-    static int fails, runs;
-    static time_t start_time;
+    static TF_Test*& first();
+    static TF_Test*& last();
+    static int& fails();
+    static int& runs();
+    static time_t& start_time();
 
     static void alarm_handler(int sig) ABI_NORETURN;
 public:
