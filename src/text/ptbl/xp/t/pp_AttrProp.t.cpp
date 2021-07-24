@@ -308,7 +308,7 @@ TFTEST_MAIN("PP_AttrProp checksum")
     attrProps.setAttributes(true_attr);
     attrProps.markReadOnly();
     UT_uint32 cs = attrProps.getCheckSum();
-    TFPASSEQ(cs, 0x1984e55b);
+    TFPASSEQ(cs, 0x12301177);
 
     PP_AttrProp attrProps2;
 
