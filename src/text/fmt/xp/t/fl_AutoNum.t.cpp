@@ -52,7 +52,10 @@ TFTEST_MAIN("fl_AutoNum")
   fl_AutoNumPtr autoNum = std::make_shared<fl_AutoNum>(2, 0, NUMBERED_LIST, 1, "*", ".",
                                                        pDoc, pView);
 
-  TFPASS(pDoc->getListByID(2) == autoNum);
+  pDoc->addList(autoNum);
+
+  fl_AutoNumPtr listTwo = pDoc->getListByID(2);
+  TFPASS(listTwo == autoNum);
 
   autoNum->fixHierarchy();
   TFPASS(!autoNum->isDirty());

@@ -116,6 +116,10 @@ class ABI_EXPORT ie_Table
 	UT_sint32        getPrevNumRightMostVMerged(void) const;
 	UT_sint32        getCurRow(void) const;
 	void             incCurRow(void);
+
+	const std::stack<ie_PartTable*>& getLastTable() const {
+		return m_sLastTable;
+	}
  private:
 	void             _clearLastTables();
 	PD_Document *    m_pDoc;

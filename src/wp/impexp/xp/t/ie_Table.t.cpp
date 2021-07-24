@@ -18,9 +18,9 @@ class TF_TableListener
 {
 public:
   TF_TableListener(PD_Document* pDoc, ie_Table & tableHelper)
-    :m_tableHelper(tableHelper)
+    : m_tableHelper(tableHelper)
     {
-      tableHelper.setDoc(pDoc);
+      m_tableHelper.setDoc(pDoc);
     }
 
   virtual bool populate(fl_ContainerLayout* /*sfh*/,
@@ -136,8 +136,7 @@ TFTEST_MAIN("ie Table")
         TFPASSEQ(tables[1].numRows, 2);
       }
 
-      TFPASSEQ(table.getNumRows(), 0);
-      TFPASSEQ(table.getNumCols(), 0);
+      TFPASS(table.getLastTable().empty());
     }
 
     doc->unref();
