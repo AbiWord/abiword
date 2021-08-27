@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002,2003 Tomas Frydrych
- * Copyright (C) 2013-2016 Hubert Figuiere
+ * Copyright (C) 2013-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -521,7 +521,7 @@ bool PD_Document:: addAuthorAttributeIfBlank(PP_PropertyVector & atts)
 	// Set Author attribute
 	const std::string & author = PP_getAttribute(PT_AUTHOR_NAME, atts);
 	if (!author.empty()) {
-		m_iLastAuthorInt = stoi(author);
+		m_iLastAuthorInt = atoi(author.c_str());
 		return true;
 	}
 	if(getMyAuthorInt() == -1)
@@ -5987,16 +5987,16 @@ bool PD_Document::appendList(const PP_PropertyVector & attributes)
 	if(szDec.empty()) {
 		szDec = ".";
 	}
-	id = stoi(*szID);
+	id = atoi(szID->c_str());
 
 	auto iter = m_mapLists.find(id);
 	if (iter != m_mapLists.end()) {
 		// already present.
 		return true;
 	}
-	parent_id = stoi(*szPid);
-	type = static_cast<FL_ListType>(stoi(*szType));
-	start = stoi(*szStart);
+	parent_id = atoi(szPid->c_str());
+	type = static_cast<FL_ListType>(atoi(szType->c_str()));
+	start = atoi(szStart->c_str());
 
 	// this is bad design -- layout items should not be created by the document, only by the view
 	// (the props and attrs of layout items are view-specific due to possible revisions settings !!!)
@@ -6432,7 +6432,7 @@ bool PD_Document::setAttrProp(const PP_PropertyVector & ppAttr)
 		const std::string & pXID = PP_getAttribute("top-xid", ppAttr);
 		if(!pXID.empty())
 		{
-			UT_uint32 iXID = stoi(pXID);
+			UT_uint32 iXID = atoi(pXID.c_str());
 			m_pPieceTable->setXIDThreshold(iXID);
 		}
 

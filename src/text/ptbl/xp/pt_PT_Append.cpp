@@ -2,6 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2016-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -429,7 +430,7 @@ bool pt_PieceTable::appendObject(PTObjectType pto, const PP_PropertyVector & att
 		UT_uint32 iXID = 0;
 		if(!pXID.empty())
 		{
-			iXID = stoi(pXID);
+			iXID = atoi(pXID.c_str());
 			pfo->setXID(iXID);
 		}
 	}
@@ -463,7 +464,7 @@ bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 		UT_uint32 iXID = 0;
 		if(!pXID.empty())
 		{
-			iXID = stoi(pXID);
+			iXID = atoi(pXID.c_str());
 			pfs->setXID(iXID);
 		}
 	}
@@ -558,7 +559,7 @@ bool pt_PieceTable::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 		UT_uint32 iXID = 0;
 		if(!pXID.empty())
 		{
-			iXID = stoi(pXID);
+			iXID = atoi(pXID.c_str());
 			pfo->setXID(iXID);
 		}
 	}

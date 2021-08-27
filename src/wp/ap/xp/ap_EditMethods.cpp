@@ -2,7 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
- * Copyright (C) 2004-2016 Hubert Figuiere
+ * Copyright (C) 2004-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11998,7 +11998,7 @@ UT_return_val_if_fail(pDialog, false);
 	const std::string & sz = PP_getAttribute("columns", props_in);
 	if (!sz.empty())
 	{
-		iColumns = stoi(sz);
+		iColumns = atoi(sz.c_str());
 	}
 
 	if ( iColumns > 1 )
