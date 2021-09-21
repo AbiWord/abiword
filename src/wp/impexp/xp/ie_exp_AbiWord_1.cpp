@@ -1390,17 +1390,12 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 {
 	bool bWroteOpenRevisionsSection = false;
 
-	const AD_Revision * pRev=NULL;
+	const auto & vRevisions = m_pDocument->getRevisions();
 
-	const UT_GenericVector<AD_Revision*> & vRevisions = m_pDocument->getRevisions();
-
-	UT_sint32 k = 0;
-	std::string s;
-	for (k=0; k < vRevisions.getItemCount(); k++)
+	for (UT_uint32 k = 0; k < vRevisions.size(); k++)
 	{
-		pRev = vRevisions.getNthItem(k);
-		UT_continue_if_fail(pRev);
-		
+		const auto rev = vRevisions[k];
+
 		if (!bWroteOpenRevisionsSection)
 		{
 			m_pie->startElement("revisions");
@@ -1412,13 +1407,13 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 		}
 
 		m_pie->startElement("r");
-		m_pie->addUint("id",pRev->getId());
-		m_pie->addLint("time-started", pRev->getStartTime());
-		m_pie->addUint("version", pRev->getVersion());
+		m_pie->addUint("id", rev.getId());
+		m_pie->addLint("time-started", rev.getStartTime());
+		m_pie->addUint("version", rev.getVersion());
 
-		if(pRev->getDescription())
+		if (rev.getDescription())
 		{
-			m_pie->addString(NULL, pRev->getDescription(), UT_UCS4_strlen(pRev->getDescription()));
+			m_pie->addString(NULL, rev.getDescription(), UT_UCS4_strlen(rev.getDescription()));
 		}
 		
 

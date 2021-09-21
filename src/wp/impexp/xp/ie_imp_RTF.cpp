@@ -10798,15 +10798,13 @@ bool IE_Imp_RTF::HandleRevisedTextTimestamp(UT_uint32 iDttm)
 	// them in this sequence, and so do we
 	UT_return_val_if_fail( m_currentRTFState.m_charProps.m_iCurrentRevisionId > 0,true); // was false (this enables RTF spec to load)
 	
-	const UT_GenericVector<AD_Revision*> & Rtbl = getDoc()->getRevisions();
-	UT_return_val_if_fail(Rtbl.getItemCount(),true); // was false (This enables RTF spec to load)
+	std::vector<AD_Revision> & Rtbl = getDoc()->getRevisions();
+	UT_return_val_if_fail(Rtbl.empty(), true); // was false (This enables RTF spec to load)
 
 	// valid revision id's start at 1, but vector is 0-based
-	AD_Revision * pRev = Rtbl.getNthItem(m_currentRTFState.m_charProps.m_iCurrentRevisionId - 1);
+	AD_Revision& rev = Rtbl[m_currentRTFState.m_charProps.m_iCurrentRevisionId - 1];
 
-	UT_return_val_if_fail( pRev, false );
-
-	if(!pRev->getStartTime())
+	if (!rev.getStartTime())
 	{
 		// set the start time to what ever is represented by dttm
 		struct tm TM;
@@ -10819,7 +10817,7 @@ bool IE_Imp_RTF::HandleRevisedTextTimestamp(UT_uint32 iDttm)
 		TM.tm_isdst = 0;
 
 		time_t tT = mktime(&TM);
-		pRev->setStartTime(tT);
+		rev.setStartTime(tT);
 	}
 	
 	return true;

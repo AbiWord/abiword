@@ -1391,34 +1391,30 @@ void s_DocBook_Listener::_handleMetaData(void)
 
 void s_DocBook_Listener::_handleRevisions(void)
 {
-	const AD_Revision * pRev = NULL;
-	const UT_GenericVector<AD_Revision*> & vRevisions = m_pDocument->getRevisions();
+	const auto& vRevisions = m_pDocument->getRevisions();
 
-	UT_sint32 k = 0;
-	for (k=0; k < vRevisions.getItemCount(); k++)
+	for (UT_uint32 k = 0; k < vRevisions.size(); k++)
 	{
 		if(k == 0)
 			_tagOpen(TT_REVHISTORY,"revhistory");
 
-		pRev = vRevisions.getNthItem(k);
-		if(!pRev)
-			continue;
+		const auto rev = vRevisions[k];
 
 		UT_UTF8String s;
 		UT_UCS4String s4;
 
-		UT_UTF8String_sprintf(s, "%d", pRev->getId());
+		UT_UTF8String_sprintf(s, "%d", rev.getId());
 		_tagOpen(TT_REVISION,"revision");
 		_tagOpen(TT_REVNUMBER,"revnumber",false);
 		m_pie->write(s.utf8_str());
 		_tagClose(TT_REVNUMBER,"revnumber",true,false);
 		s.clear();
 
-		UT_UTF8String_sprintf(s, "%d", pRev->getStartTime());
+		UT_UTF8String_sprintf(s, "%d", rev.getStartTime());
 		_tagOpen(TT_DATE,"date",false);
 		m_pie->write(s.utf8_str());
 		_tagClose(TT_DATE,"date",true,false);
-		s4 = pRev->getDescription();
+		s4 = rev.getDescription();
 
 		if(s4.length())
 		{

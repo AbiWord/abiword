@@ -898,8 +898,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			const std::string & sUid = PP_getAttribute("uid", atts);
 
 			if(!sUid.empty()) {
-				AD_VersionData v(iId, sUid.c_str(), tStarted, bAuto, iXID);
-				getDoc()->addRecordToHistory(v);
+				getDoc()->addRecordToHistory(AD_VersionData(iId, sUid.c_str(), tStarted, bAuto, iXID));
 			}
 		}
 

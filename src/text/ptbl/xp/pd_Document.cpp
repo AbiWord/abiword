@@ -856,7 +856,7 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 	// show warning if document contains revisions and they are hidden
 	// from view ...
 	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
-	bHidden |= (!isMarkRevisions() && !isShowRevisions() && getRevisions().getItemCount());
+	bHidden |= (!isMarkRevisions() && !isShowRevisions() && getRevisions().size());
 
 	// note: the GsfInput could be a memory stream, and thus we have could have no filename yet
 	if(pFrame && szFilename && (strstr(szFilename, "normal.awt") == NULL))
@@ -7484,7 +7484,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 */
 void PD_Document::purgeRevisionTable(bool bUnconditional /* = false */)
 {
-	if(getRevisions().getItemCount() == 0)
+	if (getRevisions().empty())
 		return;
 
 	if(!bUnconditional)

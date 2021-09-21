@@ -79,7 +79,7 @@ const char * AP_Dialog_ListRevisions::getColumn3Label() const
 UT_uint32 AP_Dialog_ListRevisions::getItemCount() const
 {
 	UT_return_val_if_fail(m_pDoc,0);
-	return (m_pDoc->getRevisions()).getItemCount() + 1;
+	return m_pDoc->getRevisions().size() + 1;
 }
 
 UT_uint32 AP_Dialog_ListRevisions::getNthItemId(UT_uint32 n) const
@@ -88,8 +88,8 @@ UT_uint32 AP_Dialog_ListRevisions::getNthItemId(UT_uint32 n) const
 
 	if(n == 0)
 		return 0;
-	
-	return ((AD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getId();
+
+	return m_pDoc->getRevisions()[n - 1].getId();
 }
 
 time_t
@@ -104,7 +104,7 @@ AP_Dialog_ListRevisions::getNthItemTimeT(UT_uint32 n) const
     }
     else
     {
-        tT = ((AD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getStartTime();
+        tT = m_pDoc->getRevisions()[n - 1].getStartTime();
     }
 	return tT;
 }
@@ -150,8 +150,7 @@ char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n, bool utf8) const
 	else
 	{
 		
-		const UT_UCS4Char * pC
-			= ((AD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getDescription();
+		const UT_UCS4Char * pC = m_pDoc->getRevisions()[n - 1].getDescription();
 	
 		if(!pC)
 			return NULL;

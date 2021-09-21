@@ -1054,9 +1054,9 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		
 	}
 	// revisions stuff
-	const UT_GenericVector<AD_Revision*> & Revs = getDoc()->getRevisions();
+	const auto Revs = getDoc()->getRevisions();
 
-	if(Revs.getItemCount())
+	if(!Revs.empty())
 	{
 		_rtf_open_brace();
 		_rtf_keyword("*");
@@ -1072,16 +1072,15 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		_rtf_semi();
 		_rtf_close_brace();
 		
-		for(UT_sint32 i = 0; i < Revs.getItemCount(); ++i)
+		for (UT_uint32 i = 0; i < Revs.size(); ++i)
 		{
-			AD_Revision* pRev = Revs.getNthItem(i);
-			UT_continue_if_fail(pRev);
+			const AD_Revision& rev = Revs[i];
 
-			s4 = pRev->getDescription();
+			s4 = rev.getDescription();
 
 			// construct author name from our numerical id and comment
 			// (the id guarantees us uniqueness)
-			UT_UTF8String_sprintf(s, "rev %d (%s)",pRev->getId(),s4.utf8_str());
+			UT_UTF8String_sprintf(s, "rev %d (%s)", rev.getId(), s4.utf8_str());
 			_rtf_open_brace();
 			_rtf_chardata(s.utf8_str(),s.byteLength());
 			_rtf_semi();
@@ -2113,19 +2112,18 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
 			// now we translated the revision id to and index into the revision table of
 			// the document
 			UT_sint32 iIndx = getDoc()->getRevisionIndxFromId(iId);
-			const UT_GenericVector<AD_Revision*> & RevTbl = getDoc()->getRevisions();
-			if(iIndx < 0 || RevTbl.getItemCount() == 0)
+			const auto RevTbl = getDoc()->getRevisions();
+			if (iIndx < 0 || RevTbl.empty())
 			{
 				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 				continue;
 			}
 
-			AD_Revision * pRevTblItem = RevTbl.getNthItem(iIndx);
-			UT_continue_if_fail(pRevTblItem);			
-			
+			const AD_Revision& revTblItem = RevTbl[iIndx];
+
 			// the revisions in rtf are marked by a peculiar timestamp, which we now need
 			// to construct
-			time_t t = pRevTblItem->getStartTime();
+			time_t t = revTblItem.getStartTime();
 			struct tm * pT = gmtime(&t);
 
 			// NB: gmtime counts months 0-11, while dttm 1-12

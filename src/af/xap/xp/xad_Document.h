@@ -26,12 +26,10 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
 #include "ut_bytebuf.h"
-#include "ut_vector.h"
 #include "ut_uuid.h"
 #include "time.h"
 
@@ -57,19 +55,19 @@ class ABI_EXPORT AD_VersionData
 
 	virtual ~AD_VersionData();
 
-	AD_VersionData & operator = (const AD_VersionData &v);
+	AD_VersionData & operator= (const AD_VersionData &v);
 
-	bool operator == (const AD_VersionData &v);
+	bool operator== (const AD_VersionData &v) const;
 
-	UT_uint32      getId()const{return m_iId;}
-	time_t         getTime()const;
-	time_t         getStartTime()const {return m_tStart;}
-	const UT_UUID& getUID()const {return (const UT_UUID&)*m_pUUID;}
+	UT_uint32      getId() const {return m_iId;}
+	time_t         getTime() const;
+	time_t         getStartTime() const {return m_tStart;}
+	const UT_UUID& getUID() const {return *m_pUUID;}
 	bool           newUID(); // true on success
 
 	void           setId(UT_uint32 iid) {m_iId = iid;}
 
-	bool           isAutoRevisioned()const {return m_bAutoRevision;}
+	bool           isAutoRevisioned() const {return m_bAutoRevision;}
 	void           setAutoRevisioned(bool autorev);
 
 	UT_uint32      getTopXID() const {return m_iTopXID;}
@@ -200,9 +198,9 @@ public:
 	virtual bool getAnnotationProp (const std::string & key, std::string & outProp) const = 0;
 
 	// history tracking
-	void            addRecordToHistory(const AD_VersionData & v);
+	void            addRecordToHistory(AD_VersionData&& v);
 	void            purgeHistory();
-	UT_sint32       getHistoryCount()const {return m_vHistory.getItemCount();}
+	UT_uint32       getHistoryCount() const {return m_vHistory.size();}
 	UT_uint32       getHistoryNthId(UT_sint32 i)const;
 	time_t          getHistoryNthTime(UT_sint32 i)const;
 	time_t          getHistoryNthTimeStarted(UT_sint32 i)const;
@@ -212,7 +210,7 @@ public:
 	UT_uint32       getHistoryNthTopXID(UT_sint32 i)const;
 
 	AD_HISTORY_STATE       verifyHistoryState(UT_uint32 &iVersion) const;
-	const AD_VersionData * findHistoryRecord(UT_uint32 iVersion) const;
+	const AD_VersionData*  findHistoryRecord(UT_uint32 iVersion) const;
     bool                   showHistory(AV_View * pView);
 
 	bool            areDocumentsRelated (const AD_Document &d) const;
@@ -241,10 +239,11 @@ public:
 
 	bool            addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
 								time_t tStart, UT_uint32 iVersion, bool bGenCR=true);
-	bool            addRevision(AD_Revision * pRev, bool bGenCR=true);
+	bool            addRevision(AD_Revision&& pRev, bool bGenCR = true);
 	virtual bool    createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps) = 0;
 
-	const UT_GenericVector<AD_Revision*> &         getRevisions() {return m_vRevisions;}
+	const std::vector<AD_Revision>& getRevisions() const {return m_vRevisions;}
+	std::vector<AD_Revision>& getRevisions() {return m_vRevisions;}
 	UT_uint32           getHighestRevisionId() const;
 	const AD_Revision*  getHighestRevision() const;
 	UT_sint32           getRevisionIndxFromId(UT_uint32 iId) const;
@@ -323,8 +322,8 @@ private:
 
 	// these are for tracking versioning
 	bool            m_bHistoryWasSaved;
-	UT_Vector       m_vHistory;
-	UT_GenericVector<AD_Revision*> m_vRevisions;
+	std::vector<AD_VersionData>   m_vHistory;
+	std::vector<AD_Revision> m_vRevisions;
 
 	bool            m_bMarkRevisions;
 	bool            m_bShowRevisions;
