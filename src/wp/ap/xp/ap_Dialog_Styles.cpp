@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -693,7 +694,6 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 {
 	if(m_pAbiPreview == NULL)
 		return;
-	UT_sint32 i = 0;
 	if(m_vecAllProps.empty()) {
 		return;
 	}
@@ -711,15 +711,12 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	const std::string & szBasedon = PP_getAttribute("basedon", m_vecAllAttribs);
 	std::string fullProps;
 	PD_Style * pBasedon = NULL;
-	if(!szBasedon.empty() && m_pDoc->getStyle(szBasedon.c_str(), &pBasedon))
+	if (!szBasedon.empty() && m_pDoc->getStyle(szBasedon.c_str(), &pBasedon))
 	{
-		UT_Vector vecProps;
-		pBasedon->getAllProperties(&vecProps,0);
-		for(i=0; i<vecProps.getItemCount(); i+=2)
-		{
-			std::string sProp = (const char*)vecProps.getNthItem(i);
-			std::string sVal = (const char*)vecProps.getNthItem(i+1);
-			UT_std_string_setProperty(fullProps,sProp,sVal);
+		PP_PropertyVector vecProps;
+		pBasedon->getAllProperties(vecProps, 0);
+		for (PP_PropertyVector::size_type i = 0; i < vecProps.size(); i += 2)	{
+			UT_std_string_setProperty(fullProps, vecProps[i], vecProps[i + 1]);
 		}
 	}
 //

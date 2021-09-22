@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -441,22 +442,12 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 		UT_return_val_if_fail (!szStyle.empty(),false);
 		getDocument()->getStyle(szStyle.c_str(),&pStyle);
 		UT_return_val_if_fail (pStyle,false);
-		UT_Vector vProps;
+		PP_PropertyVector vProps;
 //
 // Get the vector of properties
 //
-		pStyle->getAllProperties(&vProps,0);
-		PP_PropertyVector sProps;
-//
-// Finally make the PropertyVector
-//
-		UT_uint32 countp = vProps.getItemCount();
-		UT_uint32 i;
-		for(i=0; i<countp; i++)
-		{
-			sProps.push_back((const gchar *)vProps.getNthItem(i));
-		}
-		lProps = sProps;
+		pStyle->getAllProperties(vProps, 0);
+		lProps = vProps;
 	}
 	if (dpos1 == dpos2) 		// if length of change is zero, then we have a toggle format.
 	{

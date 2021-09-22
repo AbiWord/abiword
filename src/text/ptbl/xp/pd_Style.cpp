@@ -2,20 +2,21 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ * Copyright (C) 2021 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -23,7 +24,6 @@
 #include "pd_Style.h"
 #include "pt_PieceTable.h"
 #include "pp_Property.h"
-#include "ut_vector.h"
 #include "ut_debugmsg.h"
 
 PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, bool bDisplayed) :
@@ -426,34 +426,29 @@ bool PD_Style::getNthProperty (int ndx, const gchar *&szName,
 \param vProps the vector containing const gchar * (name,value) pairs
 */
 
-bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth) const
+bool PD_Style::getAllAttributes(PP_PropertyVector & vAttribs, UT_sint32 depth) const
 {
 //
 // This method will be recursively called to basedon style
 //
 	UT_sint32 count = getAttributeCount();
-	UT_sint32 i,j;
 	const gchar * szName = NULL;
 	const gchar * szValue = NULL;
-	for(i=0; i < count; i++)
-	{
+	for (UT_sint32 i = 0; i < count; i++) {
 		getNthAttribute(i, szName, szValue);
 		bool bfound = false;
 //
 // Only keep the most recently defined properties
 //
-		for(j = 0; (j < vAttribs->getItemCount()) && !bfound ; j += 2)
-		{
-			bfound = (0 == strcmp(szName, (const char *) vAttribs->getNthItem(j)));
+		for (PP_PropertyVector::size_type j = 0; (j < vAttribs.size()) && !bfound ; j += 2) {
+			bfound = (vAttribs[j] == szName);
 		}
-		if(!bfound)
-		{
-			vAttribs->addItem((void *) szName);
-			vAttribs->addItem((void *) szValue);
+		if (!bfound) {
+			vAttribs.push_back(szName);
+			vAttribs.push_back(szValue);
 		}
 	}
-	if(depth <  pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)
-	{
+	if (depth < pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)	{
 		getBasedOn()->getAllAttributes(vAttribs,depth +1);
 	}
 	return true;
@@ -465,34 +460,30 @@ bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth) const
 \param vProps the vector containing const gchar * (name,value) pairs
 */
 
-bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth) const
+bool PD_Style::getAllProperties(PP_PropertyVector & vProps, UT_sint32 depth) const
 {
 //
 // This method will be recursively called to basedon style
 //
 	UT_sint32 count = getPropertyCount();
-	UT_sint32 i,j;
 	const gchar * szName = NULL;
 	const gchar * szValue = NULL;
-	for(i=0; i < count; i++)
-	{
+
+	for (UT_sint32 i = 0; i < count; i++) {
 		getNthProperty(i, szName, szValue);
 		bool bfound = false;
 //
 // Only keep the most recently defined properties
 //
-		for(j = 0; (j < vProps->getItemCount()) && !bfound ; j += 2)
-		{
-			bfound = (0 == strcmp(szName, (const char *) vProps->getNthItem(j)));
+		for (PP_PropertyVector::size_type j = 0; (j < vProps.size()) && !bfound ; j += 2) {
+			bfound = (vProps[j] == szName);
 		}
-		if(!bfound)
-		{
-			vProps->addItem((void *) szName);
-			vProps->addItem((void *) szValue);
+		if (!bfound) {
+			vProps.push_back(szName);
+			vProps.push_back(szValue);
 		}
 	}
-	if(depth <  pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)
-	{
+	if (depth < pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL) {
 		getBasedOn()->getAllProperties(vProps,depth +1);
 	}
 	return true;

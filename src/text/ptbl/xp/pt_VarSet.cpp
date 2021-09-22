@@ -1,21 +1,21 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (c) 2016 Hubert Figuière
- * 
+ * Copyright (c) 2016-2021 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -299,25 +299,11 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 				}
 			}
 
-			UT_Vector vProps, vAttribs;
-
-			pStyle->getAllProperties(&vProps,0);
-
 			PP_PropertyVector sProps;
-			UT_uint32 countp = vProps.getItemCount();
-			UT_uint32 i;
-			for(i = 0; i < countp; i++)	{
-				sProps.push_back((const gchar *)vProps.getNthItem(i));
-			}
-
-			pStyle->getAllAttributes(&vAttribs,0);
+			pStyle->getAllProperties(sProps, 0);
 
 			PP_PropertyVector sAttribs;
-			countp = vAttribs.getItemCount();
-
-			for(i = 0; i < countp; i++) {
-				sAttribs.push_back((const char *)vAttribs.getNthItem(i));
-			}
+			pStyle->getAllAttributes(sAttribs, 0);
 
 			PP_AttrProp * pNew0;
 

@@ -2,7 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001, 2002 Tomas Frydrych
- * Copyright (c) 2016 Hubert Figuiere
+ * Copyright (c) 2016-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1222,47 +1222,42 @@ bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 
         if(pszStyle && (strcmp(pszStyle, "None") != 0) && pDoc->getStyle(pszStyle,&pStyle))
         {
-			UT_Vector vAttrs;
-			UT_Vector vProps;
+			PP_PropertyVector vAttrs;
+			PP_PropertyVector vProps;
 
-			UT_sint32 i;
+			pStyle->getAllAttributes(vAttrs, 100);
+			pStyle->getAllProperties(vProps, 100);
 
-			pStyle->getAllAttributes(&vAttrs, 100);
-			pStyle->getAllProperties(&vProps, 100);
-
-			for(i = 0; i < vProps.getItemCount(); i += 2)
-			{
-				const gchar * pName =  (const gchar *)vProps.getNthItem(i);
-				const gchar * pValue = (const gchar *)vProps.getNthItem(i+1);
+			for (PP_PropertyVector::size_type i = 0; i < vProps.size(); i += 2)	{
+				std::string pName =  vProps[i];
 				const gchar * p;
 
 				bool bSet = bOverwrite || !getProperty(pName, p);
 
 				if(bSet)
-					setProperty(pName, pValue);
+					setProperty(pName, vProps[i + 1]);
 			}
 
 			// attributes are more complicated, because there are some style attributes that must
 			// not be transferred to the generic AP
-			for(i = 0; i < vAttrs.getItemCount(); i += 2)
-			{
-				const gchar * pName = (const gchar *)vAttrs.getNthItem(i);
-				if(!pName || !strcmp(pName, "type")
-				          || !strcmp(pName, "name")
-				          || !strcmp(pName, "basedon")
-				          || !strcmp(pName, "followedby")
- 				          || !strcmp(pName, "props"))
+			for (PP_PropertyVector::size_type i = 0; i < vAttrs.size(); i += 2)	{
+				std::string pName = vAttrs[i];
+				if (pName.empty() || pName == "type"
+				          || pName == "name"
+				          || pName == "basedon"
+				          || pName == "followedby"
+				          || pName == "props")
 				{
 					continue;
 				}
 
-				const gchar * pValue = (const gchar *)vAttrs.getNthItem(i+1);
+				std::string pValue = vAttrs[i + 1];
 				const gchar * p;
 
 				bool bSet = bOverwrite || !getAttribute(pName, p);
 
 				if(bSet)
-					setAttribute(pName, pValue);
+					setAttribute(pName.c_str(), pValue.c_str());
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -588,13 +589,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 		PD_Style * pStyle = NULL;
 		getDocument()->getStyle(szStyle.c_str(), &pStyle);
 		UT_return_val_if_fail (pStyle,false);
-		UT_Vector vProps;
-		pStyle->getAllProperties(&vProps,0);
-		UT_uint32 countp = vProps.getItemCount();
-		for (UT_uint32 i = 0; i < countp; i++)
-		{
-			sProps.push_back((const gchar *)vProps.getNthItem(i));
-		}
+		pStyle->getAllProperties(sProps, 0);
 
 		// Changing block style should not affect character styles
 		PP_PropertyVector attrSpan = attributes;
