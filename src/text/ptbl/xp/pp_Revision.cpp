@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -404,7 +405,7 @@ void PP_RevisionAttr::setRevision(const gchar * r)
 }
 
 void
-PP_RevisionAttr::setRevision(std::string&  r)
+PP_RevisionAttr::setRevision(const std::string&  r)
 {
     setRevision( r.c_str() );
 }
@@ -1059,7 +1060,7 @@ PP_RevisionAttr::addRevision( const PP_Revision* r )
     PP_RevisionAttr us( getXMLstring() );
     _clear();
     std::string tmp = (std::string)us.getXMLstring() + "," + ss.str();
-    setRevision( tmp.c_str() );
+    setRevision(tmp);
 }
 
 void PP_RevisionAttr::mergeAttr( UT_uint32 iId, PP_RevisionType t,
@@ -1234,7 +1235,7 @@ void PP_RevisionAttr::mergeAll( const PP_RevisionAttr& ra )
     
 
     
-    setRevision( outputss.str().c_str() );
+    setRevision(outputss.str());
 
     if( DEBUG_MERGEALL )
     {

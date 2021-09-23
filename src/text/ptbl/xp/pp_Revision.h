@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,8 +22,9 @@
 #ifndef PT_REVISION_H
 #define PT_REVISION_H
 
+#include <string>
+
 #include "ut_types.h"
-#include "ut_string_class.h"
 #include "ut_vector.h"
 #include "pp_AttrProp.h"
 
@@ -92,8 +94,8 @@ class ABI_EXPORT PP_Revision: public PP_AttrProp
 	UT_uint32        m_iID;
 	PP_RevisionType  m_eType;
 	// these next three are a cache, therefor mutable
-	mutable UT_String        m_sXMLProps;
-	mutable UT_String        m_sXMLAttrs;
+	mutable std::string      m_sXMLProps;
+	mutable std::string      m_sXMLAttrs;
 	mutable bool             m_bDirty;
 };
 
@@ -147,7 +149,7 @@ class ABI_EXPORT PP_RevisionAttr
 	~PP_RevisionAttr();
 
 	void                  setRevision(const gchar * r);
-	void                  setRevision(std::string&  r);
+	void                  setRevision(const std::string&  r);
 
 	void                  addRevision(UT_uint32 iId,
                                           PP_RevisionType eType,
@@ -221,7 +223,7 @@ class ABI_EXPORT PP_RevisionAttr
 
 	UT_Vector           m_vRev;
 	// these next 2 are a cache, hence mutable
-	mutable UT_String           m_sXMLstring;
+	mutable std::string         m_sXMLstring;
 	mutable bool                m_bDirty; // indicates whether m_sXMLstring corresponds
 						          // to current state of the instance
 	UT_uint32           m_iSuperfluous;
