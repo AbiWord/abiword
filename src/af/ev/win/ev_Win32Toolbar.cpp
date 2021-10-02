@@ -513,7 +513,7 @@ bool EV_Win32Toolbar::synthesize(void)
 	bool bText = false;
 	std::string value;
 	m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, value);
-	UT_return_val_if_fail(!value.empty());
+	UT_return_val_if_fail(!value.empty(), false);
 
 	if (g_ascii_strcasecmp(value.c_str(), "icon") == 0)
 	{

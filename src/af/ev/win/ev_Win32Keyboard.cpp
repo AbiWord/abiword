@@ -75,7 +75,7 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 
 ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	: EV_Keyboard(pEEM),
-	  m_hKeyboardLayout(0),
+	  m_hKeyboardLayout(nullptr),
 	  m_iconv(UT_ICONV_INVALID),
 	  m_bIsUnicodeInput(false),
 	  m_bWasAnAbiCommand(false)
@@ -107,7 +107,7 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 		UT_iconv_close( m_iconv );
 		m_iconv = UT_ICONV_INVALID;
 	}
-	if( hKeyboardLayout != 0 )
+	if( hKeyboardLayout != nullptr )
 	{
 		strcpy( szCodePage, "CP" );
 		if( GetLocaleInfoA( LOWORD( hKeyboardLayout ),

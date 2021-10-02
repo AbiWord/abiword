@@ -57,7 +57,7 @@ GR_Win32Image::GR_Win32Image(const char* szName)
 
 struct _bb
 {
-	const UT_ByteBuf* pBB;
+	UT_ConstByteBufPtr pBB;
 	UT_uint32 iCurPos;
 };
 
@@ -90,7 +90,7 @@ bool GR_Win32Image::hasAlpha(void) const
 	return false;
 }
 
-bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_Win32Image::convertFromBuffer(const UT_ConstByteBufPtr & pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	if (mimetype == "image/png")
 		return _convertFromPNG(pBB, iDisplayWidth, iDisplayHeight);
@@ -127,7 +127,7 @@ static void _png_error(png_structp png_ptr, png_const_charp message)
 
 #endif
 
-bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
+bool GR_Win32Image::convertToBuffer(UT_ConstByteBufPtr& ppBB) const
 {
 	/*
 	  The purpose of this routine is to convert our DIB (m_pDIB)
@@ -136,7 +136,7 @@ bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 	*/
 
 	// Create our bytebuf
-	UT_ByteBuf* pBB = new UT_ByteBuf();
+	UT_ByteBufPtr pBB(new UT_ByteBuf());
 
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -152,13 +152,13 @@ bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 	{
 		/* If we get here, we had a problem reading the file */
 		png_destroy_write_struct(&png_ptr,  (png_infopp)NULL);
-		*ppBB = NULL;
+		ppBB = UT_ByteBufPtr();
 		
 		return false;
 	}
 
 	// We want libpng to write to our ByteBuf, not stdio
-	png_set_write_fn(png_ptr, (void *)pBB, _png_write, _png_flush);
+	png_set_write_fn(png_ptr, (void *)pBB.get(), _png_write, _png_flush);
 
 	UT_uint32 iWidth = m_pDIB->bmiHeader.biWidth;
 	UT_uint32 iHeight;
@@ -362,7 +362,7 @@ bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 	png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 
 	// And pass the ByteBuf back to our caller
-	*ppBB = pBB;
+	ppBB = pBB;
 
 	return true;
 }
@@ -520,7 +520,7 @@ GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & re
 	return static_cast<GR_Image *>(pImage);
 }
 
-bool GR_Win32Image::_convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_Win32Image::_convertFromPNG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -648,7 +648,7 @@ bool GR_Win32Image::_convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWid
 	return true;
 }
 
-bool GR_Win32Image::_convertFromJPEG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_Win32Image::_convertFromJPEG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	UT_sint32 iImageWidth;
 	UT_sint32 iImageHeight;

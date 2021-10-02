@@ -89,7 +89,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
     UT_Win32LocaleString str, strbis;
 	m_pFrame = pFrame;
 
-	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
+	UT_ByteBufPtr pBB(new UT_ByteBuf(g_pngSidebar_sizeof));
 	pBB->ins(0,g_pngSidebar,g_pngSidebar_sizeof);
 
 	UT_sint32 iImageWidth;
@@ -100,7 +100,6 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	m_pGrImageSidebar = new GR_Win32Image(NULL);
 	m_pGrImageSidebar->convertFromBuffer(pBB, "image/png", iImageWidth, iImageHeight);
 
-	DELETEP(pBB);
 	const wchar_t * pClassName = L"AbiSource_About";
 	
 	ATOM a = UT_RegisterClassEx(CS_HREDRAW | CS_VREDRAW, (WNDPROC) s_dlgProc, pWin32App->getInstance(),

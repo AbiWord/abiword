@@ -26,6 +26,7 @@
 #include "ev_Menu.h"
 #include "ut_color.h"
 #include "ut_misc.h"
+#include "ut_vector.h"
 #include <vector>
 //#include "ap_Win32FrameImpl.h"
 

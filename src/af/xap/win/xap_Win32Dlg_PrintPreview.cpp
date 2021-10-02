@@ -427,7 +427,7 @@ public:
     m_pGraphics->clearArea(a, b, c, d);
   }
 
-  virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBB, const std::string& mimetype,
+  virtual GR_Image* createNewImage(const char* pszName, const UT_ConstByteBufPtr& pBB, const std::string& mimetype,
 				   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 				   GR_Image::GRType iType)
   {    

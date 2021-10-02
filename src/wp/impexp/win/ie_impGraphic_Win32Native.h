@@ -35,10 +35,10 @@ class FG_Graphic;
 class ABI_EXPORT IE_ImpGraphic_Win32Native : public IE_ImpGraphic
 {
 public:
-  virtual UT_Error importGraphic(const UT_ConstByteBufPtr & pBB,
+  virtual UT_Error importGraphic(const UT_ConstByteBufPtr& pBB,
                                  FG_ConstGraphicPtr &pfg);
 private:
-  UT_Error _convertGraphic(UT_ByteBuf * pBB, std::string& mimetype);
+  UT_Error _convertGraphic(const UT_ConstByteBufPtr& pBB, std::string& mimetype);
   UT_Error Read_BMP_Header(UT_ByteBuf* pBB);
   UT_Error Initialize_PNG();
   UT_Error Convert_BMP_Palette(UT_ByteBuf* pBB);
@@ -93,7 +93,7 @@ private:
   bool		m_bOldBMPFormat;	// Older smaller file type
   bool		m_bHeaderDone;		// Check to see if finshed Reading Header
 
-  UT_ByteBuf*  m_pBB;				// pBB Converted to PNG File
+  UT_ByteBufPtr  m_pBB;				// pBB Converted to PNG File
 
 };
 

@@ -235,7 +235,7 @@ shutDownGDIPlus()
 
 /* Conversion function */
 UT_Error 
-GDIconvertGraphic(UT_ByteBuf * pBB, UT_ByteBuf* pBBOut, std::string& mimetype)
+GDIconvertGraphic(const UT_ConstByteBufPtr& pBB, const UT_ByteBufPtr& pBBOut, std::string& mimetype)
 {
 	IStream *stream, *streamOut = NULL;	
 	HGLOBAL hG;		

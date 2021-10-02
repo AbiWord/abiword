@@ -40,7 +40,7 @@
 
 /* GDIPLUS interface */
 bool isGDIPlusAvailable ();
-UT_Error GDIconvertGraphic (UT_ByteBuf * pBB, UT_ByteBuf* pBBOut, std::string& mimetype);
+UT_Error GDIconvertGraphic (const UT_ConstByteBufPtr& pBB, const UT_ConstByteBufPtr& pBBOut, std::string& mimetype);
 void  shutDownGDIPlus ();
 
 
@@ -175,7 +175,7 @@ static PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 } 
 
 //  This actually creates our FG_Graphic object for a PNG
-UT_Error IE_ImpGraphic_Win32Native::importGraphic(UT_ByteBuf* pBB, 
+UT_Error IE_ImpGraphic_Win32Native::importGraphic(const UT_ConstByteBufPtr& pBB, 
 												  FG_ConstGraphicPtr & pfg)
 {
 	std::string mimetype;
@@ -209,8 +209,8 @@ UT_Error IE_ImpGraphic_Win32Native::importGraphic(UT_ByteBuf* pBB,
   //
   // Entry point for conversion
   //
-UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(UT_ByteBuf * pBB, std::string& mimetype)
-{	
+UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(const UT_ConstByteBufPtr& pBB, std::string& mimetype)
+{
     IPicture* pPicture = NULL;
     IStream* stream;	
     HGLOBAL hG;		
@@ -223,7 +223,7 @@ UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(UT_ByteBuf * pBB, std::strin
 	/* If the system has GDI+, use it*/
 	if (isGDIPlusAvailable())
 	{
-		m_pBB = new UT_ByteBuf();
+		m_pBB = UT_ByteBufPtr(new UT_ByteBuf());
 		return GDIconvertGraphic(pBB, m_pBB, mimetype);		
 	}
 
@@ -504,10 +504,10 @@ UT_Error IE_ImpGraphic_Win32Native::Initialize_PNG()
 		/* If we get here, we had a problem reading the file */
 		return UT_ERROR;
 	}
-    m_pBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */
+    m_pBB = UT_ByteBufPtr(new UT_ByteBuf);  /* Byte Buffer for Converted Data */
     
     /* Setting up the Data Writing Function */
-    png_set_write_fn(m_pPNG, static_cast<void *>(m_pBB), static_cast<png_rw_ptr>(_write_png), static_cast<png_flush_ptr>(_write_flush));
+    png_set_write_fn(m_pPNG, static_cast<void *>(m_pBB.get()), static_cast<png_rw_ptr>(_write_png), static_cast<png_flush_ptr>(_write_flush));
 
     return UT_OK;
 }

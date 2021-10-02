@@ -32,8 +32,8 @@ public:
 	GR_Win32Image(const char* szName);
 	virtual ~GR_Win32Image();
 
-	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool		convertToBuffer(UT_ConstByteBufPtr& ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ConstByteBufPtr& pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
 	void				setDIB(BITMAPINFO *pDIB) { m_pDIB = pDIB; if (m_pDIB) setDisplaySize(m_pDIB->bmiHeader.biWidth,m_pDIB->bmiHeader.biHeight); }
 	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
@@ -46,8 +46,8 @@ protected:
 	BITMAPINFO*			m_pDIB;
 
 private:
-	bool				_convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-	bool				_convertFromJPEG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	bool				_convertFromPNG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	bool				_convertFromJPEG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 };
 
 #endif /* GR_WIN32IMAGE_H */
