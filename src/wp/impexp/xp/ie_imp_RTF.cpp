@@ -11120,7 +11120,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	HandlePCData(bookmarkName);
 
 	PP_PropertyVector props = {
-		"type", ""
+		"type", "",
 		"name", bookmarkName.utf8_str()
 	};
 	switch (type) {

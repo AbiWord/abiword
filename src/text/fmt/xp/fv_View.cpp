@@ -3515,13 +3515,13 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 		const PP_PropertyVector pListProps = {
 			"start-value", "",
 			"list-style", "",
-			(pBlock->getDominantDirection() == UT_BIDI_RTL) ? "margin-right" : "margin-left", ""
+			(pBlock->getDominantDirection() == UT_BIDI_RTL) ? "margin-right" : "margin-left", "",
 			"text-indent", "",
 			"field-color", "",
 			"list-delim", "",
 			"field-font", "",
-			"list-decimal", ""
-			"list-tag", ""
+			"list-decimal", "",
+			"list-tag", "",
 		};
 //
 // Remove all the list related properties

@@ -14040,7 +14040,7 @@ UT_return_val_if_fail(pDialog, false);//
 			else
 			{
 				props_out[1] = "0";
-				props_out[2] = "";
+				props_out[3] = "";
 			}
 			pView->setSectionFormat(props_out);
 		}
