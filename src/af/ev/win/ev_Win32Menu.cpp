@@ -253,7 +253,7 @@ void	EV_Win32Menu::destroy()
 	if (m_myMenu)
 	{
 		DestroyMenu(m_myMenu);
-		m_myMenu = 0;
+		m_myMenu = nullptr;
 	}
 
 	if (m_hFont)
@@ -974,7 +974,7 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * /*pView*/,
 	UINT nItemID = (UINT)LOWORD(wParam);
 	UINT nFlags  = (UINT)HIWORD(wParam);
 
-	if ( (nFlags==0xffff) && (hMenu==0) )
+	if ( (nFlags==0xffff) && (hMenu == NULL) )
 	{
 		//UT_DEBUGMSG(("ClearMessage 1\n"));
 		pFrame->setStatusMessage(NULL);

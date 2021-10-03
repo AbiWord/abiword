@@ -704,7 +704,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						 * Hack to create a combobox that is readonly, but which is capable of displaying text in 
 						 * the edit control which differs from that in the drop-down list like GTK combos.
 						 */
-						HWND hwndEdit = FindWindowExW(hwndCombo, 0, NULL, NULL);
+						HWND hwndEdit = FindWindowExW(hwndCombo, nullptr, NULL, NULL);
 						if (!hwndEdit)
 							UT_DEBUGMSG(("Toolbar: Failed to get handle of combos edit controls. Not setting read-only.\n"));
 						else
@@ -822,7 +822,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						foo_Bitmap_container::instance().addBitmap(hBitmap);
 
 						TBADDBITMAP ab;
-						ab.hInst = 0;
+						ab.hInst = nullptr;
 						ab.nID = (LPARAM)hBitmap;						
 						
 						LRESULT iAddedAt = SendMessageW(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
@@ -954,7 +954,7 @@ void EV_Win32Toolbar::_releaseListener(void)
 	if (!m_pViewListener)
 		return;
 	DELETEP(m_pViewListener);
-	m_pViewListener = 0;
+	m_pViewListener = nullptr;
 	m_lid = 0;
 }
 	
@@ -1038,7 +1038,7 @@ bool EV_Win32Toolbar::_refreshID(XAP_Toolbar_Id id)
 
 bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id)
 {
-	const char * szState = 0;
+	const char * szState = nullptr;
 	EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 		
 	UINT u = WmCommandFromItemId(id);
