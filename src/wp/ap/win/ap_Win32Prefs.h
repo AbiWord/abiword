@@ -27,11 +27,11 @@ class ABI_EXPORT AP_Win32Prefs : public AP_Prefs
 public:
 	AP_Win32Prefs();
 
-	virtual bool			loadBuiltinPrefs(void);
-	virtual void			overlayEnvironmentPrefs(void);
+	virtual bool			loadBuiltinPrefs(void) override;
+	virtual void			overlayEnvironmentPrefs(void) override;
 
 protected:
-	virtual const char *	_getPrefsPathname(void) const;
+	virtual const char *	_getPrefsPathname(void) const override;
 };
 
 #endif /* AP_WIN32PREFS_H */

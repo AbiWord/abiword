@@ -64,15 +64,15 @@ public:
 	AP_Win32App(HINSTANCE hInstance, const char * szAppName);
 	virtual ~AP_Win32App(void);
 
-	virtual bool					initialize(void);
-	virtual XAP_Frame *				newFrame(void);
+	virtual bool					initialize(void) override;
+	virtual XAP_Frame *				newFrame(void) override;
 	virtual bool					shutdown(void);
 	virtual bool getPrefsValueDirectory(bool bAppSpecific,
                                             const gchar * szKey, std::string &value) const;
-	virtual const XAP_StringSet *	getStringSet(void) const;
-	virtual const char *			getAbiSuiteAppDir(void) const;
-	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
-	virtual GR_Graphics *           newDefaultScreenGraphics() const;
+	virtual const XAP_StringSet *	getStringSet(void) const override;
+	virtual const char *			getAbiSuiteAppDir(void) const override;
+	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) override;
+	virtual GR_Graphics *           newDefaultScreenGraphics() const override;
 
 
 #ifdef COPY_ON_DEMAND
@@ -81,20 +81,20 @@ public:
 	bool                            copyAllFmtsToClipboardOnDemand();
 #endif
 
-	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting);
-	virtual bool					canPasteFromClipboard(void);
-	virtual void					cacheCurrentSelection(AV_View *) {};
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting) override;
+	virtual bool					canPasteFromClipboard(void) override;
+	virtual void					cacheCurrentSelection(AV_View *) override {};
 
-	virtual void 					errorMsgBadFile(XAP_Frame * pFrame, const char * file, UT_Error error);
-	virtual bool 					doWindowlessArgs (const AP_Args *, bool & bSuccess);
+	virtual void 					errorMsgBadFile(XAP_Frame * pFrame, const char * file, UT_Error error) override;
+	virtual bool 					doWindowlessArgs (const AP_Args *, bool & bSuccess) override;
 
 	static int WinMain (const char * szAppName, HINSTANCE hInstance,
 						HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);
 
-	virtual HICON							getIcon(void);
-	virtual HICON							getSmallIcon(void);
+	virtual HICON							getIcon(void) override;
+	virtual HICON							getSmallIcon(void) override;
 
-	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile);
+	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile) override;
 	UT_Vector*								getInstalledUILanguages(void);
 	bool									doesStringSetExist(const char* pLocale);
 
@@ -112,7 +112,7 @@ public:
 
 	bool handleModelessDialogMessage( MSG * msg );
 
-	virtual void catchSignals(int signum) ABI_NORETURN;
+	virtual void catchSignals(int signum) override ABI_NORETURN;
 
 private:
 	bool               _copyFmtToClipboard(PD_DocumentRange * pDocRange, UINT iFmt);

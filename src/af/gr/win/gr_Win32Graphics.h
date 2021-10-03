@@ -54,9 +54,9 @@ public:
 
 	HFONT       getDisplayFont(GR_Graphics * pGr);
 
-	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
-	UT_sint32	measureUnRemappedChar(UT_UCSChar c, UT_uint32 * height = 0);
-	virtual GR_CharWidths* newFontWidths(void) const;
+	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const override;
+	UT_sint32	measureUnRemappedChar(UT_UCSChar c, UT_uint32 * height = nullptr);
+	virtual GR_CharWidths* newFontWidths(void) const override;
 //
 // UT_Rect of glyph in Logical units.
 // rec.left = bearing Left (distance from origin to start)
@@ -64,7 +64,7 @@ public:
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
+	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG) override;
 
 	void        selectFontIntoDC(GR_Graphics * pGr, HDC hdc);
 
@@ -157,16 +157,16 @@ class ABI_EXPORT GR_Win32AllocInfo : public GR_AllocInfo
 {
   public:
 	GR_Win32AllocInfo():
-		m_hdc(0), m_hwnd(0), m_pDocInfo(NULL), m_hDevMode(NULL) {};
+		m_hdc(nullptr), m_hwnd(nullptr), m_pDocInfo(NULL), m_hDevMode(NULL) {};
 
 	GR_Win32AllocInfo(HDC hdc, HWND hwnd):
 		m_hdc(hdc), m_hwnd(hwnd), m_pDocInfo(NULL), m_hDevMode(NULL) {};
 
 	GR_Win32AllocInfo(HDC hdc, const DOCINFOW* pDoc, HGLOBAL devmode):
-		m_hdc(hdc), m_hwnd(0), m_pDocInfo(pDoc), m_hDevMode(devmode) {};
+		m_hdc(hdc), m_hwnd(nullptr), m_pDocInfo(pDoc), m_hDevMode(devmode) {};
 
-	virtual GR_GraphicsId getType() const {return GRID_WIN32;}
-	virtual bool isPrinterGraphics() const {return (m_pDocInfo != 0);}
+	virtual GR_GraphicsId getType() const override {return GRID_WIN32;}
+	virtual bool isPrinterGraphics() const override {return (m_pDocInfo != nullptr);}
 
 	HDC               m_hdc;
 	HWND              m_hwnd;
@@ -183,9 +183,9 @@ public:
 	virtual ~GR_Win32Graphics();
 
 	static UT_uint32 s_getClassId() {return GRID_WIN32;}
-	virtual UT_uint32 getClassId() {return s_getClassId();}
+	virtual UT_uint32 getClassId() override {return s_getClassId();}
 
-	virtual GR_Capability getCapability() {return GRCAP_SCREEN_AND_PRINTER;}
+	virtual GR_Capability getCapability() override {return GRCAP_SCREEN_AND_PRINTER;}
 
 	static const char *    graphicsDescriptor(){return "Win32 Default";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
@@ -193,81 +193,81 @@ public:
 	static  GR_Graphics *   getPrinterGraphics(const wchar_t * pPrinterName,
 											   const wchar_t * pDocName);
 
-	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) override;
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChars(const UT_UCSChar* pChars,
-									  int iCharOffset, int iLength,
-									  UT_sint32 xoff, UT_sint32 yoff,
-									  int * pCharWidth);
-	virtual void			setFont(const GR_Font* pFont);
-	virtual void            clearFont(void) { m_pFont = NULL;}
-	virtual UT_uint32		getFontHeight();
-	virtual UT_sint32		measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0);
-	virtual void			setColor(const UT_RGBColor& clr);
-	virtual void            getColor(UT_RGBColor& clr);
-	virtual GR_Font*		getGUIFont();
+                                                  int iCharOffset, int iLength,
+                                                  UT_sint32 xoff, UT_sint32 yoff,
+                                                  int * pCharWidth) override;
+	virtual void			setFont(const GR_Font* pFont) override;
+	virtual void            clearFont(void) override { m_pFont = NULL;}
+	virtual UT_uint32		getFontHeight() override;
+	virtual UT_sint32		measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = nullptr) override;
+	virtual void			setColor(const UT_RGBColor& clr) override;
+	virtual void            getColor(UT_RGBColor& clr) override;
+	virtual GR_Font*		getGUIFont() override;
 
-	virtual UT_uint32		getFontAscent();
-	virtual UT_uint32		getFontDescent();
-	virtual void			getCoverage(UT_NumberVector& coverage);
-	virtual void			drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void			xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void			setLineWidth(UT_sint32);
+	virtual UT_uint32		getFontAscent() override;
+	virtual UT_uint32		getFontDescent() override;
+	virtual void			getCoverage(UT_NumberVector& coverage) override;
+	virtual void			drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) override;
+	virtual void			xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) override;
+	virtual void			setLineWidth(UT_sint32) override;
 
-	virtual void            setLineProperties ( double inWidthPixels,
-												JoinStyle inJoinStyle = JOIN_MITER,
-												CapStyle inCapStyle   = CAP_BUTT,
-												LineStyle inLineStyle = LINE_SOLID );
+	virtual void            setLineProperties (double inWidthPixels,
+                                                   JoinStyle inJoinStyle = JOIN_MITER,
+                                                   CapStyle inCapStyle   = CAP_BUTT,
+                                                   LineStyle inLineStyle = LINE_SOLID) override;
 
-	virtual void			polyLine(const UT_Point * pts, UT_uint32 nPoints);
+	virtual void			polyLine(const UT_Point * pts, UT_uint32 nPoints) override;
 	virtual void			fillRect(const UT_RGBColor& c,
-									 UT_sint32 x, UT_sint32 y,
-									 UT_sint32 w, UT_sint32 h);
-	virtual void			invertRect(const UT_Rect* pRect);
-	virtual void			setClipRect(const UT_Rect* pRect);
-	virtual void			scroll(UT_sint32 dx, UT_sint32 dy);
+                                                 UT_sint32 x, UT_sint32 y,
+                                                 UT_sint32 w, UT_sint32 h) override;
+	virtual void			invertRect(const UT_Rect* pRect) override;
+	virtual void			setClipRect(const UT_Rect* pRect) override;
+	virtual void			scroll(UT_sint32 dx, UT_sint32 dy) override;
 	virtual void			scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-								   UT_sint32 x_src, UT_sint32 y_src,
-								   UT_sint32 width, UT_sint32 height);
-	virtual void			clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+                                               UT_sint32 x_src, UT_sint32 y_src,
+                                               UT_sint32 width, UT_sint32 height) override;
+	virtual void			clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32) override;
 
-	virtual void			drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual void			drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest) override;
 	virtual GR_Image*		createNewImage(const char* pszName, const UT_ConstByteBufPtr & pBB, const std::string& mimetype,
-						       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType = GR_Image::GRT_Raster);
+						       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType = GR_Image::GRT_Raster) override;
 
-	virtual bool			queryProperties(GR_Graphics::Properties gp) const;
+	virtual bool			queryProperties(GR_Graphics::Properties gp) const override;
 
-	virtual bool			startPrint(void);
+	virtual bool			startPrint(void) override;
 	virtual bool			startPage(const char * szPageLabel, UT_uint32 pageNumber,
-									  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
-	virtual bool			endPrint(void);
+                                                  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) override;
+	virtual bool			endPrint(void) override;
 
 	virtual HWND			getHwnd(void) const;
 
-	virtual void			setColorSpace(GR_Graphics::ColorSpace c);
-	virtual GR_Graphics::ColorSpace		getColorSpace(void) const;
+	virtual void			setColorSpace(GR_Graphics::ColorSpace c) override;
+	virtual GR_Graphics::ColorSpace		getColorSpace(void) const override;
 
-	virtual void			setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor			getCursor(void) const;
+	virtual void			setCursor(GR_Graphics::Cursor c) override;
+	virtual GR_Graphics::Cursor			getCursor(void) const override;
 	virtual void			handleSetCursorMessage(void);
 
-	virtual void			setColor3D(GR_Color3D c);
-	virtual bool			getColor3D(GR_Color3D, UT_RGBColor &)
+	virtual void			setColor3D(GR_Color3D c) override;
+	virtual bool			getColor3D(GR_Color3D, UT_RGBColor &) override
 	{ return false; }
 	void					init3dColors(void);
 	virtual void			fillRect(GR_Color3D c,
-									 UT_sint32 x, UT_sint32 y,
-									 UT_sint32 w, UT_sint32 h);
-	virtual void			fillRect(GR_Color3D c, UT_Rect &r);
-    virtual void            polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints);
-	virtual UT_uint32		getFontAscent(const GR_Font *);
-	virtual UT_uint32		getFontDescent(const GR_Font *);
-	virtual UT_uint32		getFontHeight(const GR_Font *);
+                                                 UT_sint32 x, UT_sint32 y,
+                                                 UT_sint32 w, UT_sint32 h) override;
+	virtual void			fillRect(GR_Color3D c, UT_Rect &r) override;
+    virtual void            polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints) override;
+	virtual UT_uint32		getFontAscent(const GR_Font *) override;
+	virtual UT_uint32		getFontDescent(const GR_Font *) override;
+	virtual UT_uint32		getFontHeight(const GR_Font *) override;
 
-    virtual GR_Image * genImageFromRectangle(const UT_Rect & r);
-	virtual void		  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
-	virtual void		  restoreRectangle(UT_uint32 iIndx);
-	virtual void 		  flush(void);
+    virtual GR_Image * genImageFromRectangle(const UT_Rect & r) override;
+	virtual void		  saveRectangle(UT_Rect & r, UT_uint32 iIndx) override;
+	virtual void		  restoreRectangle(UT_uint32 iIndx) override;
+	virtual void 		  flush(void) override;
 	void setBrush(HBRUSH hBrush){ m_hClearBrush = hBrush;};
 
 
@@ -294,14 +294,14 @@ protected:
 	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);
 
 	virtual GR_Font*		_findFont(const char* pszFontFamily,
-									  const char* pszFontStyle,
-									  const char* pszFontVariant,
-									  const char* pszFontWeight,
-									  const char* pszFontStretch,
-									  const char* pszFontSize,
-									  const char* pszLang);
+                                                  const char* pszFontStyle,
+                                                  const char* pszFontVariant,
+                                                  const char* pszFontWeight,
+                                                  const char* pszFontStretch,
+                                                  const char* pszFontSize,
+                                                  const char* pszLang) override;
 
-	virtual UT_uint32 	getDeviceResolution(void) const;
+	virtual UT_uint32 	getDeviceResolution(void) const override;
 	void					_setColor(DWORD clrRef);
 
 	HDC m_bufferHdc;
@@ -309,12 +309,12 @@ protected:
 
 	void _DeviceContext_MeasureBitBltCopySpeed(HDC source, HDC dest, int width, int height);
 	void getWidthAndHeightFromHWND(HWND h, int &width, int &height);
-	void _DeviceContext_SwitchToBuffer();
-	void _DeviceContext_SwitchToScreen();
+	void _DeviceContext_SwitchToBuffer() override;
+	void _DeviceContext_SwitchToScreen() override;
 	void _DeviceContext_DrawBufferToScreen();
 
-	void _DeviceContext_SuspendDrawing();
-	void _DeviceContext_ResumeDrawing();
+	void _DeviceContext_SuspendDrawing() override;
+	void _DeviceContext_ResumeDrawing() override;
 
 	void _DoubleBuffering_SetUpDummyBuffer();
 	void _DoubleBuffering_ReleaseDummyBuffer();
@@ -324,8 +324,8 @@ protected:
 
 	struct _HDCSwitchRecord
 	{
-		HDC oldHdc;
-		_HDCSwitchRecord(HDC h) : oldHdc(h) { }
+          HDC oldHdc;
+          _HDCSwitchRecord(HDC h) : oldHdc(h) { }
 	};
 
 	UT_Stack _HDCSwitchStack;
@@ -335,7 +335,7 @@ protected:
 private:
 	virtual GR_Win32Font * _newFont(LOGFONTW & lf, double fPointSize, HDC hdc, HDC printDC);
 
-  protected:
+protected:
 
 	UT_uint32               m_iDCFontAllocNo;
 	UT_uint32               m_iPrintDCFontAllocNo;
@@ -351,7 +351,7 @@ private:
 	GR_Win32Font*			m_pFont;
 	GR_Win32Font*			m_pFontGUI;
 	UT_sint32				m_iLineWidth;
-    JoinStyle               m_eJoinStyle;
+        JoinStyle               m_eJoinStyle;
 	CapStyle                m_eCapStyle;
 	LineStyle               m_eLineStyle;
 
@@ -386,10 +386,10 @@ private:
 
 	typedef struct
 	{
-		HPEN 	hPen;
-		int	 	nStyle;
-		int 	nWidth;
-		DWORD	dwColour;
+          HPEN 	hPen;
+          int	 	nStyle;
+          int 	nWidth;
+          DWORD	dwColour;
 
 	} CACHE_PEN;
 
