@@ -93,7 +93,6 @@ xp_pkgs="
   ${fribidi_req}
   ${glib_req}
   ${gsf_req}
-  ${goffice_req}
   ${wv_req}
   ${xslt_req}
 "
@@ -116,13 +115,14 @@ PKG_CHECK_EXISTS(cairo >= 1.10, [gtk_req="$gtk_req cairo-fc"],[])
 gtk_pkgs="
   ${cairo_req}
   ${gtk_req}
+  ${goffice_req}
 "
 
 # qt5 deps
 qt_pkgs="Qt5Gui Qt5Widgets   ${cairo_req}"
 
 # cocoa deps
-cocoa_pkgs="$enchant_req $cairo_req gmodule-2.0"
+cocoa_pkgs="$enchant_req $cairo_req gmodule-2.0   ${goffice_req}"
 
 
 # win32 deps
@@ -694,9 +694,8 @@ fi
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
 
 if test "$TOOLKIT" = "gtk"; then
-       DEPS_CFLAGS="$DEPS_CFLAGS -DGDK_VERSION_MIN_REQUIRED=$GTK_ENCODED_VERSION"
+       DEPS_CFLAGS="$DEPS_CFLAGS -DGDK_VERSION_MIN_REQUIRED=$GTK_ENCODED_VERSION -DGDK_VERSION_MAX_ALLOWED=$GTK_ENCODED_VERSION"
 fi
-dnl -DGDK_VERSION_MAX_ALLOWED=$GTK_ENCODED_VERSION"
 
 dnl make that for all.
 if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa" -o "$TOOLKIT" = "qt"; then
