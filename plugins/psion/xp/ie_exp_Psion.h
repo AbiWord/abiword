@@ -44,12 +44,12 @@ public:
 	IE_Exp_Psion_Word_Sniffer (const char * _name): IE_ExpSniffer(_name) {}
 	virtual ~IE_Exp_Psion_Word_Sniffer () {}
 
-	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool recognizeSuffix (const char * szSuffix) override;
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
+							   IEFileType * ft) override;
 	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
+										IE_Exp ** ppie) override;
 };
 
 /*!
@@ -64,12 +64,12 @@ public:
 	IE_Exp_Psion_TextEd_Sniffer (const char * _name): IE_ExpSniffer(_name) {}
 	virtual ~IE_Exp_Psion_TextEd_Sniffer () {}
 
-	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool recognizeSuffix (const char * szSuffix) override;
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
+							   IEFileType * ft) override;
 	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
+										IE_Exp ** ppie) override;
 };
 
 
@@ -92,10 +92,10 @@ public:
 
 	// Overriding methods from the base class
 	virtual bool populate(fl_ContainerLayout* sfh,
-	                      const PX_ChangeRecord * pcr);
+	                      const PX_ChangeRecord * pcr) override;
 	virtual bool populateStrux(pf_Frag_Strux* sdh,
 	                           const PX_ChangeRecord * pcr,
-	                           fl_ContainerLayout* * psfh);
+	                           fl_ContainerLayout* * psfh) override;
 
 	// New public methods
 	bool startDocument(void);
@@ -137,7 +137,7 @@ private:
 public:
 	// The following three base class methods should never be called.
 	virtual bool change(fl_ContainerLayout* /*sfh*/,
-						const PX_ChangeRecord * /*pcr*/)
+						const PX_ChangeRecord * /*pcr*/) override
 	                         { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
 	virtual bool insertStrux(fl_ContainerLayout* /*sfh*/,
 							 const PX_ChangeRecord * /*pcr*/,
@@ -146,9 +146,9 @@ public:
 							 void (* /*pfnBindHandles*/)
 	                                            (pf_Frag_Strux* sdhNew,
 	                                             PL_ListenerId lid,
-	                                             fl_ContainerLayout* sfhNew))
+	                                             fl_ContainerLayout* sfhNew)) override
 		                     { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
-	virtual bool signal(UT_uint32 /*iSignal*/)
+	virtual bool signal(UT_uint32 /*iSignal*/) override
 	                         { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
 
 };
@@ -168,7 +168,7 @@ public:
 	virtual ~PL_Psion_Word_Listener(void) { }
 
 	// Public functions
-	virtual psiconv_file createPsionFile(void);
+	virtual psiconv_file createPsionFile(void) override;
 };
 
 
@@ -186,7 +186,7 @@ public:
 	virtual ~PL_Psion_TextEd_Listener(void) { }
 
 	// Public functions
-	virtual psiconv_file createPsionFile(void);
+	virtual psiconv_file createPsionFile(void) override;
 };
 
 
@@ -211,7 +211,7 @@ public:
 
 protected:
 	// Overriding methods from the base class
-	virtual UT_Error _writeDocument(void);
+	virtual UT_Error _writeDocument(void) override;
 
 	// New methods.
 	virtual PL_Psion_Listener *_constructListener(void) = 0;
@@ -233,7 +233,7 @@ public:
 
 protected:
 	// Overriding methods from the base class
-	virtual PL_Psion_Listener *_constructListener(void);
+	virtual PL_Psion_Listener *_constructListener(void) override;
 };
 
 
@@ -252,7 +252,7 @@ public:
 
 protected:
 	// Overriding methods from the base class
-	virtual PL_Psion_Listener *_constructListener(void);
+	virtual PL_Psion_Listener *_constructListener(void) override;
 };
 
 

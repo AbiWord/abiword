@@ -51,15 +51,15 @@ public:
 	IE_Imp_Psion_Word_Sniffer(const char * _name): IE_Imp_Psion_Sniffer(_name) {}
 	virtual ~IE_Imp_Psion_Word_Sniffer() {}
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
-									           UT_uint32 iNumbytes);
+									           UT_uint32 iNumbytes) override;
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
+							   IEFileType * ft) override;
 	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
+										IE_Imp ** ppie) override;
 };
 
 class IE_Imp_Psion_TextEd_Sniffer :
@@ -70,15 +70,15 @@ public:
                                                   IE_Imp_Psion_Sniffer(_name) {}
 	virtual ~IE_Imp_Psion_TextEd_Sniffer() {}
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
+	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
-									           UT_uint32 iNumbytes);
+									           UT_uint32 iNumbytes) override;
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   IEFileType * ft);
+							   IEFileType * ft) override;
 	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
+										IE_Imp ** ppie) override;
 };
 
 class IE_Imp_Psion : public IE_Imp
@@ -88,7 +88,7 @@ public:
 	~IE_Imp_Psion() {}
 
 protected:
-	virtual UT_Error _loadFile(GsfInput * input);
+	virtual UT_Error _loadFile(GsfInput * input) override;
 
 	UT_Error getCharacterAttributes(const psiconv_character_layout layout,
                                 UT_UTF8String &props);
@@ -122,7 +122,7 @@ public:
 	~IE_Imp_Psion_Word() {}
 
 protected:
-	virtual	UT_Error parseFile(const psiconv_file psionfile);
+	virtual	UT_Error parseFile(const psiconv_file psionfile) override;
 };
 
 class IE_Imp_Psion_TextEd : public IE_Imp_Psion
@@ -132,7 +132,7 @@ public:
 	~IE_Imp_Psion_TextEd() {}
 
 protected:
-	virtual	UT_Error parseFile(const psiconv_file psionfile);
+	virtual	UT_Error parseFile(const psiconv_file psionfile) override;
 };
 
 #endif /* IE_IMP_PSION_H */

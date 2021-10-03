@@ -436,7 +436,7 @@ static bool updateParagraphLayout(const PP_AttrProp *pAP,
 static void read_png_data(png_structp png_ptr, png_bytep data, png_size_t length)
 {
     struct _bb* p = (struct _bb*) png_get_io_ptr(png_ptr);
-    UT_DEBUGMSG(("PSION: read_png_data: %d bytes at %d\n",length,p->iCurPos));
+    UT_DEBUGMSG(("PSION: read_png_data: %lu bytes at %d\n", length, p->iCurPos));
     const UT_Byte* pBytes = p->pBB->getPointer(0);
                                               		
 	memcpy(data, pBytes + p->iCurPos, length);

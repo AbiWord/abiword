@@ -82,11 +82,11 @@ static gchar *prepare_style_name(const psiconv_string_t input)
  * some data needs to writting to the PNG file. We have implemented it as
  * writing to a ByteBuf.
  */
-static void write_png_data(png_structp png_ptr, png_bytep data, 
-                           png_size_t length) 
+static void write_png_data(png_structp png_ptr, png_bytep data,
+                           png_size_t length)
 {
 	UT_ByteBuf* bb = (UT_ByteBuf*) (png_get_io_ptr(png_ptr));
-    UT_DEBUGMSG(("PSION: write_png_data: %d bytes\n",length));
+    UT_DEBUGMSG(("PSION: write_png_data: %lu bytes\n", length));
 	bb->append(data,length);
 }
 

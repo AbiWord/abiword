@@ -41,10 +41,10 @@ ABI_PLUGIN_DECLARE("Psion")
 #define PLUGIN_TEXT "AbiPsion::Psion (Text)"
 
 // we use a reference-counted sniffer
-static IE_Exp_Psion_Word_Sniffer * m_expword_sniffer = 0;
-static IE_Exp_Psion_TextEd_Sniffer * m_exptexted_sniffer = 0;
-static IE_Imp_Psion_Word_Sniffer * m_impword_sniffer = 0;
-static IE_Imp_Psion_TextEd_Sniffer * m_imptexted_sniffer = 0;
+static IE_Exp_Psion_Word_Sniffer * m_expword_sniffer = nullptr;
+static IE_Exp_Psion_TextEd_Sniffer * m_exptexted_sniffer = nullptr;
+static IE_Imp_Psion_Word_Sniffer * m_impword_sniffer = nullptr;
+static IE_Imp_Psion_TextEd_Sniffer * m_imptexted_sniffer = nullptr;
 
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
@@ -80,31 +80,31 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->name = nullptr;
+	mi->desc = nullptr;
+	mi->version = nullptr;
+	mi->author = nullptr;
+	mi->usage = nullptr;
 
 	UT_ASSERT (m_expword_sniffer && m_exptexted_sniffer);
 
 	IE_Exp::unregisterExporter (m_expword_sniffer);
 	delete m_expword_sniffer;
-	m_expword_sniffer = 0;
+	m_expword_sniffer = nullptr;
 
 	IE_Exp::unregisterExporter (m_exptexted_sniffer);
 	delete m_exptexted_sniffer;
-	m_exptexted_sniffer = 0;
+	m_exptexted_sniffer = nullptr;
 
 	UT_ASSERT (m_impword_sniffer && m_imptexted_sniffer);
 
 	IE_Imp::unregisterImporter (m_impword_sniffer);
 	delete m_impword_sniffer;
-	m_impword_sniffer = 0;
+	m_impword_sniffer = nullptr;
 
 	IE_Imp::unregisterImporter (m_imptexted_sniffer);
 	delete m_imptexted_sniffer;
-	m_imptexted_sniffer = 0;
+	m_imptexted_sniffer = nullptr;
 
 	return 1;
 }
