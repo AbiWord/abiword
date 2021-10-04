@@ -622,6 +622,7 @@ bool fl_AutoNum::isDirty() const
 void fl_AutoNum::setDelim(const gchar * lDelim)
 {
 	strncpy( m_pszDelim, lDelim, 80);
+	m_pszDelim[80] = 0;
 	m_bDirty = true;
 }
 

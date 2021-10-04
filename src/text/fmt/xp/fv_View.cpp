@@ -5894,7 +5894,7 @@ void FV_View::changeListStyle(const fl_AutoNumPtr & pAuto,
 								float Indent)
 {
 	UT_sint32 i=0;
-	gchar pszStart[80],pszAlign[20],pszIndent[20];
+	gchar pszStart[80], pszAlign[21], pszIndent[21];
 	UT_GenericVector<pf_Frag_Strux*> vb;
 	pf_Frag_Strux* sdh2 = pAuto->getNthBlock(i);
 	m_pDoc->beginUserAtomicGlob();
@@ -5939,11 +5939,13 @@ void FV_View::changeListStyle(const fl_AutoNumPtr & pAuto,
 	sprintf(pszStart, "%i" , startv);
 	strncpy( pszAlign,
 					UT_convertInchesToDimensionString(DIM_IN, Align, nullptr),
-					sizeof(pszAlign));
+					sizeof(pszAlign) - 1);
+	pszAlign[sizeof(pszAlign) - 1] = 0;
 
 	strncpy( pszIndent,
 					UT_convertInchesToDimensionString(DIM_IN, Indent, nullptr),
-					sizeof(pszIndent));
+					sizeof(pszIndent) - 1);
+	pszIndent[sizeof(pszIndent) - 1] = 0;
 
 	PP_PropertyVector props = {
 		"start-value", pszStart,

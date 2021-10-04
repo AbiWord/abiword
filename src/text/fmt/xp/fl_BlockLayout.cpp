@@ -131,11 +131,11 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos) const
 	// occasions and remember the language, not the APs (bug #9562)
 
 	static SpellChecker * checker = NULL;
-	static char szPrevLang[8] = {0};
+	static char szPrevLang[9] = {0};
 
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
-	
+
 	getSpanAP(blockPos, false, pSpanAP);
 	getAP(pBlockAP);
 
@@ -146,14 +146,13 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos) const
 		checker = SpellManager::instance().lastDictionary();
 		return checker;
 	}
-	
+
 	if(!szPrevLang[0] || strcmp(pszLang,szPrevLang))
 	{
 		checker = SpellManager::instance().requestDictionary(pszLang);
 
-		strncpy(szPrevLang, pszLang, sizeof(szPrevLang));
-		UT_uint32 iEnd = UT_MIN(sizeof(szPrevLang)-1, strlen(pszLang));
-		szPrevLang[iEnd] = 0;
+		strncpy(szPrevLang, pszLang, sizeof(szPrevLang) - 1);
+		szPrevLang[sizeof(szPrevLang) - 1] = 0;
 	}
 
 	return checker;
@@ -10302,7 +10301,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	//
 	// Starts a new list at the current block with all the options
 	//
-	gchar lid[15], pszAlign[20], pszIndent[20],buf[20],pid[20],pszStart[20];
+	gchar lid[15], pszAlign[21], pszIndent[21], buf[20], pid[20], pszStart[20];
 	gchar * style = getListStyleString(lType);
 	UT_DebugOnly<bool> bRet;
 	UT_uint32 id=0;
@@ -10346,9 +10345,11 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	sprintf(buf, "%i", curlevel);
 	sprintf(pszStart,"%i",start);
 
-	strncpy(pszAlign, UT_convertInchesToDimensionString(DIM_IN, Align, nullptr), sizeof(pszAlign));
+	strncpy(pszAlign, UT_convertInchesToDimensionString(DIM_IN, Align, nullptr), sizeof(pszAlign) - 1);
+	pszAlign[sizeof(pszAlign) - 1] = 0;
 
-	strncpy(pszIndent, UT_convertInchesToDimensionString(DIM_IN, indent, nullptr), sizeof(pszIndent));
+	strncpy(pszIndent, UT_convertInchesToDimensionString(DIM_IN, indent, nullptr), sizeof(pszIndent) - 1);
+	pszIndent[sizeof(pszIndent) - 1] = 0;
 
 	const PP_PropertyVector attribs = {
 		"listid", lid,
@@ -10458,7 +10459,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 			FL_ListType newType;
 			PD_Style * pStyle;
 			float fAlign, fIndent;
-			gchar align[30], indent[30];
+			gchar align[31], indent[31];
 
 			newType = getAutoNum()->getParent()->getType();
 			m_pDoc->getStyle(static_cast<char *>(getListStyleString(newType)), &pStyle);
@@ -10472,21 +10473,25 @@ void	fl_BlockLayout::StopListInBlock(void)
 				pStyle->getProperty(static_cast<const gchar *>("text-indent"), szIndent);
 				fAlign = static_cast<float>(UT_convertToInches(szAlign));
 				fAlign *= level;
-				strncpy( align,
+				strncpy(align,
 								UT_convertInchesToDimensionString(DIM_IN, fAlign, nullptr),
-								sizeof(align));
-				sprintf(indent, "%s", szIndent);
+								sizeof(align) - 1);
+				align[sizeof(align) - 1] = 0;
+				snprintf(indent, sizeof(indent) - 1, "%s", szIndent);
+				indent[sizeof(indent) - 1] = 0;
 			}
 			else
 			{
 				fAlign =  static_cast<float>(LIST_DEFAULT_INDENT) * level;
 				fIndent = static_cast<float>(-LIST_DEFAULT_INDENT_LABEL);
-				strncpy( align,
+				strncpy(align,
 								UT_convertInchesToDimensionString(DIM_IN, fAlign, nullptr),
-								sizeof(align));
-				strncpy( indent,
+								sizeof(align) - 1);
+				align[sizeof(align) - 1] = 0;
+				strncpy(indent,
 								UT_convertInchesToDimensionString(DIM_IN, fIndent, nullptr),
-								sizeof(indent));
+								sizeof(indent) - 1);
+				indent[sizeof(indent) - 1] = 0;
 			}
 
 			if(m_iDomDirection == UT_BIDI_RTL)

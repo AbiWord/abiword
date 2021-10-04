@@ -1,8 +1,8 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indents-tab-mode:t; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych, Yaacov Akiba Slama
- * © 2016-2017 Hubert Figuière
+ * © 2016-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -205,9 +205,8 @@ protected:
 	bool						m_bUpdatingItems;
 	bool						m_bDirty;
 	UT_sint32					m_ioffset;
-	gchar					m_pszDecimal[80]; // BAD BAD HARDCODED ARRAY LENGTHS
-	gchar					m_pszDelim[80];
-	gchar					m_pszIndent[80];
+	gchar					m_pszDecimal[81]; // BAD BAD HARDCODED ARRAY LENGTHS
+	gchar					m_pszDelim[81];
 	bool						m_bWordMultiStyle;
 	pf_Frag_Strux*			m_pParentItem;
 };
