@@ -110,12 +110,6 @@ inline UT_sint32 _sanitizeListLevel(UT_sint32 level)
 	destination = cpname;  \
 }
 
-
-// This should probably be defined in pt_Types.h
-// this used to be 8, which way to small ...
-static const UT_uint32 PT_MAX_ATTRIBUTES = 20;
-
-
 static char g_dbgLastKeyword [256];
 static UT_sint32 g_dbgLastParam; 
 

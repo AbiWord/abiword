@@ -66,8 +66,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
 
-	GR_Graphics * pG = pLayout->getGraphics();
-	UT_ASSERT(pG);
+	UT_ASSERT(pLayout->getGraphics());
+
 	m_vecColumnLeaders.clear();
 	m_rDamageRect.left = 0;
 	m_rDamageRect.top = 0;
