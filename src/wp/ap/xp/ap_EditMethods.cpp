@@ -8606,7 +8606,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 
 	if(pGraphics->startPrint())
 	{
-	  fp_PageSize ps = pPrintView->getPageSize();	  
+	  fp_PageSize ps = pPrintView->getPageSize();
 	  bool orient = ps.isPortrait ();
 	  pGraphics->setPortrait (orient);
 
@@ -8616,9 +8616,8 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	  gchar msgBuf [1024];
 
 	  dg_DrawArgs da;
-	  memset(&da, 0, sizeof(da));
 	  da.pG = pGraphics;
-	  
+
 	  XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
 
 		if (bCollate)

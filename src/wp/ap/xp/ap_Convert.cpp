@@ -137,19 +137,18 @@ public:
 			//pDocLayout->setView (&printView);
 			pDocLayout->fillLayouts();
 			pDocLayout->formatAll();
-			pDocLayout->recalculateTOCFields();			
-				
+			pDocLayout->recalculateTOCFields();
+
 			if (!m_bPrintedFirstPage)
 				if (m_pGraphics->startPrint())
 					m_bPrintedFirstPage = true;
-			
+
 
 			if (m_bPrintedFirstPage) {
 
 				dg_DrawArgs da;
-				memset(&da, 0, sizeof(da));
 				da.pG = m_pGraphics;
-				
+
 				for (UT_sint32 k = 1; (k <= pDocLayout->countPages()); k++)
 				{
 					UT_uint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
