@@ -234,11 +234,11 @@ protected:
 	bool				m_bInChangeBlock;
 	void				_sendPrefsSignal(const XAP_PrefsChangeSet& hash );
 
-	typedef struct {
+	struct Pref_Geometry {
 		UT_uint32		m_width, m_height;	/* Default width and height */
 		UT_sint32		m_posx, m_posy;		/* Default position */
 		UT_uint32		m_flags;			/* What is valid, what is not */
-	} Pref_Geometry;
+	};
 
 	Pref_Geometry		m_geom;
 

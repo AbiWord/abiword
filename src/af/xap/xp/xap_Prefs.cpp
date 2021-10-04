@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; ident-tabs-mode:t; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2020 Hubert Figuière
@@ -375,8 +375,8 @@ XAP_Prefs::XAP_Prefs()
 	, m_builtinScheme(nullptr)
 	, m_maxRecent(atoi(XAP_PREF_DEFAULT_MaxRecent))
 	, m_bInChangeBlock(false)
-	, m_bIgnoreThisOne(false)
 	, m_geom({0, 0, 0, 0, 0})
+	, m_bIgnoreThisOne(false)
 {
 	// NOTE: since constructors cannot report g_try_malloc
 	// NOTE: failures (and since it is virtual back
