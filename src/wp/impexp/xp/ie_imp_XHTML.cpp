@@ -1073,7 +1073,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			std::string szListID, szParentID, szLevel, szMarginLeft;
 			szListID = UT_std_string_sprintf("%u", thisID);
 			szParentID = UT_std_string_sprintf("%u", parentID);
-			szLevel = UT_std_string_sprintf("%lu", m_utsParents.size());
+			szLevel = UT_std_string_sprintf("%lu", (unsigned long)m_utsParents.size());
 
 			{
 				UT_LocaleTransactor t(LC_NUMERIC, "C");
