@@ -164,11 +164,11 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView, NSEvent* e)
                      [[e characters] UTF8String], state));
 
 	unsigned int modifierFlags = [e modifierFlags];
-	if (modifierFlags & NSShiftKeyMask)
+	if (modifierFlags & NSEventModifierFlagShift)
 		state |= EV_EMS_SHIFT;
-	if (modifierFlags & NSControlKeyMask)
+	if (modifierFlags & NSEventModifierFlagControl)
 		state |= EV_EMS_CONTROL;
-	if (modifierFlags & NSAlternateKeyMask)
+	if (modifierFlags & NSEventModifierFlagOption)
 		state |= EV_EMS_ALT;
 
 	NSString *characters = [e characters];

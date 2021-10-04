@@ -298,13 +298,13 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (IBAction)bottomBorderAction:(id)sender
 {
-	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_bottom, [sender state] == NSOnState);
+	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_bottom, [sender state] == NSControlStateValueOn);
 	_xap->event_previewExposed();
 }
 
 - (IBAction)leftBorderAction:(id)sender
 {
-	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_left, [sender state] == NSOnState);
+	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_left, [sender state] == NSControlStateValueOn);
 	_xap->event_previewExposed();
 }
 
@@ -316,7 +316,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (IBAction)rightBorderAction:(id)sender
 {
-	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_right, [sender state] == NSOnState);
+	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_right, [sender state] == NSControlStateValueOn);
 	_xap->event_previewExposed();
 }
 
@@ -328,7 +328,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (IBAction)topBorderAction:(id)sender
 {
-	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_top, [sender state] == NSOnState);
+	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_top, [sender state] == NSControlStateValueOn);
 	_xap->event_previewExposed();
 }
 

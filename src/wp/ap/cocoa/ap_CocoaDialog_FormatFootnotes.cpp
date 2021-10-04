@@ -201,7 +201,7 @@ void AP_CocoaDialog_FormatFootnotes::event_EndInitialValueChange(NSTextField* wi
 
 void AP_CocoaDialog_FormatFootnotes::event_EndRestartSection(NSButton* widget)
 {
-	setRestartEndnoteOnSection([widget state] == NSOnState);
+	setRestartEndnoteOnSection([widget state] == NSControlStateValueOn);
 }
 
 
@@ -357,7 +357,7 @@ static void _fillPopupWithFootnoteTypeDesc(NSPopUpButton* menu, const FootnoteTy
 
 - (void)setEndNtRestartOnSec:(bool)val
 {
-	[_endNtRestartSectionBtn setState:(val?NSOnState:NSOffState)];
+	[_endNtRestartSectionBtn setState:(val?NSControlStateValueOn:NSControlStateValueOff)];
 }
 
 

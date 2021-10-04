@@ -498,37 +498,37 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 -(IBAction)underlineAction:(id)sender
 {
 	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->underlineChanged
-				([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+				([(NSControl*)sender intValue] == NSControlStateValueOff ? 0 : 1);
 }
 
 -(IBAction)overlineAction:(id)sender
 {
 	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->overlineChanged
-			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+			([(NSControl*)sender intValue] == NSControlStateValueOff ? 0 : 1);
 }
 
 -(IBAction)strikeoutAction:(id)sender
 {
 	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->strikeoutChanged
-			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+			([(NSControl*)sender intValue] == NSControlStateValueOff ? 0 : 1);
 }
 
 -(IBAction)superscriptAction:(id)sender
 {
 	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->superscriptChanged
-			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+			([(NSControl*)sender intValue] == NSControlStateValueOff ? 0 : 1);
 }
 
 -(IBAction)subscriptAction:(id)sender
 {
 	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->subscriptChanged
-			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+			([(NSControl*)sender intValue] == NSControlStateValueOff ? 0 : 1);
 }
 
 -(IBAction)transparentAction:(id)sender
 {
 	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->transparencyChanged
-			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+			([(NSControl*)sender intValue] == NSControlStateValueOff ? 0 : 1);
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
@@ -554,27 +554,27 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 
 -(void)setStrikeout:(bool)value
 {
-	[_strikeButton setState:(value ? NSOnState : NSOffState)];
+	[_strikeButton setState:(value ? NSControlStateValueOn : NSControlStateValueOff)];
 }
 
 -(void)setUnderline:(bool)value
 {
-	[_underlineButton setState:(value ? NSOnState : NSOffState)];
+	[_underlineButton setState:(value ? NSControlStateValueOn : NSControlStateValueOff)];
 }
 
 -(void)setOverline:(bool)value
 {
-	[_overlineButton setState:(value ? NSOnState : NSOffState)];
+	[_overlineButton setState:(value ? NSControlStateValueOn : NSControlStateValueOff)];
 }
 
 -(void)setSuperscript:(bool)value
 {
-	[_superscriptButton setState:(value ? NSOnState : NSOffState)];
+	[_superscriptButton setState:(value ? NSControlStateValueOn : NSControlStateValueOff)];
 }
 
 -(void)setSubscript:(bool)value
 {
-	[_subscriptButton setState:(value ? NSOnState : NSOffState)];
+	[_subscriptButton setState:(value ? NSControlStateValueOn : NSControlStateValueOff)];
 }
 
 -(void)selectFont:(char*)value

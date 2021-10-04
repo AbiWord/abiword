@@ -364,35 +364,35 @@ void AP_CocoaDialog_Replace::_updateLists()
 
 - (bool)matchCase
 {
-	return ([_matchCaseBtn state] != NSOffState);
+	return ([_matchCaseBtn state] != NSControlStateValueOff);
 }
 
 - (void)setMatchCase:(bool)val
 {
-	[_matchCaseBtn setState:(val?NSOnState:NSOffState)];
+	[_matchCaseBtn setState:(val?NSControlStateValueOn:NSControlStateValueOff)];
 }
 
 - (bool)wholeWord
 {
-	return ([_wholeWordBtn state] != NSOffState);
+	return ([_wholeWordBtn state] != NSControlStateValueOff);
 }
 
 
 - (void)setWholeWord:(bool)val
 {
-	[_wholeWordBtn setState:(val?NSOnState:NSOffState)];
+	[_wholeWordBtn setState:(val?NSControlStateValueOn:NSControlStateValueOff)];
 }
 
 
 - (bool)findReverse
 {
-	return ([_findReverseBtn state] != NSOffState);
+	return ([_findReverseBtn state] != NSControlStateValueOff);
 }
 
 
 - (void)setFindReverse:(bool)val
 {
-	[_findReverseBtn setState:(val?NSOnState:NSOffState)];
+	[_findReverseBtn setState:(val?NSControlStateValueOn:NSControlStateValueOff)];
 }
 
 

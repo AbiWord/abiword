@@ -213,14 +213,14 @@ void AP_CocoaDialog_MarkRevisions::runModal(XAP_Frame * /*pFrame*/)
 - (IBAction)radio1Action:(id)sender
 {
 	UT_UNUSED(sender);
-	[_radio2 setState:NSOffState];
+	[_radio2 setState:NSControlStateValueOff];
 	_xap->event_FocusToggled();
 }
 
 - (IBAction)radio2Action:(id)sender
 {
 	UT_UNUSED(sender);
-	[_radio1 setState:NSOffState];
+	[_radio1 setState:NSControlStateValueOff];
 	_xap->event_FocusToggled();
 }
 
@@ -231,7 +231,7 @@ void AP_CocoaDialog_MarkRevisions::runModal(XAP_Frame * /*pFrame*/)
 
 - (int)toggled
 {
-	if ([_radio1 state] == NSOnState) {
+	if ([_radio1 state] == NSControlStateValueOn) {
 		return 1;
 	}
 	else {

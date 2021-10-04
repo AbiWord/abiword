@@ -136,7 +136,7 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * /*pView*/)
 	{
 		[menuItem setTitle:(m_menu->convertToString(szLabel))];
 	}
-	[menuItem setState:(bChecked ? NSOnState : NSOffState)];
+	[menuItem setState:(bChecked ? NSControlStateValueOn : NSControlStateValueOff)];
 
 	return bEnabled ? YES : NO;
 }
@@ -854,15 +854,15 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 	modifiers = 0;
 	char * p;
 	if (strstr (mnemonic, "Alt+")) {
-		modifiers |= NSAlternateKeyMask;
+		modifiers |= NSEventModifierFlagOption;
 	}
 	if (strstr (mnemonic, "Ctrl+") != NULL) {
-		modifiers |= NSCommandKeyMask;
+		modifiers |= NSEventModifierFlagCommand;
 	}
 	if (strstr (mnemonic, "Shift+") != NULL) {
 		needsShift = true;
 	}
-	if ((modifiers & NSCommandKeyMask) == 0) {
+	if ((modifiers & NSEventModifierFlagCommand) == 0) {
 		p = (char *)mnemonic;
 	}
 	else {
@@ -876,11 +876,11 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 
 		*keyRefKey = static_cast<UT_uint32>(c);
 
-		if (modifiers & NSAlternateKeyMask)
+		if (modifiers & NSEventModifierFlagOption)
 			*keyRefKey |= EV_COCOAMENU_MODALTERNATE;
-		if (modifiers & NSCommandKeyMask)
+		if (modifiers & NSEventModifierFlagCommand)
 			*keyRefKey |= EV_COCOAMENU_MODCOMMAND;
-		if (modifiers & NSShiftKeyMask)
+		if (modifiers & NSEventModifierFlagShift)
 			*keyRefKey |= EV_COCOAMENU_MODSHIFT;
 	}
 	NSString *shortcut = nil;
@@ -954,13 +954,13 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 {
 	m_KeyRef.key = static_cast<UT_uint32>(c);
 
-	if (modifierFlags & NSShiftKeyMask    )
+	if (modifierFlags & NSEventModifierFlagShift)
 		m_KeyRef.key |= EV_COCOAMENU_MODSHIFT;
-	if (modifierFlags & NSControlKeyMask  )
+	if (modifierFlags & NSEventModifierFlagControl)
 		m_KeyRef.key |= EV_COCOAMENU_MODCONTROL;
-	if (modifierFlags & NSAlternateKeyMask)
+	if (modifierFlags & NSEventModifierFlagOption)
 		m_KeyRef.key |= EV_COCOAMENU_MODALTERNATE;
-	if (modifierFlags & NSCommandKeyMask  )
+	if (modifierFlags & NSEventModifierFlagCommand)
 		m_KeyRef.key |= EV_COCOAMENU_MODCOMMAND; // I suspect that this one is necessarily true...
 
 	return (m_MenuBar->lookupCommandKey (&m_KeyRef) ? YES : NO);
@@ -1104,9 +1104,9 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 	}
 	
 	if (bVisible)
-		[self setState:NSOnState];
+		[self setState:NSControlStateValueOn];
 	else
-		[self setState:NSOffState];
+		[self setState:NSControlStateValueOff];
 }
 
 @end
@@ -1140,9 +1140,9 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 	NSWindow * window = static_cast<XAP_CocoaFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 
 	if ([window isKeyWindow])
-		[self setState:NSOnState];
+		[self setState:NSControlStateValueOn];
 	else
-		[self setState:NSOffState];
+		[self setState:NSControlStateValueOff];
 }
 
 @end
@@ -1239,7 +1239,7 @@ EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs
 				[pMenuItem setTarget:pMenuItem];
 				if (pFrame->getCurrentView()->isActive())
 				{
-					[pMenuItem setState:NSOnState];
+					[pMenuItem setState:NSControlStateValueOn];
 				}
 				[pDockMenu addItem:pMenuItem];
 				[pMenuItem release];

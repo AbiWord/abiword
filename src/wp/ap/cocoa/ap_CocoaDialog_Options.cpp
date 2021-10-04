@@ -226,10 +226,10 @@ void AP_CocoaDialog_Options::_controlEnable( tControl cid, bool value )
 #define DEFINE_GET_SET_BOOL(button) \
     bool     AP_CocoaDialog_Options::_gather##button(void) {    \
         UT_ASSERT(ctrl->m_checkbutton##button); \
-        return ([ctrl->m_checkbutton##button state] == NSOnState); }   \
+        return ([ctrl->m_checkbutton##button state] == NSControlStateValueOn); }   \
     void        AP_CocoaDialog_Options::_set##button(bool b) { \
         UT_ASSERT(ctrl->m_checkbutton##button); \
-        [ctrl->m_checkbutton##button setState:(b?NSOnState:NSOffState)]; }
+        [ctrl->m_checkbutton##button setState:(b?NSControlStateValueOn:NSControlStateValueOff)]; }
 
 #define DEFINE_GET_SET_BOOL_D(button) \
     bool     AP_CocoaDialog_Options::_gather##button(void) {    \
@@ -521,7 +521,7 @@ void AP_CocoaDialog_Options::_populateWindowData(void)
 
 - (IBAction)autoSaveClicked:(id)sender
 {
-	BOOL enable = (([sender state] == NSOnState) ? YES : NO);
+	BOOL enable = (([sender state] == NSControlStateValueOn) ? YES : NO);
 	[oLabel_WithExtension setEnabled:enable];
 	[oLabel_Minutes setEnabled:enable];
 	[m_textAutoSaveFilePeriod setEnabled:enable];

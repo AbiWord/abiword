@@ -26,7 +26,7 @@
 
 - (void)sendEvent:(NSEvent *)theEvent
 {
-	if ([theEvent type] == NSKeyDown) {
+	if ([theEvent type] == NSEventTypeKeyDown) {
 		[[self windowController] keyDown:theEvent];
 		return;
 	}

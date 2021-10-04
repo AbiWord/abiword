@@ -87,7 +87,7 @@ void AP_CocoaDialog_PageSetup::runModal(XAP_Frame * pFrame)
 	[pageLayout setAccessoryView:[m_ctrl view]];
 
 	while (true) {
-		if ([pageLayout runModalWithPrintInfo:printInfo] != NSOKButton) {
+		if ([pageLayout runModalWithPrintInfo:printInfo] != NSModalResponseOK) {
 			setAnswer(a_CANCEL);
 			break;
 		}

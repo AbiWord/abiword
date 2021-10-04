@@ -40,7 +40,7 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 
 - (id)initWithContentRect:(NSRect)windowFrame
 {
-	if (![super initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES])	{
+	if (![super initWithContentRect:windowFrame styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:YES])	{
 		return nil;
 	}
 	[self setBecomesKeyOnlyIfNeeded:YES];

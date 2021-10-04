@@ -47,32 +47,32 @@ struct EV_CocoaKeyEquiv
 };
 
 static struct EV_CocoaKeyEquiv KeyEquiv[] = {
-	{	AP_MENU_ID_FILE_NEW,				"n",	NSCommandKeyMask									}, // Cmd-N
-	{	AP_MENU_ID_FILE_NEW_USING_TEMPLATE,	"N",	NSCommandKeyMask									}, // Cmd-Shift-N
-	{	AP_MENU_ID_FILE_OPEN,				"o",	NSCommandKeyMask									}, // Cmd-O
-	{	AP_MENU_ID_FILE_SAVE,				"s",	NSCommandKeyMask									}, // Cmd-S
-	{	AP_MENU_ID_FILE_SAVEAS,				"S",	NSCommandKeyMask									}, // Cmd-Shift-S
-	{	AP_MENU_ID_FILE_CLOSE,				"w",	NSCommandKeyMask									}, // Cmd-W
-	{	AP_MENU_ID_FILE_PAGESETUP,			"P",	NSCommandKeyMask									}, // Cmd-Shift-P
-	{	AP_MENU_ID_FILE_PRINT,				"p",	NSCommandKeyMask									}, // Cmd-P
-	{	AP_MENU_ID_EDIT_UNDO,				"z",	NSCommandKeyMask									}, // Cmd-Z
-	{	AP_MENU_ID_EDIT_REDO,				"Z",	NSCommandKeyMask									}, // Cmd-Shift-Z
-	{	AP_MENU_ID_EDIT_CUT,				"x",	NSCommandKeyMask									}, // Cmd-X
-	{	AP_MENU_ID_EDIT_COPY,				"c",	NSCommandKeyMask									}, // Cmd-C
-	{	AP_MENU_ID_EDIT_PASTE,				"v",	NSCommandKeyMask									}, // Cmd-V
-	{	AP_MENU_ID_EDIT_PASTE_SPECIAL,		"V",	NSCommandKeyMask|NSAlternateKeyMask					}, // Cmd-Shift-Alt-V
-	{	AP_MENU_ID_EDIT_SELECTALL,			"a",	NSCommandKeyMask									}, // Cmd-A
-	{	AP_MENU_ID_EDIT_FIND,				"f",	NSCommandKeyMask									}, // Cmd-F
-	{	AP_MENU_ID_EDIT_GOTO,				"j",	NSCommandKeyMask									}, // Cmd-J
-	{	AP_MENU_ID_VIEW_RULER,				"r",	NSCommandKeyMask									}, // Cmd-R
-	{	AP_MENU_ID_FMT_FONT,				"t",	NSCommandKeyMask									}, // Cmd-T
-	{	AP_MENU_ID_FMT_BOLD,				"b",	NSCommandKeyMask									}, // Cmd-B
-	{	AP_MENU_ID_FMT_ITALIC,				"i",	NSCommandKeyMask									}, // Cmd-I
-	{	AP_MENU_ID_FMT_UNDERLINE,			"u",	NSCommandKeyMask									}, // Cmd-U
-	{	AP_MENU_ID_TOOLS_SPELL,				":",	NSCommandKeyMask									}, // Cmd-:
-	{	AP_MENU_ID_ALIGN_LEFT,				"{",	NSCommandKeyMask									}, // Cmd-{
-	{	AP_MENU_ID_ALIGN_CENTER,			"|",	NSCommandKeyMask									}, // Cmd-|
-	{	AP_MENU_ID_ALIGN_RIGHT,				"}",	NSCommandKeyMask									}, // Cmd-}
+	{	AP_MENU_ID_FILE_NEW,				"n",	NSEventModifierFlagCommand									}, // Cmd-N
+	{	AP_MENU_ID_FILE_NEW_USING_TEMPLATE,	"N",	NSEventModifierFlagCommand									}, // Cmd-Shift-N
+	{	AP_MENU_ID_FILE_OPEN,				"o",	NSEventModifierFlagCommand									}, // Cmd-O
+	{	AP_MENU_ID_FILE_SAVE,				"s",	NSEventModifierFlagCommand									}, // Cmd-S
+	{	AP_MENU_ID_FILE_SAVEAS,				"S",	NSEventModifierFlagCommand									}, // Cmd-Shift-S
+	{	AP_MENU_ID_FILE_CLOSE,				"w",	NSEventModifierFlagCommand									}, // Cmd-W
+	{	AP_MENU_ID_FILE_PAGESETUP,			"P",	NSEventModifierFlagCommand									}, // Cmd-Shift-P
+	{	AP_MENU_ID_FILE_PRINT,				"p",	NSEventModifierFlagCommand									}, // Cmd-P
+	{	AP_MENU_ID_EDIT_UNDO,				"z",	NSEventModifierFlagCommand									}, // Cmd-Z
+	{	AP_MENU_ID_EDIT_REDO,				"Z",	NSEventModifierFlagCommand									}, // Cmd-Shift-Z
+	{	AP_MENU_ID_EDIT_CUT,				"x",	NSEventModifierFlagCommand									}, // Cmd-X
+	{	AP_MENU_ID_EDIT_COPY,				"c",	NSEventModifierFlagCommand									}, // Cmd-C
+	{	AP_MENU_ID_EDIT_PASTE,				"v",	NSEventModifierFlagCommand									}, // Cmd-V
+	{	AP_MENU_ID_EDIT_PASTE_SPECIAL,		"V",	NSEventModifierFlagCommand|NSEventModifierFlagOption					}, // Cmd-Shift-Alt-V
+	{	AP_MENU_ID_EDIT_SELECTALL,			"a",	NSEventModifierFlagCommand									}, // Cmd-A
+	{	AP_MENU_ID_EDIT_FIND,				"f",	NSEventModifierFlagCommand									}, // Cmd-F
+	{	AP_MENU_ID_EDIT_GOTO,				"j",	NSEventModifierFlagCommand									}, // Cmd-J
+	{	AP_MENU_ID_VIEW_RULER,				"r",	NSEventModifierFlagCommand									}, // Cmd-R
+	{	AP_MENU_ID_FMT_FONT,				"t",	NSEventModifierFlagCommand									}, // Cmd-T
+	{	AP_MENU_ID_FMT_BOLD,				"b",	NSEventModifierFlagCommand									}, // Cmd-B
+	{	AP_MENU_ID_FMT_ITALIC,				"i",	NSEventModifierFlagCommand									}, // Cmd-I
+	{	AP_MENU_ID_FMT_UNDERLINE,			"u",	NSEventModifierFlagCommand									}, // Cmd-U
+	{	AP_MENU_ID_TOOLS_SPELL,				":",	NSEventModifierFlagCommand									}, // Cmd-:
+	{	AP_MENU_ID_ALIGN_LEFT,				"{",	NSEventModifierFlagCommand									}, // Cmd-{
+	{	AP_MENU_ID_ALIGN_CENTER,			"|",	NSEventModifierFlagCommand									}, // Cmd-|
+	{	AP_MENU_ID_ALIGN_RIGHT,				"}",	NSEventModifierFlagCommand									}, // Cmd-}
 	{	0,									0,		0													}
 };
 
@@ -123,13 +123,13 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 
 	bool bEventHandled = false;
 
-	if ([anEvent type] == NSKeyDown)
+	if ([anEvent type] == NSEventTypeKeyDown)
 	{
 		unsigned int modifierFlags = [anEvent modifierFlags];
 
-		if (modifierFlags & NSCommandKeyMask)
+		if (modifierFlags & NSEventModifierFlagCommand)
 		{
-			if ((bFrameIsActive || !keyWindow) && !(modifierFlags & (NSShiftKeyMask|NSControlKeyMask)))
+			if ((bFrameIsActive || !keyWindow) && !(modifierFlags & (NSEventModifierFlagShift|NSEventModifierFlagControl)))
 			{
 				NSString * str = [anEvent charactersIgnoringModifiers];
 				if ([str length] == 1)
@@ -142,7 +142,7 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 						switch (static_cast<char>(uc))
 						{
 						case ',': // Cmd-, (preferences)
-							if (!(modifierFlags & NSAlternateKeyMask))
+							if (!(modifierFlags & NSEventModifierFlagOption))
 							{
 								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-,)]\n"));
 								[self orderFrontPreferencesPanel:self];
@@ -151,7 +151,7 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 							break;
 
 						case '?': // Cmd-? (help)
-							if (!(modifierFlags & NSAlternateKeyMask))
+							if (!(modifierFlags & NSEventModifierFlagOption))
 							{
 								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-?)]\n"));
 								[self openContextHelp:self];
@@ -160,7 +160,7 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 							break;
 
 						case 'h': // Alt-Cmd-H (hide others)
-							if (modifierFlags & NSAlternateKeyMask)
+							if (modifierFlags & NSEventModifierFlagOption)
 							{
 								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Alt-Cmd-H)]\n"));
 								[self hideOtherApplications:self];
@@ -175,7 +175,7 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 							break;
 
 						case 'm': // Cmd-M (minimize current frame/window)
-							if (bFrameIsActive && keyWindow && !(modifierFlags & NSAlternateKeyMask))
+							if (bFrameIsActive && keyWindow && !(modifierFlags & NSEventModifierFlagOption))
 							{
 								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-M)]\n"));
 								[keyWindow miniaturize:self];
@@ -184,7 +184,7 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 							break;
 
 						case 'n': // Cmd-N (open untitled)
-							if (pController && !(modifierFlags & NSAlternateKeyMask))
+							if (pController && !(modifierFlags & NSEventModifierFlagOption))
 							{
 								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-N)]\n"));
 								[pController applicationOpenUntitledFile:self];
@@ -193,7 +193,7 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 							break;
 
 						case 'o': // Cmd-O (open file)
-							if (pController && !(modifierFlags & NSAlternateKeyMask))
+							if (pController && !(modifierFlags & NSEventModifierFlagOption))
 							{
 								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-O)]\n"));
 								[pController applicationOpenFile:self];
@@ -202,7 +202,7 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 							break;
 
 						case 'q': // Cmd-Q (quit)
-							if (!(modifierFlags & NSAlternateKeyMask))
+							if (!(modifierFlags & NSEventModifierFlagOption))
 							{
 								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-Q)]\n"));
 								[self terminate:self];
@@ -217,12 +217,12 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 				}
 			}
 
-			if (!bEventHandled && false /* m_MenuDelegate */ && bFrameIsActive)
+			if (!bEventHandled && (false) /* m_MenuDelegate */ && bFrameIsActive)
 			{
 				id  target;
 				SEL action;
 
-				if (false /* [m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action] */)
+				if ((false) /* [m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action] */)
 				{
 					[self sendAction:action to:target from:self];
 					bEventHandled = true;

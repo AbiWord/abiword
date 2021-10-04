@@ -460,7 +460,7 @@ NSColor *GR_CocoaCairoGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 	Convert a NSColor to an UT_RGBColor
 	\param c NSColor to convert
 	\retval clr destination UT_RGBColor.
-	
+
 	Handle the transparency as well.
  */
 void GR_CocoaCairoGraphics::_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr)
@@ -471,15 +471,15 @@ void GR_CocoaCairoGraphics::_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr)
 		UT_ASSERT(img);
 		NSSize size = [img size];
 		UT_DEBUGMSG(("NSColor pattern size is %f, %f\n", size.width, size.height));
-				
+
 		cairo_surface_t * surface = cairo_quartz_surface_create(CAIRO_FORMAT_ARGB32, size.width, size.height);
 		UT_DEBUGMSG(("status = %d\n", (int)cairo_surface_status(surface)));
 		CGContextRef context = cairo_quartz_surface_get_cg_context(surface);
 
-		NSGraphicsContext *gc = [NSGraphicsContext graphicsContextWithGraphicsPort:context flipped:NO]; 
-		[NSGraphicsContext saveGraphicsState]; 
+		NSGraphicsContext *gc = [NSGraphicsContext graphicsContextWithCGContext:context flipped:NO];
+		[NSGraphicsContext saveGraphicsState];
 		[NSGraphicsContext setCurrentContext:gc];
-		[img drawAtPoint:NSMakePoint(0,0) fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
+		[img drawAtPoint:NSMakePoint(0,0) fromRect:NSZeroRect operation:NSCompositingOperationCopy fraction:1.0];
 		[NSGraphicsContext restoreGraphicsState];
 
 		clr.setPattern(new GR_CairoPatternImpl(surface));
@@ -997,17 +997,17 @@ cairo_t *GR_CocoaCairoGraphics::_createCairo(NSView * view)
 	// rule of thumb: if the CGContextRef is unchanged, use it.
 	NSRect rect = [view bounds];
 	cairo_t * cr = NULL;
-	
+
 	UT_ASSERT(view);
-	
+
 	BOOL locked = [view lockFocusIfCanDraw];
 	// if it is not locked, we need to create the cairo_t anyway.
-	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-	cairo_surface_t * surface = cairo_quartz_surface_create_for_cg_context(context, 
+	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] CGContext];
+	cairo_surface_t * surface = cairo_quartz_surface_create_for_cg_context(context,
 							  rect.size.width, rect.size.height);
 	cr = cairo_create(surface);
 	cairo_surface_destroy(surface);
-	
+
 	if(locked) {
 		[view unlockFocus];
 	}

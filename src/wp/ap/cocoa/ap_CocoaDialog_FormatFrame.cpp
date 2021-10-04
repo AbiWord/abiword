@@ -203,10 +203,10 @@ void AP_CocoaDialog_FormatFrame::_populateWindowData(void)
 
 		[m_dlg setBorderColor:[NSColor colorWithCalibratedRed:bcr green:bcg blue:bcb alpha:bca]];
 
-		int bsr = getRightToggled()  ? NSOnState : NSOffState;
-		int bsl = getLeftToggled()   ? NSOnState : NSOffState;
-		int bst = getTopToggled()    ? NSOnState : NSOffState;
-		int bsb = getBottomToggled() ? NSOnState : NSOffState;
+		int bsr = getRightToggled()  ? NSControlStateValueOn : NSControlStateValueOff;
+		int bsl = getLeftToggled()   ? NSControlStateValueOn : NSControlStateValueOff;
+		int bst = getTopToggled()    ? NSControlStateValueOn : NSControlStateValueOff;
+		int bsb = getBottomToggled() ? NSControlStateValueOn : NSControlStateValueOff;
 
 		bcr = static_cast<float>(borderColorRight().m_red) / 255.0f;
 		bcg = static_cast<float>(borderColorRight().m_grn) / 255.0f;
@@ -268,7 +268,7 @@ void AP_CocoaDialog_FormatFrame::_populateWindowData(void)
 
 		[m_dlg setBackgroundColor:[NSColor colorWithCalibratedRed:bcr green:bcg blue:bcb alpha:bca]];
 
-		[m_dlg setWrapState:(getWrapping() ? NSOnState : NSOffState)];
+		[m_dlg setWrapState:(getWrapping() ? NSControlStateValueOn : NSControlStateValueOff)];
 
 		[m_dlg setPositionState:((int) positionMode())];
 
@@ -344,9 +344,9 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 		[[_positionPopUp menu] setAutoenablesItems:NO];
 
-		[[_positionPopUp itemAtIndex:0] setState:NSOffState];
-		[[_positionPopUp itemAtIndex:1] setState:NSOffState];
-		[[_positionPopUp itemAtIndex:2] setState:NSOffState];
+		[[_positionPopUp itemAtIndex:0] setState:NSControlStateValueOff];
+		[[_positionPopUp itemAtIndex:1] setState:NSControlStateValueOff];
+		[[_positionPopUp itemAtIndex:2] setState:NSControlStateValueOff];
 
 		[_rightBorderBtn setImage:[NSImage imageNamed:@"tb_LineRight"]];
 		[_topBorderBtn setImage:[NSImage imageNamed:@"tb_LineTop"]];
@@ -608,25 +608,25 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (IBAction)rightBorderAction:(id)sender
 {
-	_xap->setBorderLineStyleRight (([sender state] == NSOnState) ? LS_NORMAL : LS_OFF);
+	_xap->setBorderLineStyleRight (([sender state] == NSControlStateValueOn) ? LS_NORMAL : LS_OFF);
 	_xap->event_previewExposed();
 }
 
 - (IBAction)leftBorderAction:(id)sender
 {
-	_xap->setBorderLineStyleLeft (([sender state] == NSOnState) ? LS_NORMAL : LS_OFF);
+	_xap->setBorderLineStyleLeft (([sender state] == NSControlStateValueOn) ? LS_NORMAL : LS_OFF);
 	_xap->event_previewExposed();
 }
 
 - (IBAction)topBorderAction:(id)sender
 {
-	_xap->setBorderLineStyleTop (([sender state] == NSOnState) ? LS_NORMAL : LS_OFF);
+	_xap->setBorderLineStyleTop (([sender state] == NSControlStateValueOn) ? LS_NORMAL : LS_OFF);
 	_xap->event_previewExposed();
 }
 
 - (IBAction)bottomBorderAction:(id)sender
 {
-	_xap->setBorderLineStyleBottom (([sender state] == NSOnState) ? LS_NORMAL : LS_OFF);
+	_xap->setBorderLineStyleBottom (([sender state] == NSControlStateValueOn) ? LS_NORMAL : LS_OFF);
 	_xap->event_previewExposed();
 }
 
@@ -692,7 +692,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
-	[menuItem setState:(([menuItem tag] == m_activeMenuTag) ? NSOnState : NSOffState)];
+	[menuItem setState:(([menuItem tag] == m_activeMenuTag) ? NSControlStateValueOn : NSControlStateValueOff)];
 
 	return YES;
 }
@@ -789,7 +789,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 - (IBAction)wrapAction:(id)sender
 {
 	UT_UNUSED(sender);
-	_xap->setWrapping([_wrapSwitch state] == NSOnState);
+	_xap->setWrapping([_wrapSwitch state] == NSControlStateValueOn);
 }
 
 - (void)setPositionState:(int)state
@@ -829,7 +829,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (void)setRightBorderState:(int)state borderColor:(NSColor *)color borderThickness:(NSString *)thickness stepperValue:(float)value
 {
-	state = NSOffState;
+	state = NSControlStateValueOff;
 	[_rightBorderBtn       setState:state];
 	[_rightBorderColorWell setColor:color];
 	[_rightBorderNumber    setStringValue:thickness];
@@ -838,7 +838,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (void)setLeftBorderState:(int)state borderColor:(NSColor *)color borderThickness:(NSString *)thickness stepperValue:(float)value
 {
-	state = NSOffState;
+	state = NSControlStateValueOff;
 	[_leftBorderBtn       setState:state];
 	[_leftBorderColorWell setColor:color];
 	[_leftBorderNumber    setStringValue:thickness];
@@ -847,7 +847,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (void)setTopBorderState:(int)state borderColor:(NSColor *)color borderThickness:(NSString *)thickness stepperValue:(float)value
 {
-	state = NSOffState;
+	state = NSControlStateValueOff;
 	[_topBorderBtn       setState:state];
 	[_topBorderColorWell setColor:color];
 	[_topBorderNumber    setStringValue:thickness];
@@ -856,7 +856,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (void)setBottomBorderState:(int)state borderColor:(NSColor *)color borderThickness:(NSString *)thickness stepperValue:(float)value
 {
-	state = NSOffState;
+	state = NSControlStateValueOff;
 	[_bottomBorderBtn       setState:state];
 	[_bottomBorderColorWell setColor:color];
 	[_bottomBorderNumber    setStringValue:thickness];

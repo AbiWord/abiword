@@ -108,9 +108,9 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e, NSView *hitView)
 
 	NSEventType evtType = [e type];
 	switch (evtType) {
-	case NSLeftMouseDown:
-	case NSRightMouseDown:
-	case NSOtherMouseDown:
+	case NSEventTypeLeftMouseDown:
+	case NSEventTypeRightMouseDown:
+	case NSEventTypeOtherMouseDown:
 		switch ([e clickCount]) {
 		case 1:
 			mop = EV_EMO_SINGLECLICK;
@@ -273,13 +273,13 @@ EV_EditMouseButton EV_CocoaMouse::_convertMouseButton(int btn, bool rightBtn)
 EV_EditModifierState EV_CocoaMouse::_convertModifierState(unsigned int modifiers, bool &rightBtn)
 {
 	EV_EditModifierState ems = 0;
-	if (modifiers & NSShiftKeyMask)
+	if (modifiers & NSEventModifierFlagShift)
 		ems |= EV_EMS_SHIFT;
-	if (modifiers & NSCommandKeyMask)
+	if (modifiers & NSEventModifierFlagCommand)
 		ems |= EV_EMS_ALT;
-	if (modifiers & NSAlternateKeyMask)
+	if (modifiers & NSEventModifierFlagOption)
 		ems |= EV_EMS_CONTROL;
-	if (modifiers & NSControlKeyMask)
+	if (modifiers & NSEventModifierFlagControl)
 		rightBtn = true;
 	return ems;
 }

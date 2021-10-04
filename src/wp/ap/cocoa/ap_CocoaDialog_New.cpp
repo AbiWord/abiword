@@ -285,16 +285,16 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 	}
 	switch (selected) {
 	case NEW:
-		[_createNewBtn setState:NSOnState];
+		[_createNewBtn setState:NSControlStateValueOn];
 		[_templateList setEnabled:YES];
-		[_openBtn setState:NSOffState];
+		[_openBtn setState:NSControlStateValueOff];
 		[_documentNameData setEnabled:NO];
 		[_chooseFileBtn setEnabled:NO];
 		break;
 	case OPEN:
-		[_createNewBtn setState:NSOffState];
+		[_createNewBtn setState:NSControlStateValueOff];
 		[_templateList setEnabled:NO];
-		[_openBtn setState:NSOnState];
+		[_openBtn setState:NSControlStateValueOn];
 		[_documentNameData setEnabled:YES];
 		[_chooseFileBtn setEnabled:YES];
 		break;
@@ -306,16 +306,16 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 
 - (BOOL)existingBtnState
 {
-	return ([_openBtn state] == NSOnState);
+	return ([_openBtn state] == NSControlStateValueOn);
 }
 
 - (void)setExistingBtnState:(BOOL)state
 {
 	if (state) {
-		[_openBtn setState:NSOnState];
+		[_openBtn setState:NSControlStateValueOn];
 	}
 	else {
-		[_openBtn setState:NSOffState];
+		[_openBtn setState:NSControlStateValueOff];
 	}
 }
 
@@ -323,7 +323,7 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 {
 	NSString * path = 0;
 
-	if ([_createNewBtn state] == NSOnState) {
+	if ([_createNewBtn state] == NSControlStateValueOn) {
 		int index = [_templateList selectedRow];
 		if (index < 0) {
 			UT_DEBUGMSG(("AP_CocoaDialog_NewController -newBtnState: no template selection from list?\n"));

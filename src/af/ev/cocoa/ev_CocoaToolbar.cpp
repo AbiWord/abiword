@@ -290,7 +290,7 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 			btn = [[NSButton alloc] initWithFrame:btnFrame];
 
 		//  [btn setButtonType:NSToggleButton];
-			[btn setButtonType:NSMomentaryPushInButton];
+			[btn setButtonType:NSButtonTypeMomentaryPushIn];
 		}
 		break;
 
@@ -301,7 +301,7 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 
 			btn = [[XAP_CocoaToolbarButton alloc] initWithFrame:btnFrame];
 
-			[btn setButtonType:NSPushOnPushOffButton];
+			[btn setButtonType:NSButtonTypePushOnPushOff];
 
 			NSButtonCell * cell = (NSButtonCell *) [btn cell];
 
@@ -313,7 +313,7 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	}
 	if (btn) {
-		[btn setBezelStyle:NSRegularSquareBezelStyle];
+		[btn setBezelStyle:NSBezelStyleRegularSquare];
 		[btn setBordered:NO];
 		[btn setTag:(int)tlbrid];
 		[btn setTarget:m_target];
@@ -816,7 +816,7 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					NSButton * item = [m_wToolbar viewWithTag:tlbrid];
 					UT_ASSERT(item);
 					UT_ASSERT([item isKindOfClass:[NSButton class]]);						
-					[item setState:(bToggled?NSOnState:NSOffState)];
+					[item setState:(bToggled?NSControlStateValueOn:NSControlStateValueOff)];
 						
 					// Disable/enable toolbar item
 					[item setEnabled:(bGrayed?NO:YES)];

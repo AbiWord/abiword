@@ -239,27 +239,27 @@ void XAP_CocoaDialog_Image::setWrappingGUI()
 {
 	if(isInHdrFtr() || (getWrapping() == WRAP_INLINE))
 	{
-		[m_dlg->_textWrapInline setState:NSOnState];
+		[m_dlg->_textWrapInline setState:NSControlStateValueOn];
 		[m_dlg->_typeTextWrapMatrix setEnabled:NO];
 	}
 	else if(getWrapping() == WRAP_TEXTRIGHT)
 	{
-		[m_dlg->_textWrapRight setState:NSOnState];
+		[m_dlg->_textWrapRight setState:NSControlStateValueOn];
 		[m_dlg->_typeTextWrapMatrix setEnabled:YES];
 	}
 	else if(getWrapping() == WRAP_NONE)
 	{
-		[m_dlg->_textWrapFloat setState:NSOnState];
+		[m_dlg->_textWrapFloat setState:NSControlStateValueOn];
 		[m_dlg->_typeTextWrapMatrix setEnabled:NO];
 	}
 	else if(getWrapping() == WRAP_TEXTLEFT)
 	{
-		[m_dlg->_textWrapLeft setState:NSOnState];
+		[m_dlg->_textWrapLeft setState:NSControlStateValueOn];
 		[m_dlg->_typeTextWrapMatrix setEnabled:YES];
 	}
 	else if(getWrapping() == WRAP_TEXTBOTH)
 	{
-		[m_dlg->_textWrapBoth setState:NSOnState];
+		[m_dlg->_textWrapBoth setState:NSControlStateValueOn];
 		[m_dlg->_typeTextWrapMatrix setEnabled:YES];
 	}
 	if(isInHdrFtr())
@@ -271,11 +271,11 @@ void XAP_CocoaDialog_Image::setWrappingGUI()
 	}
 	else if(isTightWrap())
 	{
-		[m_dlg->_typeTextWrapTight setState:NSOnState];
+		[m_dlg->_typeTextWrapTight setState:NSControlStateValueOn];
 	}
 	else if(!isTightWrap())
 	{
-		[m_dlg->_typeTextWrapSquare setState:NSOnState];
+		[m_dlg->_typeTextWrapSquare setState:NSControlStateValueOn];
 	}
 }
 
@@ -286,15 +286,15 @@ void XAP_CocoaDialog_Image::setPositionToGUI()
 	{
 		if(getPositionTo() == POSITION_TO_PARAGRAPH)
 		{
-			[m_dlg->_imagePlaceNearest setState:NSOnState];
+			[m_dlg->_imagePlaceNearest setState:NSControlStateValueOn];
 		}
 		else if(getPositionTo() == POSITION_TO_COLUMN)
 		{
-			[m_dlg->_imagePlaceColumn setState:NSOnState];
+			[m_dlg->_imagePlaceColumn setState:NSControlStateValueOn];
 		}
 		else if(getPositionTo() == POSITION_TO_PAGE)
 		{
-			[m_dlg->_imagePlacePage setState:NSOnState];
+			[m_dlg->_imagePlacePage setState:NSControlStateValueOn];
 		}
 	}
 	else
@@ -403,7 +403,7 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * /*pFrame*/)
 		[_titleCell       setStringValue:[NSString stringWithUTF8String:_xap->getTitle().utf8_str()]];
 		[_descriptionCell setStringValue:[NSString stringWithUTF8String:_xap->getDescription().utf8_str()]];
 
-		[_preserveAspectBtn setState:(_xap->getPreserveAspect() ? NSOnState : NSOffState)];
+		[_preserveAspectBtn setState:(_xap->getPreserveAspect() ? NSControlStateValueOn : NSControlStateValueOff)];
 
 		[ _widthNumStepper setIntValue:1];
 		[_heightNumStepper setIntValue:1];
@@ -491,12 +491,12 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * /*pFrame*/)
 
 - (BOOL)preserveRatio
 {
-	return ([_preserveAspectBtn state] == NSOnState ? YES : NO);
+	return ([_preserveAspectBtn state] == NSControlStateValueOn ? YES : NO);
 }
 
 - (void)setPreserveRatio:(BOOL)val
 {
-	[_preserveAspectBtn setState:(val?NSOnState:NSOffState)];
+	[_preserveAspectBtn setState:(val?NSControlStateValueOn:NSControlStateValueOff)];
 }
 
 - (IBAction)wrapAction:(id)sender

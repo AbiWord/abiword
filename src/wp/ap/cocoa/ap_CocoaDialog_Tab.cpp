@@ -192,7 +192,7 @@ void AP_CocoaDialog_Tab::_setAlignment(eTabType a)
 	UT_ASSERT(w);
 
 	// tell the change routines to ignore this message
-	[w setState:NSOnState];
+	[w setState:NSControlStateValueOn];
 
 	m_current_alignment = a;
 }
@@ -217,7 +217,7 @@ void AP_CocoaDialog_Tab::_setLeader( eTabLeader a )
 	UT_ASSERT(w);
 
 	// tell the change routines to ignore this message
-	[w setState:NSOnState];
+	[w setState:NSControlStateValueOn];
 
 	m_current_leader = a;
 }

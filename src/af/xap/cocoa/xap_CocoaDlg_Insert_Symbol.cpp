@@ -322,7 +322,7 @@ static unichar s_remap[224] = {
 	LocalizeControl(oAdd,      pSS, XAP_STRING_ID_DLG_Insert);
 //	LocalizeControl(_closeBtn, pSS, XAP_STRING_ID_DLG_Close);
 
-	[oRemapGlyphs setState:NSOnState];
+	[oRemapGlyphs setState:NSControlStateValueOn];
 	m_bRemapGlyphs = YES;
 
 	[oFontFamily removeAllItems];
@@ -531,7 +531,7 @@ static unichar s_remap[224] = {
 - (IBAction)aRemapGlyphs:(id)sender
 {
 	UT_UNUSED(sender);
-	m_bRemapGlyphs = ([oRemapGlyphs state] == NSOnState) ? YES : NO;
+	m_bRemapGlyphs = ([oRemapGlyphs state] == NSControlStateValueOn) ? YES : NO;
 
 	[self recalculateSymbolWidths];
 

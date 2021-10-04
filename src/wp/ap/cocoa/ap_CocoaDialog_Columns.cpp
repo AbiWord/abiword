@@ -340,9 +340,9 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool /*bState*/)
 	[_numOfColumnData    setIntValue:num];
 	[_numOfColumnStepper setIntValue:num];
 
-	[  _oneBtn setState:((num == 1) ? NSOnState : NSOffState)];
-	[  _twoBtn setState:((num == 2) ? NSOnState : NSOffState)];
-	[_threeBtn setState:((num == 3) ? NSOnState : NSOffState)];
+	[  _oneBtn setState:((num == 1) ? NSControlStateValueOn : NSControlStateValueOff)];
+	[  _twoBtn setState:((num == 2) ? NSControlStateValueOn : NSControlStateValueOff)];
+	[_threeBtn setState:((num == 3) ? NSControlStateValueOn : NSControlStateValueOff)];
 }
 
 - (IBAction)spaceAfterColAction:(id)sender
@@ -378,12 +378,12 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool /*bState*/)
 
 - (bool)lineBetween
 {
-	return ([_lineBetweenBtn state] == NSOnState);
+	return ([_lineBetweenBtn state] == NSControlStateValueOn);
 }
 
 - (void)setLineBetween:(bool)b
 {
-	[_lineBetweenBtn setState:(b ? NSOnState : NSOffState)];
+	[_lineBetweenBtn setState:(b ? NSControlStateValueOn : NSControlStateValueOff)];
 }
 
 - (UT_uint32)columnRTLOrder
@@ -393,7 +393,7 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool /*bState*/)
 
 - (void)setColumnRTLOrder:(UT_uint32)val
 {
-	[_useRTLBtn setState:((val == 0) ? NSOffState : NSOnState)];
+	[_useRTLBtn setState:((val == 0) ? NSControlStateValueOff : NSControlStateValueOn)];
 }
 
 - (XAP_CocoaNSView *)preview

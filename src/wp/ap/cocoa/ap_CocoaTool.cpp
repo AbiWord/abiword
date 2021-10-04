@@ -226,7 +226,7 @@ static NSImage * s_findImage (NSString * filename)
 		[m_button setAction:@selector(click:)];
 
 		[m_button setToolTip:[m_tool description]];
-		[m_button setBezelStyle:NSRegularSquareBezelStyle];
+		[m_button setBezelStyle:NSBezelStyleRegularSquare];
 		[m_button setBordered:NO];
 
 		NSImage * image = nil;

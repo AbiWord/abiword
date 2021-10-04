@@ -211,7 +211,7 @@ if (m_Selection)
 - (IBAction)aOK:(id)sender
 {
 	UT_UNUSED(sender);
-	m_bApplyToDocument = ([_documentDefaultBtn state] == NSOnState) ? YES : NO;
+	m_bApplyToDocument = ([_documentDefaultBtn state] == NSControlStateValueOn) ? YES : NO;
 
 	[NSApp stopModal];
 }

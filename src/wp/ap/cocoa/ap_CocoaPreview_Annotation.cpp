@@ -95,8 +95,8 @@ void  AP_CocoaPreview_Annotation::_constructWindow(void)
 	NSPoint pt = [NSEvent mouseLocation];
 	NSRect rect = NSMakeRect(pt.x, pt.y, m_width, m_height);
 	
-	m_pPreviewWindow = [[NSWindow alloc] initWithContentRect:rect styleMask:NSBorderlessWindowMask
-	                    backing:NSBackingStoreRetained defer:NO];
+	m_pPreviewWindow = [[NSWindow alloc] initWithContentRect:rect styleMask:NSWindowStyleMaskBorderless
+	                    backing:NSBackingStoreBuffered defer:NO];
 	
 	m_pDrawingArea = [[XAP_CocoaNSView alloc] initWith:NULL andFrame:[m_pPreviewWindow contentRectForFrameRect:rect]];
 	

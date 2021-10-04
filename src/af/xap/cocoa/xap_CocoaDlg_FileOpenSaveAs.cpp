@@ -481,7 +481,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 			  URLByAppendingPathComponent:szPersistFile]];
 			result = [openPanel runModal];
 
-			result = (result == NSOKButton) ? NSFileHandlingPanelOKButton : NSFileHandlingPanelCancelButton;
+			result = (result == NSModalResponseOK) ? NSModalResponseOK : NSModalResponseCancel;
 		} else {
 			if ([m_fileTypes count]) {
 				NSString * type = (NSString *) [m_fileTypes objectAtIndex:0];
@@ -524,7 +524,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 
 	szPersistFile = [m_panel URL].path;
 
-	if ((result == NSFileHandlingPanelOKButton) && szPersistFile) {
+	if ((result == NSModalResponseOK) && szPersistFile) {
 		m_finalPathname = [szPersistFile UTF8String];
 		m_answer = a_OK;
 	}

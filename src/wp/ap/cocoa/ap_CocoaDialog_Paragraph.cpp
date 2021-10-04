@@ -177,13 +177,13 @@ void AP_CocoaDialog_Paragraph::event_CheckToggled(id sender)
 	tCheckState cs = check_FALSE;
 
 	switch (state) {
-	case NSOnState:
+	case NSControlStateValueOn:
 		cs = check_TRUE;
 		break;
-	case NSOffState:
+	case NSControlStateValueOff:
 		cs = check_FALSE;
 		break;
-	case NSMixedState:
+	case NSControlStateValueMixed:
 		cs = check_INDETERMINATE;
 		break;
 	default:
@@ -341,11 +341,11 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 {
 	switch (x) {
 	case check_FALSE:
-		return NSOffState;
+		return NSControlStateValueOff;
 	case check_TRUE:
-		return NSOnState;
+		return NSControlStateValueOn;
 	case check_INDETERMINATE:
-		return NSMixedState;
+		return NSControlStateValueMixed;
 	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return 0;

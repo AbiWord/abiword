@@ -294,7 +294,7 @@ void XAP_CocoaDialog_HTMLOptions::event_Cancel ()
 	default:
 		UT_ASSERT_NOT_REACHED();
 	}
-	[ctrl setState:(value?NSOnState:NSOffState)];
+	[ctrl setState:(value?NSControlStateValueOn:NSControlStateValueOff)];
 }
 
 
@@ -352,7 +352,7 @@ void XAP_CocoaDialog_HTMLOptions::event_Cancel ()
 	default:
 		UT_ASSERT_NOT_REACHED();
 	}
-	return ([ctrl state] == NSOnState?true:false);
+	return ([ctrl state] == NSControlStateValueOn?true:false);
 }
 
 

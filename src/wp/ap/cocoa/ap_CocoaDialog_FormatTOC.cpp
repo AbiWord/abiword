@@ -230,7 +230,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 		 */
 		std::string sVal = _xap->getTOCPropVal("toc-has-heading");
 		BOOL bHasHeading = (sVal == "1") ? YES : NO;
-		[    _hasHeadingBtn setState:(bHasHeading ? NSOnState : NSOffState)];
+		[    _hasHeadingBtn setState:(bHasHeading ? NSControlStateValueOn : NSControlStateValueOff)];
 
 		[_headingTextData setEnabled:bHasHeading];
 		[_headingStyleBtn setEnabled:bHasHeading];
@@ -252,7 +252,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 		 */
 		std::string sVal = _xap->getTOCPropVal("toc-has-label", _xap->getMainLevel());
 		BOOL bHasLabel = (sVal == "1") ? YES : NO;
-		[      _hasLabelBtn setState:(bHasLabel ? NSOnState : NSOffState)];
+		[      _hasLabelBtn setState:(bHasLabel ? NSControlStateValueOn : NSControlStateValueOff)];
 
 		[    _fillStyleData setEnabled:bHasLabel];
 		[ _displayStyleData setEnabled:bHasLabel];
@@ -296,7 +296,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 		sVal = _xap->getTOCPropVal("toc-label-inherits", _xap->getDetailsLevel());
 		BOOL bInherits = (sVal == "1") ? YES : NO;
-		[ _inheritLabelBtn setState:(bInherits ? NSOnState : NSOffState)];
+		[ _inheritLabelBtn setState:(bInherits ? NSControlStateValueOn : NSControlStateValueOff)];
 
 		/* Tabs & Page Nos
 		 */
@@ -428,7 +428,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 		sTOCProp  = "toc-has-label";
 		sTOCProp += sLevelNo;
-		if ([_hasLabelBtn state] == NSOnState)
+		if ([_hasLabelBtn state] == NSControlStateValueOn)
 			sVal = "1";
 		else
 			sVal = "0";
@@ -477,7 +477,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 		sTOCProp  = "toc-label-inherits";
 		sTOCProp += sLevelNo;
-		if ([ _inheritLabelBtn state] == NSOnState)
+		if ([ _inheritLabelBtn state] == NSControlStateValueOn)
 			sVal = "1";
 		else
 			sVal = "0";
@@ -525,7 +525,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 	std::string sVal;
 
 	sTOCProp = "toc-has-heading";
-	if ([_hasHeadingBtn state] == NSOnState)
+	if ([_hasHeadingBtn state] == NSControlStateValueOn)
 		sVal = "1";
 	else
 		sVal = "0";

@@ -48,7 +48,7 @@ static float s_ToolbarHeight = 0.0;
 
 
 XAP_CocoaWindow::XAP_CocoaWindow (WindowStyle ws, const NSRect & frameRect) :
-	m_styleMask(NSBorderlessWindowMask),
+	m_styleMask(NSWindowStyleMaskBorderless),
 	m_backingType(NSBackingStoreBuffered),
 	m_controller(0),
 	m_window(0),
@@ -65,7 +65,7 @@ XAP_CocoaWindow::XAP_CocoaWindow (WindowStyle ws, const NSRect & frameRect) :
 }
 
 XAP_CocoaWindow::XAP_CocoaWindow () :
-	m_styleMask(NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask),
+	m_styleMask(NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable),
 	m_backingType(NSBackingStoreBuffered),
 	m_controller(0),
 	m_window(0),
@@ -88,7 +88,7 @@ XAP_CocoaWindow::XAP_CocoaWindow () :
 }
 
 XAP_CocoaWindow::XAP_CocoaWindow (float height) :
-	m_styleMask(NSBorderlessWindowMask),
+	m_styleMask(NSWindowStyleMaskBorderless),
 	m_backingType(NSBackingStoreBuffered),
 	m_controller(0),
 	m_window(0),
@@ -109,12 +109,12 @@ void XAP_CocoaWindow::_init (WindowStyle ws)
 	switch (ws)
 	{
 	case ws_Raw:
-		m_styleMask = NSBorderlessWindowMask;
+		m_styleMask = NSWindowStyleMaskBorderless;
 		break;
 
 	case ws_Normal:
 	default: // ??
-		m_styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
+		m_styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
 		break;
 	}
 	m_window = [[NSWindow alloc] initWithContentRect:m_frame styleMask:m_styleMask backing:m_backingType defer:YES];

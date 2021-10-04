@@ -306,7 +306,7 @@ enum _XAP_CocoaTool_Id
 		content.size.width  = size.width;
 		content.size.height = size.height;
 
-		frame = [NSWindow frameRectForContentRect:content styleMask:(NSTitledWindowMask|NSClosableWindowMask|NSUtilityWindowMask)];
+		frame = [NSWindow frameRectForContentRect:content styleMask:(NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskUtilityWindow)];
 		frame.origin.x = current.origin.x;
 		frame.origin.y = static_cast<float>(y - static_cast<int>(frame.size.height));
 		[window setFrame:frame display:YES animate:YES];
@@ -786,7 +786,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 {
 	NSPanel * panel = (NSPanel *) [self window];
 
-	[menuItem setState:([panel isVisible] ? NSOnState : NSOffState)];
+	[menuItem setState:([panel isVisible] ? NSControlStateValueOn : NSControlStateValueOff)];
 
 	return YES;
 }
@@ -982,7 +982,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		[m_PaletteView addPalette:&palette];
 
 		NSRect content = [m_PaletteView frame];
-		NSRect frame = [NSWindow frameRectForContentRect:content styleMask:(NSTitledWindowMask|NSClosableWindowMask|NSUtilityWindowMask)];
+		NSRect frame = [NSWindow frameRectForContentRect:content styleMask:(NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskUtilityWindow)];
 
 		NSRect visible_frame = [[oPanel screen] visibleFrame];
 		int x = static_cast<int>(visible_frame.size.width ) + static_cast<int>(visible_frame.origin.x);
@@ -1121,7 +1121,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
-	[menuItem setState:([oPanel isVisible] ? NSOnState : NSOffState)];
+	[menuItem setState:([oPanel isVisible] ? NSControlStateValueOn : NSControlStateValueOff)];
 
 	return YES;
 }
@@ -1329,8 +1329,8 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 	NSString * fontFamilyName = m_pCurrentFontFamily;
 
-	BOOL bBold   = ([oTB_text_bold   state] == NSOnState) ? YES : NO; // current state
-	BOOL bItalic = ([oTB_text_italic state] == NSOnState) ? YES : NO;
+	BOOL bBold   = ([oTB_text_bold   state] == NSControlStateValueOn) ? YES : NO; // current state
+	BOOL bItalic = ([oTB_text_italic state] == NSControlStateValueOn) ? YES : NO;
 
 	BOOL bSetBold   = NO;
 	BOOL bSetItalic = NO;
@@ -1366,13 +1366,13 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 	if (bBold != bSetBold)
 	{
-		[oTB_text_bold setState:(bSetBold ? NSOnState : NSOffState)];
+		[oTB_text_bold setState:(bSetBold ? NSControlStateValueOn : NSControlStateValueOff)];
 		[self aTB_click:oTB_text_bold];
 	}
 
 	if (bItalic != bSetItalic)
 	{
-		[oTB_text_italic setState:(bSetItalic ? NSOnState : NSOffState)];
+		[oTB_text_italic setState:(bSetItalic ? NSControlStateValueOn : NSControlStateValueOff)];
 		[self aTB_click:oTB_text_italic];
 	}
 
@@ -1773,7 +1773,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 			case EV_TBIT_GroupButton:
 			{
 				[m_ToolChest[i].button setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
-				[m_ToolChest[i].button setState:(EV_TIS_ShouldBeToggled(tis) ? NSOnState : NSOffState)];
+				[m_ToolChest[i].button setState:(EV_TIS_ShouldBeToggled(tis) ? NSControlStateValueOn : NSControlStateValueOff)];
 			}
 			break;
 
@@ -1994,7 +1994,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 		if (pFView->queryCharFormat("color", szColorValue, bExplicitlyDefined, bMixedSelection))
 		{
-			[oSwitch_FG setState:(bExplicitlyDefined ? NSOnState : NSOffState)];
+			[oSwitch_FG setState:(bExplicitlyDefined ? NSControlStateValueOn : NSControlStateValueOff)];
 
 			UT_HashColor hash;
 
@@ -2021,7 +2021,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		}
 		if (pFView->queryCharFormat("bgcolor", szColorValue, bExplicitlyDefined, bMixedSelection))
 		{
-			[oSwitch_BG setState:(bExplicitlyDefined ? NSOnState : NSOffState)];
+			[oSwitch_BG setState:(bExplicitlyDefined ? NSControlStateValueOn : NSControlStateValueOff)];
 
 			if (strcmp (szColorValue.utf8_str(), "transparent") == 0)
 			{
@@ -2258,8 +2258,8 @@ static XAP_CocoaToolPalette * s_instance = nil;
 	}
 	/* We have a font family name but we need to choose a particular member of the font...
 	 */
-	BOOL bBold   = ([oTB_text_bold   state] == NSOnState) ? YES : NO;
-	BOOL bItalic = ([oTB_text_italic state] == NSOnState) ? YES : NO;
+	BOOL bBold   = ([oTB_text_bold   state] == NSControlStateValueOn) ? YES : NO;
+	BOOL bItalic = ([oTB_text_italic state] == NSControlStateValueOn) ? YES : NO;
 
 	if (bBold && bItalic)
 	{

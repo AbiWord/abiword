@@ -34,7 +34,7 @@ const IE_SuffixConfidence *IE_ImpGraphicCocoa_Sniffer::getSuffixConfidence()
 {
     static IE_SuffixConfidence *suffixConfidence = NULL;
     int idx = 0;
-    NSArray *fileTypes = [NSImage imageFileTypes];
+    NSArray *fileTypes = [NSImage imageTypes];
 
     suffixConfidence = new IE_SuffixConfidence[[fileTypes count] + 1];
 
@@ -137,10 +137,10 @@ UT_Error IE_ImpGraphic_Cocoa::convertGraphic(const UT_ConstByteBufPtr & pBB,
 
 static NSData* convertImageToPNG(NSImage* image)
 {
-	NSDictionary* props = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], 
+	NSDictionary* props = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO],
 							NSImageInterlaced, nil];
 	NSBitmapImageRep* rep = [NSBitmapImageRep imageRepWithData:[image TIFFRepresentation]];
-	return [rep representationUsingType:NSPNGFileType properties:props];
+	return [rep representationUsingType:NSBitmapImageFileTypePNG properties:props];
 }
 
 static NSData* convertImageDataToPNG(NSData* data) 

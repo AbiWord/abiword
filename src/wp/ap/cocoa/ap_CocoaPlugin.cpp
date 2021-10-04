@@ -236,7 +236,7 @@ static EV_Menu_ItemState s_GetMenuItemState_Fn (AV_View * /*pView*/, XAP_Menu_Id
 		if ([menuItem isEnabled] == NO) {
 			_state |= EV_MIS_Gray;		//	= 0x01,		/* item is or should be gray */
 		}
-		if ([menuItem state] == NSOnState) {
+		if ([menuItem state] == NSControlStateValueOn) {
 			_state |= EV_MIS_Toggled;	//	= 0x02,		/* checkable item should be checked */
 		}
 	}
@@ -284,7 +284,7 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 		m_Tag = 0;
 
-		m_State = NSOffState;
+		m_State = NSControlStateValueOff;
 		m_Enabled = YES;
 
 		m_pAction = 0;
@@ -382,7 +382,7 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 - (void)setState:(int)state
 {
-	m_State = (state == NSOnState) ? NSOnState : NSOffState;
+	m_State = (state == NSControlStateValueOn) ? NSControlStateValueOn : NSControlStateValueOff;
 }
 
 - (int)state
