@@ -243,7 +243,7 @@ void XAP_DialogFactory::releaseDialog(XAP_Dialog * pDialog)
 	UT_return_if_fail(pDialog);
 	XAP_Dialog_Id id = pDialog->getDialogId();
 	
-	UT_sint32 index;
+	UT_sint32 index = 0;
 	_findDialogInTable(id,&index);
 
 	switch (m_vec_dlg_table.getNthItem(index)->m_type)
