@@ -1253,7 +1253,7 @@ void XAP_EncodingManager::initialize()
 	*enc = getNativeEncodingName();
 	
 	// UCS-2 Encoding Names
-	static const char * (szUCS2BENames[]) = {
+	static const char * szUCS2BENames[] = {
 		"UTF-16BE",			// superset
 		"UTF-16-BE",		// my guess		
 		"UCS-2BE",			// preferred
@@ -1261,7 +1261,7 @@ void XAP_EncodingManager::initialize()
 		"UNICODEBIG",		// older glibc
 		"UNICODE-1-1",		// in libiconv source
 		nullptr };
-	static const char * (szUCS2LENames[]) = {
+	static const char * szUCS2LENames[] = {
 		"UTF-16LE",			// superset
 		"UTF-16-LE",		// my guess
 		"UCS-2LE",			// preferred
@@ -1270,11 +1270,11 @@ void XAP_EncodingManager::initialize()
 		nullptr };
 
 	// UCS-4 Encoding Names
-	static const char * (szUCS4BENames[]) = {
+	static const char * szUCS4BENames[] = {
 		"UCS-4BE",			// preferred
 		"UCS-4-BE",			// older libiconv (??)
 		nullptr };
-	static const char * (szUCS4LENames[]) = {
+	static const char * szUCS4LENames[] = {
 		"UCS-4LE",			// preferred
 		"UCS-4-LE",			// older libiconv (??)
 		nullptr };
