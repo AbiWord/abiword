@@ -611,7 +611,7 @@ fl_AnnotationLayout::fl_AnnotationLayout(FL_DocLayout* pLayout,
 fl_AnnotationLayout::~fl_AnnotationLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("Deleting Annotationlayout %p \n",this));
+	UT_DEBUGMSG(("Deleting Annotationlayout %p \n", (void*)this));
 	_purgeLayout();
 	fp_AnnotationContainer * pAC = static_cast<fp_AnnotationContainer *>(getFirstContainer());
 	while(pAC)
@@ -736,7 +736,7 @@ void fl_AnnotationLayout::_insertAnnotationContainer(fp_Container * pNewAC)
 
 void fl_AnnotationLayout::format(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Formatting Annotations first container is %p\n", getFirstContainer()));
+	UT_DEBUGMSG(("SEVIOR: Formatting Annotations first container is %p\n", (void*)getFirstContainer()));
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer();
@@ -927,7 +927,7 @@ fl_EndnoteLayout::fl_EndnoteLayout(FL_DocLayout* pLayout,
 					 PTX_SectionEndnote),
 	  m_iEndnotePID(0)
 {
-        UT_DEBUGMSG(("Create Endnote section %p from pos %d \n",this,getPosition()));
+        UT_DEBUGMSG(("Create Endnote section %p from pos %d \n", (void*)this, getPosition()));
 	m_pLayout->addEndnote(this);
 	UT_DEBUGMSG(("myContaining Layout %s \n",myContainingLayout()->getContainerString()));
 	_createEndnoteContainer();
@@ -979,7 +979,7 @@ void fl_EndnoteLayout::_localCollapse(void)
 {
 	// ClearScreen on our Cell. One Cell per layout.
 	fp_EndnoteContainer *pFC = static_cast<fp_EndnoteContainer *>(getFirstContainer());
-	UT_DEBUGMSG(("fl_endnote: _localCollapse First Container %p \n",pFC));
+	UT_DEBUGMSG(("fl_endnote: _localCollapse First Container %p \n", (void*)pFC));
 	if (pFC)
 	{
 		pFC->clearScreen();
@@ -997,7 +997,7 @@ void fl_EndnoteLayout::_localCollapse(void)
 
 void fl_EndnoteLayout::collapse(void)
 {
-	UT_DEBUGMSG(("Collapsing  Endnote %p \n",this));
+	UT_DEBUGMSG(("Collapsing  Endnote %p \n", (void*)this));
 	_localCollapse();
 	fp_EndnoteContainer *pFC = static_cast<fp_EndnoteContainer *>(getFirstContainer());
 	while(pFC)
@@ -1024,7 +1024,7 @@ void fl_EndnoteLayout::collapse(void)
 
 void fl_EndnoteLayout::format(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Formatting Endnote first container is %p \n",getFirstContainer()));
+	UT_DEBUGMSG(("SEVIOR: Formatting Endnote first container is %p \n", (void*)getFirstContainer()));
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer();

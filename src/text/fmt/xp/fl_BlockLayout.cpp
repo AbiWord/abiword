@@ -1690,7 +1690,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
 			pTRun->printText();
 		}
-		UT_DEBUGMSG(("update offsets!!!!--- Run %p offset %d Type %d \n",pRun,pRun->getBlockOffset(),pRun->getType()));
+		UT_DEBUGMSG(("update offsets!!!!--- Run %p offset %d Type %d \n", (void*)pRun, pRun->getBlockOffset(), pRun->getType()));
 		pRun = pRun->getNextRun();
 	}
 #endif
@@ -5719,7 +5719,7 @@ bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 	if(getPrev()!= NULL && getPrev()->getLastContainer()==NULL)
 	{
 		UT_DEBUGMSG(("In fl_BlockLayout::_doInsertForcedPageBreakRun  no LastLine \n"));
-		UT_DEBUGMSG(("getPrev = %p this = %p \n",getPrev(),this));
+		UT_DEBUGMSG(("getPrev = %p this = %p \n", (void*)getPrev(), (void*)this));
 		//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
@@ -7973,7 +7973,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 			}
 			if (!pFrame || (pFramePage > pLinePage) || (pFrameY > pLineY) || (pFrameX > pLineX))
 			{
-				UT_DEBUGMSG(("Frame %p associated to block %p (2nd)\n",pFL,pNewBL));
+				UT_DEBUGMSG(("Frame %p associated to block %p (2nd)\n", (void*)pFL, (void*)pNewBL));
 				removeFrame(pFL);
 				pNewBL->addFrame(pFL);
 				if((pFL->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK) && 
@@ -8014,7 +8014,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 			}
 			else
 			{
-				UT_DEBUGMSG(("Frame %p associated to block %p (1st)\n",pFL,this));
+				UT_DEBUGMSG(("Frame %p associated to block %p (1st)\n", (void*)pFL, (void*)this));
 				//Frame stays in first block. Need to change the PieceTable
 				if(!m_pDoc->isDoingTheDo())
 				{
@@ -8191,7 +8191,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	fl_SectionLayout* pSL = NULL;
 	const gchar* pszNewID = NULL;
 
-	UT_DEBUGMSG(("Insert section at pos %d sdh of section =%p sdh of block =%p \n",getPosition(true),sdh,getStruxDocHandle()));
+	UT_DEBUGMSG(("Insert section at pos %d sdh of section =%p sdh of block =%p \n",getPosition(true), (void*)sdh, (void*)getStruxDocHandle()));
 
 	switch (iType)
 	{
@@ -10326,7 +10326,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	if(bGetPrevAuto)
 	{
 		pAutoNum = m_pDoc->getListByID(id);
-		UT_DEBUGMSG(("SEVIOR: found autonum %p from id %d \n", pAutoNum.get(), id));
+		UT_DEBUGMSG(("SEVIOR: found autonum %p from id %d \n", (void*)pAutoNum.get(), id));
 		if(pAutoNum != NULL)
 		{
 			m_pAutoNum = pAutoNum;

@@ -1924,7 +1924,7 @@ bool s_RTF_ListenerWriteDoc::populate(fl_ContainerLayout* /*sfh*/,
 				return true;
 			case PTO_Hyperlink:
 			{
-				UT_DEBUGMSG(("PTO_Hyperlink pcro:%p\n", pcro ));
+				UT_DEBUGMSG(("PTO_Hyperlink pcro:%p\n", (void*)pcro));
 				_closeSpan ();
 				const PP_AttrProp * pAP = NULL;
 				m_pDocument->getAttrProp(api,&pAP);
@@ -4241,7 +4241,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 		UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 	}
 	sProp = "table-sdh";
-	sPropVal = UT_std_string_sprintf("%p", m_Table.getTableSDH());
+	sPropVal = UT_std_string_sprintf("%p", (void*)m_Table.getTableSDH());
 	UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 	if(sTableProps.size() == 0)
 	{
@@ -5147,7 +5147,7 @@ void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
 
 void s_RTF_ListenerWriteDoc::_writeRDFAnchor(const PX_ChangeRecord_Object * pcro)
 {
-	UT_DEBUGMSG(("_writeRDFAnchor() pcro:%p\n", pcro ));
+	UT_DEBUGMSG(("_writeRDFAnchor() pcro:%p\n", (void*)pcro));
 	
 	PT_AttrPropIndex api = pcro->getIndexAP();
 	const PP_AttrProp * pAP = NULL;

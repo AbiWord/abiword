@@ -46,63 +46,63 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 #if DEBUG
 	if(pfs->getStruxType() == PTX_SectionTable)
 	{
-		UT_DEBUGMSG(("_unlink Strux Table %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux Table %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_SectionCell)
 	{
-		UT_DEBUGMSG(("_unlink Strux Cell %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux Cell %p \n", (void*)pfs));
 	}	
 	else if(pfs->getStruxType() == PTX_EndTable)
 	{
-		UT_DEBUGMSG(("_unlink Strux End Table %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux End Table %p \n", (void*)pfs));
 	}	
 	else if(pfs->getStruxType() == PTX_EndCell)
 	{
-		UT_DEBUGMSG(("_unlink Strux EndCell %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux EndCell %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_SectionFrame)
 	{
-		UT_DEBUGMSG(("_unlink Strux SectionFrame %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux SectionFrame %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_EndFrame)
 	{
-		UT_DEBUGMSG(("_unlink Strux EndFrame %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux EndFrame %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_Block)
 	{
-		UT_DEBUGMSG(("_unlink Strux Block %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux Block %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_Section)
 	{
-		UT_DEBUGMSG(("_unlink Strux Section %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux Section %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_SectionHdrFtr)
 	{
-		UT_DEBUGMSG(("_unlink HdrFtr Strux Section %p \n",pfs));
+		UT_DEBUGMSG(("_unlink HdrFtr Strux Section %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_SectionFootnote)
 	{
-		UT_DEBUGMSG(("_unlink Strux SectionFootnote %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux SectionFootnote %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_EndFootnote)
 	{
-		UT_DEBUGMSG(("_unlink Strux EndFootnote %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux EndFootnote %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_SectionEndnote)
 	{
-		UT_DEBUGMSG(("_unlink Strux SectionEndnote %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux SectionEndnote %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_EndEndnote)
 	{
-		UT_DEBUGMSG(("_unlink Strux EndEndnote %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux EndEndnote %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_SectionTOC)
 	{
-		UT_DEBUGMSG(("_unlink Strux SectionTOC %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux SectionTOC %p \n", (void*)pfs));
 	}
 	else if(pfs->getStruxType() == PTX_EndTOC)
 	{
-		UT_DEBUGMSG(("_unlink Strux EndTOC %p \n",pfs));
+		UT_DEBUGMSG(("_unlink Strux EndTOC %p \n", (void*)pfs));
 	}
 //	m_pDocument->miniDump(pfs, 2);
 #endif
@@ -701,7 +701,7 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 		}
 		else
 		{
-			UT_DEBUGMSG(("Adding strux %p of type %d at Pos %d to strux vector for delete \n",pfs,pfs->getStruxType(),pfs->getPos()));
+			UT_DEBUGMSG(("Adding strux %p of type %d at Pos %d to strux vector for delete \n", (void*)pfs, pfs->getStruxType(), pfs->getPos()));
 			posLastStrux = pfs->getPos();
 			vecFragStrux.addItem((void *) pfFrag);
 			pfFrag = pfFrag->getNext();

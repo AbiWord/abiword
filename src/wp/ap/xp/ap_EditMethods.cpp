@@ -1961,7 +1961,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	// to the caller (so g_free it when you're done with it).
 
 	UT_DEBUGMSG(("s_AskForPathname: frame %p, bSaveAs %d, suggest=[%s]\n",
-				 pFrame,bSaveAs,((pSuggestedName) ? pSuggestedName : "")));
+				 (void*)pFrame, bSaveAs, ((pSuggestedName) ? pSuggestedName : "")));
 
 	UT_return_val_if_fail (ppPathname, false);
 	*ppPathname = NULL;
@@ -2189,7 +2189,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	// to the caller (so g_free it when you're done with it).
 
 	UT_DEBUGMSG(("s_AskForGraphicPathname: frame %p\n",
-				 pFrame));
+				 (void*)pFrame));
 
 	UT_return_val_if_fail (ppPathname, false);
 	*ppPathname = NULL;
@@ -5425,7 +5425,7 @@ Defun1(selectTable)
 		return false;
 	}
 	posStartTab = pDoc->getStruxPosition(tableSDH); //was -1
-	UT_DEBUGMSG(("PosStart %d TableSDH %p \n",posStartTab,tableSDH));
+	UT_DEBUGMSG(("PosStart %d TableSDH %p \n", posStartTab, (void*)tableSDH));
 	bRes = pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
 	if(!bRes)
 	{
@@ -5433,7 +5433,7 @@ Defun1(selectTable)
 		return false;
 	}
 	posEndTab = pDoc->getStruxPosition(endTableSDH)+1; //was +1
-	UT_DEBUGMSG(("PosEndTab %d endTableSDH %p \n",posEndTab,endTableSDH));
+	UT_DEBUGMSG(("PosEndTab %d endTableSDH %p \n", posEndTab, (void*)endTableSDH));
 	pView->cmdSelect(posStartTab,posEndTab);
 	return true;
 }
@@ -14802,8 +14802,8 @@ Defun(hyperlinkStatusBar)
 	fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pView->getHyperLinkRun(pos));
 	if(!pHRun)
 		return false;
-	UT_DEBUGMSG(("hyperlinkStatusBar() pHRun:%p\n", pHRun ));
-	UT_DEBUGMSG(("hyperlinkStatusBar()  type:%d\n", (int)pHRun->getHyperlinkType() ));
+	UT_DEBUGMSG(("hyperlinkStatusBar() pHRun:%p\n", (void*)pHRun));
+	UT_DEBUGMSG(("hyperlinkStatusBar()  type:%d\n", (int)pHRun->getHyperlinkType()));
 	if(pHRun->getHyperlinkType() == HYPERLINK_NORMAL)
 	{
 			pView->cmdHyperlinkStatusBar(xpos, ypos);

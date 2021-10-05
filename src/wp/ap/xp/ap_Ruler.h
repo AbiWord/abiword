@@ -53,6 +53,7 @@ public:
 class AP_Ruler
 {
 public:
+    virtual ~AP_Ruler() {}
 	virtual void setHeight(UT_uint32 iHeight) = 0;
 	virtual void setWidth(UT_uint32 iWidth) = 0;
 	virtual GR_Graphics* getGraphics(void) const = 0;

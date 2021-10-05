@@ -144,7 +144,7 @@ static void _fatalErrorSAXFunc(void *xmlp,
 
   UT_DEBUGMSG(("%s", errorMessage.c_str()));
   UT_XML * pXML = reinterpret_cast<UT_XML *>(xmlp);
-  UT_DEBUGMSG((" userData pointer is %p \n",pXML));
+  UT_DEBUGMSG((" userData pointer is %p \n", (void*)pXML));
   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
   pXML->stop();
 

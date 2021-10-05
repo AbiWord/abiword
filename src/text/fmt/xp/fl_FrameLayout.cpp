@@ -110,7 +110,7 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 fl_FrameLayout::~fl_FrameLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("Deleting Framelayout %p \n",this));
+	UT_DEBUGMSG(("Deleting Framelayout %p \n", (void*)this));
 	_purgeLayout();
 	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
 	while(pFC)
@@ -504,7 +504,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 //
 	collapse();
 	myContainingLayout()->remove(this);
-	UT_DEBUGMSG(("Unlinking frame Layout %p \n",this));
+	UT_DEBUGMSG(("Unlinking frame Layout %p \n", (void*)this));
 //
 // Remove from the list of frames in the previous block
 //
@@ -514,7 +514,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	{
 		if(!pCL->removeFrame(this))
 		{
-			UT_DEBUGMSG(("Whoops! Frame not found in container %p\n",pCL));
+			UT_DEBUGMSG(("Whoops! Frame not found in container %p\n", (void*)pCL));
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 	}

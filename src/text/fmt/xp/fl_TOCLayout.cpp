@@ -81,7 +81,7 @@ TOCEntry::TOCEntry(fl_BlockLayout * pBlock,
 TOCEntry::~TOCEntry(void)
 {
 	m_iLevel = -1;
-	UT_DEBUGMSG(("Deleteing entry %p \n",this));
+	UT_DEBUGMSG(("Deleteing entry %p \n", (void*)this));
 }
 
 PT_DocPosition TOCEntry::getPositionInDoc(void)
@@ -150,7 +150,7 @@ fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, p
 fl_TOCLayout::~fl_TOCLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("Deleting TOClayout %p \n",this));
+	UT_DEBUGMSG(("Deleting TOClayout %p \n", (void*)this));
 	_purgeLayout();
 	fp_TOCContainer * pTC = static_cast<fp_TOCContainer *>(getFirstContainer());
 	while(pTC)
@@ -902,7 +902,7 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool /*bDontRecurs
 	//
 	// Clear it!
 	//
-	UT_DEBUGMSG(("Removing block %p Entry %p \n",pThisBL,pThisEntry));
+	UT_DEBUGMSG(("Removing block %p Entry %p \n", (void*)pThisBL, (void*)pThisEntry));
 	if(!pBlock->isContainedByTOC())
 	{
 		// we only clear if the block passed to us is not one of our TOC blocks (i.e., if we are not

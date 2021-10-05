@@ -507,7 +507,7 @@ pf_Fragments::erase(Iterator it)
 {
 	if (!it.is_valid())
 	{
-	        UT_DEBUGMSG(("Inavlid frag %p in erase \n",it.getNode()->item));
+	        UT_DEBUGMSG(("Inavlid frag %p in erase \n", (void*)it.getNode()->item));
 		return;
 	}
 	Node* pNode = it.getNode();
@@ -772,7 +772,7 @@ void pf_Fragments::verifyDoc(void) const
       UT_DEBUGMSG(("Correcting Error. New LeftTreeLength set to %d \n",iCalcLeft));
       pf->setLeftTreeLength(iCalcLeft);
     }
-    UT_DEBUGMSG(("frag %d pointer %p pos %d leftLength %d length %d PT Pos %d \n",count,pf,pos,pf->getLeftTreeLength(),pf->getLength(),pf->getPos()));
+    UT_DEBUGMSG(("frag %d pointer %p pos %d leftLength %d length %d PT Pos %d \n", count, (void*)pf, pos, pf->getLeftTreeLength(), pf->getLength(), pf->getPos()));
     UT_ASSERT(pos == pf->getPos());
     count++;
     pos += pf->getLength();
@@ -780,7 +780,7 @@ void pf_Fragments::verifyDoc(void) const
   }
   UT_ASSERT(pf && (pf->getType() ==  pf_Frag::PFT_EndOfDoc));
   UT_ASSERT(pf && (pf->getNext() == NULL));
-  UT_DEBUGMSG(("Last Frag is %p Type is %d pos is %d \n",getLast(),getLast()->getType(),getLast()->getPos()));
+  UT_DEBUGMSG(("Last Frag is %p Type is %d pos is %d \n", (void*)getLast(), getLast()->getType(), getLast()->getPos()));
 }
 
 /**

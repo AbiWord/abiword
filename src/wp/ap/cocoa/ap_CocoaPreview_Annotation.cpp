@@ -37,13 +37,13 @@ AP_CocoaPreview_Annotation::AP_CocoaPreview_Annotation(XAP_DialogFactory * pDlgF
 
 AP_CocoaPreview_Annotation::~AP_CocoaPreview_Annotation(void)
 {
-  UT_DEBUGMSG(("Preview Annotation deleted %p \n",this));
+  UT_DEBUGMSG(("Preview Annotation deleted %p \n", (void*)this));
   destroy();
 }
 
 void AP_CocoaPreview_Annotation::runModeless(XAP_Frame * pFrame)
 {
-	UT_DEBUGMSG(("Preview Annotation runModeless %p \n",this));
+	UT_DEBUGMSG(("Preview Annotation runModeless %p \n", (void*)this));
 	setActiveFrame(pFrame);
 	if(m_pPreviewWindow)
 	{

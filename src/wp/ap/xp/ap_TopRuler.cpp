@@ -104,7 +104,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_draggingCell = 0;
 	m_lidTopRuler = 0;
 	m_bIsHidden = false;
-	UT_DEBUGMSG(("Created TopRuler %p \n",this));
+	UT_DEBUGMSG(("Created TopRuler %p \n", (void*)this));
 }
 
 AP_TopRuler::~AP_TopRuler(void)
@@ -122,7 +122,7 @@ AP_TopRuler::~AP_TopRuler(void)
 	if(!m_bIsHidden)
 	{
 
-	  UT_DEBUGMSG(("AP_TopRuler::~AP_TopRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
+	  UT_DEBUGMSG(("AP_TopRuler::~AP_TopRuler (this=%p scroll=%p)\n", (void*)this, (void*)m_pScrollObj));
 
 		DELETEP(m_pScrollObj);
 		DELETEP(m_pAutoScrollTimer);
@@ -134,7 +134,7 @@ AP_TopRuler::~AP_TopRuler(void)
 	}
 	m_pView = NULL;
 	m_pG = NULL;
-	UT_DEBUGMSG(("Deleting TopRuler %p \n",this));
+	UT_DEBUGMSG(("Deleting TopRuler %p \n", (void*)this));
 }
 
 /*****************************************************************/
@@ -168,7 +168,7 @@ void AP_TopRuler::setViewHidden(AV_View *pView)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
-	UT_DEBUGMSG(("setViewHidden View is set to %p \n",pView));
+	UT_DEBUGMSG(("setViewHidden View is set to %p \n", (void*)pView));
 	m_pView = pView;
 	m_bIsHidden = true;
 }
@@ -211,7 +211,7 @@ void AP_TopRuler::setView(AV_View * pView)
 	  // from column to column.
 	  
 	     m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidTopRuler);
-	     UT_DEBUGMSG(("Ruler attached as view listener %p \n",&m_lidTopRuler));
+	     UT_DEBUGMSG(("Ruler attached as view listener %p \n", (void*)&m_lidTopRuler));
 	}
 }
 

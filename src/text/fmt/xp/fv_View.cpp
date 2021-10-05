@@ -1356,7 +1356,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos, const PP_PropertyVec
 	fl_BlockLayout * pPrevBL = pBL;
 	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ANNOTATION) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
 	{
-		UT_DEBUGMSG(("Skipping Block %p \n",pBL));
+		UT_DEBUGMSG(("Skipping Block %p \n", (void*)pBL));
 		pPrevBL = pBL;
 		pBL = pBL->getPrevBlockInDocument();
 	}
@@ -12485,7 +12485,7 @@ bool FV_View::selectAnnotation(fl_AnnotationLayout * pAL)
 		PT_DocPosition posStart = getDocument()->getStruxPosition(sdhEnd); 
 		posStart++;
 		fp_Run * pRun = getHyperLinkRun(posStart);
-		UT_DEBUGMSG(("FV_View::selectAnnotation() pRun:%p\n", pRun ));
+		UT_DEBUGMSG(("FV_View::selectAnnotation() pRun:%p\n", (void*)pRun));
 		UT_return_val_if_fail(pRun, false);
 		pRun = pRun->getNextRun();
 		while(pRun && (pRun->getType() != FPRUN_HYPERLINK))

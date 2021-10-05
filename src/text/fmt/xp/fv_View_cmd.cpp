@@ -5375,7 +5375,7 @@ UT_Error FV_View::cmdInsertPositionedGraphic(const FG_ConstGraphicPtr& pFG, UT_s
 	fl_BlockLayout * pPrevBL = pBL;
 	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
 	{
-        UT_DEBUGMSG(("Skipping Block %p \n",pBL));
+        UT_DEBUGMSG(("Skipping Block %p \n", (void*)pBL));
 		pPrevBL = pBL;
 		pBL = pBL->getPrevBlockInDocument();
 	}

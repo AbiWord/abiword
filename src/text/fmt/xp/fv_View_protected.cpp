@@ -2994,7 +2994,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 
 	if (!(*pBlock)->getBlockBuf(&pBuffer))
 	{
-		UT_DEBUGMSG(("Block %p has no associated buffer.\n", *pBlock));
+		UT_DEBUGMSG(("Block %p has no associated buffer.\n", (void*)*pBlock));
 		UT_ASSERT(0);
 	}
 
@@ -3040,8 +3040,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 					
 					if (!newBlock->getBlockBuf(&pBuffer))
 					{
-						UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n",
-									 newBlock));
+						UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n", (void*)newBlock));
 						UT_ASSERT(0);
 					}
 
@@ -3081,8 +3080,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 			newOffset = 0;
 			if (!newBlock->getBlockBuf(&pBuffer))
 			{
-				UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n",
-							 newBlock));
+				UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n", (void*)newBlock));
 				UT_ASSERT(0);
 			}
 
@@ -3164,7 +3162,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 
 	if (!(*pBlock)->getBlockBuf(&pBuffer))
 	{
-		UT_DEBUGMSG(("Block %p has no associated buffer.\n", *pBlock));
+		UT_DEBUGMSG(("Block %p has no associated buffer.\n", (void*)*pBlock));
 		// I gather we better return ???
 		UT_ASSERT_HARMLESS(0);
 		return NULL;
@@ -3200,8 +3198,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 		blockStart = 0;
 		if (!newBlock->getBlockBuf(&pBuffer))
 		{
-			UT_DEBUGMSG(("Block %p (a ->prev block) has no buffer.\n",
-						 newBlock));
+			UT_DEBUGMSG(("Block %p (a ->prev block) has no buffer.\n", (void*)newBlock));
 			UT_ASSERT_HARMLESS(0);
 			return NULL;
 		}
@@ -5623,7 +5620,7 @@ UT_Error FV_View::_deleteXMLID( const std::string& xmlid, bool bSignal, PT_DocPo
 	}
 	
 	fp_HyperlinkRun* r = _getHyperlinkInRange( range.first, range.first );
-	UT_DEBUGMSG(("_deleteXMLID() xmlid:%s r:%p\n", xmlid.c_str(), r ));
+	UT_DEBUGMSG(("_deleteXMLID() xmlid:%s r:%p\n", xmlid.c_str(), (void*)r));
 	if( !r )
  	{
 		return UT_ERROR;
@@ -6044,7 +6041,7 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 	{
 		return;
 	}
-	UT_DEBUGMSG(("view_protected: Removing HdrFtr %p \n",pHdrFtr));
+	UT_DEBUGMSG(("view_protected: Removing HdrFtr %p \n", (void*)pHdrFtr));
 //
 // Need this to remove the HdrFtr attributes in the section strux.
 //

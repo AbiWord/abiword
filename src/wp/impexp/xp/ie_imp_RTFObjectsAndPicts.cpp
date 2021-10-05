@@ -435,7 +435,7 @@ bool IE_Imp_RTF::HandlePicture()
 			case RTF_KW_picwgoal:
 				if (parameterUsed)
 				{
-					if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)) {
+					if (imageProps.sizeType == RTFProps_ImageProps::ipstNone) {
 						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
 					}
 					imageProps.wGoal = parameter;
@@ -444,21 +444,21 @@ bool IE_Imp_RTF::HandlePicture()
 			case RTF_KW_pichgoal:
 				if (parameterUsed)
 				{
-					if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)) {
+					if (imageProps.sizeType == RTFProps_ImageProps::ipstNone) {
 						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
 					}
 					imageProps.hGoal = parameter;
 				}
 				break;
 			case RTF_KW_picscalex:
-				if ((parameterUsed) && (parameter != 100))       // scale the image if one of these two keywords appear
+				if (parameterUsed && (parameter != 100))       // scale the image if one of these two keywords appear
 				{
 					imageProps.sizeType = RTFProps_ImageProps::ipstScale;
 					imageProps.scaleX = static_cast<unsigned short>(parameter);
 				}
 				break;
 			case RTF_KW_picscaley:
-				if ((parameterUsed) && (parameter != 100))
+				if (parameterUsed && (parameter != 100))
 				{
 					imageProps.sizeType = RTFProps_ImageProps::ipstScale;
 					imageProps.scaleY = static_cast<unsigned short>(parameter);

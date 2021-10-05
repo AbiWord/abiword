@@ -85,7 +85,7 @@ fp_TOCContainer::~fp_TOCContainer()
 {
 	clearCons();
 	deleteBrokenTOCs(false);
-	UT_DEBUGMSG(("SEVIOR: deleting TOC %p \n",this));
+	UT_DEBUGMSG(("SEVIOR: deleting TOC %p \n", (void*)this));
 //
 // For debugging...
 //
@@ -438,7 +438,7 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 			return NULL;
 		}
 		pBroke = new fp_TOCContainer(getSectionLayout(),this);
-		UT_DEBUGMSG(("SEVIOR:!!!!!!! First broken TOC %p \n",pBroke));
+		UT_DEBUGMSG(("SEVIOR:!!!!!!! First broken TOC %p \n", (void*)pBroke));
 		pBroke->setYBreakHere(vpos);
 		pBroke->setYBottom(fp_VerticalContainer::getHeight());
 		// leave this in!		UT_ASSERT(pBroke->getHeight());

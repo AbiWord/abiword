@@ -722,8 +722,7 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 	bool bShow     = pView->isShowRevisions();
 	bool bHiddenRevision = false;
 
-	UT_Option<std::unique_ptr<PP_RevisionAttr>> revisions(
-		std::move(std::unique_ptr<PP_RevisionAttr>(nullptr)));
+	UT_Option<std::unique_ptr<PP_RevisionAttr>> revisions(std::unique_ptr<PP_RevisionAttr>(nullptr));
 	if(getType() != FPRUN_FMTMARK && getType() != FPRUN_DUMMY && getType() != FPRUN_DIRECTIONMARKER)
 	{
 		getBlock()->getSpanAttrProp(getBlockOffset(), false, &pSpanAP, revisions, bShow, iId, bHiddenRevision);

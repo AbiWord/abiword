@@ -1255,7 +1255,7 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 				//				removeOnThisCellRow(pCell);
 				continue;
 			}
-			UT_DEBUGMSG(("writeallcellprops: pCell %d row %d left %d right %d top %d bot %d sdh %p \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
+			UT_DEBUGMSG(("writeallcellprops: pCell %d row %d left %d right %d top %d bot %d sdh %p \n", i, pCell->getRow(), pCell->getLeft(), pCell->getRight(), pCell->getTop(), pCell->getBot(), (void*)pCell->getCellSDH())); 
 		}
 		if(pCell->isMergedAbove() && (pCell->getCellSDH() != NULL))
 		{
@@ -1664,7 +1664,7 @@ void ie_imp_table::deleteRow(UT_sint32 row)
 		pf_Frag_Strux* sdhMyEnd= m_pDoc->getEndCellStruxFromCellSDH(sdhCell);
 		if((sdhMyEnd != NULL) && (sdhEndCell != sdhMyEnd))
 		{
-			UT_DEBUGMSG(("Delete extraneous endCell strux 1 sdhEndCell %p sdhMyEnd %p \n",sdhEndCell,sdhMyEnd));
+			UT_DEBUGMSG(("Delete extraneous endCell strux 1 sdhEndCell %p sdhMyEnd %p \n", (void*)sdhEndCell, (void*)sdhMyEnd));
 			m_pDoc->deleteStruxNoUpdate(sdhEndCell);
 			m_pDoc->appendStrux(PTX_Block, PP_NOPROPS);
 		}
@@ -1734,13 +1734,13 @@ void ie_imp_table::_removeAllStruxes(void)
 		pCell = m_vecCells.getNthItem(i);
 		if(pCell->getCellSDH())
 		{
-			UT_DEBUGMSG(("SEVIOR: Removing cell strux %p from PT \n",pCell->getCellSDH())); 
+			UT_DEBUGMSG(("SEVIOR: Removing cell strux %p from PT \n", (void*)pCell->getCellSDH())); 
 			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
 		}
 	}
 	if(m_tableSDH)
 	{
-		UT_DEBUGMSG(("SEVIOR: Removing table strux %p from PT \n",m_tableSDH)); 
+		UT_DEBUGMSG(("SEVIOR: Removing table strux %p from PT \n", (void*)m_tableSDH));
 		m_pDoc->deleteStruxNoUpdate(m_tableSDH);
 	}
 }
@@ -1860,7 +1860,7 @@ ie_imp_table_control::~ie_imp_table_control(void)
 			pT->writeTablePropsInDoc();
 			pT->writeAllCellPropsInDoc();
 		}			
-		UT_DEBUGMSG(("SEVIOR: Deleting table %p \n",pT));
+		UT_DEBUGMSG(("SEVIOR: Deleting table %p \n", (void*)pT));
 		delete pT;
 	}
 }
@@ -2041,7 +2041,7 @@ IE_Imp_TableHelper::IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux *
 	m_thead.clear();
 	m_tfoot.clear();
 	m_tbody.clear();
-	UT_DEBUGMSG(("TableHelper created document = %p \n",m_pDocument)); 
+	UT_DEBUGMSG(("TableHelper created document = %p \n", (void*)m_pDocument)); 
 }
 
 IE_Imp_TableHelper::~IE_Imp_TableHelper ()
@@ -2612,7 +2612,7 @@ IE_Imp_TableHelperStack::IE_Imp_TableHelperStack (void) :
 	m_max(0),
 	m_stack(nullptr)
 {
-	UT_DEBUGMSG(("TableHelperStack created document = %p \n",m_pDocument)); 
+	UT_DEBUGMSG(("TableHelperStack created document = %p \n", (void*)m_pDocument)); 
 }
 
 IE_Imp_TableHelperStack::~IE_Imp_TableHelperStack ()

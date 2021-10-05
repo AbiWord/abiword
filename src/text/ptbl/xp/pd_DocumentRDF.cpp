@@ -850,11 +850,11 @@ public:
         PD_DocumentRDF( doc ),
         m_AP(AP)
     {
-        UT_DEBUGMSG((" PD_RDFModelFromAP() this:%p\n",this));
+        UT_DEBUGMSG((" PD_RDFModelFromAP() this:%p\n", (void*)this));
     }
     virtual ~PD_RDFModelFromAP()
     {
-        UT_DEBUGMSG(("~PD_RDFModelFromAP() this:%p\n",this));
+        UT_DEBUGMSG(("~PD_RDFModelFromAP() this:%p\n", (void*)this));
         delete m_AP;
     }
     virtual const PP_AttrProp* getAP(void) override
@@ -927,7 +927,7 @@ public:
         if( !frag || !endFrag )
         {
             UT_DEBUGMSG(("updateAPList() bpos:%d epos:%d frag:%p endFrag:%p\n",
-                         m_beginPos, m_endPos, frag, endFrag ));
+                         m_beginPos, m_endPos, (void*)frag, (void*)endFrag));
             return;
         }
         
@@ -1182,7 +1182,7 @@ public:
         UT_DEBUG_ONLY_ARG(headerMsg);
 
 #ifdef DEBUG
-        UT_DEBUGMSG(("PD_RDFModelFromStartEndPos::dumpModel() doc:%p\n", m_doc));
+        UT_DEBUGMSG(("PD_RDFModelFromStartEndPos::dumpModel() doc:%p\n", (void*)m_doc));
         for( m_APList_t::iterator iter = apBegin(); iter != apEnd(); ++iter )
             apDumpModel( *iter, headerMsg );
 #endif
@@ -2702,14 +2702,14 @@ PD_RDFSemanticStylesheet::format( PD_RDFSemanticItemHandle obj, FV_View* pView, 
         rdf->addRelevantIDsForPosition( tmp, pView->getPoint() );
         if( tmp.empty() )
         {
-            UT_DEBUGMSG(("ss:format(no xmlid!) obj->name:%s\n", obj->name().c_str() ));
+            UT_DEBUGMSG(("ss:format(no xmlid!) obj->name:%s\n", obj->name().c_str()));
             return;
         }
         xmlid = *(tmp.begin());
     }
     
     UT_DEBUGMSG(("ss:format() obj->name:%s\n", obj->name().c_str() ));
-    UT_DEBUGMSG(("xmlid:%s pView:%p sheetname:%s\n", xmlid.c_str(), pView, name().c_str() ));
+    UT_DEBUGMSG(("xmlid:%s pView:%p sheetname:%s\n", xmlid.c_str(), (void*)pView, name().c_str() ));
 
     std::pair< PT_DocPosition, PT_DocPosition > p = rdf->getIDRange( xmlid );
     PT_DocPosition startpos = p.first + 1;
@@ -3005,12 +3005,12 @@ PD_DocumentRDF::PD_DocumentRDF( PD_Document* doc )
     m_indexAP( 0 ),
     m_haveSemItems( false )
 {
-    UT_DEBUGMSG(("PD_DocumentRDF() this:%p doc:%p\n",this,doc));
+    UT_DEBUGMSG(("PD_DocumentRDF() this:%p doc:%p\n", (void*)this, (void*)doc));
 }
 
 PD_DocumentRDF::~PD_DocumentRDF()
 {
-    UT_DEBUGMSG(("~PD_DocumentRDF() this:%p\n", this));
+    UT_DEBUGMSG(("~PD_DocumentRDF() this:%p\n", (void*)this));
 }
 
 std::string
@@ -3555,7 +3555,7 @@ PD_DocumentRDF::getAllIDs( std::set< std::string >& ret )
     pf_Frag *	   iter = doc->getFragFromPosition(0);
 //	pf_Frag*       last = doc->getLastFrag();
 
-    UT_DEBUGMSG(( "getAllIDs() iter starting at:%p\n", iter ));
+    UT_DEBUGMSG(("getAllIDs() iter starting at:%p\n", (void*)iter));
     
     for( ; iter; iter = iter->getNext() )
     {
@@ -4218,7 +4218,7 @@ PD_RDFModelHandle PD_DocumentRDF::getRDFForID( const std::string& xmlid )
 void PD_DocumentRDF::runMilestone2Test()
 {
 #ifdef DEBUG
-    UT_DEBUGMSG(("PD_DocumentRDF::runMilestone2Test() doc:%p\n", m_doc));
+    UT_DEBUGMSG(("PD_DocumentRDF::runMilestone2Test() doc:%p\n", (void*)m_doc));
 
     {
         PD_DocumentRDFMutationHandle m = createMutation();
@@ -4414,7 +4414,7 @@ void PD_DocumentRDF::runMilestone2Test2()
 void PD_DocumentRDF::dumpObjectMarkersFromDocument()
 {
 #ifdef DEBUG
-    UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() doc:%p\n", m_doc));
+    UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() doc:%p\n", (void*)m_doc));
     m_doc->dumpDoc("dumpObjectMarkersFromDocument", 0, 0);
 
     PD_Document*    doc = getDocument();
@@ -4500,7 +4500,7 @@ void PD_DocumentRDF::dumpModel( const std::string& headerMsg )
     UT_DEBUG_ONLY_ARG(headerMsg);
   
 #ifdef DEBUG    
-    UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() doc:%p\n", m_doc));
+    UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() doc:%p\n", (void*)m_doc));
     apDumpModel( getAP(), headerMsg );
 #endif
 }
@@ -5252,7 +5252,7 @@ PD_DocumentRDFMutation::PD_DocumentRDFMutation( PD_DocumentRDF* rdf )
     m_crRemoveAP = new PP_AttrProp();
     m_crAddAP    = new PP_AttrProp();
 
-    UT_DEBUGMSG(("PD_DocumentRDF::ctor() this:%p rdf:%p\n", this, m_rdf));
+    UT_DEBUGMSG(("PD_DocumentRDF::ctor() this:%p rdf:%p\n", (void*)this, (void*)m_rdf));
 }
 
 PD_DocumentRDFMutation::~PD_DocumentRDFMutation()
@@ -5452,7 +5452,7 @@ PD_DocumentRDFMutation::add( PD_RDFModelHandle model )
 void
 PD_DocumentRDFMutation::handleCollabEvent(const gchar** szAtts, const gchar** szProps )
 {
-    UT_DEBUGMSG(("PD_DocumentRDFMutation::handleCollabEvent (remote) rdf:%p\n", m_rdf));
+    UT_DEBUGMSG(("PD_DocumentRDFMutation::handleCollabEvent (remote) rdf:%p\n", (void*)m_rdf));
     m_handlingAbiCollabNotification = true;
 
     PP_AttrProp* addAP    = new PP_AttrProp();
@@ -5604,7 +5604,7 @@ UT_Error PD_DocumentRDFMutation::commit()
 {
     bool success = false;
     
-    UT_DEBUGMSG(("PD_DocumentRDF::commit(top1) this:%p rdf:%p\n", this, m_rdf));
+    UT_DEBUGMSG(("PD_DocumentRDF::commit(top1) this:%p rdf:%p\n", (void*)this, (void*)m_rdf));
     // UT_DEBUGMSG(("PD_DocumentRDF::commit(top2) m_rolledback:%d\n", m_rolledback));
     // UT_DEBUGMSG(("PD_DocumentRDF::commit(top3) rm.hasP:%d add.hasP:%d\n",
     //              m_crRemoveAP->hasProperties(), m_crAddAP->hasProperties()));
@@ -5625,7 +5625,7 @@ UT_Error PD_DocumentRDFMutation::commit()
     if( m_committed )
         return UT_OK;
         
-    UT_DEBUGMSG(("PD_DocumentRDF::commit(running) rdf:%p\n", m_rdf));
+    UT_DEBUGMSG(("PD_DocumentRDF::commit(running) rdf:%p\n", (void*)m_rdf));
     m_pAP->prune();
     m_pAP->markReadOnly();
     PD_Document*    doc = m_rdf->getDocument();

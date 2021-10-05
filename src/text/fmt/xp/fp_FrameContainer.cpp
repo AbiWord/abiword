@@ -73,7 +73,7 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
  */
 fp_FrameContainer::~fp_FrameContainer()
 {
-  UT_DEBUGMSG(("Delete FrameContainer %p \n",this));
+  UT_DEBUGMSG(("Delete FrameContainer %p \n", (void*)this));
 	m_pPage = NULL;
 }
 

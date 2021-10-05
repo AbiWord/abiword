@@ -815,7 +815,7 @@ void AP_CocoaApp::cacheCurrentSelection(AV_View * pView)
 
 		m_cacheSelectionView = pView;
 		UT_DEBUGMSG(("Clipboard::cacheCurrentSelection: [view %p][range %d %d]\n",
-					 pFVView,
+					 (void*)pFVView,
 					 m_cacheDocumentRangeOfSelection.m_pos1,
 					 m_cacheDocumentRangeOfSelection.m_pos2));
 		m_cacheDeferClear = false;
@@ -872,7 +872,7 @@ bool AP_CocoaApp::getCurrentSelection(const char** formatList,
 		FV_View * pFVView = static_cast<FV_View *>(m_pViewSelection);
 	
 		pFVView->getDocumentRangeOfCurrentSelection(&dr);
-		UT_DEBUGMSG(("Clipboard::getCurrentSelection: [view %p][range %d %d]\n",pFVView,dr.m_pos1,dr.m_pos2));
+		UT_DEBUGMSG(("Clipboard::getCurrentSelection: [view %p][range %d %d]\n", (void*)pFVView, dr.m_pos1, dr.m_pos2));
     }
 	
     m_selectionByteBuf.truncate(0);

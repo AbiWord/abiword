@@ -158,7 +158,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 #ifdef FMT_TEST
         m_pDocLayout = this;
 #endif
-        setLayoutIsFilling(false),
+    setLayoutIsFilling(false);
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this);
 	if (m_pRedrawUpdateTimer && !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
@@ -185,7 +185,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 
 FL_DocLayout::~FL_DocLayout()
 {
-        UT_DEBUGMSG(("Deleting DocLayout %p DocListener %p lid %d\n",this,m_pDocListener,m_lid));
+        UT_DEBUGMSG(("Deleting DocLayout %p DocListener %p lid %d\n", (void*)this, (void*)m_pDocListener, m_lid));
 
 	m_bDeletingLayout = true;
 	if (m_pPrefs)
@@ -973,7 +973,7 @@ bool FL_DocLayout::AnchoredObjectHelper(double x, double y, UT_sint32 iPage, UT_
 	fl_BlockLayout * pPrevBL = pBL;
 	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
 	{
-	    UT_DEBUGMSG(("Skipping Block %p \n",pBL));
+	    UT_DEBUGMSG(("Skipping Block %p \n", (void*)pBL));
 	    pPrevBL = pBL;
 	    pBL = pBL->getPrevBlockInDocument();
 	}
@@ -2856,7 +2856,7 @@ void FL_DocLayout::formatAll()
 
 void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 {
-  UT_DEBUGMSG(("Rebuilding DocLAyout %p doc %p \n",this,m_pDoc));
+  UT_DEBUGMSG(("Rebuilding DocLAyout %p doc %p \n", (void*)this, (void*)m_pDoc));
 	UT_ASSERT(m_pDoc);
 	if(isLayoutFilling())
 	{
@@ -2877,7 +2877,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	fl_DocSectionLayout * pDSL = pStart;
 	// add page view dimensions
 #if 1
-	UT_DEBUGMSG(("SEVIOR: Rebuild from section %p \n",pFirstDSL));
+	UT_DEBUGMSG(("SEVIOR: Rebuild from section %p \n", (void*)pFirstDSL));
 	for(UT_sint32 k=0; k< m_vecPages.getItemCount(); k++)
 	{
 		fp_Page * pPage = m_vecPages.getNthItem(k);
@@ -2909,7 +2909,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	pDSL= pStart;
 	while (pDSL)
 	{
-		UT_DEBUGMSG(("SEVIOR: Building section %p \n",pDSL));
+		UT_DEBUGMSG(("SEVIOR: Building section %p \n", (void*)pDSL));
 		pDSL->updateDocSection();
 		pDSL->clearRebuild();
 		pDSL = pDSL->getNextDocSection();
@@ -4547,7 +4547,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 	// something other than '?' if '?' ever shows up as UT_isSmartQuotableCharacter()
 	UT_UCSChar c = '?';
 	if (pgb.getLength() > offset) c = *pgb.getPointer(offset);
-	UT_DEBUGMSG(("FL_DocLayout::considerSmartQuoteCandidateAt(%p, %d)  |%c|\n", block, offset, c));
+	UT_DEBUGMSG(("FL_DocLayout::considerSmartQuoteCandidateAt(%p, %d)  |%c|\n", (void*)block, offset, c));
 
 	//  there are some operations that leave a dangling pending
 	//  smart quote, so just double check before plunging onward

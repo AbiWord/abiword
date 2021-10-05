@@ -1508,7 +1508,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bCellActive(false),
 	m_ctMoveID("")
 {
-	UT_DEBUGMSG(("New ie_imp_RTF %p \n",this));
+	UT_DEBUGMSG(("New ie_imp_RTF %p \n", (void*)this));
 	m_sImageName.clear();
 	if (!IE_Imp_RTF::keywordSorted) {
 		_initialKeywordSort();
@@ -1529,17 +1529,17 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 IE_Imp_RTF::~IE_Imp_RTF()
 {
 	// Empty the state stack
-	UT_DEBUGMSG(("In RTF destructor %p \n",this));
+	UT_DEBUGMSG(("In RTF destructor %p \n", (void*)this));
 	while (m_stateStack.getDepth() > 0)
 	{
 		RTFStateStore* pItem = NULL;
 		m_stateStack.pop((void**)(&pItem));
-		UT_DEBUGMSG(("Deleting item %p in RTF destructor \n",pItem));
+		UT_DEBUGMSG(("Deleting item %p in RTF destructor \n", (void*)pItem));
 		delete pItem;
 	}
-	UT_DEBUGMSG(("Closing pastetable In RTF destructor %p \n",this));
+	UT_DEBUGMSG(("Closing pastetable In RTF destructor %p \n", (void*)this));
 	closePastedTableIfNeeded();
-	UT_DEBUGMSG(("Deleting fonts In RTF destructor %p \n",this));
+	UT_DEBUGMSG(("Deleting fonts In RTF destructor %p \n", (void*)this));
 
 	// and the font table (can't use the macro as we allow NULLs in the vector
 	UT_sint32 size = m_fontTable.size();
@@ -1551,9 +1551,9 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	}
 
 	// and the styleName table.
-	UT_DEBUGMSG(("Deleting styles In RTF destructor %p \n",this));
+	UT_DEBUGMSG(("Deleting styles In RTF destructor %p \n", (void*)this));
 
-	UT_DEBUGMSG(("Purging In RTF destructor %p \n",this));
+	UT_DEBUGMSG(("Purging In RTF destructor %p \n", (void*)this));
 	UT_std_vector_purgeall(m_vecAbiListTable);
 	UT_std_vector_purgeall(m_hdrFtrTable);
 	UT_std_vector_purgeall(m_vecWord97Lists);
@@ -1714,7 +1714,7 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 	PT_DocPosition posEnd=0;
 	getDoc()->getBounds(true,posEnd); // clean frags!
 	pf_Frag_Strux* sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
-	UT_DEBUGMSG(("SEVIOR: Table strux sdh is %p \n",sdh));
+	UT_DEBUGMSG(("SEVIOR: Table strux sdh is %p \n", (void*)sdh));
 	getTable()->setTableSDH(sdh);
 	getTable()->OpenCell();
 	if(!bDontFlush)
@@ -2070,11 +2070,11 @@ void IE_Imp_RTF::FlushCellProps(void)
 	}
 	if(m_currentRTFState.m_cellProps.m_bVerticalMerged)
 	{
-		UT_DEBUGMSG(("Set merged above to cell %p \n",getCell()));
+		UT_DEBUGMSG(("Set merged above to cell %p \n", (void*)getCell()));
 	}
 	if(m_currentRTFState.m_cellProps.m_bHorizontalMerged)
 	{
-		UT_DEBUGMSG(("Set merged left to cell %p \n",getCell()));
+		UT_DEBUGMSG(("Set merged left to cell %p \n", (void*)getCell()));
 	}
 	getCell()->setMergeAbove( m_currentRTFState.m_cellProps.m_bVerticalMerged );
 	getCell()->setFirstVerticalMerge( m_currentRTFState.m_cellProps.m_bVerticalMergedFirst );
@@ -2176,7 +2176,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	}
 	UT_ASSERT_HARMLESS(cellx>1);
 	getTable()->setCellX(cellx);
-	UT_DEBUGMSG(("set cellx for class %p to %d \n",getCell(),cellx));
+	UT_DEBUGMSG(("set cellx for class %p to %d \n", (void*)getCell(), cellx));
 	getTable()->incCellXOnRow();
 	FlushCellProps();
 	ResetCellAttributes();
@@ -2403,7 +2403,7 @@ void IE_Imp_RTF::HandleAnnotation(void)
 		m_pDelayedFrag = m_pAnnotation->m_pInsertFrag->getNext();
 		if(!m_pDelayedFrag)
 			m_pDelayedFrag = doc->getLastFrag();
-		UT_DEBUGMSG(("Delayed Frag set to %p \n",m_pDelayedFrag));
+		UT_DEBUGMSG(("Delayed Frag set to %p \n", (void*)m_pDelayedFrag));
 		ann_attrs[2] = PT_PROPS_ATTRIBUTE_NAME;
 		UT_sint32 k = 0;
 		std::string sProperties;
@@ -6017,7 +6017,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				{
 					//
 					// date of the annotation
-					UT_DEBUGMSG(("Found annotation date %p \n",m_pAnnotation));
+					UT_DEBUGMSG(("Found annotation date %p \n", (void*)m_pAnnotation));
 					if(NULL == m_pAnnotation)
 					{
 						UT_DEBUGMSG(("found atndate without annotation"));
@@ -6033,7 +6033,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				{
 					//
 					// Annotation content
-					UT_DEBUGMSG(("Found annotation content m_pAnnotation %p \n",m_pAnnotation));
+					UT_DEBUGMSG(("Found annotation content m_pAnnotation %p \n", (void*)m_pAnnotation));
 					if(m_pAnnotation == NULL)
 					{
 						UT_DEBUGMSG(("found annotation without annotation"));
@@ -6085,7 +6085,7 @@ void IE_Imp_RTF::StartAnnotation()
 	// Start of Annotated region
 	if(m_pAnnotation == NULL)
 		m_pAnnotation = new ABI_RTF_Annotation();
-	UT_DEBUGMSG(("created m_pAnnotation %p \n",m_pAnnotation));
+	UT_DEBUGMSG(("created m_pAnnotation %p \n", (void*)m_pAnnotation));
 	m_pAnnotation->m_iAnnNumber = ABI_RTF_Annotation::newNumber();
 
 	PP_PropertyVector attr = {
@@ -6449,7 +6449,7 @@ bool IE_Imp_RTF::_appendSpan()
 							if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag, propsArray)) {
 								return false;
 							}
-							UT_DEBUGMSG(("Appending span before %p \n",m_pDelayedFrag));
+							UT_DEBUGMSG(("Appending span before %p \n", (void*)m_pDelayedFrag));
 							if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p, i- iLast)) {
 								return false;
 							}
@@ -7744,7 +7744,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 				//
 				if(bisListItem)
 				{
-					UT_DEBUGMSG(("SEVIOR: Stopping list at %p \n",sdh));
+					UT_DEBUGMSG(("SEVIOR: Stopping list at %p \n", (void*)sdh));
 					getDoc()->StopList(sdh);
 				}
 				iLoop--;
@@ -8935,7 +8935,7 @@ bool IE_Imp_RTF::ReadFontTable()
 	UT_Stack stateStack;
 	// RTF state pointers.
 	struct SFontTableState *currentState = new SFontTableState;
-	UT_DEBUGMSG(("Made new currentState -1 %p \n",currentState));
+	UT_DEBUGMSG(("Made new currentState -1 %p \n", (void*)currentState));
 	struct SFontTableState *oldState = NULL;
 	UT_sint32 i;                         // Generic loop index.
 
@@ -8967,7 +8967,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			stateStack.push(reinterpret_cast<void*>(currentState));
 			// ...allocate a new one...
 			currentState = new SFontTableState;
-			UT_DEBUGMSG(("Made new currentState -2 %p \n",currentState));
+			UT_DEBUGMSG(("Made new currentState -2 %p \n", (void*)currentState));
 			if (!currentState) {
 				UT_DEBUGMSG(("RTF: Out of memory.\n"));
 				goto IEImpRTF_ReadFontTable_ErrorExit;
@@ -8980,7 +8980,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			break;
 		case RTF_TOKEN_CLOSE_BRACE:
 			// Throw away the current state.
-			UT_DEBUGMSG(("Deleting currentState -4 %p \n",currentState));
+			UT_DEBUGMSG(("Deleting currentState -4 %p \n", (void*)currentState));
 			DELETEP(currentState);
 			// Pop an old state off the stack .
 			if (!stateStack.pop(reinterpret_cast<void**>(&currentState))) 
@@ -9180,7 +9180,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			break;
 		} // Token type switch
 	}; // while (we've finished reading the font entry).
-	UT_DEBUGMSG(("Deleting currentState -2 %p \n",currentState));
+	UT_DEBUGMSG(("Deleting currentState -2 %p \n", (void*)currentState));
 	DELETEP(currentState);
 	return true;
 
@@ -9191,11 +9191,11 @@ bool IE_Imp_RTF::ReadFontTable()
 IEImpRTF_ReadFontTable_ErrorExit:
 	UT_DEBUGMSG(("RTF: ReadFontTable: Freeing memory due to error.\n"));
 	// Delete the current state and everything on the state stack.
-	UT_DEBUGMSG(("Deleting currentState -2 %p \n",currentState));
+	UT_DEBUGMSG(("Deleting currentState -2 %p \n", (void*)currentState));
 	DELETEP(currentState);
 	while (stateStack.pop(reinterpret_cast<void**>(&currentState))) 
 	{
-		UT_DEBUGMSG(("Deleting currentState -3  %p \n",currentState));
+		UT_DEBUGMSG(("Deleting currentState -3  %p \n", (void*)currentState));
 		DELETEP(currentState);
 	}
 	return false;
@@ -10101,7 +10101,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 				std::string sPasteTableSDH;
 				std::string sProp = "table-sdh";
 				sPasteTableSDH = UT_std_string_getPropVal(sProps,sProp);
-				std::string sThisTableSDH = UT_std_string_sprintf("%p",sdhTable);
+				std::string sThisTableSDH = UT_std_string_sprintf("%p", (void*)sdhTable);
 				UT_DEBUGMSG(("sThisTableSDH %s sPasteTableSDH %s \n",sThisTableSDH.c_str(),sPasteTableSDH.c_str()));
 				bool isRow = (pView->getSelectionMode() == FV_SelectionMode_TableRow);
 				if(!isRow && pView->getSelectionMode() == FV_SelectionMode_NONE)

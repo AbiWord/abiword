@@ -136,7 +136,7 @@ bool fl_DocListener::populate(fl_ContainerLayout* sfh,
 		if(pL->getType() != PTX_Block)
 		{
 			m_pDoc->miniDump(pL->getStruxDocHandle(),8);
-			UT_DEBUGMSG(("Illegal strux is %p \n",pL->getStruxDocHandle()));
+			UT_DEBUGMSG(("Illegal strux is %p \n", (void*)pL->getStruxDocHandle()));
 		}			
 		UT_ASSERT(pL->getType() == PTX_Block);
 
@@ -144,7 +144,7 @@ bool fl_DocListener::populate(fl_ContainerLayout* sfh,
 		if(pCL->getPrev()!= NULL && pCL->getPrev()->getLastContainer()==NULL)
 		{
 			UT_DEBUGMSG(("In DocListner no LastLine in Previous Block Fixing this now \n"));
-			UT_DEBUGMSG(("getPrev = %p this = %p \n",pCL->getPrev(),pCL));
+			UT_DEBUGMSG(("getPrev = %p this = %p \n", (void*)pCL->getPrev(), (void*)pCL));
 			if( pCL->getSectionLayout()->getType() != FL_SECTION_HDRFTR)
 				pCL->getPrev()->format();
 		}
@@ -162,7 +162,7 @@ bool fl_DocListener::populate(fl_ContainerLayout* sfh,
 		if(pCL->getLastContainer()==NULL)
 		{
 			UT_DEBUGMSG(("In  DocListner no LastLine in this block fixing this now \n"));
-			UT_DEBUGMSG(("getPrev = %p this = %p \n",pCL->getPrev(),pCL));
+			UT_DEBUGMSG(("getPrev = %p this = %p \n", (void*)pCL->getPrev(), (void*)pCL));
 			if(pCL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pCL->getPrev()!= NULL)
 				pCL->format();
 			//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -228,7 +228,7 @@ bool fl_DocListener::populate(fl_ContainerLayout* sfh,
 		if(pL->getType() != PTX_Block)
 		{
 			m_pDoc->miniDump(pL->getStruxDocHandle(),8);
-			UT_DEBUGMSG(("Illegal strux is %p \n",pL->getStruxDocHandle()));
+			UT_DEBUGMSG(("Illegal strux is %p \n", (void*)pL->getStruxDocHandle()));
 			UT_return_val_if_fail((pL->getType() == PTX_Block),false);
 		}			
 		UT_ASSERT(pL->getType() == PTX_Block);
@@ -601,7 +601,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 					m_pLayout->addHdrFtrSection(pSL);
 					pDocSL->setHdrFtr(hfType, pSL);
 					*psfh = (fl_ContainerLayout*)pSL;
-					UT_DEBUGMSG(("Sevior: HeaderFooter created %p \n",pSL));
+					UT_DEBUGMSG(("Sevior: HeaderFooter created %p \n", (void*)pSL));
 					
 					m_pCurrentSL = pSL;
 				}
@@ -699,7 +699,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			if(pCL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pCL->getPrev() != NULL)
 			{
 				UT_DEBUGMSG(("In DocListner no LastLine in block append. Fixing this now \n"));
-				UT_DEBUGMSG(("getPrev = %p this = %p \n",pCL->getPrev(),pCL));
+				UT_DEBUGMSG(("getPrev = %p this = %p \n", (void*)pCL->getPrev(), (void*)pCL));
 				pCL->format();
 			}
 		}
@@ -716,7 +716,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 		UT_DEBUGMSG(("!!!!Appending Table \n"));
 		if(m_pCurrentSL->getHdrFtrLayout())
 		{
-			UT_DEBUGMSG(("Appending Table into HdrFtr %p \n",m_pCurrentSL->getHdrFtrLayout()));
+			UT_DEBUGMSG(("Appending Table into HdrFtr %p \n", (void*)m_pCurrentSL->getHdrFtrLayout()));
 		}
 		if(pCon == NULL)
 		{
@@ -817,7 +817,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 		fl_TableLayout * pTable = (fl_TableLayout *) pCon;
 		if(pTable->getHdrFtrLayout())
 		{
-			UT_DEBUGMSG(("Appending a Cell to a Table in a HDrFtr %p \n",pTable->getHdrFtrLayout()));
+			UT_DEBUGMSG(("Appending a Cell to a Table in a HDrFtr %p \n", (void*)pTable->getHdrFtrLayout()));
 		}
 		fl_ContainerLayout*	pCL = pTable->append(sdh, pcr->getIndexAP(),FL_CONTAINER_CELL);
 		xxx_UT_DEBUGMSG(("SEVIOR: Appending Cell: layout is %p \n",pCL));

@@ -233,7 +233,7 @@ Stylist_tree::Stylist_tree(PD_Document *pDoc)
 
 Stylist_tree::~Stylist_tree(void)
 {
-	UT_DEBUGMSG(("Deleteing Stylist_tree %p \n",this));
+	UT_DEBUGMSG(("Deleteing Stylist_tree %p \n", (void*)this));
 	UT_VECTOR_PURGEALL(Stylist_row *, m_vecStyleRows);
 }
 
@@ -538,12 +538,12 @@ Stylist_row::Stylist_row(void):
 	m_sRowName("")
 {
 	m_vecStyles.clear();
-	UT_DEBUGMSG(("Creating Stylist_row %p \n",this));
+	UT_DEBUGMSG(("Creating Stylist_row %p \n", (void*)this));
 }
 
 Stylist_row::~Stylist_row(void)
 {
-	UT_DEBUGMSG(("Deleteing Stylist_row %p num styles %lu\n", this, (unsigned long)m_vecStyles.size()));
+	UT_DEBUGMSG(("Deleteing Stylist_row %p num styles %lu\n", (void*)this, (unsigned long)m_vecStyles.size()));
 }
 
 void Stylist_row::addStyle(const std::string & sStyle)

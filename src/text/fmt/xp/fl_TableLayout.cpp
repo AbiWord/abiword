@@ -110,7 +110,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
 	  m_iTableWidth(0),
 	  m_dTableRelWidth(0.0)
 {
-	UT_DEBUGMSG(("Created Table Layout %p \n",this));
+	UT_DEBUGMSG(("Created Table Layout %p \n", (void*)this));
 	UT_ASSERT(pLayout);
 	m_vecColProps.clear();
 	m_vecRowProps.clear();

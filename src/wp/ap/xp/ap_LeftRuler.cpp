@@ -94,7 +94,7 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	// install top_ruler_prefs_listener as this lister for this func
 	XAP_App::getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
 	m_lidLeftRuler = 9999999;
-	UT_DEBUGMSG(("Created LeftRuler %p lid is %d \n",this,m_lidLeftRuler));
+	UT_DEBUGMSG(("Created LeftRuler %p lid is %d \n", (void*)this, m_lidLeftRuler));
 }
 
 AP_LeftRuler::~AP_LeftRuler(void)
@@ -102,7 +102,7 @@ AP_LeftRuler::~AP_LeftRuler(void)
 	if(m_pView) 
 	{
 		// don't receive anymore scroll messages
-	  UT_DEBUGMSG(("Remove scroll listener %p \n",m_pScrollObj));
+	  UT_DEBUGMSG(("Remove scroll listener %p \n", (void*)m_pScrollObj));
 		m_pView->removeScrollListener(m_pScrollObj);
 
 		// no more view messages
@@ -116,9 +116,9 @@ AP_LeftRuler::~AP_LeftRuler(void)
 	}
 	// no more prefs 
 	XAP_App::getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
-	UT_DEBUGMSG(("Deleted LeftRuler %p \n",this));
+	UT_DEBUGMSG(("Deleted LeftRuler %p \n", (void*)this));
 	m_lidLeftRuler = 0;
-	UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
+	UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", (void*)this, (void*)m_pScrollObj));
 
 	DELETEP(m_pScrollObj);
 	DELETEP(m_lfi);

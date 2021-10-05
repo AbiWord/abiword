@@ -1649,7 +1649,7 @@ bool PD_Document::repairDoc(void)
 	for(i=0; i< m_vecSuspectFrags.getItemCount(); i++)
 	{
 		pf = m_vecSuspectFrags.getNthItem(i);
-		UT_DEBUGMSG(("Suspect frag %d pointer %p \n",i,pf));
+		UT_DEBUGMSG(("Suspect frag %d pointer %p \n", i, (void*)pf));
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
 			pfs = static_cast<pf_Frag_Strux *>(pf);
@@ -2003,7 +2003,7 @@ bool PD_Document::_pruneSectionAPI(pf_Frag_Strux * pfs,const char * szHType, UT_
  */
 bool PD_Document::_removeHdrFtr(pf_Frag_Strux * pfs)
 {
-	UT_DEBUGMSG(("Removing HdrFtr %p \n",pfs));
+	UT_DEBUGMSG(("Removing HdrFtr %p \n", (void*)pfs));
 	pf_Frag * pf = NULL;
 	pf_Frag * pfNext = NULL;
 	pfNext = pfs->getNext();
@@ -3397,15 +3397,15 @@ void  PD_Document::miniDump(pf_Frag_Strux* sdh, UT_sint32 nstruxes)
 			szStrux = "Other Strux";
 		if(i< nstruxes)
 		{
-			UT_DEBUGMSG(("MiniDump Before Frag %p Type %s \n",pfs,szStrux));
+			UT_DEBUGMSG(("MiniDump Before Frag %p Type %s \n", (void*)pfs, szStrux));
 		}
 		else if(i > nstruxes)
 		{
-			UT_DEBUGMSG(("MiniDump After Frag %p Type %s \n",pfs,szStrux));
+			UT_DEBUGMSG(("MiniDump After Frag %p Type %s \n", (void*)pfs, szStrux));
 		}
 		if(pfs == static_cast<const pf_Frag_Strux *>(sdh))
 		{
-			UT_DEBUGMSG(("MiniDump Actual Frag %p Type %s \n",pfs,szStrux));
+			UT_DEBUGMSG(("MiniDump Actual Frag %p Type %s \n", (void*)pfs, szStrux));
 		}
 		const char * szLeft=NULL;
 		const char * szRight=NULL;
@@ -3422,7 +3422,7 @@ void  PD_Document::miniDump(pf_Frag_Strux* sdh, UT_sint32 nstruxes)
 		pf = pf->getNext();
 		while(pf && pf->getType() != pf_Frag::PFT_Strux)
 		{
-			UT_DEBUGMSG(("MiniDump: Other Frag %p of Type %d \n",pf,pf->getType()));
+			UT_DEBUGMSG(("MiniDump: Other Frag %p of Type %d \n", (void*)pf, pf->getType()));
 			pf = pf->getNext();
 		}
 		if(pf)
@@ -4306,7 +4306,7 @@ static void s_BindHandles(pf_Frag_Strux* sdhNew,
 	UT_return_if_fail (sfhNew);
 
 	pf_Frag_Strux * pfsNew = sdhNew;
-	UT_DEBUGMSG(("Set Format handle number %d of strux %p to format %p \n",lid,pfsNew,sfhNew));
+	UT_DEBUGMSG(("Set Format handle number %d of strux %p to format %p \n",lid, (void*)pfsNew, (void*)sfhNew));
 	pfsNew->setFmtHandle(lid,sfhNew);
 }
 
@@ -5132,7 +5132,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 	}
 
 	_dataItemPair* pPair = iter->second;
-	UT_DEBUGMSG(("Found data item name %s buf %p\n", szName, pPair->pBuf.get()));
+	UT_DEBUGMSG(("Found data item name %s buf %p\n", szName, (void*)pPair->pBuf.get()));
 
 	pByteBuf = pPair->pBuf;
 

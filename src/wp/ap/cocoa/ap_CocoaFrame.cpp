@@ -243,7 +243,7 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 	AP_CocoaTopRuler * pCocoaTopRuler = NULL;
 
 	UT_DEBUGMSG(("AP_CocoaFrame::toggleTopRuler %d, %p\n", 
-		     bRulerOn, pFrameData->m_pTopRuler));
+		     bRulerOn, (void*)pFrameData->m_pTopRuler));
 	if (bRulerOn) {
 		AP_TopRuler * pTop = pFrameData->m_pTopRuler;
 		if(pTop) {
@@ -282,7 +282,7 @@ void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
 
-	UT_DEBUGMSG(("AP_CocoaFrame::toggleLeftRuler %d, %p\n", bRulerOn, pFrameData->m_pLeftRuler));
+	UT_DEBUGMSG(("AP_CocoaFrame::toggleLeftRuler %d, %p\n", bRulerOn, (void*)pFrameData->m_pLeftRuler));
 	
 	if (bRulerOn) {
 		AP_CocoaLeftRuler* pCocoaLeftRuler;
