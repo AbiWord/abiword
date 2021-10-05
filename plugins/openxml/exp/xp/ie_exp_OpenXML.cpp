@@ -22,10 +22,10 @@
 
 
 // Class definition include
-#include <ie_exp_OpenXML.h>
+#include "ie_exp_OpenXML.h"
 
 // Abiword includes
-#include <ut_std_string.h>
+#include "ut_std_string.h"
 
 /**
  * Constructor

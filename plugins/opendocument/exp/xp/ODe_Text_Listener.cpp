@@ -37,11 +37,11 @@
 #include "ODe_Style_PageLayout.h"
 
 // AbiWord includes
-#include <pp_AttrProp.h>
-#include <ut_units.h>
-#include <fl_TOCLayout.h>
-#include <pd_DocumentRDF.h>
-#include <pd_Document.h>
+#include "pp_AttrProp.h"
+#include "ut_units.h"
+#include "fl_TOCLayout.h"
+#include "pd_DocumentRDF.h"
+#include "pd_Document.h"
 
 // External includes
 #include <stdlib.h>

@@ -31,11 +31,11 @@
 #include "ODi_Abi_Data.h"
 
 // AbiWord includes
-#include <ut_math.h>
-#include <fp_PageSize.h>
-#include <pd_Document.h>
-#include <ut_locale.h>
-#include <ut_std_string.h>
+#include "ut_math.h"
+#include "fp_PageSize.h"
+#include "pd_Document.h"
+#include "ut_locale.h"
+#include "ut_std_string.h"
 
 /**
  * 

@@ -36,9 +36,9 @@ ABI_W_NO_CONST_QUAL
 ABI_W_POP
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_xml.h>
-#include <ut_vector.h>
+#include "ut_types.h"
+#include "ut_xml.h"
+#include "ut_vector.h"
 
 // Internal classes
 class ODi_Office_Styles;

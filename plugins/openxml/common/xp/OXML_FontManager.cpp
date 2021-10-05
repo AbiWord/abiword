@@ -21,14 +21,14 @@
  */
 
 // Class definition include
-#include <OXML_FontManager.h>
+#include "OXML_FontManager.h"
 
 // Internal includes
-#include <OXML_Document.h>
-#include <OXML_Theme.h>
+#include "OXML_Document.h"
+#include "OXML_Theme.h"
 
 // AbiWord includes
-#include <ut_assert.h>
+#include "ut_assert.h"
 
 // External includes
 #include <string>

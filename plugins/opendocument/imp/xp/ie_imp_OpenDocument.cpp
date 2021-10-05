@@ -33,7 +33,7 @@
 #include "ODi_ManifestStream_ListenerState.h"
 
 // AbiWord includes
-#include <ut_types.h>
+#include "ut_types.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_DialogFactory.h"

@@ -21,20 +21,20 @@
  */
 
 // Class definition include
-#include <OXMLi_PackageManager.h>
+#include "OXMLi_PackageManager.h"
 
 // Internal includes
-#include <OXML_Types.h>
-#include <OXML_Document.h>
-#include <OXMLi_StreamListener.h>
-#include <OXMLi_ListenerState.h>
-#include <OXML_Section.h>
+#include "OXML_Types.h"
+#include "OXML_Document.h"
+#include "OXMLi_StreamListener.h"
+#include "OXMLi_ListenerState.h"
+#include "OXML_Section.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_assert.h>
-#include <ut_debugmsg.h>
-#include <ut_xml.h>
+#include "ut_types.h"
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
+#include "ut_xml.h"
 
 OXMLi_PackageManager* OXMLi_PackageManager::s_pInst = NULL;
 

@@ -24,13 +24,13 @@
 #define _OXMLI_STREAMLISTENER_H_
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_xml.h>
+#include "ut_types.h"
+#include "ut_xml.h"
 
 // Internal includes
-#include <OXMLi_Types.h>
-#include <OXMLi_ListenerState.h>
-#include <OXMLi_Namespace_Common.h>
+#include "OXMLi_Types.h"
+#include "OXMLi_ListenerState.h"
+#include "OXMLi_Namespace_Common.h"
 
 // External includes
 #include <list>

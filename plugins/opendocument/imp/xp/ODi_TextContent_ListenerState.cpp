@@ -45,9 +45,9 @@
 #include "ut_std_string.h"
 
 // AbiWord includes
-#include <ut_misc.h>
-#include <pd_Document.h>
-#include <pf_Frag_Strux.h>
+#include "ut_misc.h"
+#include "pd_Document.h"
+#include "pf_Frag_Strux.h"
 
 #include <list>
 #include <sstream>

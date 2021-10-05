@@ -30,7 +30,7 @@
 #include <string>
 
 // AbiWord includes
-#include <ut_string_class.h>
+#include "ut_string_class.h"
 
 // External includes
 ABI_W_NO_CONST_QUAL

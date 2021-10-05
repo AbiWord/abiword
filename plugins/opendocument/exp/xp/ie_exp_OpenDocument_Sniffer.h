@@ -27,7 +27,7 @@
 
 
 // AbiWord includes
-#include <ie_exp.h>
+#include "ie_exp.h"
 
 
 class IE_Exp_OpenDocument_Sniffer : public IE_ExpSniffer

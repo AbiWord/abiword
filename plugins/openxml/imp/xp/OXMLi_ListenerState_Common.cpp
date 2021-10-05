@@ -21,27 +21,27 @@
  */
 
 // Class definition include
-#include <OXMLi_ListenerState_Common.h>
+#include "OXMLi_ListenerState_Common.h"
 
 // Internal includes
-#include <OXMLi_Types.h>
-#include <OXMLi_PackageManager.h>
-#include <OXML_Document.h>
-#include <OXML_Element.h>
-#include <OXML_Element_Run.h>
-#include <OXML_Element_Text.h>
-#include <OXML_Element_Field.h>
-#include <OXML_Types.h>
-#include <OXML_Theme.h>
-#include <OXML_Style.h>
-#include <OXML_Section.h>
-#include <OXML_FontManager.h>
+#include "OXMLi_Types.h"
+#include "OXMLi_PackageManager.h"
+#include "OXML_Document.h"
+#include "OXML_Element.h"
+#include "OXML_Element_Run.h"
+#include "OXML_Element_Text.h"
+#include "OXML_Element_Field.h"
+#include "OXML_Types.h"
+#include "OXML_Theme.h"
+#include "OXML_Style.h"
+#include "OXML_Section.h"
+#include "OXML_FontManager.h"
 
 // AbiWord includes
-#include <ut_units.h>
-#include <ut_misc.h>
-#include <ut_debugmsg.h>
-#include <ut_assert.h>
+#include "ut_units.h"
+#include "ut_misc.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
 
 // External includes
 #include <cstring>

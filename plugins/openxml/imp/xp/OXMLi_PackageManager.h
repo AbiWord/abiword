@@ -24,12 +24,12 @@
 #define _OXMLI_PACKAGEMANAGER_H_
 
 // Internal includes
-#include <OXMLi_StreamListener.h>
-#include <OXML_Types.h>
-#include <OXML_Section.h>
+#include "OXMLi_StreamListener.h"
+#include "OXML_Types.h"
+#include "OXML_Section.h"
 
 // AbiWord includes
-#include <ut_types.h>
+#include "ut_types.h"
 
 // External includes
 #include <string>

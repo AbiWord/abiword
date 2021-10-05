@@ -21,12 +21,12 @@
  */
 
 // Class definition include
-#include <OXML_Element_Run.h>
+#include "OXML_Element_Run.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_misc.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_misc.h"
+#include "pd_Document.h"
 
 // External includes
 #include <string>

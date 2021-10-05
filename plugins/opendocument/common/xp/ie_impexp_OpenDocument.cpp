@@ -20,7 +20,7 @@
  * 02110-1301 USA.
  */
 
-#include <xap_Module.h>
+#include "xap_Module.h"
 
 // Internal includes
 #include "../../imp/xp/ie_imp_OpenDocument_Sniffer.h"

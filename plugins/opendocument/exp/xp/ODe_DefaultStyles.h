@@ -25,7 +25,7 @@
 #include <string>
 
 // AbiWord includes
-#include <ut_hash.h>
+#include "ut_hash.h"
 
 class ODe_Style_Style;
 

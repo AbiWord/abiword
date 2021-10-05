@@ -21,12 +21,12 @@
  */
 
 // Class definition include
-#include <OXML_Element_Bookmark.h>
+#include "OXML_Element_Bookmark.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 OXML_Element_Bookmark::OXML_Element_Bookmark(const std::string & id) : 
 	OXML_Element(id, BOOK_TAG, BOOKMRK)

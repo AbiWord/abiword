@@ -21,30 +21,30 @@
  */
 
 // Class definition include
-#include <OXMLi_StreamListener.h>
+#include "OXMLi_StreamListener.h"
 
 // Internal includes
-#include <OXMLi_Types.h>
-#include <OXMLi_ListenerState.h>
-#include <OXMLi_ListenerState_Common.h>
-#include <OXMLi_ListenerState_MainDocument.h>
-#include <OXMLi_ListenerState_Styles.h>
-#include <OXMLi_ListenerState_HdrFtr.h>
-#include <OXMLi_ListenerState_Theme.h>
-#include <OXMLi_ListenerState_DocSettings.h>
-#include <OXMLi_ListenerState_Numbering.h>
-#include <OXMLi_ListenerState_Table.h>
-#include <OXMLi_ListenerState_Field.h>
-#include <OXMLi_ListenerState_Footnote.h>
-#include <OXMLi_ListenerState_Endnote.h>
-#include <OXMLi_ListenerState_Image.h>
-#include <OXMLi_ListenerState_Textbox.h>
-#include <OXMLi_ListenerState_Valid.h>
-#include <OXMLi_ListenerState_Math.h>
+#include "OXMLi_Types.h"
+#include "OXMLi_ListenerState.h"
+#include "OXMLi_ListenerState_Common.h"
+#include "OXMLi_ListenerState_MainDocument.h"
+#include "OXMLi_ListenerState_Styles.h"
+#include "OXMLi_ListenerState_HdrFtr.h"
+#include "OXMLi_ListenerState_Theme.h"
+#include "OXMLi_ListenerState_DocSettings.h"
+#include "OXMLi_ListenerState_Numbering.h"
+#include "OXMLi_ListenerState_Table.h"
+#include "OXMLi_ListenerState_Field.h"
+#include "OXMLi_ListenerState_Footnote.h"
+#include "OXMLi_ListenerState_Endnote.h"
+#include "OXMLi_ListenerState_Image.h"
+#include "OXMLi_ListenerState_Textbox.h"
+#include "OXMLi_ListenerState_Valid.h"
+#include "OXMLi_ListenerState_Math.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_assert.h>
+#include "ut_types.h"
+#include "ut_assert.h"
 
 OXMLi_StreamListener::OXMLi_StreamListener() : 
 	m_pElemStack(new OXMLi_ElementStack()), 

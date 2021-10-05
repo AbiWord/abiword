@@ -21,16 +21,16 @@
  */
 
 // Class definition include
-#include <OXMLi_ListenerState_MainDocument.h>
+#include "OXMLi_ListenerState_MainDocument.h"
 
 // Internal includes
-#include <OXML_Types.h>
-#include <OXML_Document.h>
-#include <OXML_Section.h>
+#include "OXML_Types.h"
+#include "OXML_Document.h"
+#include "OXML_Section.h"
 
 // AbiWord includes
-#include <ut_math.h>
-#include <ut_debugmsg.h>
+#include "ut_math.h"
+#include "ut_debugmsg.h"
 
 // External includes
 #include <cstring>

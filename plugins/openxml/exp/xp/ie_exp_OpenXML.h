@@ -25,16 +25,16 @@
 #define _IE_EXP_OPENXML_H_
 
 // AbiWord includes
-#include <ie_exp.h>
-#include <ut_debugmsg.h>
-#include <ut_types.h>
-#include <ut_misc.h>
-#include <ut_assert.h>
-#include <ut_string_class.h>
-#include <pp_Property.h>
+#include "ie_exp.h"
+#include "ut_debugmsg.h"
+#include "ut_types.h"
+#include "ut_misc.h"
+#include "ut_assert.h"
+#include "ut_string_class.h"
+#include "pp_Property.h"
 
-#include <OXML_Document.h>
-#include <ie_exp_OpenXML_Listener.h>
+#include "OXML_Document.h"
+#include "ie_exp_OpenXML_Listener.h"
 
 #include <string>
 #include <map>

@@ -27,8 +27,8 @@
 #include "ODe_Styles.h"
 
 // AbiWord includes
-#include <pp_AttrProp.h>
-#include <fl_TOCLayout.h>
+#include "pp_AttrProp.h"
+#include "fl_TOCLayout.h"
 
 
 /**

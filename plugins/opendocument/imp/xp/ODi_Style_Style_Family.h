@@ -29,8 +29,8 @@
 #include "ODi_Style_Style.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string_class.h>
+#include "ut_types.h"
+#include "ut_string_class.h"
 
 // Internal classes
 class ODi_ElementStack;

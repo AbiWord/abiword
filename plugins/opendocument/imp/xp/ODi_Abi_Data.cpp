@@ -23,10 +23,10 @@
 #include "ODi_Abi_Data.h"
 
 // AbiWord includes
-#include <pd_Document.h>
-#include <pt_Types.h>
-#include <ie_impGraphic.h>
-#include <fg_GraphicRaster.h>
+#include "pd_Document.h"
+#include "pt_Types.h"
+#include "ie_impGraphic.h"
+#include "fg_GraphicRaster.h"
 #include "ie_math_convert.h"
 
 // External includes

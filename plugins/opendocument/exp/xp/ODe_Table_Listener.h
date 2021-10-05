@@ -28,8 +28,8 @@
 #include "ODe_Style_Style.h"
 
 // AbiWord includes
-#include <ut_string_class.h>
-#include <ut_vector.h>
+#include "ut_string_class.h"
+#include "ut_vector.h"
 
 // External includes
 #include <stdio.h>

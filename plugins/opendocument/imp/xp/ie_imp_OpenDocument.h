@@ -34,7 +34,7 @@
 #include "ODi_Abi_Data.h"
 
 // AbiWord inlcudes
-#include <ie_imp.h>
+#include "ie_imp.h"
 
 // External includes
 #include <gsf/gsf.h>

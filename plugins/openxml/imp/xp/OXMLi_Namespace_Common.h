@@ -24,10 +24,10 @@
 #define _OXMLI_NAMESPACE_COMMON_H_
 
 // Internal includes
-#include <OXML_Types.h>
+#include "OXML_Types.h"
 
 //abiword includes
-#include <ut_hash.h>
+#include "ut_hash.h"
 
 
 //defines

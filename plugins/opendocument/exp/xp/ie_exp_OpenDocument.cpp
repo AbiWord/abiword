@@ -41,10 +41,10 @@
 #include "ODe_SettingsWriter.h"
 
 // Abiword includes
-#include <ut_assert.h>
-#include <ut_locale.h>
-#include <pd_Document.h>
-#include <pd_DocumentRDF.h>
+#include "ut_assert.h"
+#include "ut_locale.h"
+#include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "ie_exp_DocRangeListener.h"
 #include "pl_ListenerCoupleCloser.h"
 

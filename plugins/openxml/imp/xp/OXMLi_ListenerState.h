@@ -24,11 +24,11 @@
 #define _OXMLI_LISTENERSTATE_H_
 
 // Internal includes
-#include <OXMLi_Types.h>
-#include <OXMLi_StreamListener.h>
+#include "OXMLi_Types.h"
+#include "OXMLi_StreamListener.h"
 
 // AbiWord includes
-#include <ut_types.h>
+#include "ut_types.h"
 
 // External includes
 #include <stack>

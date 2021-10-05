@@ -21,14 +21,14 @@
  */
 
 // Class definition include
-#include <OXMLi_ListenerState_Textbox.h>
+#include "OXMLi_ListenerState_Textbox.h"
 
 // Internal includes
-#include <OXML_Document.h>
+#include "OXML_Document.h"
 
 // AbiWord includes
-#include <ut_assert.h>
-#include <ut_misc.h>
+#include "ut_assert.h"
+#include "ut_misc.h"
 
 // External includes
 #include <string>

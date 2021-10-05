@@ -33,7 +33,7 @@ ABI_W_NO_DEPRECATED
 ABI_W_POP
 
 // AbiWord includes
-#include <ut_types.h>
+#include "ut_types.h"
 
 #include <stdio.h>
 

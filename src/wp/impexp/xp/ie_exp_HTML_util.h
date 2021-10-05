@@ -33,14 +33,14 @@ ABI_W_NO_DEPRECATED
 ABI_W_POP
 
 // Abiword includes
-#include <ie_TOC.h>
-#include <ie_Table.h>
-#include <pd_Document.h>
-#include <ut_go_file.h>
-#include <ut_string_class.h>
-#include <ut_types.h>
-#include <ut_debugmsg.h>
-#include <ut_base64.h>
+#include "ie_TOC.h"
+#include "ie_Table.h"
+#include "pd_Document.h"
+#include "ut_go_file.h"
+#include "ut_string_class.h"
+#include "ut_types.h"
+#include "ut_debugmsg.h"
+#include "ut_base64.h"
 
 #define MYEOL "\n"
 #define FILES_DIR_NAME "_files"

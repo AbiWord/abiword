@@ -30,7 +30,7 @@
 #include "ODi_ListenerStateAction.h"
 
 // AbiWord includes
-#include <pd_Document.h>
+#include "pd_Document.h"
 
 
 /**

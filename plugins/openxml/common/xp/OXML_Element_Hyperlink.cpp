@@ -21,12 +21,12 @@
  */
 
 // Class definition include
-#include <OXML_Element_Hyperlink.h>
+#include "OXML_Element_Hyperlink.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 OXML_Element_Hyperlink::OXML_Element_Hyperlink(const std::string & id) : 
 	OXML_Element(id, HYPR_TAG, HYPRLNK)

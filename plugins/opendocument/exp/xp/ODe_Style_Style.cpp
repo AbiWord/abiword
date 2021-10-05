@@ -29,10 +29,10 @@
 #include "ODe_Common.h"
 
 // AbiWord includes
-#include <pp_AttrProp.h>
-#include <pt_Types.h>
-#include <ut_locale.h>
-#include <fl_BlockLayout.h> // for fl_TabStop
+#include "pp_AttrProp.h"
+#include "pt_Types.h"
+#include "ut_locale.h"
+#include "fl_BlockLayout.h" // for fl_TabStop
 
 // External includes
 #include <ctype.h>

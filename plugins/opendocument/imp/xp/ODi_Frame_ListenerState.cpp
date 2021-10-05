@@ -32,11 +32,11 @@
 #include "ODi_Abi_Data.h"
 
 // AbiWord includes
-#include <pt_Types.h>
-#include <pd_Document.h>
-#include <ut_locale.h>
-#include <ut_units.h>
-#include <ie_math_convert.h>
+#include "pt_Types.h"
+#include "pd_Document.h"
+#include "ut_locale.h"
+#include "ut_units.h"
+#include "ie_math_convert.h"
 
 /**
  * Constructor

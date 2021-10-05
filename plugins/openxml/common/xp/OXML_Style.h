@@ -24,12 +24,12 @@
 #define _OXML_STYLE_H_
 
 // Internal includes
-#include <OXML_Types.h>
-#include <OXML_ObjectWithAttrProp.h>
+#include "OXML_Types.h"
+#include "OXML_ObjectWithAttrProp.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "pd_Document.h"
 
 // External includes
 #include <memory>

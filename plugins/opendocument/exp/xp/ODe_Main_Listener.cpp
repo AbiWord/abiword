@@ -32,7 +32,7 @@
 #include "ODe_DocumentData.h"
 
 // AbiWord includes
-#include <pp_AttrProp.h>
+#include "pp_AttrProp.h"
 
 /**
  * Constructor

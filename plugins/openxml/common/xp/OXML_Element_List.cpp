@@ -21,12 +21,12 @@
  */
 
 // Class definition include
-#include <OXML_Element_List.h>
+#include "OXML_Element_List.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 OXML_Element_List::OXML_Element_List(const std::string & id, OXML_Element_Paragraph* paragraph) : 
 	OXML_Element(id, LST_TAG, LIST), parent(paragraph)

@@ -27,7 +27,7 @@
 #include "ODe_Style_Style.h"
 
 // AbiWord includes
-#include <pp_AttrProp.h>
+#include "pp_AttrProp.h"
 
 /**
  * Constructor

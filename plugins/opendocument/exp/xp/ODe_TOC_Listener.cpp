@@ -28,18 +28,16 @@
 #include "ODe_Style_Style.h"
 
 // AbiWord includes
-#include <pp_AttrProp.h>
+#include "pp_AttrProp.h"
 
 
 /**
  * Constructor
  */
-ODe_TOC_Listener::ODe_TOC_Listener(
-                                    ODe_AuxiliaryData& rAuxiliaryData
-                                    )
-                                    :
-                                    m_bInTOCBlock(false),
-                                    m_rAuxiliaryData(rAuxiliaryData) {
+ODe_TOC_Listener::ODe_TOC_Listener(ODe_AuxiliaryData& rAuxiliaryData)
+ : m_bInTOCBlock(false),
+   m_rAuxiliaryData(rAuxiliaryData)
+{
 }
 
 
@@ -80,7 +78,7 @@ void ODe_TOC_Listener::openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& /*r
 
     UT_UTF8String sDestStyle = m_rAuxiliaryData.m_mDestStyles[iLevel];
     UT_ASSERT_HARMLESS(sDestStyle != "");
-    
+
     UT_UTF8String output;
     _printSpacesOffset(output);
     output += "<text:p text:style-name=\"" + ODe_Style_Style::convertStyleToNCName(sDestStyle).escapeXML();

@@ -25,7 +25,7 @@
 // External includes
 #include <gsf/gsf.h>
 
-#include <pd_DocumentRDF.h>
+#include "pd_DocumentRDF.h"
 
 // Abiword classes
 class PD_Document;

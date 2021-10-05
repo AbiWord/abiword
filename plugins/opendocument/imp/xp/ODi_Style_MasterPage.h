@@ -28,7 +28,7 @@
 #include "ODi_Style_PageLayout.h"
 
 // AbiWord includes
-#include <ut_string_class.h>
+#include "ut_string_class.h"
 
 // AbiWord classes
 class PD_Document;

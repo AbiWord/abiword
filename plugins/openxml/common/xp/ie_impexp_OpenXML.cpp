@@ -25,11 +25,11 @@ ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
 ABI_W_POP
 
-#include <xap_Module.h>
+#include "xap_Module.h"
 
 // Internal includes
-#include <ie_imp_OpenXML_Sniffer.h>
-#include <ie_exp_OpenXML_Sniffer.h>
+#include "ie_imp_OpenXML_Sniffer.h"
+#include "ie_exp_OpenXML_Sniffer.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_openxml_register

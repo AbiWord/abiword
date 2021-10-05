@@ -22,20 +22,20 @@
 
 
 // Class definition include
-#include <ie_imp_OpenXML.h>
+#include "ie_imp_OpenXML.h"
 
 // Internal includes
-#include <OXML_Types.h>
-#include <OXML_Element.h>
-#include <OXML_Section.h>
-#include <OXML_Document.h>
-#include <OXML_Style.h>
-#include <OXML_Theme.h>
-#include <OXMLi_PackageManager.h>
+#include "OXML_Types.h"
+#include "OXML_Element.h"
+#include "OXML_Section.h"
+#include "OXML_Document.h"
+#include "OXML_Style.h"
+#include "OXML_Theme.h"
+#include "OXMLi_PackageManager.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_assert.h>
+#include "ut_types.h"
+#include "ut_assert.h"
 
 #include <iostream>
 

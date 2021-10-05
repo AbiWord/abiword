@@ -23,7 +23,7 @@
 #define ODE_LISTENERACTION_H_
 
 // AbiWord includes
-#include <ut_types.h>
+#include "ut_types.h"
 
 // Internal classes
 class ODe_AbiDocListenerImpl;

@@ -21,13 +21,13 @@
  */
 
 // Class definition include
-#include <OXML_Element_Image.h>
+#include "OXML_Element_Image.h"
 
 // AbiWord includes
-#include <ut_std_string.h>
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_std_string.h"
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 OXML_Element_Image::OXML_Element_Image(const std::string & id) : 
 	OXML_Element(id, IMG_TAG, IMAGE)

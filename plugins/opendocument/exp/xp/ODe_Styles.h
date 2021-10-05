@@ -23,7 +23,7 @@
 #define _ODE_STYLES_H_
 
 // AbiWord includes
-#include <ut_hash.h>
+#include "ut_hash.h"
 
 // Internal includes
 #include "ODe_DefaultStyles.h"

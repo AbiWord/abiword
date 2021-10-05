@@ -21,12 +21,12 @@
  */
 
 // Class definition include
-#include <OXML_Element_Text.h>
+#include "OXML_Element_Text.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 OXML_Element_Text::OXML_Element_Text() : 
 	OXML_Element("", T_TAG, SPAN), 

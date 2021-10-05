@@ -21,10 +21,10 @@
  */
 
 // Class definition include
-#include <OXMLi_StreamListener.h>
+#include "OXMLi_StreamListener.h"
 
 // AbiWord includes
-#include <ut_types.h>
+#include "ut_types.h"
 
 
 OXMLi_ListenerState::OXMLi_ListenerState() : 

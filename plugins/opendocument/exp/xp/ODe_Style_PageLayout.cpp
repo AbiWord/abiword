@@ -27,11 +27,11 @@
 #include "ODe_Style_Style.h"
 
 // AbiWord includes
-#include <ut_units.h>
-#include <pd_Document.h>
-#include <ut_string_class.h>
-#include <pp_AttrProp.h>
-#include <ut_locale.h>
+#include "ut_units.h"
+#include "pd_Document.h"
+#include "ut_string_class.h"
+#include "pp_AttrProp.h"
+#include "ut_locale.h"
 
 
 /**

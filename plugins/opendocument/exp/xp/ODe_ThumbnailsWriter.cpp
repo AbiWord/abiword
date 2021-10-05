@@ -25,15 +25,15 @@
 #include "ODe_Common.h"
 
 // Abiword includes
-#include <ut_types.h>
-#include <ut_string_class.h>
+#include "ut_types.h"
+#include "ut_string_class.h"
 #include "ut_std_string.h"
-#include <pd_Document.h>
-#include <xap_App.h>
-#include <xap_Frame.h>
-#include <fv_View.h>
-#include <gr_Graphics.h>
-#include <gr_Painter.h>
+#include "pd_Document.h"
+#include "xap_App.h"
+#include "xap_Frame.h"
+#include "fv_View.h"
+#include "gr_Graphics.h"
+#include "gr_Painter.h"
 
 bool ODe_ThumbnailsWriter::writeThumbnails(PD_Document* /*pDoc*/, GsfOutfile* oo) {
 

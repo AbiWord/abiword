@@ -29,17 +29,17 @@
 #include <string>
 
 // Abiword includes
-#include <pd_Document.h>
-#include <pl_Listener.h>
-#include <px_ChangeRecord.h>
-#include <px_CR_Span.h>
-#include <px_CR_Strux.h>
-#include <px_CR_Object.h>
-#include <fd_Field.h>
-#include <fl_TOCLayout.h>
-#include <ie_Table.h>
-#include <ie_TOC.h>
-#include <ut_go_file.h>
+#include "pd_Document.h"
+#include "pl_Listener.h"
+#include "px_ChangeRecord.h"
+#include "px_CR_Span.h"
+#include "px_CR_Strux.h"
+#include "px_CR_Object.h"
+#include "fd_Field.h"
+#include "fl_TOCLayout.h"
+#include "ie_Table.h"
+#include "ie_TOC.h"
+#include "ut_go_file.h"
 
 
 class ABI_EXPORT IE_Exp_HTML_NavigationHelper : public IE_TOCHelper {

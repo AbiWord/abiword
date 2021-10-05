@@ -36,9 +36,9 @@
 #include "ODi_Abi_Data.h" 
 
 // AbiWord includes
-#include <ut_misc.h>
-#include <pd_Document.h>
-#include <ut_debugmsg.h>
+#include "ut_misc.h"
+#include "pd_Document.h"
+#include "ut_debugmsg.h"
 
 
 /**

@@ -23,7 +23,7 @@
 #ifndef _IE_EXP_OPENXMLSNIFFER_H_
 #define _IE_EXP_OPENXMLSNIFFER_H_
 
-#include <ie_exp.h>
+#include "ie_exp.h"
 
 class IE_Exp_OpenXML_Sniffer : public IE_ExpSniffer
 {

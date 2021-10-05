@@ -24,13 +24,13 @@
 #define _OXML_SECTION_H_
 
 // Internal includes
-#include <OXML_Types.h>
-#include <OXML_ObjectWithAttrProp.h>
-#include <OXML_Element.h>
+#include "OXML_Types.h"
+#include "OXML_ObjectWithAttrProp.h"
+#include "OXML_Element.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "pd_Document.h"
 
 // External includes
 #include <string>

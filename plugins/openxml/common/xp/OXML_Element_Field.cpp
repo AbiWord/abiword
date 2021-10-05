@@ -21,12 +21,12 @@
  */
 
 // Class definition include
-#include <OXML_Element_Field.h>
+#include "OXML_Element_Field.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 OXML_Element_Field::OXML_Element_Field(const std::string & id, fd_Field::FieldType type, const gchar* value) : 
 	OXML_Element(id, FLD_TAG, FIELD), fieldType(type), fieldValue(value)

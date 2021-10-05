@@ -28,7 +28,7 @@
 #include "ODi_ListenerState.h"
 
 // AbiWord includes
-#include <ut_types.h>
+#include "ut_types.h"
 
 // Internal classes
 class ODi_Office_Styles;

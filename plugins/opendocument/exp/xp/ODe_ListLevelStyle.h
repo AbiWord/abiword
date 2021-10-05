@@ -23,7 +23,7 @@
 #define ODE_LISTLEVELSTYLE_H_
 
 // AbiWord includes
-#include <ut_string_class.h>
+#include "ut_string_class.h"
 
 // AbiWord classes
 class PP_AttrProp;

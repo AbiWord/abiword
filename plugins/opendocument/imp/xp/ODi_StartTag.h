@@ -23,8 +23,8 @@
 #define _ODi_STARTTAG_H_
 
 // AbiWord includes
-#include <ut_stringbuf.h>
-#include <ut_vector.h>
+#include "ut_stringbuf.h"
+#include "ut_vector.h"
 
 /**
  * This class contains the data of a start element tag.

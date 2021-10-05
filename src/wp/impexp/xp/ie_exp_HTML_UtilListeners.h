@@ -28,8 +28,8 @@
 
 
 // Abiword includes
-#include <pd_Document.h>
-#include <pl_Listener.h>
+#include "pd_Document.h"
+#include "pl_Listener.h"
 
 //#include "ie_exp_HTML_MainListener.h"
 //#include "ie_exp_HTML_Writer.h"

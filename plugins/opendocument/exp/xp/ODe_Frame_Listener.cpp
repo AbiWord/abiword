@@ -33,8 +33,8 @@
 #include "ODe_Style_PageLayout.h"
 
 // AbiWord includes
-#include <pp_AttrProp.h>
-#include <ut_units.h>
+#include "pp_AttrProp.h"
+#include "ut_units.h"
 
 /**
  * Constructor

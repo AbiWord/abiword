@@ -24,14 +24,14 @@
 #define _OXML_ELEMENT_FIELD_H_
 
 // Internal includes
-#include <OXML_Element.h>
-#include <ie_exp_OpenXML.h>
-#include <fd_Field.h>
+#include "OXML_Element.h"
+#include "ie_exp_OpenXML.h"
+#include "fd_Field.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 class OXML_Element_Field: public OXML_Element
 {

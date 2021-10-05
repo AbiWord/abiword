@@ -24,17 +24,17 @@
 #define _OXML_DOCUMENT_H_
 
 // Internal includes
-#include <OXML_Types.h>
-#include <OXML_ObjectWithAttrProp.h>
+#include "OXML_Types.h"
+#include "OXML_ObjectWithAttrProp.h"
 #include "OXML_Section.h"
 #include "OXML_Style.h"
 #include "OXML_Theme.h"
 #include "OXML_FontManager.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <pd_Document.h>
-#include <ie_exp_OpenXML.h>
+#include "ut_types.h"
+#include "pd_Document.h"
+#include "ie_exp_OpenXML.h"
 
 // External includes
 #include <string>

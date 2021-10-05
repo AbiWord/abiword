@@ -24,13 +24,13 @@
 #define _OXML_ELEMENT_BOOKMARK_H_
 
 // Internal includes
-#include <OXML_Element.h>
-#include <ie_exp_OpenXML.h>
+#include "OXML_Element.h"
+#include "ie_exp_OpenXML.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 class OXML_Element_Bookmark : public OXML_Element
 {

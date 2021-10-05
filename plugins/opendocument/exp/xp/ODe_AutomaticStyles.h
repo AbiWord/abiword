@@ -24,7 +24,7 @@
 #define _ODE_AUTOMATICSTYLES_H_
 
 // AbiWord includes
-#include <ut_hash.h>
+#include "ut_hash.h"
 
 // Internal classes
 class ODe_Style_Style;

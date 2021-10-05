@@ -40,21 +40,21 @@ class IE_Exp_HTML;
 #include "xap_Dlg_HTMLOptions.h"
 
 // Abiword includes
-#include <ut_debugmsg.h>
-#include <ut_assert.h>
-#include <ut_string_class.h>
-#include <ut_go_file.h>
-#include <xap_App.h>
-#include <ie_types.h>
-#include <ie_TOC.h>
-#include <ap_Strings.h>
-#include <xap_Dialog_Id.h>
-#include <xap_DialogFactory.h>
-#include <xap_Frame.h>
-#include <xav_View.h>
-#include <ie_exp.h>
-#include <pt_Types.h>
-#include <ut_path.h>
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
+#include "ut_string_class.h"
+#include "ut_go_file.h"
+#include "xap_App.h"
+#include "ie_types.h"
+#include "ie_TOC.h"
+#include "ap_Strings.h"
+#include "xap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
+#include "xap_Frame.h"
+#include "xav_View.h"
+#include "ie_exp.h"
+#include "pt_Types.h"
+#include "ut_path.h"
 
 /* Define if the base unicode char is UCS-4
  */

@@ -23,8 +23,8 @@
 #define _ODI_LISTENERSTATE_H_
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string_class.h>
+#include "ut_types.h"
+#include "ut_string_class.h"
 
 // Internal classes
 class ODi_ListenerStateAction;

@@ -35,10 +35,10 @@
 #include "ODi_StartTag.h"
 
 // AbiWord includes
-#include <ut_assert.h>
-#include <ut_misc.h>
-#include <pd_Document.h>
-#include <ut_debugmsg.h>
+#include "ut_assert.h"
+#include "ut_misc.h"
+#include "pd_Document.h"
+#include "ut_debugmsg.h"
 
 /**
  * Constructor

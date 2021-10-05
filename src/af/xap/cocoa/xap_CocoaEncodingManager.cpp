@@ -83,7 +83,7 @@ g_i18n_get_language_list (const gchar *category_name);
  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 #include <stdio.h>
