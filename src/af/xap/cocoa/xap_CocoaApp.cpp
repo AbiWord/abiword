@@ -22,8 +22,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
@@ -37,241 +37,255 @@
 #include "ut_string.h"
 #include "ut_uuid.h"
 
-#include "xap_Strings.h"
+#include "ev_CocoaMenuBar.h"
+#include "gr_CocoaGraphics.h"
 #include "xap_Args.h"
 #include "xap_CocoaApp.h"
-#include "xap_FakeClipboard.h"
+#include "xap_CocoaEncodingManager.h"
 #include "xap_CocoaFrame.h"
 #include "xap_CocoaFrameImpl.h"
 #include "xap_CocoaToolbar_Icons.h"
 #include "xap_Cocoa_TB_CFactory.h"
+#include "xap_FakeClipboard.h"
 #include "xap_Prefs.h"
-#include "xap_CocoaEncodingManager.h"
-#include "gr_CocoaGraphics.h"
-#include "ev_CocoaMenuBar.h"
+#include "xap_Strings.h"
 
 /*****************************************************************/
 
-XAP_CocoaApp::XAP_CocoaApp(const char * szAppName, const char* /*app_id*/)
-	: XAP_App(szAppName), 
-	m_dialogFactory(this), 
-	m_controlFactory(),
-	m_pCocoaMenu(NULL),
-	m_szMenuLayoutName(NULL),
-	m_szMenuLabelSetName(NULL)
+struct XAP_CocoaApp::Priv {
+    NSArray* nibObjects;
+
+    Priv();
+};
+
+XAP_CocoaApp::Priv::Priv()
+    : nibObjects(nil)
 {
-	m_pCocoaToolbarIcons = 0;
+}
 
-	[NSApplication sharedApplication];
-    [NSBundle loadNibNamed:@"MainMenu" owner:NSApp];
+/*****************************************************************/
 
-	_setAbiSuiteLibDir();
+XAP_CocoaApp::XAP_CocoaApp(const char* szAppName, const char* /*app_id*/)
+    : XAP_App(szAppName)
+    , m_dialogFactory(this)
+    , m_controlFactory()
+    , m_pCocoaMenu(NULL)
+    , m_szMenuLayoutName(NULL)
+    , m_szMenuLabelSetName(NULL)
+    , m_priv(new Priv)
+{
+    m_pCocoaToolbarIcons = 0;
 
-	// set some generic window sizes and positions
-	m_geometry.x = 1;
-	m_geometry.y = 1;
-	m_geometry.width = 600;
-	m_geometry.height = 600;
+    [NSApplication sharedApplication];
+    NSArray* objects = nil;
+    if (![NSBundle.mainBundle loadNibNamed:@"MainMenu"
+                                     owner:NSApp
+                           topLevelObjects:&objects]) {
 
-	// by default, which will be applied if the user does NOT
-	// specify a --geometry argument, we only want to obey the
-	// size (which is set above), not a position.
-	m_geometry.flags = GEOMETRY_FLAG_SIZE;
+        NSLog(@"Failed to find main bundle");
+    }
+    m_priv->nibObjects = [objects retain];
 
-	// create an instance of UT_UUIDGenerator or appropriate derrived class
-	_setUUIDGenerator(new UT_UUIDGenerator());
+    _setAbiSuiteLibDir();
 
-	// register graphics allocator
-	GR_GraphicsFactory * pGF = getGraphicsFactory();
-	UT_ASSERT( pGF );
+    // set some generic window sizes and positions
+    m_geometry.x = 1;
+    m_geometry.y = 1;
+    m_geometry.width = 600;
+    m_geometry.height = 600;
 
-	if(pGF)
-	{
-		UT_DebugOnly<bool> bSuccess = pGF->registerClass(GR_CocoaGraphics::graphicsAllocator,
-										   GR_CocoaGraphics::graphicsDescriptor,
-										   GR_CocoaGraphics::s_getClassId());
+    // by default, which will be applied if the user does NOT
+    // specify a --geometry argument, we only want to obey the
+    // size (which is set above), not a position.
+    m_geometry.flags = GEOMETRY_FLAG_SIZE;
 
-		// we are in deep trouble if this did not succeed
-		UT_ASSERT( bSuccess );
-		pGF->registerAsDefault(GR_CocoaGraphics::s_getClassId(), true);
-		pGF->registerAsDefault(GR_CocoaGraphics::s_getClassId(), false);
-	}
+    // create an instance of UT_UUIDGenerator or appropriate derrived class
+    _setUUIDGenerator(new UT_UUIDGenerator());
 
+    // register graphics allocator
+    GR_GraphicsFactory* pGF = getGraphicsFactory();
+    UT_ASSERT(pGF);
+
+    if (pGF) {
+        UT_DebugOnly<bool> bSuccess = pGF->registerClass(GR_CocoaGraphics::graphicsAllocator,
+            GR_CocoaGraphics::graphicsDescriptor,
+            GR_CocoaGraphics::s_getClassId());
+
+        // we are in deep trouble if this did not succeed
+        UT_ASSERT(bSuccess);
+        pGF->registerAsDefault(GR_CocoaGraphics::s_getClassId(), true);
+        pGF->registerAsDefault(GR_CocoaGraphics::s_getClassId(), false);
+    }
 }
 
 XAP_CocoaApp::~XAP_CocoaApp()
 {
-	DELETEP(m_pCocoaToolbarIcons);
-	FREEP(m_szMenuLayoutName);
-	FREEP(m_szMenuLabelSetName);
+    DELETEP(m_pCocoaToolbarIcons);
+    FREEP(m_szMenuLayoutName);
+    FREEP(m_szMenuLabelSetName);
+
+    [m_priv->nibObjects release];
+    delete m_priv;
 }
 
 /*!
 	Returns the GUI string encoding.
  */
-const char * XAP_CocoaApp::getDefaultEncoding () const
+const char* XAP_CocoaApp::getDefaultEncoding() const
 {
-	return "UTF-8";
+    return "UTF-8";
 }
 
-bool XAP_CocoaApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
+bool XAP_CocoaApp::initialize(const char* szKeyBindingsKey, const char* szKeyBindingsDefaultValue)
 {
-	// let our base class do it's thing.
-	
-	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
+    // let our base class do it's thing.
 
-	/*******************************/
+    XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
-	// load the font stuff from the font directory
+    /*******************************/
 
-	if (!_loadFonts())
-		return false;
-	
-	/*******************************/
-  
-	// load only one copy of the platform-specific icons.
-	
-	m_pCocoaToolbarIcons = new XAP_CocoaToolbar_Icons();
-	
-	// do any thing we need here...
+    // load the font stuff from the font directory
 
+    if (!_loadFonts())
+        return false;
 
+    /*******************************/
 
-	return true;
+    // load only one copy of the platform-specific icons.
+
+    m_pCocoaToolbarIcons = new XAP_CocoaToolbar_Icons();
+
+    // do any thing we need here...
+
+    return true;
 }
 
 void XAP_CocoaApp::reallyExit()
 {
-	[NSApp stop:NSApp];
+    [NSApp stop:NSApp];
 }
 
 void XAP_CocoaApp::notifyFrameCountChange()
 {
-	XAP_App::notifyFrameCountChange();
+    XAP_App::notifyFrameCountChange();
 }
 
-XAP_App::BidiSupportType XAP_CocoaApp::theOSHasBidiSupport() const 
+XAP_App::BidiSupportType XAP_CocoaApp::theOSHasBidiSupport() const
 {
-	return BIDI_SUPPORT_FULL;
+    return BIDI_SUPPORT_FULL;
 }
 
-XAP_DialogFactory * XAP_CocoaApp::getDialogFactory()
+XAP_DialogFactory* XAP_CocoaApp::getDialogFactory()
 {
-	return &m_dialogFactory;
+    return &m_dialogFactory;
 }
 
-XAP_Toolbar_ControlFactory * XAP_CocoaApp::getControlFactory()
+XAP_Toolbar_ControlFactory* XAP_CocoaApp::getControlFactory()
 {
-	return &m_controlFactory;
+    return &m_controlFactory;
 }
 
 void XAP_CocoaApp::setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
-							  windowGeometryFlags flags)
+    windowGeometryFlags flags)
 {
-	// TODO : do some range checking?
-	m_geometry.x = x;
-	m_geometry.y = y;
-	m_geometry.width = width;
-	m_geometry.height = height;
-	m_geometry.flags = flags;
+    // TODO : do some range checking?
+    m_geometry.x = x;
+    m_geometry.y = y;
+    m_geometry.width = width;
+    m_geometry.height = height;
+    m_geometry.flags = flags;
 }
 
-void XAP_CocoaApp::getGeometry(int * x, int * y, UT_uint32 * width,
-							  UT_uint32 * height, windowGeometryFlags * flags)
+void XAP_CocoaApp::getGeometry(int* x, int* y, UT_uint32* width,
+    UT_uint32* height, windowGeometryFlags* flags)
 {
-	UT_ASSERT(x && y && width && height);
-	*x = m_geometry.x;
-	*y = m_geometry.y;
-	*width = m_geometry.width;
-	*height = m_geometry.height;
-	*flags = m_geometry.flags;
+    UT_ASSERT(x && y && width && height);
+    *x = m_geometry.x;
+    *y = m_geometry.y;
+    *width = m_geometry.width;
+    *height = m_geometry.height;
+    *flags = m_geometry.flags;
 }
 
-const char * XAP_CocoaApp::getUserPrivateDirectory() const
+const char* XAP_CocoaApp::getUserPrivateDirectory() const
 {
-	static const char * szAbiDir = "Library/Application Support/AbiSuite";
-	
-	static char upd_buffer[PATH_MAX];
-	static char * upd_cache = 0;
-	if (upd_cache) return upd_cache; // points to the static buffer
-	
-	const char * szHome = getenv("HOME");
-	if (!szHome || !*szHome) {
-		szHome = ".";
-	}
-	
-	if (strlen(szHome)+strlen(szAbiDir)+2 >= PATH_MAX) 
-		return NULL;
-	
-	strcpy(upd_buffer,szHome);
-	strcat(upd_buffer,"/");
-	strcat(upd_buffer,szAbiDir);
+    static const char* szAbiDir = "Library/Application Support/AbiSuite";
 
-	upd_cache = upd_buffer;
-	return upd_cache;
+    static char upd_buffer[PATH_MAX];
+    static char* upd_cache = 0;
+    if (upd_cache)
+        return upd_cache; // points to the static buffer
+
+    const char* szHome = getenv("HOME");
+    if (!szHome || !*szHome) {
+        szHome = ".";
+    }
+
+    if (strlen(szHome) + strlen(szAbiDir) + 2 >= PATH_MAX)
+        return NULL;
+
+    strcpy(upd_buffer, szHome);
+    strcat(upd_buffer, "/");
+    strcat(upd_buffer, szAbiDir);
+
+    upd_cache = upd_buffer;
+    return upd_cache;
 }
 
-bool XAP_CocoaApp::findAbiSuiteBundleFile(std::string & path, const char * filename, const char * subdir) // checks only bundle
+bool XAP_CocoaApp::findAbiSuiteBundleFile(std::string& path, const char* filename, const char* subdir) // checks only bundle
 {
-	if (!filename)
-	{
-		return false;
-	}
+    if (!filename) {
+        return false;
+    }
 
-	bool bFound = false;
+    bool bFound = false;
 
-	// get Bundle resource directory and use that.
-	NSString * resDir = [[NSBundle mainBundle] resourcePath];
-	if (resDir)
-	{
-		path  = [resDir UTF8String];
-		if (subdir)
-		{
-			path += "/";
-			path += subdir;
-		}
-		path += "/";
-		path += filename;
-xxx_UT_DEBUGMSG(("XAP_CocoaApp::findAbiSuiteBundleFile(\"%s\",\"%s\",\"%s\")\n",path.c_str(),filename,subdir));
-		bFound = UT_isRegularFile(path.c_str());
-	}
-	return bFound;
+    // get Bundle resource directory and use that.
+    NSString* resDir = [[NSBundle mainBundle] resourcePath];
+    if (resDir) {
+        path = [resDir UTF8String];
+        if (subdir) {
+            path += "/";
+            path += subdir;
+        }
+        path += "/";
+        path += filename;
+        xxx_UT_DEBUGMSG(("XAP_CocoaApp::findAbiSuiteBundleFile(\"%s\",\"%s\",\"%s\")\n", path.c_str(), filename, subdir));
+        bFound = UT_isRegularFile(path.c_str());
+    }
+    return bFound;
 }
 
-bool XAP_CocoaApp::findAbiSuiteLibFile(std::string & path, const char * filename, const char * subdir)
+bool XAP_CocoaApp::findAbiSuiteLibFile(std::string& path, const char* filename, const char* subdir)
 {
-	if (!filename)
-	{
-		return false;
-	}
-	if (XAP_App::findAbiSuiteLibFile(path, filename, subdir))
-	{
-		return true;
-	}
-	return findAbiSuiteBundleFile(path, filename, subdir);
+    if (!filename) {
+        return false;
+    }
+    if (XAP_App::findAbiSuiteLibFile(path, filename, subdir)) {
+        return true;
+    }
+    return findAbiSuiteBundleFile(path, filename, subdir);
 }
 
-bool XAP_CocoaApp::findAbiSuiteAppFile(std::string & path, const char * filename, const char * subdir)
+bool XAP_CocoaApp::findAbiSuiteAppFile(std::string& path, const char* filename, const char* subdir)
 {
-	if (!filename)
-	{
-		return false;
-	}
-	if (XAP_App::findAbiSuiteLibFile(path, filename, subdir))
-	{
-		return true;
-	}
-	return findAbiSuiteBundleFile(path, filename, subdir);
+    if (!filename) {
+        return false;
+    }
+    if (XAP_App::findAbiSuiteLibFile(path, filename, subdir)) {
+        return true;
+    }
+    return findAbiSuiteBundleFile(path, filename, subdir);
 }
 
 bool XAP_CocoaApp::_loadFonts()
 {
-	return true;
+    return true;
 }
 
 void XAP_CocoaApp::_setAbiSuiteLibDir()
 {
-	XAP_App::_setAbiSuiteLibDir("/Library/Application Support/AbiSuite");
+    XAP_App::_setAbiSuiteLibDir("/Library/Application Support/AbiSuite");
 #if 0
 	// TODO Change that to use Bundle path instead. Probably by using FJF code.
 	char buf[PATH_MAX];
@@ -336,23 +350,20 @@ void XAP_CocoaApp::_setAbiSuiteLibDir()
 // causes memory corruption!
 void XAP_CocoaApp::setTimeOfLastEvent(NSTimeInterval timestamp)
 {
-	// assert until memory corruption fixed
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	m_eventTime = timestamp;
+    // assert until memory corruption fixed
+    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    m_eventTime = timestamp;
 }
 
-
-XAP_Frame * XAP_CocoaApp::_getFrontFrame(void)
+XAP_Frame* XAP_CocoaApp::_getFrontFrame(void)
 {
     XAP_Frame* myFrame = NULL;
     NSArray* array = [NSApp orderedWindows];
 
-	NSEnumerator* e = [array objectEnumerator];
-    while(NSWindow *win = [e nextObject])
-    {
+    NSEnumerator* e = [array objectEnumerator];
+    while (NSWindow* win = [e nextObject]) {
         id ctrl = [win delegate];
-        if ([ctrl isKindOfClass:[XAP_CocoaFrameController class]])
-        {
+        if ([ctrl isKindOfClass:[XAP_CocoaFrameController class]]) {
             myFrame = [(XAP_CocoaFrameController*)ctrl frameImpl]->getFrame();
             UT_ASSERT(myFrame);
             return myFrame;
@@ -362,13 +373,13 @@ XAP_Frame * XAP_CocoaApp::_getFrontFrame(void)
     return myFrame;
 }
 
-const char*         XAP_CocoaApp::_findNearestFont(const char* pszFontFamily,
-												   const char* /*pszFontStyle*/,
-												   const char* /*pszFontVariant*/,
-												   const char* /*pszFontWeight*/,
-												   const char* /*pszFontStretch*/,
-												   const char* /*pszFontSize*/,
-												   const char * /*pszLang*/)
+const char* XAP_CocoaApp::_findNearestFont(const char* pszFontFamily,
+    const char* /*pszFontStyle*/,
+    const char* /*pszFontVariant*/,
+    const char* /*pszFontWeight*/,
+    const char* /*pszFontStretch*/,
+    const char* /*pszFontSize*/,
+    const char* /*pszLang*/)
 {
-	return pszFontFamily;
+    return pszFontFamily;
 }
