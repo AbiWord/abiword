@@ -448,11 +448,11 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 	BOOL bFileOpenedDuringLaunch = NO;
 
-	unsigned count = [m_FilesRequestedDuringLaunch count];
+	NSUInteger count = [m_FilesRequestedDuringLaunch count];
 
-	for (unsigned i = 0; i < count; i++) // filter out plugins from list and open those first
+	for (NSUInteger i = 0; i < count; i++) // filter out plugins from list and open those first
 	{
-		NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
+		NSString* filename = (NSString*)[m_FilesRequestedDuringLaunch objectAtIndex:i];
 
 		std::string path([filename UTF8String]);
 
@@ -461,20 +461,19 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 			[self application:NSApp openFile:filename];
 		}
 	}
-	for (unsigned i = 0; i < count; i++) // open the rest
-	{
-		NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
+	for (NSUInteger i = 0; i < count; i++) // open the rest
+    {
+		NSString* filename = (NSString*)[m_FilesRequestedDuringLaunch objectAtIndex:i];
 
 		std::string path([filename UTF8String]);
 
-		if (!XAP_CocoaModule::hasPluginExtension(path))
-			if ([self application:NSApp openFile:filename])
-			{
+        if (!XAP_CocoaModule::hasPluginExtension(path)) {
+			if ([self application:NSApp openFile:filename]) {
 				bFileOpenedDuringLaunch = YES;
 			}
+        }
 	}
-	if (bFileOpenedDuringLaunch == NO)
-	{
+	if (bFileOpenedDuringLaunch == NO) {
 		UT_DEBUGMSG(("[...FinishLaunching] No file opened during launch, so opening untitled document:\n"));
 		[self applicationOpenUntitledFile:NSApp];
 	}
