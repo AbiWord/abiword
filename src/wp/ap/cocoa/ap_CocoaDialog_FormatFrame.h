@@ -20,8 +20,8 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_COCOADIALOG_FORMATFRAME_H
-#define AP_COCOADIALOG_FORMATFRAME_H
+
+#pragma once
 
 #import <Cocoa/Cocoa.h>
 
@@ -30,7 +30,7 @@
 
 
 class XAP_CocoaFrame;
-class GR_CocoaCairoGraphics;
+class GR_CocoaGraphics;
 @class AP_CocoaDialog_FormatFrameController;
 
 /*****************************************************************/
@@ -60,7 +60,7 @@ protected:
 	void					_populateWindowData(void);
 	void					_storeWindowData(void);
 
-	GR_CocoaCairoGraphics	* 		m_pPreviewWidget;
+	GR_CocoaGraphics* m_pPreviewWidget;
 private:
 	AP_CocoaDialog_FormatFrameController*	m_dlg;
 };
@@ -166,5 +166,3 @@ private:
 
 //- (int)applyItemTag;
 @end
-
-#endif /* AP_COCOADIALOG_FORMATTABLE_H */

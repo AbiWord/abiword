@@ -699,7 +699,7 @@ if test "$TOOLKIT" = "gtk"; then
 fi
 
 dnl make that for all.
-if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa" -o "$TOOLKIT" = "qt"; then
+if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "qt"; then
 	dnl move away
 	AC_DEFINE([WITH_CAIRO], [1], [Using Cairo])
 	WITH_CAIRO=1
@@ -837,6 +837,7 @@ dnl on Mingw32 it is defined.
 	esac
 elif test "$TOOLKIT" = "cocoa"; then
 	AC_DEFINE([TOOLKIT_COCOA], [1], [Build cocoa user interface])
+	AC_DEFINE([XAP_DONTUSE_XOR], [1], [do not use XOR drawing functions])
 	# override static/shared, on cocoa. shared only
 	enable_shared="yes"
 	enable_static="no"

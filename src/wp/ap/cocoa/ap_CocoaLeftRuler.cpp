@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2021 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@
 #include "ut_debugmsg.h"
 #include "ut_sleep.h"
 
-#include "gr_CocoaCairoGraphics.h"
+#include "gr_CocoaGraphics.h"
 #include "gr_Painter.h"
 
 #include "ev_CocoaMouse.h"
@@ -61,7 +61,7 @@ AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 
 AP_CocoaLeftRuler::~AP_CocoaLeftRuler(void)
 {
-	static_cast<GR_CocoaCairoGraphics *>(m_pG)->_setUpdateCallback (NULL, NULL);
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (NULL, NULL);
 	DELETEP(m_pG);
 	if (m_delegate) {
 		[[NSNotificationCenter defaultCenter] removeObserver:m_delegate];
@@ -84,8 +84,8 @@ void AP_CocoaLeftRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);
 
-	GR_CocoaCairoAllocInfo ai(m_wLeftRuler);
-	GR_CocoaCairoGraphics * pG = static_cast<GR_CocoaCairoGraphics*>(XAP_App::getApp()->newGraphics(ai));
+	GR_CocoaAllocInfo ai(m_wLeftRuler);
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics*>(XAP_App::getApp()->newGraphics(ai));
 	UT_ASSERT(pG);
 	m_pG = pG;
 
@@ -127,7 +127,7 @@ void AP_CocoaLeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */, A
 	
 	GR_Painter painter(m_pG);
 
-	GR_CocoaCairoGraphics * pG = static_cast<GR_CocoaCairoGraphics *>(m_pG);
+	GR_CocoaGraphics* pG = static_cast<GR_CocoaGraphics *>(m_pG);
 
 	UT_Point control[4];
 	UT_Point control2[4];
@@ -142,7 +142,7 @@ void AP_CocoaLeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */, A
 	control[3].y = 0;
 
 	UT_RGBColor lineColor;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
+	GR_CocoaGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
 	UT_RGBColor fillColor;
 	fillColor = pG->VBlue();
 
@@ -183,7 +183,7 @@ void AP_CocoaLeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 
 	GR_Painter painter(m_pG);
 
-	GR_CocoaCairoGraphics * pG = static_cast<GR_CocoaCairoGraphics *>(m_pG);
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics*>(m_pG);
 
 	UT_Point control[4];
 
@@ -197,13 +197,13 @@ void AP_CocoaLeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 	control[3].y = t + 1;
 
 	UT_RGBColor lineColor;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
+	GR_CocoaGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
 
 	UT_RGBColor fillColor;
 	if (bUp)
 		fillColor = pG->VGrey();
 	else
-		GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
+		GR_CocoaGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
 
 	pG->polygon(fillColor, control, 4);
 	pG->setColor(lineColor);
@@ -211,7 +211,7 @@ void AP_CocoaLeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 }
 #endif
 
-bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *pG, void* param)
+bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
 {
 	// a static function
 	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)param;
@@ -279,7 +279,7 @@ bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics 
 
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	GR_CocoaCairoGraphics* pGr = dynamic_cast<GR_CocoaCairoGraphics*>(_xap->getGraphics());
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
 	if (!pGr->_isFlipped()) {
 		pt.y = [sender bounds].size.height - pt.y;
 	}
@@ -297,7 +297,7 @@ bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics 
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	GR_CocoaCairoGraphics* pGr = dynamic_cast<GR_CocoaCairoGraphics*>(_xap->getGraphics());
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
 	if (!pGr->_isFlipped()) {
 		pt.y = [sender bounds].size.height - pt.y;
 	}
@@ -317,7 +317,7 @@ bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics 
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	GR_CocoaCairoGraphics* pGr = dynamic_cast<GR_CocoaCairoGraphics*>(_xap->getGraphics());
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
 	if (!pGr->_isFlipped()) {
 		pt.y = [sender bounds].size.height - pt.y;
 	}

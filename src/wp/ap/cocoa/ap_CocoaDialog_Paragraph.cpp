@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (c) 2003 Hubert Figuiere
+ * Copyright (c) 2003-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@
 
 #include "xap_CocoaDialog_Utilities.h"
 
-#include "gr_CocoaCairoGraphics.h"
+#include "gr_CocoaGraphics.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -91,8 +91,8 @@ void AP_CocoaDialog_Paragraph::runModal(XAP_Frame * pFrame)
 void	AP_CocoaDialog_Paragraph::_createGC(XAP_CocoaNSView* owner)
 {
 	NSSize  size;
-	GR_CocoaCairoAllocInfo ai(owner);
-	m_pGraphics = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaAllocInfo ai(owner);
+	m_pGraphics = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	size = [owner bounds].size;
 	_createPreviewFromGC(m_pGraphics, lrintf(size.width), lrintf(size.height));

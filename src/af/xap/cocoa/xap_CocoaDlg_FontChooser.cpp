@@ -34,7 +34,7 @@
 #include "xap_CocoaCompat.h"
 
 #include "xap_EncodingManager.h"
-#include "gr_CocoaCairoGraphics.h"
+#include "gr_CocoaGraphics.h"
 
 // your typographer's standard nonsense latin font phrase
 #define PREVIEW_ENTRY_DEFAULT_STRING	"Lorem ipsum dolor sit amet, consectetaur adipisicing..."
@@ -257,7 +257,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * /*pFrame*/)
 		UT_RGBColor c;
 		UT_parseColor(sColor.c_str(), c);
 
-		NSColor *color = GR_CocoaCairoGraphics::_utRGBColorToNSColor(c);
+		NSColor *color = GR_CocoaGraphics::_utRGBColorToNSColor(c);
 		[m_dlg setTextColor:color];
 	}
 	else {
@@ -271,7 +271,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * /*pFrame*/)
 		UT_RGBColor c;
 		UT_parseColor(sBGCol.c_str(), c);
 
-		NSColor *color = GR_CocoaCairoGraphics::_utRGBColorToNSColor(c);
+		NSColor *color = GR_CocoaGraphics::_utRGBColorToNSColor(c);
 		[m_dlg setBgColor:color];
 	}
 	else
@@ -359,8 +359,8 @@ void XAP_CocoaDialog_FontChooser::_cancelAction(void)
 void	XAP_CocoaDialog_FontChooser::_createGC(XAP_CocoaNSView* owner)
 {
 	NSSize  size;
-	GR_CocoaCairoAllocInfo ai(owner);
-	m_pGraphics = static_cast<GR_CocoaCairoGraphics*>(XAP_App::getApp()->newGraphics(ai));
+	GR_CocoaAllocInfo ai(owner);
+	m_pGraphics = static_cast<GR_CocoaGraphics*>(XAP_App::getApp()->newGraphics(ai));
 
 	size = [owner bounds].size;
 	_createFontPreviewFromGC(m_pGraphics, lrintf(size.width), lrintf(size.height));

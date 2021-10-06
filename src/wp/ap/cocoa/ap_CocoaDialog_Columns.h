@@ -28,7 +28,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 
-class GR_CocoaCairoGraphics;
+class GR_CocoaGraphics;
 
 class XAP_CocoaFrame;
 @class AP_CocoaDialog_ColumnsController;
@@ -63,7 +63,7 @@ public:
 	void			incrSpaceAfter(bool bIncrement);
 
 private:
-	GR_CocoaCairoGraphics *	m_pPreviewWidget;
+	GR_CocoaGraphics* m_pPreviewWidget;
 
 	AP_CocoaDialog_ColumnsController *	m_dlg;
 

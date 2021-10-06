@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003, 2005 Hubert Figuiere
+ * Copyright (C) 2001, 2003, 2005-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,8 +18,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_COCOADIALOG_LISTS_H
-#define AP_COCOADIALOG_LISTS_H
+#pragma once
 
 #import <Cocoa/Cocoa.h>
 
@@ -27,7 +26,7 @@
 #include "ut_timer.h"
 #include "xap_CocoaDialog_Utilities.h"
 
-class GR_CocoaCairoGraphics;
+class GR_CocoaGraphics;
 class XAP_CocoaFrame;
 class AP_CocoaDialog_Lists;
 
@@ -157,19 +156,10 @@ class AP_CocoaDialog_Lists: public AP_Dialog_Lists
 	void					_setRadioButtonLabels(void);
 	void					_gatherData(void);
  private:
-	GR_CocoaCairoGraphics *		m_pPreviewWidget;
+	GR_CocoaGraphics* m_pPreviewWidget;
 	UT_Timer *				m_pAutoUpdateLists;
 	bool					m_bDontUpdate;
 	bool					m_bDestroy_says_stopupdating;
 	bool					m_bAutoUpdate_happening_now;
 	AP_CocoaDialog_ListsController* m_dlg;
 };
-
-#endif /* AP_COCOADIALOG_LISTS_H */
-
-
-
-
-
-
-

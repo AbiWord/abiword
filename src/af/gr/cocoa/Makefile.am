@@ -6,8 +6,9 @@ AM_CPPFLAGS = \
 	-x objective-c++
 
 libcocoa_la_SOURCES = \
-	gr_CocoaCairoGraphics.h \
-	gr_CocoaCairoGraphics.cpp \
+	gr_CocoaGraphics.h \
+	gr_CocoaGraphics.cpp \
+	gr_CocoaFont.h gr_CocoaFont.cpp \
 	gr_CocoaImage.h \
 	gr_CocoaImage.cpp
 

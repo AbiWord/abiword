@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009-2021 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@
 
 #include "ut_debugmsg.h"
 #include "ap_CocoaPreview_Annotation.h"
-#include "gr_CocoaCairoGraphics.h"
+#include "gr_CocoaGraphics.h"
 #include "xap_Frame.h"
 #include "xap_CocoaFrameImpl.h"
 #include "xap_CocoaFrame.h"
@@ -61,8 +61,8 @@ void AP_CocoaPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	DELETEP(m_gc);
 	
 	XAP_App *pApp = XAP_App::getApp();
-	GR_CocoaCairoAllocInfo ai(m_pDrawingArea);
-	m_gc = (GR_CairoGraphics*) pApp->newGraphics(ai);
+	GR_CocoaAllocInfo ai(m_pDrawingArea);
+	m_gc = (GR_Graphics*) pApp->newGraphics(ai);
 	
 	NSSize size = [m_pDrawingArea frame].size;
 	_createAnnotationPreviewFromGC(m_gc, size.width, size.height);

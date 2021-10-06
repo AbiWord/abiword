@@ -25,7 +25,7 @@
 #include "ut_debugmsg.h"
 #include "ut_locale.h"
 
-#include "gr_CocoaCairoGraphics.h"
+#include "gr_CocoaGraphics.h"
 #include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
@@ -77,8 +77,8 @@ void AP_CocoaDialog_FormatTable::runModeless(XAP_Frame * /*pFrame*/)
 	// make a new Cocoa GC
 	DELETEP (m_pPreviewWidget);
 	XAP_CocoaNSView * view = [m_dlg preview];
-	GR_CocoaCairoAllocInfo ai(view);
-	m_pPreviewWidget = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaAllocInfo ai(view);
+	m_pPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
@@ -104,7 +104,7 @@ void AP_CocoaDialog_FormatTable::setSensitivity(bool bSens)
 
 void AP_CocoaDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
 {
-	NSColor *color = GR_CocoaCairoGraphics::_utRGBColorToNSColor(clr);
+	NSColor *color = GR_CocoaGraphics::_utRGBColorToNSColor(clr);
 	[m_dlg->_bgColorWell setColor:color];
 }
 
@@ -278,7 +278,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 - (IBAction)bgColorAction:(id)sender
 {
 	UT_RGBColor clr;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor ([sender color], clr);
+	GR_CocoaGraphics::_utNSColorToRGBColor ([sender color], clr);
 	_xap->setBackgroundColor(clr);
 	_xap->event_previewExposed();
 }
@@ -286,7 +286,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 - (IBAction)borderColorAction:(id)sender
 {
 	UT_RGBColor clr;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor ([sender color], clr);
+	GR_CocoaGraphics::_utNSColorToRGBColor ([sender color], clr);
 	_xap->setBorderColor(clr);
 	_xap->event_previewExposed();
 }

@@ -42,7 +42,7 @@
 #include "xap_EncodingManager.h"
 #include "ap_CocoaFrame.h"
 #include "xap_CocoaFrameImpl.h"
-#include "gr_CocoaCairoGraphics.h"
+#include "gr_CocoaGraphics.h"
 #include "pd_Style.h"
 
 #import <Cocoa/Cocoa.h>
@@ -84,7 +84,7 @@
 {
 	NSColor * color = [[NSColorPanel sharedColorPanel] color];
 	UT_RGBColor rgbclr;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor(color, rgbclr);
+	GR_CocoaGraphics::_utNSColorToRGBColor(color, rgbclr);
 	
 	UT_HashColor hash;
 

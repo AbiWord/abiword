@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001,2003 Hubert Figuiere
+ * Copyright (C) 2001,2003-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,12 +18,11 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_COCOADIALOG_PARAGRAPH_H
-#define AP_COCOADIALOG_PARAGRAPH_H
+#pragma once
 
 #include "ap_Dialog_Paragraph.h"
 
-class GR_CocoaCairoGraphics;
+class GR_CocoaGraphics;
 class XAP_CocoaFrame;
 class AP_CocoaDialog_Paragraph;
 
@@ -115,7 +114,7 @@ void	_createGC(XAP_CocoaNSView* owner);
 void 	_deleteGC(void);
  protected:
 
-	GR_CocoaCairoGraphics	* 		m_pGraphics;
+	GR_CocoaGraphics* m_pGraphics;
 
 	void                 _populateWindowData(void);
 
@@ -129,5 +128,3 @@ private:
 
 	AP_CocoaDialog_ParagraphController* m_dlg;
 };
-
-#endif /* XAP_COCOADIALOG_PARAGRAPH_H */

@@ -18,11 +18,10 @@
  * 02110-1301 USA.
  */
 
-#ifndef XAP_COCOADIALOG_PRINT_H
-#define XAP_COCOADIALOG_PRINT_H
+#pragma once
 
 #include "xap_Dlg_Print.h"
-class GR_CocoaCairoGraphics;
+class GR_CocoaGraphics;
 class AP_CocoaFrame;
 class FV_View;
 
@@ -45,7 +44,5 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 private:
-	GR_CocoaCairoGraphics*			m_pPrintGraphics;
+	GR_CocoaGraphics*			m_pPrintGraphics;
 };
-
-#endif /* XAP_COCOADIALOG_PRINT_H */

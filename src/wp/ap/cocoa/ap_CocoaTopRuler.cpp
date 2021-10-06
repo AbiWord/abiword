@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2021 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "gr_CocoaCairoGraphics.h"
+#include "gr_CocoaGraphics.h"
 #include "gr_Painter.h"
 
 #include "ev_CocoaMouse.h"
@@ -61,7 +61,7 @@ AP_CocoaTopRuler::AP_CocoaTopRuler(XAP_Frame * pFrame)
 
 AP_CocoaTopRuler::~AP_CocoaTopRuler(void)
 {
-	static_cast<GR_CocoaCairoGraphics *>(m_pG)->_setUpdateCallback (NULL, NULL);
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (NULL, NULL);
 	DELETEP(m_pG);
 	if (m_delegate) {
 		[[NSNotificationCenter defaultCenter] removeObserver:m_delegate];
@@ -79,8 +79,8 @@ void AP_CocoaTopRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);
 
-	GR_CocoaCairoAllocInfo ai(m_wTopRuler);
-	GR_CocoaCairoGraphics * pG = (GR_CocoaCairoGraphics *) XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaAllocInfo ai(m_wTopRuler);
+	GR_CocoaGraphics * pG = (GR_CocoaGraphics *) XAP_App::getApp()->newGraphics(ai);
 	UT_ASSERT(pG);
 	m_pG = pG;
 
@@ -121,7 +121,7 @@ void AP_CocoaTopRuler::_drawMarginProperties(const UT_Rect * /*pClipRect*/, AP_T
 
 	GR_Painter painter(m_pG);
 
-	GR_CocoaCairoGraphics * pG = static_cast<GR_CocoaCairoGraphics *>(m_pG);
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
 
 	UT_sint32 l = rLeft.left;
 	UT_sint32 t = rLeft.top;
@@ -138,7 +138,7 @@ void AP_CocoaTopRuler::_drawMarginProperties(const UT_Rect * /*pClipRect*/, AP_T
 	control[3].y = t + 0;
 
 	UT_RGBColor lineColor;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
+	GR_CocoaGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
 
 	UT_RGBColor fillColor;
 	fillColor = pG->HBlue();
@@ -168,7 +168,7 @@ void AP_CocoaTopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 
 	GR_Painter painter(m_pG);
 
-	GR_CocoaCairoGraphics * pG = static_cast<GR_CocoaCairoGraphics *>(m_pG);
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
 
 	UT_Point control[5];
 
@@ -184,14 +184,14 @@ void AP_CocoaTopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 	control[4].y = t + 8;
 
 	UT_RGBColor lineColor;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
+	GR_CocoaGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
 
 	UT_RGBColor fillColor;
 
         if (bFilled)
                 fillColor = pG->HBlue();
         else
-                GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
+                GR_CocoaGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
 
 	pG->polygon(fillColor, control, 5);
 	pG->setColor(lineColor);
@@ -228,7 +228,7 @@ void AP_CocoaTopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 
 	GR_Painter painter(m_pG);
 
-	GR_CocoaCairoGraphics * pG = static_cast<GR_CocoaCairoGraphics *>(m_pG);
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
 
 	UT_Point control[5];
 
@@ -244,14 +244,14 @@ void AP_CocoaTopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 	control[4].y = t + 8;
 
 	UT_RGBColor lineColor;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
+	GR_CocoaGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
 
 	UT_RGBColor fillColor;
 
 	if (bFilled)
 		fillColor = pG->HBlue();
 	else
-		GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
+		GR_CocoaGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
 
 	pG->polygon(fillColor, control, 5);
 	pG->setColor(lineColor);
@@ -284,7 +284,7 @@ void AP_CocoaTopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 
 	GR_Painter painter(m_pG);
 
-	GR_CocoaCairoGraphics * pG = static_cast<GR_CocoaCairoGraphics *>(m_pG);
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
 
 	UT_Point control[5];
 
@@ -300,14 +300,14 @@ void AP_CocoaTopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 	control[4].y = t + 0;
 
 	UT_RGBColor lineColor;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
+	GR_CocoaGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
 
 	UT_RGBColor fillColor;
 
 	if (bFilled)
 		fillColor = pG->HBlue();
 	else
-		GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
+		GR_CocoaGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
 
 	pG->polygon(fillColor, control, 5);
 	pG->setColor(lineColor);
@@ -326,7 +326,7 @@ void AP_CocoaTopRuler::_drawColumnGapMarker(UT_Rect & rect)
 
 	GR_Painter painter(m_pG);
 
-	GR_CocoaCairoGraphics * pG = static_cast<GR_CocoaCairoGraphics *>(m_pG);
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
 
 	UT_Point control[6];
 
@@ -344,7 +344,7 @@ void AP_CocoaTopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	control[5].y = t + 6;
 
 	UT_RGBColor lineColor;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
+	GR_CocoaGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
 	UT_RGBColor fillColor;
 	fillColor = pG->HBlue();
 
@@ -366,7 +366,7 @@ void AP_CocoaTopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 
 	GR_Painter painter(m_pG);
 
-	GR_CocoaCairoGraphics * pG = static_cast<GR_CocoaCairoGraphics *>(m_pG);
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
 
 	UT_Point control[4];
 
@@ -380,13 +380,13 @@ void AP_CocoaTopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 	control[3].y = t + 1;
 
 	UT_RGBColor lineColor;
-	GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
+	GR_CocoaGraphics::_utNSColorToRGBColor([NSColor knobColor], lineColor);
 
 	UT_RGBColor fillColor;
 	if (bUp)
 		fillColor = pG->HGrey();
 	else
-		GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
+		GR_CocoaGraphics::_utNSColorToRGBColor([NSColor whiteColor], fillColor);
 
 	pG->polygon(fillColor, control, 4);
 	pG->setColor(lineColor);
@@ -394,7 +394,7 @@ void AP_CocoaTopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 }
 #endif
 
-bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *pG, void* param)
+bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
 {
 	// a static function
 	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)param;
@@ -453,7 +453,7 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *
 
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	GR_CocoaCairoGraphics* pGr = dynamic_cast<GR_CocoaCairoGraphics*>(_xap->getGraphics());
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
 	if (!pGr->_isFlipped()) {
 		pt.y = [sender bounds].size.height - pt.y;
 	}
@@ -471,7 +471,7 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	GR_CocoaCairoGraphics* pGr = dynamic_cast<GR_CocoaCairoGraphics*>(_xap->getGraphics());
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
 	if (!pGr->_isFlipped()) {
 		pt.y = [sender bounds].size.height - pt.y;
 	}
@@ -492,7 +492,7 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	GR_CocoaCairoGraphics* pGr = dynamic_cast<GR_CocoaCairoGraphics*>(_xap->getGraphics());
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
 	if (!pGr->_isFlipped()) {
 		pt.y = [sender bounds].size.height - pt.y;
 	}

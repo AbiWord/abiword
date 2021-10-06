@@ -1708,7 +1708,6 @@ const char *  GR_GraphicsFactory::getClassDescription(UT_uint32 iClassId) const
 		return NULL;
 
 	return descr();
-				
 }
 
 bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
@@ -1721,10 +1720,12 @@ bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
 	return true;
 }
 
-#if defined(WITH_CAIRO)
+#if defined(TOOLKIT_GTK)
 #include "gr_CairoNullGraphics.h"
 #elif defined(TOOLKIT_WIN)
 #include "gr_Win32Graphics.h"
+#elif defined(TOOLKIT_COCOA)
+#warning implement offscreen
 #else
 #warning un-handled case
 #endif
@@ -1736,15 +1737,15 @@ bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
 GR_Graphics* GR_Graphics::newNullGraphics()
 {
 	// todo: support other platforms when possible
-	
-#if defined(WITH_CAIRO)
+
+#if defined(TOOLKIT_GTK)
 	GR_CairoNullGraphicsAllocInfo ai;
 	return XAP_App::getApp()->newGraphics(GRID_CAIRO_NULL, (GR_AllocInfo&)ai);
 #elif defined(TOOLKIT_WIN)
 	GR_Win32AllocInfo ai (GR_Win32Graphics::createbestmetafilehdc(), GR_Win32Graphics::getDocInfo(), NULL);
 	return XAP_App::getApp()->newGraphics(GRID_WIN32, (GR_AllocInfo&)ai);
-#else
+#elif defined(TOOLKIT_COCOA)
 #endif
-	
+
 	return NULL;
 }

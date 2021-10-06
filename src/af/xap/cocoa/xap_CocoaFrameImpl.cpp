@@ -36,7 +36,7 @@
 #import "ev_CocoaMenuPopup.h"
 #import "ev_CocoaToolbar.h"
 #import "ev_Toolbar.h"
-#import "gr_CocoaCairoGraphics.h"
+#import "gr_CocoaGraphics.h"
 #import "xap_App.h"
 #import "xap_CocoaApp.h"
 #import "xap_CocoaAppController.h"
@@ -368,7 +368,7 @@ UT_RGBColor XAP_CocoaFrameImpl::getColorSelBackground () const
 	static UT_RGBColor * c = NULL;
 	if (c == NULL) {
 		c = new UT_RGBColor();
-		GR_CocoaCairoGraphics::_utNSColorToRGBColor ([[NSColor selectedTextBackgroundColor] 
+		GR_CocoaGraphics::_utNSColorToRGBColor ([[NSColor selectedTextBackgroundColor] 
 					colorUsingColorSpaceName:NSCalibratedRGBColorSpace], *c);
 	}
 	return *c;

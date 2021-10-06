@@ -26,7 +26,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "gr_CocoaCairoGraphics.h"
+#include "gr_CocoaGraphics.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -85,8 +85,8 @@ void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * /*pFrame*/)
 	/* make a new Cocoa GC
 	 */
 	DELETEP(m_pPreviewWidget);
-	GR_CocoaCairoAllocInfo ai((XAP_CocoaNSView*)view);
-	m_pPreviewWidget = (GR_CocoaCairoGraphics *) m_pApp->newGraphics(ai);
+	GR_CocoaAllocInfo ai((XAP_CocoaNSView*)view);
+	m_pPreviewWidget = (GR_CocoaGraphics *) m_pApp->newGraphics(ai);
 
 	/* TODO: we need a good widget to query with a probable non-white (i.e. gray, or
 	 *       a similar bgcolor as our parent widget) background. This should be fine.

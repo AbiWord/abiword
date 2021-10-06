@@ -29,8 +29,6 @@
 // like centering them, measuring them, etc.
 #include "xap_CocoaDialog_Utilities.h"
 
-#include "gr_CocoaCairoGraphics.h"
-
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"

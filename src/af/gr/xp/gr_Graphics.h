@@ -103,7 +103,7 @@ class ABI_EXPORT GR_Font
 										   FontPitchEnum * pfp,
 										   bool * pbTrueType);
 
-	virtual const char* getFamily() const { return NULL; }
+    virtual const char* getFamily() const = 0;
 	UT_uint32           getAllocNumber() const {return m_iAllocNo;}
 	/*!
 		Measure the unremapped char to be put into the cache.

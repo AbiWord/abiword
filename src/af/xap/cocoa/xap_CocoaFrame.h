@@ -41,7 +41,7 @@ class EV_CocoaMenuPopup;
 ******************************************************************
 *****************************************************************/
 
-class GR_CocoaCairoGraphics;
+class GR_CocoaGraphics;
 class FV_View;
 
 @protocol XAP_MouseEventDelegate
@@ -56,14 +56,14 @@ class FV_View;
 {
 	NSCursor		*_cursor;
 	XAP_Frame 		*m_pFrame;
-	GR_CocoaCairoGraphics	*m_pGR;
+	GR_CocoaGraphics* m_pGR;
 	NSObject<XAP_MouseEventDelegate>	*_eventDelegate;
 }
 - (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)becomeFirstResponder;
 - (XAP_Frame *)xapFrame;
-- (void)setGraphics:(GR_CocoaCairoGraphics *)gr;
+- (void)setGraphics:(GR_CocoaGraphics *)gr;
 - (void)setEventDelegate:(NSObject<XAP_MouseEventDelegate>*)delegate;
 - (NSObject<XAP_MouseEventDelegate>*)eventDelegate;
 - (void)drawRect:(NSRect)aRect;

@@ -3,7 +3,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 2003 Hubert Figuiere
  * Copyright (C) 2004 Francis James Franklin
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009-2021 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,8 +21,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef XAP_COCOAAPPCONTROLLER_H
-#define XAP_COCOAAPPCONTROLLER_H
+#pragma once
 
 #import <Cocoa/Cocoa.h>
 
@@ -32,6 +31,9 @@ class AV_View;
 class XAP_Frame;
 
 @class EV_CocoaMenuDelegate;
+
+@class GR_CocoaFontFamilyHelper;
+@class GR_CocoaFontReference;
 
 @class AP_CocoaPlugin_MenuIDRef;
 
@@ -96,6 +98,11 @@ enum XAP_CocoaAppMenu_Id
 	NSMenu *				m_AppMenu[XAP_CocoaAppMenu_count__];
 	NSMenuItem *			m_AppItem[XAP_CocoaAppMenu_count__];
 
+    NSMutableDictionary *   m_FontDictionary;
+
+    NSMutableDictionary *   m_FontReferenceDictionary;
+    NSMutableDictionary *   m_FontFamilyDictionary;
+    
 	NSMutableDictionary *	m_MenuIDRefDictionary;
 
 	NSMutableArray *		m_Plugins;
@@ -163,6 +170,33 @@ enum XAP_CocoaAppMenu_Id
 - (void)clearMenu:(XAP_CocoaAppMenu_Id)appMenu; // except AbiWord & Windows
 - (void)clearAllMenus;                          // except AbiWord & Windows
 
+/**
+ * Look up a font name for the corresponding font family name.
+ *
+ * \return Returns the corresponding font family name, or nil if none found.
+ */
+- (NSString *)familyNameForFont:(NSString *)fontName;
+
+/**
+ * Look up a font name for the corresponding font family helper.
+ *
+ * \return Returns a reference to the corresponding font family helper, or nil if none found.
+ */
+- (GR_CocoaFontReference *)helperReferenceForFont:(NSString *)fontName;
+
+/**
+ * Look up a font family name for the corresponding font family helper.
+ *
+ * \return Returns the corresponding font family helper, or nil if none found.
+ */
+- (GR_CocoaFontFamilyHelper *)helperForFontFamily:(NSString *)fontFamilyName;
+
+/**
+ * Create a font family helper for an unknown font or font family name.
+ *
+ * \return Returns the corresponding font family helper.
+ */
+- (GR_CocoaFontFamilyHelper *)helperForUnknownFontFamily:(NSString *)fontFamilyName;
 
 - (void)reappendPluginMenuItems; // for use after rebuilding menus - see XAP_CocoaApp::rebuildMenus()
 - (void)appendPluginMenuItem:(NSMenuItem *)menuItem;
@@ -246,5 +280,3 @@ enum XAP_CocoaAppMenu_Id
 - (id <NSObject, XAP_CocoaPlugin_ToolProvider>)toolProvider:(NSString *)name;
 
 @end
-
-#endif /* ! XAP_COCOAAPPCONTROLLER_H */

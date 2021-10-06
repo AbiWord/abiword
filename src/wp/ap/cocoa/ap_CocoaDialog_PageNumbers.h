@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,14 +20,13 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_COCOADIALOG_PAGENUMBERS_H
-#define AP_COCOADIALOG_PAGENUMBERS_H
+#pragma once
 
 #include "ut_types.h"
 #include "ap_Dialog_PageNumbers.h"
 
 class XAP_CocoaFrame;
-class GR_CocoaCairoGraphics;
+class GR_CocoaGraphics;
 @class AP_CocoaDialog_PageNumbersController;
 @protocol XAP_CocoaDialogProtocol;
 
@@ -51,7 +50,7 @@ public:
 private:
 	AP_Dialog_PageNumbers::tAlign m_recentAlign;
 	AP_Dialog_PageNumbers::tControl m_recentControl;
-	GR_CocoaCairoGraphics * m_pG;
+	GR_CocoaGraphics * m_pG;
 	AP_CocoaDialog_PageNumbersController * m_dlg;
 };
 
@@ -85,5 +84,3 @@ private:
 - (IBAction)positionAction:(id)sender;
 - (XAP_CocoaNSView*)preview;
 @end
-
-#endif /* AP_COCOADIALOG_PAGENUBMERS_H */

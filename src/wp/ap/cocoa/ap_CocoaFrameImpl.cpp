@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2021 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@
 #import "ut_types.h"
 #import "ut_debugmsg.h"
 #import "ut_assert.h"
-#import "gr_CocoaCairoGraphics.h"
+#import "gr_CocoaGraphics.h"
 #import "ev_CocoaToolbar.h"
 #import "ev_CocoaMouse.h"
 
@@ -483,10 +483,10 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	[[_getController() window] makeFirstResponder:m_docAreaGRView];
 	[m_docAreaGRView release];
 	
-	GR_CocoaCairoAllocInfo ai(m_docAreaGRView);
-	pG = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaAllocInfo ai(m_docAreaGRView);
+	pG = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
-	static_cast<GR_CocoaCairoGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)pFrame);
+	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)pFrame);
 }
 
 
@@ -629,7 +629,7 @@ XAP_CocoaFrameController *AP_CocoaFrameImpl::_createController()
 
 
 
-bool AP_CocoaFrameImpl::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *pG, void* param)
+bool AP_CocoaFrameImpl::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
 {
 	// a static function
 	AP_CocoaFrame * pCocoaFrame = static_cast<AP_CocoaFrame *>(param);

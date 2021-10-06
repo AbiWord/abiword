@@ -30,7 +30,7 @@
 
 #import "xap_CocoaDialog_Utilities.h"
 
-#include "gr_CocoaCairoGraphics.h"
+#include "gr_CocoaGraphics.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
