@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,8 @@
 	Implements the text view that supports the NSTextInput protocol
  */
 
+#pragma once
+
 #import <AppKit/AppKit.h>
 
 #import "xap_CocoaFrame.h"
@@ -27,8 +29,8 @@
 class AV_View;
 
 @interface XAP_CocoaTextView : XAP_CocoaNSView <NSTextInput> {
-	NSRange		m_selectedRange;
-	BOOL		m_hasMarkedText;
+	NSRange m_selectedRange;
+	BOOL m_hasMarkedText;
 }
-- (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame;
+- (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame andName:(NSString*)name;
 @end

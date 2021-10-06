@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2009 Hubert Figuiere
+ * Copyright (C) 2001, 2009-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,16 +54,17 @@ class FV_View;
 // TODO should figure out if need default values
 @interface XAP_CocoaNSView : NSView
 {
-	NSCursor		*_cursor;
-	XAP_Frame 		*m_pFrame;
+    NSString* m_name;
+	NSCursor* _cursor;
+	XAP_Frame* m_pFrame;
 	GR_CocoaGraphics* m_pGR;
 	NSObject<XAP_MouseEventDelegate>	*_eventDelegate;
 }
-- (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame;
+- (id)initWith:(XAP_Frame*)frame andFrame:(NSRect)windowFrame andName:(NSString*)name;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)becomeFirstResponder;
-- (XAP_Frame *)xapFrame;
-- (void)setGraphics:(GR_CocoaGraphics *)gr;
+- (XAP_Frame*)xapFrame;
+- (void)setGraphics:(GR_CocoaGraphics*)gr;
 - (void)setEventDelegate:(NSObject<XAP_MouseEventDelegate>*)delegate;
 - (NSObject<XAP_MouseEventDelegate>*)eventDelegate;
 - (void)drawRect:(NSRect)aRect;

@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001-2004 Hubert Figuiere
+ * Copyright (C) 2001-2021 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -50,16 +50,17 @@
 
 
 @implementation XAP_CocoaNSView
-- (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame
+- (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame andName:(NSString*)name
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaNSView initWith:Frame\n"));
 	UT_ASSERT (frame);
-	if(![super initWithFrame:windowFrame]) {
+	if (![super initWithFrame:windowFrame]) {
 		return nil;
 	}
+    m_name = [name retain];
 	m_pFrame = frame;
 	m_pGR = NULL;
-	if(frame) {
+	if (frame) {
 		[[NSNotificationCenter defaultCenter] addObserver:self
 						selector:@selector(hasBeenResized:)
 						name:NSViewFrameDidChangeNotification object:self];
@@ -71,6 +72,7 @@
 {
 	[_eventDelegate release];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+    [m_name release];
 	[super dealloc];
 }
 

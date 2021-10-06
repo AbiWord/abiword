@@ -98,7 +98,7 @@ void  AP_CocoaPreview_Annotation::_constructWindow(void)
 	m_pPreviewWindow = [[NSWindow alloc] initWithContentRect:rect styleMask:NSWindowStyleMaskBorderless
 	                    backing:NSBackingStoreBuffered defer:NO];
 	
-	m_pDrawingArea = [[XAP_CocoaNSView alloc] initWith:NULL andFrame:[m_pPreviewWindow contentRectForFrameRect:rect]];
+	m_pDrawingArea = [[XAP_CocoaNSView alloc] initWith:NULL andFrame:[m_pPreviewWindow contentRectForFrameRect:rect] andName:@"Annotation preview"];
 	
 	[m_pPreviewWindow setContentView:m_pDrawingArea];
 }

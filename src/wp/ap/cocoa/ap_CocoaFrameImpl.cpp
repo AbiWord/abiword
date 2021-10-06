@@ -168,33 +168,26 @@ void AP_CocoaFrameImpl::_setVVisible(UT_sint32 value)
 
 void AP_CocoaFrameImpl::_setHScrollbarValues()
 {
-	float value;
+	double value;
 	CGFloat knob;
 	if (m_HMaxScroll == 0) {
 		value = 0.0;
-	}
-	else {
-		value = ((float)m_HCurrentScroll / (float)m_HMaxScroll);
+	} else {
+		value = ((double)m_HCurrentScroll / (double)m_HMaxScroll);
 	}
 	if (m_HMaxScroll == 0) {
 		knob = 1.0;
-	}
-	else {
+	} else {
 		knob = ((CGFloat)m_HVisible / (CGFloat)(m_HVisible + m_HMaxScroll));
 	}
 	UT_DEBUGMSG(("_setHScrollbarValues(), max = %d, current = %d, visible = %d\n", m_HMaxScroll, m_HCurrentScroll, m_HVisible));
 	UT_DEBUGMSG(("_setHScrollbarValues(), value = %f, knob = %f\n", value, knob));
 	if (knob >= 1.0) {
 		[m_hScrollbar setEnabled:NO];
-	}
-	else {
+	} else {
 		[m_hScrollbar setEnabled:YES];
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
 		[m_hScrollbar setKnobProportion:knob];
 		[m_hScrollbar setDoubleValue:value];
-#else
-		[m_hScrollbar setFloatValue:value knobProportion:knob];
-#endif
 	}
 	[m_hScrollbar setNeedsDisplay:YES];
 	[[(AP_CocoaFrameController*)_getController() getHRuler] setNeedsDisplay:YES];
@@ -203,33 +196,26 @@ void AP_CocoaFrameImpl::_setHScrollbarValues()
 
 void AP_CocoaFrameImpl::_setVScrollbarValues()
 {
-	float value;
+	double value;
 	CGFloat knob;
 	if (m_VMaxScroll == 0) {
 		value = 0.0;
-	}
-	else {
-		value = ((float)m_VCurrentScroll / (float)m_VMaxScroll);
+	} else {
+		value = ((double)m_VCurrentScroll / (double)m_VMaxScroll);
 	}
 	if (m_VMaxScroll == 0) {
 		knob = 1.0;
-	}
-	else {
+	} else {
 		knob = ((CGFloat)m_VVisible / (CGFloat)(m_VVisible + m_VMaxScroll));
 	}
 	UT_DEBUGMSG(("_setVScrollbarValues(), max = %d, current = %d, visible = %d\n", m_VMaxScroll, m_VCurrentScroll, m_VVisible));
 	UT_DEBUGMSG(("_setVScrollbarValues(), value = %f, knob = %f\n", value, knob));
 	if (knob >= 1.0) {
 		[m_vScrollbar setEnabled:NO];
-	}
-	else {
+	} else {
 		[m_vScrollbar setEnabled:YES];
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
 		[m_hScrollbar setKnobProportion:knob];
 		[m_hScrollbar setDoubleValue:value];
-#else
-		[m_hScrollbar setFloatValue:value knobProportion:knob];
-#endif
 	}
 	[m_vScrollbar setNeedsDisplay:YES];
 	// [[(_getController()) getVRuler] setNeedsDisplay:YES]; // ??
@@ -253,8 +239,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		UT_DEBUGMSG(("NSScrollerDecrementPage\n"));
 		if (sender == m_vScrollbar) {
 			_setVScrollValue(m_VCurrentScroll - m_VVisible);
-		}
-		else {
+		} else {
 			_setHScrollValue(m_HCurrentScroll - m_HVisible);
 		}
 		break;
@@ -262,8 +247,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		UT_DEBUGMSG(("NSScrollerIncrementPage\n"));
 		if (sender == m_vScrollbar) {
 			_setVScrollValue(m_VCurrentScroll + m_VVisible);
-		}
-		else {
+		} else {
 			_setHScrollValue(m_HCurrentScroll + m_HVisible);
 		}
 		break;
@@ -271,8 +255,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		UT_DEBUGMSG(("NSScrollerDecrementLine\n"));
 		if (sender == m_vScrollbar) {
 			_setVScrollValue(m_VCurrentScroll - pGr->tlu(20));
-		}
-		else {
+		} else {
 			_setHScrollValue(m_HCurrentScroll - pGr->tlu(20));
 		}
 		break;
@@ -280,8 +263,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		UT_DEBUGMSG(("NSScrollerIncrementLine\n"));
 		if (sender == m_vScrollbar) {
 			_setVScrollValue(m_VCurrentScroll + pGr->tlu(20));
-		}
-		else {
+		} else {
 			_setHScrollValue(m_HCurrentScroll + pGr->tlu(20));
 		}
 		break;
@@ -291,8 +273,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		if (sender == m_vScrollbar) {
 			m_VCurrentScroll = lrintf(newValue * m_VMaxScroll);
 			_setVScrollbarValues();
-		}
-		else {
+		} else {
 			m_HCurrentScroll = lrintf(newValue * m_HMaxScroll);
 			_setHScrollbarValues();
 		}
@@ -474,7 +455,7 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	controlFrame.origin.y = [NSScroller scrollerWidth];
 	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
 	controlFrame.size.width = frame.size.width - [NSScroller scrollerWidth];
-	m_docAreaGRView = [[XAP_CocoaTextView alloc] initWith:pFrame andFrame:controlFrame];
+	m_docAreaGRView = [[XAP_CocoaTextView alloc] initWith:pFrame andFrame:controlFrame andName:@"document view"];
 	[docArea addSubview:m_docAreaGRView];
 	[m_docAreaGRView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
 	[m_docAreaGRView setEventDelegate:[[[AP_DocViewDelegate alloc] init] autorelease]];

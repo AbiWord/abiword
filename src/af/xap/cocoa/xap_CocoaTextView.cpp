@@ -41,9 +41,9 @@
 
 @implementation XAP_CocoaTextView
 
-- (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame
+- (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame andName:(NSString*)name
 {
-	if (![super initWith:frame andFrame:windowFrame]) {
+	if (![super initWith:frame andFrame:windowFrame andName:name]) {
 		return nil;
 	}
 	m_hasMarkedText = NO;
