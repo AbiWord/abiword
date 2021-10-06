@@ -211,18 +211,6 @@ fp_PageSize::fp_PageSize(double w, double h, UT_Dimension u)
 	Set(w, h, u);
 }
 
-fp_PageSize& fp_PageSize::operator=(fp_PageSize& rhs)
-{
-  m_predefined = rhs.m_predefined;
-  m_iWidth = rhs.m_iWidth;
-  m_iHeight = rhs.m_iHeight;
-  m_bisPortrait = rhs.m_bisPortrait;
-  m_scale = rhs.m_scale;
-  m_unit = rhs.m_unit;
-  return *this;
-}
-
-
 fp_PageSize& fp_PageSize::operator=(const fp_PageSize& rhs)
 {
   m_predefined = rhs.m_predefined;
