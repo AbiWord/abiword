@@ -134,7 +134,7 @@ bool fd_Field::update(void)
 		      m_updateCount);
 
               //UT_UCSChar * curpos;
-	      char lineno[20];
+	      char lineno[26];
 	      UT_UCS4_strcpy_char(testUCSFieldText,
 				 testChars);
 	      UT_uint32 len = UT_UCS4_strlen(testUCSFieldText);
