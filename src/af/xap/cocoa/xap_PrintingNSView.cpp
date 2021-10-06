@@ -21,7 +21,6 @@
 #include "ut_debugmsg.h"
 
 #include "xap_PrintingDelegate.h"
-#import "xap_CocoaCompat.h"
 #import "xap_PrintingNSView.h"
 
 

@@ -30,7 +30,6 @@
 #include "ev_NamedVirtualKey.h"
 
 #include "xap_App.h"
-#import "xap_CocoaCompat.h"
 #include "xap_CocoaTextView.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_Frame.h"

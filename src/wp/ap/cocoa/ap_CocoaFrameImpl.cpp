@@ -31,7 +31,6 @@
 #import "ev_CocoaMouse.h"
 
 #import "xav_View.h"
-#import "xap_CocoaCompat.h"
 #import "xap_CocoaApp.h"
 #import "xap_CocoaTextView.h"
 #import "xap_CocoaToolbarWindow.h"

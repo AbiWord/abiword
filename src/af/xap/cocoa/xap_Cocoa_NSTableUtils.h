@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002-2003, 2009 Hubert Figuiere
+ * Copyright (C) 2002-2003, 2009-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +17,9 @@
  * 02110-1301 USA.
  */
 
-#import <Cocoa/Cocoa.h>
+#pragma once
 
+#import <Cocoa/Cocoa.h>
 
 @interface XAP_StringListDataSource
 	: NSObject <NSTableViewDataSource, NSComboBoxDataSource>
@@ -33,13 +34,13 @@
 - (void)insertString:(NSString*)string atIndex:(int)index;
 - (void)addString:(NSString*)string;
 - (void)addCString:(const char * )string;
-- (int)rowWithCString:(const char *)cString;
+- (NSUInteger)rowWithCString:(const char *)cString;
 - (void)removeAllStrings;
 - (NSArray*)array;
 
 - (void)loadFontList;
 
 /* NSTableDataSource */
-- (int)numberOfRowsInTableView:(NSTableView *)tableView;
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row;
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView;
+- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row;
 @end
