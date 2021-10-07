@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2004 Hubert Figuière
+ * Copyright (C) 2004-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,12 +17,10 @@
  * 02110-1301 USA.
  */
 
-#ifndef XAP_COCOAASSERT_H
-#define XAP_COCOAASSERT_H
+#pragma once
 
 /* MUST BE PURE C++ !!! */
 
-void XAP_CocoaAssertMsg(const char * szMsg, const char * szFile, int iLine);
-
-
-#endif /* XAP_COCOAASSERT_H */
+/// Show the assert. Currently as a dialog box with a "never show me again".
+/// Return true if the assert should be ignored next time
+bool XAP_CocoaAssertMsg(const char* szMsg, const char* szFile, int iLine);

@@ -19,8 +19,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef UT_ASSERT_H
-#define UT_ASSERT_H
+#pragma once
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -124,27 +123,38 @@ extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * 
 
 #endif // ifdef NDEBUG
 
+// MacOS code.
+#elif defined(TOOLKIT_COCOA)
+#	ifdef NDEBUG
+// When NDEBUG is defined, assert() does nothing.
+// So we let the system header files take care of it.
+#		include <assert.h>
+#		define UT_ASSERT assert
+#	else
+// Please keep the "/**/" to stop MSVC dependency generator complaining.
+#		include /**/ "xap_CocoaAssert.h"
+#			define UT_ASSERT(expr)								\
+			{												\
+				static bool __bOnceOnly = false;			\
+				if (!__bOnceOnly && !(expr)) {				\
+					if (XAP_CocoaAssertMsg(#expr,			\
+						__FILE__, __LINE__)) {				\
+						__bOnceOnly = true;					\
+					}										\
+				} \
+			}
+#	endif
 #else
 
-	// A Unix variant, possibly Gnome.
+// A Unix variant, possibly Gnome.
 
 #	ifdef NDEBUG
 
 		// When NDEBUG is defined, assert() does nothing.
 		// So we let the system header files take care of it.
-#       if 0 //defined(TOOLKIT_COCOA)
-// Please keep the "/**/" to stop MSVC dependency generator complaining.
-#			include /**/ "xap_CocoaAssert.h"
-#			define UT_ASSERT(expr)								\
-			((void) ((expr) ||								\
-				(XAP_CocoaAssertMsg(#expr,					\
-								  __FILE__, __LINE__),		\
-				 0)))
 
-#       else
-#			include <assert.h>
-#			define UT_ASSERT assert
-#		endif
+#		include <assert.h>
+#		define UT_ASSERT assert
 #	else
 		// Otherwise, we want a slighly modified behavior.
 		// We'd like assert() to ask us before crashing.
@@ -219,5 +229,3 @@ extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * 
  * Continue if this condition fails
  */
 #define UT_continue_if_fail(cond) if (!(cond)) { UT_ASSERT(cond); continue; }
-
-#endif /* UT_ASSERT_H */
