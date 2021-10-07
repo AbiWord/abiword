@@ -429,8 +429,8 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	NSRect controlFrame;
 	
 	/* vertical scrollbar */
-	controlFrame.origin.y = [NSScroller scrollerWidth];
-	controlFrame.size.width = [NSScroller scrollerWidth];
+	controlFrame.origin.y = [NSScroller scrollerWidthForControlSize:NSControlSizeRegular scrollerStyle:NSScrollerStyleOverlay];
+	controlFrame.size.width = [NSScroller scrollerWidthForControlSize:NSControlSizeRegular scrollerStyle:NSScrollerStyleOverlay];
 	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
 	controlFrame.origin.x = frame.size.width - controlFrame.size.width;
 	m_vScrollbar = [[XAP_NSScroller alloc] initWithFrame:controlFrame andController:_getController()
@@ -442,7 +442,7 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	/* horizontal scrollbar */
 	controlFrame.origin.x = 0;
 	controlFrame.origin.y = 0;
-	controlFrame.size.height = [NSScroller scrollerWidth];
+	controlFrame.size.height = [NSScroller scrollerWidthForControlSize:NSControlSizeRegular scrollerStyle:NSScrollerStyleOverlay];
 	controlFrame.size.width = frame.size.width - controlFrame.size.height;
 	m_hScrollbar = [[XAP_NSScroller alloc] initWithFrame:controlFrame andController:_getController()
 						vertical:NO];
@@ -452,9 +452,9 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 
 	/* doc view */
 	controlFrame.origin.x = 0;
-	controlFrame.origin.y = [NSScroller scrollerWidth];
+	controlFrame.origin.y = [NSScroller scrollerWidthForControlSize:NSControlSizeRegular scrollerStyle:NSScrollerStyleOverlay];
 	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
-	controlFrame.size.width = frame.size.width - [NSScroller scrollerWidth];
+	controlFrame.size.width = frame.size.width - [NSScroller scrollerWidthForControlSize:NSControlSizeRegular scrollerStyle:NSScrollerStyleOverlay];
 	m_docAreaGRView = [[XAP_CocoaTextView alloc] initWith:pFrame andFrame:controlFrame andName:@"document view"];
 	[docArea addSubview:m_docAreaGRView];
 	[m_docAreaGRView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
