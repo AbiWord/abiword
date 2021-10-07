@@ -1,8 +1,7 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003, 2009 Hubert Figuiere
+ * Copyright (C) 2001-2003, 2009-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,8 +19,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef XAP_COCOADIALOG_FILEOPENSAVEAS_H
-#define XAP_COCOADIALOG_FILEOPENSAVEAS_H
+#pragma once
 
 #import <Cocoa/Cocoa.h>
 
@@ -32,19 +30,17 @@ class XAP_CocoaDialog_FileOpenSaveAs;
 
 
 @interface XAP_OpenSavePanel_AccessoryController 
-	: NSObject<NSOpenSavePanelDelegate>
+	: NSViewController<NSOpenSavePanelDelegate>
 {
-	IBOutlet NSTextField *		oFTLabel;
-	IBOutlet NSPopUpButton *	oFTPopUp;
-	IBOutlet NSView *			oFTAccessoryView;
+	IBOutlet NSTextField* oFTLabel;
+	IBOutlet NSPopUpButton* oFTPopUp;
 
-	XAP_CocoaDialog_FileOpenSaveAs *	_xap;
+	XAP_CocoaDialog_FileOpenSaveAs* _xap;
 }
 
 - (id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap;
 
-- (NSView *)fileTypeAccessoryView;
-- (void)setFileTypeLabel:(const std::string &)label;
+- (void)setFileTypeLabel:(const std::string&)label;
 - (void)setSelectedFileType:(int)type;
 
 - (void)removeItemsOfFileTypesMenu;
@@ -83,5 +79,3 @@ private:
 	bool									m_bOpenPanel;
 	bool									m_bIgnoreCancel;
 };
-
-#endif /* XAP_COCOADIALOG_FILEOPENSAVEAS_H */

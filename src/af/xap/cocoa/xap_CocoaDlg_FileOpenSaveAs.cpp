@@ -1,8 +1,7 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003, 2009 Hubert Figuiere
+ * Copyright (C) 2001-2003, 2009-2021 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,16 +53,11 @@
 
 - (id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap
 {
-	if (![super init]) {
+	_xap = xap;
+	if (![super initWithNibName:@"xap_CocoaFileOpen_Views" bundle:NSBundle.mainBundle]) {
 		return nil;
 	}
-	_xap = xap;
 	return self;
-}
-
-- (NSView *)fileTypeAccessoryView
-{
-	return oFTAccessoryView;
 }
 
 - (void)setFileTypeLabel:(const std::string &)label
@@ -223,7 +217,7 @@ NSSavePanel * XAP_CocoaDialog_FileOpenSaveAs::_makeSavePanel(const std::string &
 	[m_accessoryViewsController setSelectedFileType:defaultFileType];
 	_setSelectedFileType(defaultFileType);
 	
-	[savePanel setAccessoryView:[m_accessoryViewsController fileTypeAccessoryView]];
+	[savePanel setAccessoryView:[m_accessoryViewsController view]];
 	return savePanel;
 }
 
@@ -233,13 +227,6 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 {
 	if (!m_accessoryViewsController) {
 		m_accessoryViewsController = [[XAP_OpenSavePanel_AccessoryController alloc] initWithXAP:this];
-		if (m_accessoryViewsController) {
-			if (![NSBundle loadNibNamed:@"xap_CocoaFileOpen_Views" owner:m_accessoryViewsController]) {
-				NSLog (@"Couldn't load nib xap_CocoaFileOpen_Views");
-				[m_accessoryViewsController release];
-				m_accessoryViewsController = 0;
-			}
-		}
 	}
 	UT_ASSERT(m_accessoryViewsController);
 	if (!m_accessoryViewsController)
@@ -448,9 +435,9 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 		}
 	}
 
-	int result;
+	NSModalResponse result;
 
-	m_bOpenPanel   = bOpenPanel;
+	m_bOpenPanel = bOpenPanel;
 	m_bPanelActive = true;
 
 	do
@@ -476,9 +463,11 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 				// can't be empty...
 				[openPanel setAllowedFileTypes:nil];
 			}
-			[openPanel setDirectoryURL:
-			 [[NSURL fileURLWithPath:szPersistDirectory] 
-			  URLByAppendingPathComponent:szPersistFile]];
+			if (szPersistDirectory) {
+				[openPanel setDirectoryURL:
+					[[NSURL fileURLWithPath:szPersistDirectory]
+					 URLByAppendingPathComponent:szPersistFile]];
+			}
 			result = [openPanel runModal];
 
 			result = (result == NSModalResponseOK) ? NSModalResponseOK : NSModalResponseCancel;
@@ -504,9 +493,11 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 			}
 
 //			[m_panel setPanelCanOrderOut:YES];
-			[m_panel setDirectoryURL:[[NSURL 
-									   fileURLWithPath:szPersistDirectory]
-									  URLByAppendingPathComponent:szPersistFile]];
+			if (szPersistDirectory) {
+				[m_panel setDirectoryURL:
+					[[NSURL fileURLWithPath:szPersistDirectory]
+					 URLByAppendingPathComponent:szPersistFile]];
+			}
 			result = [m_panel runModal];
 		}
 
@@ -522,7 +513,8 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 
 	m_bPanelActive = false;
 
-	szPersistFile = [m_panel URL].path;
+	// We expect an URL here, otherwise it fails everywhere.
+	szPersistFile = [[m_panel URL] absoluteString];
 
 	if ((result == NSModalResponseOK) && szPersistFile) {
 		m_finalPathname = [szPersistFile UTF8String];
