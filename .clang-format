@@ -1,0 +1,6 @@
+BasedOnStyle: WebKit
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterFunction: true
