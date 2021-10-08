@@ -1501,7 +1501,7 @@ void GR_CocoaGraphics::setColor3D(GR_Color3D c)
     _setColor(m_3dColors[c]);
 }
 
-bool GR_CocoaGraphics::getColor3D(GR_Color3D /*c*/, UT_RGBColor& /*colour*/)
+bool GR_CocoaGraphics::getColor3D(GR_Color3D c, UT_RGBColor& /*colour*/)
 {
     UT_ASSERT(c < COUNT_3D_COLORS);
 
