@@ -524,7 +524,7 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 		}
 		else
 		{
-			pView->updateScreen();
+			pView->updateScreen(true);
 		}
 	}
 	pG->flush();
@@ -959,7 +959,7 @@ void XAP_Frame::quickZoom(void)
 		quickZoom( newZoom );
 		break;
 	default:
-		m_pView->updateScreen(false);
+		m_pView->queueDraw();
        ;
    }
 }

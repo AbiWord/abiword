@@ -4910,7 +4910,7 @@ FV_View::_checkPendingWordForSpell(void)
 				// recalculated. In other words, make the world a
 				// better place by adding requestUpdateScreen or
 				// similar.
-				updateScreen();
+				updateScreen(true);
 			}
 		}
 	}

@@ -188,7 +188,7 @@ void fl_TOCLayout::setSelected(bool bIsSelected)
 		fp_TOCContainer * pTOCCon = static_cast<fp_TOCContainer *>(getFirstContainer());
 		pTOCCon->forceClearScreen();
 		markAllRunsDirty();
-		m_pLayout->getView()->updateScreen();
+		m_pLayout->getView()->updateScreen(true);
 //		pTOCCon->draw(m_pLayout->getGraphics());
 	}
 	m_bIsSelected = bIsSelected;
@@ -197,7 +197,7 @@ void fl_TOCLayout::setSelected(bool bIsSelected)
 		fp_TOCContainer * pTOCCon = static_cast<fp_TOCContainer *>(getFirstContainer());
 		pTOCCon->forceClearScreen();
 		markAllRunsDirty();
-		m_pLayout->getView()->updateScreen();
+		m_pLayout->getView()->updateScreen(true);
 //		pTOCCon->draw(m_pLayout->getGraphics());
 	}
 }

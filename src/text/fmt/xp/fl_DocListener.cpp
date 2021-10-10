@@ -1628,7 +1628,7 @@ bool fl_DocListener::change(fl_ContainerLayout* sfh,
 		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 		pCL->format();
 		FV_View* pView = m_pLayout->getView();
-		pView->updateScreen();
+		pView->updateScreen(true);
 		goto finish_up;
 	}
 	case PX_ChangeRecord::PXT_RemoveList:
@@ -2507,7 +2507,7 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 #ifdef UPDATE_LAYOUT_ON_SIGNAL
 		m_pLayout->updateLayout();
 #endif
-		pView->updateScreen();
+		pView->updateScreen(true);
 		break;
 	case PD_SIGNAL_REFORMAT_LAYOUT:
 		m_pLayout->formatAll();

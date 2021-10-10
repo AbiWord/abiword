@@ -9914,7 +9914,7 @@ fl_BlockLayout::recheckIgnoredWords(void)
 	FV_View* pView = getView();
 	if (bUpdate && pView)
 	{
-		pView->updateScreen();
+		pView->updateScreen(true);
 	}
 }
 #endif

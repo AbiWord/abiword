@@ -109,7 +109,7 @@ public:
 	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; }
 	inline UT_sint32	getYScrollOffset(void) const { return m_yScrollOffset; }
 
-	virtual void	      updateScreen(bool bDirtyRunsOnly=true) = 0;
+	virtual void	      updateScreen(bool bDirtyRunsOnly) = 0;
     virtual void          updateLayout(void) = 0;
 	virtual void          rebuildLayout(void) = 0;
 	virtual void          remeasureCharsWithoutRebuild() = 0;

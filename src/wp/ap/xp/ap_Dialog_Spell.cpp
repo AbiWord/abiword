@@ -332,7 +332,7 @@ bool AP_Dialog_Spell::makeWordVisible(void)
 
    m_pView->moveInsPtTo( (PT_DocPosition) (m_pCurrBlock->getPosition() + m_iWordOffset) );
    m_pView->extSelHorizontal(true, static_cast<UT_uint32>(m_iWordLength));
-   m_pView->updateScreen();
+   m_pView->updateScreen(true);
    
    return true;
 }
@@ -404,7 +404,7 @@ bool AP_Dialog_Spell::changeWordWith(const UT_UCSChar * newword)
    _getDict()->correctWord (oldWord, iOldLength, newword, iNewLength);
 
    result = m_pPreserver->cmdCharInsert(newword, iNewLength);
-   m_pView->updateScreen();
+   m_pView->updateScreen(true);
    
    // If this is the last block, adjust the end length accordingly
    // (seeing as the change must have occurred before the end of the

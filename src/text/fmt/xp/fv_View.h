@@ -521,7 +521,7 @@ public:
 	PT_DocPosition  getDocPositionFromLastXY(void);
 
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};
-	virtual void	updateScreen(bool bDirtyRunsOnly = true) override;
+	virtual void updateScreen(bool bDirtyRunsOnly) override;
 	bool            isInDocSection(PT_DocPosition pos = 0) const;
 
 //---------

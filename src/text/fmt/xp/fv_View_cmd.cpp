@@ -6126,7 +6126,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 	_restorePieceTableState();
 
 	_generalUpdate();
-	updateScreen (); // fix 1803, force screen update/redraw
+	updateScreen(true); // fix 1803, force screen update/redraw
 
 	_updateInsertionPoint();
 	m_pDoc->endUserAtomicGlob();

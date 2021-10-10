@@ -7811,7 +7811,7 @@ FV_View::findReplaceReverse(bool& bDoneEntireDocument)
 	bool bRes = _findReplaceReverse(pPrefix, bDoneEntireDocument, false /* do update */);
 	FREEP(pPrefix);
 
-	updateScreen();
+	updateScreen(true);
 
 	if (isSelectionEmpty())
 	{
@@ -7844,7 +7844,7 @@ FV_View::findReplace(bool& bDoneEntireDocument)
 	bool bRes = _findReplace(pPrefix, bDoneEntireDocument, false /* do update */);
 	FREEP(pPrefix);
 
-	updateScreen();
+	updateScreen(true);
 
 	if (isSelectionEmpty())
 	{
@@ -11388,7 +11388,7 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 		// Signal PieceTable Changes have finished
 		_restorePieceTableState();
 		_generalUpdate();
-		updateScreen (); // fix 1803, force screen update/redraw
+		updateScreen(true); // fix 1803, force screen update/redraw
 
 		_updateInsertionPoint();
 		m_pDoc->endUserAtomicGlob();
@@ -11723,7 +11723,7 @@ void FV_View::setHdrFtrEdit(fl_HdrFtrShadow * pShadow)
 //
 // Draw the decorations around the Header/Footer
 //
-	updateScreen();
+	updateScreen(true);
 }
 
 
@@ -11739,7 +11739,7 @@ void FV_View::clearHdrFtrEdit(void)
 //
 // Remove the decorations around the Header/Footer
 //
-	updateScreen();
+	updateScreen(true);
 }
 
 /*!
@@ -13402,7 +13402,7 @@ void FV_View::toggleMarkRevisions()
 	m_pDoc->toggleMarkRevisions();
 
 	// force screen update to fix 7673
-	updateScreen();
+	updateScreen(true);
 }
 
 void FV_View::setShowRevisions(bool bShow)

@@ -11373,7 +11373,7 @@ Defun1(dlgFmtPosImage)
 
 		pView->convertPositionedToInLine(pPosObj);
 		pView->setCharFormat(properties, attribs);
-		pView->updateScreen();
+		pView->updateScreen(true);
 		return true;
 	}
 	else
@@ -11655,7 +11655,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 			  };
 
 			  pView->setCharFormat(properties, attribs);
-			  pView->updateScreen();
+			  pView->updateScreen(true);
 		  }
 
 //
