@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copryight (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,15 +18,11 @@
  * 02110-1301 USA.
  */
 
-#ifndef XAP_CAIRONULLGRAPHICS_H
-#define XAP_CAIRONULLGRAPHICS_H
+#pragma once
 
-#include "ut_vector.h"
 #include "gr_CairoGraphics.h"
 #include "gr_Image.h"
 #include "ut_misc.h"
-
-class UT_ByteBuf;
 
 /*****************************************************************/
 /*****************************************************************/
@@ -70,6 +67,7 @@ public:
 	virtual void polyLine(const UT_Point * pts, UT_uint32 nPoints) override;
 	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) override;
 	virtual void invertRect(const UT_Rect*) override;
+	virtual void queueDraw(const UT_Rect* pRect) override;
 	virtual void setClipRect(const UT_Rect*) override;
 	virtual void scroll(UT_sint32, UT_sint32) override;
 	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -116,5 +114,3 @@ protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	CairoNull_Graphics();
 };
-
-#endif /* GR_CAIROPSGRAPHICS_H */

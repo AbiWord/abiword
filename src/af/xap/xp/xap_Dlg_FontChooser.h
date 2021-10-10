@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,8 +20,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef XAP_DIALOG_FONTCHOOSER_H
-#define XAP_DIALOG_FONTCHOOSER_H
+#pragma once
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
@@ -67,7 +66,8 @@ public:
 
 	void                            addOrReplaceVecProp(const std::string & pszProp,
 														const std::string & pszVal);
-	void                            event_previewExposed(const UT_UCSChar * pszChars);
+	void event_previewInvalidate(const UT_UCSChar * pszChars);
+	void event_previewDrawImmediate();
 	void                            event_previewClear(void);
 	std::string                     getVal(const std::string & sProp) const;
 	void                            setAllPropsFromVec(const std::vector<std::string> & vProps);
@@ -163,7 +163,7 @@ public:
 	virtual ~XAP_Preview_FontPreview(void);
 	void setVecProperties( const XAP_Dialog_FontChooser::PropMap * vFontProps);
 	std::string getVal(const std::string &) const;
-	void draw(const UT_Rect *clip = NULL) override;
+	void drawImmediate(const UT_Rect* clip = nullptr) override;
 	void setDrawString( const UT_UCSChar * pszChars) {m_pszChars = pszChars;}
 	void clearScreen(void);
 
@@ -174,10 +174,8 @@ protected:
 	const UT_UCSChar * m_pszChars;
 
 private:
-
-	XAP_Preview_FontPreview();
-	XAP_Preview_FontPreview(const XAP_Preview_FontPreview &other);
-	XAP_Preview_FontPreview& operator=(const XAP_Preview_FontPreview & other);
+	XAP_Preview_FontPreview(const XAP_Preview_FontPreview &other) = delete;
+	XAP_Preview_FontPreview& operator=(const XAP_Preview_FontPreview & other) = delete;
 
 	GR_Font * m_pFont;
 
@@ -185,5 +183,3 @@ private:
 	UT_sint32 m_iDescent;
 	UT_sint32 m_iHeight;
 };
-
-#endif /* XAP_DIALOG_FONTCHOOSER_H */

@@ -182,7 +182,7 @@ void AP_Dialog_Lists::event_PreviewAreaExposed(void)
 	if (m_pListsPreview)
 	{
 		fillFakeLabels();
-		m_pListsPreview->draw();
+		m_pListsPreview->queueDraw();
 	}
 	else
 	{
@@ -1125,7 +1125,7 @@ void AP_Lists_preview::setData(const gchar * pszFont,float fAlign,float fIndent)
 }
 
 
-void AP_Lists_preview::draw(const UT_Rect *clip)
+void AP_Lists_preview::drawImmediate(const UT_Rect* clip)
 {
 	UT_UNUSED(clip);
 	UT_return_if_fail(m_pFont);

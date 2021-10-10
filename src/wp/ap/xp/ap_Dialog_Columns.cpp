@@ -397,7 +397,7 @@ AP_Columns_preview::~AP_Columns_preview()
 {
 }
 
-void AP_Columns_preview::draw(const UT_Rect *clip)
+void AP_Columns_preview::drawImmediate(const UT_Rect* clip)
 {
 	UT_UNUSED(clip);
 	GR_Painter painter(m_gc);

@@ -397,7 +397,7 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 
 /*****************************************************************/
 
-void AP_TopRuler::drawLU(const UT_Rect *clip)
+void AP_TopRuler::drawImmediateLU(const UT_Rect *clip)
 {
 	if (!m_pG)
 		return;
@@ -4870,7 +4870,7 @@ void AP_TopRuler::_prefsListener( XAP_Prefs *pPrefs, const XAP_PrefsChangeSet* /
 void AP_TopRuler::setDimension( UT_Dimension newdim )
 {
 	m_dim = newdim;
-	draw( static_cast<const UT_Rect *>(0) );
+	queueDraw(nullptr);
 }
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)

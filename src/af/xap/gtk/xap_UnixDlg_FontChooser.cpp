@@ -217,8 +217,7 @@ static gboolean s_drawing_area_draw(GtkWidget * w,
 {
 	XAP_UnixDialog_FontChooser * dlg = 
 		(XAP_UnixDialog_FontChooser *)g_object_get_data(G_OBJECT(w), "user-data");
-	dlg->updatePreview();
-//	g_idle_add(static_cast<GSourceFunc>(do_update),static_cast<gpointer>(dlg));
+	dlg->event_previewDrawImmediate();
 	return TRUE;
 }
 
@@ -1114,18 +1113,14 @@ void XAP_UnixDialog_FontChooser::updatePreview(void)
 	// if a font has been set since this dialog was launched, draw things with it
 	if (m_doneFirstFont)
 	{
-	  const UT_UCSChar * entryString = getDrawString ();
+		const UT_UCSChar * entryString = getDrawString ();
 
-	  if (!entryString)
-		  return;
+		if (!entryString) {
+			return;
+        }
 
-	  event_previewExposed(entryString);
-	}
-	else
+		event_previewInvalidate(entryString);
+	} else {
 		event_previewClear();
+	}
 }
-
-
-
-
-

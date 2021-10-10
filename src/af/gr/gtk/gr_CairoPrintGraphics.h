@@ -56,6 +56,8 @@ public:
 						   bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/) override;
 	virtual bool endPrint(void) override;
 
+	virtual void queueDraw(const UT_Rect* pRect) override;
+
 	virtual void setCursor(GR_Graphics::Cursor /*c*/) override { UT_ASSERT_NOT_REACHED(); }
 	virtual GR_Graphics::Cursor getCursor(void) const override { UT_ASSERT_NOT_REACHED(); return GR_CURSOR_INVALID; }
 	virtual GR_Font * getGUIFont(void) override;

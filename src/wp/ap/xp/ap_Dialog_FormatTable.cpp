@@ -672,7 +672,7 @@ AP_FormatTable_preview::~AP_FormatTable_preview()
 {
 }
 
-void AP_FormatTable_preview::draw(const UT_Rect *clip)
+void AP_FormatTable_preview::drawImmediate(const UT_Rect* clip)
 {
 	UT_UNUSED(clip);
 	GR_Painter painter(m_gc);

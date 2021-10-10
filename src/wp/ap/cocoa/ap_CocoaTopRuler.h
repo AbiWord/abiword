@@ -61,8 +61,6 @@ protected:
 #endif
 
 private:
-	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
-
 	XAP_CocoaNSView *			m_wTopRuler;
 	AP_CocoaTopRulerDelegate*	m_delegate;
 };

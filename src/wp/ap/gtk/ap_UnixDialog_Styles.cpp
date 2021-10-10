@@ -1,21 +1,21 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (c) 2009-2016 Hubert Figuiere
- * 
+ * Copyright (c) 2009-2021 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -201,7 +201,7 @@ static gboolean s_paraPreview_draw(GtkWidget * widget, gpointer /* data */, AP_U
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
-	me->event_paraPreviewExposed();
+	me->event_paraPreviewDraw();
 	return FALSE;
 }
 
@@ -210,7 +210,7 @@ static gboolean s_charPreview_draw(GtkWidget * widget, gpointer /* data */, AP_U
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
-	me->event_charPreviewExposed();
+	me->event_charPreviewDraw();
 	return FALSE;
 }
 
@@ -219,7 +219,7 @@ static gboolean s_modifyPreview_draw(GtkWidget * widget, gpointer /* data */, AP
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
-	me->event_ModifyPreviewExposed();
+	me->event_ModifyPreviewDraw();
 	return FALSE;
 }
 
@@ -375,17 +375,26 @@ void AP_UnixDialog_Styles::event_WindowDelete(void)
 	m_answer = AP_Dialog_Styles::a_CANCEL;
 }
 
-void AP_UnixDialog_Styles::event_paraPreviewExposed(void)
+void AP_UnixDialog_Styles::event_paraPreviewDraw(void)
 {
-	if(m_pParaPreview)
-		m_pParaPreview->draw();
+	if (m_pParaPreview) {
+		m_pParaPreview->drawImmediate();
+	}
 }
 
 
-void AP_UnixDialog_Styles::event_charPreviewExposed(void)
+void AP_UnixDialog_Styles::event_charPreviewInvalidate(void)
 {
-	if(m_pCharPreview)
+	if (m_pCharPreview) {
 		event_charPreviewUpdated();
+	}
+}
+
+void AP_UnixDialog_Styles::event_charPreviewDraw(void)
+{
+	if (m_pCharPreview) {
+		m_pCharPreview->drawImmediate();
+	}
 }
 
 void AP_UnixDialog_Styles::event_DeleteClicked(void)
@@ -393,8 +402,8 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 	if (m_selectedStyle)
     {
 		m_sNewStyleName = "";
-        gchar * style = NULL;
-		
+		gchar * style = NULL;
+
 		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
 		GtkTreeIter iter;
 		gtk_tree_model_get_iter(model, &iter, m_selectedStyle);
@@ -1281,10 +1290,18 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 	DELETEP(m_pAbiPreviewWidget);
 }
 
-void AP_UnixDialog_Styles::event_ModifyPreviewExposed(void)
+void AP_UnixDialog_Styles::event_ModifyPreviewInvalidate(void)
 {
-	drawLocal();
+	invalidatePreview();
 }
+
+void AP_UnixDialog_Styles::event_ModifyPreviewDraw(void)
+{
+	if (m_pAbiPreview) {
+		m_pAbiPreview->drawImmediate();
+	}
+}
+
 
 void AP_UnixDialog_Styles::event_ModifyClicked(void)
 {

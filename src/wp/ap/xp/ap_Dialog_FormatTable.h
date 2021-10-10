@@ -58,8 +58,7 @@ public:
 	virtual ~AP_FormatTable_preview(void);
 
 	// data twiddlers
-	void			draw(const UT_Rect *clip = NULL) override;
-	GR_Graphics *   getGraphics(void) const { return m_gc;}
+	void drawImmediate(const UT_Rect* clip = nullptr) override;
 private:
 	AP_Dialog_FormatTable *  m_pFormatTable;
 protected:

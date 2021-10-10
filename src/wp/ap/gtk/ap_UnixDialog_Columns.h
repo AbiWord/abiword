@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +18,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_UnixDialog_Columns_H
-#define AP_UnixDialog_Columns_H
+#pragma once
 
 #include "ap_Dialog_Columns.h"
 
@@ -67,7 +67,10 @@ public:
 	void                            checkLineBetween(void);
 	void                            readSpin(void);
 	void                            event_Toggle( UT_uint32 icolumns);
-	void                            event_previewExposed(void);
+	// invalidate preview
+	void event_previewInvalidate(void);
+	// draw the preview
+	void event_previewDraw(void);
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
 
@@ -115,11 +118,3 @@ protected:
 	UT_sint32 m_iSizeHeight;
     GtkWidget * m_checkOrder;
 };
-
-#endif /* AP_UnixDialog_Columns_H */
-
-
-
-
-
-

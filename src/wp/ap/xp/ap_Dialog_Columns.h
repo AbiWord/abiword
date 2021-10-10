@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +18,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_Dialog_Columns_H
-#define AP_Dialog_Columns_H
+#pragma once
 
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
@@ -51,13 +51,13 @@ public:
 	virtual ~AP_Columns_preview(void);
 
 	// data twiddlers
-	virtual void	draw(const UT_Rect *clip=NULL) override;
+	virtual void drawImmediate(const UT_Rect* clip = nullptr) override;
 
 	void			set(UT_uint32 iColumns, bool bLines)
 					{
 						m_iColumns = iColumns;
 						m_bLineBetween = bLines;
-						draw();
+						queueDraw();
 					}
 
 private:
@@ -81,6 +81,11 @@ public:
 
 
 	void							setColumns(UT_uint32 iColumns);
+
+	AP_Columns_preview* getColumnsPreview() const
+	{
+		return m_pColumnsPreview;
+	}
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 	AP_Dialog_Columns::tAnswer getAnswer(void) const;
@@ -131,5 +136,3 @@ private:
 	double                     m_dMarginLeft;
 	double                     m_dMarginRight;
 };
-
-#endif /* AP_Dialog_Columns_H */

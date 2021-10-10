@@ -1753,7 +1753,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 
 			if(!s_bFirstDrawDone && (iPageCount > 1))
 			{
-				pView->draw();
+				pView->queueDraw();
 				s_bFirstDrawDone = true;
 			}
 			else
@@ -8632,19 +8632,19 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 							i++;
 							k = *page;
 							snprintf (msgBuf, 1024, msgTmpl, i, pages.size());
-							
+
 							if(pFrame) {
 								pFrame->setStatusMessage ( msgBuf );
 								pFrame->nullUpdate();
 							}
-							
+
 							// NB we will need a better way to calc
 							// pGraphics->m_iRasterPosition when
 							// iHeight is allowed to vary page to page
 							pGraphics->m_iRasterPosition = (k-1)*iHeight;
 							pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
-							pPrintView->draw(k-1, &da);
-						}		
+							pPrintView->drawPage(k-1, &da);
+						}
 				}
 		}
 		else
@@ -8660,7 +8660,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 					for (j=1; (j <= nCopies); j++)
 						{
 							snprintf (msgBuf, 1024, msgTmpl, i, pages.size());
-							
+
 							if(pFrame) {
 								pFrame->setStatusMessage ( msgBuf );
 								pFrame->nullUpdate();
@@ -8671,12 +8671,12 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 							// iHeight is allowed to vary page to page
 							pGraphics->m_iRasterPosition = (k-1)*iHeight;
 							pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
-							pPrintView->draw(k-1, &da);
+							pPrintView->drawPage(k-1, &da);
 						}
 				}
 		}
 		pGraphics->endPrint();
-		
+
 		if(pFrame)
 		  pFrame->setStatusMessage (""); // reset/0 out status bar
 	}
@@ -14924,7 +14924,7 @@ Defun(hyperlinkStatusBar)
 	//UT_DEBUGMSG(("hyperlinkStatusBar: pRungetxy %d %d\n",pHRun->getX(),pHRun->getY()));
 	//UT_DEBUGMSG(("hyperlinkStatusBar: getScreenOffsets %d %d\n",xoff,yoff));
 	
-	pAnnPview->draw();
+	pAnnPview->queueDraw();
 	
 	return true;	
 }

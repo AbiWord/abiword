@@ -2444,7 +2444,8 @@ void FV_View::setPaperColor(const gchar* clr)
 	};
 	setSectionFormat(props);
 	// update the screen
-	_draw(0, 0, getWindowWidth(), getWindowHeight(), false, false);
+	UT_Rect rect(0, 0, getWindowWidth(), getWindowHeight());
+	queueDraw(&rect);
 }
 
 void FV_View::killBlink(void)
@@ -7923,7 +7924,7 @@ FV_View::findReplaceAll()
 	
 	_updateInsertionPoint();
 	_generalUpdate();
-	draw();
+	queueDraw();
 	setCursorToContext();
 
 	FREEP(pPrefix);
@@ -8219,7 +8220,7 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	_updateSelectionHandles();
 }
 
-void FV_View::draw(int page, dg_DrawArgs* da)
+void FV_View::drawPage(int page, dg_DrawArgs* da)
 {
 	UT_DEBUGMSG(("FV_View::draw_1: [page %d]\n",page));
 	calculateNumHorizPages();
@@ -8236,12 +8237,18 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 	}
 }
 
+
+void FV_View::queueDraw(const UT_Rect* pClipRect)
+{
+	m_drawQueue.push(pClipRect ? UT_Option<UT_Rect>(*pClipRect) : UT_Option<UT_Rect>());
+	getGraphics()->queueDraw(pClipRect);
+}
 /*!
     The rectangle is in device coordinances
 */
-void FV_View::draw(const UT_Rect* pClipRect)
+void FV_View::drawImmediate(const UT_Rect* pClipRect)
 {
-	if(getPoint() == 0) {
+	if (getPoint() == 0) {
 		return;
 	}
 
@@ -11262,7 +11269,7 @@ void FV_View::setShowPara(bool bShowPara)
 		m_pDoc->allowChangeInsPoint();
 		if(getPoint() > 0)
 		{
-			draw();
+			queueDraw();
 		}
 	}
 }
@@ -13412,7 +13419,7 @@ void FV_View::setShowRevisions(bool bShow)
 		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 
 		/* have to force redraw -- see 10486 */
-		draw(NULL);
+		queueDraw(nullptr);
 		
 		_fixInsertionPointCoords();
 	}

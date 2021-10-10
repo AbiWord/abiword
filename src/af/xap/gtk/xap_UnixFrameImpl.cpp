@@ -2,7 +2,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2002 William Lachance
- * Copyright (C) 2019 Hubert Figuière
+ * Copyright (C) 2019-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -855,11 +855,11 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 				pView->setWindowSize(iNewWidth, iNewHeight);
 				if(!pView->isConfigureChanged())
 				{
-						pView->draw(&rClip);
+						pView->queueDraw(&rClip);
 				}
 				else
 				{
-						pView->draw();
+						pView->queueDraw();
 						pView->setConfigure(false);
 				}
 		}
@@ -893,11 +893,11 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 				pView->setWindowSize(iNewWidth, iNewHeight);
 				if(!pView->isConfigureChanged())
 				{
-						pView->draw(&rClip);
+						pView->queueDraw(&rClip);
 				}
 				else
 				{
-						pView->draw();
+						pView->queueDraw();
 						pView->setConfigure(false);
 				}
 		}
@@ -1215,7 +1215,7 @@ gboolean XAP_UnixFrameImpl::_fe::draw(GtkWidget *w, cairo_t *cr, gpointer)
 //	}
 	if(pView)
 	{
-		GR_Graphics * pGr = pView->getGraphics ();
+		GR_CairoGraphics * pGr = static_cast<GR_CairoGraphics*>(pView->getGraphics());
 		UT_Rect rClip;
 		if (pGr->getPaintCount () > 0)
 			return TRUE;
@@ -1224,9 +1224,9 @@ gboolean XAP_UnixFrameImpl::_fe::draw(GtkWidget *w, cairo_t *cr, gpointer)
 		rClip.top = pGr->tlu(y);
 		rClip.width = pGr->tlu(width);
 		rClip.height = pGr->tlu(height);
-		static_cast<GR_CairoGraphics *>(pGr)->setCairo(cr);
-		pView->draw(&rClip);
-		static_cast<GR_CairoGraphics *>(pGr)->setCairo(NULL);
+		pGr->setCairo(cr);
+		pView->drawImmediate(&rClip);
+		pGr->setCairo(nullptr);
 	}
 	return TRUE;
 }

@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (c) 2009 Hubert Figuiere
+ * Copyright (c) 2009-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -232,14 +232,15 @@ static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
-	dlg->event_previewExposed();
+	dlg->event_previewDraw();
 	return FALSE;
 }
 
 static gboolean s_window_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
-	dlg->event_previewExposed();
+// We shouldn't need to do this, the widget machinery should do this.
+//	dlg->event_previewInvalidate();
 	return FALSE;
 }
 
@@ -392,7 +393,7 @@ void AP_UnixDialog_Columns::readSpin(void)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
 	}
 	setColumns( val );
-	m_pColumnsPreview->draw();
+	m_pColumnsPreview->queueDraw();
 }
 
 void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
@@ -439,7 +440,7 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 	g_signal_handler_unblock(G_OBJECT(m_wtoggleThree),
 							   m_threeHandlerID);
 	setColumns( icolumns );
-	m_pColumnsPreview->draw();
+	m_pColumnsPreview->queueDraw();
 }
 
 
@@ -483,10 +484,16 @@ void AP_UnixDialog_Columns::event_Cancel(void)
 	m_answer = AP_Dialog_Columns::a_CANCEL;
 }
 
-void AP_UnixDialog_Columns::event_previewExposed(void)
+void AP_UnixDialog_Columns::event_previewInvalidate(void)
 {
-        if(m_pColumnsPreview)
-	       m_pColumnsPreview->draw();
+	if(m_pColumnsPreview)
+	       m_pColumnsPreview->queueDraw();
+}
+
+void AP_UnixDialog_Columns::event_previewDraw(void)
+{
+	if(m_pColumnsPreview)
+	       m_pColumnsPreview->drawImmediate();
 }
 
 /*****************************************************************/

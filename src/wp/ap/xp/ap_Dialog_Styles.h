@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,8 +19,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_Dialog_Styles_H
-#define AP_Dialog_Styles_H
+#pragma once
 
 #include <string>
 #include <map>
@@ -70,7 +69,7 @@ class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	virtual void _populatePreviews(bool isModify);
 	FV_View * getLView(void) const;
 	PD_Document * getLDoc(void) const;
-	void drawLocal(void);
+	void invalidatePreview(void);
 	void destroyAbiPreview(void);
 	void fillVecWithProps(const gchar * szStyle, bool bReplaceAttributes);
 	void fillVecFromCurrentPoint(void);
@@ -118,16 +117,3 @@ private:
 	PropMap                       m_mapCharProps;
 	std::string                   m_ListProps[8];
 };
-
-#endif /* AP_Dialog_Styles_H */
-
-
-
-
-
-
-
-
-
-
-

@@ -81,6 +81,6 @@ void XAP_FontPreview::setText(const gchar * pFontFamily)
 void XAP_FontPreview::draw()
 {
   if (m_pFontPreview)
-    m_pFontPreview->draw();
+    m_pFontPreview->queueDraw();
 }
 

@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 2010 Patrik Fimml
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +18,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef XAP_UNIXCUSTOMWIDGET_H
-#define XAP_UNIXCUSTOMWIDGET_H
+#pragma once
 
 #include "xap_CustomWidget.h"
 #include <gtk/gtk.h>
@@ -27,7 +27,6 @@ class XAP_UnixCustomWidget: virtual public XAP_CustomWidget
 {
 public:
 	virtual GtkWidget *getWidget() = 0;
-	virtual void queueDraw(const UT_Rect *clip = NULL) override;
 
 protected:
 	class _fe
@@ -38,5 +37,3 @@ protected:
 	friend class _fe;
 	cairo_t *m_cr;
 };
-
-#endif

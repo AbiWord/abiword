@@ -21,10 +21,12 @@
 
 #pragma once
 
+#include "gr_Graphics.h"
 #include "xap_UnixCustomWidget.h"
 
 class AV_View;
 class GR_UnixCairoGraphics;
+class XAP_Frame;
 
 /**
  * This is the Gtk3 implementation for the rulers.
@@ -32,7 +34,7 @@ class GR_UnixCairoGraphics;
  *
  */
 class AP_UnixRuler
-    : public XAP_UnixCustomWidget
+    : virtual public XAP_UnixCustomWidget
 {
 public:
     AP_UnixRuler(XAP_Frame* pFrame);

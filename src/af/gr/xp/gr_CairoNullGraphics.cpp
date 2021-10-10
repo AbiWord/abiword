@@ -112,6 +112,10 @@ void CairoNull_Graphics::invertRect(const UT_Rect* /*pRect*/)
 {
 }
 
+void CairoNull_Graphics::queueDraw(const UT_Rect*)
+{
+}
+
 void CairoNull_Graphics::setClipRect(const UT_Rect* )
 {
 }

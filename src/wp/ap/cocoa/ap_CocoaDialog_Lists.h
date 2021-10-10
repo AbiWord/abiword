@@ -89,9 +89,9 @@ class AP_CocoaDialog_Lists;
 - (NSMenuItem*)selectedListType;
 - (void)setStyleMenu:(int)type;
 - (void)selectFolding:(int)folding;
-- (int)selectedTab;
+- (NSInteger)selectedTab;
 
-- (int)listAction;
+- (NSInteger)listAction;
 
 - (IBAction)applyAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
@@ -131,7 +131,7 @@ class AP_CocoaDialog_Lists: public AP_Dialog_Lists
 	void					customChanged(void);
 	void					applyClicked(void);
 	void					typeChanged(int type);
-	void					previewExposed(void);
+	void previewInvalidate(void);
 
 	/* Just Plain Useful Functions */
 
@@ -148,9 +148,9 @@ class AP_CocoaDialog_Lists: public AP_Dialog_Lists
 	void					_fillNoneStyleMenu(NSMenu *listmenu);
 	void					_fillFontMenu(NSPopUpButton* menu);
 
-	void					_foldingChanged(int i)
+	void _foldingChanged(NSInteger i)
 		{
-			setCurrentFold(i);
+			setCurrentFold(static_cast<UT_sint32>(i));
 		}
  protected:
 	void					_setRadioButtonLabels(void);

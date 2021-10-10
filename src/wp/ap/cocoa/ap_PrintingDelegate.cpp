@@ -38,7 +38,7 @@ void s_printPage(PD_Document */*doc*/,  GR_Graphics *pGraphics,
 
 	pGraphics->m_iRasterPosition = (nPage-1)*iHeight;
 	pGraphics->startPage(pDocName, nPage, ps.isPortrait(), iWidth, iHeight);
-	pPrintView->draw(nPage-1, &da);
+	pPrintView->drawPage(nPage-1, &da);
 }
 
 AP_PrintingDelegate::AP_PrintingDelegate(FV_View* pView)

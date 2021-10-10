@@ -55,62 +55,10 @@
 #endif
 #endif
 
-#define CONTEXT_LOCKED__ (m_viewLocker != nullptr)
-#define LOCK_CONTEXT__ UT_ASSERT(CONTEXT_LOCKED__)
-
 #define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] CGContext]
 
 #define TDUX(x) (_tduX(x))
 // #define TDUX(x) (_tduX(x)+1.0)
-
-// create a stack object like that to lock a NSView, then it will be unlocked on scope exit.
-// never do a new
-class StNSViewLocker
-{
-public:
-    StNSViewLocker(NSView* view)
-        : m_view(view)
-        , m_hasLock([view lockFocusIfCanDraw])
-    {
-        //		UT_ASSERT(m_hasLock);
-    }
-    ~StNSViewLocker()
-    {
-        if (m_hasLock == YES) {
-            [m_view unlockFocus];
-        }
-    }
-
-private:
-    NSView* m_view;
-    BOOL m_hasLock;
-
-    //void * operator new (size_t size);	// private so that we never call new for that class. Never defined.
-};
-
-class StNSImageLocker
-{
-public:
-    StNSImageLocker(NSView* view, NSImage* img)
-        : m_view(view)
-        , m_image(img)
-    {
-        [img lockFocusFlipped:YES];
-    }
-    ~StNSImageLocker()
-    {
-        [m_image unlockFocus];
-        [m_view setNeedsDisplay:YES];
-    }
-
-private:
-    NSImage* m_image;
-    NSView* m_view;
-
-    void* operator new(size_t size); // private so that we never call new for that class. Never defined.
-};
-
-UT_uint32 GR_CocoaGraphics::s_iInstanceCount = 0;
 
 bool GR_CocoaGraphics::m_colorAndImageInited = false;
 
@@ -158,49 +106,41 @@ void GR_CocoaGraphics::_initColorAndImage(void)
     if (path) {
         m_imageBlue16x15 = [[NSImage alloc] initWithContentsOfFile:path];
         if (m_imageBlue16x15) {
-            m_colorBlue16x15 = [NSColor colorWithPatternImage:m_imageBlue16x15];
-            [m_colorBlue16x15 retain];
+            m_colorBlue16x15 = [[NSColor colorWithPatternImage:m_imageBlue16x15] retain];
         }
     }
     if (!m_colorBlue16x15) {
-        m_colorBlue16x15 = [NSColor blueColor];
-        [m_colorBlue16x15 retain];
+        m_colorBlue16x15 = [NSColor.blueColor retain];
     }
     path = [bundle pathForResource:@"Blue11x16" ofType:@"png"];
     if (path) {
         m_imageBlue11x16 = [[NSImage alloc] initWithContentsOfFile:path];
         if (m_imageBlue11x16) {
-            m_colorBlue11x16 = [NSColor colorWithPatternImage:m_imageBlue11x16];
-            [m_colorBlue11x16 retain];
+            m_colorBlue11x16 = [[NSColor colorWithPatternImage:m_imageBlue11x16] retain];
         }
     }
     if (!m_colorBlue11x16) {
-        m_colorBlue11x16 = [NSColor blueColor];
-        [m_colorBlue11x16 retain];
+        m_colorBlue11x16 = [NSColor.blueColor retain];
     }
     path = [bundle pathForResource:@"Grey16x15" ofType:@"png"];
     if (path) {
         m_imageGrey16x15 = [[NSImage alloc] initWithContentsOfFile:path];
         if (m_imageGrey16x15) {
-            m_colorGrey16x15 = [NSColor colorWithPatternImage:m_imageGrey16x15];
-            [m_colorGrey16x15 retain];
+            m_colorGrey16x15 = [[NSColor colorWithPatternImage:m_imageGrey16x15] retain];
         }
     }
     if (!m_colorGrey16x15) {
-        m_colorGrey16x15 = [NSColor grayColor];
-        [m_colorGrey16x15 retain];
+        m_colorGrey16x15 = [NSColor.grayColor retain];
     }
     path = [bundle pathForResource:@"Grey11x16" ofType:@"png"];
     if (path) {
         m_imageGrey11x16 = [[NSImage alloc] initWithContentsOfFile:path];
         if (m_imageGrey11x16) {
-            m_colorGrey11x16 = [NSColor colorWithPatternImage:m_imageGrey11x16];
-            [m_colorGrey11x16 retain];
+            m_colorGrey11x16 = [[NSColor colorWithPatternImage:m_imageGrey11x16] retain];
         }
     }
     if (!m_colorGrey11x16) {
-        m_colorGrey11x16 = [NSColor grayColor];
-        [m_colorGrey11x16 retain];
+        m_colorGrey11x16 = [NSColor.grayColor retain];
     }
 
     // Cursors
@@ -213,8 +153,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_E) {
-        m_Cursor_E = [NSCursor arrowCursor];
-        [m_Cursor_E retain];
+        m_Cursor_E = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_N" ofType:@"png"];
     if (path) {
@@ -225,8 +164,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_N) {
-        m_Cursor_N = [NSCursor arrowCursor];
-        [m_Cursor_N retain];
+        m_Cursor_N = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_NE" ofType:@"png"];
     if (path) {
@@ -237,8 +175,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_NE) {
-        m_Cursor_NE = [NSCursor arrowCursor];
-        [m_Cursor_NE retain];
+        m_Cursor_NE = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_NW" ofType:@"png"];
     if (path) {
@@ -249,8 +186,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_NW) {
-        m_Cursor_NW = [NSCursor arrowCursor];
-        [m_Cursor_NW retain];
+        m_Cursor_NW = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_S" ofType:@"png"];
     if (path) {
@@ -261,8 +197,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_S) {
-        m_Cursor_S = [NSCursor arrowCursor];
-        [m_Cursor_S retain];
+        m_Cursor_S = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_SE" ofType:@"png"];
     if (path) {
@@ -285,8 +220,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_SW) {
-        m_Cursor_SW = [NSCursor arrowCursor];
-        [m_Cursor_SW retain];
+        m_Cursor_SW = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_W" ofType:@"png"];
     if (path) {
@@ -297,8 +231,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_W) {
-        m_Cursor_W = [NSCursor arrowCursor];
-        [m_Cursor_W retain];
+        m_Cursor_W = [NSCursor.arrowCursor retain];
     }
 
     path = [bundle pathForResource:@"Cursor_Wait" ofType:@"png"];
@@ -310,8 +243,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_Wait) {
-        m_Cursor_Wait = [NSCursor arrowCursor];
-        [m_Cursor_Wait retain];
+        m_Cursor_Wait = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_LeftArrow" ofType:@"png"];
     if (path) {
@@ -322,8 +254,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_LeftArrow) {
-        m_Cursor_LeftArrow = [NSCursor arrowCursor];
-        [m_Cursor_LeftArrow retain];
+        m_Cursor_LeftArrow = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_RightArrow" ofType:@"png"];
     if (path) {
@@ -334,8 +265,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_RightArrow) {
-        m_Cursor_RightArrow = [NSCursor arrowCursor];
-        [m_Cursor_RightArrow retain];
+        m_Cursor_RightArrow = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_Compass" ofType:@"png"];
     if (path) {
@@ -346,8 +276,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_Compass) {
-        m_Cursor_Compass = [NSCursor arrowCursor];
-        [m_Cursor_Compass retain];
+        m_Cursor_Compass = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_Exchange" ofType:@"png"];
     if (path) {
@@ -358,8 +287,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_Exchange) {
-        m_Cursor_Exchange = [NSCursor arrowCursor];
-        [m_Cursor_Exchange retain];
+        m_Cursor_Exchange = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"leftright_cursor" ofType:@"png"];
     if (path) {
@@ -370,8 +298,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_LeftRight) {
-        m_Cursor_LeftRight = [NSCursor arrowCursor];
-        [m_Cursor_LeftRight retain];
+        m_Cursor_LeftRight = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"updown_cursor" ofType:@"png"];
     if (path) {
@@ -382,8 +309,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_UpDown) {
-        m_Cursor_UpDown = [NSCursor arrowCursor];
-        [m_Cursor_UpDown retain];
+        m_Cursor_UpDown = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_Crosshair" ofType:@"png"];
     if (path) {
@@ -394,8 +320,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_Crosshair) {
-        m_Cursor_Crosshair = [NSCursor arrowCursor];
-        [m_Cursor_Crosshair retain];
+        m_Cursor_Crosshair = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_HandPointer" ofType:@"png"];
     if (path) {
@@ -406,8 +331,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_HandPointer) {
-        m_Cursor_HandPointer = [NSCursor arrowCursor];
-        [m_Cursor_HandPointer retain];
+        m_Cursor_HandPointer = [NSCursor.arrowCursor retain];
     }
     path = [bundle pathForResource:@"Cursor_DownArrow" ofType:@"png"];
     if (path) {
@@ -418,17 +342,16 @@ void GR_CocoaGraphics::_initColorAndImage(void)
         }
     }
     if (!m_Cursor_DownArrow) {
-        m_Cursor_DownArrow = [NSCursor arrowCursor];
-        [m_Cursor_DownArrow retain];
+        m_Cursor_DownArrow = [NSCursor.arrowCursor retain];
     }
 
     m_colorAndImageInited = true;
 }
 
-GR_CocoaGraphics::GR_CocoaGraphics(XAP_CocoaNSView* win)
+GR_CocoaGraphics::GR_CocoaGraphics(XAP_CocoaNSView* view)
     : m_updateCallback(nullptr)
     , m_updateCBparam(nullptr)
-    , m_pWin(win)
+    , m_view(view)
     , m_cacheArray(10)
     , m_cacheRectArray(10)
     , m_currentColor(nil)
@@ -443,38 +366,25 @@ GR_CocoaGraphics::GR_CocoaGraphics(XAP_CocoaNSView* win)
     , m_screenResolution(0)
     , m_bIsPrinting(false)
     , m_bIsDrawing(false)
-    , m_viewLocker(nullptr)
 {
     _initColorAndImage();
 
-    UT_ASSERT(m_pWin);
-    if (![m_pWin isKindOfClass:[XAP_CocoaNSView class]]) {
+    UT_ASSERT(m_view);
+    if (![m_view isKindOfClass:[XAP_CocoaNSView class]]) {
         NSLog(@"attaching a non-XAP_CocoaNSView to a GR_CocoaGraphics");
     }
 
-    [m_pWin setGraphics:this];
-    s_iInstanceCount++;
+    [m_view setGraphics:this];
     init3dColors();
 
     /* resolution does not change thru the life of the object */
     m_screenResolution = lrintf(_getScreenResolution());
 
-    StNSViewLocker locker(m_pWin);
     m_currentColor = [[NSColor blackColor] copy];
-    NSGraphicsContext* gc = [NSGraphicsContext currentContext];
-
-    m_CGContext = gc.CGContext;
-    _resetContext(m_CGContext);
 
     m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
     m_cursor = GR_CURSOR_INVALID;
     setCursor(GR_CURSOR_DEFAULT);
-    NSRect aRect = [m_pWin bounds];
-
-    [gc saveGraphicsState];
-    [[NSColor whiteColor] set];
-    ::CGContextFillRect(m_CGContext, aRect);
-    [gc restoreGraphicsState];
 }
 
 #ifndef RELEASEP
@@ -496,51 +406,45 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
     UT_std_vector_releaseall(m_cacheArray);
     UT_std_vector_sparsepurgeall(m_cacheRectArray);
 
-    [m_pWin setGraphics:nullptr];
+    [m_view setGraphics:nullptr];
     [m_fontForGraphics release];
     [m_currentColor release];
 
-    s_iInstanceCount--;
     for (int i = 0; i < COUNT_3D_COLORS; i++) {
         [m_3dColors[i] release];
     }
-
-    DELETEP(m_viewLocker);
 }
 
 void GR_CocoaGraphics::fillNSRect(NSRect& aRect, NSColor* color)
 {
-    if (CONTEXT_LOCKED__) {
-        ::CGContextSaveGState(m_CGContext);
-        [color set];
-        ::CGContextFillRect(m_CGContext, aRect);
-        ::CGContextRestoreGState(m_CGContext);
-    }
+    ::CGContextSaveGState(m_CGContext);
+    [color set];
+    ::CGContextFillRect(m_CGContext, aRect);
+    ::CGContextRestoreGState(m_CGContext);
 }
 
 void GR_CocoaGraphics::_beginPaint(void)
 {
-    UT_ASSERT(m_viewLocker == nullptr);
-    m_viewLocker = new StNSViewLocker(m_pWin);
-    m_CGContext = CG_CONTEXT__;
-    _resetContext(m_CGContext);
-    _setClipRectImpl(nullptr);
-}
+    UT_ASSERT([m_view in_draw_rect]);
+    NSGraphicsContext* gc = [NSGraphicsContext currentContext];
+    UT_ASSERT(gc != nil);
 
-/*!
-	Restart the paiting by unlocking and relocking the whole stuff. One
-	of the purpose of this operation is to reset the clipping view
- */
-void GR_CocoaGraphics::_restartPaint(void)
-{
-    UT_ASSERT(m_viewLocker);
-    _endPaint();
-    _beginPaint();
+    m_CGContext = gc.CGContext;
+    UT_ASSERT(m_CGContext);
+    _resetContext(m_CGContext);
+
+#if 0
+    NSRect aRect = m_view.bounds;
+    [gc saveGraphicsState];
+    [[NSColor whiteColor] set];
+    ::CGContextFillRect(m_CGContext, aRect);
+    [gc restoreGraphicsState];
+#endif
+    _setClipRectImpl(nullptr);
 }
 
 void GR_CocoaGraphics::_endPaint(void)
 {
-    DELETEP(m_viewLocker);
 }
 
 bool GR_CocoaGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -572,12 +476,11 @@ void GR_CocoaGraphics::setLineProperties(double inWidth,
     m_joinStyle = inJoinStyle;
     m_capStyle = inCapStyle;
     m_lineStyle = inLineStyle;
-    if (m_viewLocker) {
-        ::CGContextSetLineWidth(m_CGContext, m_fLineWidth);
-        _setCapStyle(m_capStyle);
-        _setJoinStyle(m_joinStyle);
-        _setLineStyle(m_lineStyle);
-    }
+
+    ::CGContextSetLineWidth(m_CGContext, m_fLineWidth);
+    _setCapStyle(m_capStyle);
+    _setJoinStyle(m_joinStyle);
+    _setLineStyle(m_lineStyle);
 }
 
 void GR_CocoaGraphics::_setCapStyle(CapStyle inCapStyle, CGContextRef* context)
@@ -651,7 +554,7 @@ void GR_CocoaGraphics::_setLineStyle(LineStyle inLineStyle, CGContextRef* contex
 }
 
 void GR_CocoaGraphics::_realDrawChars(CTLineRef ctLine,
-    float x, float y, int /*begin*/, int /*rangelen*/, float xOffset)
+    CGFloat x, CGFloat y, int /*begin*/, int /*rangelen*/, CGFloat xOffset)
 {
     y += [m_fontForGraphics ascender];
 
@@ -691,10 +594,8 @@ void GR_CocoaGraphics::drawChars(const UT_UCS4Char* pChars, int iCharOffset,
         /*
 		  We don't have char widths because we don't care. Just draw the text.
 		 */
-        LOCK_CONTEXT__;
         _realDrawChars(ctLine, TDUX(xoff), yoff, 0, iLength, 0);
     } else {
-        LOCK_CONTEXT__;
 
         UT_sint32 x = xoff;
 
@@ -734,11 +635,11 @@ UT_uint32 GR_CocoaGraphics::getFontHeight()
 	
 	\return width in Device Unit
  */
-float GR_CocoaGraphics::_measureUnRemappedCharCached(const UT_UCSChar c)
+CGFloat GR_CocoaGraphics::_measureUnRemappedCharCached(const UT_UCSChar c)
 {
-    float width;
+    CGFloat width;
     width = m_pFont->getCharWidthFromCache(c);
-    width *= (m_pFont->getSize() / (float)GR_CharWidthsCache::CACHE_FONT_SIZE);
+    width *= (m_pFont->getSize() / GR_CharWidthsCache::CACHE_FONT_SIZE);
     return width;
 }
 
@@ -809,10 +710,8 @@ void GR_CocoaGraphics::_setColor(NSColor* c)
     UT_DEBUGMSG(("GR_CocoaGraphics::_setColor(NSColor *): setting NSColor\n"));
     [m_currentColor release];
     m_currentColor = [c copy];
-    if (m_viewLocker) {
-        LOCK_CONTEXT__;
-        [m_currentColor set];
-    }
+
+    [m_currentColor set];
 }
 
 GR_Font* GR_CocoaGraphics::getGUIFont(void)
@@ -943,8 +842,6 @@ void GR_CocoaGraphics::rawPolyAtOffset(NSPoint* point, int npoint, UT_sint32 off
         return;
     }
 
-    LOCK_CONTEXT__;
-
     [color set];
 
     ::CGContextBeginPath(m_CGContext);
@@ -966,8 +863,7 @@ void GR_CocoaGraphics::rawPolyAtOffset(NSPoint* point, int npoint, UT_sint32 off
 void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
     UT_sint32 x2, UT_sint32 y2)
 {
-    LOCK_CONTEXT__;
-    UT_DEBUGMSG(("GR_CocoaGraphics::drawLine(%ld, %ld, %ld, %ld) width=%f\n", x1, y1, x2, y2, m_fLineWidth));
+    UT_DEBUGMSG(("GR_CocoaGraphics::drawLine(%d, %d, %d, %d) width=%lf\n", x1, y1, x2, y2, m_fLineWidth));
     // if ((y1 == y2) && (x1 >= 500)) fprintf(stderr, "GR_CocoaGraphics::drawLine(%ld, %ld, %ld, %ld) width=%f\n", x1, y1, x2, y2, m_fLineWidth);
     ::CGContextBeginPath(m_CGContext);
     ::CGContextMoveToPoint(m_CGContext, TDUX(x1), _tduY(y1));
@@ -978,20 +874,18 @@ void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 
 void GR_CocoaGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-    UT_DEBUGMSG(("GR_CocoaGraphics::setLineWidth(%ld) was %f\n", iLineWidth, m_fLineWidth));
-    m_fLineWidth = static_cast<float>(ceil(tduD(iLineWidth) - 0.75));
+    UT_DEBUGMSG(("GR_CocoaGraphics::setLineWidth(%d) was %lf\n", iLineWidth, m_fLineWidth));
+    m_fLineWidth = ceil(tduD(iLineWidth) - 0.75);
     m_fLineWidth = (m_fLineWidth > 0) ? m_fLineWidth : 1.0f;
-    if (m_viewLocker) {
-        ::CGContextSetLineWidth(m_CGContext, m_fLineWidth);
-        _setLineStyle(m_lineStyle);
-    }
+
+    ::CGContextSetLineWidth(m_CGContext, m_fLineWidth);
+    _setLineStyle(m_lineStyle);
 }
 
 void GR_CocoaGraphics::polyLine(const UT_Point* pts, UT_uint32 nPoints)
 {
     UT_DEBUGMSG(("GR_CocoaGraphics::polyLine() width=%f\n", m_fLineWidth));
 
-    LOCK_CONTEXT__;
     ::CGContextBeginPath(m_CGContext);
 
     ::CGContextMoveToPoint(m_CGContext, TDUX(pts[0].x), _tduY(pts[0].y));
@@ -1006,10 +900,20 @@ void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
     UT_DEBUGMSG(("GR_CocoaGraphics::invertRect()\n"));
     UT_ASSERT(pRect);
 
-    LOCK_CONTEXT__;
     // TODO handle invert. this is highlight.
 
     NSHighlightRect(NSMakeRect(TDUX(pRect->left), _tduY(pRect->top), _tduR(pRect->width), _tduR(pRect->height)));
+}
+
+void GR_CocoaGraphics::queueDraw(const UT_Rect* pRect)
+{
+    CGRect clip;
+    if (pRect) {
+        clip = ::CGRectMake(TDUX(pRect->left), _tduY(pRect->top), _tduR(pRect->width), _tduR(pRect->height));
+    } else {
+        clip = m_view.bounds;
+    }
+    [m_view setNeedsDisplayInRect:clip];
 }
 
 void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
@@ -1020,11 +924,8 @@ void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
     } else {
         m_pRect.reset();
     }
-    if (m_viewLocker) {
-        /* if we are painting, restart the painting to reset the clipping view */
-        _restartPaint();
-    }
 }
+
 void GR_CocoaGraphics::_setClipRectImpl(const UT_Rect*)
 {
     if (m_pRect) {
@@ -1033,16 +934,14 @@ void GR_CocoaGraphics::_setClipRectImpl(const UT_Rect*)
             ::CGRectMake(TDUX(m_pRect->left), _tduY(m_pRect->top), _tduR(m_pRect->width), _tduR(m_pRect->height)));
     } else {
         UT_DEBUGMSG(("ClipRect reset!!\n"));
-        NSRect bounds = [m_pWin bounds];
-        ::CGContextClipToRect(m_CGContext,
-            ::CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height)); // ??
+        ::CGContextClipToRect(m_CGContext, m_view.bounds); // ??
     }
 }
 
 void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
     UT_sint32 w, UT_sint32 h)
 {
-    UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(UT_RGBColor&, %ld, %ld, %ld, %ld)\n", x, y, w, h));
+    UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(UT_RGBColor&, %d, %d, %d, %d)\n", x, y, w, h));
 
     /* make this as accurate as possible, though it's still not perfect :-(
 	 */
@@ -1061,22 +960,21 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
     double dw = ceil(tduD(w));
     double dh = ceil(tduD(h));
 
-    float f_x = static_cast<float>(x1);
-    float f_y = static_cast<float>(y1);
-    float f_w = static_cast<float>(dw);
-    float f_h = static_cast<float>(dh);
+    CGFloat f_x = x1;
+    CGFloat f_y = y1;
+    CGFloat f_w = dw;
+    CGFloat f_h = dh;
 
     if (((_x1 - x1) > 0.75) || ((x2 - _x2) < 0.25) || ((_x1 - x1) > (x2 - _x2))) {
-        f_x = static_cast<float>(x2 - dw);
+        f_x = x2 - dw;
     }
     if (((_y1 - y1) > 0.75) || ((y2 - _y2) < 0.25) || ((_y1 - y1) > (y2 - _y2))) {
-        f_y = static_cast<float>(y2 - dh);
+        f_y = y2 - dh;
     }
 
     // save away the current color, and restore it after we fill the rect
     NSColor* c = _utRGBColorToNSColor(clr);
 
-    LOCK_CONTEXT__;
     ::CGContextSaveGState(m_CGContext);
     [c set];
     ::CGContextFillRect(m_CGContext, ::CGRectMake(f_x, f_y, f_w, f_h));
@@ -1086,9 +984,8 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
 void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
     UT_ASSERT(c < COUNT_3D_COLORS);
-    UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D %d, %ld, %ld, %ld, %ld)\n", c, x, y, w, h));
+    UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D %d, %d, %d, %d, %d)\n", c, x, y, w, h));
 
-    LOCK_CONTEXT__;
     ::CGContextSaveGState(m_CGContext);
     [m_3dColors[c] set];
     ::CGContextFillRect(m_CGContext, ::CGRectMake(tdu(x), tdu(y), tdu(w), tdu(h)));
@@ -1116,11 +1013,11 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
     setPrevYOffset(newY);
     setPrevXOffset(newX);
 
-    [m_pWin displayIfNeeded];
+    [m_view displayIfNeeded];
 
-    NSRect bounds = [m_pWin bounds];
+    NSRect bounds = m_view.bounds;
     NSSize offset = NSMakeSize(ddx, ddy);
-    [m_pWin scrollRect:bounds by:offset];
+    [m_view scrollRect:bounds by:offset];
 
     if (offset.width > 0) {
         if (offset.width < bounds.size.width) {
@@ -1131,7 +1028,7 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
                     tmp.origin.y = bounds.origin.y;
                     tmp.size.width = bounds.size.width - offset.width;
                     tmp.size.height = offset.height;
-                    [m_pWin setNeedsDisplayInRect:tmp];
+                    [m_view setNeedsDisplayInRect:tmp];
 
                     bounds.size.width = offset.width;
                 }
@@ -1142,7 +1039,7 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
                     tmp.origin.y = bounds.origin.y + bounds.size.height + offset.height;
                     tmp.size.width = bounds.size.width - offset.width;
                     tmp.size.height = -offset.height;
-                    [m_pWin setNeedsDisplayInRect:tmp];
+                    [m_view setNeedsDisplayInRect:tmp];
 
                     bounds.size.width = offset.width;
                 }
@@ -1155,11 +1052,10 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
             if (offset.height > 0) {
                 if (offset.height < bounds.size.height) {
                     NSRect tmp;
-                    tmp.origin.x = bounds.origin.x;
-                    tmp.origin.y = bounds.origin.y;
+                    tmp.origin = bounds.origin;
                     tmp.size.width = bounds.size.width - offset.width;
                     tmp.size.height = offset.height;
-                    [m_pWin setNeedsDisplayInRect:tmp];
+                    [m_view setNeedsDisplayInRect:tmp];
 
                     bounds.origin.x += bounds.size.width + offset.width;
                     bounds.size.width = -offset.width;
@@ -1171,7 +1067,7 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
                     tmp.origin.y = bounds.origin.y + bounds.size.height + offset.height;
                     tmp.size.width = bounds.size.width + offset.width;
                     tmp.size.height = -offset.height;
-                    [m_pWin setNeedsDisplayInRect:tmp];
+                    [m_view setNeedsDisplayInRect:tmp];
 
                     bounds.origin.x += bounds.size.width + offset.width;
                     bounds.size.width = -offset.width;
@@ -1193,7 +1089,7 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
             }
         }
     }
-    [m_pWin setNeedsDisplayInRect:bounds];
+    [m_view setNeedsDisplayInRect:bounds];
 }
 
 void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -1212,7 +1108,7 @@ void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
     UT_sint32 ddx = oldDX - tdu(newX);
     UT_sint32 ddy = oldDY - tdu(newY);
 
-    [m_pWin scrollRect:NSMakeRect(tdu(x_dest) - ddx, tdu(y_dest) - ddy, _tduR(width), _tduR(height)) by:NSMakeSize(ddx, ddy)];
+    [m_view scrollRect:NSMakeRect(tdu(x_dest) - ddx, tdu(y_dest) - ddy, _tduR(width), _tduR(height)) by:NSMakeSize(ddx, ddy)];
 
     setPrevXOffset(newX);
     setPrevYOffset(newY);
@@ -1223,9 +1119,8 @@ void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 {
     UT_DEBUGMSG(("ClearArea: %d %d %d %d\n", x, y, width, height));
     if (width > 0) {
-        LOCK_CONTEXT__;
         ::CGContextSaveGState(m_CGContext);
-        [[NSColor whiteColor] set];
+        [NSColor.whiteColor set];
         ::CGContextFillRect(m_CGContext, ::CGRectMake(TDUX(x), _tduY(y), _tduR(width), _tduR(height)));
         ::CGContextRestoreGState(m_CGContext);
     }
@@ -1253,10 +1148,11 @@ bool GR_CocoaGraphics::endPrint(void)
 GR_Image* GR_CocoaGraphics::createNewImage(const char* pszName, const UT_ConstByteBufPtr& pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
     GR_Image* pImg = nullptr;
-    if (iType == GR_Image::GRT_Raster)
+    if (iType == GR_Image::GRT_Raster) {
         pImg = new GR_CocoaImage(pszName);
-    else
+    } else {
         pImg = new GR_VectorImage(pszName);
+    }
 
     pImg->convertFromBuffer(pBB, mimetype, _tduR(iDisplayWidth), _tduR(iDisplayHeight));
     return pImg;
@@ -1275,7 +1171,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
     NSImage* image = pCocoaImage->getNSImage();
 
-    if (image == 0) {
+    if (image == nil) {
         UT_DEBUGMSG(("Found no image data. This is probably SVG masquerading as a raster!\n"));
         return;
     }
@@ -1284,7 +1180,6 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
     UT_sint32 iImageHeight = pCocoaImage->getDisplayHeight();
     NSSize size = [image size];
 
-    LOCK_CONTEXT__;
     ::CGContextSaveGState(m_CGContext);
     //	::CGContextTranslateCTM (m_CGContext, -0.5, -0.5);
     [image drawInRect:NSMakeRect(TDUX(xDest), _tduY(yDest), pCocoaImage->getDisplayWidth(), iImageHeight)
@@ -1297,8 +1192,9 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
 void GR_CocoaGraphics::flush(void)
 {
-    if (!m_bIsDrawing)
-        [m_pWin displayIfNeeded];
+    if (!m_bIsDrawing) {
+        [m_view displayIfNeeded];
+    }
 }
 
 void GR_CocoaGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
@@ -1327,12 +1223,12 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
     switch (m_cursor) {
     case GR_CURSOR_DEFAULT:
         // NSLog(@"Cursor default");
-        [m_pWin setCursor:[NSCursor arrowCursor]];
+        [m_view setCursor:NSCursor.arrowCursor];
         break;
 
     case GR_CURSOR_IBEAM:
         // NSLog(@"Cursor IBeam");
-        [m_pWin setCursor:[NSCursor IBeamCursor]];
+        [m_view setCursor:NSCursor.IBeamCursor];
         break;
 
     case GR_CURSOR_VLINE_DRAG:
@@ -1343,7 +1239,7 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
     case GR_CURSOR_LEFTRIGHT:
         // NSLog(@"Cursor LeftRight");
         if (m_cursor != old_cursor) {
-            [m_pWin setCursor:m_Cursor_LeftRight];
+            [m_view setCursor:m_Cursor_LeftRight];
         }
         break;
 
@@ -1355,88 +1251,88 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
     case GR_CURSOR_UPDOWN:
         // NSLog(@"Cursor UpDown");
         if (m_cursor != old_cursor) {
-            [m_pWin setCursor:m_Cursor_UpDown];
+            [m_view setCursor:m_Cursor_UpDown];
         }
         break;
 
     case GR_CURSOR_IMAGE:
         // NSLog(@"Cursor Image");
-        [m_pWin setCursor:m_Cursor_Compass];
+        [m_view setCursor:m_Cursor_Compass];
         break;
 
     case GR_CURSOR_IMAGESIZE_E:
         // NSLog(@"Cursor ImageSize [ E]");
-        [m_pWin setCursor:m_Cursor_E];
+        [m_view setCursor:m_Cursor_E];
         break;
 
     case GR_CURSOR_IMAGESIZE_N:
         // NSLog(@"Cursor ImageSize [N ]");
-        [m_pWin setCursor:m_Cursor_N];
+        [m_view setCursor:m_Cursor_N];
         break;
 
     case GR_CURSOR_IMAGESIZE_NE:
         // NSLog(@"Cursor ImageSize [NE]");
-        [m_pWin setCursor:m_Cursor_NE];
+        [m_view setCursor:m_Cursor_NE];
         break;
 
     case GR_CURSOR_IMAGESIZE_NW:
         // NSLog(@"Cursor ImageSize [NW]");
-        [m_pWin setCursor:m_Cursor_NW];
+        [m_view setCursor:m_Cursor_NW];
         break;
 
     case GR_CURSOR_IMAGESIZE_S:
         // NSLog(@"Cursor ImageSize [S ]");
-        [m_pWin setCursor:m_Cursor_S];
+        [m_view setCursor:m_Cursor_S];
         break;
 
     case GR_CURSOR_IMAGESIZE_SE:
         // NSLog(@"Cursor ImageSize [SE]");
-        [m_pWin setCursor:m_Cursor_SE];
+        [m_view setCursor:m_Cursor_SE];
         break;
 
     case GR_CURSOR_IMAGESIZE_SW:
         // NSLog(@"Cursor ImageSize [SW]");
-        [m_pWin setCursor:m_Cursor_SW];
+        [m_view setCursor:m_Cursor_SW];
         break;
 
     case GR_CURSOR_IMAGESIZE_W:
         // NSLog(@"Cursor ImageSize [ W]");
-        [m_pWin setCursor:m_Cursor_W];
+        [m_view setCursor:m_Cursor_W];
         break;
 
     case GR_CURSOR_WAIT:
         // NSLog(@"Cursor Wait");
-        [m_pWin setCursor:m_Cursor_Wait];
+        [m_view setCursor:m_Cursor_Wait];
         break;
 
     case GR_CURSOR_RIGHTARROW:
         // NSLog(@"Cursor RightArrow");
-        [m_pWin setCursor:m_Cursor_RightArrow];
+        [m_view setCursor:m_Cursor_RightArrow];
         break;
 
     case GR_CURSOR_LEFTARROW:
         // NSLog(@"Cursor LeftArrow");
-        [m_pWin setCursor:m_Cursor_LeftArrow];
+        [m_view setCursor:m_Cursor_LeftArrow];
         break;
 
     case GR_CURSOR_EXCHANGE:
         // NSLog(@"Cursor Exchange");
-        [m_pWin setCursor:m_Cursor_Exchange];
+        [m_view setCursor:m_Cursor_Exchange];
         break;
 
     case GR_CURSOR_CROSSHAIR:
         // NSLog(@"Cursor Crosshair");
-        [m_pWin setCursor:m_Cursor_Crosshair];
+        [m_view setCursor:m_Cursor_Crosshair];
         break;
 
     case GR_CURSOR_LINK:
         // NSLog(@"Cursor Link");
-        [m_pWin setCursor:m_Cursor_HandPointer];
+        [m_view setCursor:m_Cursor_HandPointer];
         break;
 
     case GR_CURSOR_DOWNARROW:
         // NSLog(@"Cursor DownArrow");
-        [m_pWin setCursor:m_Cursor_DownArrow];
+        [m_view setCursor:m_Cursor_DownArrow];
         break;
 
     case GR_CURSOR_GRAB:
@@ -1455,11 +1351,11 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
     if (!bImplemented) {
         m_cursor = GR_CURSOR_DEFAULT;
         if (m_cursor != old_cursor) {
-            [m_pWin setCursor:[NSCursor arrowCursor]];
+            [m_view setCursor:NSCursor.arrowCursor];
         }
     }
     if (m_cursor != old_cursor) {
-        [[m_pWin window] invalidateCursorRectsForView:m_pWin];
+        [m_view.window invalidateCursorRectsForView:m_view];
     }
 }
 
@@ -1512,17 +1408,16 @@ bool GR_CocoaGraphics::getColor3D(GR_Color3D c, UT_RGBColor& /*colour*/)
 void GR_CocoaGraphics::init3dColors()
 {
     UT_DEBUGMSG(("init3dColors()\n"));
-    m_3dColors[CLR3D_Foreground] = [NSColor blackColor];
-    m_3dColors[CLR3D_Background] = [NSColor lightGrayColor];
-    m_3dColors[CLR3D_BevelUp] = [NSColor whiteColor];
-    m_3dColors[CLR3D_BevelDown] = [NSColor darkGrayColor];
-    m_3dColors[CLR3D_Highlight] = [NSColor whiteColor];
+    m_3dColors[CLR3D_Foreground] = NSColor.blackColor;
+    m_3dColors[CLR3D_Background] = NSColor.lightGrayColor;
+    m_3dColors[CLR3D_BevelUp] = NSColor.whiteColor;
+    m_3dColors[CLR3D_BevelDown] = NSColor.darkGrayColor;
+    m_3dColors[CLR3D_Highlight] = NSColor.whiteColor;
 }
 
 void GR_CocoaGraphics::polygon(UT_RGBColor& clr, UT_Point* pts, UT_uint32 nPoints)
 {
     NSColor* c = _utRGBColorToNSColor(clr);
-    LOCK_CONTEXT__;
     ::CGContextBeginPath(m_CGContext);
     for (UT_uint32 i = 0; i < nPoints; i++) {
         if (i == 0) {
@@ -1603,13 +1498,10 @@ GR_Image* GR_CocoaGraphics::genImageFromRectangle(const UT_Rect& r)
     GR_CocoaImage* img = new GR_CocoaImage("ScreenShot");
     NSRect rect = NSMakeRect(TDUX(r.left), _tduY(r.top),
         _tduR(r.width), _tduR(r.height));
-    NSBitmapImageRep* imageRep;
-    {
-        LOCK_CONTEXT__;
-        imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:rect];
-    }
+
+    NSBitmapImageRep* imageRep = [m_view bitmapImageRepForCachingDisplayInRect:rect];
+    [m_view cacheDisplayInRect:rect toBitmapImageRep:imageRep];
     img->setFromImageRep(imageRep);
-    [imageRep release];
 
     return img;
 }
@@ -1617,24 +1509,20 @@ GR_Image* GR_CocoaGraphics::genImageFromRectangle(const UT_Rect& r)
 void GR_CocoaGraphics::saveRectangle(UT_Rect& rect, UT_uint32 iIndx)
 {
     NSRect* cacheRect = new NSRect;
-    cacheRect->origin.x = static_cast<float>(_tduX(rect.left)) - 1.0f;
-    cacheRect->origin.y = static_cast<float>(_tduY(rect.top)) - 1.0f;
-    cacheRect->size.width = static_cast<float>(_tduR(rect.width)) + 2.0f;
-    cacheRect->size.height = static_cast<float>(_tduR(rect.height)) + 2.0f;
+    cacheRect->origin.x = _tduX(rect.left) - 1.0f;
+    cacheRect->origin.y = _tduY(rect.top) - 1.0f;
+    cacheRect->size.width = _tduR(rect.width) + 2.0f;
+    cacheRect->size.height = _tduR(rect.height) + 2.0f;
 
-    NSRect bounds = [m_pWin bounds];
+    NSRect bounds = m_view.bounds;
     if (cacheRect->size.height > bounds.size.height - cacheRect->origin.y) {
         cacheRect->size.height = bounds.size.height - cacheRect->origin.y;
     }
 
-    NSBitmapImageRep* imageRep;
-    {
-        LOCK_CONTEXT__;
-        imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:*cacheRect];
-    }
+    NSBitmapImageRep* imageRep = [m_view bitmapImageRepForCachingDisplayInRect:*cacheRect];
+    [m_view cacheDisplayInRect:*cacheRect toBitmapImageRep:imageRep];
     NSImage* cache = [[NSImage alloc] initWithSize:[imageRep size]];
     [cache addRepresentation:imageRep];
-    [imageRep release];
 
     // update cache arrays
     id oldObj = m_cacheArray[iIndx];
@@ -1654,10 +1542,7 @@ void GR_CocoaGraphics::restoreRectangle(UT_uint32 iIndx)
     NSImage* cache = m_cacheArray[iIndx];
     NSPoint pt = cacheRect->origin;
     pt.y += cacheRect->size.height;
-    {
-        LOCK_CONTEXT__;
-        [cache drawAtPoint:pt fromRect:NSZeroRect operation:NSCompositingOperationCopy fraction:1.0];
-    }
+    [cache drawAtPoint:pt fromRect:NSZeroRect operation:NSCompositingOperationCopy fraction:1.0];
 }
 
 UT_uint32 GR_CocoaGraphics::getDeviceResolution(void) const

@@ -42,6 +42,12 @@ XAP_Preview::~XAP_Preview()
 {
 }
 
+void XAP_Preview::queueDraw(const UT_Rect* clip)
+{
+    m_drawQueue.push(clip ? UT_Option<UT_Rect>(*clip) : UT_Option<UT_Rect>());
+    getGraphics()->queueDraw(clip);
+}
+
 /************************************************************************/
 
 void XAP_Preview::setWindowSize(UT_sint32 width, UT_sint32 height)

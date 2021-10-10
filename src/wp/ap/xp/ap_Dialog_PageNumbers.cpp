@@ -112,7 +112,7 @@ void AP_Preview_PageNumbers::setAlign(AP_Dialog_PageNumbers::tAlign align)
 	m_align = align;
 }
 
-void AP_Preview_PageNumbers::draw (const UT_Rect *clip)
+void AP_Preview_PageNumbers::drawImmediate(const UT_Rect* clip)
 {
 	UT_UNUSED(clip);
 	GR_Painter painter(m_gc);

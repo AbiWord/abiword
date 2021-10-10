@@ -663,7 +663,7 @@ void FL_DocLayout::fillLayouts(void)
 		m_pView->updateLayout();
 		if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
-			m_pView->updateScreen(false);
+			m_pView->queueDraw();
 			XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_pView->getParentData());
 			if(pFrame)
 			{
@@ -3005,7 +3005,7 @@ void FL_DocLayout::updateColor()
 //
 	if(pView)
 	{
-		pView->updateScreen(false);
+		pView->queueDraw();
 	}
 
 }
@@ -3070,7 +3070,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 			// If we're here, it was set to TRUE before but now it is
 			// being set to FALSE. This means that it is the user
 			// setting it. That's good.
-			m_pView->draw(NULL);
+			m_pView->queueDraw(nullptr);
 			// A pending word would be bad. Not sure why it's not
 			// ignored once autospell is off, but for now it should
 			// definitely be annulled.
@@ -3139,7 +3139,7 @@ FL_DocLayout::_toggleAutoGrammar(bool bGrammar)
 			// If we're here, it was set to TRUE before but now it is
 			// being set to FALSE. This means that it is the user
 			// setting it. That's good.
-			m_pView->draw(NULL);
+			m_pView->queueDraw(nullptr);
 		}
 	}
 }
@@ -4028,7 +4028,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		pDocLayout->formatAll();
 		if(pDocLayout->getView())
 		{
-		    pDocLayout->getView()->updateScreen(false);
+		    pDocLayout->getView()->queueDraw(nullptr);
 		}
 	}
 
@@ -4042,7 +4042,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		pDocLayout->formatAll();
 		if(pDocLayout->getView())
 		{
-		    pDocLayout->getView()->updateScreen(false);
+		    pDocLayout->getView()->queueDraw(nullptr);
 		}
 	}
 

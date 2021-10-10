@@ -2,7 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
- * Copyright (C) 2004-2019 Hubert Figuière
+ * Copyright (C) 2004-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,8 +20,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_TOPRULER_H
-#define AP_TOPRULER_H
+#pragma once
 
 #include "xap_Features.h"
 // Class for dealing with the horizontal ruler at the top of
@@ -182,7 +181,7 @@ public:
 	} u;
 };
 
-class ABI_EXPORT AP_TopRuler : public AP_Ruler, public AV_Listener, virtual public XAP_CustomWidgetLU
+class ABI_EXPORT AP_TopRuler : public AP_Ruler, public AV_Listener
 {
 public:
 	AP_TopRuler(XAP_Frame * pFrame);
@@ -227,8 +226,8 @@ public:
 	static UT_uint32 getFixedWidth(){return s_iFixedWidth;}
 
 protected:
-	/* implement XAP_CustomWidgetLU::drawLU */
-	virtual void drawLU(const UT_Rect *clip) override;
+	/* implement XAP_CustomWidgetLU::drawImmediateLU */
+	virtual void drawImmediateLU(const UT_Rect *clip) override;
 
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
@@ -392,5 +391,3 @@ private:
 	GR_Image*			m_otherGuideCache;
 #endif
 };
-
-#endif /* AP_TOPRULER_H */

@@ -91,7 +91,7 @@ void AP_CocoaTopRuler::setView(AV_View * pView)
 			selector:@selector(viewDidResize:) 
 			name:NSViewFrameDidChangeNotification object:m_wTopRuler];
 
-	pG->_setUpdateCallback(&_graphicsUpdateCB, (void *)this);
+	m_wTopRuler.drawable = this;
 	pG->setGrabCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 
 	NSRect bounds = [m_wTopRuler bounds];
@@ -394,30 +394,6 @@ void AP_CocoaTopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 }
 #endif
 
-bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
-{
-	// a static function
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)param;
-	if (!pCocoaTopRuler)
-		return false;
-
-	UT_Rect rClip;
-	rClip.left   = aRect->origin.x;
-	rClip.top    = aRect->origin.y;
-	rClip.width  = aRect->size.width;
-	rClip.height = aRect->size.height;
-	xxx_UT_DEBUGMSG(("Cocoa in topruler expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	if(pG != NULL)
-	{
-//		pCocoaTopRuler->getGraphics()->doRepaint(&rClip);
-		pCocoaTopRuler->draw(&rClip);
-	}
-	else {
-		return false;
-	}
-	return true;
-}
-		
 /*****************************************************************/
 
 

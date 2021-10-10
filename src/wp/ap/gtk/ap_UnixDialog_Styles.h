@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (c) 2009 Hubert Figuiere
+ * Copyright (c) 2009-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,8 +18,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_UnixDialog_Styles_H
-#define AP_UnixDialog_Styles_H
+#pragma once
 
 #include <string>
 #include <list>
@@ -51,8 +50,10 @@ public:
 
 	// callbacks can fire these events
 
-	void                            event_paraPreviewExposed(void);
-	void                            event_charPreviewExposed(void);
+	void event_paraPreviewInvalidate(void);
+	void event_paraPreviewDraw(void);
+	void event_charPreviewInvalidate(void);
+	void event_charPreviewDraw(void);
 
 	virtual void			event_Apply(void);
 	virtual void			event_Close(void);
@@ -77,7 +78,8 @@ public:
 	void         event_ModifyNumbering();
 	void         event_ModifyTabs();
 	void         event_ModifyLanguage();
-	void         event_ModifyPreviewExposed();
+	void event_ModifyPreviewInvalidate();
+	void event_ModifyPreviewDraw();
 	void         event_RemoveProperty(void);
 	void         rebuildDeleteProps(void);
 	void         event_basedOn(void);
@@ -181,5 +183,3 @@ private:
 	bool m_bBlockModifySignal;
 	std::string m_sNewStyleName;
 };
-
-#endif /* AP_UnixDialog_Styles_H */

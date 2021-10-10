@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2004-2006 Tomas Frydrych <dr.tomas@yahoo.co.uk>
- * Copyright (C) 2009-2016 Hubert Figuiere
+ * Copyright (C) 2009-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,9 +19,7 @@
  * 02110-1301 USA.
  */
 
-
-#ifndef __GR_UNIXCAIROGRAPHICS_H__
-#define __GR_UNIXCAIROGRAPHICS_H__
+#pragma once
 
 #include "ut_compiler.h"
 
@@ -95,6 +93,7 @@ public:
 	virtual void		fillRect(GR_Color3D c,
 								 UT_sint32 x, UT_sint32 y,
 								 UT_sint32 w, UT_sint32 h) override;
+	virtual void queueDraw(const UT_Rect* pRect) override;
 	virtual void      flush(void) override;
 
 	// Return the cursor name.
@@ -124,7 +123,3 @@ private:
 	GtkStyleContext* m_styleBg;
 	GtkStyleContext* m_styleHighlight;
 };
-
-
-#endif
-

@@ -96,6 +96,7 @@ void	AP_CocoaDialog_Paragraph::_createGC(XAP_CocoaNSView* owner)
 
 	size = [owner bounds].size;
 	_createPreviewFromGC(m_pGraphics, lrintf(size.width), lrintf(size.height));
+	m_dlg.preview.drawable = m_paragraphPreview;
 }
 
 void AP_CocoaDialog_Paragraph::_deleteGC(void)
@@ -196,7 +197,7 @@ void AP_CocoaDialog_Paragraph::event_CheckToggled(id sender)
 void AP_CocoaDialog_Paragraph::event_PreviewAreaExposed(void)
 {
 	if (m_paragraphPreview)
-		m_paragraphPreview->draw();
+		m_paragraphPreview->queueDraw();
 }
 
 

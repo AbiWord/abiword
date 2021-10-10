@@ -195,7 +195,7 @@ void XAP_UnixDialog_Print::PrintPage(gint page_nr)
 		m_pFrame->setStatusMessage ( msgBuf );
 		m_pFrame->nullUpdate();
 	}
-	m_pPrintView->draw(page_nr, &da);
+	m_pPrintView->drawPage(page_nr, &da);
 	m_pPrintGraphics->endPaint();
 }
 

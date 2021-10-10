@@ -1,21 +1,21 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009, 2019 Hubert Figuière
- * 
+ * Copyright (C) 2009, 2021 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -232,7 +232,7 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 	// callbacks when no font has been set.
 	iDrawSymbol->setSelectedFont( buffer && *buffer ? static_cast<const char *>(buffer) :
 		                                              "Symbol");
-	
+
 	// we get strange things if the previous Symbol does not exists in the
 	// new font. Reset it
 	UT_UCSChar c = iDrawSymbol->calcSymbol(0, 0);
@@ -242,9 +242,9 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 	        m_CurrentSymbol = c;
 		iDrawSymbol->calculatePosition(m_CurrentSymbol, m_ix, m_iy);
 	}
- 	
+
 	_setScrolledWindow ();
-	iDrawSymbol->draw();
+	iDrawSymbol->queueDraw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 }
 
@@ -360,7 +360,7 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_exposed(void )
 {
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
-	iDrawSymbol->draw();
+	iDrawSymbol->queueDraw();
 	UT_DEBUGMSG(("main symbol area exposed \n"));
 	/*
 	    Need this to see the blue square after an expose event

@@ -118,7 +118,7 @@ bool XAP_Preview_Zoom::setString(UT_UCSChar * string)
 	return foo;
 }
 
-void XAP_Preview_Zoom::draw(const UT_Rect *clip)
+void XAP_Preview_Zoom::drawImmediate(const UT_Rect *clip)
 {
 	UT_UNUSED(clip);
 	UT_ASSERT(m_gc);

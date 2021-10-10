@@ -126,7 +126,7 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 //
 		pView->setPoint(pView->getPoint()); // place the cursor correctly
 		pView->ensureInsertionPointOnScreen(); // on the screen
-		pView->updateScreen(false);
+		pView->queueDraw();
 	}
 	else
 	{
@@ -703,7 +703,7 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 	setXScrollRange();
 	setYScrollRange();
 
-	m_pView->draw();
+	m_pView->queueDraw();
 
 	if ( static_cast<AP_FrameData*>(m_pData)->m_bShowRuler  ) 
 	{

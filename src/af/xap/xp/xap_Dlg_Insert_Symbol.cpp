@@ -87,7 +87,7 @@ XAP_Dialog_Insert_Symbol::tAnswer XAP_Dialog_Insert_Symbol::getAnswer(void) cons
 
 void XAP_Dialog_Insert_Symbol::_updateDrawSymbol()
 {
-	m_DrawSymbol->draw();
+	m_DrawSymbol->queueDraw();
 }
 
 void XAP_Dialog_Insert_Symbol::_createSymbolFromGC(GR_Graphics * gc,

@@ -18,8 +18,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_UNIXDIALOG_BORDER_SHADING_H
-#define AP_UNIXDIALOG_BORDER_SHADING_H
+#pragma once
 
 #include "xap_UnixDialog.h"
 #include "ap_Dialog_Border_Shading.h"
@@ -44,7 +43,8 @@ public:
 
 	// callbacks can fire these events
 	virtual void			event_Close(void);
-	void					event_previewExposed(void);
+	void event_previewInvalidate(void);
+	void event_previewDraw(void);
 	void                    event_BorderThicknessChanged(void);
 	void                    event_BorderStyleChanged(void);
 	void                    event_ShadingOffsetChanged(void);
@@ -104,5 +104,3 @@ protected:
 	guint		m_iLineTopConnect;
 	guint		m_iLineBotConnect;
 };
-
-#endif /* AP_UNIXDIALOG_BORDER_SHADING_H */

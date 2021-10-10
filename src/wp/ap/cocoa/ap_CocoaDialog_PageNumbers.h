@@ -43,7 +43,7 @@ public:
 	void event_OK(void);
 	void event_Cancel(void);
 	void event_WindowDelete(void);
-	void event_PreviewExposed(void);
+	void event_previewInvalidate(void);
 	void event_AlignChanged(AP_Dialog_PageNumbers::tAlign);
 	void event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl);
 

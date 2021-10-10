@@ -61,8 +61,7 @@ public:
 	virtual ~AP_FormatFrame_preview(void);
 
 	// data twiddlers
-	void			draw(const UT_Rect *clip = NULL) override;
-	GR_Graphics *   getGraphics(void) const { return m_gc;}
+	void drawImmediate(const UT_Rect* clip = nullptr) override;
 	/*void			set(UT_uint32 iColumns, bool bLines)
 					{
 						m_iColumns = iColumns;

@@ -518,7 +518,7 @@ void AP_Preview_Paragraph::setFormat(const gchar * pageLeftMargin,
 								lineSpacing, spacing);
 }
 
-void AP_Preview_Paragraph::draw(const UT_Rect *clip)
+void AP_Preview_Paragraph::drawImmediate(const UT_Rect *clip)
 {
 	UT_UNUSED(clip);
 	UT_return_if_fail (m_gc);

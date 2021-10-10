@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2003-2004, 2009 Hubert Figuiere
+ * Copyright (C) 2003-2004, 2009-2021 Hubert Figuière
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -68,7 +68,7 @@ void AP_CocoaDialog_FormatTable::runModeless(XAP_Frame * /*pFrame*/)
 	m_dlg = [[AP_CocoaDialog_FormatTableController alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
 
-	NSWindow* window = [m_dlg window];
+	NSWindow* window = m_dlg.window;
 
 	// Populate the window's data items
 	_populateWindowData();
@@ -76,7 +76,7 @@ void AP_CocoaDialog_FormatTable::runModeless(XAP_Frame * /*pFrame*/)
 
 	// make a new Cocoa GC
 	DELETEP (m_pPreviewWidget);
-	XAP_CocoaNSView * view = [m_dlg preview];
+	XAP_CocoaNSView* view = m_dlg.preview;
 	GR_CocoaAllocInfo ai(view);
 	m_pPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
@@ -90,8 +90,8 @@ void AP_CocoaDialog_FormatTable::runModeless(XAP_Frame * /*pFrame*/)
 	_createPreviewFromGC(m_pPreviewWidget,
 						 static_cast<UT_uint32>(lrintf(size.width)),
 						 static_cast<UT_uint32>(lrintf(size.width)));	
-	
-	m_pFormatTablePreview->draw();
+	view.drawable = m_pFormatTablePreview;
+	m_pFormatTablePreview->queueDraw();
 
 	[window orderFront:m_dlg];	
 	startUpdater();
@@ -120,10 +120,10 @@ void AP_CocoaDialog_FormatTable::event_Close(void)
 	destroy();
 }
 
-void AP_CocoaDialog_FormatTable::event_previewExposed(void)
+void AP_CocoaDialog_FormatTable::event_previewInvalidate(void)
 {
-	if(m_pFormatTablePreview) {
-		m_pFormatTablePreview->draw();
+	if (m_pFormatTablePreview) {
+		m_pFormatTablePreview->queueDraw();
 	}
 }
 
@@ -155,7 +155,7 @@ void AP_CocoaDialog_FormatTable::event_BorderThicknessChanged(NSPopUpButton *ctr
 	// TODO refactor as Gtk has the same code.
 	if(ctrl)
 	{
-		int idx = [ctrl indexOfSelectedItem];
+		NSInteger idx = [ctrl indexOfSelectedItem];
 		double thickness = m_dThickness[idx];
 
 		UT_UTF8String sThickness;
@@ -165,7 +165,7 @@ void AP_CocoaDialog_FormatTable::event_BorderThicknessChanged(NSPopUpButton *ctr
 		}
 
 		setBorderThickness(sThickness);
-		event_previewExposed();
+		event_previewInvalidate();
 	}
 }
 
@@ -280,7 +280,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 	UT_RGBColor clr;
 	GR_CocoaGraphics::_utNSColorToRGBColor ([sender color], clr);
 	_xap->setBackgroundColor(clr);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)borderColorAction:(id)sender
@@ -288,7 +288,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 	UT_RGBColor clr;
 	GR_CocoaGraphics::_utNSColorToRGBColor ([sender color], clr);
 	_xap->setBorderColor(clr);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 -(IBAction)borderThicknessAction:(id)sender
@@ -299,13 +299,13 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 - (IBAction)bottomBorderAction:(id)sender
 {
 	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_bottom, [sender state] == NSControlStateValueOn);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)leftBorderAction:(id)sender
 {
 	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_left, [sender state] == NSControlStateValueOn);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)removeImageAction:(id)sender
@@ -317,7 +317,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 - (IBAction)rightBorderAction:(id)sender
 {
 	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_right, [sender state] == NSControlStateValueOn);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)selectImageAction:(id)sender
@@ -329,7 +329,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 - (IBAction)topBorderAction:(id)sender
 {
 	_xap->toggleLineType(AP_Dialog_FormatTable::toggle_top, [sender state] == NSControlStateValueOn);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)applyToAction:(id)sender

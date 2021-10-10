@@ -18,9 +18,7 @@
  * 02110-1301 USA.
  */
 
-
-#ifndef XAP_COCOAFRAME_H
-#define XAP_COCOAFRAME_H
+#pragma once
 
 #import <Cocoa/Cocoa.h>
 
@@ -43,6 +41,7 @@ class EV_CocoaMenuPopup;
 
 class GR_CocoaGraphics;
 class FV_View;
+class XAP_Drawable;
 
 @protocol XAP_MouseEventDelegate
 - (void)mouseDown:(NSEvent *)theEvent from:(id)sender;
@@ -56,10 +55,17 @@ class FV_View;
 {
     NSString* m_name;
 	NSCursor* _cursor;
+	bool _in_draw_rect;
 	XAP_Frame* m_pFrame;
 	GR_CocoaGraphics* m_pGR;
+	XAP_Drawable* m_drawable;
 	NSObject<XAP_MouseEventDelegate>	*_eventDelegate;
 }
+#if DEBUG
+@property (readonly) bool in_draw_rect;
+#endif
+@property XAP_Drawable* drawable;
+
 - (id)initWith:(XAP_Frame*)frame andFrame:(NSRect)windowFrame andName:(NSString*)name;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)becomeFirstResponder;
@@ -73,6 +79,3 @@ class FV_View;
 - (void)hasBeenResized:(NSNotification*)notif;
 - (void)setCursor:(NSCursor*)cursor;
 @end
-
-
-#endif /* XAP_COCOAFRAME_H */

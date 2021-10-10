@@ -130,7 +130,7 @@ static void s_typeChanged (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 	me->setListTypeFromWidget(); // Use this to set m_newListType
 	me->fillUncustomizedValues(); // Use defaults to start.
 	me->loadXPDataIntoLocal(); // Load them into our member variables
-	me->previewExposed();
+	me->previewInvalidate();
 }
 
 /*!
@@ -142,7 +142,7 @@ static void s_valueChanged (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 		return;
   	me->setDirty();
 	me->setXPFromLocal(); // Update member Variables
-	me->previewExposed();
+	me->previewInvalidate();
 }
 
 
@@ -160,7 +160,7 @@ static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixD
 {
 	UT_DEBUG_ONLY_ARG(widget);
 	UT_ASSERT(widget && me);
-	me->previewExposed();
+	me->previewDraw();
 	return FALSE;
 }
 
@@ -295,20 +295,27 @@ void AP_UnixDialog_Lists::autoupdateLists(UT_Worker * pWorker)
 		{
 			pDialog->m_bAutoUpdate_happening_now = true;
 			pDialog->updateDialog();
-			pDialog->previewExposed();
+			pDialog->previewInvalidate();
 			pDialog->m_bAutoUpdate_happening_now = false;
 		}
 	}
 }
 
 
-void AP_UnixDialog_Lists::previewExposed(void)
+void AP_UnixDialog_Lists::previewInvalidate(void)
 {
-	if(m_pPreviewWidget)
-	{
+	if (m_pPreviewWidget) {
 		setbisCustomized(true);
 		event_PreviewAreaExposed();
 	}
+}
+
+void AP_UnixDialog_Lists::previewDraw(void)
+{
+	if (m_pPreviewWidget) {
+		setbisCustomized(true);
+	}
+	getListsPreview()->drawImmediate();
 }
 
 void AP_UnixDialog_Lists::destroy(void)
@@ -400,7 +407,7 @@ void AP_UnixDialog_Lists::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), getWindowName());
 	m_bDontUpdate = false;
 	updateDialog();
-	previewExposed();
+	previewInvalidate();
 }
 
 
@@ -464,7 +471,7 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 	{
 		fillUncustomizedValues(); // Set defaults
 		loadXPDataIntoLocal(); // load them into the widget
-		previewExposed(); // Show current setting
+		previewInvalidate(); // Show current setting
 	}
 }
 
@@ -523,7 +530,7 @@ void  AP_UnixDialog_Lists::setXPFromLocal(void)
 void  AP_UnixDialog_Lists::applyClicked(void)
 {
 	setXPFromLocal();
-	previewExposed();
+	previewInvalidate();
 	Apply();
 	if(isModal())
 	{

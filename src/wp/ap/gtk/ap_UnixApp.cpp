@@ -1166,7 +1166,7 @@ bool AP_UnixApp::makePngPreview(const char * pszInFile, const char * pszPNGFile,
 	da.pG = pG;
 	GR_Painter * pPaint = new GR_Painter(pG);
 	pPaint->clearArea(0,0,pG->tlu(iWidth),pG->tlu(iHeight));
-	pPrevAbi->getView()->draw(0, &da);
+	pPrevAbi->getView()->drawPage(0, &da);
 	pG->endPaint();
 	cairo_destroy(cr);
 	DELETEP(pPaint);

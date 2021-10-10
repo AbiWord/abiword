@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,45 +18,40 @@
  * 02110-1301 USA.
  */
 
+#pragma once
 
-#ifndef XAP_PREVIEW_H
-#define XAP_PREVIEW_H
+#include <queue>
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
+#include "ut_option.h"
 #include "ut_misc.h"
-#include "xap_CustomWidget.h"
-
-/* #include "ev_EditBits.h" */
+#include "xap_Drawable.h"
 
 class GR_Graphics;
 
-class ABI_EXPORT XAP_Preview: public XAP_CustomWidget
+class ABI_EXPORT XAP_Preview: public XAP_Drawable
 {
 public:
 	XAP_Preview(GR_Graphics * gc);
 	virtual ~XAP_Preview(void);
 
+	virtual GR_Graphics* getGraphics() const override
+	{
+		return m_gc;
+	}
+	virtual void queueDraw(const UT_Rect* pRect = nullptr) override;
+
 	void					setWindowSize(UT_sint32, UT_sint32);
 	inline UT_sint32		getWindowWidth(void) const { return m_iWindowWidth; };
 	inline UT_sint32		getWindowHeight(void) const { return m_iWindowHeight; };
-
-	// we probably don't need this one
-/*
-  inline GR_Graphics * 	getGraphicsContext(void) const { return m_graphics; };
-*/
 
 	// function to handle mouse down event.
 	virtual void			onLeftButtonDown(UT_sint32 /*x*/, UT_sint32 /*y*/) {  };
 
 protected:
 	XAP_Preview();
-	GR_Graphics *		m_gc;
+	GR_Graphics* m_gc;
+	std::queue<UT_Option<UT_Rect>> m_drawQueue;
 
 private:
 	// TODO :
@@ -65,5 +61,3 @@ private:
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
 };
-
-#endif /* XAP_PREVIEW_H */

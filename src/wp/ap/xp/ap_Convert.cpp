@@ -154,7 +154,7 @@ public:
 					UT_uint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
 					m_pGraphics->m_iRasterPosition = (k-1)*iHeight;
 					m_pGraphics->startPage(m_szFile.utf8_str(), m_iter++, printView.getPageSize().isPortrait(), pDocLayout->getWidth(), iHeight);
-					printView.draw(k-1, &da);
+					printView.drawPage(k-1, &da);
 				}
 			}
 

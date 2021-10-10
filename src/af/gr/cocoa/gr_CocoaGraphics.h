@@ -30,7 +30,6 @@
 #include "xap_Frame.h"
 
 class GR_CocoaFont;
-class StNSViewLocker;
 
 @class XAP_CocoaNSView;
 
@@ -126,6 +125,7 @@ public:
     virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) override;
 #if XAP_DONTUSE_XOR
 #else
+    // CoreGraphics doesn't support xor mode.
     virtual void xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2) override;
 #endif
     virtual void setLineWidth(UT_sint32) override;
@@ -136,6 +136,7 @@ public:
         UT_sint32 x, UT_sint32 y,
         UT_sint32 w, UT_sint32 h) override;
     virtual void invertRect(const UT_Rect* pRect) override;
+    virtual void queueDraw(const UT_Rect* pRect) override;
     virtual void setClipRect(const UT_Rect* pRect) override;
     virtual void scroll(UT_sint32, UT_sint32) override;
     virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -199,7 +200,7 @@ public:
     bool _callUpdateCallback(NSRect* aRect);
     XAP_CocoaNSView* _getView() const
     {
-        return m_pWin;
+        return m_view;
     };
 
     static bool _isFlipped();
@@ -235,17 +236,11 @@ protected:
 private:
     void _setClipRectImpl(const UT_Rect* pRect);
 
-    NSImage* _makeNewCacheImage()
-    {
-        NSImage* cache = [[NSImage alloc] initWithSize:NSMakeSize(0, 0)];
-        return cache;
-    }
-
     void _resetContext(CGContextRef context); // reset m_CGContext to default values
 
     gr_cocoa_graphics_update m_updateCallback;
     void* m_updateCBparam;
-    XAP_CocoaNSView* m_pWin;
+    XAP_CocoaNSView* m_view;
     CGContextRef m_CGContext;
     std::vector<id> m_cacheArray;
     std::vector<NSRect*> m_cacheRectArray;
@@ -309,11 +304,10 @@ public: //HACK
 
 private:
     /* private implementations. Allow esasy selection accross various ways */
-    float _measureUnRemappedCharCached(const UT_UCSChar c);
+    CGFloat _measureUnRemappedCharCached(const UT_UCSChar c);
     void _setCapStyle(CapStyle inCapStyle, CGContextRef* context = 0);
     void _setJoinStyle(JoinStyle inJoinStyle, CGContextRef* context = 0);
     void _setLineStyle(LineStyle inLineStyle, CGContextRef* context = 0);
-    void _restartPaint(void);
     //
     /*!
 	  Wrapper to draw the char.
@@ -327,10 +321,8 @@ private:
 	  \note the NSView must be focused prior this call
 	 */
     void _realDrawChars(CTLineRef ctLine,
-        float x, float y, int begin, int rangelen,
-        float xOffset);
-    //
-    StNSViewLocker* m_viewLocker;
+        CGFloat x, CGFloat y, int begin, int rangelen,
+        CGFloat xOffset);
 };
 
 class GR_CocoaPatternImpl

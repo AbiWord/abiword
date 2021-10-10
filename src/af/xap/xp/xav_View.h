@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,23 +18,20 @@
  * 02110-1301 USA.
  */
 
-
-#ifndef AV_VIEW_H
-#define AV_VIEW_H
+#pragma once
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
  */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
 #include "ut_misc.h"
 #include "ut_vector.h"
 #include "ut_debugmsg.h"
 
 #include "ev_EditBits.h"
 
+#include "xap_Drawable.h"
 #include "xav_Listener.h"
 
 class GR_Graphics;
@@ -80,6 +78,7 @@ class ABI_EXPORT AV_ScrollObj
 };
 
 class ABI_EXPORT AV_View
+	: public XAP_Drawable
 {
 public:
 	AV_View(XAP_App * pApp, void*);
@@ -110,9 +109,7 @@ public:
 	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; }
 	inline UT_sint32	getYScrollOffset(void) const { return m_yScrollOffset; }
 
-	virtual void	      draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL)) = 0;
 	virtual void	      updateScreen(bool bDirtyRunsOnly=true) = 0;
-	virtual GR_Graphics * getGraphics(void) const = 0;
     virtual void          updateLayout(void) = 0;
 	virtual void          rebuildLayout(void) = 0;
 	virtual void          remeasureCharsWithoutRebuild() = 0;
@@ -193,8 +190,8 @@ protected:
 	UT_GenericVector<AV_Listener*>	m_vecListeners;
 
 private:
-	AV_View(const AV_View&);	// no impl.
-	void operator=(AV_View&);	// no impl.
+	AV_View(const AV_View&) = delete;
+	void operator=(AV_View&) = delete;
 	bool m_bIsLayoutFilling;
 
 	UT_sint32			m_iWindowHeight;
@@ -203,20 +200,3 @@ private:
 	bool                            m_bCouldBeActive;
 	bool                            m_bConfigureChanged;
 };
-
-#endif /* AV_VIEW_H */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

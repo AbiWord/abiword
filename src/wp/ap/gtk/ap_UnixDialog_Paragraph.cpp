@@ -121,7 +121,7 @@ static gint s_preview_draw(GtkWidget * /* widget */,
 			   AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(dlg);
-	dlg->event_PreviewAreaExposed();
+	dlg->event_PreviewAreaDraw();
 	return TRUE;
 }
 
@@ -294,10 +294,11 @@ void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 	_setCheckItemValue(id, cs);
 }
 
-void AP_UnixDialog_Paragraph::event_PreviewAreaExposed(void)
+void AP_UnixDialog_Paragraph::event_PreviewAreaDraw(void)
 {
-	if (m_paragraphPreview)
-		m_paragraphPreview->draw();
+	if (m_paragraphPreview) {
+		m_paragraphPreview->drawImmediate();
+	}
 }
 
 /*****************************************************************/

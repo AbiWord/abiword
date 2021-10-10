@@ -496,7 +496,7 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 		pFrameImpl->m_ViewAutoUpdater->stop();
 		pFrameImpl->m_ViewAutoUpdaterID = 0;
 		DELETEP(pFrameImpl->m_ViewAutoUpdater);
-		pView->draw();
+		pView->queueDraw();
 		pG->flush();
 		return;
 	}
@@ -519,7 +519,7 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 		pView->updateLayout();
 		if(!pFrameImpl->m_pFrame->m_bFirstDraw)
 		{
-			pView->draw();
+			pView->queueDraw();
 			pFrameImpl->m_pFrame->m_bFirstDraw = true;
 		}
 		else

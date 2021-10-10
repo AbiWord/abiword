@@ -110,7 +110,7 @@ void XAP_Dialog_Zoom::_updatePreviewZoomPercent(UT_uint32 percent)
 	if (m_zoomPreview)
 	{
 		m_zoomPreview->setZoomPercent(percent);
-		m_zoomPreview->draw();
+		m_zoomPreview->queueDraw();
 	}
 	if (m_pFrame)
 		m_pFrame->quickZoom(percent);

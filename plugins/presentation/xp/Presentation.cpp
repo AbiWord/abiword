@@ -536,7 +536,7 @@ bool Presentation::drawNthPage(UT_sint32 iPage)
   da.pG = pG;
   da.xoff = 0;
   da.yoff = 0;
-  m_pView->draw(iPage, &da);
+  m_pView->drawPage(iPage, &da);
   fp_Page * pPage = m_pView->getLayout()->getNthPage(iPage);
   UT_sint32 iTotalHeight = (pPage->getHeight() + m_pView->getPageViewSep())*iPage;
   m_pView->setYScrollOffset(iTotalHeight);
@@ -574,7 +574,7 @@ GR_Image * Presentation::renderPageToImage(UT_sint32 iPage, UT_uint32 iZoom)
 	da.xoff = 0;
 	da.yoff = 0;
 	m_pView->getLayout()->setQuickPrint(pG);
-	m_pView->draw(iPage, &da);
+	m_pView->drawPage(iPage, &da);
 	UT_Rect r;
 	r.left = 0;
 	r.top = 0;

@@ -85,7 +85,7 @@ public:
 	void setAlign(AP_Dialog_PageNumbers::tAlign);
 
 	// where all the zoom-specific drawing happens
-	void draw(const UT_Rect *clip = NULL) override;
+	void drawImmediate(const UT_Rect* clip = nullptr) override;
 
 protected:
 	AP_Dialog_PageNumbers::tControl m_control;

@@ -329,16 +329,13 @@ void XAP_CocoaDialog_FontChooser::updatePreview(void)
 	}
 	
 	// if a font has been set since this dialog was launched, draw things with it
-	const char * entryString;
+	const UT_UCSChar*  entryString = getDrawString();
 
-	if (!getEntryString(&entryString)) {
+	if (!entryString) {
 		return;
 	}
 
-	UT_UCSChar * unicodeString = NULL;
-	UT_UCS4_cloneString_char(&unicodeString, entryString);
-	event_previewExposed(unicodeString);
-	FREEP(unicodeString);
+	event_previewInvalidate(entryString);
 }
 
 void XAP_CocoaDialog_FontChooser::_okAction(void)
@@ -363,6 +360,7 @@ void	XAP_CocoaDialog_FontChooser::_createGC(XAP_CocoaNSView* owner)
 
 	size = [owner bounds].size;
 	_createFontPreviewFromGC(m_pGraphics, lrintf(size.width), lrintf(size.height));
+	owner.drawable = m_pFontPreview;
 }
 
 void XAP_CocoaDialog_FontChooser::_deleteGC(void)

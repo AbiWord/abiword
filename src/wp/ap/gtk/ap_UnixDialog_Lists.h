@@ -56,7 +56,8 @@ class AP_UnixDialog_Lists
 	void					applyClicked(void);
 	void closeClicked(void);
 	void					styleChanged( gint style);
-	void					previewExposed(void);
+	void previewInvalidate(void);
+	void previewDraw(void);
 	void                    setFoldLevel(UT_sint32 iLevel,bool bSet);
 
 	/* Just Plain Useful Functions */

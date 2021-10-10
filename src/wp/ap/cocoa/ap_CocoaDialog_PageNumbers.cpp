@@ -81,10 +81,10 @@ void AP_CocoaDialog_PageNumbers::event_Cancel(void)
 }
 
 
-void AP_CocoaDialog_PageNumbers::event_PreviewExposed(void)
+void AP_CocoaDialog_PageNumbers::event_previewInvalidate(void)
 {
 	if(m_preview) {
-		m_preview->draw();
+		m_preview->queueDraw();
 	}
 }
 
@@ -113,17 +113,18 @@ void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * /*pFrame*/)
 	DELETEP (m_pG);
 	
 	// make a new Cocoa GC
-	XAP_CocoaNSView* view = [m_dlg preview];
-	NSSize size = [view frame].size;
+	XAP_CocoaNSView* view = m_dlg.preview;
+	NSSize size = view.frame.size;
 	GR_CocoaAllocInfo ai(view);
 	m_pG = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 	_createPreviewFromGC(m_pG, (UT_uint32) lrintf(size.width), (UT_uint32) lrintf(size.height));
+	view.drawable = m_preview;
 	
 	// hack in a quick draw here
 	_updatePreview(m_recentAlign, m_recentControl);
-	event_PreviewExposed ();
+	event_previewInvalidate();
 
 	[NSApp runModalForWindow:window];
 

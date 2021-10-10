@@ -217,9 +217,10 @@ AP_Preview_Abi::~AP_Preview_Abi()
 	UNREFP(m_pDocument);
 }
 
-void AP_Preview_Abi::draw(const UT_Rect *clip)
+void AP_Preview_Abi::drawImmediate(const UT_Rect *clip)
 {
 	UT_UNUSED(clip);
+	// this calls FV_View::_draw()
 	getView()->updateScreen(false);
 }
 

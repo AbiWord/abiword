@@ -1446,7 +1446,7 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 	else
 	{
 		GR_Painter painter(getGraphics());
-		m_pView->draw(&m_recCurFrame);
+		m_pView->drawImmediate(&m_recCurFrame);
 		painter.drawImage(m_pFrameImage,m_recCurFrame.left,m_recCurFrame.top);
 	}
 }

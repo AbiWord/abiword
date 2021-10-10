@@ -96,7 +96,7 @@ void AP_CocoaLeftRuler::setView(AV_View * pView)
 			selector:@selector(viewDidResize:) 
 			name:NSViewFrameDidChangeNotification object:m_wLeftRuler];
 
-	pG->_setUpdateCallback(&_graphicsUpdateCB, (void *)this);
+	m_wLeftRuler.drawable = this;
 	pG->setGrabCursor(GR_Graphics::GR_CURSOR_UPDOWN);
 
 	NSRect bounds = [m_wLeftRuler bounds];
@@ -211,40 +211,7 @@ void AP_CocoaLeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 }
 #endif
 
-bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
-{
-	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)param;
-	if (!pCocoaLeftRuler)
-		return false;
-
-	UT_Rect rClip;
-	rClip.left   = aRect->origin.x;
-	rClip.top    = aRect->origin.y;
-	rClip.width  = aRect->size.width;
-	rClip.height = aRect->size.height;
-	xxx_UT_DEBUGMSG(("Cocoa in leftruler expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	if(pG != NULL)
-	{
-//		pCocoaLeftRuler->getGraphics()->doRepaint(&rClip);
-		pCocoaLeftRuler->draw(&rClip);
-	}
-	else {
-		return false;
-	}
-#if 0
-	else
-	{
-		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		pCocoaLeftRuler->draw(&rClip);
-	}
-#endif
-	return true;
-}
-
 /*****************************************************************/
-
 
 @implementation AP_CocoaLeftRulerDelegate
 

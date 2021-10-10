@@ -17,8 +17,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_UNIXDIALOG_PARAGRAPH_H
-#define AP_UNIXDIALOG_PARAGRAPH_H
+#pragma once
 
 #include "ap_Dialog_Paragraph.h"
 
@@ -60,7 +59,7 @@ public:
 		virtual void event_CheckToggled(GtkWidget * widget);
 
 	// Preview
-	virtual void event_PreviewAreaExposed(void);
+	virtual void event_PreviewAreaDraw(void);
 
  protected:
 
@@ -120,5 +119,3 @@ public:
 
 	GtkWidget * m_checkbuttonDomDirection;
 };
-
-#endif /* XAP_UNIXDIALOG_PARAGRAPH_H */

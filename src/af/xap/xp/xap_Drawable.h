@@ -1,5 +1,4 @@
 /* AbiSource Application Framework
- * Copyright (C) 2010 Patrik Fimml
  * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
@@ -20,21 +19,18 @@
 
 #pragma once
 
-#include <queue>
+#include "ut_export.h"
 
-#include "ut_option.h"
-#include "xap_Drawable.h"
+class UT_Rect;
+class GR_Graphics;
 
-/* utility class for widgets drawing in layout units */
-class ABI_EXPORT XAP_CustomWidget
-    : public XAP_Drawable
+/// Interface for drawables.
+class ABI_EXPORT XAP_Drawable
 {
 public:
-    virtual void queueDrawLU(const UT_Rect* clip);
-    virtual void drawImmediate(const UT_Rect* clip) override;
-    virtual void queueDraw(const UT_Rect *clip = nullptr) override;
-
-    virtual void drawImmediateLU(const UT_Rect* clip) = 0;
-private:
-    std::queue<UT_Option<UT_Rect>> m_drawQueue;
+    virtual GR_Graphics* getGraphics() const = 0;
+    /// Queue a drawing
+    virtual void queueDraw(const UT_Rect* pRect = nullptr) = 0;
+    /// Immediately draw.
+    virtual void drawImmediate(const UT_Rect* pRect = nullptr) = 0;
 };

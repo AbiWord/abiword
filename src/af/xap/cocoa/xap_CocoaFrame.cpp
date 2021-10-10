@@ -60,6 +60,7 @@
     m_name = [name retain];
 	m_pFrame = frame;
 	m_pGR = NULL;
+	m_drawable = nullptr;
 	if (frame) {
 		[[NSNotificationCenter defaultCenter] addObserver:self
 						selector:@selector(hasBeenResized:)
@@ -106,11 +107,16 @@
 	m_pGR = gr;
 }
 
+#if DEBUG
+@synthesize in_draw_rect = _in_draw_rect;
+#endif
+@synthesize drawable = m_drawable;
 /*!
 	Cocoa overridden method. Redraw the screen.
  */
 - (void)drawRect:(NSRect)aRect
 {
+	_in_draw_rect = true;
 	if (m_pGR) {
 		UT_RGBColor clr;
 		GR_Painter painter(m_pGR);
@@ -127,9 +133,14 @@
 		aRect.size.width  +=  2.0;
 		aRect.size.height +=  2.0;
 
-		// if (![self inLiveResize]) // this case handled in -hasBeenResized: below
+		if (m_drawable) {
+			m_drawable->drawImmediate();
+		} else {
+			// if (![self inLiveResize]) // this case handled in -hasBeenResized: below
 			m_pGR->_callUpdateCallback(&aRect);
+		}
 	}
+	_in_draw_rect = false;
 }
 
 /*!

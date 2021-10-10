@@ -1080,7 +1080,7 @@ AP_FormatFrame_preview::~AP_FormatFrame_preview()
 {
 }
 
-void AP_FormatFrame_preview::draw(const UT_Rect *clip)
+void AP_FormatFrame_preview::drawImmediate(const UT_Rect* clip)
 {
 	UT_UNUSED(clip);
 	GR_Painter painter(m_gc);

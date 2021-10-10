@@ -72,10 +72,10 @@ void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * /*pFrame*/)
 	[m_dlg setXAPOwner:this];
 	[m_dlg window];
 
-	NSView * view = [m_dlg preview];
+	XAP_CocoaNSView* view = m_dlg.preview;
 	UT_ASSERT([view isKindOfClass:[XAP_CocoaNSView class]]);
 
-	NSSize size = [view bounds].size;
+	NSSize size = view.bounds.size;
 
 	UT_uint32 width  = static_cast<UT_uint32>(lrintf(size.width));
 	UT_uint32 height = static_cast<UT_uint32>(lrintf(size.height));
@@ -94,8 +94,9 @@ void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * /*pFrame*/)
 	/* let the widget materialize
 	 */
 	_createPreviewFromGC(m_pPreviewWidget, width, height);
+	view.drawable = m_pFormatFramePreview;
 
-	m_pFormatFramePreview->draw();
+	m_pFormatFramePreview->queueDraw();
 
 	activate();
 	startUpdater();
@@ -117,10 +118,10 @@ void AP_CocoaDialog_FormatFrame::event_Close(void)
 	destroy();
 }
 
-void AP_CocoaDialog_FormatFrame::event_previewExposed(void)
+void AP_CocoaDialog_FormatFrame::event_previewInvalidate(void)
 {
 	if(m_pFormatFramePreview) {
-		m_pFormatFramePreview->draw();
+		m_pFormatFramePreview->queueDraw();
 	}
 }
 
@@ -377,7 +378,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			thickness = _xap->borderThicknessRight();
 			[stepper setFloatValue:thickness];
 			[field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessRight().utf8_str())]];
-			_xap->event_previewExposed();
 			break;
 
 		case 2:
@@ -388,7 +388,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			thickness = _xap->borderThicknessBottom();
 			[stepper setFloatValue:thickness];
 			[field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessBottom().utf8_str())]];
-			_xap->event_previewExposed();
 			break;
 
 		case 3:
@@ -399,7 +398,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			thickness = _xap->borderThicknessLeft();
 			[stepper setFloatValue:thickness];
 			[field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessLeft().utf8_str())]];
-			_xap->event_previewExposed();
 			break;
 
 		case 4:
@@ -410,7 +408,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			thickness = _xap->borderThicknessTop();
 			[stepper setFloatValue:thickness];
 			[field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessTop().utf8_str())]];
-			_xap->event_previewExposed();
 			break;
 
 		default:
@@ -437,9 +434,9 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			[   _topBorderStepper setFloatValue:[stepper floatValue]];
 			[_bottomBorderStepper setFloatValue:[stepper floatValue]];
 
-			_xap->event_previewExposed();
 			break;
 		}
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)borderThicknessStepper:(id)sender
@@ -458,7 +455,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			thickness = _xap->borderThicknessRight();
 			[stepper setFloatValue:thickness];
 			[field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessRight().utf8_str())]];
-			_xap->event_previewExposed();
 			break;
 
 		case 2:
@@ -469,7 +465,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			thickness = _xap->borderThicknessBottom();
 			[stepper setFloatValue:thickness];
 			[field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessBottom().utf8_str())]];
-			_xap->event_previewExposed();
 			break;
 
 		case 3:
@@ -480,7 +475,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			thickness = _xap->borderThicknessLeft();
 			[stepper setFloatValue:thickness];
 			[field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessLeft().utf8_str())]];
-			_xap->event_previewExposed();
 			break;
 
 		case 4:
@@ -491,7 +485,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			thickness = _xap->borderThicknessTop();
 			[stepper setFloatValue:thickness];
 			[field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessTop().utf8_str())]];
-			_xap->event_previewExposed();
 			break;
 
 		default:
@@ -518,9 +511,9 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			[   _topBorderStepper setFloatValue:[stepper floatValue]];
 			[_bottomBorderStepper setFloatValue:[stepper floatValue]];
 
-			_xap->event_previewExposed();
 			break;
 		}
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)bgColorAction:(id)sender
@@ -540,7 +533,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 	int b = static_cast<int>(lrintf(blue  * 255));	b = (b < 0) ? 0 : b;	b = (b > 255) ? 255 : b;
 
 	_xap->setBGColor(UT_RGBColor(static_cast<unsigned char>(r), static_cast<unsigned char>(g), static_cast<unsigned char>(b)));
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)borderColorAction:(id)sender
@@ -601,31 +594,31 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			_xap->setBorderColorAll(rgb);
 			break;
 		}
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)rightBorderAction:(id)sender
 {
 	_xap->setBorderLineStyleRight (([sender state] == NSControlStateValueOn) ? LS_NORMAL : LS_OFF);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)leftBorderAction:(id)sender
 {
 	_xap->setBorderLineStyleLeft (([sender state] == NSControlStateValueOn) ? LS_NORMAL : LS_OFF);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)topBorderAction:(id)sender
 {
 	_xap->setBorderLineStyleTop (([sender state] == NSControlStateValueOn) ? LS_NORMAL : LS_OFF);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)bottomBorderAction:(id)sender
 {
 	_xap->setBorderLineStyleBottom (([sender state] == NSControlStateValueOn) ? LS_NORMAL : LS_OFF);
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (IBAction)borderLineStyleAction:(id)sender
@@ -659,7 +652,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			// should not happen
 			break;
 		}
-	_xap->event_previewExposed();
+	_xap->event_previewInvalidate();
 }
 
 - (void)menuWillActivate:(NSMenu *)menu forButton:(XAP_CocoaToolbarButton *)button

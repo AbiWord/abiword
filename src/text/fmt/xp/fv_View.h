@@ -28,11 +28,13 @@
 
 #include <memory>
 #include <string>
+#include <queue>
 #include <vector>
 
 #include "xap_Features.h"
 #include "xap_Prefs.h"
 #include "ut_types.h"
+#include "ut_option.h"
 #include "xav_View.h"
 #include "pt_Types.h"
 #include "pp_Property.h"
@@ -280,7 +282,8 @@ public:
 	void	        cmdHyperlinkJump(PT_DocPosition pos);
 	void			cmdHyperlinkCopyLocation(PT_DocPosition pos);
 
-	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL)) override;
+	virtual void queueDraw(const UT_Rect* pRect = nullptr) override;
+	virtual void drawImmediate(const UT_Rect* pRect = nullptr) override;
 	virtual void 	drawSelectionBox(UT_Rect & box, bool drawHandles);
 
 	void			setVisualSelectionEnabled(bool bActive);
@@ -389,8 +392,7 @@ public:
 	fp_Page*		getCurrentPage(void) const;
 	fl_BlockLayout* getCurrentBlock(void) const;
 
-	void draw(int page, dg_DrawArgs* da);
-
+	void drawPage(int page, dg_DrawArgs* da);
 
 	// TODO some of these functions should move into protected
 
@@ -1194,6 +1196,8 @@ public:
 	bool unregisterDoubleBufferingObject(FV_ViewDoubleBuffering *obj);
 private:
 	FV_ViewDoubleBuffering *m_pViewDoubleBufferingObject;
+
+	std::queue<UT_Option<UT_Rect>> m_drawQueue;
 };
 
 #endif /* FV_VIEW_H */

@@ -46,7 +46,7 @@ public:
 	virtual ~AP_Lists_preview(void);
 
 	// data twiddlers
-	void draw(const UT_Rect *clip = NULL) override;
+	void drawImmediate(const UT_Rect* clip = nullptr) override;
 	AP_Dialog_Lists*	getLists(void);
 	void				setData(const gchar * pszFont,float fAlign,float fIndent);
 	void				setData(const std::string & font, float fAlign,
@@ -74,6 +74,11 @@ class ABI_EXPORT AP_Dialog_Lists : public AP_Dialog_Modeless
 public:
 	AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Lists(void);
+
+    AP_Lists_preview* getListsPreview() const
+    {
+        return m_pListsPreview;
+    }
 
 	// these are used for the Modal version of the dialog called from the
     // styles dialog.

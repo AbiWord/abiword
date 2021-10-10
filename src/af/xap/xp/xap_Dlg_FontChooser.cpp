@@ -111,7 +111,7 @@ void XAP_Dialog_FontChooser::addOrReplaceVecProp(const std::string & sProp, cons
 /*!
  * This method updates the drawing area in the dialog.
  */
-void XAP_Dialog_FontChooser::event_previewExposed(const UT_UCSChar * pszChars)
+void XAP_Dialog_FontChooser::event_previewInvalidate(const UT_UCSChar * pszChars)
 {
 	UT_UCSChar * pszNew = NULL;
 	if(!pszChars || UT_UCS4_strlen(pszChars) <= 0)
@@ -127,11 +127,15 @@ void XAP_Dialog_FontChooser::event_previewExposed(const UT_UCSChar * pszChars)
 	{
 		m_pFontPreview->setDrawString(pszChars);
 	}
-	m_pFontPreview->draw();
+	m_pFontPreview->queueDraw();
 
 	FREEP(pszNew);
 }
 
+void XAP_Dialog_FontChooser::event_previewDrawImmediate()
+{
+	m_pFontPreview->drawImmediate();
+}
 
 /*!
  * This method clears the drawing area in the dialog.
@@ -518,7 +522,7 @@ std::string XAP_Preview_FontPreview::getVal(const std::string & sProp) const
  * Finally draw the characters in the preview.
  *
  */
-void XAP_Preview_FontPreview::draw(const UT_Rect *clip)
+void XAP_Preview_FontPreview::drawImmediate(const UT_Rect* clip)
 {
 	UT_UNUSED(clip);
 //

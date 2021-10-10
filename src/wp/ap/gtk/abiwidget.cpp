@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
-/* The AbiWord Widget 
+/* The AbiWord Widget
  *
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001,2002 Dom Lachowicz <cinamod@hotmail.com>
@@ -12,15 +12,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -1064,7 +1064,8 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 
 			if(!s_bFirstDrawDone && iPageCount > 1)
 			{
-				pView->draw();
+				// XXX is this really immediate?
+				pView->drawImmediate();
 				s_bFirstDrawDone = true;
 			}
 			else
@@ -1488,7 +1489,7 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 		}
 	}
 	pView->getLayout()->setQuickPrint(pG);
-	pView->draw(iPage, &da);
+	pView->drawPage(iPage, &da);
 	pView->getLayout()->setQuickPrint(NULL);
 	pView->getLayout()->incrementGraphicTick();
 	pG->endPaint();
@@ -2642,7 +2643,7 @@ abi_widget_draw (AbiWidget * w)
 		UT_return_if_fail (w != NULL);
 		FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 		if (view)
-			view->draw();
+			view->queueDraw();
 	}
 }
 

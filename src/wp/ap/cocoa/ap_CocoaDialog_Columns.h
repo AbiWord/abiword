@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,8 +20,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_CocoaDialog_Columns_H
-#define AP_CocoaDialog_Columns_H
+#pragma once
 
 #include "ap_Dialog_Columns.h"
 
@@ -132,5 +131,3 @@ private:
 - (XAP_CocoaNSView*)preview;
 
 @end
-
-#endif /* AP_CocoaDialog_Columns_H */

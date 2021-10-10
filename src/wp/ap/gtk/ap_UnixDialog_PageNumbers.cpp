@@ -49,7 +49,7 @@ static gint s_preview_draw(GtkWidget * /*w*/,
 			   AP_UnixDialog_PageNumbers * dlg)
 {
 	UT_ASSERT(dlg);
-	dlg->event_PreviewExposed();
+	dlg->event_PreviewDraw();
 	return FALSE;
 }
 
@@ -86,10 +86,18 @@ AP_UnixDialog_PageNumbers::~AP_UnixDialog_PageNumbers(void)
 	DELETEP (m_unixGraphics);
 }
 
-void AP_UnixDialog_PageNumbers::event_PreviewExposed(void)
+void AP_UnixDialog_PageNumbers::event_PreviewInvalidate(void)
 {
-	if(m_preview)
-		m_preview->draw();
+	if (m_preview) {
+		m_preview->queueDraw();
+	}
+}
+
+void AP_UnixDialog_PageNumbers::event_PreviewDraw(void)
+{
+	if (m_preview) {
+		m_preview->drawImmediate();
+	}
 }
 
 void AP_UnixDialog_PageNumbers::event_AlignChanged(AP_Dialog_PageNumbers::tAlign align)

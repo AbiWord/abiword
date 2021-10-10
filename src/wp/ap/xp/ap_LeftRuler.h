@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2004-2019 Hubert Figuière
+ * Copyright (C) 2004-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,8 +19,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_LEFTRULER_H
-#define AP_LEFTRULER_H
+#pragma once
 
 #include "xap_Features.h"
 // Class for dealing with the horizontal ruler at the top of
@@ -119,7 +118,7 @@ public:
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_LeftRuler : public AP_Ruler, public AV_Listener, public XAP_CustomWidgetLU
+class ABI_EXPORT AP_LeftRuler : public AP_Ruler, public AV_Listener
 {
 public:
 	AP_LeftRuler(XAP_Frame * pFrame);
@@ -162,7 +161,7 @@ protected:
 	virtual void        _refreshView(void) override;
 
 	/* don't call this function directly, use XAP_CustomWidget::queueDraw() instead */
-	virtual void		drawLU(const UT_Rect *clip) override;
+	virtual void		drawImmediateLU(const UT_Rect *clip) override;
 
 //	void				_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 //									 UT_sint32 x, UT_sint32 h);
@@ -240,5 +239,3 @@ private:
 	GR_Image*			m_guideCache;
 #endif
 };
-
-#endif /* AP_LEFTRULER_H */

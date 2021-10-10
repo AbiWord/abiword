@@ -103,6 +103,7 @@
     IBOutlet NSTextField *_styleTypeLabel;
 	AP_CocoaDialog_Styles* _xap;
 }
+@property (readonly) XAP_CocoaNSView* preview;
 - (IBAction)basedOnAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)followStyleAction:(id)sender;
@@ -178,9 +179,10 @@ void AP_CocoaDialog_Styles::runModal(XAP_Frame * pFrame)
 	}
 	
         // let the widget materialize
-	NSSize size = [preview frame].size;
+	NSSize size = preview.frame.size;
 	_createParaPreviewFromGC(m_pParaPreviewWidget,
 							 (UT_uint32)rintf(size.width), (UT_uint32)rintf(size.height));
+	preview.drawable = m_pParaPreview;
 
 	// make a new Cocoa GC
 	DELETEP (m_pCharPreviewWidget);
@@ -191,10 +193,10 @@ void AP_CocoaDialog_Styles::runModal(XAP_Frame * pFrame)
 	}
 
 	// let the widget materialize
-	size = [preview frame].size;
+	size = preview.frame.size;
 	_createCharPreviewFromGC(m_pCharPreviewWidget,
 							 (UT_uint32)rintf(size.width), (UT_uint32)rintf(size.height));
-
+	preview.drawable = m_pCharPreview;
 //
 // Draw the previews!!
 //
@@ -237,7 +239,7 @@ void AP_CocoaDialog_Styles::event_Close(void)
 void AP_CocoaDialog_Styles::event_paraPreviewExposed(void)
 {
 	if(m_pParaPreview)
-		m_pParaPreview->draw();
+		m_pParaPreview->queueDraw();
 }
 
 
@@ -497,26 +499,27 @@ void  AP_CocoaDialog_Styles::modifyRunModal(void)
 {
 	m_modifyDlg = [[AP_CocoaDialog_StylesModifyController alloc] initFromNib];
 	[m_modifyDlg setXAPOwner:this];
-	NSWindow * window = [m_modifyDlg window];
+	NSWindow* window = m_modifyDlg.window;
 	UT_ASSERT(window);
 
 	if (_populateModify()) {
 		// make a new Cocoa GC
 		DELETEP (m_pAbiPreviewWidget);
-		XAP_CocoaNSView * preview = m_modifyDlg->_preview;
+		XAP_CocoaNSView* preview = m_modifyDlg.preview;
 		GR_CocoaAllocInfo ai(preview);
 		m_pAbiPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 		
 			// let the widget materialize
 	
-		NSSize size =  [preview frame].size;
+		NSSize size =  preview.frame.size;
 		_createAbiPreviewFromGC(m_pAbiPreviewWidget,
-								(UT_uint32)rintf(size.width), (UT_uint32)rintf(size.height)); 
+								(UT_uint32)rintf(size.width), (UT_uint32)rintf(size.height));
+		preview.drawable = m_pAbiPreview;
 		_populateAbiPreview(isNew());
 		event_ModifyPreviewExposed();
 	
-		[NSApp beginSheet:window modalForWindow:[m_dlg window] modalDelegate:m_modifyDlg
+		[NSApp beginSheet:window modalForWindow:m_dlg.window modalDelegate:m_modifyDlg
 				didEndSelector:@selector(sheetDidEnd:returnCode:contextInfo:) contextInfo:nil];
 	}
 }
@@ -551,7 +554,7 @@ void AP_CocoaDialog_Styles::event_modifySheetDidEnd(int /*code*/)
 
 void AP_CocoaDialog_Styles::event_ModifyPreviewExposed(void)
 {
-	drawLocal();
+	invalidatePreview();
 }
 
 void AP_CocoaDialog_Styles::event_ModifyClicked(void)
@@ -825,7 +828,6 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 
 @implementation AP_CocoaDialog_StylesController
 
-
 - (id)initFromNib
 {
 	return [super initWithWindowNibName:@"ap_CocoaDialog_Styles"];
@@ -891,7 +893,7 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 {
 	UT_UNUSED(sender);
 	NSString *str;
-	int row = [_availStylesList selectedRow];
+	NSInteger row = [_availStylesList selectedRow];
 	if (row >= 0) {
 		str = [[m_stylesDataSource array] objectAtIndex:row];
 		_xap->event_DeleteClicked(str);
@@ -938,6 +940,8 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 
 
 @implementation AP_CocoaDialog_StylesModifyController
+
+@synthesize preview = _preview;
 
 - (id)initFromNib
 {

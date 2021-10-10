@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,17 +18,13 @@
  * 02110-1301 USA.
  */
 
-
-#ifndef XAP_PREVIEW_ZOOM_H
-#define XAP_PREVIEW_ZOOM_H
+#pragma once
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
  */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
 #include "ut_misc.h"
 
 #include "xap_Preview.h"
@@ -56,7 +53,7 @@ public:
 	bool	setString(UT_UCSChar * string);
 
     // where all the zoom-specific drawing happens
-	void	draw(const UT_Rect *clip = NULL) override;
+	virtual void drawImmediate(const UT_Rect* clip = nullptr) override;
 
 protected:
 
@@ -68,5 +65,3 @@ protected:
 
 	GR_Font *				m_pFont;	// so we can delete it
 };
-
-#endif /* XAP_PREVIEW_ZOOM_H */

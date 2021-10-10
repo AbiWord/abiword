@@ -2,21 +2,21 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2009, 2013, 2019 Hubert Figuiere
+ * Copyright (C) 2009, 2013, 2019-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -72,7 +72,7 @@ static void s_line_left(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatFrame::toggle_left, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_line_right(GtkWidget *widget, gpointer data )
@@ -80,7 +80,7 @@ static void s_line_right(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_FormatFrame * dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatFrame::toggle_right, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_line_top(GtkWidget *widget, gpointer data )
@@ -88,7 +88,7 @@ static void s_line_top(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_FormatFrame * dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatFrame::toggle_top, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_line_bottom(GtkWidget *widget, gpointer data )
@@ -96,7 +96,7 @@ static void s_line_bottom(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_FormatFrame * dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatFrame::toggle_bottom, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 
@@ -118,7 +118,7 @@ static void s_border_thickness(GtkWidget *widget, gpointer data )
 static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_FormatFrame * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
-	dlg->event_previewExposed();
+	dlg->event_previewDraw();
 	return FALSE;
 }
 
@@ -163,7 +163,7 @@ AP_UnixDialog_FormatFrame__onBorderColorClicked (GtkWidget 		*button,
 
 	if (color.get()) {
 		dlg->setBorderColor (*color);
-		dlg->event_previewExposed ();
+		dlg->event_previewInvalidate ();
 	}
 
 	return TRUE;
@@ -194,7 +194,7 @@ AP_UnixDialog_FormatFrame__onBackgroundColorClicked (GtkWidget 		*button,
 
 	if (color.get()) {
 		dlg->setBGColor (*color);
-		dlg->event_previewExposed ();
+		dlg->event_previewInvalidate ();
 	}
 
 	return TRUE;
@@ -287,7 +287,7 @@ void AP_UnixDialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 						 static_cast<UT_uint32>(allocation.width),
 						 static_cast<UT_uint32>(allocation.height));	
 	
-	m_pFormatFramePreview->draw();
+	m_pFormatFramePreview->queueDraw();
 	
 	startUpdater();
 }
@@ -310,10 +310,16 @@ void AP_UnixDialog_FormatFrame::event_Close(void)
 	destroy();
 }
 
-void AP_UnixDialog_FormatFrame::event_previewExposed(void)
+void AP_UnixDialog_FormatFrame::event_previewInvalidate(void)
 {
 	if(m_pFormatFramePreview)
-		m_pFormatFramePreview->draw();
+		m_pFormatFramePreview->queueDraw();
+}
+
+void AP_UnixDialog_FormatFrame::event_previewDraw(void)
+{
+	if(m_pFormatFramePreview)
+		m_pFormatFramePreview->drawImmediate();
 }
 
 void AP_UnixDialog_FormatFrame::setBorderThicknessInGUI(UT_UTF8String & sThick)
@@ -351,7 +357,7 @@ void AP_UnixDialog_FormatFrame::event_BorderThicknessChanged(void)
 		}
 
 		setBorderThicknessAll(sThickness);
-		event_previewExposed();
+		event_previewInvalidate();
 	}
 }
 

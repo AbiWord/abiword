@@ -54,9 +54,8 @@
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
-	: XAP_CustomWidgetLU()
 #if XAP_DONTUSE_XOR
-	, m_guideCache(NULL)
+	: m_guideCache(NULL)
 #endif
 {
 	m_pFrame = pFrame;
@@ -1683,7 +1682,7 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool /*bUp*/)
 
 /*****************************************************************/
 
-void AP_LeftRuler::drawLU(const UT_Rect *clip)
+void AP_LeftRuler::drawImmediateLU(const UT_Rect *clip)
 {
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if (!pView)

@@ -19,6 +19,7 @@
  * 02110-1301 USA.
  */
 
+#include <gtk/gtk.h>
 #include "ut_bytebuf.h"
 
 #include "gr_UnixCairoGraphics.h"
@@ -499,6 +500,23 @@ void GR_UnixCairoGraphics::_endPaint()
 	m_CairoCreated = false;
 
 	GR_CairoGraphics::_endPaint();
+}
+
+void GR_UnixCairoGraphics::queueDraw(const UT_Rect* clip)
+{
+	UT_ASSERT(m_Widget);
+
+	if (!clip) {
+		gtk_widget_queue_draw(m_Widget);
+	} else {
+		gtk_widget_queue_draw_area(
+				m_Widget,
+				clip->left,
+				clip->top,
+				clip->width,
+				clip->height
+			);
+	}
 }
 
 void GR_UnixCairoGraphics::flush(void)

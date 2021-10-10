@@ -227,7 +227,7 @@ void XAP_Draw_Symbol::setRow (UT_uint32 row)
 		}
 		chars += numb;
 	}
-	draw ();
+	queueDraw();
 }
 
 UT_uint32 XAP_Draw_Symbol::getSymbolRows (void) const
@@ -242,7 +242,7 @@ UT_uint32 XAP_Draw_Symbol::getSymbolRows (void) const
 	return rows;
 }
 
-void XAP_Draw_Symbol::draw(const UT_Rect *clip)
+void XAP_Draw_Symbol::drawImmediate(const UT_Rect *clip)
 {
 	UT_UNUSED(clip);
 	UT_ASSERT(m_gc);

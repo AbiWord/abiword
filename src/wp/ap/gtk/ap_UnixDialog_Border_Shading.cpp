@@ -75,7 +75,7 @@ static void s_line_left(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_Border_Shading * dlg = reinterpret_cast<AP_UnixDialog_Border_Shading *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_Border_Shading::toggle_left, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_line_right(GtkWidget *widget, gpointer data )
@@ -83,7 +83,7 @@ static void s_line_right(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_Border_Shading * dlg = static_cast<AP_UnixDialog_Border_Shading *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_Border_Shading::toggle_right, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_line_top(GtkWidget *widget, gpointer data )
@@ -91,7 +91,7 @@ static void s_line_top(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_Border_Shading * dlg = static_cast<AP_UnixDialog_Border_Shading *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_Border_Shading::toggle_top, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_line_bottom(GtkWidget *widget, gpointer data )
@@ -99,13 +99,13 @@ static void s_line_bottom(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_Border_Shading * dlg = static_cast<AP_UnixDialog_Border_Shading *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_Border_Shading::toggle_bottom, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Border_Shading * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
-	dlg->event_previewExposed();
+	dlg->event_previewDraw();
 	return FALSE;
 }
 
@@ -142,7 +142,7 @@ static gboolean s_on_border_color_clicked (GtkWidget 		*button,
 
 	if (color.get()) {
 		dlg->setBorderColor (*color);
-		dlg->event_previewExposed ();
+		dlg->event_previewInvalidate();
 	}
 
 	return TRUE;
@@ -186,7 +186,7 @@ static gboolean s_on_shading_color_clicked (GtkWidget 		*button,
 
 	if (color.get()) {
 		dlg->setShadingColor (*color);
-		dlg->event_previewExposed ();
+		dlg->event_previewInvalidate();
 	}
 
 	return TRUE;
@@ -279,7 +279,7 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 						 static_cast<UT_uint32>(alloc.width),
 						 static_cast<UT_uint32>(alloc.height));	
 	
-	m_pBorderShadingPreview->draw();
+	m_pBorderShadingPreview->queueDraw();
 
 	startUpdater();
 	UT_DEBUGMSG(("========================= End the unModeless \n"));
@@ -305,10 +305,18 @@ void AP_UnixDialog_Border_Shading::event_Close(void)
 	destroy();
 }
 
-void AP_UnixDialog_Border_Shading::event_previewExposed(void)
+void AP_UnixDialog_Border_Shading::event_previewInvalidate(void)
 {
-	if(m_pBorderShadingPreview)
-		m_pBorderShadingPreview->draw();
+	if(m_pBorderShadingPreview) {
+		m_pBorderShadingPreview->queueDraw();
+	}
+}
+
+void AP_UnixDialog_Border_Shading::event_previewDraw(void)
+{
+	if(m_pBorderShadingPreview) {
+		m_pBorderShadingPreview->drawImmediate();
+	}
 }
 
 void AP_UnixDialog_Border_Shading::_setShadingEnable(bool enable)
@@ -396,7 +404,7 @@ void AP_UnixDialog_Border_Shading::event_BorderThicknessChanged(void)
 			sThickness = UT_std_string_sprintf("%fin",thickness);
 		}
 		setBorderThickness(sThickness);
-		event_previewExposed();
+		event_previewInvalidate();
 	}
 }
 
@@ -405,11 +413,11 @@ void AP_UnixDialog_Border_Shading::event_BorderStyleChanged(void)
 	if(m_wBorderStyle)
 	{
 		gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderStyle));
-
+		UT_DEBUGMSG(("border index %d\n", index));
 		if (index >= 0 && index < BORDER_SHADING_NUMOFSTYLES)
 		{
 			setBorderStyle(sBorderStyle[index]);
-			event_previewExposed();
+			event_previewInvalidate();
 		}
 	}
 }
@@ -428,7 +436,7 @@ void AP_UnixDialog_Border_Shading::event_ShadingOffsetChanged(void)
 		}
 
 		setShadingOffset(sOffset);
-		event_previewExposed();
+		event_previewInvalidate();
 	}
 }
 

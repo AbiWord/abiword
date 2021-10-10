@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2019 Hubert Figuière
+ * Copyright (C) 2019-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,14 +19,14 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_RULER_H
-#define AP_RULER_H
+#pragma once
 
 // Common utilities for the left and top rulers.
 
 #include "ut_types.h"
 #include "gr_Graphics.h"
 #include "ev_EditBits.h"
+#include "xap_CustomWidget.h"
 
 class ABI_EXPORT ap_RulerTicks
 {
@@ -50,18 +50,15 @@ public:
 	double			dBasicUnit;
 };
 
-class AP_Ruler
+class AP_Ruler : virtual public XAP_CustomWidget
 {
 public:
     virtual ~AP_Ruler() {}
 	virtual void setHeight(UT_uint32 iHeight) = 0;
 	virtual void setWidth(UT_uint32 iWidth) = 0;
-	virtual GR_Graphics* getGraphics(void) const = 0;
 	virtual XAP_Frame* getFrame() const = 0;
 	virtual void mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y) = 0;
 	virtual void mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y) = 0;
 	virtual void mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y) = 0;
 	virtual void _refreshView(void) = 0;
 };
-
-#endif /* AP_RULER_H */

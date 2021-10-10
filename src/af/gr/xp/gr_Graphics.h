@@ -2,6 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Tomas Frydrych, <tomas@frydrych.uklinux.net>
+ * Coprygiht (C) 2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,8 +20,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef GR_GRAPHICS_H
-#define GR_GRAPHICS_H
+#pragma once
 
 #include <memory>
 
@@ -496,6 +496,8 @@ class ABI_EXPORT GR_Graphics
 
 	virtual void      setLineWidth(UT_sint32) = 0;
 
+	/// Invalidate the rect of the whole view
+	virtual void queueDraw(const UT_Rect* pRect) = 0;
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
 	const UT_Rect *   getClipRect(void) const { return m_pRect.get();}
 	UT_Option<UT_Rect> getClipRectOptional(void) const;
@@ -908,5 +910,3 @@ class ABI_EXPORT GR_Graphics
 	AllCarets               m_AllCarets;
 	bool                    m_bAntiAliasAlways;
 };
-
-#endif /* GR_GRAPHICS_H */

@@ -2,7 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2019 Hubert Figuière
+ * Copyright (C) 2019-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,8 +20,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_UNIXDIALOG_FORMATFRAME_H
-#define AP_UNIXDIALOG_FORMATFRAME_H
+#pragma once
 
 #include "xap_UnixDialog.h"
 #include "ap_Dialog_FormatFrame.h"
@@ -46,7 +45,8 @@ public:
 
 	// callbacks can fire these events
 	virtual void			event_Close(void);
-	void					event_previewExposed(void);
+	void event_previewInvalidate(void);
+	void event_previewDraw(void);
 	void					event_ApplyToChanged(void);
 	void                    event_BorderThicknessChanged(void);
 	virtual void setBorderThicknessInGUI(UT_UTF8String & sThick) override;
@@ -92,7 +92,4 @@ protected:
 	GtkWidget * m_wPosParagraph;
 	GtkWidget * m_wPosColumn;
 	GtkWidget * m_wPosPage;
-
 };
-
-#endif /* AP_UNIXDIALOG_FORMATFRAME_H */

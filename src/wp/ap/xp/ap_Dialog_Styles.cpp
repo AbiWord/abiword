@@ -745,7 +745,7 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	}
 	getLView()->setPoint(m_posFocus+1);
 	getLView()->setStyle("tmp");
-	drawLocal();
+	invalidatePreview();
 }
 
 
@@ -957,11 +957,10 @@ PD_Document * AP_Dialog_Styles::getLDoc(void) const
 /*!
  * This updates the mini-Abi in the second pane preview.
  */
-void  AP_Dialog_Styles::drawLocal(void)
+void  AP_Dialog_Styles::invalidatePreview(void)
 {
-    if(m_pAbiPreview)
-    {
-	m_pAbiPreview->draw();
+    if (m_pAbiPreview) {
+        m_pAbiPreview->queueDraw();
     }
 }
 
@@ -1221,7 +1220,7 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const gchar * pageLeftMargin,
 							   tSpacing);
 
 	// force a redraw
-	m_pParaPreview->draw();
+	m_pParaPreview->queueDraw();
 }
 
 /*!
@@ -1233,7 +1232,7 @@ void AP_Dialog_Styles::event_charPreviewUpdated (void) const
 
 	// force a redraw
 	m_pCharPreview->setVecProperties( &m_mapCharProps);
-	m_pCharPreview->draw();
+	m_pCharPreview->queueDraw();
 }
 
 /*!

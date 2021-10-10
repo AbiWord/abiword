@@ -59,8 +59,6 @@ protected:
 	virtual void		_drawCellMark(UT_Rect *prDrag, bool bUp);
 #endif
 private:
-	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
-
 	XAP_CocoaNSView *		m_wLeftRuler;
 	AP_CocoaLeftRulerDelegate* m_delegate;
 };

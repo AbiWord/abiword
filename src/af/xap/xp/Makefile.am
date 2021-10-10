@@ -93,6 +93,7 @@ libxp_la_SOURCES = \
 	xap_Dlg_WindowMore.h \
 	xap_Dlg_Zoom.cpp \
 	xap_Dlg_Zoom.h \
+	xap_Drawable.h \
 	xap_Draw_Symbol.cpp \
 	xap_Draw_Symbol.h \
 	xap_EditMethods.h \

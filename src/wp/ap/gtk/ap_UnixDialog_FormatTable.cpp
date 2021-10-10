@@ -2,7 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2009, 2019 Hubert Figuiere
+ * Copyright (C) 2009, 2019-2021 Hubert Figuière
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -68,7 +68,7 @@ static void s_line_left(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_left, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_line_right(GtkWidget *widget, gpointer data )
@@ -76,7 +76,7 @@ static void s_line_right(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_right, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_line_top(GtkWidget *widget, gpointer data )
@@ -84,7 +84,7 @@ static void s_line_top(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_top, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_line_bottom(GtkWidget *widget, gpointer data )
@@ -92,7 +92,7 @@ static void s_line_bottom(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_bottom, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-	dlg->event_previewExposed();
+	dlg->event_previewInvalidate();
 }
 
 static void s_border_thickness(GtkWidget *widget, gpointer data )
@@ -105,7 +105,7 @@ static void s_border_thickness(GtkWidget *widget, gpointer data )
 static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_FormatTable * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
-	dlg->event_previewExposed();
+	dlg->event_previewDraw();
 	return FALSE;
 }
 
@@ -159,7 +159,7 @@ AP_UnixDialog_FormatTable__onBorderColorClicked (GtkWidget 		*button,
 					    GTK_COLOR_BUTTON(button));
 	if (color.get()) {
 		dlg->setBorderColor (*color);
-		dlg->event_previewExposed ();
+		dlg->event_previewInvalidate();
 	}
 
 	return TRUE;
@@ -189,7 +189,7 @@ AP_UnixDialog_FormatTable__onBackgroundColorClicked (GtkWidget 		*button,
 					    GTK_COLOR_BUTTON(button));
 	if (color.get()) {
 		dlg->setBackgroundColor (*color);
-		dlg->event_previewExposed ();
+		dlg->event_previewInvalidate();
 	}
 
 	return TRUE;
@@ -264,10 +264,10 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	gtk_widget_get_allocation(m_wPreviewArea, &allocation);
 	_createPreviewFromGC(m_pPreviewWidget,
 						 static_cast<UT_uint32>(allocation.width),
-						 static_cast<UT_uint32>(allocation.height));	
-	
-	m_pFormatTablePreview->draw();
-	
+						 static_cast<UT_uint32>(allocation.height));
+
+	m_pFormatTablePreview->queueDraw();
+
 	startUpdater();
 }
 
@@ -292,10 +292,18 @@ void AP_UnixDialog_FormatTable::event_Close(void)
 	destroy();
 }
 
-void AP_UnixDialog_FormatTable::event_previewExposed(void)
+void AP_UnixDialog_FormatTable::event_previewInvalidate(void)
 {
-	if(m_pFormatTablePreview)
-		m_pFormatTablePreview->draw();
+	if (m_pFormatTablePreview) {
+		m_pFormatTablePreview->queueDraw();
+	}
+}
+
+void AP_UnixDialog_FormatTable::event_previewDraw(void)
+{
+	if (m_pFormatTablePreview) {
+		m_pFormatTablePreview->drawImmediate();
+	}
 }
 
 void AP_UnixDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
@@ -326,7 +334,7 @@ void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)
 		}
 
 		setBorderThickness(sThickness);
-		event_previewExposed();
+		event_previewInvalidate();
 	}
 }
 

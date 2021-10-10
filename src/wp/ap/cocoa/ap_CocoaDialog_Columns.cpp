@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003, 2009 Hubert Figuiere
+ * Copyright (C) 2003, 2009-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -92,6 +92,7 @@ void AP_CocoaDialog_Columns::runModal(XAP_Frame * pFrame)
 	_createPreviewFromGC(m_pPreviewWidget,
 			     (UT_uint32) lrintf(size.width),
 			     (UT_uint32) lrintf(size.height));
+	m_dlg.preview.drawable = getColumnsPreview();
 
 //	setLineBetween(getLineBetween());  // isn't that a little useless ? Grafted from GTK...
 	[m_dlg setLineBetween:getLineBetween()];
@@ -132,7 +133,7 @@ void AP_CocoaDialog_Columns::event_Toggle( UT_uint32 icolumns)
 	[m_dlg setColNum:((int) icolumns)];
 	
 	setColumns(icolumns);
-	m_pColumnsPreview->draw();
+	getColumnsPreview()->queueDraw();
 }
 
 
@@ -227,6 +228,9 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool /*bState*/)
 - (void)setXAPOwner:(XAP_Dialog *)owner
 {
 	_xap = dynamic_cast<AP_CocoaDialog_Columns*>(owner);
+
+	// There is no guarantee this is not nullptr, but this makes it consistent.
+	self.preview.drawable = _xap->getColumnsPreview();
 }
 
 -(void)windowDidLoad

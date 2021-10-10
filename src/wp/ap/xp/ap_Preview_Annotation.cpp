@@ -116,7 +116,7 @@ void AP_Preview_Annotation::setSizeFromAnnotation(void)
 	UT_DEBUGMSG(("SetSize from Annotation width %d rat %f \n",m_width,rat));
 }
 
-void AP_Preview_Annotation::draw(const UT_Rect *clip)
+void AP_Preview_Annotation::drawImmediate(const UT_Rect* clip)
 {
 	UT_UNUSED(clip);
 	m_drawString = m_sDescription;
