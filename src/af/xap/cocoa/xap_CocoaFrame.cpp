@@ -151,7 +151,7 @@
 */
 - (BOOL)isFlipped
 {
-	return GR_CocoaGraphics::_isFlipped();
+	return NO; //GR_CocoaGraphics::_isFlipped();
 }
 
 /*!

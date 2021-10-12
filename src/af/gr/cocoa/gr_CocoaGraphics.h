@@ -309,20 +309,27 @@ private:
     void _setJoinStyle(JoinStyle inJoinStyle, CGContextRef* context = 0);
     void _setLineStyle(LineStyle inLineStyle, CGContextRef* context = 0);
     //
-    /*!
-	  Wrapper to draw the char.
-
-	  \param ctLine  the CTLine
-	  \param x X position
-	  \param y Y position
-	  \param begin the start of the range to draw
-	  \param rangelen the length of the range
-
-	  \note the NSView must be focused prior this call
-	 */
-    void _realDrawChars(CTLineRef ctLine,
-        CGFloat x, CGFloat y, int begin, int rangelen,
-        CGFloat xOffset);
+    /// Draw the CTLine at x and y
+    ///
+    /// @param ctLine  the CTLine
+    /// @param x X position in device unit
+    /// @param y Y position in device unit
+    ///
+    /// @note Must be called from drawRect: chain
+    void _drawTextLine(CTLineRef ctLine,
+        CGFloat x, CGFloat y);
+    /// Draw the CTLine content at x and y
+    ///
+    /// @param ctLine  the CTLine
+    /// @param x X position in device unit
+    /// @param y Y position in device unit
+    /// @param length the number for characters to draw
+    /// @param charWidths the char widths (extra space to advance glyphs from)
+    ///
+    /// @note Must be called from drawRect: chain
+    void _drawSpacedTextLine(CTLineRef ctLine,
+        CGFloat x, CGFloat y, int length,
+        int* charWidths);
 };
 
 class GR_CocoaPatternImpl

@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <memory>
+
 #include "gr_CharWidths.h"
 #include "gr_CocoaFont.h"
 #include "gr_CocoaGraphics.h"
@@ -352,6 +354,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(XAP_CocoaNSView* view)
     : m_updateCallback(nullptr)
     , m_updateCBparam(nullptr)
     , m_view(view)
+    , m_CGContext(nullptr)
     , m_cacheArray(10)
     , m_cacheRectArray(10)
     , m_currentColor(nil)
@@ -445,6 +448,7 @@ void GR_CocoaGraphics::_beginPaint(void)
 
 void GR_CocoaGraphics::_endPaint(void)
 {
+    m_CGContext = nullptr;
 }
 
 bool GR_CocoaGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -553,14 +557,47 @@ void GR_CocoaGraphics::_setLineStyle(LineStyle inLineStyle, CGContextRef* contex
     }
 }
 
-void GR_CocoaGraphics::_realDrawChars(CTLineRef ctLine,
-    CGFloat x, CGFloat y, int /*begin*/, int /*rangelen*/, CGFloat xOffset)
+void GR_CocoaGraphics::_drawTextLine(CTLineRef ctLine,
+    CGFloat x, CGFloat y)
 {
-    y += [m_fontForGraphics ascender];
+    // NSLog(@"real draw char x=%lf, y=%lf", x, y);
 
-    ::CGContextTranslateCTM(m_CGContext, x - xOffset, y);
+    ::CGContextSetTextPosition(m_CGContext, x, y);
     ::CTLineDraw(ctLine, m_CGContext);
-    ::CGContextTranslateCTM(m_CGContext, -(x - xOffset), -y);
+}
+
+void GR_CocoaGraphics::_drawSpacedTextLine(CTLineRef ctLine,
+    CGFloat x, CGFloat y, int length,
+    int* charWidths)
+{
+    [m_fontForGraphics set];
+
+    CFArrayRef glyphRuns = ::CTLineGetGlyphRuns(ctLine);
+    // NSLog(@"drawSpacedLine: glyphCount %ld, run count %lu, {%lf, %lf}", (long)::CTLineGetGlyphCount(ctLine), [(id)glyphRuns count], x, y);
+    CFIndex runIndex = 0;
+    CTRunRef currentRun = nullptr;
+    CFIndex indexInRun = 0;
+    CFIndex runGlyphCount = 0;
+    const CGGlyph* glyphs = nullptr;
+    for (int i = 0; i < length; i++) {
+        if (currentRun == nullptr) {
+            currentRun = (CTRunRef)::CFArrayGetValueAtIndex(glyphRuns, runIndex);
+            UT_ASSERT(currentRun != nullptr);
+            runGlyphCount = ::CTRunGetGlyphCount(currentRun);
+            runIndex++;
+            indexInRun = 0;
+            glyphs = ::CTRunGetGlyphsPtr(currentRun);
+        }
+
+        CGPoint point = ::NSMakePoint(x, y);
+        ::CGContextShowGlyphsAtPositions(m_CGContext, &glyphs[indexInRun], &point, 1);
+        indexInRun++;
+        if (indexInRun >= runGlyphCount) {
+            currentRun = nullptr;
+        }
+
+        x += TDUX(charWidths[i]);
+    }
 }
 
 void GR_CocoaGraphics::drawChars(const UT_UCS4Char* pChars, int iCharOffset,
@@ -568,19 +605,18 @@ void GR_CocoaGraphics::drawChars(const UT_UCS4Char* pChars, int iCharOffset,
     int* pCharWidths)
 {
     UT_DEBUGMSG(("GR_CocoaGraphics::drawChars()\n"));
-    UT_sint32 yoff = _tduY(yoffLU); // - m_pFont->getDescent();
     UT_sint32 xoff = xoffLU; // layout Unit !
-
-    ::CGContextSetShouldAntialias(m_CGContext, true);
 
     const UT_UCS4Char* begin = pChars + iCharOffset;
 
-    NSData* data = [NSData dataWithBytesNoCopy:(void*)begin length:(NSUInteger)iLength * sizeof(UT_UCS4Char) freeWhenDone:NO];
-    NSDictionary* attributes = [NSDictionary dictionaryWithObject:m_fontForGraphics forKey:NSFontAttributeName];
+    NSFont* font = m_fontForGraphics;
+    NSDictionary* attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
     NSString* string = [[[NSString alloc]
-        initWithData:data
-            encoding:NSUnicodeStringEncoding]
+        initWithBytes:(void*)begin
+               length:(NSUInteger)iLength * sizeof(UT_UCS4Char)
+             encoding:NSUTF32LittleEndianStringEncoding]
         autorelease];
+    // NSLog(@"drawChars string=%@ font=%@", string, font);
     NSAttributedString* attrString = [[[NSAttributedString alloc]
         initWithString:string
             attributes:attributes]
@@ -588,24 +624,28 @@ void GR_CocoaGraphics::drawChars(const UT_UCS4Char* pChars, int iCharOffset,
 
     CTLineRef ctLine = ::CTLineCreateWithAttributedString((CFAttributedStringRef)attrString);
 
-    //_createLayout(cBuf.get(), iLength, 0, iLength);
+    ::CGContextSaveGState(m_CGContext);
+    ::CGContextSetShouldAntialias(m_CGContext, true);
+
+    // This is needed to set the text transformation matrix to sensible
+    // value
+    ::CGContextSetTextMatrix(m_CGContext, CGAffineTransformIdentity);
+
+    ::CGContextTranslateCTM(m_CGContext, 0, m_view.bounds.size.height);
+    ::CGContextScaleCTM(m_CGContext, 1.0, -1.0);
+    CGFloat y = m_view.bounds.size.height - ((CGFloat)_tduY(yoffLU) + [font ascender] + [font descender]);
 
     if (!pCharWidths) {
         /*
 		  We don't have char widths because we don't care. Just draw the text.
 		 */
-        _realDrawChars(ctLine, TDUX(xoff), yoff, 0, iLength, 0);
+        _drawTextLine(ctLine, TDUX(xoff), y);
     } else {
-
-        UT_sint32 x = xoff;
-
-        for (int i = 0; i < iLength; i++) {
-            //NSLog(@"drawing at %d, offset = %d", TDUX(x), TDUX(x - xoff));
-            _realDrawChars(ctLine, TDUX(x), yoff, i, 1, TDUX(x - xoff));
-            x += pCharWidths[iCharOffset + i];
-        }
+        _drawSpacedTextLine(ctLine, TDUX(xoff), y, iLength, pCharWidths + iCharOffset);
     }
     ::CGContextSetShouldAntialias(m_CGContext, false);
+    ::CGContextRestoreGState(m_CGContext);
+    ::CFRelease(ctLine);
 }
 
 void GR_CocoaGraphics::setFont(const GR_Font* pFont)
@@ -661,7 +701,14 @@ UT_sint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32*
         return 0;
     }
 
-    return static_cast<UT_uint32>(lrint(ftluD(_measureUnRemappedCharCached(c))));
+    NSFont* font = m_pFont->getNSFont();
+    CGGlyph glyph = 0;
+    UniChar chars = c; // XXX BAD BAD we truncate here.
+    ::CTFontGetGlyphsForCharacters((CTFontRef)font, &chars, &glyph, 1);
+    CGSize size;
+    double advance = ::CTFontGetAdvancesForGlyphs((CTFontRef)font, kCTFontOrientationDefault, &glyph, &size, 1);
+
+    return static_cast<UT_uint32>(lrint(ftluD(advance)));
 }
 
 void GR_CocoaGraphics::getCoverage(UT_NumberVector& coverage)
@@ -1457,7 +1504,7 @@ bool GR_CocoaGraphics::_callUpdateCallback(NSRect* aRect)
 
 bool GR_CocoaGraphics::_isFlipped()
 {
-    return YES;
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -1552,6 +1599,8 @@ UT_uint32 GR_CocoaGraphics::getDeviceResolution(void) const
 
 void GR_CocoaGraphics::_resetContext(CGContextRef context)
 {
+    ::CGContextScaleCTM(context, 1.0, -1.0);
+    ::CGContextTranslateCTM(context, 0, -m_view.bounds.size.height);
     // TODO check that we properly reset parameters according to what has been saved.
     ::CGContextSetLineWidth(context, m_fLineWidth);
     _setCapStyle(m_capStyle, &context);
