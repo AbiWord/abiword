@@ -1415,8 +1415,9 @@ void GR_CocoaGraphics::init3dColors()
     m_3dColors[CLR3D_Highlight] = NSColor.whiteColor;
 }
 
-void GR_CocoaGraphics::polygon(UT_RGBColor& clr, UT_Point* pts, UT_uint32 nPoints)
+void GR_CocoaGraphics::polygon(const UT_RGBColor& clr, const UT_Point* pts, UT_uint32 nPoints)
 {
+    ::CGContextSaveGState(m_CGContext);
     NSColor* c = _utRGBColorToNSColor(clr);
     ::CGContextBeginPath(m_CGContext);
     for (UT_uint32 i = 0; i < nPoints; i++) {
@@ -1426,7 +1427,6 @@ void GR_CocoaGraphics::polygon(UT_RGBColor& clr, UT_Point* pts, UT_uint32 nPoint
             ::CGContextAddLineToPoint(m_CGContext, TDUX(pts[i].x), _tduY(pts[i].y));
         }
     }
-    ::CGContextSaveGState(m_CGContext);
     [c set];
     ::CGContextFillPath(m_CGContext);
     ::CGContextRestoreGState(m_CGContext);

@@ -183,7 +183,7 @@ public:
         UT_sint32 w, UT_sint32 h) override;
     virtual void fillRect(GR_Color3D c, UT_Rect& r) override;
 
-    virtual void polygon(UT_RGBColor& c, UT_Point* pts, UT_uint32 nPoints);
+    virtual void polygon(const UT_RGBColor& c, const UT_Point* pts, UT_uint32 nPoints) override;
 
     /* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
     virtual UT_uint32 getFontAscent(const GR_Font*) override;
