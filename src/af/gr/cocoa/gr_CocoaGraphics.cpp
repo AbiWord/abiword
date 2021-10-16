@@ -39,7 +39,6 @@
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
 #include "ut_std_vector.h"
-#include "ut_string.h"
 
 #include "ut_OverstrikingChars.h"
 #include "xap_EncodingManager.h"
@@ -50,14 +49,10 @@
 
 #define DISABLE_VERBOSE 1
 
-#ifdef DISABLE_VERBOSE
-#if DISABLE_VERBOSE
+#if defined(DISABLE_VERBOSE) && DISABLE_VERBOSE
 #undef UT_DEBUGMSG
 #define UT_DEBUGMSG(x)
 #endif
-#endif
-
-#define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] CGContext]
 
 #define TDUX(x) (_tduX(x))
 // #define TDUX(x) (_tduX(x)+1.0)
@@ -1455,7 +1450,7 @@ bool GR_CocoaGraphics::getColor3D(GR_Color3D c, UT_RGBColor& /*colour*/)
 {
     UT_ASSERT(c < COUNT_3D_COLORS);
 
-    UT_ASSERT(UT_NOT_IMPLEMENTED);
+    //UT_ASSERT(UT_NOT_IMPLEMENTED);
     return false;
 }
 
