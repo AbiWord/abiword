@@ -63,7 +63,7 @@ void GR_CocoaImage::setFromImageRep(NSImageRep* imageRep)
     [m_image release];
     m_image = [[NSImage alloc] initWithSize:size];
     [m_image addRepresentation:imageRep];
-    setDisplaySize(lrintf(size.width), lrintf(size.height));
+    setDisplaySize((UT_sint32)lrintl(size.width), (UT_sint32)lrintl(size.height));
 }
 
 GR_Image* GR_CocoaImage::createImageSegment(GR_Graphics* pG, const UT_Rect& rec)
