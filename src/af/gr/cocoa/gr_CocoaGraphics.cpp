@@ -1614,11 +1614,11 @@ CGFloat GR_CocoaGraphics::_getScreenResolution(void)
 {
     static CGFloat fResolution = 0.0;
     if (fResolution == 0.0) {
-        NSDictionary* desc = [[NSScreen mainScreen] deviceDescription];
+        NSDictionary* desc = NSScreen.mainScreen.deviceDescription;
         UT_ASSERT(desc);
         NSValue* value = [desc objectForKey:NSDeviceResolution];
         UT_ASSERT(value);
-        fResolution = value.sizeValue.height;
+        fResolution = value.sizeValue.height / NSScreen.mainScreen.backingScaleFactor;
     }
     return fResolution;
 }
