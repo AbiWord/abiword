@@ -1327,9 +1327,9 @@ public:
           "id", "0"
         };
         if (!strcmp(name, "text:ordered-list")) {
-          list_atts[3] = "Numbered List";
+          list_atts[1] = "Numbered List";
         } else {
-          list_atts[3] = "Bullet List";
+          list_atts[1] = "Bullet List";
         }
         getDocument()->appendList(list_atts);
 
