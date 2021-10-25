@@ -267,22 +267,21 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 	strcat(buf,"...");
 
 	data[0] = buf;
-	
+
 	return data;
 }
 
 XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet *labels, const UT_String &label)
 {
-	const UT_GenericVector<EV_Menu_Label *> * labels_table = labels->getAllLabels();
+	const std::vector<EV_Menu_Label*>& labels_table = labels->getAllLabels();
 	const EV_Menu_Label *l = nullptr;
 
-	UT_return_val_if_fail(labels_table, 0);
-	UT_uint32 size_labels = labels_table->size();
+	UT_uint32 size_labels = labels_table.size();
 	XAP_Menu_Id id = 0;
 
 	for (UT_uint32 i = 0; i < size_labels; ++i)
 	{
-		l = labels_table->getNthItem(i);
+		l = labels_table.at(i);
 		if (l && label ==l->getMenuLabel())
 		{
 			id = l->getMenuId();

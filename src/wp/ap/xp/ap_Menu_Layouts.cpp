@@ -736,7 +736,7 @@ UT_uint32 XAP_Menu_Factory::GetMenuLabelSetLanguageCount(void)
 	return 1;
 }
 
-const char * XAP_Menu_Factory::GetNthMenuLabelLanguageName(UT_uint32 /*ndx*/)
+const std::string& XAP_Menu_Factory::GetNthMenuLabelLanguageName(UT_uint32 /*ndx*/)
 {
 	return m_pLabelSet->getLanguage();
 }

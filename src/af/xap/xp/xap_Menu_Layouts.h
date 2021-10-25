@@ -69,7 +69,7 @@ public:
 									  const char * szNuke);
 	void         resetMenusToDefault(void);
 	UT_uint32    GetMenuLabelSetLanguageCount(void);
-	const char * GetNthMenuLabelLanguageName(UT_uint32 ndx);
+	const std::string& GetNthMenuLabelLanguageName(UT_uint32 ndx);
 	EV_Menu_LabelSet *  CreateMenuLabelSet(const char * szLanguage_);
 	bool         buildMenuLabelSet(const char * szLanguage_);
 	bool         buildBuiltInMenuLabelSet(  EV_Menu_LabelSet *& pLabelSet);
