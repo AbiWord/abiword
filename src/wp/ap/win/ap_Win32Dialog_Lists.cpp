@@ -224,7 +224,7 @@ void AP_Win32Dialog_Lists::setFoldLevelInGUI(void)
 	_setFoldingComboCurSel(getCurrentFold());
 }
 
-bool AP_Win32Dialog_Lists::isPageLists(void)
+bool AP_Win32Dialog_Lists::isPageLists(void) const
 {
 	if(isModal())
 	{

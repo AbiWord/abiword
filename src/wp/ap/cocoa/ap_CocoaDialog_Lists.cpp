@@ -196,7 +196,7 @@ void AP_CocoaDialog_Lists::setFoldLevelInGUI(void)
 	[m_dlg selectFolding:getCurrentFold()];
 }
 
-bool AP_CocoaDialog_Lists::isPageLists(void)
+bool AP_CocoaDialog_Lists::isPageLists(void) const
 {
 	if(isModal())
 	{

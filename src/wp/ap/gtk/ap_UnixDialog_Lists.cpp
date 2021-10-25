@@ -380,7 +380,7 @@ void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 	}
 }
 
-bool AP_UnixDialog_Lists::isPageLists(void)
+bool AP_UnixDialog_Lists::isPageLists(void) const
 {
 	if(isModal())
 	{

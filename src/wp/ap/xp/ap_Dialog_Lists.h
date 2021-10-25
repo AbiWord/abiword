@@ -182,7 +182,7 @@ protected:
 	UT_sint32         getCurrentFold(void)
 		{ return m_iCurrentLevel;}
 	virtual void      setFoldLevelInGUI(void) = 0;
-	virtual bool      isPageLists(void) = 0;
+	virtual bool      isPageLists(void) const = 0;
 	void              setFoldingLevelChanged(bool b)
 	  { m_bFoldingLevelChanged = b;}
 private:

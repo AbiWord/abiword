@@ -42,7 +42,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static void				autoupdateLists(UT_Worker * pTimer);
 	virtual void            setFoldLevelInGUI(void);
-	virtual bool            isPageLists(void);
+	virtual bool            isPageLists(void) const override;
 
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);

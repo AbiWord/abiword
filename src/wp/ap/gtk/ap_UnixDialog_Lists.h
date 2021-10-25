@@ -70,7 +70,7 @@ class AP_UnixDialog_Lists
 	void					updateDialog(void);
 	bool                                    dontUpdate(void);
 	static void				autoupdateLists(UT_Worker * pTimer);
-    virtual bool            isPageLists(void) override;
+	virtual bool            isPageLists(void) const override;
 	virtual void            setFoldLevelInGUI(void) override;
  protected:
 	virtual GtkWidget* _constructWindow(void);
