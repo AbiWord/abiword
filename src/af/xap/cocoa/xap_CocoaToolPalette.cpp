@@ -2342,7 +2342,7 @@ bool XAP_CocoaToolPaletteListener::notify(AV_View * pView, const AV_ChangeMask /
 	return true; // why is this a bool function?
 }
 
-AV_ListenerType XAP_CocoaToolPaletteListener::getType()
+AV_ListenerType XAP_CocoaToolPaletteListener::getType() const
 {
 	return AV_LISTENER_TOOLBAR;
 }

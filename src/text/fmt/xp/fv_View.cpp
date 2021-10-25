@@ -177,7 +177,7 @@ public:
 	  return false;
   }
 
-  virtual AV_ListenerType    getType(void) override {return AV_LISTENER_CARET;}
+  virtual AV_ListenerType    getType(void) const override {return AV_LISTENER_CARET;}
 
 private:
   XAP_Frame   * m_pFrame;

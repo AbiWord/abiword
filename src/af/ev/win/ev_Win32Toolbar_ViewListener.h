@@ -17,8 +17,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef EV_WIN32TOOLBAR_VIEWLISTENER_H
-#define EV_WIN32TOOLBAR_VIEWLISTENER_H
+#pragma once
 
 #include "xav_Listener.h"
 class EV_Win32Toolbar;
@@ -32,11 +31,9 @@ public:
 								AV_View * pView);
 
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
-    virtual AV_ListenerType getType(void) { return AV_LISTENER_TOOLBAR;}
+	virtual AV_ListenerType getType(void) const override { return AV_LISTENER_TOOLBAR;}
 
 protected:
 	EV_Win32Toolbar *	m_pWin32Toolbar;
 	AV_View *			m_pView;
 };
-
-#endif /* EV_WIN32TOOLBAR_VIEWLISTENER_H */

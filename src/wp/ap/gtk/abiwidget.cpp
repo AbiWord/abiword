@@ -761,7 +761,7 @@ public:
 		return true;
 	}
 
-    virtual AV_ListenerType getType(void) override
+    virtual AV_ListenerType getType(void) const override
 	{
 		// i don't feel like creating a new type if i don't have to. this is semantically
 		// similar enough that i don't care

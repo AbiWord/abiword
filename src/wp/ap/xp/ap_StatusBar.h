@@ -19,8 +19,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_STATUSBAR_H
-#define AP_STATUSBAR_H
+#pragma once
 
 #include <limits.h>
 // Class for dealing with the status bar at the bottom of
@@ -89,7 +88,7 @@ public:
 
     /* used with AV_Listener */
     virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override;
-    virtual AV_ListenerType getType(void) override { return AV_LISTENER_STATUSBAR;}
+    virtual AV_ListenerType getType(void) const override { return AV_LISTENER_STATUSBAR;}
 
 
     UT_GenericVector<AP_StatusBarField*> *             getFields() { return &m_vecFields; }
@@ -191,4 +190,3 @@ protected:
     UT_uint32			m_ProgressFlags;
     UT_Timer			*m_ProgressTimer;
 };
-#endif /* AP_STATUSBAR_H */

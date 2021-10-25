@@ -17,10 +17,7 @@
  * 02110-1301 USA.
  */
 
-
-
-#ifndef XAP_VIEWLISTENER_H
-#define XAP_VIEWLISTENER_H
+#pragma once
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
@@ -50,10 +47,8 @@ public:
 	virtual ~ap_ViewListener();
 
 	virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override;
-	virtual AV_ListenerType getType(void) override { return AV_LISTENER_VIEW;}
+	virtual AV_ListenerType getType(void) const override { return AV_LISTENER_VIEW;}
 
 protected:
 	XAP_Frame*		m_pFrame;
 };
-
-#endif /* XAP_VIEWLISTENER_H */

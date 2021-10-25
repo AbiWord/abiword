@@ -211,7 +211,7 @@ public:
 	bool            isMouseOverTab(UT_uint32 x, UT_uint32 y);
 	/* used with AV_Listener */
 	virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override;
-	virtual AV_ListenerType getType(void) override { return AV_LISTENER_TOPRULER;}
+	virtual AV_ListenerType getType(void) const override { return AV_LISTENER_TOPRULER;}
 
 	/* used with AV_ScrollObj */
 	static void		_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);

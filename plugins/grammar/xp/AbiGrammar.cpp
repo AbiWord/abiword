@@ -80,7 +80,7 @@ void setID(AV_ListenerId id)
 			m_lid = id;
 		}
 
-virtual  AV_ListenerType getType(void)  override { return AV_LISTENER_PLUGIN_EXTRA;}
+virtual  AV_ListenerType getType(void) const override { return AV_LISTENER_PLUGIN_EXTRA;}
 
 AV_ListenerId	getID(void) const
 		{

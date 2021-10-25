@@ -18,8 +18,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef EV_COCOATOOLBAR_VIEWLISTENER_H
-#define EV_COCOATOOLBAR_VIEWLISTENER_H
+#pragma once
 
 #include "xav_Listener.h"
 class EV_CocoaToolbar;
@@ -33,11 +32,9 @@ public:
 								AV_View * pView);
 
 	virtual bool notify(AV_View * pView, const AV_ChangeMask mask) override;
-	virtual AV_ListenerType getType(void) override { return AV_LISTENER_TOOLBAR;}
+	virtual AV_ListenerType getType(void) const override { return AV_LISTENER_TOOLBAR;}
 
 protected:
 	EV_CocoaToolbar *	m_pCocoaToolbar;
 	AV_View *			m_pView;
 };
-
-#endif /* EV_COCOATOOLBAR_VIEWLISTENER_H */

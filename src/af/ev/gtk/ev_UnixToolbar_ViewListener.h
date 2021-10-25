@@ -17,8 +17,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef EV_UNIXTOOLBAR_VIEWLISTENER_H
-#define EV_UNIXTOOLBAR_VIEWLISTENER_H
+#pragma once
 
 #include "xav_Listener.h"
 #include "xav_View.h"
@@ -34,12 +33,10 @@ public:
 	virtual ~EV_UnixToolbar_ViewListener(void);
 
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask) override;
-	virtual AV_ListenerType getType(void) override { return AV_LISTENER_TOOLBAR;}
+	virtual AV_ListenerType getType(void) const override { return AV_LISTENER_TOOLBAR;}
 	void                setLID(	AV_ListenerId lid) {m_lid = lid;}
 protected:
 	EV_UnixToolbar *	m_pUnixToolbar;
 	AV_View *			m_pView;
 	AV_ListenerId       m_lid;
 };
-
-#endif /* EV_UNIXTOOLBAR_VIEWLISTENER_H */
