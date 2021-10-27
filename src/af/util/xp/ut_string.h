@@ -17,21 +17,14 @@
  * 02110-1301 USA.
  */
 
-
-#ifndef UT_STRING_H
-#define UT_STRING_H
+#pragma once
 
 #include <map>
 #include <string>
+
 #include <string.h>
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
 
 class UT_GrowBuf;
 
@@ -248,5 +241,3 @@ ABI_EXPORT bool            UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_u
 ABI_EXPORT bool            UT_bidiGetMirrorChar(UT_UCS4Char c, UT_UCS4Char &mc);
 
 G_END_DECLS
-
-#endif /* UT_STRING_H */

@@ -18,9 +18,7 @@
  */
 
 
-
-#ifndef UT_BYTEBUF_H
-#define UT_BYTEBUF_H
+#pragma once
 
 /*****************************************************************
 ** A buffer class which can grow and shrink
@@ -87,5 +85,3 @@ private:
 
 typedef std::shared_ptr<UT_ByteBuf> UT_ByteBufPtr;
 typedef std::shared_ptr<const UT_ByteBuf> UT_ConstByteBufPtr;
-
-#endif /* UT_BYTEBUF_H */

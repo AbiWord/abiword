@@ -19,8 +19,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef UT_TYPES_H
-#define UT_TYPES_H
+#pragma once
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -268,5 +267,3 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 // 0xffffffff to avoid problems with bad 64-bit compilers
 
 #define PD_MAX_REVISION 0x0fffffff
-
-#endif /* UT_TYPES_H */
