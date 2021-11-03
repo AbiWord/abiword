@@ -69,7 +69,7 @@ bool AP_Win32Toolbar_FontCombo::populate(void)
 	seenFonts.clear();
 
 	// populate the vector
-	HWND hwnd = NULL;
+	HWND hwnd = nullptr;
     HDC hdc = GetDC(hwnd) ;
 	LOGFONTW lf;
 	lf.lfCharSet=DEFAULT_CHARSET;

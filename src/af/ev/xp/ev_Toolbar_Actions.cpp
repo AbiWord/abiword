@@ -114,13 +114,13 @@ bool EV_Toolbar_ActionSet::setAction(XAP_Toolbar_Id id,
 	UT_uint32 index = (id - m_first);
 	DELETEP(m_actionTable[index]);
 	m_actionTable[index] = new EV_Toolbar_Action(id,type,szMethodName,maskOfInterest,pfnGetState);
-	return (m_actionTable[index] != NULL);
+	return (m_actionTable[index] != nullptr);
 }
 
 EV_Toolbar_Action * EV_Toolbar_ActionSet::getAction(XAP_Toolbar_Id id) const
 {
 	if ((id < m_first) || (id > m_last))
-		return NULL;
+		return nullptr;
 
 	UT_uint32 index = (id - m_first);
 	EV_Toolbar_Action * pAction = m_actionTable[index];

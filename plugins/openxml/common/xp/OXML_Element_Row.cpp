@@ -136,8 +136,8 @@ UT_Error OXML_Element_Row::addChildrenToPT(PD_Document * pDocument)
 	UT_Error ret = UT_OK;
 	UT_Error temp = UT_OK;
 
-	const gchar * szValue = NULL;
-	const gchar * bgColor = NULL;
+	const gchar * szValue = nullptr;
+	const gchar * bgColor = nullptr;
 
 	getProperty("background-color", bgColor);
 

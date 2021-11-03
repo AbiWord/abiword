@@ -223,17 +223,17 @@ bool IE_Exp_HTML_StyleTree::add(const gchar * _style_name, PD_Document * pDoc)
     if (!style)
         return false;
 
-    IE_Exp_HTML_StyleTree * parent = NULL;
+    IE_Exp_HTML_StyleTree * parent = nullptr;
 
     PD_Style * basis = style->getBasedOn();
 
-    const gchar * parent_name = NULL;
+    const gchar * parent_name = nullptr;
     if (basis &&
         basis->getAttribute(PT_NAME_ATTRIBUTE_NAME, parent_name) &&
         strcmp(_style_name, parent_name) != 0)
     {
         parent = const_cast<IE_Exp_HTML_StyleTree*> (find(basis));
-        if (parent == NULL)
+        if (parent == nullptr)
         {
             const gchar * basis_name = nullptr;
             basis->getAttribute(PT_NAME_ATTRIBUTE_NAME, basis_name);
@@ -309,7 +309,7 @@ const IE_Exp_HTML_StyleTree * IE_Exp_HTML_StyleTree::find(PD_Style * style) cons
     const gchar * _style_name = nullptr;
     style->getAttribute(PT_NAME_ATTRIBUTE_NAME, _style_name);
     if (!_style_name)
-        return NULL;
+        return nullptr;
 
     return find(_style_name);
 }
@@ -360,7 +360,7 @@ void IE_Exp_HTML_StyleListener::styleCheck(PT_AttrPropIndex api)
 
     if (bHaveProp && pAP)
     {
-        const gchar * szStyle = NULL;
+        const gchar * szStyle = nullptr;
         bool have_style = pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szStyle);
 
         if (have_style && szStyle)

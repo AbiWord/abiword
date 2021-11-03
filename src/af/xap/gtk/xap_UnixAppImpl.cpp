@@ -44,7 +44,7 @@ bool XAP_UnixAppImpl::openURL(const char * url)
 	// Need this to make AbiGimp Load!!!!!
 	if (progExists("foo")) {}
 
-	GError * err = NULL;
+	GError * err = nullptr;
 	err = UT_go_url_show (url);
 	if (err) {
 		g_warning ("%s", err->message);

@@ -158,12 +158,12 @@ const std::vector<std::string> & IE_ImpGraphic::getSupportedSuffixes()
 }
 
 /*!
- * Map mime type to a suffix. Returns NULL if not found.
+ * Map mime type to a suffix. Returns nullptr if not found.
  */
 const char * IE_ImpGraphic::getMimeTypeForSuffix(const char * suffix)
 {
 	if (!suffix || !(*suffix))
-		return NULL;
+		return nullptr;
 		
 	if (suffix[0] == '.') {
 		suffix++;
@@ -180,14 +180,14 @@ const char * IE_ImpGraphic::getMimeTypeForSuffix(const char * suffix)
 					return mc->mimetype.c_str();
 				}
 				else {
-					return NULL;
+					return nullptr;
 				}
 			}
 			sc++;
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*****************************************************************/
@@ -425,7 +425,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
 {
 	GsfInput * input;
 
-	input = UT_go_file_open (szFilename, NULL);
+	input = UT_go_file_open (szFilename, nullptr);
 	if (!input)
 		return UT_IE_FILENOTFOUND;
 
@@ -454,7 +454,7 @@ UT_Error IE_ImpGraphic::constructImporter(GsfInput * input,
   // importer to use and assign that back to ft.
   if (ft == IEGFT_Unknown)
     { 
-		UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
+		UT_return_val_if_fail (input != nullptr, UT_IE_FILENOTFOUND);
 
 		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
 		
@@ -471,7 +471,7 @@ UT_Error IE_ImpGraphic::constructImporter(GsfInput * input,
 				}
 
 				const char * name = gsf_input_name (input);
-				// we can have an empty name (NULL) because we can have a memory stream.
+				// we can have an empty name (nullptr) because we can have a memory stream.
 				if(name) {
 					const IE_SuffixConfidence * sc = s->getSuffixConfidence();
 					while (sc && !sc->suffix.empty() && suffix_confidence != UT_CONFIDENCE_PERFECT) {
@@ -518,7 +518,7 @@ UT_Error IE_ImpGraphic::constructImporter(GsfInput * input,
 UT_Error IE_ImpGraphic::importGraphic(const UT_ConstByteBufPtr & byteBuf,
 									  FG_ConstGraphicPtr& pfg)
 {
-	UT_return_val_if_fail (byteBuf != NULL, UT_IE_FILENOTFOUND);
+	UT_return_val_if_fail (byteBuf != nullptr, UT_IE_FILENOTFOUND);
 
 	GsfInput * input = gsf_input_memory_new_clone (byteBuf->getPointer(0), byteBuf->getLength());
 
@@ -535,11 +535,11 @@ UT_Error IE_ImpGraphic::importGraphic(const UT_ConstByteBufPtr & byteBuf,
 UT_Error IE_ImpGraphic::importGraphic(GsfInput * input,
 									  FG_ConstGraphicPtr& pfg)
 {
-	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
+	UT_return_val_if_fail (input != nullptr, UT_IE_FILENOTFOUND);
 
 	UT_ByteBufPtr pBB(new UT_ByteBuf);
 
-	if (pBB == NULL)
+	if (pBB == nullptr)
 		return UT_IE_NOMEMORY;
 
 	if (!pBB->insertFromInput(0, input))
@@ -558,7 +558,7 @@ UT_Error IE_ImpGraphic::importGraphic(const char * szFilename,
 {
 	GsfInput * input;
 
-	input = UT_go_file_open (szFilename, NULL);
+	input = UT_go_file_open (szFilename, nullptr);
 	if (!input)
 		return UT_IE_FILENOTFOUND;
 
@@ -575,7 +575,7 @@ UT_Error IE_ImpGraphic::loadGraphic(const char * szFilename,
 {
 	GsfInput *input;
 	
-	input = UT_go_file_open (szFilename, NULL);
+	input = UT_go_file_open (szFilename, nullptr);
 	if (!input)
 		return UT_IE_FILENOTFOUND;
 
@@ -590,7 +590,7 @@ UT_Error IE_ImpGraphic::loadGraphic(GsfInput * input,
 									IEGraphicFileType iegft,
 									FG_ConstGraphicPtr& pfg)
 {
-	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
+	UT_return_val_if_fail (input != nullptr, UT_IE_FILENOTFOUND);
 
 	IE_ImpGraphic *importer;
 	

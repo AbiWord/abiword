@@ -47,7 +47,7 @@ bool fp_FieldListLabelRun::calculateValue(void)
 		PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 		fl_BlockLayout * pBlockInDoc = pLayout->findBlockAtPosition(pos);
-		if(pBlockInDoc == NULL)
+		if(pBlockInDoc == nullptr)
 		{
 			sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');
 			sz_ucs_FieldValue[1] = 0;
@@ -62,7 +62,7 @@ bool fp_FieldListLabelRun::calculateValue(void)
 		i = 0;
 		listlabel = getBlock()->getListLabel();
 	}
-	if(listlabel == NULL)
+	if(listlabel == nullptr)
 	{
 		sz_ucs_FieldValue[0] = 0;
 	}

@@ -56,8 +56,8 @@ void XAP_CustomWidget::drawImmediate(const UT_Rect* clip)
 	GR_Graphics *gr = getGraphics();
 	UT_ASSERT(gr);
 
-	if (clip == NULL) {
-		drawImmediateLU(NULL);
+	if (clip == nullptr) {
+		drawImmediateLU(nullptr);
 	} else {
 		UT_Rect r(
 				gr->tlu(clip->left),

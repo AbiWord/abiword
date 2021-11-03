@@ -33,7 +33,7 @@
  * Constructor
  */
 ODi_StartTag::ODi_StartTag(UT_uint32 attributeGrowStep) :
-    m_pAttributes(NULL),
+    m_pAttributes(nullptr),
     m_attributeSize(0),
     m_attributeMemSize(0),
     m_attributeGrowStep(attributeGrowStep) {
@@ -94,7 +94,7 @@ void ODi_StartTag::set(const gchar* pName, const gchar** ppAtts) {
  */
 void ODi_StartTag::_growAttributes() {
     
-    if (m_pAttributes == NULL) {
+    if (m_pAttributes == nullptr) {
         
         m_pAttributes = new UT_UTF8Stringbuf[m_attributeGrowStep];
         m_attributeMemSize = m_attributeGrowStep;
@@ -139,5 +139,5 @@ const char* ODi_StartTag::getAttributeValue(const char* rName ) const {
     
     // If we reached this point it's because we haven't found the specified
     // attribute.
-    return NULL;
+    return nullptr;
 }

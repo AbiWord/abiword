@@ -38,7 +38,7 @@
 
 OXMLi_ListenerState_Numbering::OXMLi_ListenerState_Numbering():
 	OXMLi_ListenerState(),
-	m_currentList(NULL),
+	m_currentList(nullptr),
 	m_currentNumId(""),
 	m_parentListId("")
 {
@@ -186,7 +186,7 @@ void OXMLi_ListenerState_Numbering::endElement (OXMLi_EndElementRequest * rqst)
 		}			
 		OXML_SharedList sharedList(m_currentList);
 		doc->addList(sharedList);
-		m_currentList = NULL;
+		m_currentList = nullptr;
 		rqst->handled = true;
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "num"))

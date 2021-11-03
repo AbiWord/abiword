@@ -38,7 +38,7 @@ static const char szErrCouldNotUnload[]	= "Could not unload library";
 class ABI_EXPORT XAP_Win32ModuleImpl
 {
 public:
-	XAP_Win32ModuleImpl() : m_hMod(0), m_pszErr(0), m_pszModuleName(0) { }
+	XAP_Win32ModuleImpl() : m_hMod(nullptr), m_pszErr(nullptr), m_pszModuleName(nullptr) { }
 	~XAP_Win32ModuleImpl()
 	{
 	}
@@ -61,7 +61,7 @@ public:
 			m_pszErr = szErrNoDllFound;
 			return false;
 		}
-		m_pszErr = 0;
+		m_pszErr = nullptr;
 		m_pszModuleName = new char[strlen(name) + 1];
 		if (m_pszModuleName)
 		{
@@ -76,10 +76,10 @@ public:
 		{
 			if (FreeLibrary(m_hMod))
 			{
-				m_hMod = 0;
+				m_hMod = nullptr;
 				delete [] m_pszModuleName;
-				m_pszModuleName = 0;
-				m_pszErr = 0;
+				m_pszModuleName = nullptr;
+				m_pszErr = nullptr;
 				return true;
 			}
 			m_pszErr = szErrCouldNotUnload;
@@ -106,7 +106,7 @@ public:
 			#else
 			*symbol = reinterpret_cast<void*>(pProc);
 			#endif
-			m_pszErr = 0;
+			m_pszErr = nullptr;
 			return true;
 		}
 		return false;
@@ -127,7 +127,7 @@ public:
 		if (m_pszModuleName)
 		{
 			*dest = g_strdup(m_pszModuleName);
-			m_pszErr = 0;
+			m_pszErr = nullptr;
 			return true;
 		}
 		return false;

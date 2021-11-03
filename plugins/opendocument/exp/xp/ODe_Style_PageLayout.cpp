@@ -107,11 +107,11 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     // Note: no need to check separately for the existence of a "header-even"
     // property: "header-even" only exists in AbiWord when "header" also exists.
     ok = pAP->getAttribute("header", pValue);
-    if (ok && pValue != NULL)
+    if (ok && pValue != nullptr)
          hasHeader = true;
 
     ok = pAP->getProperty("page-margin-top", pValue);
-    if (ok && pValue != NULL)
+    if (ok && pValue != nullptr)
         m_marginTop = pValue;
     if (m_marginTop.size() == 0)
 	    m_marginTop = fp_PageSize::getDefaultPageMargin(DIM_IN);
@@ -119,7 +119,7 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     if (hasHeader)
     {
         ok = pAP->getProperty("page-margin-header", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
         
             abiHeaderMarginCM = UT_convertToDimension(pValue, DIM_CM);
         
@@ -136,11 +136,11 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     // Note: no need to check separately for the existence of a "footer-even"
     // property: "footer-even" only exists in AbiWord when "footer" also exists.
     ok = pAP->getAttribute("footer", pValue);
-    if (ok && pValue != NULL)
+    if (ok && pValue != nullptr)
          hasFooter = true;
 
     ok = pAP->getProperty("page-margin-bottom", pValue);
-    if (ok && pValue != NULL)
+    if (ok && pValue != nullptr)
         m_marginBottom = pValue;
     if (m_marginBottom.size() == 0)
 	    m_marginBottom = fp_PageSize::getDefaultPageMargin(DIM_IN);
@@ -148,7 +148,7 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     if (hasFooter)
     {
         ok = pAP->getProperty("page-margin-footer", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
         
             abiFooterMarginCM = UT_convertToDimension(pValue, DIM_CM);
         
@@ -163,13 +163,13 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     }
 
     ok = pAP->getProperty("page-margin-left", pValue);
-    if (ok && pValue != NULL)
+    if (ok && pValue != nullptr)
         m_marginLeft = pValue;
     if (m_marginLeft.size() == 0)
 		m_marginLeft = fp_PageSize::getDefaultPageMargin(DIM_IN);
 
     ok = pAP->getProperty("page-margin-right", pValue);
-    if (ok && pValue != NULL)
+    if (ok && pValue != nullptr)
         m_marginRight = pValue;
     if(m_marginRight.size() == 0)
 	    m_marginRight = fp_PageSize::getDefaultPageMargin(DIM_IN);
@@ -181,7 +181,7 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     }
 
     ok = pAP->getAttribute("strux-image-dataid", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_backgroundImage = pValue;
     }
 }
@@ -195,42 +195,42 @@ bool ODe_Style_PageLayout::hasPageLayoutInfo(const PP_AttrProp* pAP) {
     bool ok;
     
     ok = pAP->getProperty("page-margin-header", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("page-margin-footer", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("page-margin-top", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("page-margin-bottom", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("page-margin-left", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("page-margin-right", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("background-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getAttribute("strux-image-dataid", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 

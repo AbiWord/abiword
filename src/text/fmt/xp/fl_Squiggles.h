@@ -85,7 +85,7 @@ private:
 	UT_sint32				_find(UT_sint32 iOffset) const;
 
 	void					_move(UT_sint32 iOffset, UT_sint32 chg,
-								  fl_BlockLayout* pBlock=NULL);
+								  fl_BlockLayout* pBlock=nullptr);
 
 	inline UT_sint32		_getCount(void) const
 		{ return m_vecSquiggles.size(); }

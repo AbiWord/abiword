@@ -140,8 +140,8 @@ public:
 	// TODO - this should be returning IEFileType,
 	// but that's AP stuff, so it's not here
 
-	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * props = NULL) = 0;
-	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true, const char * props = NULL) = 0;
+	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * props = nullptr) = 0;
+	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true, const char * props = nullptr) = 0;
 	virtual UT_Error		newDocument() = 0;
 	virtual bool			isDirty(void) const = 0;
 	virtual void            forceDirty() {m_bForcedDirty = true;};
@@ -151,8 +151,8 @@ public:
 	virtual bool			undoCmd(UT_uint32 repeatCount) = 0;
 	virtual bool			redoCmd(UT_uint32 repeatCount) = 0;
 
-	UT_Error		        saveAs(const char * szFilename, int ieft, const char * props = NULL);
-	UT_Error		        saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL);
+	UT_Error		        saveAs(const char * szFilename, int ieft, const char * props = nullptr);
+	UT_Error		        saveAs(const char * szFilename, int ieft, bool cpy, const char * props = nullptr);
 	UT_Error		        save(void);
 	virtual bool			createDataItem(const char * szName,
 										   bool bBase64,
@@ -170,16 +170,16 @@ public:
 	/**
 	 * Returns the # of seconds since the last save of this file
 	 */
-	time_t          getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
+	time_t          getTimeSinceSave () const { return (time(nullptr) - m_lastSavedTime); }
 	time_t          getLastSavedTime() const {return m_lastSavedTime;}
 	void            setLastSavedTime(time_t t) {m_lastSavedTime = t;}
 	virtual UT_uint32 getLastSavedAsType() const = 0;
 
-	time_t          getTimeSinceOpen () const { return (time(NULL) - m_lastOpenedTime); }
+	time_t          getTimeSinceOpen () const { return (time(nullptr) - m_lastOpenedTime); }
 	time_t          getLastOpenedTime() const {return m_lastOpenedTime;}
 	void            setLastOpenedTime(time_t t) {m_lastOpenedTime = t;}
 
-	time_t          getEditTime()const {return (m_iEditTime + (time(NULL) - m_lastOpenedTime));}
+	time_t          getEditTime()const {return (m_iEditTime + (time(nullptr) - m_lastOpenedTime));}
 	void            setEditTime(UT_uint32 t) {m_iEditTime = t;}
 
 	void            setDocVersion(UT_uint32 i){m_iVersion = i;}
@@ -288,8 +288,8 @@ public:
 	virtual UT_uint32   getTopXID() const = 0;
 
  protected:
-	virtual UT_Error	_saveAs(const char * szFilename, int ieft, const char * props = NULL) = 0;
-	virtual UT_Error	_saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL) = 0;
+	virtual UT_Error	_saveAs(const char * szFilename, int ieft, const char * props = nullptr) = 0;
+	virtual UT_Error	_saveAs(const char * szFilename, int ieft, bool cpy, const char * props = nullptr) = 0;
 	virtual UT_Error	_save(void) = 0;
 
 	void            _purgeRevisionTable();

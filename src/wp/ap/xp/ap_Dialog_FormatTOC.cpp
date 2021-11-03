@@ -55,10 +55,10 @@
 
 AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
-	  m_pDoc(NULL),
+	  m_pDoc(nullptr),
 	  m_pAutoUpdater(nullptr),
 	  m_iTick(0),
-	  m_pAP(NULL),
+	  m_pAP(nullptr),
 	  m_bTOCFilled(false),
 	  m_sTOCProps(""),
   	  m_iMainLevel(1),
@@ -119,13 +119,13 @@ void AP_Dialog_FormatTOC::Apply(void)
 
 void AP_Dialog_FormatTOC::stopUpdater(void)
 {
-	if(m_pAutoUpdater == NULL)
+	if(m_pAutoUpdater == nullptr)
 	{
 		return;
 	}
 	m_pAutoUpdater->stop();
 	DELETEP(m_pAutoUpdater);
-	m_pAutoUpdater = NULL;
+	m_pAutoUpdater = nullptr;
 }
 
 /*!
@@ -281,13 +281,13 @@ bool AP_Dialog_FormatTOC::setPropFromDoc(const char * szProp)
 {
 	UT_return_val_if_fail (m_pAP, false);
 	bool bRes = true;
-	const char * szVal = NULL;
+	const char * szVal = nullptr;
 	m_pAP->getProperty(szProp,szVal);
-	if(szVal == NULL)
+	if(szVal == nullptr)
 	{
 		bRes = false;
 		const PP_Property * pProp = PP_lookupProperty(szProp);
-		if(pProp == NULL)
+		if(pProp == nullptr)
 		{
 			UT_ASSERT_HARMLESS(0);
 			return bRes;
@@ -394,7 +394,7 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 	else
 	{
 		PT_DocPosition pos = pView->getSelectionAnchor()+1;
-		pf_Frag_Strux* sdhTOC = NULL;
+		pf_Frag_Strux* sdhTOC = nullptr;
 		m_pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTOC, &sdhTOC);
 		UT_return_if_fail (sdhTOC);
 //

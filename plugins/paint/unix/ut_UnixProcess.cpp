@@ -36,7 +36,7 @@ bool createChildProcess(const char *app, const char *args, ProcessInfo *pid)
   char * execArgs[3];
   execArgs[0] = const_cast<char *>(app);
   execArgs[1] = const_cast<char *>(args);
-  execArgs[2] = NULL;
+  execArgs[2] = nullptr;
 
   if((*pid = fork())== 0)  // child process
   {

@@ -63,7 +63,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 	fl_ContainerLayout* sfh = nullptr;
 	PT_DocPosition sum = 0;
 	UT_uint32 blockOffset = 0;
-	pf_Frag_Strux * pfs2 = NULL;
+	pf_Frag_Strux * pfs2 = nullptr;
 	bool bListensOnly = (pListener->getType() >= PTL_CollabExport);
 	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
 	{
@@ -76,10 +76,10 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			                break;
 				}
 				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
-				PX_ChangeRecord * pcr = NULL;
+				PX_ChangeRecord * pcr = nullptr;
 				bool bStatus1 = false;
 				bool bAddOffset = true;
-				if(sfh != NULL)
+				if(sfh != nullptr)
 				{
 					bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset);
 					UT_return_val_if_fail (bStatus1, false);
@@ -122,7 +122,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					pfs2->setFmtHandle(listenerId,sfh);
 			                break;
 				}
-				PX_ChangeRecord * pcr = NULL;
+				PX_ChangeRecord * pcr = nullptr;
 				bool bStatus1 = pfs2->createSpecialChangeRecord(&pcr,sum);
 				UT_return_val_if_fail (bStatus1, false);
 				bool bStatus2 = pListener->populateStrux(pfs2,pcr,&sfh);
@@ -143,7 +143,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				blockOffset = 0;
 				if(isEndFootnote(pfs2))
 				{
-					sfh = NULL;
+					sfh = nullptr;
 				}
 			}
 			break;
@@ -155,10 +155,10 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			                break;
 				}
 				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
-				PX_ChangeRecord * pcr = NULL;
+				PX_ChangeRecord * pcr = nullptr;
 				bool bStatus1 = false;
 				bool bAddOffset = true;
-				if(sfh != NULL)
+				if(sfh != nullptr)
 				{
 					bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
 					UT_return_val_if_fail (bStatus1,false);
@@ -167,7 +167,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				{
 					PT_DocPosition pos = pf->getPos();
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
-					pf_Frag_Strux* pfs = NULL;
+					pf_Frag_Strux* pfs = nullptr;
 					getStruxOfTypeFromPosition(pos,PTX_Block,&pfs);
 					if(!pfs)
 					  return false;
@@ -203,10 +203,10 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			                break;
 				}
 				pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
-				PX_ChangeRecord * pcr = NULL;
+				PX_ChangeRecord * pcr = nullptr;
 				bool bStatus1 = false;
 				bool bAddOffset = true;
-				if(sfh != NULL)
+				if(sfh != nullptr)
 				{
 					bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
 					UT_return_val_if_fail (bStatus1,false);
@@ -314,7 +314,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
 	fl_ContainerLayout* sfh = nullptr;
 	UT_uint32 blockOffset = 0;
 
-	pf_Frag * pf1 = NULL;
+	pf_Frag * pf1 = nullptr;
 	PT_BlockOffset fragOffset1 = 0;
 	PT_BlockOffset endOffset = 0;
     PT_DocPosition pfPos = rangeStartPos;
@@ -340,7 +340,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                 case pf_Frag::PFT_Text:
                 {
                     pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
-                    PX_ChangeRecord * pcr = NULL;
+                    PX_ChangeRecord * pcr = nullptr;
                     if( rangeEndPos < sum+pf->getLength() )
                         endOffset = (rangeEndPos - sum);
                     else
@@ -365,7 +365,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                     pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
                     pf_Frag_Strux* sdh = pfs;
                     sfh = nullptr;
-                    PX_ChangeRecord * pcr = NULL;
+                    PX_ChangeRecord * pcr = nullptr;
                     bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
                     if(!bStatus1) {
                         UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) b\n" ));
@@ -383,7 +383,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                 case pf_Frag::PFT_Object:
                 {
                     pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
-                    PX_ChangeRecord * pcr = NULL;
+                    PX_ChangeRecord * pcr = nullptr;
                     bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
                     if(!bStatus1) {
                         UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) c\n" ));
@@ -401,7 +401,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                 case pf_Frag::PFT_FmtMark:
                 {
                     pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
-                    PX_ChangeRecord * pcr = NULL;
+                    PX_ChangeRecord * pcr = nullptr;
                     bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
                     if(!bStatus1) {
                         UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) d\n" ));
@@ -549,7 +549,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
 	fl_ContainerLayout* sfh = 0;
 	UT_uint32 blockOffset = 0;
 
-	pf_Frag * pf1 = NULL;
+	pf_Frag * pf1 = nullptr;
 	PT_BlockOffset fragOffset1 = 0;
 	PT_BlockOffset endOffset = 0;
 	
@@ -566,7 +566,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
 		case pf_Frag::PFT_Text:
 			{
 				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
-				PX_ChangeRecord * pcr = NULL;
+				PX_ChangeRecord * pcr = nullptr;
 				if (pDocRange->m_pos2 < sum+pf->getLength())
 					endOffset = (pDocRange->m_pos2 - sum);
 				else
@@ -588,7 +588,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
 				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
 				pf_Frag_Strux* sdh = pf;
 				sfh = 0;
-				PX_ChangeRecord * pcr = NULL;
+				PX_ChangeRecord * pcr = nullptr;
 				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
 				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
@@ -605,7 +605,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
 		case pf_Frag::PFT_Object:
 			{
 				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
-				PX_ChangeRecord * pcr = NULL;
+				PX_ChangeRecord * pcr = nullptr;
 				bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
 				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populate(sfh,pcr);
@@ -622,7 +622,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
 		case pf_Frag::PFT_FmtMark:
 			{
 				pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
-				PX_ChangeRecord * pcr = NULL;
+				PX_ChangeRecord * pcr = nullptr;
 				bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
 				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populate(sfh,pcr);
@@ -667,7 +667,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
                     pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
                     pf_Frag_Strux* sdh = pf;
                     sfh = 0;
-                    PX_ChangeRecord * pcr = NULL;
+                    PX_ChangeRecord * pcr = nullptr;
                     bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
                     UT_return_val_if_fail (bStatus1,false);
                     closer->populateStruxClose(sdh,pcr,&sfh);
@@ -680,7 +680,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
                 case pf_Frag::PFT_Object:
                 {
                     pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
-                    PX_ChangeRecord * pcr = NULL;
+                    PX_ChangeRecord * pcr = nullptr;
                     bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
                     UT_return_val_if_fail (bStatus1,false);
                     closer->populateClose(sfh,pcr);

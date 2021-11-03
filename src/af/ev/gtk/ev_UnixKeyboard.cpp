@@ -82,7 +82,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			gdk_event_get_keycode((GdkEvent*)e, &ev_keycode);
 			if (gdk_keymap_translate_keyboard_state(keymap, ev_keycode,
 													(GdkModifierType)ev_state, e->group,
-													&keyval, NULL, NULL, NULL)) {
+													&keyval, nullptr, nullptr, nullptr)) {
 				charData = keyval;
 			}
 		}

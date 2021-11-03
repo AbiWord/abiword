@@ -57,7 +57,7 @@ typedef struct {
 static const SuffixInfo *
 s_getSuffixInfo (void)
 {
-	static SuffixInfo	suffixInfo = { NULL, 0 };
+	static SuffixInfo	suffixInfo = { nullptr, 0 };
 	static gboolean 	isInitialized = FALSE;
 
 	if (isInitialized) {
@@ -105,7 +105,7 @@ s_getSuffixInfo (void)
 	}
 
 	// null-terminator
-	suffixInfo.suffixes[idx] = NULL;
+	suffixInfo.suffixes[idx] = nullptr;
 	isInitialized = TRUE;
 	return &suffixInfo;
 }
@@ -137,7 +137,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(const UT_ConstByteBufPtr & pBB, 
 		return UT_ERROR;
 	}
 	FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
-	if(pFGR == NULL)
+	if(pFGR == nullptr)
 	{
 		g_object_unref(G_OBJECT(pixbuf));
 		m_pPngBB.reset();
@@ -257,7 +257,7 @@ void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
  */
 GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(const UT_ConstByteBufPtr & pBB)
 {
-	GdkPixbuf * pixbuf = NULL;
+	GdkPixbuf * pixbuf = nullptr;
 	const char * pBC = reinterpret_cast<const char *>(pBB->getPointer(0));
 
 	UT_GenericVector<char*> vecStr;
@@ -273,7 +273,7 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(const UT_ConstByteBufPtr & pBB)
 
 	if(k >= length)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	k++;
@@ -282,10 +282,10 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(const UT_ConstByteBufPtr & pBB)
 		;
 	if(k >= length)
 	{
-		return NULL;
+		return nullptr;
 	}
 
-	char * sz = NULL;
+	char * sz = nullptr;
 	UT_sint32 kLen = k-iBase+1;
 	sz = static_cast<char *>(UT_calloc(kLen,sizeof(char)));
 	UT_sint32 i =0;
@@ -319,9 +319,9 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(const UT_ConstByteBufPtr & pBB)
 			}
 			if(k >= length)
 			{
-				return NULL;
+				return nullptr;
 			}
-			sz = NULL;
+			sz = nullptr;
 			kLen = k-iBase+1;
 			sz = static_cast<char *>(UT_calloc(kLen,sizeof(char)));
 			for(i=0; i<(kLen -1); i++)
@@ -340,7 +340,7 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(const UT_ConstByteBufPtr & pBB)
 			char * psz = vecStr.getNthItem(i);
 			FREEP(psz);
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	const char ** pszStr = static_cast<const char **>(UT_calloc(vecStr.getItemCount(),sizeof(char *)));
@@ -355,9 +355,9 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf(const UT_ConstByteBufPtr &
 													   std::string & mimetype)
 {
 	if ( !pBB || !pBB->getLength() )
-		return NULL;
+		return nullptr;
 
-	GdkPixbuf * pixbuf = NULL;
+	GdkPixbuf * pixbuf = nullptr;
 
 	bool bIsXPM = false;
 	const char * szBuf = reinterpret_cast<const char *>(pBB->getPointer(0));
@@ -380,7 +380,7 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf(const UT_ConstByteBufPtr &
 		{
 			UT_DEBUGMSG (("GdkPixbuf: couldn't create loader! WTF?\n"));
 			UT_ASSERT (ldr);
-			return NULL ;
+			return nullptr ;
 		}
 
 		if (!gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),
@@ -388,14 +388,14 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf(const UT_ConstByteBufPtr &
 		{
 			UT_DEBUGMSG(("DOM: couldn't write to loader: %s\n", err->message));
 			g_error_free(err);
-			gdk_pixbuf_loader_close (ldr, NULL);
+			gdk_pixbuf_loader_close (ldr, nullptr);
 			g_object_unref (G_OBJECT(ldr));
 			mimetype.clear();
-			return NULL ;
+			return nullptr ;
 		}
 
 
-		gdk_pixbuf_loader_close (ldr, NULL);
+		gdk_pixbuf_loader_close (ldr, nullptr);
 		pixbuf = gdk_pixbuf_loader_get_pixbuf (ldr);
 
 		GdkPixbufFormat * format = gdk_pixbuf_loader_get_format(ldr);
@@ -423,26 +423,24 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf(const UT_ConstByteBufPtr &
 
 	return pixbuf;
 }
-	
+
 UT_Error IE_ImpGraphic_GdkPixbuf::Initialize_PNG(void)
 {
 	/* Set up png structures for writing */
-	m_pPNG = png_create_write_struct( PNG_LIBPNG_VER_STRING, 
-									  static_cast<void*>(NULL),
-									  NULL, 
-									  NULL );
-	if( m_pPNG == NULL )
+	m_pPNG = png_create_write_struct(PNG_LIBPNG_VER_STRING,
+									  nullptr, nullptr, nullptr);
+	if( m_pPNG == nullptr )
 	{
 		return UT_ERROR;
 	}
-	
+
 	m_pPNGInfo = png_create_info_struct(m_pPNG);
-	if ( m_pPNGInfo == NULL )
+	if ( m_pPNGInfo == nullptr )
 	{
-		png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(NULL));
+		png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(nullptr));
 		return UT_ERROR;
 	}
-	
+
 	/* Set error handling if you are using the setjmp/longjmp method (this is
 	 * the normal method of doing things with libpng).  REQUIRED unless you
 	 * set up your own error handlers in the png_create_read_struct() earlier.
@@ -459,7 +457,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::Initialize_PNG(void)
 	
 	/* Setting up the Data Writing Function */
 	png_set_write_fn(m_pPNG, const_cast<void *>(reinterpret_cast<const void *>(m_pPngBB.get())),
-					 reinterpret_cast<png_rw_ptr>(_write_png), NULL);
+					 reinterpret_cast<png_rw_ptr>(_write_png), nullptr);
 	
 	return UT_OK;
 }
@@ -535,7 +533,7 @@ _gdk_pixbuf_get_module (const guchar *buffer, guint size)
 	GSList *formats, *format_ptr;
 
 	gint score, best = 0;
-	GdkPixbufFormat *selected = NULL;
+	GdkPixbufFormat *selected = nullptr;
 
 	format_ptr = gdk_pixbuf_get_formats ();
 	for (formats = format_ptr; formats; formats = g_slist_next (formats)) {
@@ -556,7 +554,7 @@ _gdk_pixbuf_get_module (const guchar *buffer, guint size)
 	}
 
 	g_slist_free(format_ptr);
-	if (selected != NULL)
+	if (selected != nullptr)
 		return true;
 
 	return false;
@@ -566,7 +564,7 @@ _gdk_pixbuf_get_module (const guchar *buffer, guint size)
 
 const IE_MimeConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getMimeConfidence ()
 {
-	static IE_MimeConfidence *mimeConfidence = NULL;
+	static IE_MimeConfidence *mimeConfidence = nullptr;
 
 	if (mimeConfidence) {
 		return mimeConfidence;
@@ -623,7 +621,7 @@ const IE_MimeConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getMimeConfidence ()
 
 const IE_SuffixConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getSuffixConfidence ()
 {
-	static IE_SuffixConfidence *suffixConfidence = NULL;
+	static IE_SuffixConfidence *suffixConfidence = nullptr;
 
 	if (suffixConfidence) {
 		return suffixConfidence;
@@ -650,7 +648,7 @@ const IE_SuffixConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getSuffixConfidence 
 		idx++;
 	}
 
-	// NULL-terminator
+	// nullptr-terminator
 	suffixConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
 	
 	return suffixConfidence;
@@ -682,12 +680,12 @@ bool IE_ImpGraphicGdkPixbuf_Sniffer::getDlgLabels(const char ** pszDesc,
 						  const char ** pszSuffixList,
 						  IEGraphicFileType * ft)
 {
-	static gchar *suffixString = NULL;
+	static gchar *suffixString = nullptr;
 
 	if (!suffixString) {
 		const SuffixInfo *suffixInfo = s_getSuffixInfo ();
 		const gchar 	**suffixIter = suffixInfo->suffixes;
-		gchar		 	*tmp = NULL;
+		gchar		 	*tmp = nullptr;
 		while (*suffixIter) {
 			tmp = suffixString;
 			suffixString = g_strdup_printf ("%s*.%s;", suffixString, *suffixIter);
@@ -708,7 +706,7 @@ bool IE_ImpGraphicGdkPixbuf_Sniffer::getDlgLabels(const char ** pszDesc,
 UT_Error IE_ImpGraphicGdkPixbuf_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_GdkPixbuf();
-	if (*ppieg == NULL)
+	if (*ppieg == nullptr)
 		return UT_IE_NOMEMORY;
 	return UT_OK;
 }

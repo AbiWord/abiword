@@ -71,7 +71,7 @@ private:
     NSMutableArray* m_fileTypes;
 
     const char* m_szFileTypeDescription;
-    UT_uint32 m_szFileTypeCount;
+    UT_uint32 m_fileTypeCount;
 
     bool m_bPanelActive;
     bool m_bOpenPanel;

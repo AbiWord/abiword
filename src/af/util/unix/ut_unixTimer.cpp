@@ -92,7 +92,7 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 					 ));
 
 #ifndef TOOLKIT_COCOA
-	m_iGtkTimerId = g_timeout_add_full(0, iMilliseconds, _Timer_Proc, this, NULL);
+	m_iGtkTimerId = g_timeout_add_full(0, iMilliseconds, _Timer_Proc, this, nullptr);
 #else
 	m_iGtkTimerId = XAP_newCocoaTimer(iMilliseconds, _Timer_Proc, this);
 #endif

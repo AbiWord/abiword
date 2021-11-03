@@ -159,7 +159,7 @@ UT_Error UT_HTML::parse (const char * szFilename)
 			ctxt = htmlCreatePushParserCtxt (&hdl, static_cast<void *>(this),
 											 buffer, static_cast<int>(length),
 											 szFilename, encoding);
-			if (ctxt == NULL)
+			if (ctxt == nullptr)
 				{
 					UT_DEBUGMSG (("Unable to create libxml2 push-parser context!\n"));
 					reader->closeFile ();
@@ -196,7 +196,7 @@ UT_Error UT_HTML::parse (const char * szFilename)
 				if (!ctxt->wellFormed && !m_bStopped)
 					ret = UT_IE_IMPORTERROR; // How does stopping mid-file affect wellFormed?
 
-			ctxt->sax = NULL;
+			ctxt->sax = nullptr;
 			htmlFreeParserCtxt (ctxt);
 		}
 	else

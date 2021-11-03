@@ -71,7 +71,7 @@ enum {
 
 static guint cell_renderer_font_signals[RENDERER_LAST_SIGNAL] = { 0 };
 
-static GtkCellRendererTextClass *abi_cell_renderer_font_parent_class = NULL;
+static GtkCellRendererTextClass *abi_cell_renderer_font_parent_class = nullptr;
 
 void
 abi_cell_renderer_font_render (GtkCellRenderer      *cell,
@@ -87,7 +87,7 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 	gchar 			*text;
 
 	self = ABI_CELL_RENDERER_FONT (cell);
-	text = NULL;
+	text = nullptr;
 
 	GTK_CELL_RENDERER_CLASS (abi_cell_renderer_font_parent_class)->render (
 					cell, cr, widget, background_area, 
@@ -119,12 +119,12 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 
 			g_object_get (G_OBJECT (cell), 
 					      "text", &text, 
-					      NULL);
+					      nullptr);
 
 			UT_return_if_fail (text);
 			if (0 == strcmp (text, PREVIEW_TEXT)) {
 				g_free (text);
-				text = NULL;
+				text = nullptr;
 				gtk_combo_box_get_active_iter (GTK_COMBO_BOX (self->parent_widget), &iter);
 				model = gtk_combo_box_get_model (GTK_COMBO_BOX (self->parent_widget));
 				UT_return_if_fail (model);
@@ -169,7 +169,7 @@ abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass, gpointer)
 			G_OBJECT_CLASS_TYPE (klass),
 			G_SIGNAL_RUN_LAST,
 			G_STRUCT_OFFSET (AbiCellRendererFontClass, popup_position),
-			NULL, NULL,
+			nullptr, nullptr,
 			g_cclosure_marshal_VOID__POINTER,
 			G_TYPE_NONE, 1,
 			G_TYPE_POINTER);
@@ -179,7 +179,7 @@ abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass, gpointer)
 			G_OBJECT_CLASS_TYPE (klass),
 			G_SIGNAL_RUN_LAST,
 			G_STRUCT_OFFSET (AbiCellRendererFontClass, prelight_popup),
-			NULL, NULL,
+			nullptr, nullptr,
 			g_cclosure_marshal_VOID__POINTER,
 			G_TYPE_NONE, 1,
 			G_TYPE_POINTER);
@@ -189,7 +189,7 @@ abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass, gpointer)
 			G_OBJECT_CLASS_TYPE (klass),
 			G_SIGNAL_RUN_LAST,
 			G_STRUCT_OFFSET (AbiCellRendererFontClass, render_closed),
-			NULL, NULL,
+			nullptr, nullptr,
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 }
@@ -201,15 +201,15 @@ abi_cell_renderer_font_get_type (void)
         if (!type) {
                 static const GTypeInfo info = {
                         sizeof (AbiCellRendererFontClass),
-                        NULL,           /* base_init */
-                        NULL,           /* base_finalize */
+                        nullptr,           /* base_init */
+                        nullptr,           /* base_finalize */
                         (GClassInitFunc) abi_cell_renderer_font_class_init,
-                        NULL,           /* class_finalize */
-                        NULL,           /* class_data */
+                        nullptr,           /* class_finalize */
+                        nullptr,           /* class_data */
                         sizeof (AbiCellRendererFont),
                         0,              /* n_preallocs */
                         (GInstanceInitFunc) abi_cell_renderer_font_instance_init,
-						NULL
+						nullptr
                 };
                 type = g_type_register_static (GTK_TYPE_CELL_RENDERER_TEXT, 
 					       "AbiCellRendererFont", &info, 
@@ -223,7 +223,7 @@ abi_cell_renderer_font_new (GtkWidget *parent)
 {
 	GtkCellRenderer *self;
 	self = (GtkCellRenderer *) g_object_new (ABI_TYPE_CELL_RENDERER_FONT, 
-						 NULL);
+						 nullptr);
 	ABI_CELL_RENDERER_FONT (self)->parent_widget = parent;
 	return self;
 }
@@ -242,7 +242,7 @@ enum {
 
 static guint font_combo_signals[LAST_SIGNAL] = { 0 };
 
-static GtkComboBoxClass *abi_font_combo_parent_class = NULL;
+static GtkComboBoxClass *abi_font_combo_parent_class = nullptr;
 
 static void
 renderer_popup_opened_cb (AbiFontCombo		*self, 
@@ -290,10 +290,10 @@ abi_font_combo_dispose (GObject *instance)
 	self->is_disposed = TRUE;
 
 	g_object_unref (G_OBJECT (self->sort));
-	self->sort = NULL;
+	self->sort = nullptr;
 
 	g_object_unref (G_OBJECT (self->model));
-	self->model = NULL;
+	self->model = nullptr;
 
 	G_OBJECT_CLASS (abi_font_combo_parent_class)->dispose (instance);
 }
@@ -319,7 +319,7 @@ abi_font_combo_class_init (AbiFontComboClass *klass, gpointer)
 			G_OBJECT_CLASS_TYPE (klass),
 			G_SIGNAL_RUN_LAST,
 			G_STRUCT_OFFSET (AbiFontComboClass, popup_opened),
-			NULL, NULL,
+			nullptr, nullptr,
 			g_cclosure_marshal_VOID__POINTER,
 			G_TYPE_NONE, 1,
 			G_TYPE_POINTER);
@@ -329,7 +329,7 @@ abi_font_combo_class_init (AbiFontComboClass *klass, gpointer)
 			G_OBJECT_CLASS_TYPE (klass),
 			G_SIGNAL_RUN_LAST,
 			G_STRUCT_OFFSET (AbiFontComboClass, prelight),
-			NULL, NULL,
+			nullptr, nullptr,
 			g_cclosure_marshal_VOID__POINTER,
 			G_TYPE_NONE, 1,
 			G_TYPE_POINTER);
@@ -339,7 +339,7 @@ abi_font_combo_class_init (AbiFontComboClass *klass, gpointer)
 			G_OBJECT_CLASS_TYPE (klass),
 			G_SIGNAL_RUN_LAST,
 			G_STRUCT_OFFSET (AbiFontComboClass, popup_closed),
-			NULL, NULL,
+			nullptr, nullptr,
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE, 0);
 }
@@ -351,15 +351,15 @@ abi_font_combo_get_type (void)
         if (!type) {
                 static const GTypeInfo info = {
                         sizeof (AbiFontComboClass),
-                        NULL,           /* base_init */
-                        NULL,           /* base_finalize */
+                        nullptr,           /* base_init */
+                        nullptr,           /* base_finalize */
                         (GClassInitFunc) abi_font_combo_class_init,
-                        NULL,           /* class_finalize */
-                        NULL,           /* class_data */
+                        nullptr,           /* class_finalize */
+                        nullptr,           /* class_data */
                         sizeof (AbiFontCombo),
                         0,              /* n_preallocs */
                         (GInstanceInitFunc) abi_font_combo_init,
-						NULL
+						nullptr
                 };
                 type = g_type_register_static (GTK_TYPE_COMBO_BOX, 
 					       "AbiFontCombo", &info, 
@@ -374,7 +374,7 @@ abi_font_combo_new (void)
 	AbiFontCombo 	 *self;
 	GtkCellRenderer  *cell;
 
-	self = (AbiFontCombo *) g_object_new (ABI_TYPE_FONT_COMBO, NULL);
+	self = (AbiFontCombo *) g_object_new (ABI_TYPE_FONT_COMBO, nullptr);
 	self->model = (GtkTreeModel *) gtk_list_store_new (NUM_COLS, G_TYPE_STRING);
 	self->sort = gtk_tree_model_sort_new_with_model (self->model);
 	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (self->sort), FONT, GTK_SORT_ASCENDING);
@@ -384,7 +384,7 @@ abi_font_combo_new (void)
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self), cell, FALSE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self), cell,
 					"text", FONT,
-					NULL);
+					nullptr);
 
 	g_signal_connect_swapped (G_OBJECT (cell), "renderer-popup-opened", 
 				  G_CALLBACK (renderer_popup_opened_cb), (gpointer) self);
@@ -419,7 +419,7 @@ abi_font_combo_insert_font (AbiFontCombo 	*self,
 /*!
  * Use this for updating the whole combo.
  * \param self
- * \param fonts NULL-terminated array of fonts.
+ * \param fonts NUL-terminated array of fonts.
  */
 void
 abi_font_combo_set_fonts (AbiFontCombo 	 *self, 
@@ -430,8 +430,8 @@ abi_font_combo_set_fonts (AbiFontCombo 	 *self,
 
 	g_return_if_fail (fonts);
 
-	gtk_combo_box_set_model (GTK_COMBO_BOX (self), NULL);
-	g_object_unref (G_OBJECT (self->sort)); self->sort = NULL;
+	gtk_combo_box_set_model (GTK_COMBO_BOX (self), nullptr);
+	g_object_unref (G_OBJECT (self->sort)); self->sort = nullptr;
 	gtk_list_store_clear (GTK_LIST_STORE (self->model));
 
     g_object_unref (G_OBJECT (self->model));

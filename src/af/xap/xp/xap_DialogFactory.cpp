@@ -135,20 +135,20 @@ void XAP_DialogFactory::unregisterDialog(XAP_Dialog_Id id)
 XAP_Dialog * XAP_DialogFactory::justMakeTheDialog(XAP_Dialog_Id id)
 {
 	UT_sint32 index;
-	XAP_Dialog * pDialog = NULL;
+	XAP_Dialog * pDialog = nullptr;
 	
 	if(_findDialogInTable(id,&index))
 	{
 	  pDialog = (XAP_Dialog *)((m_vec_dlg_table.getNthItem(index)->m_pfnStaticConstructor)(this,id));
 		return pDialog;
 	}
-	return NULL;
+	return nullptr;
 }
 
 XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 {
-	const _dlg_table * dlg = NULL;
-	XAP_Dialog * pDialog = NULL;
+	const _dlg_table * dlg = nullptr;
+	XAP_Dialog * pDialog = nullptr;
 	UT_sint32 index;
 	
 	if(_findDialogInTable(id, &index))
@@ -183,7 +183,7 @@ XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 	}
 
 //	UT_ASSERT_NOT_REACHED();
-	return NULL;
+	return nullptr;
 
 CreateItSimple:
 	{

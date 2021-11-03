@@ -58,8 +58,8 @@ XAP_Dialog * AP_UnixDialog_InsertBookmark::static_constructor(XAP_DialogFactory 
 AP_UnixDialog_InsertBookmark::AP_UnixDialog_InsertBookmark(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_InsertBookmark(pDlgFactory,id)
-	, m_windowMain(NULL)
-	, m_buttonInsert(NULL)
+	, m_windowMain(nullptr)
+	, m_buttonInsert(nullptr)
 {
 }
 

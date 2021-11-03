@@ -193,7 +193,7 @@ void UT_ByteBuf::truncate(UT_uint32 position)
 
 bool UT_ByteBuf::insertFromURI(UT_uint32 iPosition, const char *szURI)
 {
-  GsfInput *fp = UT_go_file_open(szURI, NULL);
+  GsfInput *fp = UT_go_file_open(szURI, nullptr);
   if(!fp)
     return false;
 
@@ -205,7 +205,7 @@ bool UT_ByteBuf::insertFromURI(UT_uint32 iPosition, const char *szURI)
 
 bool UT_ByteBuf::insertFromInput(UT_uint32 iPosition, GsfInput * fp)
 {
-  UT_return_val_if_fail (fp != NULL, false);
+  UT_return_val_if_fail (fp != nullptr, false);
 
   UT_uint32 iLengthOfFile = gsf_input_size(fp);
 
@@ -294,7 +294,7 @@ bool UT_ByteBuf::writeToURI(const char* pszURI) const
 {
 	UT_ASSERT(pszURI && pszURI[0]);
 	
-	GsfOutput *fp = UT_go_file_create(pszURI, NULL);
+	GsfOutput *fp = UT_go_file_create(pszURI, nullptr);
 	if (!fp)
 	  return false;
 

@@ -43,11 +43,11 @@
 
 AP_Dialog_Replace::AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogreplace"),
-	m_findString(NULL),
-	m_replaceString(NULL)
+	m_findString(nullptr),
+	m_replaceString(nullptr)
 {
-	m_pView = NULL;
-	m_pFrame = NULL;
+	m_pView = nullptr;
+	m_pFrame = nullptr;
 	
 
 	// is this used?
@@ -133,7 +133,7 @@ void  AP_Dialog_Replace::setActiveFrame(XAP_Frame * /*pFrame*/)
 void  AP_Dialog_Replace::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	gchar * tmp = NULL;
+	gchar * tmp = nullptr;
 	// conditionally set title
 	std::string s;
 	
@@ -175,7 +175,7 @@ void AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
  */
 UT_UCSChar * AP_Dialog_Replace::getFindString(void)
 {
-	UT_UCSChar * string = NULL;
+	UT_UCSChar * string = nullptr;
 	string = getFvView()->findGetFindString();
 	if (string)
 	{
@@ -187,7 +187,7 @@ UT_UCSChar * AP_Dialog_Replace::getFindString(void)
 			return string;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 void AP_Dialog_Replace::setReplaceString(const UT_UCSChar * string)
@@ -199,7 +199,7 @@ void AP_Dialog_Replace::setReplaceString(const UT_UCSChar * string)
 
 UT_UCSChar * AP_Dialog_Replace::getReplaceString(void)
 {
-	UT_UCSChar * string = NULL;
+	UT_UCSChar * string = nullptr;
 	UT_UCSChar * replaceString = getFvView()->findGetReplaceString();
 	
 	if (replaceString)
@@ -212,7 +212,7 @@ UT_UCSChar * AP_Dialog_Replace::getReplaceString(void)
 			return string;
 	}
 
-	return NULL;
+	return nullptr;
 }
 	
 void AP_Dialog_Replace::setMatchCase(bool match)
@@ -407,11 +407,11 @@ bool AP_Dialog_Replace::_manageList(UT_GenericVector<UT_UCS4Char*>* list, UT_UCS
 			break;
 		}
 	}
-	
-	UT_UCSChar * clone = NULL;		
+
+	UT_UCSChar * clone = nullptr;
 	if (UT_UCS4_cloneString(&clone, string))
 	{
-		if (!found) 
+		if (!found)
 		{
 			// if not present, just add it to the internal list
 			list->insertItemAt(clone, 0);

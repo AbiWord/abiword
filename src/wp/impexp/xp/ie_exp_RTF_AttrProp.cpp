@@ -112,7 +112,7 @@ const gchar * s_RTF_AttrPropAdapter_AP::getAttribute(const gchar * szName) const
     // UT_DEBUGMSG(("s_RTF_AttrPropAdapter_AP::getAttribute() szName:%s\n", szName ));
 
     // we should probably have something similar for attrs as PP_evalProperty() ...
-	const gchar * pValue = NULL;
+	const gchar * pValue = nullptr;
 
 	if(m_pSpanAP && m_pSpanAP->getAttribute(szName, pValue))
 		return m_attrAPFilterList( szName, pValue );
@@ -123,7 +123,7 @@ const gchar * s_RTF_AttrPropAdapter_AP::getAttribute(const gchar * szName) const
 	if(m_pSectionAP && m_pSectionAP->getAttribute(szName, pValue))
 		return m_attrAPFilterList( szName, pValue );
 
-	return NULL;
+	return nullptr;
 }
 
 const gchar * s_RTF_AttrPropAdapter_AP::getProperty(const gchar * szName) const 

@@ -35,7 +35,7 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 
 	m_pDrawingArea = gtk_drawing_area_new ();
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
-	g_object_set(G_OBJECT(m_pDrawingArea), "expand", TRUE, NULL);
+	g_object_set(G_OBJECT(m_pDrawingArea), "expand", TRUE, nullptr);
 
 	gtk_widget_show_all(m_pPreviewWindow);
 	gtk_window_move(GTK_WINDOW(m_pPreviewWindow), m_left, m_top);

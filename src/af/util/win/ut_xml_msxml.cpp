@@ -310,20 +310,20 @@ HRESULT STDMETHODCALLTYPE AbiXMLHandler::startElement(
 	{
 		char* pAtts;
 		int length;
-   		wchar_t* pwchQName = NULL;
+		wchar_t* pwchQName = nullptr;
 		pAttributes->getQName( i, &pwchQName, &length );
 		pAtts = new char[length+1];
 		wcstombs( pAtts, pwchQName, length );
 		pAtts[length] = '\0';
-		new_atts[2*i] = pAtts;		
-		wchar_t* pwchValue = NULL;
+		new_atts[2*i] = pAtts;
+		wchar_t* pwchValue = nullptr;
 		pAttributes->getValue( i, &pwchValue, &length );
 		pAtts = new char[length+1];
 		wcstombs( pAtts, pwchValue, length );
 		pAtts[length] = '\0';
 		new_atts[2*i+1] = pAtts;
 	}
-	new_atts[2*nAttributes] = NULL;
+	new_atts[2*nAttributes] = nullptr;
 
 	char* pcChars = new char[cchRawName+1];
 	wcstombs( pcChars, pwchRawName, cchRawName );
@@ -423,17 +423,17 @@ UT_Error UT_XML::parse (const char * szFilename)
 		return UT_errnoToUTError ();
     }
 
-	CoInitialize(NULL); 
-	ISAXXMLReader* pRdr = NULL;
+	CoInitialize(nullptr);
+	ISAXXMLReader* pRdr = nullptr;
 
 	HRESULT hr = CoCreateInstance(
-								__uuidof(SAXXMLReader), 
-								NULL, 
-								CLSCTX_ALL, 
-								__uuidof(ISAXXMLReader), 
+								__uuidof(SAXXMLReader),
+								nullptr,
+								CLSCTX_ALL,
+								__uuidof(ISAXXMLReader),
 								(void **)&pRdr);
 
-	if( FAILED(hr) ) 
+	if( FAILED(hr) )
 	{
       	UT_DEBUGMSG (("Unable to create parser!\n"));
      	reader->closeFile ();
@@ -455,7 +455,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 		done = (length < sizeof (buffer));
 
 		// Transfer bytes read into a SAFEARRAY 
-		SAFEARRAY* psa = NULL;
+		SAFEARRAY* psa = nullptr;
         psa = SafeArrayCreateVector( VT_UI1, 0, length );
 		void * pDest;
 		SafeArrayAccessData(psa, &pDest);
@@ -508,17 +508,17 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
 	UT_Error ret = UT_OK;
 
-	CoInitialize(NULL); 
-	ISAXXMLReader* pRdr = NULL;
+	CoInitialize(nullptr);
+	ISAXXMLReader* pRdr = nullptr;
 
 	HRESULT hr = CoCreateInstance(
-								__uuidof(SAXXMLReader), 
-								NULL, 
-								CLSCTX_ALL, 
-								__uuidof(ISAXXMLReader), 
+								__uuidof(SAXXMLReader),
+								nullptr,
+								CLSCTX_ALL,
+								__uuidof(ISAXXMLReader),
 								(void **)&pRdr);
 
-	if( FAILED(hr) ) 
+	if( FAILED(hr) )
 	{
       	UT_DEBUGMSG (("Unable to create parser!\n"));
       	return UT_ERROR;
@@ -530,7 +530,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 	hr = pRdr->putErrorHandler(pEc);
 
 	// Transfer bytes read into a SAFEARRAY 
-	SAFEARRAY* psa = NULL;
+	SAFEARRAY* psa = nullptr;
 	psa = SafeArrayCreateVector( VT_UI1, 0, length );
 	void * pDest;
 	SafeArrayAccessData(psa, &pDest);

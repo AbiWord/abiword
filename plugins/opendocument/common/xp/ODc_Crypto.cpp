@@ -80,7 +80,7 @@ UT_Error ODc_Crypto::performDecrypt(GsfInput* pStream,
 	UT_sint32 content_size = gsf_input_size(pStream); 
 	if (content_size == -1)
 		return UT_ERROR;
-	const unsigned char* content = gsf_input_read(pStream, content_size, NULL);
+	const unsigned char* content = gsf_input_read(pStream, content_size, nullptr);
 	if (!content)
 		return UT_ERROR;
 

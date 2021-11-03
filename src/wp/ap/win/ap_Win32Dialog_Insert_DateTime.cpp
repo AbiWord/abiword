@@ -68,7 +68,7 @@ void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
 {
     int i;
     wchar_t szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
-    time_t  tim = time(NULL);
+    time_t  tim = time(nullptr);
     struct tm *pTime = localtime(&tim);
 
 // debug code to produce widest possible string (in English, at least)
@@ -95,7 +95,7 @@ void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
 	UT_LocaleTransactor t(LC_ALL, s.c_str());
     UT_Win32LocaleString str;
 
-    for (i = 0;InsertDateTimeFmts[i] != NULL;i++)
+    for (i = 0;InsertDateTimeFmts[i] != nullptr;i++)
     {
       	str.fromASCII (InsertDateTimeFmts[i]);
         wcsftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, str.c_str(), pTime);

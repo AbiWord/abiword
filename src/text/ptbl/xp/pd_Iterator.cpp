@@ -44,7 +44,7 @@
     \param dpos - document position we want to start from
 */
 PD_DocIterator::PD_DocIterator(const PD_Document &doc, PT_DocPosition dpos)
-	: m_pt(*doc.getPieceTable()), m_pos(dpos), m_max_pos(0xffffffff), m_frag(NULL), m_status(UTIter_OK)
+	: m_pt(*doc.getPieceTable()), m_pos(dpos), m_max_pos(0xffffffff), m_frag(nullptr), m_status(UTIter_OK)
 {
 	// find the frag at requested postion
 	_findFrag();
@@ -53,7 +53,7 @@ PD_DocIterator::PD_DocIterator(const PD_Document &doc, PT_DocPosition dpos)
 UT_TextIterator * PD_DocIterator::makeCopy() const
 {
 	PD_DocIterator * t = new PD_DocIterator(m_pt);
-	UT_return_val_if_fail(t, NULL);
+	UT_return_val_if_fail(t, nullptr);
 	
 	t->m_pos = m_pos;
 	t->m_frag = m_frag;
@@ -135,7 +135,7 @@ bool PD_DocIterator::_findFrag()
 
 	// do it the hard way
 	m_frag = m_pt.getFragments().findFirstFragBeforePos(m_pos);
-	if(m_frag == NULL)
+	if(m_frag == nullptr)
 	{
 	  //
 	  // One last attempt
@@ -412,9 +412,9 @@ UT_uint32 PD_DocIterator::find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward
 */
 PD_StruxIterator::PD_StruxIterator(pf_Frag_Strux* sdh,UT_uint32 offset,
 								   UT_uint32 maxOffset)
-	: m_pPT(NULL), m_offset(offset),
+	: m_pPT(nullptr), m_offset(offset),
 	  m_frag_offset(0),  m_sdh(sdh),
-	  m_frag(NULL),
+	  m_frag(nullptr),
 	  m_status(UTIter_OK),
 	  m_max_offset(maxOffset),
 	  m_strux_len(0)
@@ -434,7 +434,7 @@ PD_StruxIterator::PD_StruxIterator(pf_Frag_Strux* sdh,UT_uint32 offset,
 UT_TextIterator * PD_StruxIterator::makeCopy() const
 {
 	PD_StruxIterator * t = new PD_StruxIterator();
-	UT_return_val_if_fail(t, NULL);
+	UT_return_val_if_fail(t, nullptr);
 	
 	t->m_pPT = m_pPT;
 	t->m_offset = m_offset;

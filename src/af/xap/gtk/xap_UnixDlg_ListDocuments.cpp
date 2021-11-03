@@ -52,8 +52,8 @@ XAP_Dialog * XAP_UnixDialog_ListDocuments::static_constructor(XAP_DialogFactory 
 XAP_UnixDialog_ListDocuments::XAP_UnixDialog_ListDocuments(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: XAP_Dialog_ListDocuments(pDlgFactory,id),
-		m_listWindows(NULL),
-		m_windowMain(NULL)
+		m_listWindows(nullptr),
+		m_windowMain(nullptr)
 {
 }
 
@@ -147,7 +147,7 @@ GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
 													   renderer,
 													   "text", 
 													   0,
-													   NULL);
+													   nullptr);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_listWindows), column);
 	
 	// connect a dbl-clicked signal to the column

@@ -45,7 +45,7 @@ XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szLanguageName)
 {
 	m_pApp = pApp;
 
-	m_szLanguageName = NULL;
+	m_szLanguageName = nullptr;
 	if (szLanguageName && *szLanguageName)
 		m_szLanguageName = g_strdup(szLanguageName);
 }
@@ -65,7 +65,7 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, std::str
 {
 	const char * toTranslate = getValue(id);
 
-	UT_return_val_if_fail(toTranslate != NULL, false);
+	UT_return_val_if_fail(toTranslate != nullptr, false);
 
 	if(!strcmp(m_encoding.c_str(),inEncoding))
 	{
@@ -76,7 +76,7 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, std::str
 	        UT_iconv_t conv = UT_iconv_open(inEncoding, m_encoding.c_str());
 		UT_return_val_if_fail(UT_iconv_isValid(conv), false);
 	  
-		char * translated = UT_convert_cd(toTranslate, strlen (toTranslate)+1, conv, NULL, NULL);
+		char * translated = UT_convert_cd(toTranslate, strlen (toTranslate)+1, conv, nullptr, nullptr);
 		
 		UT_iconv_close(conv);
 		
@@ -138,7 +138,7 @@ const gchar * XAP_BuiltinStringSet::getValue(XAP_String_Id id) const
 	if ( (id > XAP_STRING_ID__FIRST__) && (id < XAP_STRING_ID__LAST__) )
 		return m_arrayXAP[id];
 
-	return NULL;
+	return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -149,10 +149,10 @@ const gchar * XAP_BuiltinStringSet::getValue(XAP_String_Id id) const
 //////////////////////////////////////////////////////////////////
 
 XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
-	: XAP_StringSet(pApp,NULL), 
+	: XAP_StringSet(pApp, nullptr),
 	  m_vecStringsXAP(XAP_STRING_ID__LAST__ - XAP_STRING_ID__FIRST__ + 1, 4, true)
 {
-	m_pFallbackStringSet = NULL;
+	m_pFallbackStringSet = nullptr;
 
 	XAP_DiskStringSet::setValue(XAP_STRING_ID__FIRST__, nullptr);			// bogus zero element
 }
@@ -177,7 +177,7 @@ bool XAP_DiskStringSet::setLanguage(const gchar * szLanguageName)
 {
 	if (m_szLanguageName)
 		g_free(const_cast<gchar *>(m_szLanguageName));
-	m_szLanguageName = NULL;
+	m_szLanguageName = nullptr;
 	if (szLanguageName && *szLanguageName)
 		m_szLanguageName = g_strdup(szLanguageName);
 	return true;
@@ -191,7 +191,7 @@ void XAP_DiskStringSet::setFallbackStringSet(XAP_StringSet * pFallback)
 bool XAP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 {
 	bool bFoundMultiByte = false;
-	gchar * szDup = NULL;
+	gchar * szDup = nullptr;
 	int length;
 	const void* ptr;
 	
@@ -262,9 +262,9 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 		szDup[length]='\0';	
 	}
 
-    gchar* pOldValue = NULL;
+    gchar* pOldValue = nullptr;
 	bool bResult = (m_vecStringsXAP.setNthItem(id,szDup,&pOldValue) == 0);
-	UT_ASSERT(pOldValue == NULL);		// duplicate string for this id
+	UT_ASSERT(pOldValue == nullptr);		// duplicate string for this id
 
 	if (bFoundMultiByte)
 	{
@@ -288,7 +288,7 @@ const gchar * XAP_DiskStringSet::getValue(XAP_String_Id id) const
 	if (m_pFallbackStringSet)
 		return m_pFallbackStringSet->getValue(id);
 
-	return NULL;
+	return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////

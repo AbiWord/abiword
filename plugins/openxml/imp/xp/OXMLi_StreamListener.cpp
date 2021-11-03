@@ -67,7 +67,7 @@ OXMLi_StreamListener::~OXMLi_StreamListener()
 
 void OXMLi_StreamListener::setupStates(OXML_PartType type, const char * partId)
 {
-	OXMLi_ListenerState * state = NULL;
+	OXMLi_ListenerState * state = nullptr;
 	m_namespaces->reset();
 
 	//this has to be the first pushed state since it checks the validity of the input
@@ -144,7 +144,7 @@ void OXMLi_StreamListener::setupStates(OXML_PartType type, const char * partId)
 
 void OXMLi_StreamListener::pushState(OXMLi_ListenerState* s)
 {
-	UT_return_if_fail(s != NULL);
+	UT_return_if_fail(s != nullptr);
 	s->setListener(this);
 	m_states.push_back(s);
 }

@@ -117,7 +117,7 @@ EV_Menu_Label* EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 {
 	XAP_Menu_Id last = m_first + m_labelTable.size();
 	if (id < m_first || id >= last) {
-		return NULL;
+		return nullptr;
 	}
 
 	UT_uint32 index = (id - m_first);

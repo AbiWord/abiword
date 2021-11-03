@@ -33,7 +33,7 @@ IE_Exp_HTML_Listener::IE_Exp_HTML_Listener(PD_Document *pDocument,
                                            IE_Exp_HTML_NavigationHelper *pNavigationHelper,
                                            IE_Exp_HTML_ListenerImpl* pListenerImpl,
                                            const UT_UTF8String &filename) :
-m_bFirstWrite(true),										   
+m_bFirstWrite(true),
 m_bInSpan(false),
 m_bInBlock(false),
 m_bInBookmark(false),
@@ -179,9 +179,9 @@ bool IE_Exp_HTML_Listener::populate(fl_ContainerLayout* /*sfh*/, const PX_Change
             _closeSpan();
             _closeField();
 
-            const PP_AttrProp* pAP = NULL;
+            const PP_AttrProp* pAP = nullptr;
             m_pDocument->getAttrProp(api, &pAP);
-            const gchar* pValue = NULL;
+            const gchar* pValue = nullptr;
 
             if (pAP && pAP->getAttribute("type", pValue) && pValue 
 				&& (strcmp(pValue, "start") == 0))
@@ -200,9 +200,9 @@ bool IE_Exp_HTML_Listener::populate(fl_ContainerLayout* /*sfh*/, const PX_Change
         {
             _closeSpan();
             _closeField();
-            const PP_AttrProp* pAP = NULL;
+            const PP_AttrProp* pAP = nullptr;
             m_pDocument->getAttrProp(api, &pAP);
-            const gchar* pValue = NULL;
+            const gchar* pValue = nullptr;
 
             if (pAP && pAP->getAttribute("xlink:href", pValue) && pValue)
             {
@@ -278,11 +278,11 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
     //     {
     //         UT_DEBUGMSG(("TESTING AAA ... have psfh\n"));
     //         PT_AttrPropIndex api = m_pDocument->getAPIFromSDH( psfh );
-    //         const PP_AttrProp * AP = NULL;
+    //         const PP_AttrProp * AP = nullptr;
     //         m_pDocument->getAttrProp(api,&AP);
     //         if( AP )
     //         {
-    //             const gchar * v = NULL;
+    //             const gchar * v = nullptr;
     //             if(AP->getAttribute("xml:id", v))
     //                 UT_DEBUGMSG(("TESTING AAA ... xmlid:%s\n",v));
     //             if(AP->getAttribute("props", v))
@@ -292,7 +292,7 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
     //         m_pDocument->getAttrProp(api,&AP);
     //         if( AP )
     //         {
-    //             const gchar * v = NULL;
+    //             const gchar * v = nullptr;
     //             if(AP->getAttribute("xml:id", v))
     //                 UT_DEBUGMSG(("TESTING AAA2 ... xmlid:%s\n",v));
     //             if(AP->getAttribute("props", v))
@@ -579,7 +579,7 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
         const gchar *szListId = _getObjectKey(api, PT_LISTID_ATTRIBUTE_NAME);
         bool zeroListId = true;
 
-        if (szListId != NULL)
+        if (szListId != nullptr)
         {
             UT_DEBUGMSG(("List found!!!!\n"));
             zeroListId = !g_ascii_strcasecmp(szListId, "0");
@@ -594,7 +594,7 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
             break;
         }
 
-        if (szBlockStyle != NULL)
+        if (szBlockStyle != nullptr)
         {                
             if ((g_ascii_strcasecmp(static_cast<const gchar *> 
 									(szBlockStyle), "Heading 1") == 0) ||
@@ -834,13 +834,13 @@ void IE_Exp_HTML_Listener::_openSpan(PT_AttrPropIndex api)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
     const gchar *szStyleName = _getObjectKey(api, PT_STYLE_ATTRIBUTE_NAME);
     const IE_Exp_HTML_StyleTree *tree = m_pStyleTree->find(szStyleName);
-    const gchar *styleName = NULL;
-    if (tree != NULL)
+    const gchar *styleName = nullptr;
+    if (tree != nullptr)
     {
         styleName = tree->class_name().c_str();
     }
@@ -939,9 +939,9 @@ void IE_Exp_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		//}
 	}
 	if (szP_TextDecoration) {
-		bool bUnderline = (strstr(szP_TextDecoration, "underline") != NULL);
-		bool bLineThrough = (strstr(szP_TextDecoration, "line-through") != NULL);
-		bool bOverline = (strstr(szP_TextDecoration, "overline") != NULL);
+		bool bUnderline = (strstr(szP_TextDecoration, "underline") != nullptr);
+		bool bLineThrough = (strstr(szP_TextDecoration, "line-through") != nullptr);
+		bool bOverline = (strstr(szP_TextDecoration, "overline") != nullptr);
 
 		if (bUnderline || bLineThrough || bOverline) {
 			tmp  = "";
@@ -1043,13 +1043,13 @@ void IE_Exp_HTML_Listener::_openBlock(PT_AttrPropIndex api)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
     const gchar *szStyleName = _getObjectKey(api, PT_STYLE_ATTRIBUTE_NAME);
     const IE_Exp_HTML_StyleTree *tree = m_pStyleTree->find(szStyleName);
-    const gchar *styleName = NULL;
-    if (tree != NULL)
+    const gchar *styleName = nullptr;
+    if (tree != nullptr)
     {
         styleName = tree->class_name().c_str();
     }
@@ -1142,7 +1142,7 @@ void IE_Exp_HTML_Listener::_openHeading(PT_AttrPropIndex api, size_t level,
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok) 
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
     
     m_bInHeading = true;
@@ -1181,16 +1181,16 @@ void IE_Exp_HTML_Listener::_openSection(PT_AttrPropIndex api, bool recursiveCall
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
     
     const gchar *szStyleName = _getObjectKey(api, PT_STYLE_ATTRIBUTE_NAME);
 	m_dPageWidthInches = m_pDocument->m_docPageSize.Width(DIM_IN);
 
-	const char* pszLeftMargin = NULL;
-	const char* pszRightMargin = NULL;
-	const char* pszTopMargin = NULL;
-	const char* pszBottomMargin = NULL;
+	const char* pszLeftMargin = nullptr;
+	const char* pszRightMargin = nullptr;
+	const char* pszTopMargin = nullptr;
+	const char* pszBottomMargin = nullptr;
 	pAP->getProperty("page-margin-left", (const gchar *&)pszLeftMargin);
 	pAP->getProperty("page-margin-right", (const gchar *&)pszRightMargin);
 	pAP->getProperty("page-margin-top", (const gchar *&)pszTopMargin);
@@ -1261,7 +1261,7 @@ void IE_Exp_HTML_Listener::_openField(const PX_ChangeRecord_Object* pcro,
 {
     UT_return_if_fail(pcro);
 
-    const PP_AttrProp* pAP = NULL;
+    const PP_AttrProp* pAP = nullptr;
     fd_Field* pField = pcro->getField();
 
     UT_return_if_fail(pField);
@@ -1269,7 +1269,7 @@ void IE_Exp_HTML_Listener::_openField(const PX_ChangeRecord_Object* pcro,
 
     UT_UTF8String fieldValue = pField->getValue();
     UT_UTF8String fieldType;
-    const gchar * szValue = NULL;
+    const gchar * szValue = nullptr;
 
     UT_return_if_fail(pAP->getAttribute("type", szValue) && szValue);
     fieldType = szValue;
@@ -1303,7 +1303,7 @@ void IE_Exp_HTML_Listener::_closeField(void)
 
     m_pCurrentImpl->closeField(m_currentFieldType);
 
-    m_pCurrentField = NULL;
+    m_pCurrentField = nullptr;
     m_currentFieldType.clear();
 }
 
@@ -1318,7 +1318,7 @@ void IE_Exp_HTML_Listener::_openFootnote(PT_AttrPropIndex api)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
     m_bInFootnote = true;
@@ -1345,7 +1345,7 @@ void IE_Exp_HTML_Listener::_openEndnote(PT_AttrPropIndex api)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
 
@@ -1371,13 +1371,13 @@ void IE_Exp_HTML_Listener::_openAnnotation(PT_AttrPropIndex api)
         return;
     }
 
-    const PP_AttrProp* pAP = NULL;
+    const PP_AttrProp* pAP = nullptr;
     bool ok = false;
 
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
     m_pCurrentImpl->openAnnotation();
@@ -1418,7 +1418,7 @@ void IE_Exp_HTML_Listener::_openTable(PT_AttrPropIndex api, bool recursiveCall)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 	_fillColWidthsVector();
 
@@ -1484,7 +1484,7 @@ void IE_Exp_HTML_Listener::_openTable(PT_AttrPropIndex api, bool recursiveCall)
 	}
 
 	const char * pszBgColor = m_tableHelper.getTableProp ("bgcolor");
-	if (pszBgColor == NULL)
+	if (pszBgColor == nullptr)
 		pszBgColor = m_tableHelper.getTableProp ("background-color");
 	if (pszBgColor)
 	{
@@ -1499,7 +1499,7 @@ void IE_Exp_HTML_Listener::_openTable(PT_AttrPropIndex api, bool recursiveCall)
 			styles += pszBgColor;
 	}
 
-	const char * pszBorderColor = NULL;
+	const char * pszBorderColor = nullptr;
 
 	pszBorderColor = m_tableHelper.getTableProp ("color");
 	if (pszBorderColor)
@@ -1564,7 +1564,7 @@ void IE_Exp_HTML_Listener::_openTable(PT_AttrPropIndex api, bool recursiveCall)
 			sC[2] = pszBorderColor;
 	}
 
-	const char * pszBorderStyle = NULL;
+	const char * pszBorderStyle = nullptr;
 
 	pszBorderStyle = m_tableHelper.getTableProp ("bot-style");
 	if (pszBorderStyle)
@@ -1587,7 +1587,7 @@ void IE_Exp_HTML_Listener::_openTable(PT_AttrPropIndex api, bool recursiveCall)
 		sS[2] = PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 	}
 
-	const char * pszBorderWidth = NULL;
+	const char * pszBorderWidth = nullptr;
 
 	pszBorderWidth = m_tableHelper.getTableProp ("bot-thickness");
 	if (pszBorderWidth)
@@ -1822,7 +1822,7 @@ void IE_Exp_HTML_Listener::_openRow(PT_AttrPropIndex api, bool recursiveCall)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
     m_pCurrentImpl->openRow();
@@ -1857,7 +1857,7 @@ void IE_Exp_HTML_Listener::_openCell(PT_AttrPropIndex api, bool recursiveCall)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
 	_setCellWidthInches();
@@ -1885,7 +1885,7 @@ void IE_Exp_HTML_Listener::_openCell(PT_AttrPropIndex api, bool recursiveCall)
 	UT_sint32 colspan = m_tableHelper.getRight() - m_tableHelper.getLeft();
 
 	const char * pszBgColor = m_tableHelper.getCellProp("bgcolor");
-	if (pszBgColor == NULL)
+	if (pszBgColor == nullptr)
 		pszBgColor = m_tableHelper.getCellProp("background-color");
 	if (pszBgColor) {
 		if (styles.byteLength()) styles += ";";
@@ -1899,7 +1899,7 @@ void IE_Exp_HTML_Listener::_openCell(PT_AttrPropIndex api, bool recursiveCall)
 			styles += pszBgColor;
 	}
 
-	const char * pszBorderColor = NULL;
+	const char * pszBorderColor = nullptr;
 
 	pszBorderColor = m_tableHelper.getCellProp("color");
 	if (pszBorderColor) {
@@ -1959,7 +1959,7 @@ void IE_Exp_HTML_Listener::_openCell(PT_AttrPropIndex api, bool recursiveCall)
 			sC[2] = pszBorderColor;
 	}
 
-	const char * pszBorderStyle = NULL;
+	const char * pszBorderStyle = nullptr;
 
 	pszBorderStyle = m_tableHelper.getCellProp("bot-style");
 	if (pszBorderStyle) {
@@ -1978,7 +1978,7 @@ void IE_Exp_HTML_Listener::_openCell(PT_AttrPropIndex api, bool recursiveCall)
 		sS[2] = PP_PropertyMap::linestyle_for_CSS(pszBorderStyle);
 	}
 
-	const char * pszBorderWidth = NULL;
+	const char * pszBorderWidth = nullptr;
 
 	pszBorderWidth = m_tableHelper.getCellProp("bot-thickness");
 	if (pszBorderWidth) {
@@ -2204,10 +2204,10 @@ void IE_Exp_HTML_Listener::_openList(PT_AttrPropIndex api, bool recursiveCall)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
-    if (pAP == NULL)
+    if (pAP == nullptr)
     {
         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
     }
@@ -2254,13 +2254,13 @@ void IE_Exp_HTML_Listener::_openList(PT_AttrPropIndex api, bool recursiveCall)
     }
     else
     {
-        const gchar* szListStyle = NULL;
+        const gchar* szListStyle = nullptr;
         pAP->getProperty("list-style", szListStyle);
         bool isOrdered = szListStyle
 			&& (g_ascii_strcasecmp(szListStyle, "Bullet List") != 0);
 #ifdef DEBUG
         if(!szListStyle) {
-            UT_DEBUGMSG(("***BUG*** szListStyle is NULL - http://bugzilla.abisource.com/show_bug.cgi?id=13564\n"));
+            UT_DEBUGMSG(("***BUG*** szListStyle is NULL - https://bugzilla.abisource.com/show_bug.cgi?id=13564\n"));
         }
 #endif
         ListInfo info;
@@ -2274,8 +2274,8 @@ void IE_Exp_HTML_Listener::_openList(PT_AttrPropIndex api, bool recursiveCall)
         m_listInfoStack.push_back(info);
         UT_DEBUGMSG(("OPENED LIST\n"));
         const IE_Exp_HTML_StyleTree *tree = m_pStyleTree->find(szListStyle);
-        const gchar *styleName = NULL;
-        if (tree != NULL)
+        const gchar *styleName = nullptr;
+        if (tree != nullptr)
         {
             styleName = tree->class_name().c_str();
         }
@@ -2361,7 +2361,7 @@ void IE_Exp_HTML_Listener::_openFrame(PT_AttrPropIndex api, const PX_ChangeRecor
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
     
     const gchar *szType;
@@ -2381,12 +2381,12 @@ void IE_Exp_HTML_Listener::_openFrame(PT_AttrPropIndex api, const PX_ChangeRecor
 
 void IE_Exp_HTML_Listener::_insertPosImage(PT_AttrPropIndex api)
 {
-    const PP_AttrProp * pAP = NULL;
+    const PP_AttrProp * pAP = nullptr;
     bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
     if (!bHaveProp || (pAP == nullptr))
         return;
 
-    const gchar * pszDataID = NULL;
+    const gchar * pszDataID = nullptr;
     if (pAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&) pszDataID) && pszDataID)
         _handleImage(api, pszDataID, true);
 }
@@ -2481,7 +2481,7 @@ void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
     const gchar *pValue = nullptr;
@@ -2526,7 +2526,7 @@ void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)
     for (int i = 0; i < m_pNavigationHelper->getNumTOCEntries(); i++)
     {
         
-        UT_UTF8String tocItem = m_pNavigationHelper->getNthTOCEntry(i, NULL);
+        UT_UTF8String tocItem = m_pNavigationHelper->getNthTOCEntry(i, nullptr);
         UT_UTF8String tocItemUri;
         if (m_bSplitDocument)
         {
@@ -2562,13 +2562,13 @@ void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)
  */
 void IE_Exp_HTML_Listener::_openBookmark(PT_AttrPropIndex api)
 {
-    const PP_AttrProp* pAP = NULL;
+    const PP_AttrProp* pAP = nullptr;
     bool ok = false;
 
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (ok && pAP)
     {
-        const gchar* pValue = NULL;
+        const gchar* pValue = nullptr;
         if (pAP->getAttribute("name", pValue) && pValue)
         {
             m_bookmarkName = pValue;
@@ -2601,7 +2601,7 @@ void IE_Exp_HTML_Listener::_closeBookmark()
  */
 void IE_Exp_HTML_Listener::_openHyperlink(PT_AttrPropIndex api)
 {
-    const PP_AttrProp* pAP = NULL;
+    const PP_AttrProp* pAP = nullptr;
     bool ok;
 
     ok = m_pDocument->getAttrProp(api, &pAP);
@@ -2609,10 +2609,10 @@ void IE_Exp_HTML_Listener::_openHyperlink(PT_AttrPropIndex api)
     {
         m_bInHyperlink = true;
 
-        const gchar *szEscapedUrl = NULL;
+        const gchar *szEscapedUrl = nullptr;
         const gchar *szUrl = _getObjectKey(api, "xlink:href");
         UT_UTF8String url = szUrl;
-        if (szUrl != NULL)
+        if (szUrl != nullptr)
         {
             
         
@@ -2637,7 +2637,7 @@ void IE_Exp_HTML_Listener::_openHyperlink(PT_AttrPropIndex api)
         }
 
         UT_DEBUGMSG(("Opened Hyperlink\n"));
-        m_pCurrentImpl->openHyperlink(szEscapedUrl, NULL, NULL);
+        m_pCurrentImpl->openHyperlink(szEscapedUrl, nullptr, nullptr);
     }
 
 
@@ -2660,7 +2660,7 @@ void IE_Exp_HTML_Listener::_closeHyperlink()
 
 void IE_Exp_HTML_Listener::_openTextbox(PT_AttrPropIndex api)
 {
-    const PP_AttrProp* pAP = NULL;
+    const PP_AttrProp* pAP = nullptr;
     bool ok;
 
     ok = m_pDocument->getAttrProp(api, &pAP);
@@ -2681,7 +2681,7 @@ void IE_Exp_HTML_Listener::_openTextbox(PT_AttrPropIndex api)
             "right-color", "border-right-color",
             "left-color", "border-left-color",
             "background-color", "background-color",
-            NULL, NULL}; // [AbiWord property name, CSS21 property name]
+            nullptr, nullptr}; // [AbiWord property name, CSS21 property name]
         const gchar * tempProp = nullptr;
         UT_UTF8String style;
 
@@ -2743,7 +2743,7 @@ void IE_Exp_HTML_Listener::_closeTextbox()
 const gchar* IE_Exp_HTML_Listener::_getObjectKey(const PT_AttrPropIndex& api,
                                                  const gchar* key)
 {
-    const PP_AttrProp * pAP = NULL;
+    const PP_AttrProp * pAP = nullptr;
     bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
     if (bHaveProp && pAP)
     {
@@ -2767,7 +2767,7 @@ void IE_Exp_HTML_Listener::_insertImage(PT_AttrPropIndex api)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
     szDataId =
@@ -2781,14 +2781,14 @@ void IE_Exp_HTML_Listener::_insertImage(PT_AttrPropIndex api)
 void IE_Exp_HTML_Listener::_insertEmbeddedImage(PT_AttrPropIndex api)
 {
     UT_UTF8String snapshot = "snapshot-png-";
-    const gchar* szDataId = NULL;
+    const gchar* szDataId = nullptr;
     const PP_AttrProp* pAP;
     bool ok;
 
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 
     szDataId =
@@ -2809,17 +2809,17 @@ void IE_Exp_HTML_Listener::_handleImage(PT_AttrPropIndex api,
 
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok) {
-        pAP = NULL;
+        pAP = nullptr;
     }
     
-    if (szDataId == NULL) {
+    if (szDataId == nullptr) {
         return;
     }
 
     std::string mimeType;
     UT_ConstByteBufPtr bb;
     if (!m_pDocument->getDataItemDataByName(szDataId, bb,
-                                            &mimeType, NULL))
+                                            &mimeType, nullptr))
         return;
 
     if (mimeType == "image/svg")
@@ -2865,7 +2865,7 @@ void IE_Exp_HTML_Listener::_handleImage(PT_AttrPropIndex api,
     }
     UT_UTF8String align = "";
     if (bIsPositioned) {
-        const gchar * szXPos = NULL;
+        const gchar * szXPos = nullptr;
         UT_sint32 ixPos = 0;
         if (pAP->getProperty("xpos", szXPos)) {
             ixPos = UT_convertToLogicalUnits(szXPos);
@@ -2909,13 +2909,13 @@ void IE_Exp_HTML_Listener::_handleImage(PT_AttrPropIndex api,
 void IE_Exp_HTML_Listener::_insertMath(PT_AttrPropIndex api)
 {
     
-        const gchar* szMath = NULL;
+        const gchar* szMath = nullptr;
         szMath = _getObjectKey(api, static_cast<const gchar*>("dataid"));
 
         UT_return_if_fail(szMath);
 
         UT_ConstByteBufPtr pByteBuf;
-        bool bOK = m_pDocument->getDataItemDataByName(szMath, pByteBuf, NULL, NULL);
+        bool bOK = m_pDocument->getDataItemDataByName(szMath, pByteBuf, nullptr, nullptr);
 
         UT_return_if_fail(bOK);
 
@@ -2925,7 +2925,7 @@ void IE_Exp_HTML_Listener::_insertMath(PT_AttrPropIndex api)
 
         UT_return_if_fail(!sMathML.empty());
 
-        const PP_AttrProp * pAP = NULL;
+        const PP_AttrProp * pAP = nullptr;
         bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
         UT_LocaleTransactor t(LC_NUMERIC, "C");
         double dWidth;
@@ -2999,7 +2999,7 @@ void IE_Exp_HTML_Listener::_handleAnnotationData(PT_AttrPropIndex api)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
     
     const gchar *szTitle = nullptr;
@@ -3022,7 +3022,7 @@ void IE_Exp_HTML_Listener::_makeStylesheet(PT_AttrPropIndex api)
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok)
     {
-        pAP = NULL;
+        pAP = nullptr;
     }
 	
     UT_ByteBuf buffer;
@@ -3034,15 +3034,15 @@ void IE_Exp_HTML_Listener::_makeStylesheet(PT_AttrPropIndex api)
 		m_stylesheet += p;
 
 	UT_UTF8String bodyStyle = "body{\n";
-	const gchar* szName = NULL;
-	const gchar* szValue = NULL;
+	const gchar* szName = nullptr;
+	const gchar* szValue = nullptr;
 	// Set margins for paged media to match those set in AbiWord
 	// TODO: consolidate all places of awml-css21 matching into one UT/PP function
 	const gchar * marginProps [10] = {"page-margin-top", "padding-top",
 		"page-margin-bottom", "padding-bottom",
 		"page-margin-left", "padding-left",
 		"page-margin-right", "padding-right",
-		NULL, NULL};
+		nullptr, nullptr};
 	for (unsigned short int propIdx = 0; propIdx < 8; propIdx += 2) {
 		szValue = PP_evalProperty(marginProps[propIdx], nullptr, nullptr, pAP,
 								 m_pDocument, true);

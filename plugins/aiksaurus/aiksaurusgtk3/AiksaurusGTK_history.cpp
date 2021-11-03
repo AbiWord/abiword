@@ -37,7 +37,7 @@
 
 AiksaurusGTK_history::AiksaurusGTK_history()
 {
-	d_forward_tip_ptr = d_back_tip_ptr = d_current_ptr = static_cast<char*>(NULL);
+	d_forward_tip_ptr = d_back_tip_ptr = d_current_ptr = nullptr;
 }
 
 
@@ -107,7 +107,7 @@ AiksaurusGTK_history::search(const char* str)
 	d_forward.clear();
 
 	// push current entry to top of back.
-	if (d_current_ptr != NULL)
+	if (d_current_ptr != nullptr)
 	{
 		d_back.push_front(d_current_ptr);
 		delete[] d_current_ptr;
@@ -168,7 +168,7 @@ void
 AiksaurusGTK_history::move_back_to(GList* element)
 {
     int back_steps = 0;
-    for(GList* itor = const_cast<GList*>(d_back.list()); itor != NULL; itor = itor->next)
+    for(GList* itor = const_cast<GList*>(d_back.list()); itor != nullptr; itor = itor->next)
     {
         ++back_steps;
 
@@ -193,7 +193,7 @@ void
 AiksaurusGTK_history::move_forward_to(GList* element)
 {
     int forward_steps = 0;
-    for(GList* itor = const_cast<GList*>(d_forward.list()); itor != NULL; itor = itor->next)
+    for(GList* itor = const_cast<GList*>(d_forward.list()); itor != nullptr; itor = itor->next)
     {
         ++forward_steps;
 

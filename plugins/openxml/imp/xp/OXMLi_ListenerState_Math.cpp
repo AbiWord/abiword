@@ -28,7 +28,7 @@
 #include "ie_math_convert.h"
 
 OXMLi_ListenerState_Math::OXMLi_ListenerState_Math():
-    OXMLi_ListenerState(), m_pMathBB(NULL), m_bInMath(false)
+    OXMLi_ListenerState(), m_pMathBB(nullptr), m_bInMath(false)
 {
 
 }
@@ -46,7 +46,7 @@ void OXMLi_ListenerState_Math::startElement (OXMLi_StartElementRequest * rqst)
         m_pMathBB->append(reinterpret_cast<const UT_Byte *>(((rqst->pName).substr(2)).c_str()),((rqst->pName).substr(2)).length());
 
         const gchar* val = attrMatches(NS_M_KEY, "val", rqst->ppAtts);
-        if(val != NULL)
+        if(val != nullptr)
         {
             m_pMathBB->append(reinterpret_cast<const UT_Byte *>(" m:val=\""), 8);
             m_pMathBB->append(reinterpret_cast<const UT_Byte *>(val), strlen(val));

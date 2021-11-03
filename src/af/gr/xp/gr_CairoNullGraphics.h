@@ -55,7 +55,7 @@ public:
 	virtual void drawChars(const UT_UCSChar* pChars,
 			       int iCharOffset, int iLength,
 			       UT_sint32 xoff, UT_sint32 yoff,
-			       int * pCharWidths = NULL) override;
+			       int * pCharWidths = nullptr) override;
 
 	virtual void setColor(const UT_RGBColor& clr) override;
 	virtual void getColor(UT_RGBColor& clr) override;
@@ -101,7 +101,7 @@ public:
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 	virtual void setPageCount(UT_uint32 /*iCount*/) {}
 
-	virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) override { return NULL;}
+	virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) override { return nullptr;}
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) override {}
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) override {}
 

@@ -183,73 +183,73 @@ UT_Error IE_Imp_MSWrite_Sniffer::constructImporter (PD_Document *pDocument,
 static const wri_struct WRI_FILE_HEADER[] =
 {
 	/* value, data, size, type, name */      /* word no. */
-	{0, NULL, 2, CT_VALUE, "wIdent"},        // 0
-	{0, NULL, 2, CT_VALUE, "dty"},           // 1
-	{0, NULL, 2, CT_VALUE, "wTool"},         // 2
-	{0, NULL, 2, CT_VALUE, "reserved1"},     // 3
-	{0, NULL, 2, CT_VALUE, "reserved2"},     // 4
-	{0, NULL, 2, CT_VALUE, "reserved3"},     // 5
-	{0, NULL, 2, CT_VALUE, "reserved4"},     // 6
-	{0, NULL, 4, CT_VALUE, "fcMac"},         // 7-8
-	{0, NULL, 2, CT_VALUE, "pnPara"},        // 9
-	{0, NULL, 2, CT_VALUE, "pnFntb"},        // 10
-	{0, NULL, 2, CT_VALUE, "pnSep"},         // 11
-	{0, NULL, 2, CT_VALUE, "pnSetb"},        // 12
-	{0, NULL, 2, CT_VALUE, "pnPgtb"},        // 13
-	{0, NULL, 2, CT_VALUE, "pnFfntb"},       // 14
-	{0, NULL, 64, CT_IGNORE, "szSsht"},      // 15-47
-	{0, NULL, 2, CT_VALUE, "pnMac"},         // 48
-	{0, NULL, 0, CT_IGNORE, NULL}            // EOF
+	{0, nullptr, 2, CT_VALUE, "wIdent"},        // 0
+	{0, nullptr, 2, CT_VALUE, "dty"},           // 1
+	{0, nullptr, 2, CT_VALUE, "wTool"},         // 2
+	{0, nullptr, 2, CT_VALUE, "reserved1"},     // 3
+	{0, nullptr, 2, CT_VALUE, "reserved2"},     // 4
+	{0, nullptr, 2, CT_VALUE, "reserved3"},     // 5
+	{0, nullptr, 2, CT_VALUE, "reserved4"},     // 6
+	{0, nullptr, 4, CT_VALUE, "fcMac"},         // 7-8
+	{0, nullptr, 2, CT_VALUE, "pnPara"},        // 9
+	{0, nullptr, 2, CT_VALUE, "pnFntb"},        // 10
+	{0, nullptr, 2, CT_VALUE, "pnSep"},         // 11
+	{0, nullptr, 2, CT_VALUE, "pnSetb"},        // 12
+	{0, nullptr, 2, CT_VALUE, "pnPgtb"},        // 13
+	{0, nullptr, 2, CT_VALUE, "pnFfntb"},       // 14
+	{0, nullptr, 64, CT_IGNORE, "szSsht"},      // 15-47
+	{0, nullptr, 2, CT_VALUE, "pnMac"},         // 48
+	{0, nullptr, 0, CT_IGNORE, nullptr}            // EOF
 };
 
 static const wri_struct WRI_PICTURE_HEADER[] =
 {
 	/* value, data, size, type, name */         /* word no. */
 	// METAFILEPICT structure
-	{0, NULL, 2, CT_VALUE, "mm"},               // 0
-	{0, NULL, 2, CT_VALUE, "xExt"},             // 1
-	{0, NULL, 2, CT_VALUE, "yExt"},             // 2
-	{0, NULL, 2, CT_IGNORE, "hMF"},             // 3
+	{0, nullptr, 2, CT_VALUE, "mm"},               // 0
+	{0, nullptr, 2, CT_VALUE, "xExt"},             // 1
+	{0, nullptr, 2, CT_VALUE, "yExt"},             // 2
+	{0, nullptr, 2, CT_IGNORE, "hMF"},             // 3
 	// end of METAFILEPICT structure
-	{0, NULL, 2, CT_VALUE, "dxaOffset"},        // 4
-	{0, NULL, 2, CT_VALUE, "dxaSize"},          // 5
-	{0, NULL, 2, CT_VALUE, "dyaSize"},          // 6
-	{0, NULL, 2, CT_VALUE, "cbOldSize"},        // 7
+	{0, nullptr, 2, CT_VALUE, "dxaOffset"},        // 4
+	{0, nullptr, 2, CT_VALUE, "dxaSize"},          // 5
+	{0, nullptr, 2, CT_VALUE, "dyaSize"},          // 6
+	{0, nullptr, 2, CT_VALUE, "cbOldSize"},        // 7
 	// BITMAP structure
-	{0, NULL, 2, CT_VALUE, "bmType"},           // 8
-	{0, NULL, 2, CT_VALUE, "bmWidth"},          // 9
-	{0, NULL, 2, CT_VALUE, "bmHeight"},         // 10
-	{0, NULL, 2, CT_VALUE, "bmWidthBytes"},     // 11
-	{0, NULL, 1, CT_VALUE, "bmPlanes"},         // 12
-	{0, NULL, 1, CT_VALUE, "bmBitsPixel"},      // 12.5
-	{0, NULL, 4, CT_VALUE, "bmBits"},           // 13-14
+	{0, nullptr, 2, CT_VALUE, "bmType"},           // 8
+	{0, nullptr, 2, CT_VALUE, "bmWidth"},          // 9
+	{0, nullptr, 2, CT_VALUE, "bmHeight"},         // 10
+	{0, nullptr, 2, CT_VALUE, "bmWidthBytes"},     // 11
+	{0, nullptr, 1, CT_VALUE, "bmPlanes"},         // 12
+	{0, nullptr, 1, CT_VALUE, "bmBitsPixel"},      // 12.5
+	{0, nullptr, 4, CT_VALUE, "bmBits"},           // 13-14
 	// end of BITMAP structure
-	{0, NULL, 2, CT_VALUE, "cbHeader"},         // 15
-	{0, NULL, 4, CT_VALUE, "cbSize"},           // 16-17
-	{0, NULL, 2, CT_VALUE, "mx"},               // 18
-	{0, NULL, 2, CT_VALUE, "my"},               // 19
-	{0, NULL, 0, CT_IGNORE, NULL}               // EOF
+	{0, nullptr, 2, CT_VALUE, "cbHeader"},         // 15
+	{0, nullptr, 4, CT_VALUE, "cbSize"},           // 16-17
+	{0, nullptr, 2, CT_VALUE, "mx"},               // 18
+	{0, nullptr, 2, CT_VALUE, "my"},               // 19
+	{0, nullptr, 0, CT_IGNORE, nullptr}               // EOF
 };
 
 static const wri_struct WRI_OLE_HEADER[] =
 {
 	/* value, data, size, type, name */       /* word no. */
-	{0, NULL, 2, CT_VALUE, "mm"},             // 0
-	{0, NULL, 4, CT_IGNORE, "not_used"},      // 1-2
-	{0, NULL, 2, CT_VALUE, "objectType"},     // 3
-	{0, NULL, 2, CT_VALUE, "dxaOffset"},      // 4
-	{0, NULL, 2, CT_VALUE, "dxaSize"},        // 5
-	{0, NULL, 2, CT_VALUE, "dyaSize"},        // 6
-	{0, NULL, 2, CT_IGNORE, "not_used2"},     // 7
-	{0, NULL, 4, CT_VALUE, "dwDataSize"},     // 8-9
-	{0, NULL, 4, CT_IGNORE, "not_used3"},     // 10-11
-	{0, NULL, 4, CT_VALUE, "dwObjNum"},       // 12-13
-	{0, NULL, 2, CT_VALUE, "not_used4"},      // 14
-	{0, NULL, 2, CT_VALUE, "cbHeader"},       // 15
-	{0, NULL, 4, CT_IGNORE, "not_used5"},     // 16-17
-	{0, NULL, 2, CT_VALUE, "mx"},             // 18
-	{0, NULL, 2, CT_VALUE, "my"},             // 19
-	{0, NULL, 0, CT_IGNORE, NULL}             // EOF
+	{0, nullptr, 2, CT_VALUE, "mm"},             // 0
+	{0, nullptr, 4, CT_IGNORE, "not_used"},      // 1-2
+	{0, nullptr, 2, CT_VALUE, "objectType"},     // 3
+	{0, nullptr, 2, CT_VALUE, "dxaOffset"},      // 4
+	{0, nullptr, 2, CT_VALUE, "dxaSize"},        // 5
+	{0, nullptr, 2, CT_VALUE, "dyaSize"},        // 6
+	{0, nullptr, 2, CT_IGNORE, "not_used2"},     // 7
+	{0, nullptr, 4, CT_VALUE, "dwDataSize"},     // 8-9
+	{0, nullptr, 4, CT_IGNORE, "not_used3"},     // 10-11
+	{0, nullptr, 4, CT_VALUE, "dwObjNum"},       // 12-13
+	{0, nullptr, 2, CT_VALUE, "not_used4"},      // 14
+	{0, nullptr, 2, CT_VALUE, "cbHeader"},       // 15
+	{0, nullptr, 4, CT_IGNORE, "not_used5"},     // 16-17
+	{0, nullptr, 2, CT_VALUE, "mx"},             // 18
+	{0, nullptr, 2, CT_VALUE, "my"},             // 19
+	{0, nullptr, 0, CT_IGNORE, nullptr}             // EOF
 };
 
 #define PIC_OR_OLE_HEADER_SIZE 40   // common size of both header types
@@ -560,11 +560,11 @@ void IE_Imp_MSWrite::free_ffntb ()
 	for (int i = 0; i < wri_fonts_count; i++)
 	{
 		free((void *) wri_fonts[i].name);
-		wri_fonts[i].name = NULL;
+		wri_fonts[i].name = nullptr;
 	}
 
 	free(wri_fonts);
-	wri_fonts = NULL;
+	wri_fonts = nullptr;
 }
 
 /**********************************************************************
@@ -1060,7 +1060,7 @@ const ffn_suff_cp_tbl[] =
 	{"\x09 (Hebrew)", "CP1255"},
 	{"\x09 (Arabic)", "CP1256"},
 	{"\x07 Baltic", "CP1257"},
-	{NULL, NULL}
+	{nullptr, nullptr}
 };
 
 const char *IE_Imp_MSWrite::get_codepage (const char *facename, int *facelen) const
@@ -1426,10 +1426,10 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 	int mm, cbHeader, cbSize, bmBitsPixel, objectType;
 	int colorPaletteLen = 0, bmW = 0, bmH = 0;
 	int chunk, filler, written, ole_offset, formatID, objLen, bhSize, bppOff;
-	wri_struct *write_pic = NULL;
+	wri_struct *write_pic = nullptr;
 	UT_ByteBufPtr pic(new UT_ByteBuf);
 	IEGraphicFileType iegft = IEGFT_Unknown;
-	const char *msg = NULL, *className = "";
+	const char *msg = nullptr, *className = "";
 
 	if (size < PIC_OR_OLE_HEADER_SIZE + OLE_ClassNameString)
 	{
@@ -1716,7 +1716,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 			};
 			appendObject(PTO_Image, attributes);
 
-			getDoc()->createDataItem(id.c_str(), false, graphic->getBuffer(), graphic->getMimeType(), NULL);
+			getDoc()->createDataItem(id.c_str(), false, graphic->getBuffer(), graphic->getMimeType(), nullptr);
 		}
 	}
 

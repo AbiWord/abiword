@@ -164,7 +164,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   }
 
   // the bookmark list
-  m_swindow  = gtk_scrolled_window_new(NULL, NULL);
+  m_swindow  = gtk_scrolled_window_new(nullptr, nullptr);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (m_swindow),GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_widget_show(m_swindow);
   gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, TRUE, TRUE, 0);
@@ -181,7 +181,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   GtkCellRenderer *renderer = GTK_CELL_RENDERER(gtk_cell_renderer_text_new());
   GtkTreeViewColumn *col;
   col = gtk_tree_view_column_new_with_attributes("",
-												 renderer, "text", 0, NULL);
+												 renderer, "text", 0, nullptr);
   gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col);
   //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
 
@@ -229,7 +229,7 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
   pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Title,s);
   m_windowMain = abiDialogNew("insert table dialog", TRUE, s.c_str());
 
-  frame1 = gtk_frame_new (NULL);
+  frame1 = gtk_frame_new (nullptr);
   gtk_widget_show (frame1);
   gtk_box_pack_start(GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(m_windowMain))), frame1,true,true,0);
   XAP_gtk_widget_set_margin(frame1, 4);

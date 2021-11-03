@@ -55,10 +55,10 @@ AP_Win32Dialog_Background::~AP_Win32Dialog_Background(void)
 
 UINT CALLBACK AP_Win32Dialog_Background::s_hookProc(HWND hdlg,UINT uiMsg,WPARAM /*wParam*/,LPARAM lParam)
 {
-	AP_Win32Dialog_Background * pThis = NULL;
+	AP_Win32Dialog_Background * pThis = nullptr;
 	if (uiMsg==WM_INITDIALOG)
 	{
-		CHOOSECOLORW * pCC = NULL;
+		CHOOSECOLORW * pCC = nullptr;
 		pCC = (CHOOSECOLORW *) lParam;
 		pThis = (AP_Win32Dialog_Background *)pCC->lCustData;
 		SetWindowLongPtrW(hdlg, DWLP_USER, (LONG_PTR) pThis);

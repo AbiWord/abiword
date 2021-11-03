@@ -77,11 +77,11 @@ ABI_EXPORT const char * UT_incrementDimString(const char * dimString, double inc
 ABI_EXPORT const char * UT_multiplyDimString(const char * dimString, double mult);
 ABI_EXPORT UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_IN);
 ABI_EXPORT const char * UT_dimensionName(UT_Dimension dim);
-ABI_EXPORT const char * UT_convertInchesToDimensionString(UT_Dimension, double valueInInches, const char * szPrecision = NULL);
-ABI_EXPORT const char * UT_formatDimensionString(UT_Dimension, double value, const char * szPrecision = NULL);
-ABI_EXPORT const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const char * szPrecision = NULL);
-ABI_EXPORT const char * UT_convertToDimensionlessString(double value, const char * szPrecision = NULL);
-ABI_EXPORT const char * UT_formatDimensionedValue(double value, const char * szUnits, const char * szPrecision = NULL);
+ABI_EXPORT const char * UT_convertInchesToDimensionString(UT_Dimension, double valueInInches, const char * szPrecision = nullptr);
+ABI_EXPORT const char * UT_formatDimensionString(UT_Dimension, double value, const char * szPrecision = nullptr);
+ABI_EXPORT const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const char * szPrecision = nullptr);
+ABI_EXPORT const char * UT_convertToDimensionlessString(double value, const char * szPrecision = nullptr);
+ABI_EXPORT const char * UT_formatDimensionedValue(double value, const char * szUnits, const char * szPrecision = nullptr);
 
 ABI_EXPORT bool UT_hasDimensionComponent(const char * sz);
 ABI_EXPORT bool UT_isValidDimensionString(const char * sz, size_t max_length = 0);

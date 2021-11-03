@@ -50,7 +50,7 @@ void ODi_ListenerStateAction::pushState(const char* pStateName) {
     m_action = this->ACTION_PUSH;
     m_deleteWhenPop = true;
     m_stateName = pStateName;
-    m_pState = NULL;
+    m_pState = nullptr;
 }
 
 
@@ -62,7 +62,7 @@ void ODi_ListenerStateAction::popState()
 {
     m_action=this->ACTION_POP;
     m_stateName.clear();
-    m_pState = NULL;
+    m_pState = nullptr;
 }
 
 
@@ -90,7 +90,7 @@ void ODi_ListenerStateAction::postponeElementParsing(ODi_ListenerState* pState,
 void ODi_ListenerStateAction::postponeElementParsing(const gchar* pStateName) {
     m_action=this->ACTION_POSTPONE;
     m_deleteWhenPop = true;
-    m_pState = NULL;
+    m_pState = nullptr;
     m_stateName = pStateName;
 }
 
@@ -101,7 +101,7 @@ void ODi_ListenerStateAction::postponeElementParsing(const gchar* pStateName) {
 void ODi_ListenerStateAction::bringUpPostponedElements(bool comeBackAfter) {
     m_action=this->ACTION_BRINGUPALL;
     m_comeBackAfter = comeBackAfter;
-    m_pState = NULL;
+    m_pState = nullptr;
     m_stateName.clear();
 }
 
@@ -112,7 +112,7 @@ void ODi_ListenerStateAction::bringUpPostponedElements(bool comeBackAfter) {
 void ODi_ListenerStateAction::reset()
 {
     m_action=this->ACTION_NONE;
-    m_pState=NULL;
+    m_pState=nullptr;
     m_stateName.clear();
     m_elementLevel=-999;
 }
@@ -127,7 +127,7 @@ void ODi_ListenerStateAction::bringUpMostRecentlyPostponedElement(
                                          bool comeBackAfter) {
     m_action=this->ACTION_BRINGUP;
     m_comeBackAfter = comeBackAfter;
-    m_pState = NULL;
+    m_pState = nullptr;
     m_stateName = pStateName;
 }
 
@@ -140,7 +140,7 @@ void ODi_ListenerStateAction::bringUpMostRecentlyPostponedElement(
  */
 void ODi_ListenerStateAction::repeatElement() {
     m_action=this->ACTION_REPEAT;
-    m_pState = NULL;
+    m_pState = nullptr;
     m_stateName.clear();
 }
 
@@ -159,6 +159,6 @@ void ODi_ListenerStateAction::repeatElement() {
 void ODi_ListenerStateAction::ignoreElement(UT_sint32 elementLevel) {
     m_action=this->ACTION_IGNORE;
     m_elementLevel = elementLevel;
-    m_pState = NULL;
+    m_pState = nullptr;
     m_stateName.clear();
 }

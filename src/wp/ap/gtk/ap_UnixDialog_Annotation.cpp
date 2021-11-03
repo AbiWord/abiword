@@ -103,7 +103,7 @@ void AP_UnixDialog_Annotation::eventOK ()
 	setAnswer ( AP_Dialog_Annotation::a_OK ) ;
 	
 	// TODO: gather data
-	const char * txt = NULL ;
+	const char * txt = nullptr ;
 	
 	GRAB_ENTRY_TEXT(Title);
 	GRAB_ENTRY_TEXT(Author);
@@ -128,7 +128,7 @@ void AP_UnixDialog_Annotation::eventApply ()
 	setAnswer ( AP_Dialog_Annotation::a_APPLY ) ;
 	
 	// TODO: gather data
-	const char * txt = NULL ;
+	const char * txt = nullptr ;
 	
 	GRAB_ENTRY_TEXT(Title);
 	GRAB_ENTRY_TEXT(Author);

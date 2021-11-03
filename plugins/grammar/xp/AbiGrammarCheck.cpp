@@ -50,7 +50,7 @@
 #include "fl_Squiggles.h"
 
 Abi_GrammarCheck::Abi_GrammarCheck(void) :
-  m_GrammarWrap(NULL)
+  m_GrammarWrap(nullptr)
 {
 }
 
@@ -68,11 +68,11 @@ Abi_GrammarCheck::~Abi_GrammarCheck(void)
 
 bool Abi_GrammarCheck::CheckBlock(fl_BlockLayout * pB)
 {
-  if(m_GrammarWrap == NULL)
+  if(m_GrammarWrap == nullptr)
   {
     m_GrammarWrap = new LinkGrammarWrap();
   }
-  if(pB == NULL)
+  if(pB == nullptr)
   {
     return false;
   }
@@ -161,9 +161,9 @@ bool Abi_GrammarCheck::GetEnglishText(fl_BlockLayout * pB)
   UT_GrowBufElement space = static_cast<UT_GrowBufElement>(' ');
   bool bSomeText = false;
   UT_UTF8String sEng("en");
-  const gchar * szLang =  NULL;
+  const gchar * szLang =  nullptr;
   UT_UTF8String sLang("");
-  fp_TextRun * pTRun = NULL;
+  fp_TextRun * pTRun = nullptr;
   while(pRun)
   {
     
@@ -171,13 +171,13 @@ bool Abi_GrammarCheck::GetEnglishText(fl_BlockLayout * pB)
     {
       pTRun = static_cast<fp_TextRun *>(pRun);
       //
-      // For some strange compiler reason, this line szLang= NULL is required
+      // For some strange compiler reason, this line szLang= nullptr is required
       // otherwise szLang is undefined on the line afterwards!!!!
       //
-      szLang = NULL;
+      szLang = nullptr;
       szLang =  pTRun->getLanguage();
       //      printf("Block %x pTRun %x Language %x \n",pB,pTRun,szLang);
-      if(szLang != NULL && *szLang != '\0')
+      if(szLang != nullptr && *szLang != '\0')
       {
 	  sLang = szLang;
       }

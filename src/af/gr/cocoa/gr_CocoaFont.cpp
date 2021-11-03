@@ -94,7 +94,7 @@ const char* GR_CocoaFont::getFamily() const
 void GR_CocoaFont::_resetMetricsCache()
 {
     DELETEP(_m_coverage);
-    _m_coverage = NULL;
+    _m_coverage = nullptr;
     memset(_m_text, 0, sizeof(_m_text));
 }
 

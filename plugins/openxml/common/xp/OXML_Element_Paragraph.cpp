@@ -29,7 +29,7 @@
 #include "pd_Document.h"
 
 OXML_Element_Paragraph::OXML_Element_Paragraph(const std::string & id) : 
-	OXML_Element(id, P_TAG, BLOCK), pageBreak(false), m_section(NULL)
+	OXML_Element(id, P_TAG, BLOCK), pageBreak(false), m_section(nullptr)
 {
 }
 
@@ -87,7 +87,7 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 {
 	//TODO: Add all the property serializations here
 	UT_Error err = UT_OK;
-	const gchar* szValue = NULL;
+	const gchar* szValue = nullptr;
 
 	err = exporter->startParagraphProperties(TARGET);
 	if(err != UT_OK)
@@ -225,7 +225,7 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
 
-	if (pDocument == NULL)
+	if (pDocument == nullptr)
 		return UT_ERROR;
 
 	//update list id and parent id here
@@ -322,7 +322,7 @@ const gchar* OXML_Element_Paragraph::getListLevel()
 	err = getAttribute("level", szValue);
 	if(err != UT_OK)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return szValue;
 }
@@ -335,7 +335,7 @@ const gchar* OXML_Element_Paragraph::getListId()
 	err = getAttribute("listid", szValue);
 	if(err != UT_OK)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return szValue;
 }

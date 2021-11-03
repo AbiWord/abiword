@@ -1632,7 +1632,7 @@ UT_uint32 GR_CocoaGraphics::getDeviceResolution(void) const
 void GR_CocoaGraphics::_resetContext()
 {
     if (m_CGContext == nullptr) {
-        GR_CGContextIsNull(@"Attempted to reset NULL context");
+        GR_CGContextIsNull(@"Attempted to reset nullptr context");
     }
     ::CGContextScaleCTM(m_CGContext, 1.0, -1.0);
     ::CGContextTranslateCTM(m_CGContext, 0, -m_view.bounds.size.height);

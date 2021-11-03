@@ -47,7 +47,7 @@ UT_Error OXML_Element_Image::serialize(IE_Exp_OpenXML* exporter)
 	const gchar* width = "1.0in";
 	const gchar* xpos = "0.0in";
 	const gchar* ypos = "0.0in";
-	const gchar* wrapMode = NULL;
+	const gchar* wrapMode = nullptr;
 	bool bPositionedImage = false;
 
 	bPositionedImage = (getAttribute("strux-image-dataid", szValue) == UT_OK);
@@ -114,7 +114,7 @@ UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 
 	UT_Error ret = UT_OK;
 	bool bInline = false;
-	const gchar* szValue = NULL;
+	const gchar* szValue = nullptr;
 
 	ret = getProperty("height", szValue);
 	if(ret == UT_OK && szValue)

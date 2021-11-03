@@ -17,9 +17,7 @@
  * 02110-1301 USA.
  */
 
-
-#ifndef PF_FRAGMENTS_H
-#define PF_FRAGMENTS_H
+#pragma once
 
 /*!
  pf_Fragments is a container for all of the pf_Frag
@@ -86,7 +84,7 @@ public:
 	class Iterator
 	{
 	public:
-		Iterator() : m_pOwner(NULL), m_pNode(NULL) {}
+		Iterator() : m_pOwner(nullptr), m_pNode(nullptr) {}
 
 		Iterator& operator++()
 		{
@@ -190,5 +188,3 @@ private:
 	friend class Iterator;
 
 };
-
-#endif /* PF_FRAGMENTS_H */

@@ -90,16 +90,16 @@ GtkWidget* AP_UnixRuler::_createWidget(gint w, gint h)
                              static_cast<XAP_UnixCustomWidget *>(this));
 
     g_signal_connect(G_OBJECT(m_wRuler), "button_press_event",
-                     G_CALLBACK(_fe::button_press_event), NULL);
+                     G_CALLBACK(_fe::button_press_event), nullptr);
 
     g_signal_connect(G_OBJECT(m_wRuler), "button_release_event",
-                     G_CALLBACK(_fe::button_release_event), NULL);
+                     G_CALLBACK(_fe::button_release_event), nullptr);
 
     g_signal_connect(G_OBJECT(m_wRuler), "motion_notify_event",
-                     G_CALLBACK(_fe::motion_notify_event), NULL);
+                     G_CALLBACK(_fe::motion_notify_event), nullptr);
 
     g_signal_connect(G_OBJECT(m_wRuler), "configure_event",
-                     G_CALLBACK(_fe::configure_event), NULL);
+                     G_CALLBACK(_fe::configure_event), nullptr);
 
     return m_wRuler;
 }
@@ -264,12 +264,12 @@ gint AP_UnixRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 
     XAP_App* pApp = XAP_App::getApp();
     XAP_Frame* pFrame = pApp->getLastFocussedFrame();
-    if (pFrame == NULL) {
+    if (pFrame == nullptr) {
         return 1;
     }
 
     AV_View * pView = pFrame->getCurrentView();
-    if(pView == NULL || pView->getPoint() == 0 || !ruler->getGraphics()) {
+    if(pView == nullptr || pView->getPoint() == 0 || !ruler->getGraphics()) {
         return 1;
     }
 

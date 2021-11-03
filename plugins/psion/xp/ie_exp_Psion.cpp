@@ -81,7 +81,7 @@ struct _bb
 /*!
  * Convert a AbiWord UTF8 string to a Psiconv UCS2 string.
  *
- * Returns NULL on error.
+ * Returns nullptr on error.
  */
 static psiconv_ucs2 *utf8_to_ucs2(const gchar *input)
 {
@@ -92,14 +92,14 @@ static psiconv_ucs2 *utf8_to_ucs2(const gchar *input)
     psiconv_ucs2 *result;
 
     if (!input)
-        return NULL;
+        return nullptr;
     read=written=0;
     intermediate = UT_convert((char *)input,strlen(input) * sizeof(*input),
                       "UTF-8","UCS-2",&read,&written);
     if (!(result = (psiconv_ucs2 *) malloc(sizeof(*result) * 
 					                       (written / 2 + 1)))) {
 		free(intermediate);
-		return NULL;
+		return nullptr;
 	}
 	for (i = 0; i < written/2; i++) 
 		result[i] = intermediate[i*2] + (intermediate[i*2+1] << 8);
@@ -572,7 +572,7 @@ UT_Error IE_Exp_Psion::_writeDocument(void)
 	if (!config)
 		return UT_IE_NOMEMORY;
 	config->error_handler = &psion_error_handler;
-	psiconv_config_read(NULL,&config);
+	psiconv_config_read(nullptr,&config);
 	
 	// Write the file to a buffer (psiondump), and free all allocated data
 	iRes = psiconv_write(config,&psiondump,psionfile);
@@ -617,18 +617,18 @@ UT_Error IE_Exp_Psion::_writeDocument(void)
  * The listener uses several psiconv_file fragments while building
  * paragraphs (and perhaps other things). We can't allocate them
  * here, because we can't fail in a constructor.
- * At all places, we use NULL to indicate an unallocated structure.
+ * At all places, we use nullptr to indicate an unallocated structure.
  */
 PL_Psion_Listener::PL_Psion_Listener(PD_Document * pDocument):
-  m_pDocument(pDocument), 
-  m_paragraphs(NULL),m_styles(NULL),
-  m_header(NULL),m_footer(NULL),
+  m_pDocument(pDocument),
+  m_paragraphs(nullptr),m_styles(nullptr),
+  m_header(nullptr),m_footer(nullptr),
   m_inParagraph(false),
   m_sectionType(section_none),
-  m_currentParagraphText(NULL),
-  m_currentParagraphPLayout(NULL),
-  m_currentParagraphCLayout(NULL), 
-  m_currentParagraphInLines(NULL),
+  m_currentParagraphText(nullptr),
+  m_currentParagraphPLayout(nullptr),
+  m_currentParagraphCLayout(nullptr),
+  m_currentParagraphInLines(nullptr),
   m_currentParagraphStyle(0)
 {
 }
@@ -637,7 +637,7 @@ PL_Psion_Listener::PL_Psion_Listener(PD_Document * pDocument):
  * Destructor
  *
  * Deallocate those psiconv_file fragments that are currently allocated.
- * NULL is used to indicate an unallocated structure.
+ * nullptr is used to indicate an unallocated structure.
  */
 PL_Psion_Listener::~PL_Psion_Listener(void)
 {
@@ -663,7 +663,7 @@ PL_Psion_Listener::~PL_Psion_Listener(void)
  * Call this right after the constructor.
  * We can't call it from the constructor, because our constructor may not fail.
  * We initialize all kinds of private variables. Some juggling is done with
- * NULL values to make sure everything can be safely deallocated at any time
+ * nullptr values to make sure everything can be safely deallocated at any time
  * by our destructor.
  * We also parse all styles here. This is needed further on, and listeners
  * do not traverse styles.
@@ -684,16 +684,16 @@ bool PL_Psion_Listener::startDocument(void)
 	if (!(m_header =  (psiconv_page_header) malloc(sizeof(*m_header))))
 		return false;
 	m_header->on_first_page = psiconv_bool_true;
-	m_header->base_paragraph_layout = NULL;
-	m_header->base_character_layout = NULL;
-	m_header->text = NULL;
+	m_header->base_paragraph_layout = nullptr;
+	m_header->base_character_layout = nullptr;
+	m_header->text = nullptr;
 	if (!(m_header->base_paragraph_layout = psiconv_basic_paragraph_layout()))
 		return false;
 	if (!(m_header->base_character_layout = psiconv_basic_character_layout()))
 		return false;
 	if (!(m_header->text = (psiconv_texted_section) malloc(sizeof(*m_header->text))))
 		return false;
-	m_header->text->paragraphs = NULL;
+	m_header->text->paragraphs = nullptr;
 	if (!(m_header->text->paragraphs = psiconv_list_new(sizeof(struct psiconv_paragraph_s))))
 		return false;
 	
@@ -701,16 +701,16 @@ bool PL_Psion_Listener::startDocument(void)
 	if (!(m_footer = (psiconv_page_header) malloc(sizeof(*m_footer))))
 		return false;
 	m_footer->on_first_page = psiconv_bool_true;
-	m_footer->base_paragraph_layout = NULL;
-	m_footer->base_character_layout = NULL;
-	m_footer->text = NULL;
+	m_footer->base_paragraph_layout = nullptr;
+	m_footer->base_character_layout = nullptr;
+	m_footer->text = nullptr;
 	if (!(m_footer->base_paragraph_layout = psiconv_basic_paragraph_layout()))
 		return false;
 	if (!(m_footer->base_character_layout = psiconv_basic_character_layout()))
 		return false;
 	if (!(m_footer->text = (psiconv_texted_section) malloc(sizeof(*m_footer->text))))
 		return false;
-	m_footer->text->paragraphs = NULL;
+	m_footer->text->paragraphs = nullptr;
 	if (!(m_footer->text->paragraphs = psiconv_list_new(sizeof(struct psiconv_paragraph_s))))
 		return false;
 
@@ -740,9 +740,9 @@ bool PL_Psion_Listener::populate(fl_ContainerLayout*,
                                 const PX_ChangeRecord * pcr)
 {
 	PT_BufIndex bi;
-	const PX_ChangeRecord_Span * pcrs = NULL;
-	const PX_ChangeRecord_Object * pcro = NULL;
-	const fd_Field *field = NULL;
+	const PX_ChangeRecord_Span * pcrs = nullptr;
+	const PX_ChangeRecord_Object * pcro = nullptr;
+	const fd_Field *field = nullptr;
 	UT_uint32 textlen;
 	
 	const PT_AttrPropIndex api = pcr->getIndexAP();
@@ -810,7 +810,7 @@ bool PL_Psion_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 	const PX_ChangeRecord_Strux * pcrx = 
 	                        static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	PT_AttrPropIndex api;
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	const gchar *sectiontype;
 
 	switch (pcrx->getStruxType()) {
@@ -939,9 +939,9 @@ bool PL_Psion_Listener::_writeText(const UT_UCSChar *p, UT_uint32 inLength,
  */
 bool PL_Psion_Listener::_openParagraph(const PT_AttrPropIndex api)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	const gchar *stylename;
-	psiconv_string_t stylename_ucs2 = NULL;
+	psiconv_string_t stylename_ucs2 = nullptr;
 	psiconv_word_style style;
 	int stylenr;
 
@@ -977,7 +977,7 @@ bool PL_Psion_Listener::_openParagraph(const PT_AttrPropIndex api)
 	}
 	if (stylename_ucs2) {
 		free(stylename_ucs2);
-		stylename_ucs2 = NULL;
+		stylename_ucs2 = nullptr;
 	}
 		
 	// New paragraph, new text.
@@ -1000,13 +1000,13 @@ bool PL_Psion_Listener::_openParagraph(const PT_AttrPropIndex api)
 
 ERROR4:
 	psiconv_list_free(m_currentParagraphInLines);
-	m_currentParagraphInLines = NULL;
+	m_currentParagraphInLines = nullptr;
 ERROR3:
 	psiconv_free_character_layout(m_currentParagraphCLayout);
-	m_currentParagraphCLayout = NULL;
+	m_currentParagraphCLayout = nullptr;
 ERROR2:
 	psiconv_free_paragraph_layout(m_currentParagraphPLayout);
-	m_currentParagraphPLayout = NULL;
+	m_currentParagraphPLayout = nullptr;
 ERROR1:
 	if (stylename_ucs2) 
 		free(stylename_ucs2);
@@ -1036,11 +1036,11 @@ bool PL_Psion_Listener::_closeParagraph(void)
 			UT_DEBUGMSG(("PSION: Closing paragraph while not in a section\n"));
 			psiconv_list_empty(m_currentParagraphText);
 			psiconv_free_character_layout(m_currentParagraphCLayout);
-			m_currentParagraphCLayout = NULL;
+			m_currentParagraphCLayout = nullptr;
 			psiconv_free_paragraph_layout(m_currentParagraphPLayout);
-			m_currentParagraphPLayout = NULL;
+			m_currentParagraphPLayout = nullptr;
 			psiconv_list_free(m_currentParagraphInLines);
-			m_currentParagraphInLines = NULL;
+			m_currentParagraphInLines = nullptr;
 			m_inParagraph = false;
 			return true;
 		}
@@ -1053,12 +1053,12 @@ bool PL_Psion_Listener::_closeParagraph(void)
 		
 		// Get the base paragraph and character layout, its style and inlines.
 		para.base_character = m_currentParagraphCLayout;
-		m_currentParagraphCLayout = NULL;
+		m_currentParagraphCLayout = nullptr;
 		para.base_paragraph = m_currentParagraphPLayout;
-		m_currentParagraphPLayout = NULL;
+		m_currentParagraphPLayout = nullptr;
 		para.base_style = m_currentParagraphStyle;
 		para.in_lines = m_currentParagraphInLines;
-		m_currentParagraphInLines = NULL;
+		m_currentParagraphInLines = nullptr;
 		
 		// We don't do replacements, because I do not really understand
 		// the Psion-side of it yet.
@@ -1105,7 +1105,7 @@ ERROR1:
  */
 bool PL_Psion_Listener::_addInLine(const PT_AttrPropIndex api,UT_uint32 textlen)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	psiconv_in_line_layout curInLine;
 
 	UT_DEBUGMSG(("PSION: set inline formatting (%d)\n",textlen));
@@ -1120,7 +1120,7 @@ bool PL_Psion_Listener::_addInLine(const PT_AttrPropIndex api,UT_uint32 textlen)
 		goto ERROR1;
 
 	// Fill CurInLine with sane defaults
-	curInLine->object = NULL;
+	curInLine->object = nullptr;
 	curInLine->length = textlen;
 	if (!(curInLine->layout =
 	                psiconv_clone_character_layout(m_currentParagraphCLayout)))
@@ -1167,8 +1167,8 @@ bool PL_Psion_Listener::_setStyleLayout(PD_Style *style,
                                         psiconv_character_layout char_layout)
 {
 	PT_AttrPropIndex api;
-	const PP_AttrProp * pAP = NULL;
-	PD_Style *parent_style = NULL;
+	const PP_AttrProp * pAP = nullptr;
+	PD_Style *parent_style = nullptr;
 
 	// If we are based on another style, we need to get its layout first,
 	// so that we can overrule it.
@@ -1195,7 +1195,7 @@ bool PL_Psion_Listener::_processStyles(void)
 {
 	UT_GenericVector<PD_Style *> vecStyles;
 	UT_sint32 i = 0;
-	PD_Style * pStyle=NULL;
+	PD_Style * pStyle=nullptr;
 	psiconv_word_style style;
 
 	// Allocate a temporary psiconv_word_style structure.	
@@ -1208,7 +1208,7 @@ bool PL_Psion_Listener::_processStyles(void)
 	if (!(m_styles->styles = psiconv_list_new(sizeof(*style))))
 		goto ERROR1;
 	
-	m_styles->normal = NULL;
+	m_styles->normal = nullptr;
 	
 	// Examine all used styles one by one (so we do not export unused styles.
 	// You could discuss whether this is a good idea. I think so. I do not
@@ -1290,7 +1290,7 @@ ERROR1:
  */
 bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	const gchar *szValue;
 	_bb image_data;
     std::string mimeType;
@@ -1315,7 +1315,7 @@ bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 	
 	// Retrieve the image
 	if (!m_pDocument->getDataItemDataByName(szValue, image_data.pBB,
-                                                &mimeType, NULL))
+                                                &mimeType, nullptr))
 		goto ERROR2;
 	image_data.iCurPos = 0;
 	
@@ -1327,14 +1327,14 @@ bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 		
 	// Prepare the PNG structure for reading
 	png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, 
-	                                               NULL, NULL, NULL);
+	                                               nullptr, nullptr, nullptr);
     if (!png_ptr)
        goto ERROR2;
 	
 	// Prepare the PNG structure for info
 	info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-	    png_destroy_read_struct(&png_ptr,NULL,NULL);
+	    png_destroy_read_struct(&png_ptr,nullptr,nullptr);
 		goto ERROR2;
 	}
 	
@@ -1351,7 +1351,7 @@ bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 	png_read_png(png_ptr,info_ptr,PNG_TRANSFORM_STRIP_16 | 
 	                              PNG_TRANSFORM_STRIP_ALPHA |
 	                              PNG_TRANSFORM_PACKING |
-	                              PNG_TRANSFORM_EXPAND,NULL);
+	                              PNG_TRANSFORM_EXPAND,nullptr);
 	png_data_rows = png_get_rows(png_ptr,info_ptr);
 	width = png_get_image_width(png_ptr,info_ptr);
 	height = png_get_image_height(png_ptr,info_ptr);
@@ -1434,7 +1434,7 @@ bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 	// Objects are represented by an object marker in the text.
 	if (psiconv_list_add(m_currentParagraphText,&object_marker))
 		goto ERROR3;
-	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 	return true;
 	
 ERROR15:
@@ -1462,7 +1462,7 @@ ERROR5:
 ERROR4:
 	free(paint_data);
 ERROR3:
-	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 ERROR2:
 	UT_DEBUGMSG(("PSION: Parsing of image object failed\n"));
 	return false;
@@ -1483,26 +1483,26 @@ psiconv_file PL_Psion_Word_Listener::createPsionFile(void)
 
 	// We base our file on an empty file.
 	if (!(psionfile = psiconv_empty_file(psiconv_word_file))) 
-		return NULL;
+		return nullptr;
 	wordfile = (psiconv_word_f)(psionfile->file);
 	
 	// Free the old paragraphs structure and put ours into it. 
 	psiconv_free_text_and_layout(wordfile->paragraphs);
 	wordfile->paragraphs = m_paragraphs;
-	m_paragraphs = NULL;
+	m_paragraphs = nullptr;
 	
 	// Free the old styles list and put ours into it
 	psiconv_free_word_styles_section(wordfile->styles_sec);
 	wordfile->styles_sec = m_styles;
-	m_styles = NULL;
+	m_styles = nullptr;
 	
 	// Free the old header and footer and put ours into it
 	psiconv_free_page_header(wordfile->page_sec->header);
 	wordfile->page_sec->header = m_header;
-	m_header = NULL;
+	m_header = nullptr;
 	psiconv_free_page_header(wordfile->page_sec->footer);
 	wordfile->page_sec->footer = m_footer;
-	m_footer = NULL;
+	m_footer = nullptr;
 	
 	// That's it!
 	return psionfile;
@@ -1524,13 +1524,13 @@ psiconv_file PL_Psion_TextEd_Listener::createPsionFile(void)
 
 	// We base our file on an empty file.
 	if (!(psionfile = psiconv_empty_file(psiconv_texted_file)))  
-		return NULL;
+		return nullptr;
 	textedfile = (psiconv_texted_f)(psionfile->file);
 	
 	// Free the old paragraphs structure and put ours into it.
 	psiconv_free_text_and_layout(textedfile->texted_sec->paragraphs);
 	textedfile->texted_sec->paragraphs = m_paragraphs;
-	m_paragraphs = NULL;
+	m_paragraphs = nullptr;
 
 	// Free the old header and footer and put ours into it
 	psiconv_free_page_header(textedfile->page_sec->header);

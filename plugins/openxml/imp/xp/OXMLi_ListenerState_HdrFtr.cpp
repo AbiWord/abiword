@@ -69,7 +69,7 @@ void OXMLi_ListenerState_HdrFtr::endElement (OXMLi_EndElementRequest * rqst)
 		}
 
 		OXML_Document * doc = OXML_Document::getInstance();
-		UT_return_if_fail( this->_error_if_fail(doc != NULL) );
+		UT_return_if_fail( this->_error_if_fail(doc != nullptr) );
 
 		if (nameMatches(rqst->pName, NS_W_KEY, "hdr"))
 			doc->addHeader(s);

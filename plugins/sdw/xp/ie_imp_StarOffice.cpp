@@ -420,7 +420,7 @@ static std::string _getPassword (XAP_Frame * pFrame)
 void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength)
 {
 	UT_uint16 length;
-	str = NULL;
+	str = nullptr;
 	streamRead(stream, length);
 	str = new char[length + 1];
 	if (length)
@@ -434,13 +434,13 @@ void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, S
 {
 	UT_uint16 len;
 	char* rawString;
-	str = NULL;
+	str = nullptr;
 	readByteString(stream, rawString, &len);
 	// decrypt
 	if (cryptor)
 		cryptor->Decrypt(rawString, rawString, len);
 
-	str = reinterpret_cast<UT_UCS4Char*>(UT_convert_cd(rawString, len + 1, converter, NULL, NULL));
+	str = reinterpret_cast<UT_UCS4Char*>(UT_convert_cd(rawString, len + 1, converter, nullptr, nullptr));
 #ifdef DEBUG
 	if (!str) {
 		UT_DEBUGMSG(("SDW: UT_convert_cd returned %d (%s)\n", errno, strerror(errno)));
@@ -493,11 +493,11 @@ UT_Confidence_t IE_Imp_StarOffice_Sniffer::recognizeContents(GsfInput * input) {
 	GsfInfile * ole;
 	UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
 
-	ole = gsf_infile_msole_new (input, NULL);
+	ole = gsf_infile_msole_new (input, nullptr);
 	if (ole)
 		{
 			GsfInput * starWriterDocument = gsf_infile_child_by_name (ole, "StarWriterDocument");
-			if (starWriterDocument != NULL)
+			if (starWriterDocument != nullptr)
 				{
 					confidence = UT_CONFIDENCE_PERFECT;
 					g_object_unref (G_OBJECT (starWriterDocument));
@@ -575,7 +575,7 @@ void DocHdr::load(GsfInput* stream)
 		streamRead(stream, buf, 64);
 		UT_DEBUGMSG(("SDW: BLOCKNAME: %.64s\n", buf));
 		// XXX verify that the string is really null terminated
-		sBlockName = reinterpret_cast<UT_UCS4Char*>(UT_convert_cd(buf, strlen(buf) + 1, converter, NULL, NULL));
+		sBlockName = reinterpret_cast<UT_UCS4Char*>(UT_convert_cd(buf, strlen(buf) + 1, converter, nullptr, nullptr));
 	}
 
 	if (nRecSzPos != 0 && nVersion >= SWG_RECSIZES) {
@@ -590,7 +590,7 @@ void DocHdr::load(GsfInput* stream)
 	if (nFileFlags & SWGF_HAS_PASSWD)
 		cryptor = new SDWCryptor(nDate, nTime, cPasswd);
 	else
-		cryptor = NULL;
+		cryptor = nullptr;
 
 }
 
@@ -598,7 +598,7 @@ void DocHdr::load(GsfInput* stream)
 // Actual Importer
 
 IE_Imp_StarOffice::IE_Imp_StarOffice(PD_Document *pDocument)
-	: IE_Imp(pDocument), mOle(NULL), mDocStream(NULL) {
+	: IE_Imp(pDocument), mOle(nullptr), mDocStream(nullptr) {
 }
 
 IE_Imp_StarOffice::~IE_Imp_StarOffice() {
@@ -636,7 +636,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 {
 	try {
 		UT_DEBUGMSG(("SDW: Starting import\n"));
-		mOle = GSF_INFILE (gsf_infile_msole_new(input, NULL));
+		mOle = GSF_INFILE (gsf_infile_msole_new(input, nullptr));
 		if (!mOle)
 			return UT_IE_BOGUSDOCUMENT;
 
@@ -961,7 +961,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 						// FIXME: find a way to not have to copy and free 
 						// the result of UT_convert_cd.... --hub
 						UT_DEBUGMSG(("SDW: StringPool: found 0x%04x <-> %.*s\n", id, len, str));
-						UT_UCS4Char* convertedString = reinterpret_cast<UT_UCS4Char*>(UT_convert_cd(str, len + 1, cd, NULL, NULL));
+						UT_UCS4Char* convertedString = reinterpret_cast<UT_UCS4Char*>(UT_convert_cd(str, len + 1, cd, nullptr, nullptr));
 						mStringPool.insert(stringpool_map::value_type(id, convertedString));
 						FREEP(convertedString);
                         delete [] str;

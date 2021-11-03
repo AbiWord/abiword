@@ -56,7 +56,7 @@
 #endif
 
 // use preference file instead of registry
-XAP_PrefsScheme * prefsScheme = NULL;
+XAP_PrefsScheme * prefsScheme = nullptr;
 /* our Plugin Scheme name in preference file,  e.g. "AbiGeneric" */
 const gchar * szAbiPluginSchemeName = ABI_PLUGIN_SCHEME_NAME ;
 // settings within our plugin scheme
@@ -78,28 +78,28 @@ static DECLARE_ABI_PLUGIN_METHOD(specify);
 ABI_TOGGLEABLE_MENUITEM_PROTOTYPE(useBmp);
 
 
-/* Note:  Make sure the methodName field is Not NULL, otherwise
+/* Note:  Make sure the methodName field is Not nullptr, otherwise
  *        AbiWord.exe will probably segfault -- actual results 
  *        depend on where other plugins add menu items.
  * Note2: Make sure the label is unique across ALL plugins (and
- *        internal menu labels), any duplicates [including NULL]
+ *        internal menu labels), any duplicates [including nullptr]
  *        may cause the menu to display incorrectly.  This is
  *        most notable on the end of a submenu; its probably ok
- *        for separators to share a NULL label.
+ *        for separators to share a nullptr label.
  */
 static AbiMenuOptions amo [] = 
 {
-  { ABI_PLUGIN_METHOD_STR(submenu_start), NULL,                           "AbiPaint",                   "Allows in place editing of image via external program.", EV_MLF_BeginSubMenu, true, false, false, NULL, NULL, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(submenu_start), nullptr,                           "AbiPaint",                   "Allows in place editing of image via external program.", EV_MLF_BeginSubMenu, true, false, false, nullptr, nullptr, true, false, 0 },
   { ABI_PLUGIN_METHOD_STR(editImage),     ABI_PLUGIN_METHOD(editImage),   "(AbiPaint) &Edit Image",     "Opens the selected image for modification (in specified image editing program).", EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), getEditImageMenuName, true, true, 0 },
 #ifdef ENABLE_BMP
-  { ABI_PLUGIN_METHOD_STR(saveAsBmp),     ABI_PLUGIN_METHOD(saveAsBmp),   "Save Image &As BMP",         "Saves the selected image as a BMP file.", EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), NULL, true, true, 0 },
+  { ABI_PLUGIN_METHOD_STR(saveAsBmp),     ABI_PLUGIN_METHOD(saveAsBmp),   "Save Image &As BMP",         "Saves the selected image as a BMP file.", EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), nullptr, true, true, 0 },
 #endif
-  { ABI_PLUGIN_METHOD_STR(separator1),    NULL,                           NULL,                         NULL, EV_MLF_Separator, false, false, false, NULL, NULL, true, false, 0 },
-  { ABI_PLUGIN_METHOD_STR(specify),       ABI_PLUGIN_METHOD(specify),     "&Specify Image Editor",      "Allows you to specify what image editing program to use, results stored in registry.", EV_MLF_Normal, false, true, false, NULL, NULL, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(separator1),    nullptr,                           nullptr,                         nullptr, EV_MLF_Separator, false, false, false, nullptr, nullptr, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(specify),       ABI_PLUGIN_METHOD(specify),     "&Specify Image Editor",      "Allows you to specify what image editing program to use, results stored in registry.", EV_MLF_Normal, false, true, false, nullptr, nullptr, true, false, 0 },
 #ifdef ENABLE_BMP
-  { ABI_PLUGIN_METHOD_STR(useBmp),        ABI_PLUGIN_METHOD(useBmp),      "Image Editor Requires &BMP", "Indicates the specified image editing program must use a BMP file instead of PNG (default is enabled).", EV_MLF_Normal, false, false, true, ABI_TOGGLEABLE_MENUITEM(useBmp), NULL, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(useBmp),        ABI_PLUGIN_METHOD(useBmp),      "Image Editor Requires &BMP", "Indicates the specified image editing program must use a BMP file instead of PNG (default is enabled).", EV_MLF_Normal, false, false, true, ABI_TOGGLEABLE_MENUITEM(useBmp), nullptr, true, false, 0 },
 #endif
-  { ABI_PLUGIN_METHOD_STR(submenu_end),   NULL,                           "AbiPaint Submenu End",       NULL, EV_MLF_EndSubMenu, true, false, false, NULL, NULL, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(submenu_end),   nullptr,                           "AbiPaint Submenu End",       nullptr, EV_MLF_EndSubMenu, true, false, false, nullptr, nullptr, true, false, 0 },
 } ;
 #define NUM_MENUITEMS G_N_ELEMENTS(amo)
     
@@ -127,7 +127,7 @@ XAP_ModuleInfo * getModuleInfo(void)
 bool doRegistration(void)
 {
     // Get XAP_Prefs object for retrieving/storing image editor and related preferences
-    UT_return_val_if_fail(prefs != NULL, false);
+    UT_return_val_if_fail(prefs != nullptr, false);
     if ((prefsScheme = prefs->getPluginScheme(szAbiPluginSchemeName)) == nullptr) {
       // it may not exist so try creating & adding it.
       prefs->addPluginScheme(new XAP_PrefsScheme(prefs, szAbiPluginSchemeName));
@@ -184,7 +184,7 @@ static DECLARE_ABI_PLUGIN_METHOD(specify)
 		int ft[3];
 		szDescList[0] = szProgramsDesc;
 		szSuffixList[0] = szProgramSuffix;
-		szDescList[1] = szSuffixList[1] = NULL;
+		szDescList[1] = szSuffixList[1] = nullptr;
 		ft[0] = ft[1] = ft[2] = IEGFT_Unknown;
 
 		if (getFileName(szProgramName, pFrame, XAP_DIALOG_ID_FILE_OPEN, szDescList, szSuffixList, ft))
@@ -256,12 +256,12 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
 
-	char *szTempFileName = NULL;
-	GError *err = NULL;
+	char *szTempFileName = nullptr;
+	GError *err = nullptr;
 	gint fp = g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
 	if (err) {
 		g_warning (err->message);
-		g_error_free (err); err = NULL;
+		g_error_free (err); err = nullptr;
 		return FALSE;
 	}
 	close(fp);
@@ -269,7 +269,7 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 	std::string szTmpPng = szTempFileName;
 	szTmpPng += ".png";
 	remove(szTempFileName);
-	g_free (szTempFileName); szTempFileName = NULL;
+	g_free (szTempFileName); szTempFileName = nullptr;
 
 	PT_DocPosition pos = pView->saveSelectedImage(szTmpPng.c_str());
 	if(pos == 0)
@@ -295,7 +295,7 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 			szSuffixList[0] = "*.bmp";
 			ft[0] = IEGFT_BMP;
 		}
-		szDescList[1] = szSuffixList[1] = NULL;
+		szDescList[1] = szSuffixList[1] = nullptr;
 		ft[1] = IEGFT_Unknown;
 
 		if (getFileName(szBMPFile, pFrame, XAP_DIALOG_ID_FILE_SAVEAS, szDescList, szSuffixList, ft))
@@ -396,12 +396,12 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 //
 // generate a temp file name...
 //
-	char *szTempFileName = NULL;
-	GError *err = NULL;
+	char *szTempFileName = nullptr;
+	GError *err = nullptr;
 	gint fp = g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
 	if (err) {
 		g_warning ("%s", err->message);
-		g_error_free (err); err = NULL;
+		g_error_free (err); err = nullptr;
 		return FALSE;
 	}
 	close(fp);
@@ -414,7 +414,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	if(pos == 0)
 	{
 		remove(szTempFileName);
-		g_free (szTempFileName); szTempFileName = NULL;
+		g_free (szTempFileName); szTempFileName = nullptr;
 		pFrame->showMessageBox("You must select an Image before editing it", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
@@ -435,7 +435,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 			remove(szTempFileName);
-			g_free (szTempFileName); szTempFileName = NULL;
+			g_free (szTempFileName); szTempFileName = nullptr;
 			remove(szTmpPng.c_str());
 			return false;
 		}
@@ -446,7 +446,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	
 	// remove the temp file (that lacks proper extension)
 	remove(szTempFileName);
-	g_free (szTempFileName); szTempFileName = NULL;
+	g_free (szTempFileName); szTempFileName = nullptr;
 
 //
 // Get the initial file status.
@@ -616,13 +616,13 @@ static void getDefaultApp(std::string &imageApp, bool &bLeaveImageAsPNG)
 		HKEY hKey;
 		unsigned long lType;
 		DWORD dwSize;
-		unsigned char* szValue = NULL;
+		unsigned char* szValue = nullptr;
 		if( ::RegOpenKeyExA( HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion", 0, KEY_READ, &hKey) == ERROR_SUCCESS )
 		{
-			if( ::RegQueryValueExA( hKey, "ProgramFilesDir", NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS )
+			if( ::RegQueryValueExA( hKey, "ProgramFilesDir", nullptr, &lType, nullptr, &dwSize) == ERROR_SUCCESS )
 			{
 				szValue = new unsigned char[dwSize + 1];
-				::RegQueryValueExA( hKey, "ProgramFilesDir", NULL, &lType, szValue, &dwSize);
+				::RegQueryValueExA( hKey, "ProgramFilesDir", nullptr, &lType, szValue, &dwSize);
 				imageApp = (char*) szValue;
 				delete[] szValue;
 				imageApp += "\\ACCESSORIES\\MSPAINT.EXE";

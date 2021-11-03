@@ -52,7 +52,7 @@ static void readPaddedByteString(GsfInput* aStream, UT_UCS4String& aString,
 
 class AutoGsfInput {
 	public:
-		AutoGsfInput(GsfInput* aStream = NULL) : mStream(aStream) {}
+		AutoGsfInput(GsfInput* aStream = nullptr) : mStream(aStream) {}
 		~AutoGsfInput() { close(); }
 		void close() { if (mStream) g_object_unref(G_OBJECT(mStream)); }
 
@@ -114,7 +114,7 @@ static inline void do_SetMetadata(PD_Document* aDoc, const std::string & aKey, U
 
 void SDWDocInfo::load(GsfInfile* aDoc, PD_Document* aPDDoc)
 {
-	char* headStr = NULL;
+	char* headStr = nullptr;
 
 	try {
 		UT_DEBUGMSG(("SDW: Loading Docinfo...\n"));

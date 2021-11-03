@@ -33,14 +33,14 @@ public:
 	/*!
 	* Returns the name of the factory for logging and debugging purposes.
 	*/
-	virtual const char * getName (void) = NULL;
+	virtual const char * getName (void) = nullptr;
 
 	/*!
 	* Load a module.
 	* \param szFilename Plugin file to load.
-	* \return Ptr to module instance if success, otherwise NULL;
+	* \return Ptr to module instance if success, otherwise nullptr;
 	*/
-	virtual XAP_Module * loadModule (const char * szFilename) = NULL;
+	virtual XAP_Module * loadModule (const char * szFilename) = nullptr;
 	/*!
 	* Unload a module.
 	* Plugin factories can implement this method if they want to handle unloading of

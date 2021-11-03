@@ -76,7 +76,7 @@ UT_Error OXML_Element_TextBox::serializeProperties(IE_Exp_OpenXML* exporter)
 {
 	//TODO: Add all the property serializations here
 	UT_Error err = UT_OK;
-	const gchar* szValue = NULL;
+	const gchar* szValue = nullptr;
 
 	err = exporter->startTextBoxProperties(TARGET);
 	if(err != UT_OK)

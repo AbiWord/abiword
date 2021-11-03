@@ -117,7 +117,7 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 -(void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 -(void)dealloc

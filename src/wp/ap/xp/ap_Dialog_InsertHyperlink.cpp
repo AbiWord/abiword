@@ -110,7 +110,7 @@ void AP_Dialog_InsertHyperlink::setDoc(FV_View * pView)
 			if(!UT_go_path_is_uri(m_pHyperlink))
 			{
 				delete [] m_pHyperlink;
-				m_pHyperlink = NULL;
+				m_pHyperlink = nullptr;
 			}
 		}
 	}

@@ -39,7 +39,7 @@ PD_Document *makeDocument()
 
   PD_Document* doc = new PD_Document;
 
-  UT_Error err = doc->readFromFile(data_file.c_str(), IEFT_Unknown, NULL);
+  UT_Error err = doc->readFromFile(data_file.c_str(), IEFT_Unknown, nullptr);
   TFPASSEQ(err, UT_OK);
   return doc;
 }

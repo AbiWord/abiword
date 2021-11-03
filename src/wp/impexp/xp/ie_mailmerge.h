@@ -115,7 +115,7 @@ public:
 	static UT_Error	constructMerger(const char * szFilename,
 	                                IEMergeType ieft,
 	                                IE_MailMergePtr & pie,
-	                                IEMergeType * pieft = NULL);
+	                                IEMergeType * pieft = nullptr);
 
 	static bool	    enumerateDlgLabels(UT_uint32 ndx,
 	                                       const char ** pszDesc,

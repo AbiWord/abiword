@@ -71,7 +71,7 @@ XAP_Dialog * AP_UnixDialog_Options::static_constructor ( XAP_DialogFactory * pFa
 AP_UnixDialog_Options::AP_UnixDialog_Options ( XAP_DialogFactory * pDlgFactory,
         XAP_Dialog_Id id )
         : AP_Dialog_Options ( pDlgFactory, id ),
-        m_extraPages ( NULL )
+        m_extraPages ( nullptr )
 {}
 
 AP_UnixDialog_Options::~AP_UnixDialog_Options ( void )
@@ -389,7 +389,7 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     // remove anything related to grammar.
     tmp = WID ( "tableGrammar" );
     gtk_container_remove(gtk_widget_get_parent(tmp), tmp);
-    m_checkbuttonGrammarCheck = NULL;
+    m_checkbuttonGrammarCheck = nullptr;
 #else
     tmp = WID ( "lblGrammar" );
     localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_Grammar );
@@ -400,13 +400,13 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 #endif /// _DISABLE_GRAMMAR
 
 #else
-    m_checkbuttonSpellCheckAsType = NULL;
-    m_checkbuttonSpellHideErrors = NULL;
-    m_checkbuttonSpellUppercase = NULL;
-    m_checkbuttonSpellNumbers = NULL;
-    m_checkbuttonSpellSuggest = NULL;
-    m_checkbuttonSpellMainOnly = NULL;
-    m_checkbuttonGrammarCheck = NULL;
+    m_checkbuttonSpellCheckAsType = nullptr;
+    m_checkbuttonSpellHideErrors = nullptr;
+    m_checkbuttonSpellUppercase = nullptr;
+    m_checkbuttonSpellNumbers = nullptr;
+    m_checkbuttonSpellSuggest = nullptr;
+    m_checkbuttonSpellMainOnly = nullptr;
+    m_checkbuttonGrammarCheck = nullptr;
     gtk_notebook_remove_page((GtkNotebook*)m_notebook, 2);
 #endif
     // Smart Quotes
@@ -504,7 +504,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
         /* check to see if there is any data already stored there (note, will
          * not work if 0's is stored in multiple places  */
-        UT_ASSERT ( g_object_get_data ( G_OBJECT ( w ), "tControl" ) == NULL );
+        UT_ASSERT ( g_object_get_data ( G_OBJECT ( w ), "tControl" ) == nullptr );
 
         g_object_set_data ( G_OBJECT ( w ), "tControl", reinterpret_cast<gpointer> ( i ) );
         if ( GTK_IS_COMBO_BOX ( w ) || GTK_IS_ENTRY ( w ) )
@@ -889,7 +889,7 @@ void AP_UnixDialog_Options::_setupSmartQuotesCombos(  GtkWidget *optionmenu  )
 		wszDisplayString[1] = (gunichar)'O';
 		wszDisplayString[2] = XAP_EncodingManager::smartQuoteStyles[i].rightQuote;
 		wszDisplayString[3] = (gunichar)0;
-        gchar* szDisplayStringUTF8 = g_ucs4_to_utf8 ( wszDisplayString, -1, NULL, NULL, NULL );
+        gchar* szDisplayStringUTF8 = g_ucs4_to_utf8 ( wszDisplayString, -1, nullptr, nullptr, nullptr );
 		XAP_appendComboBoxTextAndInt(combo, szDisplayStringUTF8, i);
         g_free ( szDisplayStringUTF8 );
 	}

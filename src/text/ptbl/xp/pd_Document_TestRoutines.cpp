@@ -39,6 +39,6 @@ void PD_Document::__dump(FILE * fp) const
 				 UT_TestStatus_GetMessage(status)));
 }
 
-PD_Document* PD_Document::m_pDoc = NULL;
+PD_Document* PD_Document::m_pDoc = nullptr;
 
 #endif /* PT_TEST */

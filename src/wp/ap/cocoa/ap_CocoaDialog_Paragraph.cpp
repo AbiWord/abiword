@@ -50,7 +50,7 @@ XAP_Dialog * AP_CocoaDialog_Paragraph::static_constructor(XAP_DialogFactory * pF
 AP_CocoaDialog_Paragraph::AP_CocoaDialog_Paragraph(XAP_DialogFactory * pDlgFactory,
 												 XAP_Dialog_Id dlgid)
 	: AP_Dialog_Paragraph(pDlgFactory,dlgid),
-		m_pGraphics(NULL),
+		m_pGraphics(nullptr),
 		m_dlg(nil)
 {
 }
@@ -102,7 +102,7 @@ void	AP_CocoaDialog_Paragraph::_createGC(XAP_CocoaNSView* owner)
 void AP_CocoaDialog_Paragraph::_deleteGC(void)
 {
 	DELETEP(m_pGraphics);
-	m_pGraphics = NULL;
+	m_pGraphics = nullptr;
 }
 /*****************************************************************/
 
@@ -370,7 +370,7 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 {
 	if (_xap) {
 		_xap->_deleteGC();
-		_xap = NULL;
+		_xap = nullptr;
 	}
 }
 

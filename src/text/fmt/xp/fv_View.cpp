@@ -196,8 +196,8 @@ fv_CaretProps::fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint):
 	m_bPointEOL(false),
 	m_iPointHeight(0),
 	m_caretColor(0,0,0),
-	m_PropCaretListner(NULL),
-	m_pCaret(NULL),
+	m_PropCaretListner(nullptr),
+	m_pCaret(nullptr),
 	m_ListenerID(0),
 	m_pView(pView),
 	m_iAuthorId(-1),
@@ -207,7 +207,7 @@ fv_CaretProps::fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint):
 
 fv_CaretProps::~fv_CaretProps(void)
 {
-	if(m_PropCaretListner != NULL)
+	if(m_PropCaretListner != nullptr)
 	{
 		DELETEP(m_PropCaretListner);
 	}
@@ -247,7 +247,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_startPosition(0),
 		m_doneFind(false),
 		m_bEditHdrFtr(false),
-		m_pEditShadow(NULL),
+		m_pEditShadow(nullptr),
 		m_iSavedPosition(0),
 		m_bNeedSavedPosition(false),
 		m_bReverseFind(false),
@@ -275,10 +275,10 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bIsResizingImage(false),
 		m_curImageSel(-1,-1,-1,-1),
 #if XAP_DONTUSE_XOR
-		m_curImageSelCache(NULL),
+		m_curImageSelCache(nullptr),
 #endif
 		m_bIsDraggingImage(false),
-		m_pDraggedImageRun(NULL),
+		m_pDraggedImageRun(nullptr),
 		m_dragImageRect(-1,-1,-1,-1),
 		m_ixDragOrigin(0),
 		m_iyDragOrigin(0),
@@ -295,8 +295,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_countDisable(0),
 		m_bDragTableLine(false),
 		m_prevMouseContext(EV_EMC_UNKNOWN),
-		m_pTopRuler(NULL),
-		m_pLeftRuler(NULL),
+		m_pTopRuler(nullptr),
+		m_pLeftRuler(nullptr),
 		m_bInFootnote(false),
 		m_bgColorInitted(false),
 		m_iLowDrawPoint(0),
@@ -309,7 +309,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_eBidiOrder(FV_Order_Visual),
 		m_iFreePass(0),
 		m_bDontNotifyListeners(false),
-		m_pLocalBuf(NULL),
+		m_pLocalBuf(nullptr),
 		m_iGrabCell(0),
 		m_InlineImage(this),
 		m_bInsertAtTablePending(false),
@@ -319,7 +319,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bubbleBlockerCount(0),
 		m_iOldPageCount(-1),
 		m_SelectionHandles(this, m_Selection),
-		m_pViewDoubleBufferingObject(NULL)
+		m_pViewDoubleBufferingObject(nullptr)
 {
 	if(m_pDoc)
 		m_sDocUUID = m_pDoc->getMyUUIDString();
@@ -622,7 +622,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 //
 // Update the combo boxes on the frame with this documents info.
 //
-	m_caretListener = NULL;
+	m_caretListener = nullptr;
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if( pFrame )
 	{
@@ -643,7 +643,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		}
 		else
 		{
-			m_caretListener = NULL;
+			m_caretListener = nullptr;
 		}
 	}
 
@@ -675,7 +675,7 @@ FV_View::~FV_View()
 	m_pApp->getPrefs()->removeListener( _prefsListener, this );
 
 	DELETEP(m_pAutoScrollTimer);
-	if(m_caretListener != NULL)
+	if(m_caretListener != nullptr)
 	{
 		DELETEP(m_caretListener);
 	}
@@ -691,7 +691,7 @@ bool FV_View::isActive(void) const
 {
 	if(!couldBeActive())
 	        return false;
-	const AV_View* pActiveView = NULL;
+	const AV_View* pActiveView = nullptr;
 	XAP_Frame* lff = getApp()->getLastFocussedFrame();
 	if(lff) 
 	{
@@ -713,7 +713,7 @@ bool FV_View::isActive(void) const
 
 void FV_View::setGraphics(GR_Graphics * pG)
 {
-	if(m_caretListener != NULL)
+	if(m_caretListener != nullptr)
 	{
 		removeListener(m_CaretListID);
 		DELETEP(m_caretListener);
@@ -729,13 +729,13 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	}
 	else
 	{
-		m_caretListener = NULL;
+		m_caretListener = nullptr;
 	}
 }
 
 bool FV_View::registerDoubleBufferingObject(FV_ViewDoubleBuffering *obj)
 {
-	if(m_pViewDoubleBufferingObject == NULL)
+	if(m_pViewDoubleBufferingObject == nullptr)
 	{
 		// ok, you're the top most one, I will register you
 		m_pViewDoubleBufferingObject = obj;
@@ -749,7 +749,7 @@ bool FV_View::unregisterDoubleBufferingObject(FV_ViewDoubleBuffering *obj)
 	if((void*)m_pViewDoubleBufferingObject == (void*)obj)
 	{
 		// you're the top most caller, I will unregister you
-		m_pViewDoubleBufferingObject = NULL;
+		m_pViewDoubleBufferingObject = nullptr;
 		return true;
 	}
 	else return false;
@@ -762,7 +762,7 @@ void FV_View:: fixInsertionPointCoords(void)
 
 void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 {
-	fv_CaretProps * pCaretProps = NULL;
+	fv_CaretProps * pCaretProps = nullptr;
 	UT_sint32 iCount = m_vecCarets.getItemCount();
 	std::string sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
@@ -824,7 +824,7 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 	//
 	// Check we're not adding a duplicated caret
 	//
-	fv_CaretProps* pCaretProps = NULL;
+	fv_CaretProps* pCaretProps = nullptr;
 	UT_sint32 iCount = m_vecCarets.getItemCount();
 	for (UT_sint32 i = 0; i < iCount; i++)
 	{
@@ -879,7 +879,7 @@ UT_RGBColor	FV_View::getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const
 UT_RGBColor	FV_View::getColorAnnotation(const fp_Run * pRun) const
 {
 	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
-	fp_AnnotationRun * pARun = NULL;
+	fp_AnnotationRun * pARun = nullptr;
 	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
 	{
 			pARun = static_cast<fp_AnnotationRun *>(pHRun);
@@ -917,7 +917,7 @@ UT_RGBColor	FV_View::getColorRDFAnchor(const fp_Run * pRun) const
 		return pRun->_getColorFG();
 
 	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
-//	fp_RDFAnchorRun * pARun = NULL;
+//	fp_RDFAnchorRun * pARun = nullptr;
 	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_RDFANCHOR)
 	{
 //		pARun = static_cast<fp_RDFAnchorRun*>(pHRun);
@@ -1170,7 +1170,7 @@ void FV_View::btn1Frame(UT_sint32 x, UT_sint32 y)
 void FV_View::setFrameFormat(const PP_PropertyVector & properties)
 {
 	std::string dataID;
-	setFrameFormat(properties, NULL, dataID);
+	setFrameFormat(properties, nullptr, dataID);
 }
 
 /*!
@@ -1187,7 +1187,7 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 		fp_Page * pPage = pFC->getPage();
 		fp_Column * pCol = pPage->getNthColumnLeader(0);
 		fp_Container * pCon = pCol->getFirstContainer();
-		fl_BlockLayout * pB = NULL;
+		fl_BlockLayout * pB = nullptr;
 		if(pCon->getContainerType() == FP_CONTAINER_LINE)
 		{
 			pB = static_cast<fp_Line *>(pCon)->getBlock();
@@ -1203,7 +1203,7 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	fl_BlockLayout * pBL = vecBlocks.getNthItem(iBlk);
 	fp_Line * pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 	bool bLoop = true;
-	while((pLine != NULL) && bLoop)
+	while((pLine != nullptr) && bLoop)
 	{
 			UT_sint32 xoffLine, yoffLine;
 			fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(pLine->getContainer()));
@@ -1214,7 +1214,7 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 				break;
 			}
 			pLine = static_cast<fp_Line *>(pLine->getNext());
-			if(pLine == NULL)
+			if(pLine == nullptr)
 			{
 				iBlk++;
 				if(iBlk < vecBlocks.getItemCount())
@@ -1224,18 +1224,18 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 				}
 			}
 	}
-	if(pLine == NULL)
+	if(pLine == nullptr)
 	{
 		pBL = vecBlocks.getNthItem(vecBlocks.getItemCount()-1);
 		pLine = static_cast<fp_Line *>(pBL->getLastContainer());
-		if(pLine == NULL)
+		if(pLine == nullptr)
 			return false;
 	}
 	fp_Run * pRun = pLine->getLastRun();
 	PT_DocPosition pos = pBL->getPosition() + pRun->getBlockOffset() + pRun->getLength();
-	const PP_AttrProp* pAP = NULL;
+	const PP_AttrProp* pAP = nullptr;
 	pFrame->getAP(pAP);
-	if(pAP == NULL)
+	if(pAP == nullptr)
 	{
 		return false;
 	}
@@ -1316,7 +1316,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos, const PP_PropertyVec
 {
 
 	fl_BlockLayout * pBlock = getBlockAtPosition(pos);
-	fp_Run *  pRun = NULL;
+	fp_Run *  pRun = nullptr;
 	bool bEOL,bDir;
 	bEOL = false;
 	UT_sint32 x1,y1,x2,y2,iHeight;
@@ -1342,14 +1342,14 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos, const PP_PropertyVec
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
 	_deleteSelection();
-	pf_Frag_Strux * pfFrame = NULL;
+	pf_Frag_Strux * pfFrame = nullptr;
 //
 // This should place the the frame strux immediately after the block containing
 // position posXY.
 // It returns the Frag_Strux of the new frame.
 //
 	fl_BlockLayout * pBL = pBlock;
-	if((pBL == NULL) || (pRun == NULL))
+	if((pBL == nullptr) || (pRun == nullptr))
 	{
 	  return;
 	}
@@ -1360,7 +1360,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos, const PP_PropertyVec
 		pPrevBL = pBL;
 		pBL = pBL->getPrevBlockInDocument();
 	}
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 	        pBL = pPrevBL;
 	}
@@ -1394,7 +1394,7 @@ void FV_View::setFrameFormat(const PP_PropertyVector & properties, const FG_Cons
 	_saveAndNotifyPieceTableChange();
 
 	fl_FrameLayout * pFrame = getFrameLayout();
-	if(pFrame == NULL)
+	if(pFrame == nullptr)
 	{
 		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -1421,7 +1421,7 @@ void FV_View::setFrameFormat(const PP_PropertyVector & properties, const FG_Cons
 			posStart = 2;
 		}
 	}
-	if(pFG != NULL)
+	if(pFG != nullptr)
 	{
 		pFG->insertAtStrux(m_pDoc,72,posStart,
 						   PTX_SectionFrame,sDataID.c_str());
@@ -1480,7 +1480,7 @@ void FV_View::setFrameFormat(const PP_PropertyVector & attribs, const PP_Propert
 		warpInsPtToXY(0,0,false);
 	}
 	fl_FrameLayout * pFrame = getFrameLayout();
-	if(pFrame == NULL)
+	if(pFrame == nullptr)
 	{
 		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
 		// should we assert ?
@@ -1534,7 +1534,7 @@ void FV_View::copyFrame(bool b_keepFrame)
 		m_FrameEdit.mouseLeftPress(m_iMouseX,m_iMouseY);
 	}
 	fl_FrameLayout * pFL = getFrameLayout();
-	if(pFL == NULL)
+	if(pFL == nullptr)
 	{
 		m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
 		XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
@@ -1569,7 +1569,7 @@ void FV_View::selectFrame(void)
 		m_FrameEdit.mouseLeftPress(m_iMouseX,m_iMouseY);
 	}
 	fl_FrameLayout * pFL = getFrameLayout();
-	if(pFL == NULL)
+	if(pFL == nullptr)
 	{
 		m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
 		XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
@@ -1605,7 +1605,7 @@ void FV_View::deleteFrame(void)
 	{
 		m_FrameEdit.mouseLeftPress(m_iMouseX,m_iMouseY);
 	}
-	if(getFrameLayout() == NULL)
+	if(getFrameLayout() == nullptr)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		selectFrame(); // this will clear the frame context
@@ -1639,7 +1639,7 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos) const
 {
 	if(m_pDoc->isFrameAtPos(pos))
 	{
-		fl_ContainerLayout* psfh = NULL;
+		fl_ContainerLayout* psfh = nullptr;
 		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),pos+1,
 										   PTX_SectionFrame, &psfh);
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(psfh);
@@ -1648,7 +1648,7 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos) const
 	}
 	if(m_pDoc->isFrameAtPos(pos-1))
 	{
-		fl_ContainerLayout* psfh = NULL;
+		fl_ContainerLayout* psfh = nullptr;
 		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),
 											 pos,
 											 PTX_SectionFrame, &psfh);
@@ -1676,30 +1676,30 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos) const
 		{
 			pBlock = pBlock->getNextBlockInDocument();
 		}
-		if(pBlock == NULL)
+		if(pBlock == nullptr)
 		{
-			return NULL;
+			return nullptr;
 		}
 		if((pBlock->getPosition(true) < pos) && (pBlock->getPosition(true) + pBlock->getLength() +1 < pos))
 		{
-			return NULL;
+			return nullptr;
 		}
 		pCL = pBlock->myContainingLayout();
 		while(pCL && (pCL->getContainerType() != FL_CONTAINER_FRAME) && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
 		{
 			pCL = pCL->myContainingLayout();
 		}
-		if(pCL == NULL)
+		if(pCL == nullptr)
 		{
-			return NULL;
+			return nullptr;
 		}
 		if(pCL->getContainerType() != FL_CONTAINER_FRAME)
 		{
-			return NULL;
+			return nullptr;
 		}
 		return static_cast<fl_FrameLayout *>(pCL);
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*!
@@ -1727,7 +1727,7 @@ bool FV_View::isInFrame(PT_DocPosition pos) const
 		{
 			pCL = pCL->myContainingLayout();
 		}
-		if(pCL == NULL)
+		if(pCL == nullptr)
 		{
 			return false;
 		}
@@ -1768,7 +1768,7 @@ UT_RGBColor FV_View::getColorSelBackground ()
 
   XAP_Frame * pFrame = nullptr;
 
-  if ((pFrame = static_cast<XAP_Frame*>(getParentData())) != NULL)
+  if ((pFrame = static_cast<XAP_Frame*>(getParentData())) != nullptr)
     return pFrame->getColorSelBackground ();
 
   if (!m_bgColorInitted) {
@@ -1788,7 +1788,7 @@ UT_RGBColor FV_View::getColorSelForeground () const
 
   XAP_Frame * pFrame = nullptr;
   
-  if ((pFrame = static_cast<XAP_Frame*>(getParentData())) != NULL)
+  if ((pFrame = static_cast<XAP_Frame*>(getParentData())) != nullptr)
     return pFrame->getColorSelForeground ();
   
   return fgcolor;
@@ -1975,12 +1975,12 @@ void FV_View::toggleCase (ToggleCase c)
 	while(pBL && (low == pBL->getPosition(true) + pBL->getLength()))
 	{
 		pBL = pBL->getNextBlockInDocument();
-		if(pBL != NULL)
+		if(pBL != nullptr)
 		{
 			low = pBL->getPosition();
 		}
 	}
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 		return;
 	}
@@ -2054,7 +2054,7 @@ void FV_View::toggleCase (ToggleCase c)
 			xxx_UT_DEBUGMSG(("CASE_ROTATE translated to %d\n", c));
 
 		}
-		if(pBL == NULL)
+		if(pBL == nullptr)
 		{
 			return;
 		}
@@ -2063,7 +2063,7 @@ void FV_View::toggleCase (ToggleCase c)
 			pBL = static_cast<fl_ContainerLayout *>(pBL)->getNextBlockInDocument();
 		}
 
-		const PP_AttrProp * pSpanAPAfter = NULL;
+		const PP_AttrProp * pSpanAPAfter = nullptr;
 		pBL->getSpanAP(offset,false,pSpanAPAfter);
 		PP_AttrProp * pSpanAPNow = const_cast<PP_AttrProp *>(pSpanAPAfter);
 
@@ -2116,7 +2116,7 @@ void FV_View::toggleCase (ToggleCase c)
 				}
 				
 
-				fp_TextRun * pPrevTR = NULL;
+				fp_TextRun * pPrevTR = nullptr;
 
 				while(pRun
 					&& iLenToCopy > 0
@@ -2155,7 +2155,7 @@ void FV_View::toggleCase (ToggleCase c)
 				{
 					case CASE_FIRST_CAPITAL:
 						if(offset == 0)
-							prev = NULL;
+							prev = nullptr;
 						else
 							prev = reinterpret_cast<UT_UCSChar*>(buffer.getPointer(offset - 1));
 						_toggleFirstCapital(pTemp,pTemp, iLen, prev);
@@ -2164,7 +2164,7 @@ void FV_View::toggleCase (ToggleCase c)
 					case CASE_SENTENCE:
 #if 0
 						if(offset < 2)
-							prev = NULL;
+							prev = nullptr;
 						else
 							prev = buffer.getPointer(offset - 2);
 						_toggleSentence (pTemp, pTemp, iLen, prev);
@@ -2264,7 +2264,7 @@ void FV_View::toggleCase (ToggleCase c)
 				UT_uint32 iRealDeleteCount;
 				m_pDoc->tellPTDoNotTweakPosition(true); // stop surrounding hyperlinks,
 														// bookmarks, etc. getting deleted
-				bool bResult = m_pDoc->deleteSpan(low, low + iLen,NULL,iRealDeleteCount);
+				bool bResult = m_pDoc->deleteSpan(low, low + iLen,nullptr,iRealDeleteCount);
 				m_pDoc->tellPTDoNotTweakPosition(false);
 				UT_ASSERT(bResult);
 
@@ -2373,8 +2373,8 @@ void FV_View:: getTextInDocument(UT_GrowBuf & buf) const
  */
 	bool FV_View::getLineBounds(PT_DocPosition pos, PT_DocPosition *start, PT_DocPosition *end)
 {
-	fl_BlockLayout *pBlock = NULL;
-	fp_Run *pRun = NULL;
+	fl_BlockLayout *pBlock = nullptr;
+	fp_Run *pRun = nullptr;
 	UT_sint32 x, y;
 	UT_uint32 height;
 	UT_sint32 x2, y2;
@@ -2403,7 +2403,7 @@ UT_UCSChar FV_View::getChar(PT_DocPosition pos, UT_sint32 *x, UT_sint32 *y, UT_u
   UT_uint32 fp_height;
   UT_sint32 x2, y2;
   bool bDirection;
-    _findPositionCoords(pos, FALSE, fp_x, fp_y, x2, y2, fp_height, bDirection, NULL, NULL);
+    _findPositionCoords(pos, FALSE, fp_x, fp_y, x2, y2, fp_height, bDirection, nullptr, nullptr);
     if (x) *x = fp_x;
     if (y) *y = fp_y;
     if (height) *height = fp_height;
@@ -2738,18 +2738,18 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		// computing which column the cursor is in is rather expensive,
 		// i'm not sure it's worth the effort here...
 
-		fp_Run * pRun = NULL;
+		fp_Run * pRun = nullptr;
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
 		UT_sint32 xCaret2, yCaret2;
 		bool bDirection;
-		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRun);
+		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, nullptr, &pRun);
 
 		//
 		// Handle Headers/Footers This is a kludge for now
 		//
-		fp_Container * pContainer = NULL;
-		if(pRun == NULL)
+		fp_Container * pContainer = nullptr;
+		if(pRun == nullptr)
 		{
 			return false; // bail out
 		}
@@ -2777,7 +2777,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		else
 		{
 			pContainer = pRun->getLine()->getColumn();
-			if(pContainer == NULL)
+			if(pContainer == nullptr)
 			{
 				pBlock->needsReformat();
 				return false;
@@ -2812,7 +2812,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			// Clearly you can't change columns while editing a header. -PL
 			mask ^= AV_CHG_COLUMN;
 		}
-		else if(pContainer == NULL)
+		else if(pContainer == nullptr)
 		{
 			return false;
 		}
@@ -2836,7 +2836,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		else if (m_chg.pCellLayout)
 		{
 			// Caret just moved out of a table
-			m_chg.pCellLayout = NULL;
+			m_chg.pCellLayout = nullptr;
 		}
 		else
 		{
@@ -2882,10 +2882,10 @@ PT_DocPosition FV_View::saveSelectedImage(UT_ConstByteBufPtr & pBytes)
 	if(m_prevMouseContext == EV_EMC_POSOBJECT)
 	{
 		fl_FrameLayout * pFrame = getFrameLayout();
-		const PP_AttrProp* pAP = NULL;
+		const PP_AttrProp* pAP = nullptr;
 		UT_return_val_if_fail(pFrame, 0);
 		pFrame->getAP(pAP);
-		if(pAP == NULL)
+		if(pAP == nullptr)
 		{
 			return 0;
 		}
@@ -2899,7 +2899,7 @@ PT_DocPosition FV_View::saveSelectedImage(UT_ConstByteBufPtr & pBytes)
 	// if nothing selected or selection not an image
 		if (pos == 0) return 0;
 	}
-	if ( m_pDoc->getDataItemDataByName ( dataId, pBytes, NULL, NULL ) )
+	if ( m_pDoc->getDataItemDataByName ( dataId, pBytes, nullptr, nullptr ) )
 	  {
 		return pos ;
 	  }
@@ -2907,14 +2907,14 @@ PT_DocPosition FV_View::saveSelectedImage(UT_ConstByteBufPtr & pBytes)
 }
 
 /* If no image is selected returns 0
- * and if dataId is not NULL will set value to NULL
+ * and if dataId is not nullptr will set value to nullptr
  * Otherwise returns a nonzero value indicating the position of the image
- * and if dataId is not NULL will set value to the image's data ID
+ * and if dataId is not nullptr will set value to the image's data ID
  */
 
 PT_DocPosition FV_View::getSelectedImage(const char **dataId) const
 {
-	const fp_Run * pRun = NULL;
+	const fp_Run * pRun = nullptr;
 	return getSelectedImage(dataId,&pRun);
 }
 
@@ -2924,12 +2924,12 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId, const fp_Run **pIm
 	if (!isSelectionEmpty())
 	{
 		PT_DocPosition pos = m_Selection.getSelectionAnchor();
-		fp_Run* pRun = NULL;
+		fp_Run* pRun = nullptr;
 
 		UT_GenericVector<fl_BlockLayout *> vBlock;
 		getBlocksInSelection( &vBlock);
 		UT_uint32 count = vBlock.getItemCount();
-		fl_BlockLayout * pBlock = NULL;
+		fl_BlockLayout * pBlock = nullptr;
 		for(UT_uint32 i=0; (i< count); i++)
 		{
 			if(i==0)
@@ -2958,7 +2958,7 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId, const fp_Run **pIm
 			if(pRun && pRun->getType() == FPRUN_IMAGE)
 			{
 				pos = pBlock->getPosition() +  pRun->getBlockOffset();
-				if (dataId != NULL)
+				if (dataId != nullptr)
 				{
 					*dataId = static_cast<fp_ImageRun *>(pRun)->getDataId();
 				}
@@ -2969,17 +2969,17 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId, const fp_Run **pIm
 	}
 
 	// if we made it here, then run type is not an image
-	if (dataId != NULL) {
-		*dataId = NULL;
+	if (dataId != nullptr) {
+		*dataId = nullptr;
 	}
-	pImRun = NULL;
+	pImRun = nullptr;
 	
 	return 0;
 }
 
-/* If no object is selected returns NULL
+/* If no object is selected returns nullptr
  * Otherwise returns a nonzero value indicating the position of the object
- * and if dataId is not NULL will set value to the object's data ID
+ * and if dataId is not nullptr will set value to the object's data ID
  */
 fp_Run *FV_View::getSelectedObject() const
 {
@@ -2987,12 +2987,12 @@ fp_Run *FV_View::getSelectedObject() const
 	if (!isSelectionEmpty())
 	{
 		PT_DocPosition pos = m_Selection.getSelectionAnchor();
-		fp_Run* pRun = NULL;
+		fp_Run* pRun = nullptr;
 
 		UT_GenericVector<fl_BlockLayout *> vBlock;
 		getBlocksInSelection( &vBlock);
 		UT_uint32 count = vBlock.getItemCount();
-		fl_BlockLayout * pBlock = NULL;
+		fl_BlockLayout * pBlock = nullptr;
 		for(UT_uint32 i=0; (i< count); i++)
 		{
 			if(i==0)
@@ -3025,7 +3025,7 @@ fp_Run *FV_View::getSelectedObject() const
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 PT_DocPosition FV_View::getSelectionAnchor(void) const
@@ -3316,7 +3316,7 @@ bool FV_View::isCurrentListBlockEmpty(void) const
 	fl_BlockLayout * pBlock = getCurrentBlock();
 	fl_BlockLayout * nBlock = static_cast<fl_BlockLayout *>(pBlock->getNext());
 	bool bEmpty = true;
-	if(pBlock->isListItem() == false || (nBlock!= NULL && nBlock->isListItem()==true))
+	if(pBlock->isListItem() == false || (nBlock!= nullptr && nBlock->isListItem()==true))
 	{
 		return false;
 	}
@@ -3327,7 +3327,7 @@ bool FV_View::isCurrentListBlockEmpty(void) const
 	fp_Run * pRun = pBlock->getFirstRun();
 	UT_uint32 ifield =0;
 	UT_uint32 iTab = 0;
-	while((bEmpty == true) && (pRun != NULL))
+	while((bEmpty == true) && (pRun != nullptr))
 	{
 		FP_RUN_TYPE runtype = static_cast<FP_RUN_TYPE>(pRun->getType());
 		if((runtype == FPRUN_TAB) ||
@@ -3389,7 +3389,7 @@ bool FV_View::isPointBeforeListLabel(void) const
 
 	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 	pRun = pRun->getPrevRun();
-	while(pRun != NULL && bBefore == true)
+	while(pRun != nullptr && bBefore == true)
 	{
 		if(pRun->getType()== FPRUN_FIELD)
 		{
@@ -3411,24 +3411,24 @@ bool FV_View::isPointBeforeListLabel(void) const
 bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock) const
 {
 	bool bHasNumberedHeading = false;
-	if(pBlock == NULL)
+	if(pBlock == nullptr)
 	{
 		return bHasNumberedHeading;
 	}
-	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pBlockAP = nullptr;
 	pBlock->getAP(pBlockAP);
-	const gchar* pszCurStyle = NULL;
+	const gchar* pszCurStyle = nullptr;
 	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszCurStyle);
-	if(pszCurStyle == NULL)
+	if(pszCurStyle == nullptr)
 	{
 		return false;
 	}
-	PD_Style * pCurStyle = NULL;
+	PD_Style * pCurStyle = nullptr;
 	m_pDoc->getStyle(static_cast<const char*>(pszCurStyle), &pCurStyle);
 	UT_uint32 depth = 0;
 	while(pCurStyle && !bHasNumberedHeading && depth < 10)
 	{
-		bHasNumberedHeading = (strstr(pszCurStyle,"Numbered Heading") != NULL);
+		bHasNumberedHeading = (strstr(pszCurStyle,"Numbered Heading") != nullptr);
 		if(!bHasNumberedHeading)
 		{
 			pCurStyle = pCurStyle->getBasedOn();
@@ -3557,7 +3557,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 //
 		double prevLeft = 0.0;
 		double blockLeft = 0.0;
-		if(pPrev != NULL)
+		if(pPrev != nullptr)
 		{
 			prevLeft = pPrev->getDominantDirection() == UT_BIDI_LTR
 				? UT_convertToInches(pPrev->getProperty(margin_left,true))
@@ -3572,14 +3572,14 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 // If there is one there we don't attach this block to it.
 //
 		bool bHasNumberedHeading = false;
-		if(pPrev != NULL)
+		if(pPrev != nullptr)
 		{
 			bHasNumberedHeading = isNumberedHeadingHere(pPrev);
 		}
 //
 // Don't resume if the previous block has a Numbered Heading Style
 //
-		if(!bHasNumberedHeading && (pBlock->isListItem()== false) && (pPrev != NULL) && (pPrev->isListItem()== true) && (pPrev->getAutoNum()->getType() == listType) && (blockLeft <= (prevLeft - 0.00001)))
+		if(!bHasNumberedHeading && (pBlock->isListItem()== false) && (pPrev != nullptr) && (pPrev->isListItem()== true) && (pPrev->getAutoNum()->getType() == listType) && (blockLeft <= (prevLeft - 0.00001)))
 		{
 			pBlock->resumeList(pPrev);
 		}
@@ -3631,9 +3631,9 @@ UT_sint32 FV_View::getNumColumnsInSelection(void) const
 	UT_sint32 i =0;
 	UT_sint32 iNumCols = 0;
 	UT_sint32 iCurCol = -1;
-	fl_BlockLayout * pBlock = NULL;
-	fl_CellLayout * pCell = NULL;
-	fp_CellContainer * pCellCon = NULL;
+	fl_BlockLayout * pBlock = nullptr;
+	fl_CellLayout * pCell = nullptr;
+	fp_CellContainer * pCellCon = nullptr;
 	for(i=0; i< vecBlocks.getItemCount();i++)
 	{
 		pBlock = vecBlocks.getNthItem(i);
@@ -3643,7 +3643,7 @@ UT_sint32 FV_View::getNumColumnsInSelection(void) const
 		}
 		pCell = static_cast<fl_CellLayout *>(pBlock->myContainingLayout());
 		pCellCon = static_cast<fp_CellContainer *>(pCell->getFirstContainer());
-		if(pCellCon == NULL)
+		if(pCellCon == nullptr)
 		{
 			return 0;
 		}
@@ -3667,9 +3667,9 @@ UT_sint32 FV_View::getNumRowsInSelection(void) const
 	UT_sint32 i =0;
 	UT_sint32 iNumRows = 0;
 	UT_sint32 iCurRow = -1;
-	fl_BlockLayout * pBlock = NULL;
-	fl_CellLayout * pCell = NULL;
-	fp_CellContainer * pCellCon = NULL;
+	fl_BlockLayout * pBlock = nullptr;
+	fl_CellLayout * pCell = nullptr;
+	fp_CellContainer * pCellCon = nullptr;
 	PT_DocPosition startpos = getPoint();
 	PT_DocPosition endpos = startpos;
 	if(!isSelectionEmpty())
@@ -3692,7 +3692,7 @@ UT_sint32 FV_View::getNumRowsInSelection(void) const
 			{
 				pCell = static_cast<fl_CellLayout *>(pBlock->myContainingLayout());
 				pCellCon = static_cast<fp_CellContainer *>(pCell->getFirstContainer());
-				if(pCellCon == NULL)
+				if(pCellCon == nullptr)
 				{
 						return 0;
 				}
@@ -3714,7 +3714,7 @@ UT_sint32 FV_View::getNumRowsInSelection(void) const
 		}
 		pCell = static_cast<fl_CellLayout *>(pBlock->myContainingLayout());
 		pCellCon = static_cast<fp_CellContainer *>(pCell->getFirstContainer());
-		if(pCellCon == NULL)
+		if(pCellCon == nullptr)
 		{
 			return 0;
 		}
@@ -3768,7 +3768,7 @@ void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock, b
 	while(!bStop)
 	{
 		fl_BlockLayout * pBlock = _findBlockAtPosition(startpos);
-		fl_BlockLayout * pBlNext = NULL;
+		fl_BlockLayout * pBlNext = nullptr;
 		PT_DocPosition posEOD = 0;
 		getEditableBounds(true, posEOD);
 
@@ -3776,11 +3776,11 @@ void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock, b
 		{
 			pBlNext = _findBlockAtPosition(startpos+1);
 		}
-		if((pBlNext != NULL) && (pBlNext != pBlock))
+		if((pBlNext != nullptr) && (pBlNext != pBlock))
 		{
 			pBlock = pBlNext;
 		}
-		while( pBlock != NULL && pBlock->getPosition(true) <= endpos)
+		while( pBlock != nullptr && pBlock->getPosition(true) <= endpos)
 		{
 			if(pBlock->getContainerType()== FL_CONTAINER_BLOCK)
 			{
@@ -3901,21 +3901,21 @@ void FV_View::insertParagraphBreak(void)
 		_setPoint(getCurrentBlock()->getPosition());
 	}
 
-	const gchar* style = NULL;
-	PD_Style* pStyle = NULL;
+	const gchar* style = nullptr;
+	PD_Style* pStyle = nullptr;
 	if(getStyle(&style) && bAtEnd)
 	{
 		m_pDoc->getStyle(static_cast<const char*>(style), &pStyle);
-		if(pStyle != NULL  && !bBefore)
+		if(pStyle != nullptr  && !bBefore)
 		{
-			const gchar* szFollow = NULL;
+			const gchar* szFollow = nullptr;
 			pStyle->getAttribute("followedby",szFollow);
 			if(szFollow && strcmp(szFollow,"Current Settings")!=0)
 			{
 				if(pStyle->getFollowedBy())
 					pStyle = pStyle->getFollowedBy();
 
-				const gchar* szValue = NULL;
+				const gchar* szValue = nullptr;
 //
 // The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME attribute within the
 // style
@@ -3931,7 +3931,7 @@ void FV_View::insertParagraphBreak(void)
 //
 // Stop a List if "followed-by" is not a list style
 //
-					const gchar * szListType = NULL;
+					const gchar * szListType = nullptr;
 					pStyle->getProperty("list-style",szListType);
 					bool bisListStyle = false;
 					if(szListType)
@@ -4036,7 +4036,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 	}
 
 	// lookup the current style
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	m_pDoc->getStyle(static_cast<const char*>(style), &pStyle);
 	if (!pStyle)
 	{
@@ -4058,7 +4058,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 // Get This info before it's lost from the following processing
 //
 	fl_BlockLayout * pBL = getCurrentBlock();
-	const gchar * pszStyle = NULL;
+	const gchar * pszStyle = nullptr;
 	pStyle->getProperty("list-style",pszStyle);
 	bool bisListStyle = false;
 	if(pszStyle)
@@ -4074,7 +4074,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 		return false;
 	}
 	pBL = _findBlockAtPosition(posStart+2);
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 		m_pDoc->enableListUpdates();
 		UT_DEBUGMSG(("restoring PieceTable state (3)\n"));
@@ -4106,7 +4106,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 			}
 			pCL = pCL->myContainingLayout();
 		}
-		if(pCL == NULL)
+		if(pCL == nullptr)
 		{
 			return false;
 		}
@@ -4233,7 +4233,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 //
 	while(bisListStyle && pCurStyle && !bHasNumberedHeading && depth < 10)
 	{
-		bHasNumberedHeading = (strstr(pszCurStyle,"Numbered Heading") != NULL);
+		bHasNumberedHeading = (strstr(pszCurStyle,"Numbered Heading") != nullptr);
 		if(!bHasNumberedHeading)
 		{
 			pCurStyle = pCurStyle->getBasedOn();
@@ -4279,10 +4279,10 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 //
 		bool bAttach = false;
 		pf_Frag_Strux* prevSDH = m_pDoc->getPrevNumberedHeadingStyle(curSdh);
-		if(prevSDH != NULL)
+		if(prevSDH != nullptr)
 		{
 			PD_Style * pPrevStyle = m_pDoc->getStyleFromSDH(prevSDH);
-			if(pPrevStyle != NULL)
+			if(pPrevStyle != nullptr)
 			{
 //
 // See if it's of shallower depth then current numbered Heading.
@@ -4313,7 +4313,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 						pf_Frag_Strux* subSDH = pAuto->getFirstItem();
 						fl_BlockLayout * pSubBlock = getBlockFromSDH(subSDH);
 						UT_ASSERT(pSubBlock);
-						if(pSubBlock == NULL)
+						if(pSubBlock == nullptr)
 							goto finish_up;
 
 						for(i=0; i< vBlock.getItemCount(); i++)
@@ -4350,7 +4350,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 //
 			bool bFoundPrevHeadingBackwards = false;
 			pf_Frag_Strux* sdh = m_pDoc->findPreviousStyleStrux(style, pos);
-			bFoundPrevHeadingBackwards = (sdh != NULL);
+			bFoundPrevHeadingBackwards = (sdh != nullptr);
 //
 // If not, Look forward to see if there one ahead of this block
 //
@@ -4370,7 +4370,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 //
 // OK put this heading style into any pre-exsiting Numbering Headings
 //
-			if(sdh == NULL || (sdh == curSdh))
+			if(sdh == nullptr || (sdh == curSdh))
 			{
 				for(UT_sint32 i=0; i< vBlock.getItemCount(); i++)
 				{
@@ -4394,7 +4394,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 			{
 				fl_BlockLayout * pBlock = getBlockFromSDH(sdh);
 				UT_ASSERT(pBlock);
-				if(pBlock == NULL)
+				if(pBlock == nullptr)
 					goto finish_up;
 
 				for(UT_sint32 j = 0; j < vBlock.getItemCount(); ++j)
@@ -4415,7 +4415,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 			{
 				fl_BlockLayout * pBlock = getBlockFromSDH(sdh);
 				UT_ASSERT(pBlock);
-				if(pBlock == NULL)
+				if(pBlock == nullptr)
 					goto finish_up;
 				for(UT_sint32 j = 0; j < vBlock.getItemCount(); j++)
 				{
@@ -4462,19 +4462,19 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
  */
 fl_BlockLayout * FV_View::getBlockFromSDH(pf_Frag_Strux* sdh)
 {
-	fl_ContainerLayout* sfh = NULL;
-	fl_BlockLayout * pBlock = NULL;
+	fl_ContainerLayout* sfh = nullptr;
+	fl_BlockLayout * pBlock = nullptr;
 //
 // Cast it into a fl_BlockLayout and we're done!
 //
 	sfh = m_pDoc->getNthFmtHandle(sdh, m_pLayout->getLID());
-	if(sfh != NULL)
+	if(sfh != nullptr)
 	{
 		pBlock = static_cast<fl_BlockLayout *>(sfh);
 		if(pBlock->getDocLayout() != m_pLayout)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			pBlock = NULL;
+			pBlock = nullptr;
 		}
 	}
 	return pBlock;
@@ -4483,8 +4483,8 @@ fl_BlockLayout * FV_View::getBlockFromSDH(pf_Frag_Strux* sdh)
 
 static const gchar * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 {
-	UT_return_val_if_fail(pAP, NULL);
-	const gchar* sz = NULL;
+	UT_return_val_if_fail(pAP, nullptr);
+	const gchar* sz = nullptr;
 
 	pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, sz);
 
@@ -4499,10 +4499,10 @@ static const gchar * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 bool FV_View::getStyle(const gchar ** style) const
 {
 	bool bCharStyle = false;
-	const gchar * szChar = NULL;
-	const gchar * szBlock = NULL;
+	const gchar * szChar = nullptr;
+	const gchar * szBlock = nullptr;
 
-	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pBlockAP = nullptr;
 
 	/*
 	  IDEA: We want to know the style, if it's constant across the
@@ -4513,7 +4513,7 @@ bool FV_View::getStyle(const gchar ** style) const
 //
 // Check we have a layout defined first. On start up we don't
 //
-	if(getLayout()->getFirstSection() == NULL)
+	if(getLayout()->getFirstSection() == nullptr)
 	{
 		return false;
 	}
@@ -4531,7 +4531,7 @@ bool FV_View::getStyle(const gchar ** style) const
 
 	// 1. get block style at insertion point
 	fl_BlockLayout* pBlock2 = _findBlockAtPosition(posStart);
-	if(pBlock2 == NULL)
+	if(pBlock2 == nullptr)
 	{
 		return false;
 	}
@@ -4572,8 +4572,8 @@ bool FV_View::getStyle(const gchar ** style) const
 				if (strcmp(sz, szBlock))
 				{
 					// doesn't match, so stop looking
-					szBlock = NULL;
-					pBlock2 = NULL;
+					szBlock = nullptr;
+					pBlock2 = nullptr;
 					break;
 				}
 			}
@@ -4584,7 +4584,7 @@ bool FV_View::getStyle(const gchar ** style) const
 
 	if (szBlock && szBlock[0])
 	{
-		const PP_AttrProp * pSpanAP = NULL;
+		const PP_AttrProp * pSpanAP = nullptr;
 
 		// 3. locate char style at insertion point
 		UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
@@ -4595,7 +4595,7 @@ bool FV_View::getStyle(const gchar ** style) const
 		fp_Run* pRun;
 
 		_findPositionCoords(posStart, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
-		if(pBlock == NULL)
+		if(pBlock == nullptr)
 		{
 			return false;
 		}
@@ -4651,7 +4651,7 @@ bool FV_View::getStyle(const gchar ** style) const
 
 				// did span format change?
 
-				pAP = NULL;
+				pAP = nullptr;
 				pBlock->getSpanAP(pRun->getBlockOffset()+pRun->getLength(),true,pAP);
 				if (pAP && (pSpanAP != pAP))
 				{
@@ -4668,8 +4668,8 @@ bool FV_View::getStyle(const gchar ** style) const
 					{
 						// doesn't match, so stop looking
 						bCharStyle = false;
-						szChar = NULL;
-						pRun = NULL;
+						szChar = nullptr;
+						pRun = nullptr;
 						break;
 					}
 				}
@@ -4699,7 +4699,7 @@ bool FV_View::setCharFormat(const PP_PropertyVector & properties, const PP_Prope
 
 			m_pDoc->beginUserAtomicGlob();
 			UT_sint32 i = 0;
-			PD_DocumentRange * pRange = NULL;
+			PD_DocumentRange * pRange = nullptr;
 			for(i=0; i < getNumSelections(); i++)
 			{
 				pRange = getNthSelection(i); // don't delete!
@@ -4828,12 +4828,12 @@ bool FV_View::resetCharFormat(bool bAll)
 const PP_AttrProp * FV_View::getAttrPropForPoint() const
 {
 	const fl_BlockLayout * pBL = getCurrentBlock();
-	UT_return_val_if_fail( pBL, NULL);
+	UT_return_val_if_fail( pBL, nullptr);
 
 	UT_uint32 blockOffset = getPoint() - pBL->getPosition();
 	fp_Run * pRun = pBL->findRunAtOffset(blockOffset);
 
-	UT_return_val_if_fail( pRun, NULL );
+	UT_return_val_if_fail( pRun, nullptr );
 	bool bLeftSide = true;
 
 	if(/*(pRun->getType() == FPRUN_TEXT || pRun->getType() == FPRUN_ENDOFPARAGRAPH) &&*/
@@ -4848,7 +4848,7 @@ const PP_AttrProp * FV_View::getAttrPropForPoint() const
 		bLeftSide = false;
 	}
 	
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	getDocument()->getSpanAttrProp(pBL->getStruxDocHandle(), blockOffset, bLeftSide, &pAP);
 #if 0
 	if(pAP) pAP->miniDump(getDocument());
@@ -4859,7 +4859,7 @@ const PP_AttrProp * FV_View::getAttrPropForPoint() const
 
 bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP, PT_DocPosition posStart) const
 {
-	if(getLayout()->getFirstSection() == NULL)
+	if(getLayout()->getFirstSection() == nullptr)
 		return false;
 
 	PT_DocPosition posEnd = posStart;
@@ -4888,7 +4888,7 @@ bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** 
 	bool bDirection;
 
 	fl_BlockLayout* pBlock;
-	fl_BlockLayout* pNBlock = NULL;
+	fl_BlockLayout* pNBlock = nullptr;
 	fp_Run* pRun;
 
 	_findPositionCoords(posStart, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
@@ -4958,7 +4958,7 @@ bool FV_View::getAllAttrProp(const PP_AttrProp *& pSpanAP, const PP_AttrProp *& 
 	pBlockAP = nullptr;
 	pSpanAP = nullptr;
 
-	if(getLayout()->getFirstSection() == NULL)
+	if(getLayout()->getFirstSection() == nullptr)
 	{
 		UT_DEBUGMSG(("FV_View::getAllAttrProp: no first section!\n"));
 		return false;
@@ -5081,7 +5081,7 @@ bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue,
 bool FV_View::isGrammarLoaded(void) const
 {
 	XAP_Module * pGrammar = m_pApp->getPlugin("abigrammar");
-	if(pGrammar == NULL)
+	if(pGrammar == nullptr)
 	{
 		return false;
 	}
@@ -5094,7 +5094,7 @@ bool FV_View::isGrammarLoaded(void) const
 bool FV_View::isMathLoaded(void) const
 {
 	XAP_Module * pMath = m_pApp->getPlugin("abimathview");
-	if(pMath == NULL)
+	if(pMath == nullptr)
 	{
 		return false;
 	}
@@ -5153,14 +5153,14 @@ bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue,
 	if (!bExplicitlyDefined)
 	{
 		szPropValue = PP_evalProperty(szProperty, pSpanAP, pBlockAP, pSectionAP, m_pDoc, true);
-		if (szPropValue != NULL)
+		if (szPropValue != nullptr)
 		{
 			xxx_UT_DEBUGMSG(("Property \"%s\" defined at style/document level as \"%s\"\n",szProperty,szPropValue));
 			szValue = szPropValue;
 		}
 		else
 		{
-			/* PP_evalProperty returns NULL only if something is very wrong...
+			/* PP_evalProperty returns nullptr only if something is very wrong...
 			 */
 			szValue = "";
 			okay = false;
@@ -5176,9 +5176,9 @@ bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles) const
 
 bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles, PT_DocPosition posStart) const
 {
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr; // TODO do we care about section-level inheritance
 	UT_GenericVector<_fmtPair *> v;
 	UT_uint32 i;
 	_fmtPair * f;
@@ -5187,7 +5187,7 @@ bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles, PT_Do
 // Check we have a layout defined first. On start up we don't
 //
 
-	if(getLayout()->getFirstSection() == NULL)
+	if(getLayout()->getFirstSection() == nullptr)
 	{
 		return false;
 	}
@@ -5230,7 +5230,7 @@ bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles, PT_Do
 	bool bDirection;
 
 	fl_BlockLayout* pBlock;
-	fl_BlockLayout* pNBlock = NULL;
+	fl_BlockLayout* pNBlock = nullptr;
 	fp_Run* pRun;
 
 	_findPositionCoords(posStart, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
@@ -5255,13 +5255,13 @@ bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles, PT_Do
 								&pRun);
 		}
 	}
-	if(pBlock == NULL)
+	if(pBlock == nullptr)
 	{
-		// We want to return NULL here, because that makes it clear to the caller that the props are
+		// We want to return nullptr here, because that makes it clear to the caller that the props are
 		// not valid; in any case to return sometimes a dynamically allocated array and sometimes a
 		// statically allocated one is not a good idea
 		//
-		// static const char * pszTmp[2] = {NULL,NULL};
+		// static const char * pszTmp[2] = {nullptr,nullptr};
 
 		props = PP_NOPROPS;
 		return false;
@@ -5303,7 +5303,7 @@ bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles, PT_Do
 		if((PP_getNthPropertyLevel(n) & PP_LEVEL_CHAR))
 		{
 			f = new _fmtPair(PP_getNthPropertyName(n),pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-			if(f->m_val != NULL)
+			if(f->m_val != nullptr)
 				v.addItem(f);
 			else
 				delete f;
@@ -5355,7 +5355,7 @@ bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles, PT_Do
 
 			// did span format change?
 
-			pAP = NULL;
+			pAP = nullptr;
 			pBlock->getSpanAP(pRun->getBlockOffset()+pRun->getLength(),true,pAP);
 			if (pSpanAP != pAP)
 			{
@@ -5386,7 +5386,7 @@ bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles, PT_Do
 				// when vector is empty, stop looking
 				if (0 == v.getItemCount())
 				{
-					pRun = NULL;
+					pRun = nullptr;
 					break;
 				}
 			}
@@ -5442,7 +5442,7 @@ void FV_View::getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * v) const
 	// Now collect all all the blocks between the first and last list elements
 	// in a vector
 	//
-	while (pBlock != NULL && foundLast == false)
+	while (pBlock != nullptr && foundLast == false)
 	{
 		if(pBlock->getStruxDocHandle() == pFirstSdh)
 		{
@@ -5573,19 +5573,19 @@ bool FV_View::removeStruxAttrProps(PT_DocPosition ipos1,
 
 bool FV_View::isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux)
 {
-	pf_Frag_Strux* sdh = NULL;
+	pf_Frag_Strux* sdh = nullptr;
 	bool  bret = m_pDoc->getStruxOfTypeFromPosition(ipos1, iStrux, &sdh);
 	if(!bret)
 	{
 		return false;
 	}	
-	const gchar * pszDataID = NULL;
+	const gchar * pszDataID = nullptr;
     bret = m_pDoc->getAttributeFromSDH(sdh, isShowRevisions(), getRevisionLevel(), PT_STRUX_IMAGE_DATAID,&pszDataID);
 	if(!bret)
 	{
 		return false;
 	}
-	if(pszDataID == NULL)
+	if(pszDataID == nullptr)
 	{
 		return false;
 	}
@@ -5674,7 +5674,7 @@ bool FV_View::setBlockFormat(const PP_PropertyVector & properties)
 		bRet = false;
 		UT_GenericVector<fl_BlockLayout*> vBlock;
 		getBlocksInSelection(&vBlock);
-		fl_ContainerLayout * pCL = NULL;
+		fl_ContainerLayout * pCL = nullptr;
 		UT_sint32 i =0;
 		for(i=0; i<vBlock.getItemCount();i++)
 		{
@@ -5751,7 +5751,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const PP_PropertyVector & att
 //
 	bool bInsertFromHdrFtr = false;
 	PT_DocPosition oldpos = getPoint();
-	fl_HdrFtrShadow * pShadow = NULL;
+	fl_HdrFtrShadow * pShadow = nullptr;
 	if(isHdrFtrEdit())
 	{
 		bInsertFromHdrFtr = true;
@@ -5763,7 +5763,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const PP_PropertyVector & att
 // Handle simple cases of inserting into non-existing header/footers.
 //
 	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
-	if(hfType == FL_HDRFTR_FOOTER && pDSL->getFooter() == NULL)
+	if(hfType == FL_HDRFTR_FOOTER && pDSL->getFooter() == nullptr)
 	{
 		insertPageNum(atts, hfType);
 		setPoint(oldpos);
@@ -5773,7 +5773,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const PP_PropertyVector & att
 		}
 		return true;
 	}
-	else if(hfType == FL_HDRFTR_HEADER && pDSL->getHeader() == NULL)
+	else if(hfType == FL_HDRFTR_HEADER && pDSL->getHeader() == nullptr)
 	{
 		insertPageNum(atts, hfType);
 		setPoint(oldpos);
@@ -5787,7 +5787,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const PP_PropertyVector & att
 // OK we're here if we want to insert a page number into a pre-existing
 // header/footer. Let's get the header/footer now.
 //
-	fl_HdrFtrSectionLayout * pHFSL = NULL;
+	fl_HdrFtrSectionLayout * pHFSL = nullptr;
 	if(hfType >= FL_HDRFTR_FOOTER)
 		pHFSL = pDSL->getFooter();
 	else
@@ -5797,10 +5797,10 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const PP_PropertyVector & att
 //
 	fl_BlockLayout * pBL = pHFSL->getNextBlockInDocument();
 	bool bFoundPageNumber = false;
-	while(pBL != NULL && !bFoundPageNumber)
+	while(pBL != nullptr && !bFoundPageNumber)
 	{
 		fp_Run * pRun = pBL->getFirstRun();
-		while(pRun != NULL && !bFoundPageNumber)
+		while(pRun != nullptr && !bFoundPageNumber)
 		{
 			if(pRun->getType() == FPRUN_FIELD)
 			{
@@ -5910,7 +5910,7 @@ void FV_View::changeListStyle(const fl_AutoNumPtr & pAuto,
 		// Stop lists in all elements
 		i = 0;
 		sdh2 = pAuto->getNthBlock(i);
-		while(sdh2 != NULL)
+		while(sdh2 != nullptr)
 		{
 			vb.addItem(sdh2);
 			i++;
@@ -5955,19 +5955,19 @@ void FV_View::changeListStyle(const fl_AutoNumPtr & pAuto,
 		"list-style", style
 	};
 	pAuto->setStartValue(startv);
-	if(pszDelim != NULL)
+	if(pszDelim != nullptr)
 	{
 		props.push_back( "list-delim");
 		props.push_back( pszDelim);
 		pAuto->setDelim(pszDelim);
 	}
-	if(pszDecimal != NULL)
+	if(pszDecimal != nullptr)
 	{
 		props.push_back( "list-decimal");
 		props.push_back( pszDecimal);
 		pAuto->setDecimal(pszDecimal);
 	}
-	if(pszFont != NULL)
+	if(pszFont != nullptr)
 	{
 		props.push_back( "field-font");
 		props.push_back( pszFont);
@@ -5979,7 +5979,7 @@ void FV_View::changeListStyle(const fl_AutoNumPtr & pAuto,
 
 	i = 0;
 	sdh2 = pAuto->getNthBlock(i);
-	while(sdh2 != NULL)
+	while(sdh2 != nullptr)
 	{
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh2)+fl_BLOCK_STRUX_OFFSET;
 		UT_DebugOnly<bool> bRet;
@@ -6003,8 +6003,8 @@ void FV_View::changeListStyle(const fl_AutoNumPtr & pAuto,
 
 bool FV_View::getSectionFormat(PP_PropertyVector & props) const
 {
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 	UT_GenericVector<_fmtPair *> v;
 	UT_uint32 i;
 	_fmtPair * f;
@@ -6032,7 +6032,7 @@ bool FV_View::getSectionFormat(PP_PropertyVector & props) const
 	m_SecProps.setTick(AV_View::getTick());
 	b = m_SecProps.isValid();
 	
-	if(getLayout()->getFirstSection() == NULL)
+	if(getLayout()->getFirstSection() == nullptr)
 	{
 		return false;
 	}
@@ -6056,8 +6056,8 @@ bool FV_View::getSectionFormat(PP_PropertyVector & props) const
 	{
 		if((PP_getNthPropertyLevel(n) & PP_LEVEL_SECT))
 		{
-			f = new _fmtPair(PP_getNthPropertyName(n),NULL,pBlockAP,pSectionAP,m_pDoc,false);
-			if(f->m_val != NULL)
+			f = new _fmtPair(PP_getNthPropertyName(n),nullptr,pBlockAP,pSectionAP,m_pDoc,false);
+			if(f->m_val != nullptr)
 				v.addItem(f);
 			else
 				delete f;
@@ -6102,10 +6102,10 @@ bool FV_View::getSectionFormat(PP_PropertyVector & props) const
 				{
 					f = v.getNthItem(i-1);
 
-					const gchar * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,false);
+					const gchar * value = PP_evalProperty(f->m_prop,nullptr,pBlockAP,pSectionAP,m_pDoc,false);
 
 					// prune anything that doesn't match
-					if(f->m_val == NULL  || value == NULL)
+					if(f->m_val == nullptr  || value == nullptr)
 					{
 						DELETEP(f);
 						v.deleteNthItem(i-1);
@@ -6122,7 +6122,7 @@ bool FV_View::getSectionFormat(PP_PropertyVector & props) const
 				// when vector is empty, stop looking
 				if (0 == v.getItemCount())
 				{
-					pSection = NULL;
+					pSection = nullptr;
 					break;
 				}
 			}
@@ -6160,7 +6160,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, std::string & sCellProps) const
 	{
 		return false;
 	}
-	const PP_AttrProp * pCellAP = NULL;
+	const PP_AttrProp * pCellAP = nullptr;
 	fl_BlockLayout * pBL =  _findBlockAtPosition(pos);
 	if(!pBL)
 	{
@@ -6199,8 +6199,8 @@ bool FV_View::getCellFormat(PT_DocPosition pos, std::string & sCellProps) const
 
 bool FV_View::getBlockFormat(PP_PropertyVector & props,bool bExpandStyles) const
 {
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;	// TODO do we care about section-level inheritance?
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;	// TODO do we care about section-level inheritance?
 											// we do in the bidi version
 
 //
@@ -6210,7 +6210,7 @@ bool FV_View::getBlockFormat(PP_PropertyVector & props,bool bExpandStyles) const
 
 	props.clear();
 
-	if(getLayout()->getFirstSection() == NULL)
+	if(getLayout()->getFirstSection() == nullptr)
 	{
 		return false;
 	}
@@ -6218,7 +6218,7 @@ bool FV_View::getBlockFormat(PP_PropertyVector & props,bool bExpandStyles) const
 	// currently there are 69 block level properties
 	UT_GenericVector<_fmtPair *> v(69,4,true);
 	UT_sint32 i;
-	_fmtPair * f = NULL;
+	_fmtPair * f = nullptr;
 
 	/*
 	  IDEA: We want to know block-level formatting properties, if
@@ -6250,7 +6250,7 @@ bool FV_View::getBlockFormat(PP_PropertyVector & props,bool bExpandStyles) const
 
 	// 1. assemble complete set at insertion point
 	pBlock = _findBlockAtPosition(posStart);
-	if(pBlock == NULL)
+	if(pBlock == nullptr)
 	{
 		return false;
 	}
@@ -6265,8 +6265,8 @@ bool FV_View::getBlockFormat(PP_PropertyVector & props,bool bExpandStyles) const
 	{
 		if((PP_getNthPropertyLevel(n) & PP_LEVEL_BLOCK))
 		{
-			f = new _fmtPair(PP_getNthPropertyName(n),NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-			if(f->m_val != NULL)
+			f = new _fmtPair(PP_getNthPropertyName(n),nullptr,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+			if(f->m_val != nullptr)
 				v.addItem(f);
 			else
 				delete f;
@@ -6303,7 +6303,7 @@ bool FV_View::getBlockFormat(PP_PropertyVector & props,bool bExpandStyles) const
 				{
 					f = v.getNthItem(i-1);
 
-					const gchar * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+					const gchar * value = PP_evalProperty(f->m_prop,nullptr,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 					UT_ASSERT(value);
 
 					// prune anything that doesn't match
@@ -6319,7 +6319,7 @@ bool FV_View::getBlockFormat(PP_PropertyVector & props,bool bExpandStyles) const
 				// when vector is empty, stop looking
 				if (0 == v.getItemCount())
 				{
-					pBlock = NULL;
+					pBlock = nullptr;
 					break;
 				}
 			}
@@ -6365,7 +6365,7 @@ void FV_View::delTo(FV_DocPos dp)
 		bCaretLeft = true;
 	}
 	
-	_deleteSelection(NULL, false, bCaretLeft);
+	_deleteSelection(nullptr, false, bCaretLeft);
 
 	
 	// Signal PieceTable Changes have finished
@@ -6418,7 +6418,7 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText) const
 	{
 		block->getBlockBuf(&buffer);
 
-		UT_UCSChar * bufferSegment = NULL;
+		UT_UCSChar * bufferSegment = nullptr;
 
 		PT_DocPosition offset = 0;
 		if( low >= block->getPosition(false) )
@@ -6427,7 +6427,7 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText) const
 		}
 		if( buffer.getLength() <= 0)
 		{
-			pText = NULL;
+			pText = nullptr;
 			return;
 		}
 		// allow no more than the rest of the block
@@ -6445,7 +6445,7 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText) const
 
 		if(!bufferSegment)
 		{
-			pText = NULL;
+			pText = nullptr;
 			return;
 		}
 		
@@ -6456,7 +6456,7 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText) const
 		return;
 	}
 
-	pText = NULL;
+	pText = nullptr;
 }
 
 /* this function has not been debugged
@@ -6465,7 +6465,7 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText) const
  */
 UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2) const
 {
-	UT_return_val_if_fail(pos2 > pos1, NULL);
+	UT_return_val_if_fail(pos2 > pos1, nullptr);
 
 	UT_GrowBuf buffer;
 
@@ -6480,7 +6480,7 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 
 	UT_ASSERT(bufferRet);
 	if(!bufferRet)
-		return NULL;
+		return nullptr;
 
 	UT_UCSChar * buff_ptr = bufferRet;
 
@@ -6553,7 +6553,7 @@ bool FV_View::isTabListBehindPoint(UT_sint32 & iNumToDelete) const
 	{
 		pRun = pRun->getPrevRun();
 	}
-	if(pRun == NULL)
+	if(pRun == nullptr)
 	{
 		return false;
 	}
@@ -6572,7 +6572,7 @@ bool FV_View::isTabListBehindPoint(UT_sint32 & iNumToDelete) const
 		return false;
 	}
 	pRun = pRun->getPrevRun();
-	while((pRun != NULL) && (pRun->getType()== FPRUN_FMTMARK))
+	while((pRun != nullptr) && (pRun->getType()== FPRUN_FMTMARK))
 	{
 		pRun = pRun->getPrevRun();
 	}
@@ -6954,7 +6954,7 @@ PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, boo
 	{
 		bUseHdrFtr = false;
 	}
-	pPage->mapXYToPosition(bNotFrames,xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, bUseHdrFtr,NULL);
+	pPage->mapXYToPosition(bNotFrames,xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, bUseHdrFtr,nullptr);
 	xxx_UT_DEBUGMSG((" point at (%d,%d) is docpos %d \n",xpos,ypos,iNewPoint));
 	return iNewPoint;
 }
@@ -7361,7 +7361,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			if (inc) // TODO:  What if number passes the number of pages?
 				for (UT_uint32 i = 0; i < number; i++)
 				{
-					if ((pTmpPage = pPage->getNext ()) != NULL)
+					if ((pTmpPage = pPage->getNext ()) != nullptr)
 						pPage = pTmpPage;
 					else
 						break;
@@ -7369,7 +7369,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			else
 				for (UT_uint32 i = 0; i < number; i++)
 				{
-					if ((pTmpPage = pPage->getPrev ()) != NULL)
+					if ((pTmpPage = pPage->getPrev ()) != nullptr)
 						pPage = pTmpPage;
 					else
 						break;
@@ -7401,7 +7401,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			//UT_uint32 line = 0;
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
 			fl_BlockLayout * pBL = pSL->getNextBlockInDocument();
-			if(pBL == NULL)
+			if(pBL == nullptr)
 			{
 				return false;
 			}
@@ -7409,17 +7409,17 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			fp_Line * pOldLine = pLine;
 			for (UT_uint32 i = 1; i < number; i++)
 			{
-				if(pLine == NULL)
+				if(pLine == nullptr)
 				{
 					pLine = pOldLine;
 					break;
 				}
 				pOldLine = pLine;
 				pLine = static_cast<fp_Line *>(pLine->getNext ());
-				if (pLine == NULL)
+				if (pLine == nullptr)
 				{
 					pBL = pBL->getNextBlockInDocument();
-					if (pBL == NULL)
+					if (pBL == nullptr)
 					{
 						return false;
 					}
@@ -7429,7 +7429,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 					}
 				}
 			}
-			if(pLine == NULL)
+			if(pLine == nullptr)
 			{
 				return false;
 			}
@@ -7471,7 +7471,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
 			fl_BlockLayout * pBL;
 			fp_Run* pRun;
-			fp_BookmarkRun * pB[2] = {NULL,NULL};
+			fp_BookmarkRun * pB[2] = {nullptr,nullptr};
 
 			UT_uint32 i = 0;
 			bool bFound = false;
@@ -7695,7 +7695,7 @@ FV_View::findSetFindString(const UT_UCSChar* pFind)
 UT_UCSChar * 
 FV_View::findGetFindString(void)
 {
-	UT_UCSChar * string = NULL;
+	UT_UCSChar * string = nullptr;
 	if (m_sFind)
 	{
 		if (UT_UCS4_cloneString(&string, m_sFind))
@@ -7707,7 +7707,7 @@ FV_View::findGetFindString(void)
 			return string;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void
@@ -7720,7 +7720,7 @@ FV_View::findSetReplaceString(const UT_UCSChar* pReplace)
 UT_UCSChar * 
 FV_View::findGetReplaceString(void)
 {
-	UT_UCSChar * string = NULL;
+	UT_UCSChar * string = nullptr;
 	if (m_sReplace)
 	{
 		if (UT_UCS4_cloneString(&string, m_sReplace))
@@ -7732,7 +7732,7 @@ FV_View::findGetReplaceString(void)
 			return string;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void
@@ -7981,7 +7981,7 @@ void FV_View::insertSymbol(UT_UCSChar c, const gchar * symfont)
 
 		fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(getPoint());
 		fp_Run * pRun;
-		if(pBL == NULL)
+		if(pBL == nullptr)
 		{
 			return;
 		}
@@ -8005,7 +8005,7 @@ void FV_View::insertSymbol(UT_UCSChar c, const gchar * symfont)
 
 		fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(getPoint());
 		fp_Run * pRun;
-		if(pBL == NULL)
+		if(pBL == nullptr)
 		{
 			return;
 		}
@@ -8036,20 +8036,20 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	PT_DocPosition pos,posEnd;
 	bool bBOL = false;
 	bool bEOL = false;
-	fl_HdrFtrShadow * pShadow=NULL;	
+	fl_HdrFtrShadow* pShadow = nullptr;
 	bool isTOC = false;
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL,isTOC, true, &pShadow);
 	if(bClick)
 	{
 		getEditableBounds(true,posEnd,true);
-		if((pos > posEnd) && (pShadow != NULL))
+		if((pos > posEnd) && (pShadow != nullptr))
 		{
 			if (pos != getPoint())
 				_clearIfAtFmtMark(getPoint());
 			setHdrFtrEdit(pShadow);
 			bClick = true;
 		}
-		else if((pos > posEnd) && (pShadow == NULL))
+		else if((pos > posEnd) && (pShadow == nullptr))
 		{
 			bClick = false;
 			pos = posEnd;
@@ -8682,7 +8682,7 @@ bool FV_View::setCellFormat(const PP_PropertyVector & properties, FormatTable ap
 			//
 			pf_Frag_Strux* endTableSDH = m_pDoc->getEndTableStruxFromTablePos(posTable);
 			UT_ASSERT(endTableSDH);
-			if(endTableSDH == NULL)
+			if(endTableSDH == nullptr)
 			{
 				return false;
 			}
@@ -8694,8 +8694,8 @@ bool FV_View::setCellFormat(const PP_PropertyVector & properties, FormatTable ap
 			// Do the actual change
 			UT_GenericVector<fl_BlockLayout*> vBlock;
 			getBlocksInSelection(&vBlock);
-			fl_ContainerLayout * pCL = NULL;
-			fl_CellLayout * pCell = NULL;
+			fl_ContainerLayout * pCL = nullptr;
+			fl_CellLayout * pCell = nullptr;
 			UT_sint32 i =0;
 			for(i=0; i<vBlock.getItemCount();i++)
 			{
@@ -8708,7 +8708,7 @@ bool FV_View::setCellFormat(const PP_PropertyVector & properties, FormatTable ap
 						bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, pos, pos, PP_NOPROPS, properties, PTX_SectionCell);
 					if(static_cast<fl_CellLayout *>(pCL) != pCell)
 					{
-						if(pFG != NULL)
+						if(pFG != nullptr)
 						{
 							pCell = static_cast<fl_CellLayout *>(pCL);
 							pFG->insertAtStrux(m_pDoc,72,pos,PTX_SectionCell,sDataID.c_str());
@@ -8760,7 +8760,7 @@ bool FV_View::setCellFormat(const PP_PropertyVector & properties, FormatTable ap
 					// Do the actual change
 					posStart = m_pDoc->getStruxPosition(cellSDH)+1;
 					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posStart,PP_NOPROPS, properties, PTX_SectionCell);
-					if(pFG != NULL)
+					if(pFG != nullptr)
 					{
 						pFG->insertAtStrux(m_pDoc,72,posStart,
 										   PTX_SectionCell,sDataID.c_str());
@@ -8849,7 +8849,7 @@ bool FV_View::setCellFormat(const PP_PropertyVector & properties, FormatTable ap
 					// Do the actual change
 					posStart = m_pDoc->getStruxPosition(cellSDH)+1;
 					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posStart, PP_NOPROPS, properties, PTX_SectionCell);
-					if(pFG != NULL)
+					if(pFG != nullptr)
 					{
 						pFG->insertAtStrux(m_pDoc,72,posStart,
 										   PTX_SectionCell,sDataID.c_str());
@@ -8930,7 +8930,7 @@ bool FV_View::setTableFormat(PT_DocPosition pos, const PP_PropertyVector & prope
 	bool bRet;
 
 	PT_DocPosition posStart = pos;
-	pf_Frag_Strux* tableSDH = NULL;
+	pf_Frag_Strux* tableSDH = nullptr;
 	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart, PTX_SectionTable, &tableSDH);
 	if(!bRet)
 	{
@@ -9101,8 +9101,8 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		return;
 	}
 
-	fl_BlockLayout * pBlock = NULL;
-	fp_Run * pRun = NULL;
+	fl_BlockLayout * pBlock = nullptr;
+	fp_Run * pRun = nullptr;
 	UT_sint32 xCaret, yCaret;
 	UT_uint32 heightCaret;
 	UT_sint32 xCaret2, yCaret2;
@@ -9127,8 +9127,8 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 
 	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_CONTAINER_FOOTNOTE || pSection->getContainerType() == FL_CONTAINER_ANNOTATION || pSection->getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
-		fp_Column* pColumn = NULL;
-		fl_DocSectionLayout* pDSL = NULL;
+		fp_Column* pColumn = nullptr;
+		fl_DocSectionLayout* pDSL = nullptr;
 		
 		if(pSection->getType() == FL_SECTION_DOC)
 		{
@@ -9222,11 +9222,11 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pContainer);
 		fl_DocSectionLayout* pDSL = pSection->getDocSectionLayout();
 		fp_VerticalContainer * pColumn = static_cast<fp_Column *>(pCell->getColumn(pLine));
-		if(pColumn == NULL)
+		if(pColumn == nullptr)
 		{
 			return;
 		}
-		fp_FrameContainer * pFrameC = NULL;
+		fp_FrameContainer * pFrameC = nullptr;
 		UT_uint32 nCol=0;
 		if(isInFrame(getPoint()))
 		{
@@ -9235,7 +9235,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			{
 				pCon = pCon->getContainer();
 			}
-			if(pCon == NULL)
+			if(pCon == nullptr)
 			{
 				return;
 			}
@@ -9248,7 +9248,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				return;
 			}
 			fp_Page * pPage = pFrameC->getPage();
-			if(pPage == NULL)
+			if(pPage == nullptr)
 			{
 				return;
 			}
@@ -9312,7 +9312,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		UT_sint32 numcols = pTab->getNumCols();
 		//UT_sint32 numrows = pTab->getNumRows();
 		UT_sint32 i =0;
-		fp_CellContainer * pCur = NULL;
+		fp_CellContainer * pCur = nullptr;
 		UT_sint32 iCellCount = 0;
 		pInfo->m_vecTableColInfo = new UT_GenericVector<AP_TopRulerTableInfo*>();
 		while( i < numcols)
@@ -9353,7 +9353,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 // Now fill the full vector including merged cells.
 //
 		pInfo->m_vecFullTable = new UT_GenericVector<AP_TopRulerTableInfo *>();
-		fp_TableRowColumn * pRC = NULL;
+		fp_TableRowColumn * pRC = nullptr;
 		UT_sint32 iCum = 0;
 		UT_sint32 ioff_x = 0;
 		fp_Container * pCon = static_cast<fp_Container*>(pTab->getContainer());
@@ -9399,7 +9399,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_FRAME;
 		fl_DocSectionLayout * pDSL = pFL->getDocSectionLayout();
-		if(pDSL == NULL)
+		if(pDSL == nullptr)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return;
@@ -9407,7 +9407,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_iCurrentColumn = 0;
 		pInfo->m_iNumColumns = 1;
 		fp_Page * pPage = pFC->getPage();
-		if(pPage == NULL)
+		if(pPage == nullptr)
 		{
 			return;
 		}
@@ -9482,8 +9482,8 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 		pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_COLUMNS;
 
-		fl_BlockLayout * pBlock = NULL;
-		fp_Run * pRun = NULL;
+		fl_BlockLayout * pBlock = nullptr;
+		fp_Run * pRun = nullptr;
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
 		UT_sint32 xCaret2, yCaret2;
@@ -9516,10 +9516,10 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yBottomMargin = 0;
 			return;
 		}
-		fl_SectionLayout * pSection = NULL;
-		fl_DocSectionLayout * pDSL2 = NULL;
+		fl_SectionLayout * pSection = nullptr;
+		fl_DocSectionLayout * pDSL2 = nullptr;
 		fp_Container * pContainer = pRun->getLine()->getContainer();
-		if(pContainer == NULL)
+		if(pContainer == nullptr)
 		{
 			pInfo->m_yPageStart = 0;
 			pInfo->m_yPageSize = 0;
@@ -9534,7 +9534,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		bool isEndnote = false;
 		xxx_UT_DEBUGMSG(("ap_leftRulerInfo: container type %d \n",pContainer->getContainerType()));
 		fp_Page * pPage =  pRun->getLine()->getPage();
-		if(pPage == NULL)
+		if(pPage == nullptr)
 		{
 			pInfo->m_yPageStart = 0;
 			pInfo->m_yPageSize = 0;
@@ -9594,7 +9594,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 				pCL = pCL->myContainingLayout();
 			}
 			fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
-			if(pDSL == NULL)
+			if(pDSL == nullptr)
 			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return;
@@ -9629,7 +9629,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			UT_sint32 col = pCell->getLeftAttach();
 			UT_sint32 numrows = pTab->getNumRows();
 			UT_sint32 i =0;
-			fp_CellContainer * pCur = NULL;
+			fp_CellContainer * pCur = nullptr;
 			pInfo->m_vecTableRowInfo = new UT_GenericVector<AP_LeftRulerTableInfo*>();
 			pCur = pTab->getCellAtRowColumn(0,col);
 			fp_CellContainer * pPrev = pCur;	
@@ -9680,7 +9680,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 			pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_FRAME;
 			fl_DocSectionLayout * pDSL = pFL->getDocSectionLayout();
-			if(pDSL == NULL)
+			if(pDSL == nullptr)
 			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return;
@@ -9757,7 +9757,7 @@ bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
 
 /*!
  * Returns a pointer to the cell container surrounding the supplied point
- * Return NULL if there isn't one.
+ * Return nullptr if there isn't one.
  */
 fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos) const
 {
@@ -9768,7 +9768,7 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos) const
 	fl_BlockLayout* pBlock;
 	fp_Run* pRun;
 	_findPositionCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
-	fp_CellContainer * pCell = NULL;
+	fp_CellContainer * pCell = nullptr;
 	if(isInTable(pos))
 	{
 		fp_Line * pLine = pRun->getLine();
@@ -9786,9 +9786,9 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos) const
 		   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
 		{
 			pBlock = pBlock->getEnclosingBlock();
-			if(pBlock == NULL)
+			if(pBlock == nullptr)
 			{
-				return NULL;
+				return nullptr;
 			}
 			pCL = pBlock->myContainingLayout();
 			if(pCL->getContainerType() == FL_CONTAINER_CELL)
@@ -9797,13 +9797,13 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos) const
 			}
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 {
 	fl_BlockLayout* pBlock =_findBlockAtPosition(pos);
-	fp_Run* pRun = NULL;
+	fp_Run* pRun = nullptr;
 
 	if(pBlock)
 	{
@@ -9864,14 +9864,14 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 			pRun = nullptr;
 		}
 	}
-	if(pRun && pRun->getHyperlink() != NULL)
+	if(pRun && pRun->getHyperlink() != nullptr)
 	{
 		xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(ret) run.hl:%p\n", pRun->getHyperlink() ));
 		return pRun->getHyperlink();
 	}
 	
 	xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(end fail)\n" ));
-	return NULL;
+	return nullptr;
 }
 
 EV_EditMouseContext FV_View::getLastMouseContext(void)
@@ -9984,7 +9984,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		xxx_UT_DEBUGMSG(("In Frame \n"));
 		if(m_pDoc->isFrameAtPos(pos))
 		{
-			fl_ContainerLayout* psfh = NULL;
+			fl_ContainerLayout* psfh = nullptr;
 			m_pDoc->getStruxOfTypeFromPosition(m_pLayout->getLID(),pos+1,
 											   PTX_SectionFrame, &psfh);
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(psfh);
@@ -10291,7 +10291,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	//
 	// If we are over a hyperlink then return that context
 	//
-	if(pHyperRun && pHyperRun->getHyperlink() != NULL)
+	if(pHyperRun && pHyperRun->getHyperlink() != nullptr)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pHyperRun->getType()));
 		
@@ -10509,9 +10509,9 @@ bool FV_View::isMathSelected(UT_sint32 x, UT_sint32 y, PT_DocPosition  & pos) co
 	bool bEOL = false;
 	bool isTOC = false;
 	bool bUseHdrFtr = true;
-	pPage->mapXYToPosition(false,xClick, yClick, pos, bBOL, bEOL,isTOC, bUseHdrFtr,NULL);
-	fl_BlockLayout * pBlock = NULL;
-	fp_Run * pRun = NULL;
+	pPage->mapXYToPosition(false,xClick, yClick, pos, bBOL, bEOL,isTOC, bUseHdrFtr,nullptr);
+	fl_BlockLayout * pBlock = nullptr;
+	fp_Run * pRun = nullptr;
 	UT_sint32 xCaret, yCaret;
 	UT_uint32 heightCaret;
 	UT_sint32 xCaret2, yCaret2;
@@ -10736,7 +10736,7 @@ bool FV_View::isTextMisspelled() const
 {
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
-	if(pBlock == NULL)
+	if(pBlock == nullptr)
 	{
 		return false;
 	}
@@ -10829,7 +10829,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 		return EV_EMC_REVISION;
 	}
 
-	if(pRun->getHyperlink() != NULL)
+	if(pRun->getHyperlink() != nullptr)
 	{
 		return EV_EMC_HYPERLINK;
 	}
@@ -10913,9 +10913,9 @@ fp_Page* FV_View::getCurrentPage(void) const
 //
 // Check we have a vaild layout. At startup we don't
 //
-	if(getLayout()->getFirstSection() == NULL)
+	if(getLayout()->getFirstSection() == nullptr)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	fl_BlockLayout * pBlock;
@@ -10935,10 +10935,9 @@ fp_Page* FV_View::getCurrentPage(void) const
 //
 // Detect if we have no Lines at the curren tpoint and bail out.
 //
- 	if(pRun == NULL || pRun->getLine() == NULL || iPointHeight == 0)
- 	{
- 		return NULL;
- 	}
+	if(pRun == nullptr || pRun->getLine() == nullptr || iPointHeight == 0) {
+		return nullptr;
+	}
 
 	// NOTE prior call will fail if the block isn't currently formatted,
 	// NOTE so we won't be able to figure out more specific geometry
@@ -10948,7 +10947,7 @@ fp_Page* FV_View::getCurrentPage(void) const
 		// we now have coords relative to the page containing the ins pt
 
 		fl_BlockLayout * pBL = pRun->getBlock();
-		fp_Page* pPointPage = NULL;
+		fp_Page* pPointPage = nullptr;
 		if(pBL->isHdrFtr())
 		{
 			UT_DEBUGMSG(("Yikes! What page am I on? \n"));
@@ -10960,7 +10959,7 @@ fp_Page* FV_View::getCurrentPage(void) const
 		return pPointPage;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*!
@@ -10968,13 +10967,13 @@ fp_Page* FV_View::getCurrentPage(void) const
  */
 bool FV_View::isDocumentPresent(void) const
 {
-	return (getLayout()->getFirstSection() != NULL);
+	return (getLayout()->getFirstSection() != nullptr);
 }
 
 UT_uint32 FV_View::getCurrentPageNumForStatusBar(void) const
 {
 	fp_Page* pCurrentPage = getCurrentPage();
-	if(pCurrentPage == NULL)
+	if(pCurrentPage == nullptr)
 	{
 		return 0;
 	}
@@ -11003,17 +11002,17 @@ UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 {
 	// locate the squiggle
 	PT_DocPosition pos = 0 ;
-	fl_BlockLayout* pBL = NULL ;
+	fl_BlockLayout* pBL = nullptr ;
 
 	pos = getPoint();
 	pBL = _findBlockAtPosition(pos);
-	UT_return_val_if_fail(pBL,NULL);
+	UT_return_val_if_fail(pBL,nullptr);
 
 	PT_DocPosition epos = 0;
 	getDocument()->getBounds(true, epos);
 	UT_DEBUGMSG(("end bound is %d\n", epos));
 	const fl_PartOfBlockPtr& pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
-	UT_return_val_if_fail(pPOB, NULL);
+	UT_return_val_if_fail(pPOB, nullptr);
 
 	// grab the suggestion
 	return _lookupSuggestion(pBL, pPOB, ndx);
@@ -11079,7 +11078,7 @@ FV_DocCount FV_View::countWords(bool bActuallyCountWords)
 		fl_EmbedLayout * pEmbedL= static_cast<fl_EmbedLayout*>(pBL->myContainingLayout()); 
 		pBL = pEmbedL->getContainingBlock();
 	}
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 		return wCount;
 	}
@@ -11108,7 +11107,7 @@ FV_DocCount FV_View::countWords(bool bActuallyCountWords)
 			}
 		}
 		// Find first line in selection
-		fp_Line* pNextLine = NULL;
+		fp_Line* pNextLine = nullptr;
 		while (pLine)
 		{
 			pNextLine = static_cast<fp_Line*>(pLine->getNext());
@@ -11174,7 +11173,7 @@ FV_DocCount FV_View::countWords(bool bActuallyCountWords)
 				UT_ASSERT_HARMLESS(iMaxOffset <= len);
 				imax = UT_MIN(iMaxOffset,len);
 			}
-			fl_ContainerLayout * pNoteCL = NULL;
+			fl_ContainerLayout * pNoteCL = nullptr;
 			UT_sint32 iNote = pBL->getEmbeddedOffset(0,pNoteCL);
 			UT_sint32 iNoteEnd = -1;
 			if (pNoteCL)
@@ -11419,7 +11418,7 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos) const
   {
 	  pf = pf->getPrev();
   }
-  if(pf == NULL)
+  if(pf == nullptr)
   {  
 	  return false;
   }
@@ -11446,7 +11445,7 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos) const
 	  {
 		  pf = pf->getPrev();
 	  }
-	  if(pf == NULL)
+	  if(pf == nullptr)
 	  {  
 		  return false;
 	  }
@@ -11495,7 +11494,7 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 	}
 	PT_DocPosition oldPos = getPoint();
 	fp_Page * pPage = getCurrentPage();
-	if(pPage == NULL)
+	if(pPage == nullptr)
 	{
 		clearCursorWait();
 		return;
@@ -11566,7 +11565,7 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 // Detect and abort if so.
 //
 	fp_Page * pPage = getCurrentPage();
-	if(pPage == NULL)
+	if(pPage == nullptr)
 	{
 		return;
 	}
@@ -11604,8 +11603,8 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 	}
 
 	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
-	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
-	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
+	fl_HdrFtrSectionLayout * pHdrFtrSrc = nullptr;
+	fl_HdrFtrSectionLayout * pHdrFtrDest = nullptr;
 	if(pDSL && (hfType < FL_HDRFTR_FOOTER))
 	{
 		pHdrFtrSrc = pDSL->getHeader();
@@ -11614,7 +11613,7 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 	{
 		pHdrFtrSrc = pDSL->getFooter();
 	}
-	if(pHdrFtrSrc == NULL)
+	if(pHdrFtrSrc == nullptr)
 	{
 
 	// restore updates and clean up dirty lists
@@ -11695,7 +11694,7 @@ bool FV_View::isHeaderOnPage(void) const
 	//UT_return_val_if_fail(pPage, false);
 	if(!pPage) 
 		return false;
-	return (pPage->getHdrFtrP(FL_HDRFTR_HEADER) != NULL);
+	return (pPage->getHdrFtrP(FL_HDRFTR_HEADER) != nullptr);
 }
 
 /*!
@@ -11708,7 +11707,7 @@ bool FV_View::isFooterOnPage(void) const
 	//UT_return_val_if_fail(pPage, false);
 	if(!pPage) 
 		return false;
-	return (pPage->getHdrFtrP(FL_HDRFTR_FOOTER) != NULL);
+	return (pPage->getHdrFtrP(FL_HDRFTR_FOOTER) != nullptr);
 }
 
 /*!
@@ -11735,7 +11734,7 @@ void FV_View::setHdrFtrEdit(fl_HdrFtrShadow * pShadow)
 void FV_View::clearHdrFtrEdit(void)
 {
 	m_bEditHdrFtr = false;
-	m_pEditShadow = NULL;
+	m_pEditShadow = nullptr;
 //
 // Remove the decorations around the Header/Footer
 //
@@ -11833,8 +11832,8 @@ void FV_View::markSavedPositionAsNeeded(void)
 bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOveride) const
 {
 	bool res=true;
-	fl_SectionLayout * pSL = NULL;
-	fl_BlockLayout * pBL = NULL;
+	fl_SectionLayout * pSL = nullptr;
+	fl_BlockLayout * pBL = nullptr;
 	if(!isEnd && (!m_bEditHdrFtr || bOveride))
 	{
 		res = m_pDoc->getBounds(isEnd,posEOD);
@@ -11853,7 +11852,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 
 		// So if there are no HdrFtr sections, return m_pDoc->getBounds.
 
-		while(pSL->getNext() != NULL && (pSL->getContainerType() != FL_CONTAINER_HDRFTR))
+		while(pSL->getNext() != nullptr && (pSL->getContainerType() != FL_CONTAINER_HDRFTR))
 		{
 			pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 		}
@@ -11867,7 +11866,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 // use that to get the end of editttable region.
 //
 		fl_ContainerLayout * pFirstCL = pSL->getFirstLayout();
-		if(pFirstCL == NULL)
+		if(pFirstCL == nullptr)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
 			return res;
@@ -11875,7 +11874,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 
 		PT_DocPosition posFirst = pFirstCL->getPosition(true) - 1;
 		PT_DocPosition posNext;
-		while((pSL->getNext() != NULL) && (pSL->getNextBlockInDocument() != NULL))
+		while((pSL->getNext() != nullptr) && (pSL->getNextBlockInDocument() != nullptr))
 		{
 			pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 			pFirstCL = pSL->getFirstLayout();
@@ -11904,7 +11903,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 	UT_return_val_if_fail(pBL, false);
 	posEOD = pBL->getPosition(false);
 	fp_Run * pRun = pBL->getFirstRun();
-	while( pRun && pRun->getNextRun() != NULL)
+	while( pRun && pRun->getNextRun() != nullptr)
 	{
 		pRun = pRun->getNextRun();
 	}
@@ -11960,8 +11959,8 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 // Now extract the shadow section from this.
 //
 	fp_Page * pPage = m_pLayout->getNthPage(iPageNo);
-	fl_HdrFtrShadow * pShadow = NULL;
-	fp_ShadowContainer * pHFCon = NULL;
+	fl_HdrFtrShadow * pShadow = nullptr;
+	fp_ShadowContainer * pHFCon = nullptr;
 	if(hfType >= FL_HDRFTR_FOOTER)
 		pHFCon = pPage->getHdrFtrP(FL_HDRFTR_FOOTER);
 	else if (hfType < FL_HDRFTR_FOOTER)
@@ -12050,7 +12049,7 @@ bool FV_View::insertHeaderFooter(const PP_PropertyVector & props, HdrFtrType hfT
 // Find the section that owns this page.
 //
 	fl_DocSectionLayout * pDocL = pDSL;
-	if(pDocL == NULL)
+	if(pDocL == nullptr)
 	{
 		fp_Page* pCurrentPage = getCurrentPage();
 		pDocL = pCurrentPage->getOwningSection();
@@ -12092,7 +12091,7 @@ bool FV_View::insertHeaderFooter(const PP_PropertyVector & props, HdrFtrType hfT
 UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos) const
 {
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 		return 0;
 	}
@@ -12111,20 +12110,20 @@ UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos) const
 }
 /*!
  * This method returns the closest footnote before or that contains the 
- * requested doc position. If the is no footnote before the doc position, NULL
+ * requested doc position. If the is no footnote before the doc position, nullptr
  * is returned.
  */
 fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos) const
 {
-	fl_FootnoteLayout * pFL = NULL;
-	fl_FootnoteLayout * pClosest = NULL;
+	fl_FootnoteLayout * pFL = nullptr;
+	fl_FootnoteLayout * pClosest = nullptr;
 	UT_sint32 i = 0;
 	for(i = 0; i< static_cast<UT_sint32>(m_pLayout->countFootnotes());i++)
 	{
 		pFL = m_pLayout->getNthFootnote(i);
 		if(pFL->getDocPosition() <= pos)
 		{
-			if(pClosest == NULL)
+			if(pClosest == nullptr)
 			{
 				pClosest = pFL;
 			}
@@ -12140,20 +12139,20 @@ fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos) const
 
 /*!
  * This method returns the closest endnote before or that contains the 
- * requested doc position. If the is no footnote before the doc position, NULL
+ * requested doc position. If the is no footnote before the doc position, nullptr
  * is returned.
  */
 fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos) const
 {
-	fl_EndnoteLayout * pFL = NULL;
-	fl_EndnoteLayout * pClosest = NULL;
+	fl_EndnoteLayout * pFL = nullptr;
+	fl_EndnoteLayout * pClosest = nullptr;
 	UT_sint32 i = 0;
 	for(i = 0; i< static_cast<UT_sint32>(m_pLayout->countEndnotes());i++)
 	{
 		pFL = m_pLayout->getNthEndnote(i);
 		if(pFL->getDocPosition() <= pos)
 		{
-			if(pClosest == NULL)
+			if(pClosest == nullptr)
 			{
 				pClosest = pFL;
 			}
@@ -12170,20 +12169,20 @@ fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos) const
 
 /*!
  * This method returns the closest annotation before or that contains the 
- * requested doc position. If the is no annnotation before the doc position, NULL
+ * requested doc position. If the is no annnotation before the doc position, nullptr
  * is returned.
  */
 fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos) const
 {
-	fl_AnnotationLayout * pAL = NULL;
-	fl_AnnotationLayout * pClosest = NULL;
+	fl_AnnotationLayout * pAL = nullptr;
+	fl_AnnotationLayout * pClosest = nullptr;
 	UT_sint32 i = 0;
 	for(i = 0; i< static_cast<UT_sint32>(m_pLayout->countAnnotations());i++)
 	{
 		pAL = m_pLayout->getNthAnnotation(i);
 		if(pAL->getDocPosition() <= pos)
 		{
-			if(pClosest == NULL)
+			if(pClosest == nullptr)
 			{
 				pClosest = pAL;
 			}
@@ -12199,7 +12198,7 @@ fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos) const
 bool FV_View::isInHdrFtr(PT_DocPosition pos) const
 {
 	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 		return false;
 	}
@@ -12224,8 +12223,8 @@ bool FV_View::isInHdrFtr(PT_DocPosition pos) const
  */
 bool FV_View::isPointLegal(PT_DocPosition pos) const
 {
-	pf_Frag_Strux* prevSDH = NULL;
-	pf_Frag_Strux* nextSDH = NULL;
+	pf_Frag_Strux* prevSDH = nullptr;
+	pf_Frag_Strux* nextSDH = nullptr;
 	PT_DocPosition nextPos =0;
 	
 //
@@ -12240,7 +12239,7 @@ bool FV_View::isPointLegal(PT_DocPosition pos) const
 		return true;
 	}
 	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 	        return false;
 	}
@@ -12340,7 +12339,7 @@ bool FV_View::isInFootnote(void) const
 bool FV_View::isInFootnote(PT_DocPosition pos) const
 {
 	fl_FootnoteLayout * pFL = getClosestFootnote(pos);
-	if(pFL == NULL)
+	if(pFL == nullptr)
 	{
 		return false;
 	}
@@ -12369,7 +12368,7 @@ bool FV_View::isInEndnote(void) const
 bool FV_View::isInEndnote(PT_DocPosition pos) const
 {
 	fl_EndnoteLayout * pFL = getClosestEndnote(pos);
-	if(pFL == NULL)
+	if(pFL == nullptr)
 	{
 		return false;
 	}
@@ -12399,7 +12398,7 @@ bool FV_View::isInAnnotation(void) const
 bool FV_View::isInAnnotation(PT_DocPosition pos) const
 {
 	fl_AnnotationLayout * pAL = getClosestAnnotation(pos);
-	if(pAL == NULL)
+	if(pAL == nullptr)
 	{
 		return false;
 	}
@@ -12453,7 +12452,7 @@ bool FV_View::getAnnotationText(UT_uint32 iAnnotation, std::string & sText) cons
 	fl_BlockLayout * block; 
 	
 	block = m_pLayout->findBlockAtPosition(posStart+1);
-	fp_Run * pRun = NULL;
+	fp_Run * pRun = nullptr;
 	while(block && (static_cast<fl_AnnotationLayout *>(block->myContainingLayout()) == pAL))
 	{
 			UT_GrowBuf tmp;
@@ -12482,10 +12481,10 @@ bool FV_View::getAnnotationText(UT_uint32 iAnnotation, std::string & sText) cons
 bool FV_View::selectAnnotation(fl_AnnotationLayout * pAL)
 {
 		pf_Frag_Strux* sdhAnn = pAL->getStruxDocHandle();
-		pf_Frag_Strux* sdhEnd = NULL;
+		pf_Frag_Strux* sdhEnd = nullptr;
 		getDocument()->getNextStruxOfType(sdhAnn,PTX_EndAnnotation, &sdhEnd);
 		
-		UT_return_val_if_fail(sdhEnd != NULL, false);
+		UT_return_val_if_fail(sdhEnd != nullptr, false);
 		//
 		// Start of the text covered by the annotations
 		//
@@ -12522,10 +12521,10 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText
 	if(!pAL)
 		return false;
 	pf_Frag_Strux* sdhStart = pAL->getStruxDocHandle();
-	pf_Frag_Strux* sdhEnd = NULL;
+	pf_Frag_Strux* sdhEnd = nullptr;
 	getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
 	
-	UT_return_val_if_fail(sdhEnd != NULL, false);
+	UT_return_val_if_fail(sdhEnd != nullptr, false);
 	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
 	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd); 
 	//
@@ -12538,7 +12537,7 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText
 	// Cut out current content
 	//
 	UT_uint32 iRealDeleteCount2;
-	PP_AttrProp * pAttrProp_Before = NULL;
+	PP_AttrProp * pAttrProp_Before = nullptr;
 	m_pDoc->deleteSpan(posStart+1, posEnd, pAttrProp_Before, iRealDeleteCount2);
 	//
 	// Insert the new text
@@ -12567,10 +12566,10 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText
 	if(!pAL)
 		return false;
 	pf_Frag_Strux* sdhStart = pAL->getStruxDocHandle();
-	pf_Frag_Strux* sdhEnd = NULL;
+	pf_Frag_Strux* sdhEnd = nullptr;
 	getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
 	
-	UT_return_val_if_fail(sdhEnd != NULL, false);
+	UT_return_val_if_fail(sdhEnd != nullptr, false);
 	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
 	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd); 
 	//
@@ -12582,7 +12581,7 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText
 	//
 	// Cut out current content (if any, as "" is allowed as annotation content)
 	//
-	PP_AttrProp * pAttrProp_Before = NULL;
+	PP_AttrProp * pAttrProp_Before = nullptr;
 	if (posStart+1 < posEnd)
 	{
 		UT_uint32 iRealDeleteCount2;
@@ -12602,7 +12601,7 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText
 		"annotation-date", ""
 	};
 	GDate  gDate;
-	g_date_set_time_t (&gDate, time (NULL));
+	g_date_set_time_t (&gDate, time (nullptr));
 	propsAnn[5] = UT_std_string_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
 	xxx_UT_DEBUGMSG((" Set Author %s Title %s posStart %d \n", sAuthor.c_str(),sTitle.c_str(),posStart));
 	m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posStart, PP_NOPROPS, propsAnn, PTX_SectionAnnotation);
@@ -12680,7 +12679,7 @@ bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotation, const std::string  & sA
 /*!
  * Insert annotation number iAnnotation across the current selection.
  * The text of the annotation is contained in pStr.
- * If pstr is NULL default text is inserted.
+ * If pstr is nullptr default text is inserted.
  * If bCopy is true, the current selection is copied and placed into
  * an annotation.
  */
@@ -12693,7 +12692,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	// can only apply an Annotation to an FL_SECTION_DOC or a Table
 	// TODO allow applying to empty selection (cursor position)
 	fl_BlockLayout * pBlock =  _findBlockAtPosition(getPoint());
-	if(pBlock == NULL)
+	if(pBlock == nullptr)
 	{
 		return false;
 	}
@@ -12701,7 +12700,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
-	if(getHyperLinkRun(getPoint()) != NULL)
+	if(getHyperLinkRun(getPoint()) != nullptr)
 	{
 		return false;
 	}
@@ -12746,7 +12745,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	getBlocksInSelection(&vBlocks);
 	if(vBlocks.getItemCount() > 1)
 	{
-		fl_BlockLayout * pBMax = NULL;
+		fl_BlockLayout * pBMax = nullptr;
 		UT_sint32 iMaxSize = 0;
 		UT_sint32 j = 0;
 		for(j=0; j<vBlocks.getItemCount(); j++)
@@ -12792,7 +12791,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 		return false;
 	}
 	// Silently fail (TODO: pop up message) if we try to nest annotations or hyperlinks.
-	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
+	if (_getHyperlinkInRange(posStart, posEnd) != nullptr)
 		return false;
 //
 // Under sum1 induced conditions posEnd could give the same block pointer
@@ -12842,7 +12841,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 		"annotation-id", sNum
 	};
 	GDate gDate;
-	g_date_set_time_t (&gDate, time (NULL));
+	g_date_set_time_t (&gDate, time (nullptr));
 	PP_PropertyVector propsAnn = {
 		"annotation-author", sAuthor,
 		"annotation-title", sTitle,
@@ -12871,8 +12870,8 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	else
 	{
 		UT_UCS4String sUCS4(sDescr);
-		const PP_AttrProp * pSpanAP = NULL;
-		const PP_AttrProp * pBlockAP = NULL;
+		const PP_AttrProp * pSpanAP = nullptr;
+		const PP_AttrProp * pBlockAP = nullptr;
 		getAttributes(&pSpanAP,&pBlockAP,posAnnotation+2);
 		bRet = m_pDoc->insertSpan(posAnnotation+2, sUCS4.ucs4_str(),sUCS4.length(),const_cast<PP_AttrProp *>(pSpanAP));
 
@@ -12975,7 +12974,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 {
 	// can only insert Footnote into an FL_SECTION_DOC or a Table
 	fl_BlockLayout * pBlock =  _findBlockAtPosition(getPoint());
-	if(pBlock == NULL)
+	if(pBlock == nullptr)
 	{
 		return false;
 	}
@@ -12983,7 +12982,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
-	if(getHyperLinkRun(getPoint()) != NULL)
+	if(getHyperLinkRun(getPoint()) != nullptr)
 	{
 		return false;
 	}
@@ -13107,8 +13106,8 @@ bool FV_View::insertFootnote(bool bFootnote)
 	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
 	//insert a TAB after the anchor
 	UT_UCSChar tab = UCS_TAB;
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
 	getAttributes(&pSpanAP,&pBlockAP,FanchStart);
 
 	m_pDoc->insertSpan(FanchEnd, &tab, 1, const_cast<PP_AttrProp *>(pSpanAP));
@@ -13516,28 +13515,28 @@ fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos) const
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	if(!pBL)
 	{
-		return NULL;
+		return nullptr;
 	}
 	fl_ContainerLayout * pCL = pBL->myContainingLayout();
 	if(!pCL)
 	{
-		return NULL;
+		return nullptr;
 	}
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		pCL = pCL->myContainingLayout();
 		if(!pCL)
 		{
-			return NULL;
+			return nullptr;
 		}
 		if(pCL->getContainerType() != FL_CONTAINER_TABLE)
 		{
-			return NULL;
+			return nullptr;
 		}
 		fl_TableLayout * pTab = static_cast<fl_TableLayout *>(pCL);
 		return pTab;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*!
@@ -13551,7 +13550,7 @@ bool FV_View::isInTable( PT_DocPosition pos) const
 		//
 		// This could be the start of nested table. If so return true!
 		//
-		pf_Frag_Strux* sdhTable = NULL;
+		pf_Frag_Strux* sdhTable = nullptr;
 		bool bRes = m_pDoc->getStruxOfTypeFromPosition(pos+1,PTX_SectionTable,&sdhTable);
 		UT_return_val_if_fail(bRes,false);
 		UT_ASSERT(sdhTable && sdhTable->getPos() == pos);
@@ -13589,7 +13588,7 @@ bool FV_View::isInTable( PT_DocPosition pos) const
 	if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION))
 	{
 		pBL = pBL->getEnclosingBlock();
-		if(pBL == NULL)
+		if(pBL == nullptr)
 		{
 			return false;
 		}
@@ -13606,9 +13605,9 @@ bool FV_View::isInTable( PT_DocPosition pos) const
 		return true;
 	}
 	pCL = pBL->getNext();
-	if(pCL == NULL)
+	if(pCL == nullptr)
 	{
-		xxx_UT_DEBUGMSG(("Get Next is NULL \n"));
+		xxx_UT_DEBUGMSG(("Get Next is nullptr \n"));
 		return false;
 	}
 	xxx_UT_DEBUGMSG(("Get Next Containing Layout is %s \n",pCL->getContainerString()));
@@ -13625,7 +13624,7 @@ bool FV_View::isInTable( PT_DocPosition pos) const
 		}
 	}
 	pCL = pBL->getPrev();
-	if(pCL == NULL)
+	if(pCL == nullptr)
 	{
 		return false;
 	}
@@ -13633,7 +13632,7 @@ bool FV_View::isInTable( PT_DocPosition pos) const
 	{
 		pf_Frag_Strux* sdh = pCL->getStruxDocHandle();
 		pf_Frag_Strux* sdhEnd = m_pDoc->getEndTableStruxFromTableSDH(sdh);
-		if(sdhEnd != NULL)
+		if(sdhEnd != nullptr)
 		{
 			PT_DocPosition posEnd =  m_pDoc->getStruxPosition(sdhEnd);
 			if(posEnd == pos)
@@ -13664,7 +13663,7 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 //
 // This is MUCH faster than linearly searching through the Piecetable.
 //
-	if(pTC != NULL)
+	if(pTC != nullptr)
 	{
 		fp_CellContainer * pCell = pTC->getCellAtRowColumn(row,col);
 		if(pCell)
@@ -13677,7 +13676,7 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 		}
 	}
 	cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(), row,col);
-	if(cellSDH == NULL)
+	if(cellSDH == nullptr)
 	{
 		return 0;
 	}
@@ -13830,7 +13829,7 @@ bool FV_View::isImageSelected(void) const
 #ifdef ENABLE_SPELL
 SpellChecker * FV_View::getDictForSelection () const
 {
-	SpellChecker * checker = NULL;
+	SpellChecker * checker = nullptr;
 	std::string lang;
 
 	PP_PropertyVector props_in;
@@ -13885,7 +13884,7 @@ void FV_View::rebuildLayout()
 
 fv_PropCache::fv_PropCache(void):
 	m_iTick(0),
-	m_pCurrentCL(NULL)
+	m_pCurrentCL(nullptr)
 {
 }
 

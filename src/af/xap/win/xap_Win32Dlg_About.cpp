@@ -62,7 +62,7 @@ XAP_Win32Dialog_About::XAP_Win32Dialog_About(XAP_DialogFactory * pDlgFactory,
 											 XAP_Dialog_Id id)
 	: XAP_Dialog_About(pDlgFactory,id)
 {
-	m_pGrImageSidebar = NULL;
+	m_pGrImageSidebar = nullptr;
 }
 
 XAP_Win32Dialog_About::~XAP_Win32Dialog_About(void)
@@ -97,14 +97,14 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		
 	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 	
-	m_pGrImageSidebar = new GR_Win32Image(NULL);
+	m_pGrImageSidebar = new GR_Win32Image(nullptr);
 	m_pGrImageSidebar->convertFromBuffer(pBB, "image/png", iImageWidth, iImageHeight);
 
 	const wchar_t * pClassName = L"AbiSource_About";
 	
 	ATOM a = UT_RegisterClassEx(CS_HREDRAW | CS_VREDRAW, (WNDPROC) s_dlgProc, pWin32App->getInstance(),
-								NULL, LoadCursorW(NULL, (LPCWSTR)IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,
-								NULL, pClassName);
+								nullptr, LoadCursorW(nullptr, (LPCWSTR)IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), nullptr,
+								nullptr, pClassName);
 	if (!a)
 	{
 		::MessageBeep(MB_ICONEXCLAMATION);
@@ -153,9 +153,9 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 										ABOUT_WIDTH,
 										ABOUT_HEIGHT,
 										hWndFrame,
-										NULL,
+										nullptr,
 										pWin32App->getInstance(),
-										NULL);
+										nullptr);
 	if (!hwndAbout)
 	{
 		UnregisterClassW(pClassName, pWin32App->getInstance());
@@ -181,7 +181,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 							   hwndAbout,
 							   (HMENU) IDOK,
 							   pWin32App->getInstance(),
-							   NULL);
+							   nullptr);
 
 	HWND hwndURL = CreateWindowW(L"BUTTON",
 								L"www.abisource.com",
@@ -193,7 +193,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 								hwndAbout,
 								(HMENU) ID_BUTTON_URL,
 								pWin32App->getInstance(),
-								NULL);
+								nullptr);
 
     str.fromUTF8 (XAP_App::getApp()->getApplicationName());
 	HWND hwndStatic_Heading = CreateWindowW(L"STATIC",
@@ -206,7 +206,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 										   hwndAbout,
 										   (HMENU) 3001,
 										   pWin32App->getInstance(),
-										   NULL);
+										   nullptr);
 
 	const char *versiontext=pSS->getValue(XAP_STRING_ID_DLG_ABOUT_Version);
 	UT_UTF8String version = UT_UTF8String_sprintf(versiontext,XAP_App::s_szBuild_Version);
@@ -222,7 +222,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 										   hwndAbout,
 										   (HMENU) 3002,
 										   pWin32App->getInstance(),
-										   NULL);
+										   nullptr);
 
     str.fromASCII (XAP_ABOUT_COPYRIGHT);
 	HWND hwndStatic_Copyright = CreateWindowW(L"STATIC",
@@ -235,7 +235,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 											 hwndAbout,
 											 (HMENU) 3003,
 											 pWin32App->getInstance(),
-											 NULL);
+											 nullptr);
 
     str.fromASCII (XAP_App::getApp()->getApplicationName());
 	strbis.fromASCII (XAP_ABOUT_GPL_LONG);
@@ -250,10 +250,10 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 									   hwndAbout,
 									   (HMENU) 3004,
 									   pWin32App->getInstance(),
-									   NULL);
+									   nullptr);
 
-	HWND hwndStatic_USP_Version = 0;
-	
+	HWND hwndStatic_USP_Version = nullptr;
+
 	if(pWin32App->getLastFocussedFrame()->getCurrentView()->getGraphics()->getClassId()==GRID_WIN32_UNISCRIBE)
 	{
 		GR_Win32USPGraphics * pUSP = static_cast<GR_Win32USPGraphics*>(
@@ -270,7 +270,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 												   hwndAbout,
 												   (HMENU) 3005,
 												   pWin32App->getInstance(),
-												   NULL);
+												   nullptr);
 	
 		
 	}
@@ -316,7 +316,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	
 		while (!s_bEventLoopDone)
 		{
-			if (GetMessageW(&msg, NULL, 0, 0))
+			if (GetMessageW(&msg, nullptr, 0, 0))
 			{
 				if( hwndAbout && IsDialogMessageW( hwndAbout, &msg ) )
 					continue;

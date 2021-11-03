@@ -149,14 +149,14 @@ static const wchar_t * _ev_GetLabelName(XAP_Win32App * pWin32App,
 		szLabelName_utf8 = pLabel->getMenuLabel();
 
 	if (!szLabelName_utf8 || !*szLabelName_utf8)
-		return NULL;
+		return nullptr;
 
 	UT_Win32LocaleString str;
 	str.fromUTF8 (szLabelName_utf8);
 	szLabelName = str.c_str();
 
-	const char * szShortcut_ascii = NULL;
-	const wchar_t * szShortcut = NULL;
+	const char * szShortcut_ascii = nullptr;
+	const wchar_t * szShortcut = nullptr;
 	UT_Win32LocaleString shortcut;
 	
     int len = 0;
@@ -169,7 +169,7 @@ static const wchar_t * _ev_GetLabelName(XAP_Win32App * pWin32App,
 		if (szMethodName)
 		{
 			const EV_EditMethodContainer * pEMC = pWin32App->getEditMethodContainer();
-			UT_return_val_if_fail(pEMC, NULL);
+			UT_return_val_if_fail(pEMC, nullptr);
 
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);					// make sure it's bound to something
@@ -224,7 +224,7 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 :	EV_Menu(pWin32App, pWin32App->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	m_pWin32App(pWin32App),
 	m_pEEM(pEEM),
-	m_myMenu(NULL),
+	m_myMenu(nullptr),
 	m_iDIR(0)
 {
 		    
@@ -430,7 +430,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 	
 		case EV_MLF_EndSubMenu:
 			{				
-				HMENU m = NULL;
+				HMENU m = nullptr;
 				bResult = stack.pop((void **)&m);
 				UT_ASSERT(bResult);
 				UT_DEBUGMSG(("menu::synthesize [endSubMenu 0x%08lx]\n",m));
@@ -444,7 +444,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 				UT_ASSERT(bResult);
 				UT_ASSERT(m);
 
-				AppendMenuW(m, MF_SEPARATOR, 0, NULL);
+				AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
 				UT_DEBUGMSG(("menu::synthesize [separator appended to submenu 0x%08lx]\n",m));
 			}
 			break;
@@ -460,7 +460,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 	}
 
 #ifdef DEBUG
-	HMENU wDbg = NULL;
+	HMENU wDbg = nullptr;
 	bResult = stack.pop((void **)&wDbg);
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == menuRoot);
@@ -652,7 +652,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 	}
 
 #ifdef DEBUG
-	HMENU wDbg = NULL;
+	HMENU wDbg = nullptr;
 	bResult = stackMenu.pop((void **)&wDbg);
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == hMenuBar);
@@ -667,7 +667,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int width, int height, const UT_RGBColor & color)
 {
 	
-	HBITMAP hBitmap = NULL;
+	HBITMAP hBitmap = nullptr;
 	EV_Menu_Bitmap* pBitmaps = (EV_Menu_Bitmap*)&s_bitmaps;		
 							 
 	for (; pBitmaps->id;pBitmaps++)
@@ -694,7 +694,7 @@ void EV_Win32Menu::_setBitmapforID (HMENU hMenu, XAP_Menu_Id id, UINT cmd)
 	Color.m_bIsTransparent=true;
 	HBITMAP hBitmap =  EV_Win32Menu::_loadBitmap(id, BITMAP_WITDH, BITMAP_HEIGHT, Color);
 							
-	if (hBitmap != NULL) {
+	if (hBitmap != nullptr) {
 		SetMenuItemBitmaps (hMenu, cmd, MF_BYCOMMAND, hBitmap, hBitmap);		
 		m_vechBitmaps.push_back (hBitmap);
 	}
@@ -942,7 +942,7 @@ void EV_Win32Menu::onDrawItem(HWND /*hwnd*/, WPARAM /*wParam*/, LPARAM lParam)
 			UINT nWidth = GetSystemMetrics(SM_CXMENUCHECK);
 			UINT nHeight = GetSystemMetrics(SM_CYMENUCHECK);
 			RECT r;
-			HBITMAP bm = CreateBitmap(nWidth, nHeight, 1, 1, NULL );
+			HBITMAP bm = CreateBitmap(nWidth, nHeight, 1, 1, nullptr );
 			HDC hdcMem = CreateCompatibleDC(lpdis->hDC);
 
 			SetBkColor(lpdis->hDC, GetSysColor(colorID));
@@ -974,24 +974,24 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * /*pView*/,
 	UINT nItemID = (UINT)LOWORD(wParam);
 	UINT nFlags  = (UINT)HIWORD(wParam);
 
-	if ( (nFlags==0xffff) && (hMenu == NULL) )
+	if ( (nFlags==0xffff) && (hMenu == nullptr) )
 	{
 		//UT_DEBUGMSG(("ClearMessage 1\n"));
-		pFrame->setStatusMessage(NULL);
+		pFrame->setStatusMessage(nullptr);
 		return true;
 	}
 
 	if ( (nItemID==0) || (nFlags & (MF_SEPARATOR|MF_POPUP)) )
 	{
 		//UT_DEBUGMSG(("ClearMessage 2\n"));
-		pFrame->setStatusMessage(NULL);
+		pFrame->setStatusMessage(nullptr);
 		return true;
 	}
 
 	if (nFlags & (MF_SYSMENU))
 	{
 		//UT_DEBUGMSG(("SysMenu [%x]\n",nItemID));
-		pFrame->setStatusMessage(NULL);
+		pFrame->setStatusMessage(nullptr);
 		return true;
 	}
 	
@@ -1000,7 +1000,7 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * /*pView*/,
 	if (!pLabel)
 	{
 		//UT_DEBUGMSG(("ClearMessage 3 [%d %d]\n",nItemID,id));
-		pFrame->setStatusMessage(NULL);
+		pFrame->setStatusMessage(nullptr);
 		return true;
 	}
 
@@ -1068,7 +1068,7 @@ bool EV_Win32MenuBar::synthesizeMenuBar(XAP_Frame * pFrame)
 EV_Win32MenuPopup::EV_Win32MenuPopup(XAP_Win32App * pWin32App,
 									 const char * szMenuLayoutName,
 									 const char * szMenuLabelSetName)
-	: EV_Win32Menu(pWin32App,NULL,szMenuLayoutName,szMenuLabelSetName)
+	: EV_Win32Menu(pWin32App,nullptr,szMenuLayoutName,szMenuLabelSetName)
 {
 }
 

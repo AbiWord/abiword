@@ -34,7 +34,7 @@
 //////////////////////////////////////////////////////////////////
 
 AP_Win32Clipboard::AP_Win32Clipboard(void)
-	: XAP_Win32Clipboard(), m_pClipboardDoc(NULL)
+	: XAP_Win32Clipboard(), m_pClipboardDoc(nullptr)
 {
 #define AddFmt(szFormat,cf)	do { m_vecFormat.addItem((void*)szFormat); m_vecCF.addItem((void *)cf); } while (0)
 

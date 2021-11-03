@@ -69,20 +69,20 @@ XAP_Dialog * XAP_UnixDialog_Print::static_constructor(XAP_DialogFactory * pFacto
 XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 													 XAP_Dialog_Id id)
 	: XAP_Dialog_Print(pDlgFactory,id),
-	  m_pPrintGraphics (NULL),
+	  m_pPrintGraphics (nullptr),
 	  m_bIsPreview(false),
-	  m_pPageSetup(NULL),
-	  m_pGtkPageSize(NULL),
-	  m_pPO(NULL),
-	  m_pView(NULL),
+	  m_pPageSetup(nullptr),
+	  m_pGtkPageSize(nullptr),
+	  m_pPO(nullptr),
+	  m_pView(nullptr),
 	  m_iNumberPages(0),
 	  m_iCurrentPage(0),
-	  m_pDL(NULL),
-	  m_pPrintView(NULL),
-	  m_pPrintLayout(NULL),
+	  m_pDL(nullptr),
+	  m_pPrintView(nullptr),
+	  m_pPrintLayout(nullptr),
 	  m_bDidQuickPrint(false),
 	  m_bShowParagraphs(false),
-	  m_pFrame(NULL)
+	  m_pFrame(nullptr)
 {
 }
 
@@ -98,17 +98,20 @@ GR_Graphics * XAP_UnixDialog_Print::getPrinterGraphicsContext(void)
 void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
 	UT_UNUSED(pGraphics);
-	UT_ASSERT(pGraphics == m_pPrintGraphics);	
+	UT_ASSERT(pGraphics == m_pPrintGraphics);
 	DELETEP(m_pPrintGraphics);
-	if(m_pPageSetup)
-	   g_object_unref(m_pPageSetup);
-	m_pPageSetup = NULL;
-	if(m_pGtkPageSize)
-		gtk_paper_size_free (m_pGtkPageSize);
-	m_pGtkPageSize=  NULL;
-	if(m_pPO)
+	if (m_pPageSetup) {
+		g_object_unref(m_pPageSetup);
+	}
+	m_pPageSetup = nullptr;
+	if (m_pGtkPageSize) {
+		gtk_paper_size_free(m_pGtkPageSize);
+	}
+	m_pGtkPageSize = nullptr;
+	if (m_pPO) {
 		g_object_unref(m_pPO);
-	m_pPO=  NULL;
+	}
+	m_pPO = nullptr;
 }
 
 /*****************************************************************/
@@ -237,17 +240,16 @@ void XAP_UnixDialog_Print::setupPrint()
 	s_getPageMargins(m_pView, blockMrgnLeft, blockMrgnRight, mrgnLeft, mrgnRight,  mrgnTop, mrgnBottom);
 
 	portrait = m_pView->getPageSize().isPortrait();
-		
+
 	width = m_pView->getPageSize().Width (DIM_MM);
 	height = m_pView->getPageSize().Height (DIM_MM);
-	
+
 	m_pPageSetup = gtk_page_setup_new();
 
 	const char * pszName = m_pView->getPageSize().getPredefinedName();
 	bool isPredefined = false;
-	const char * pszGtkName = NULL;
-	if(pszName == NULL)
-    {
+	const char * pszGtkName = nullptr;
+	if (pszName == nullptr) {
 	}
 	else if(g_ascii_strcasecmp(pszName,"Custom") == 0)
 	{
@@ -420,7 +422,7 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 	gtk_print_operation_run (m_pPO,
 							 (m_bIsPreview)? GTK_PRINT_OPERATION_ACTION_PREVIEW:
 							 GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
-							 pPWindow, NULL);
+							 pPWindow, nullptr);
 
 	cleanup();
 }
@@ -432,12 +434,12 @@ void XAP_UnixDialog_Print::cleanup(void)
 	//
 	GtkPrintSettings *  pSettings = gtk_print_operation_get_print_settings(m_pPO);
 	const gchar * szFname =  gtk_print_settings_get(pSettings,GTK_PRINT_SETTINGS_OUTPUT_URI);
-	if((szFname != NULL) && (strcmp(szFname,"output.pdf") != 0))
+	if((szFname != nullptr) && (strcmp(szFname, "output.pdf") != 0))
 	{
 		m_pView->getDocument()->setPrintFilename(szFname);
 	}
 	g_object_unref(m_pPO);
-	m_pPO= NULL;
+	m_pPO = nullptr;
 	if(!m_bDidQuickPrint)
 	{
 		UT_DEBUGMSG(("Deleting PrintView %p \n",m_pPrintView));
@@ -446,10 +448,11 @@ void XAP_UnixDialog_Print::cleanup(void)
 	}
 	else
 	{
-		if(m_pPrintLayout)
-			m_pPrintLayout->setQuickPrint(NULL);
-		m_pPrintLayout = NULL;
-		m_pPrintView = NULL;
+		if (m_pPrintLayout) {
+			m_pPrintLayout->setQuickPrint(nullptr);
+		}
+		m_pPrintLayout = nullptr;
+		m_pPrintView = nullptr;
 
 		if(m_bShowParagraphs)
 			m_pView->setShowPara(true);
@@ -472,7 +475,7 @@ void XAP_UnixDialog_Print::PrintDirectly(XAP_Frame * pFrame, const char * szFile
     {
 		 gtk_print_operation_set_export_filename(m_pPO, szFilename);
 		 gtk_print_operation_run (m_pPO,GTK_PRINT_OPERATION_ACTION_EXPORT,
-								  NULL,NULL);
+								  nullptr,nullptr);
 	}
 	else
 	{
@@ -487,7 +490,7 @@ void XAP_UnixDialog_Print::PrintDirectly(XAP_Frame * pFrame, const char * szFile
 		}
 		gtk_print_operation_set_print_settings(m_pPO,pSettings);
 		gtk_print_operation_run (m_pPO,GTK_PRINT_OPERATION_ACTION_PRINT,
-								 NULL,NULL);
+								 nullptr,nullptr);
 	}
 	cleanup();
 }

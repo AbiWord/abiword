@@ -51,12 +51,12 @@ AP_Win32Dialog_SplitCells::AP_Win32Dialog_SplitCells(XAP_DialogFactory * pDlgFac
 										             XAP_Dialog_Id id)
 	: AP_Dialog_SplitCells(pDlgFactory,id)
 {		
-	m_hBitmapAbove = NULL;
-	m_hBitmapHoriMid = NULL;
-	m_hBitmapBelow = NULL;
-	m_hBitmapLeft = NULL;
-	m_hBitmapVertMid = NULL;
-	m_hBitmapRight = NULL;
+	m_hBitmapAbove = nullptr;
+	m_hBitmapHoriMid = nullptr;
+	m_hBitmapBelow = nullptr;
+	m_hBitmapLeft = nullptr;
+	m_hBitmapVertMid = nullptr;
+	m_hBitmapRight = nullptr;
 }   
     
 AP_Win32Dialog_SplitCells::~AP_Win32Dialog_SplitCells(void)
@@ -180,7 +180,7 @@ void AP_Win32Dialog_SplitCells::notifyActiveFrame(XAP_Frame *pFrame)
 		setDialogTitle (m_WindowName);
 
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 	setAllSensitivities();

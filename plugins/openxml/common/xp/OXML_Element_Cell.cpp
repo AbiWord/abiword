@@ -37,8 +37,8 @@ OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table*
 	m_startHorizontalMerge(true),
 	m_table(tbl),
 	m_row(nullptr),
-	m_horizontalTail(NULL),
-	m_verticalTail(NULL)
+	m_horizontalTail(nullptr),
+	m_verticalTail(nullptr)
 {
 }
 
@@ -76,10 +76,10 @@ UT_Error OXML_Element_Cell::serialize(IE_Exp_OpenXML* exporter)
 UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
-	const gchar* szValue = NULL;
-	const gchar* borderType = NULL;
-	const gchar* color = NULL;
-	const gchar* size = NULL;
+	const gchar* szValue = nullptr;
+	const gchar* borderType = nullptr;
+	const gchar* color = nullptr;
+	const gchar* size = nullptr;
 
 	err = exporter->startCellProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
@@ -133,13 +133,13 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 		}
 	}
 
-	color = NULL;
+	color = nullptr;
 	if(getProperty("left-color", szValue) == UT_OK)
 	{
 		color = szValue;
 	}
 
-	size = NULL;
+	size = nullptr;
 	if(getProperty("left-thickness", szValue) == UT_OK)
 	{
 		size = szValue;
@@ -159,13 +159,13 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 		}
 	}
 
-	color = NULL;
+	color = nullptr;
 	if(getProperty("right-color", szValue) == UT_OK)
 	{
 		color = szValue;
 	}
 
-	size = NULL;
+	size = nullptr;
 	if(getProperty("right-thickness", szValue) == UT_OK)
 	{
 		size = szValue;
@@ -186,13 +186,13 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 			}
 		}
 
-		color = NULL;
+		color = nullptr;
 		if(getProperty("top-color", szValue) == UT_OK)
 		{
 			color = szValue;
 		}
 
-		size = NULL;
+		size = nullptr;
 		if(getProperty("top-thickness", szValue) == UT_OK)
 		{
 			size = szValue;
@@ -214,13 +214,13 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 			}
 		}
 
-		color = NULL;
+		color = nullptr;
 		if(getProperty("bot-color", szValue) == UT_OK)
 		{
 			color = szValue;
 		}
 
-		size = NULL;
+		size = nullptr;
 		if(getProperty("bot-thickness", szValue) == UT_OK)
 		{
 			size = szValue;
@@ -297,8 +297,8 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 	if(ret != UT_OK)
 		return ret;
 
-	const gchar * szValue = NULL;
-	const gchar * bgColor = NULL;
+	const gchar * szValue = nullptr;
+	const gchar * bgColor = nullptr;
 
 	if((getProperty("background-color", bgColor) == UT_OK) && bgColor)
 	{
@@ -330,7 +330,7 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 			return ret;
 	}
 
-	szValue = NULL;
+	szValue = nullptr;
 	if((getProperty("left-style", szValue) != UT_OK) || !szValue)
 	{
 		ret = setProperty("left-color", bgColor);
@@ -338,7 +338,7 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 			return ret;
 	}
 
-	szValue = NULL;
+	szValue = nullptr;
 	if((getProperty("right-style", szValue) != UT_OK) || !szValue)
 	{
 		ret = setProperty("right-color", bgColor);
@@ -346,7 +346,7 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 			return ret;
 	}
 
-	szValue = NULL;
+	szValue = nullptr;
 	if((getProperty("bot-style", szValue) != UT_OK) || !szValue)
 	{
 		ret = setProperty("bot-color", bgColor);
@@ -409,18 +409,18 @@ void OXML_Element_Cell::setLastHorizontalContinuationCell(const OXML_SharedEleme
 
 	m_horizontalTail = cell;
 
-	const gchar* szValue = NULL;
+	const gchar* szValue = nullptr;
 
 	m_horizontalTail->getProperty("right-color", szValue);
 	if(szValue)
 		setProperty("right-color", szValue);
 
-	szValue = NULL;
+	szValue = nullptr;
 	m_horizontalTail->getProperty("right-style", szValue);
 	if(szValue)
 		setProperty("right-style", szValue);
 
-	szValue = NULL;
+	szValue = nullptr;
 	m_horizontalTail->getProperty("right-thickness", szValue);
 	if(szValue)
 		setProperty("right-thickness", szValue);
@@ -433,18 +433,18 @@ void OXML_Element_Cell::setLastVerticalContinuationCell(const OXML_SharedElement
 
 	m_verticalTail = cell;
 
-	const gchar* szValue = NULL;
+	const gchar* szValue = nullptr;
 
 	m_verticalTail->getProperty("bot-color", szValue);
 	if(szValue)
 		setProperty("bot-color", szValue);
 
-	szValue = NULL;
+	szValue = nullptr;
 	m_verticalTail->getProperty("bot-style", szValue);
 	if(szValue)
 		setProperty("bot-style", szValue);
 
-	szValue = NULL;
+	szValue = nullptr;
 	m_verticalTail->getProperty("bot-thickness", szValue);
 	if(szValue)
 		setProperty("bot-thickness", szValue);

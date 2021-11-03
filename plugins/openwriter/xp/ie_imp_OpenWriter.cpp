@@ -96,7 +96,7 @@ public:
   */
   const gchar ** getAbiPageAtts(const gchar * masterName)
   {
-    UT_return_val_if_fail(masterName != NULL, (const gchar **)m_pageAtts);
+    UT_return_val_if_fail(masterName != nullptr, (const gchar **)m_pageAtts);
 
     if (strcmp (m_name.c_str(), masterName))
     {
@@ -119,7 +119,7 @@ private:
 	
   void parse (const gchar ** props)
   {
-    const gchar * val = NULL;
+    const gchar * val = nullptr;
     int propCtr = 0;
     double width = 0;
     double height = 0;
@@ -265,8 +265,8 @@ public:
 
   void parse (const gchar ** props)
   {
-    const gchar * val = NULL;
-    const gchar * val2 = NULL;
+    const gchar * val = nullptr;
+    const gchar * val2 = nullptr;
 
     val = UT_getAttribute ("fo:text-align", props);
     if (val) {
@@ -316,7 +316,7 @@ public:
 	  }
       else if (dim == DIM_PERCENT && m_pParentStyle) {
         // calculate font-size based on parent's 
-        const gchar * parentFontSize = NULL;
+        const gchar * parentFontSize = nullptr;
         double fontSize = 12;
 		if (m_pParentStyle->getProperty("font-size", parentFontSize)) {
           fontSize = atoi(parentFontSize) * atoi(val) / 100.0;
@@ -601,8 +601,8 @@ UT_Confidence_t IE_Imp_OpenWriter_Sniffer::recognizeContents (GsfInput * input)
 
 	GsfInfile * zip;
 
-	zip = gsf_infile_zip_new (input, NULL);
-	if (zip != NULL)
+	zip = gsf_infile_zip_new (input, nullptr);
+	if (zip != nullptr)
 		{
 			GsfInput* pInput = gsf_infile_child_by_name(zip, "mimetype");
 
@@ -612,7 +612,7 @@ UT_Confidence_t IE_Imp_OpenWriter_Sniffer::recognizeContents (GsfInput * input)
     
 					if (gsf_input_size (pInput) > 0) {
 						mimetype.append(
-										(const char *)gsf_input_read(pInput, gsf_input_size (pInput), NULL),
+										(const char *)gsf_input_read(pInput, gsf_input_size (pInput), nullptr),
 										gsf_input_size (pInput));
 					}
 
@@ -636,7 +636,7 @@ UT_Confidence_t IE_Imp_OpenWriter_Sniffer::recognizeContents (GsfInput * input)
 							int min = UT_MIN(size, 150);
 
 							UT_UTF8String content;
-							content.append((const char *)gsf_input_read(pInput, min, NULL));
+							content.append((const char *)gsf_input_read(pInput, min, nullptr));
 
 							if (strstr(content.utf8_str(), "<!DOCTYPE office:document-content PUBLIC"))
 								confidence = UT_CONFIDENCE_GOOD;
@@ -682,14 +682,14 @@ void IE_Imp_OpenWriter::defineSimpleStyle (const UT_UTF8String & name, const gch
   if (!name.size() || !props)
     return;
   
-  OO_Style * style = new OO_Style (props, NULL, m_bOpenDocument);
+  OO_Style * style = new OO_Style (props, nullptr, m_bOpenDocument);
   m_styleBucket.insert (name.utf8_str(), style);
 }
 
 const gchar* IE_Imp_OpenWriter::mapStyle (const gchar * name) const
 {
   OO_Style * style = m_styleBucket.pick((const char *)name);
-  if (NULL == style)
+  if (nullptr == style)
     return "";
   return style->getAbiStyle (); 
 }
@@ -697,7 +697,7 @@ const gchar* IE_Imp_OpenWriter::mapStyle (const gchar * name) const
 const OO_Style * IE_Imp_OpenWriter::mapStyleObj (const gchar * name) const
 {
   if (!name)
-    return NULL;
+    return nullptr;
   return m_styleBucket.pick((const char *)name);
 }
 
@@ -718,9 +718,9 @@ IE_Imp_OpenWriter::IE_Imp_OpenWriter (PD_Document * pDocument)
  */
 UT_Error IE_Imp_OpenWriter::_loadFile (GsfInput * oo_src)
 {
-  m_oo = GSF_INFILE (gsf_infile_zip_new (oo_src, NULL));
+  m_oo = GSF_INFILE (gsf_infile_zip_new (oo_src, nullptr));
 
-  if (m_oo == NULL)
+  if (m_oo == nullptr)
     return UT_ERROR;
   
   UT_Error err = UT_OK;
@@ -784,7 +784,7 @@ static UT_Error loadStream ( GsfInfile * oo,
 			     const char * stream,
 			     const UT_ByteBufPtr & buf )
 {
-  guint8 const *data = NULL;
+  guint8 const *data = nullptr;
   size_t len = 0;
   
   buf->truncate(0);
@@ -796,7 +796,7 @@ static UT_Error loadStream ( GsfInfile * oo,
   if (gsf_input_size (input) > 0) {
     while ((len = gsf_input_remaining (input)) > 0) {
       len = UT_MIN (len, BUF_SZ);
-      if (NULL == (data = gsf_input_read (input, len, NULL))) {
+      if (nullptr == (data = gsf_input_read (input, len, nullptr))) {
 	g_object_unref (G_OBJECT (input));
 	return UT_ERROR;
       }
@@ -816,7 +816,7 @@ static UT_Error parseStream ( GsfInfile * oo,
 			      const char * stream,
 			      UT_XML & parser )
 {
-  guint8 const *data = NULL;
+  guint8 const *data = nullptr;
   size_t len = 0;
 
   GsfInput * input = gsf_infile_child_by_name(oo, stream);
@@ -829,7 +829,7 @@ static UT_Error parseStream ( GsfInfile * oo,
       // FIXME: we want to pass the stream in chunks, but libXML2 finds this disagreeable.
       // we probably need to pass some magic to our XML parser? 
       // len = UT_MIN (len, BUF_SZ);
-      if (NULL == (data = gsf_input_read (input, len, NULL))) {
+      if (nullptr == (data = gsf_input_read (input, len, nullptr))) {
 	g_object_unref (G_OBJECT (input));
 	return UT_ERROR;
       }
@@ -889,7 +889,7 @@ public:
     if (!strcmp (name, "meta:user-defined"))
 	{
 	  const gchar * attrib = UT_getAttribute ("meta:name", atts);
-	  if (attrib != NULL)
+	  if (attrib != nullptr)
 	    mAttrib = attrib;
 	}
   }
@@ -938,7 +938,7 @@ UT_Error IE_Imp_OpenWriter::_handleMimetype ()
 
   UT_UTF8String mimetype;
   if (gsf_input_size (input) > 0) {
-    mimetype.append((const char *)gsf_input_read(input, gsf_input_size (input), NULL), gsf_input_size (input));
+    mimetype.append((const char *)gsf_input_read(input, gsf_input_size (input), nullptr), gsf_input_size (input));
   }
   
   if (strcmp("application/vnd.sun.xml.writer", mimetype.utf8_str()) &&
@@ -1043,7 +1043,7 @@ public:
       getDocument()->setPageSizeFromFile(PP_std_copyProps(pageAtts));
     }
     else if (!strcmp (name, "style:style")) {
-      const gchar * attr = NULL;
+      const gchar * attr = nullptr;
 
       attr = UT_getAttribute("style:name",atts);
       if (attr)
@@ -1085,7 +1085,7 @@ public:
 	m_type = PARAGRAPH;
       }
       DELETEP(m_ooStyle);
-      m_ooStyle = NULL;
+      m_ooStyle = nullptr;
     }
     else if (/* SXW || ODT */
 	     (!strcmp (name, "style:properties") || !strcmp (name, "style:page-layout-properties")) && 
@@ -1097,7 +1097,7 @@ public:
 	     !strcmp (name, "style:text-properties") || 		/* ODT */
 	     !strcmp (name, "style:paragraph-properties")) {
       
-      if (m_ooStyle == NULL) {
+      if (m_ooStyle == nullptr) {
 	getDocument()->getStyle (m_parent.utf8_str(), &m_pParentStyle);
 	m_ooStyle = new OO_Style (atts, m_pParentStyle, m_bOpenDocument);
       }
@@ -1155,7 +1155,7 @@ public:
       m_parent.clear ();
       m_next.clear ();
       DELETEP(m_ooStyle);
-      m_ooStyle = NULL;
+      m_ooStyle = nullptr;
     }
   }
   
@@ -1168,7 +1168,7 @@ public:
     if (!strcmp (m_ooPageStyle.getName(), "")) 
     {
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-      return NULL;
+      return nullptr;
     }
     return m_ooPageStyle.getAbiSectionProps();
   }
@@ -1265,7 +1265,7 @@ public:
 	if (abi_sty) {
 	  // append an empty paragraph with this one char
 	  if (abi_sty->getColBreakBefore () || abi_sty->getPageBreakBefore ()) {
-	    _insureInBlock(NULL);
+	    _insureInBlock(nullptr);
 	    UT_UCSChar ucs = (abi_sty->getColBreakBefore () ? UCS_VTAB : UCS_FF);
 	    getDocument()->appendSpan (&ucs, 1);
 	  }
@@ -1286,7 +1286,7 @@ public:
 	  _insureInBlock((const gchar **)props);
 	}
 	else
-	  _insureInBlock(NULL);
+	  _insureInBlock(nullptr);
 	m_bAcceptingText = true;
       }
     else if (!strcmp(name, "text:span"))
@@ -1402,7 +1402,7 @@ public:
     else if (!strcmp(name, "text:table-of-content"))
     {
       _flush ();
-      _insureInBlock(NULL);
+      _insureInBlock(nullptr);
       
       getDocument()->appendStrux(PTX_SectionTOC, PP_NOPROPS);
       getDocument()->appendStrux(PTX_EndTOC, PP_NOPROPS);
@@ -1412,12 +1412,12 @@ public:
     else if (!strcmp(name, "draw:image"))
       {
 	_flush ();
-	_insureInBlock(NULL);
+	_insureInBlock(nullptr);
 	_insertImage (atts);
       }
     else if (!strcmp(name, "table:table"))
       {
-	_insureInSection(NULL);
+	_insureInSection(nullptr);
 	_openTable (atts);
       }
     else if (!strcmp(name, "table:table-column"))
@@ -1563,7 +1563,7 @@ private:
     const gchar * height = UT_getAttribute ("svg:height", atts);
     const gchar * href   = UT_getAttribute ("xlink:href", atts);
 
-    if (width == NULL || height == NULL || href == NULL)
+    if (width == nullptr || height == nullptr || href == nullptr)
         return; //don't crash on invalid images
 
     m_imgCnt++;
@@ -1627,7 +1627,7 @@ private:
       }
 
     if (!getDocument()->createDataItem(propsName.c_str(), false,
-                                       pictData, pFG->getMimeType(), NULL))
+                                       pictData, pFG->getMimeType(), nullptr))
       {
 		  return;
       }
@@ -1639,7 +1639,7 @@ private:
     if (m_bAcceptingText)
       return;
 
-    _insureInSection(NULL);
+    _insureInSection(nullptr);
 
     if (!m_bAcceptingText) {
       getDocument()->appendStrux(PTX_Block, PP_std_copyProps(atts));

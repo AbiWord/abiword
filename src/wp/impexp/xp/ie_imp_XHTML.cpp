@@ -178,7 +178,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "start-value", "1",
     "list-delim", "%L.",
     "list-decimal", ".",
-    NULL, NULL
+    nullptr, nullptr
   };
 
   static const gchar *ol_p_atts[] = 
@@ -186,13 +186,13 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "1",
     "parentid", "0",
-    "props", "list-style:Numbered List; start-value:1; text-indent:-0.3in; field-font: NULL;",
+    "props", "list-style:Numbered List; start-value:1; text-indent:-0.3in; field-font: nullptr;",
 	/* margin-left is purposefully left out of the props.  It is computed
 	   based on the depth of the list, and appended to this list of
 	   attributes.
 	*/
     "style", "Normal",
-    NULL, NULL
+    nullptr, nullptr
   };
 
   static const gchar *ul_atts[] =
@@ -203,7 +203,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "start-value", "0",
     "list-delim", "%L",
     "list-decimal", "NULL",
-    NULL, NULL
+    nullptr, nullptr
   };
 
   static const gchar *ul_p_atts[] =
@@ -211,13 +211,13 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "2",
     "parentid", "0",
-    "props", "list-style:Bullet List; start-value:0; text-indent:-0.3in; field-font: NULL;",
+    "props", "list-style:Bullet List; start-value:0; text-indent:-0.3in; field-font: nullptr;",
 	/* margin-left is purposefully left out of the props.  It is computed
 	   based on the depth of the list, and appended to this list of
 	   attributes.
 	*/
     "style", "Normal",
-    NULL, NULL
+    nullptr, nullptr
   };
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
@@ -940,7 +940,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
 
 		const std::string & style = PP_getAttribute("style", atts);
-		newBlock ("Plain Text", style.c_str(), NULL);
+		newBlock ("Plain Text", style.c_str(), nullptr);
 
 		m_iPreCount++;
 		m_bWhiteSignificant = true;
@@ -1349,7 +1349,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 		X_CheckError(appendObject (PTO_Image, api_atts));
 		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB,
-                                               pfg->getMimeType(), NULL));
+                                               pfg->getMimeType(), nullptr));
 
 		UT_DEBUGMSG(("insertion successful\n"));
 		}
@@ -1747,7 +1747,7 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 
 		uid = getDoc()->getUID(UT_UniqueId::Math);
 		std::string sUID = UT_std_string_sprintf("MathLatex%d",uid);
-		X_CheckError(getDoc()->createDataItem(sUID.c_str(), false, m_pMathBB, "", NULL));
+		X_CheckError(getDoc()->createDataItem(sUID.c_str(), false, m_pMathBB, "", nullptr));
 
 		PP_PropertyVector new_atts = {
 			"dataid", sUID
@@ -2098,7 +2098,7 @@ bool IE_Imp_XHTML::appendObject(PTObjectType pto, const PP_PropertyVector & attr
  */
 bool IE_Imp_XHTML::bInTable(void)
 {
-	return !(m_TableHelperStack->top() == NULL);
+	return !(m_TableHelperStack->top() == nullptr);
 }
 
 /* returns true if child of a <div> with a recognized "class" attribute
@@ -2363,10 +2363,10 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 				}
 			else if (strcmp (name, "text-decoration") == 0)
 				{
-					bool bInherit     = (strstr (value, "inherit")      != NULL);
-					bool bUnderline   = (strstr (value, "underline")    != NULL);
-					bool bLineThrough = (strstr (value, "line-through") != NULL);
-					bool bOverline    = (strstr (value, "overline")     != NULL);
+					bool bInherit     = (strstr (value, "inherit")      != nullptr);
+					bool bUnderline   = (strstr (value, "underline")    != nullptr);
+					bool bLineThrough = (strstr (value, "line-through") != nullptr);
+					bool bOverline    = (strstr (value, "overline")     != nullptr);
 
 					if (bUnderline || bLineThrough || bOverline)
 						{

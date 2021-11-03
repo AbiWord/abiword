@@ -93,9 +93,9 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 	if (![super initWithWindowNibName:@"xap_CocoaDlg_Language"]) {
 		return nil;
 	}
-	_xap = 0;
+	_xap = nullptr;
 
-	m_Selection = 0;
+	m_Selection = nil;
 	m_SelectionIndex = -1;
 
 	m_bApplyToDocument = NO;
@@ -132,7 +132,7 @@ if (m_Selection)
 	}
 	m_SelectionIndex = -1;
 
-	_xap = 0;
+	_xap = nullptr;
 }
 
 - (void)windowDidLoad
@@ -201,7 +201,7 @@ if (m_Selection)
 	if (m_Selection)
 	{
 		[m_Selection release];
-		m_Selection = 0;
+		m_Selection = nil;
 	}
 	m_SelectionIndex = -1;
 

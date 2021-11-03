@@ -34,9 +34,9 @@ TFTEST_MAIN("pf_Fragments")
 
   pf_Frag *frag1, *frag2, *frag3;
 
-  frag1 = new pf_Frag(NULL, pf_Frag::PFT_Text, 0);
-  frag2 = new pf_Frag(NULL, pf_Frag::PFT_Text, 0);
-  frag3 = new pf_Frag(NULL, pf_Frag::PFT_Text, 0);
+  frag1 = new pf_Frag(nullptr, pf_Frag::PFT_Text, 0);
+  frag2 = new pf_Frag(nullptr, pf_Frag::PFT_Text, 0);
+  frag3 = new pf_Frag(nullptr, pf_Frag::PFT_Text, 0);
 
   printf("frag1 = %p frag2 = %p frag3 = %p\n", frag1, frag2, frag3);
 

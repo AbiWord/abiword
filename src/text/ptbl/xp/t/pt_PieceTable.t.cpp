@@ -31,9 +31,9 @@
 TFTEST_MAIN("pt_PieceTable")
 {
 //	PD_Document doc;
-	pt_PieceTable pt(NULL);
+	pt_PieceTable pt(nullptr);
 
-	TFPASS(pt.getDocument() == NULL);
+	TFPASS(pt.getDocument() == nullptr);
 
 	// we need to set the state to loading.
 	pt.setPieceTableState(PTS_Loading);
@@ -42,7 +42,7 @@ TFTEST_MAIN("pt_PieceTable")
 		"foo", "bar"
 	};
 
-	pf_Frag_Strux *frag = NULL;
+	pf_Frag_Strux *frag = nullptr;
 	TFPASS(pt.appendStrux(PTX_Block, attrs, &frag));
 	TFPASS(frag);
 	TFPASS(frag->getType() == pf_Frag::PFT_Strux);

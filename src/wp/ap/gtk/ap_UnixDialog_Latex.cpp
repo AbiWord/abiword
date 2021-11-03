@@ -60,11 +60,11 @@ XAP_Dialog * AP_UnixDialog_Latex::static_constructor(XAP_DialogFactory * pFactor
 	return new AP_UnixDialog_Latex(pFactory,id);
 }
 
-AP_UnixDialog_Latex::AP_UnixDialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id) : 
-  AP_Dialog_Latex(pDlgFactory,id),
-  m_wClose(NULL), 
-  m_wInsert(NULL),
-  m_wText(NULL)
+AP_UnixDialog_Latex::AP_UnixDialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+  : AP_Dialog_Latex(pDlgFactory, id),
+  m_wClose(nullptr),
+  m_wInsert(nullptr),
+  m_wText(nullptr)
 {
   UT_DEBUGMSG(("Constructing Latex dialog %p \n",this));
 }
@@ -125,10 +125,10 @@ void AP_UnixDialog_Latex::destroy(void)
 {
 	m_answer = AP_Dialog_Latex::a_CANCEL;	
 	modeless_cleanup();
-	if (m_windowMain != NULL)
+	if (m_windowMain != nullptr)
 	{
 		gtk_widget_destroy(m_windowMain); // TOPLEVEL
-		m_windowMain = NULL;
+		m_windowMain = nullptr;
 	}
 }
 
@@ -152,7 +152,7 @@ bool AP_UnixDialog_Latex::getLatexFromGUI(void)
 	//
 	// Get the chars from the widget
 	//
-	gchar * sz = NULL;
+	gchar * sz = nullptr;
 #ifdef HAVE_GO_MATH_EDITOR_NEW
 	m_compact = go_math_editor_get_inline(GO_MATH_EDITOR(m_wText));
 	sz = go_math_editor_get_itex(GO_MATH_EDITOR(m_wText));

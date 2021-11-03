@@ -104,7 +104,7 @@ void UT_UUIDGenerator__test(UT_UUIDGenerator* self)
   if(self->m_pUUID)
   {
     delete self->m_pUUID;
-    self->m_pUUID = NULL;
+    self->m_pUUID = nullptr;
   }
 
   UT_DEBUGMSG(("---------------------- Testing uuid hash END --------------------------\n"));

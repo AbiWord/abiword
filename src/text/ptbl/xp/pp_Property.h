@@ -19,10 +19,7 @@
  * 02110-1301 USA.
  */
 
-
-
-#ifndef PP_PROPERTY_H
-#define PP_PROPERTY_H
+#pragma once
 
 #include <memory>
 #include <string>
@@ -192,10 +189,9 @@ ABI_EXPORT std::unique_ptr<PP_PropertyType> PP_evalPropertyType(const gchar * ps
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
 								 tProperty_type Type,
-								 const PD_Document * pDoc=NULL,
+								 const PD_Document* pDoc = nullptr,
 								 bool bExpandStyles=false);
 
 ABI_EXPORT UT_uint32        PP_getPropertyCount();
 ABI_EXPORT const gchar * PP_getNthPropertyName(UT_uint32 n);
 ABI_EXPORT tPropLevel       PP_getNthPropertyLevel(UT_uint32 n);
-#endif /* PP_PROPERTY_H */

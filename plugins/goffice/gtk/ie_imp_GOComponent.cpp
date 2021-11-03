@@ -49,7 +49,7 @@
 GSList *mime_types;
 
 // supported mimetypes
-static IE_MimeConfidence *IE_Imp_Component_Sniffer__MimeConfidence = NULL;
+static IE_MimeConfidence *IE_Imp_Component_Sniffer__MimeConfidence = nullptr;
 
 IE_Imp_Component_Sniffer::IE_Imp_Component_Sniffer ()
 	: IE_ImpSniffer(IE_IMPEXPNAME_GOCOMPONENT, true)
@@ -59,14 +59,14 @@ IE_Imp_Component_Sniffer::IE_Imp_Component_Sniffer ()
 
 IE_Imp_Component_Sniffer::~IE_Imp_Component_Sniffer ()
 {
-	if (IE_Imp_Component_Sniffer__MimeConfidence != NULL)
+	if (IE_Imp_Component_Sniffer__MimeConfidence != nullptr)
 		delete[] IE_Imp_Component_Sniffer__MimeConfidence;
 }
 
 static UT_Confidence_t 
 supports_mime (const char * szMIME)
 {
-	if (g_slist_find_custom (mime_types, szMIME, (GCompareFunc) strcmp) != NULL)
+	if (g_slist_find_custom (mime_types, szMIME, (GCompareFunc) strcmp) != nullptr)
 	{
 		 switch (go_components_get_priority (szMIME))
 		 {
@@ -88,17 +88,17 @@ supports_mime (const char * szMIME)
 
 const IE_SuffixConfidence * IE_Imp_Component_Sniffer::getSuffixConfidence ()
 {
-	return NULL;
+	return nullptr;
 }
 
 const IE_MimeConfidence * IE_Imp_Component_Sniffer::getMimeConfidence ()
 {
-	if (IE_Imp_Component_Sniffer__MimeConfidence == NULL)
+	if (IE_Imp_Component_Sniffer__MimeConfidence == nullptr)
 	{
 		IE_Imp_Component_Sniffer__MimeConfidence = new IE_MimeConfidence[g_slist_length(mime_types) + 1];
 		int i;
 		GSList *l;
-		for (l = mime_types, i = 0; l != NULL; l= l->next, i++)
+		for (l = mime_types, i = 0; l != nullptr; l= l->next, i++)
 		{
 			IE_Imp_Component_Sniffer__MimeConfidence[i].match = IE_MIME_MATCH_FULL;
 			IE_Imp_Component_Sniffer__MimeConfidence[i].mimetype = static_cast<const char*>(l->data);
@@ -117,7 +117,7 @@ UT_Confidence_t IE_Imp_Component_Sniffer::recognizeContents(const char * szBuf,
 													   UT_uint32 iNumbytes)
 {
 	char const *mime = go_get_mime_type_for_data (szBuf, iNumbytes);
-	if (mime != NULL)
+	if (mime != nullptr)
 	{
 	   UT_Confidence_t confidence = supports_mime (mime);
 	   FREEP(mime);
@@ -156,7 +156,7 @@ UT_Error IE_Imp_Component::_loadFile(GsfInput * fp)
 	ImportStreamFile * pStream = new ImportStreamFile(fp);
 	UT_Error error;
 
-	pStream->init(NULL);
+	pStream->init(nullptr);
 	X_CleanupIfError(error,_parseStream(pStream));
 	error = UT_OK;
 
@@ -220,7 +220,7 @@ UT_Error IE_Imp_Component::_parseStream(ImportStream * pStream)
 		g_free (mime_type);
 	}
 	if (g_slist_find_custom (mime_types, m_MimeType.c_str (),
-				(gint (*)(const void*, const void*))strcmp) == NULL) {
+				(gint (*)(const void*, const void*))strcmp) == nullptr) {
 		return UT_IE_UNSUPTYPE;
 	}
 	UT_String Props=UT_String("embed-type: GOComponent");
@@ -240,7 +240,7 @@ bool IE_Imp_Component::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 	ImportStreamClipboard stream(pData, lenData);
 	setClipboard (pDocRange->m_pos1);
-	stream.init(NULL);
+	stream.init(nullptr);
 	UT_Error error = _parseStream(&stream);
 	return error == UT_OK;
 }

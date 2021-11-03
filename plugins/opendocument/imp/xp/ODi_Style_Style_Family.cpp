@@ -45,7 +45,7 @@ ODi_Style_Style_Family::~ODi_Style_Style_Family()
 
 /**
  * @param pReplacementName Name to replace the actual name of the style that is
- *                         being added. NULL if the name shouldn't be replaced.
+ *                         being added. nullptr if the name shouldn't be replaced.
  */
 ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
                              ODi_ElementStack& rElementStack,
@@ -53,7 +53,7 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
                              std::string* pReplacementName,
                              std::string* pReplacementDisplayName) {
                                 
-    ODi_Style_Style* pStyle = NULL;
+    ODi_Style_Style* pStyle = nullptr;
     bool bOnContentStream;
     const gchar* pName;
     
@@ -116,7 +116,7 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
     }
 
 
-    if (pReplacementName != NULL) {
+    if (pReplacementName != nullptr) {
         std::string originalName = pName;
         
         if (bOnContentStream) {
@@ -135,7 +135,7 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
 /** Remove any style that doesn't have properties */
 void ODi_Style_Style_Family::_removeEmptyStyles(const StyleMap & map, bool bOnContentStream)
 {
-    ODi_Style_Style* pStyle = NULL;
+    ODi_Style_Style* pStyle = nullptr;
     bool foundNone;
     
 
@@ -195,7 +195,7 @@ void ODi_Style_Style_Family::_buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFa
 void ODi_Style_Style_Family::buildAbiPropsAttrString(
                                             ODi_FontFaceDecls& rFontFaceDecls)
 {
-    if (m_pDefaultStyle != NULL) {
+    if (m_pDefaultStyle != nullptr) {
         m_pDefaultStyle->buildAbiPropsAttrString(rFontFaceDecls);
     }
     
@@ -319,7 +319,7 @@ void ODi_Style_Style_Family::_findSuitableReplacement(
         return;
     }
 
-    ODi_Style_Style* pStyle = NULL;
+    ODi_Style_Style* pStyle = nullptr;
     
     if (bOnContentStream) {
         StyleMap::const_iterator iter = m_styles_contentStream.find(pRemovedStyle->getParentName().c_str());
@@ -400,9 +400,9 @@ void ODi_Style_Style_Family::linkStyles()
 const ODi_Style_Style* ODi_Style_Style_Family::getStyle(const gchar* pStyleName,
                                                       bool bOnContentStream) const
 {
-    UT_return_val_if_fail(pStyleName, NULL);
+    UT_return_val_if_fail(pStyleName, nullptr);
 
-    const ODi_Style_Style* pStyle = NULL;
+    const ODi_Style_Style* pStyle = nullptr;
     
     // Is it the default style?
     if (m_pDefaultStyle && (m_pDefaultStyle->getName() == pStyleName)) {
@@ -456,11 +456,11 @@ const ODi_Style_Style* ODi_Style_Style_Family::getStyle(const gchar* pStyleName,
         } else {
             // This style never existed.
             // Let's return the default one instead, if there is one.
-            if (m_pDefaultStyle != NULL) {
+            if (m_pDefaultStyle != nullptr) {
                 pStyle = m_pDefaultStyle;
             } 
             else {
-                pStyle = NULL;
+                pStyle = nullptr;
             }
         }
         
@@ -496,7 +496,7 @@ void ODi_Style_Style_Family::_linkStyles(const StyleMap & map, bool onContentStr
                 // We don't have this style!
                 // Let's pretend that it never existed.
                 UT_ASSERT_HARMLESS(pOtherStyle);
-                pStyle->setParentName(NULL);
+                pStyle->setParentName(nullptr);
             }
         }
         
@@ -513,7 +513,7 @@ void ODi_Style_Style_Family::_linkStyles(const StyleMap & map, bool onContentStr
                 // We don't have this style!
                 // Let's pretend that it never existed.
                 UT_ASSERT_HARMLESS(pOtherStyle);
-                pStyle->setNextStyleName(NULL);
+                pStyle->setNextStyleName(nullptr);
             }
         }
     }

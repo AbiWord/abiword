@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuière
+ * Copyright (C) 2003 Hubert FiguiÃ¨re
  * Copyright (C) 2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
@@ -186,9 +186,9 @@ static unichar s_remap[224] = {
 	if (![super initWithWindowNibName:@"xap_CocoaDlg_Insert_Symbol"]) {
 		return nil;
 	}
-	m_FontList = 0;
-	m_CurrentFont = 0;
-	m_CurrentFontName = 0;
+	m_FontList = nil;
+	m_CurrentFont = nil;
+	m_CurrentFontName = nil;
 
 	m_Symbol_lo = 0;
 	m_Symbol_hi = 0;
@@ -243,7 +243,7 @@ static unichar s_remap[224] = {
 				UT_DEBUGMSG(("XAP_CocoaDlg_Insert_Symbol -initFromNib: no usable font families?\n"));
 
 				[m_FontList release];
-				m_FontList = 0;
+				m_FontList = nil;
 			}
 		}
 	}
@@ -267,32 +267,32 @@ static unichar s_remap[224] = {
 		{
 			if ( m_OffsetString[i])
 				[m_OffsetString[i] release];
-			m_OffsetString[i] = 0;
+			m_OffsetString[i] = nil;
 		}
 	for (i = 0; i < 224; i++)
 		{
 			if ( m_SymbolString[i])
 				[m_SymbolString[i] release];
-			m_SymbolString[i] = 0;
+			m_SymbolString[i] = nil;
 
 			if ( m_Remap_String[i])
 				[m_Remap_String[i] release];
-			m_Remap_String[i] = 0;
+			m_Remap_String[i] = nil;
 		}
 	if (m_FontList)
 		{
 			[m_FontList release];
-			m_FontList = 0;
+			m_FontList = nil;
 		}
 	if (m_CurrentFont)
 		{
 			[m_CurrentFont release];
-			m_CurrentFont = 0;
+			m_CurrentFont = nil;
 		}
 	if (m_CurrentFontName)
 		{
 			[m_CurrentFontName release];
-			m_CurrentFontName = 0;
+			m_CurrentFontName = nil;
 		}
 	[super dealloc];
 }
@@ -434,7 +434,7 @@ static unichar s_remap[224] = {
 			/* okay, this is awkward; the font remapping will treat characters <= 0xff specially,
 			 * but for a very few cases we're actually mapping within this range.
 			 */
-			_xap->insertSymbol(NULL, remapped_index);
+			_xap->insertSymbol(nullptr, remapped_index);
 			return;
 		}
 	}
@@ -466,7 +466,7 @@ static unichar s_remap[224] = {
 	if (m_CurrentFontName)
 		{
 			[m_CurrentFontName release];
-			m_CurrentFontName = 0;
+			m_CurrentFontName = nil;
 		}
 	m_CurrentFontName = [font objectAtIndex:0];
 	[m_CurrentFontName retain];
@@ -474,7 +474,7 @@ static unichar s_remap[224] = {
 	if (m_CurrentFont)
 		{
 			[m_CurrentFont release];
-			m_CurrentFont = 0;
+			m_CurrentFont = nil;
 		}
 	m_CurrentFont = [NSFont fontWithName:m_CurrentFontName size:12.0f];
 	[m_CurrentFont retain];
@@ -508,7 +508,7 @@ static unichar s_remap[224] = {
 					if (m_CurrentFontName)
 						{
 							[m_CurrentFontName release];
-							m_CurrentFontName = 0;
+							m_CurrentFontName = nil;
 						}
 					m_CurrentFontName = [font objectAtIndex:0];
 					[m_CurrentFontName retain];
@@ -520,7 +520,7 @@ static unichar s_remap[224] = {
 	if (m_CurrentFont)
 		{
 			[m_CurrentFont release];
-			m_CurrentFont = 0;
+			m_CurrentFont = nil;
 		}
 	m_CurrentFont = [NSFont fontWithName:m_CurrentFontName size:12.0f];
 	[m_CurrentFont retain];

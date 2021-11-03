@@ -220,8 +220,8 @@ bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
 {
 	// Fetch data from the clipboard (using the allowable source(s)) in one of
 	// the prioritized list of formats.  Return pointer to clipboard's buffer. 
-	*pszFormatFound = NULL;
-	*ppData = NULL;
+	*pszFormatFound = nullptr;
+	*ppData = nullptr;
 	*pLen = 0;
 	if (TAG_ClipboardOnly == tFrom)
 		return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
@@ -235,7 +235,7 @@ bool XAP_UnixClipboard::getTextData(T_AllowGet tFrom, void ** ppData,
 									UT_uint32 * pLen)
 {
 	// start out pessimistic
-	*ppData = NULL;
+	*ppData = nullptr;
 	*pLen = 0;
 	
 	GtkClipboard * clippy = gtkClipboardForTarget (tFrom);
@@ -256,7 +256,7 @@ bool XAP_UnixClipboard::getTextData(T_AllowGet tFrom, void ** ppData,
 	g_free (txt);
 	
 	// ignored
-	const char * pszFormatFound = NULL;
+	const char * pszFormatFound = nullptr;
 	
 	static const char * txtFormatList [] = {
 		"text/plain",
@@ -308,7 +308,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 										   const char **pszFormatFound)
 {
 	bool rval = false;
-	if(formatList == NULL)
+	if(formatList == nullptr)
 	  return false;
 
 	GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);

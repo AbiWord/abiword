@@ -31,7 +31,7 @@
 XAP_FontPreview::XAP_FontPreview()
 	: m_width(PREVIEW_WIDTH)
 	, m_height(PREVIEW_HEIGHT)
-	, m_pFontPreview(NULL)
+	, m_pFontPreview(nullptr)
 {
 	UT_UCS4_cloneString_char (&m_drawString, PREVIEW_ENTRY_DEFAULT_STRING);
 }
@@ -48,7 +48,7 @@ void XAP_FontPreview::_createFontPreviewFromGC(GR_Graphics * gc,
 {
 	UT_ASSERT(gc);
 	UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! font priview created!!!!!\n"));
-	m_pFontPreview = new XAP_Preview_FontPreview(gc,NULL);
+	m_pFontPreview = new XAP_Preview_FontPreview(gc,nullptr);
 	UT_return_if_fail(m_pFontPreview);
 	
 	m_pFontPreview->setDrawString(m_drawString);

@@ -124,8 +124,8 @@ class ABI_EXPORT GR_Itemization
 	    m_iEmbedingLevel(0),
 		m_iDirOverride(0),
 		m_bShowControlChars(false),
-	    m_pLang(NULL),
-	    m_pFont(NULL)
+	    m_pLang(nullptr),
+	    m_pFont(nullptr)
 	{};
 
 	virtual ~GR_Itemization() {clear();} // do not delete the actual
@@ -210,13 +210,13 @@ class ABI_EXPORT GR_RenderInfo
 	GR_RenderInfo(GR_ScriptType type)
 		: m_iOffset(0), m_iLength(0), m_eShapingResult(GRSR_Unknown),
  		  m_eState(GRSR_Unknown), m_eScriptType(type),
-		  m_pText(NULL), m_iVisDir(UT_BIDI_LTR),
+		  m_pText(nullptr), m_iVisDir(UT_BIDI_LTR),
 	      m_xoff(0), m_yoff(),
-	      m_pGraphics(NULL), m_pFont(NULL),
+	      m_pGraphics(nullptr), m_pFont(nullptr),
 		  m_iJustificationPoints(0),
 		  m_iJustificationAmount(0),
 		  m_bLastOnLine(false),
-		  m_pItem(NULL),
+		  m_pItem(nullptr),
 		  m_bInvalidateFontCache(false){};
 
 

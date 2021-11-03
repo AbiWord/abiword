@@ -63,11 +63,11 @@ AP_UnixDialog_InsertTable::AP_UnixDialog_InsertTable(XAP_DialogFactory * pDlgFac
 										             XAP_Dialog_Id id)
 	: AP_Dialog_InsertTable(pDlgFactory,id)
 {
-	m_windowMain = NULL;
-	m_pColSpin = NULL;
-	m_pRowSpin = NULL;
-	m_pColWidthSpin = NULL;
-	m_radioGroup = NULL;
+	m_windowMain = nullptr;
+	m_pColSpin = nullptr;
+	m_pRowSpin = nullptr;
+	m_pColWidthSpin = nullptr;
+	m_radioGroup = nullptr;
 }
 
 AP_UnixDialog_InsertTable::~AP_UnixDialog_InsertTable(void)

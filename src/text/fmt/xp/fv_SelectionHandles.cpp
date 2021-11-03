@@ -37,7 +37,7 @@ bool FV_SelectionHandles::_getPositionCoords(PT_DocPosition pos, UT_sint32& x, U
 
 	m_pView->_findPositionCoords (pos,false, x1, y1,
 				   x2, y2, h,
-				   bPos, NULL, NULL);
+				   bPos, nullptr, nullptr);
 
         if (x1 < 0 || y1 < 0 ||
             x1 > m_pView->getWindowWidth() ||
@@ -83,7 +83,7 @@ void FV_SelectionHandles::updateSelectionStart(UT_sint32 x, UT_sint32 y)
 	x = m_pView->getGraphics()->tlu(x);
 	y = m_pView->getGraphics()->tlu(y);
 	page = m_pView->_getPageForXY(x, y, xClick, yClick);
-        page->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL,isTOC, true, NULL);
+        page->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL,isTOC, true, nullptr);
         right = m_pView->getSelectionRightAnchor();
 
         pos = UT_MIN (pos, right - 1);
@@ -101,7 +101,7 @@ void FV_SelectionHandles::updateSelectionEnd(UT_sint32 x, UT_sint32 y)
 	x = m_pView->getGraphics()->tlu(x);
 	y = m_pView->getGraphics()->tlu(y);
 	page = m_pView->_getPageForXY(x, y, xClick, yClick);
-        page->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL,isTOC, true, NULL);
+        page->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL,isTOC, true, nullptr);
         left = m_pView->getSelectionLeftAnchor();
 
         pos = UT_MAX (pos, left + 1);

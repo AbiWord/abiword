@@ -27,8 +27,8 @@
 #include "ut_debugmsg.h"
 
 PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, bool bDisplayed) :
-  m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), m_bDisplayed(bDisplayed), m_iUsed(0),
-  m_pBasedOn(NULL), m_pFollowedBy(NULL)
+  m_pPT(pPT), m_indexAP(indexAP), m_szName(nullptr), m_bDisplayed(bDisplayed), m_iUsed(0),
+  m_pBasedOn(nullptr), m_pFollowedBy(nullptr)
 {
   if (szName)
     m_szName = g_strdup (szName);
@@ -52,7 +52,7 @@ bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
 
 bool PD_Style::getProperty(const gchar * szName, const gchar *& szValue) const
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
@@ -63,7 +63,7 @@ bool PD_Style::getProperty(const gchar * szName, const gchar *& szValue) const
 
 bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue) const
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 	{
@@ -78,7 +78,7 @@ bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue) c
 		else
 		{
 			const PD_Style * pStyle = getBasedOn();
-			if(pStyle != NULL)
+			if(pStyle != nullptr)
 			{
 				return pStyle->_getPropertyExpand(szName,szValue, 0);
 			}
@@ -94,7 +94,7 @@ bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue) c
 
 bool PD_Style::_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth) const
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
@@ -110,7 +110,7 @@ bool PD_Style::_getPropertyExpand(const gchar * szName, const gchar *& szValue, 
 		else
 		{
 			const PD_Style * pStyle = getBasedOn();
-			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ))
+			if((pStyle != nullptr) && (iDepth < pp_BASEDON_DEPTH_LIMIT ))
 			{
 				return pStyle->_getPropertyExpand(szName,szValue, iDepth+1);
 			}
@@ -126,7 +126,7 @@ bool PD_Style::_getPropertyExpand(const gchar * szName, const gchar *& szValue, 
 
 bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue) const
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
@@ -142,7 +142,7 @@ bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue) 
 		else
 		{
 			const PD_Style * pStyle = getBasedOn();
-			if(pStyle != NULL )
+			if(pStyle != nullptr )
 			{
 				return pStyle->_getAttributeExpand(szName,szValue, 0);
 			}
@@ -158,7 +158,7 @@ bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue) 
 
 bool PD_Style::_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth) const
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
@@ -174,7 +174,7 @@ bool PD_Style::_getAttributeExpand(const gchar * szName, const gchar *& szValue,
 		else
 		{
 			const PD_Style * pStyle = getBasedOn();
-			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ) )
+			if((pStyle != nullptr) && (iDepth < pp_BASEDON_DEPTH_LIMIT ) )
 			{
 				return pStyle->_getAttributeExpand(szName,szValue, iDepth+1);
 			}
@@ -189,7 +189,7 @@ bool PD_Style::_getAttributeExpand(const gchar * szName, const gchar *& szValue,
 
 std::unique_ptr<PP_PropertyType> PD_Style::getPropertyType(const gchar * szName, tProperty_type Type) const
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return std::unique_ptr<PP_PropertyType>();
@@ -200,7 +200,7 @@ std::unique_ptr<PP_PropertyType> PD_Style::getPropertyType(const gchar * szName,
 
 bool PD_Style::getAttribute(const gchar * szName, const gchar *& szValue) const
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
@@ -232,7 +232,7 @@ bool PD_Style::isCharStyle(void) const
 {
 	// TODO: cache this too  
 
-	const gchar * szValue = NULL;
+	const gchar * szValue = nullptr;
 	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, szValue))
 		if (szValue && szValue[0])
 			return g_ascii_strcasecmp(szValue, "C") == 0; // *PLEASE LEAVE THIS AS CASE
@@ -248,7 +248,7 @@ bool PD_Style::isCharStyle(void) const
 
 bool PD_Style::isList(void) const
 {
-	const char *szListStyle = NULL;
+	const char *szListStyle = nullptr;
 	if (getPropertyExpand("list-style", szListStyle)) {
 		return (g_ascii_strcasecmp(szListStyle, "None") != 0);
 	}
@@ -294,7 +294,7 @@ PD_Style * PD_Style::getFollowedBy(void) const
  */
 bool PD_Style::addProperty(const gchar * szName, const gchar * szValue)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bres= true;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
@@ -320,7 +320,7 @@ bool PD_Style::addProperty(const gchar * szName, const gchar * szValue)
 */
 bool PD_Style::addProperties(const PP_PropertyVector & pProperties)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bres= true;
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
@@ -344,15 +344,15 @@ bool PD_Style::addProperties(const PP_PropertyVector & pProperties)
 bool PD_Style::setAllAttributes(const PP_PropertyVector & atts)
 {
 	bool bres =	m_pPT->getVarSet().storeAP(atts, &m_indexAP);
-	m_pFollowedBy = NULL;
-	m_pBasedOn = NULL;
+	m_pFollowedBy = nullptr;
+	m_pBasedOn = nullptr;
 	return bres;
 }
 
 
 bool PD_Style::addAttributes(const PP_PropertyVector & pAtts)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bres = false;
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
@@ -368,37 +368,37 @@ bool PD_Style::addAttributes(const PP_PropertyVector & pAtts)
 		pNewAP->markReadOnly();
 		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
 	}
-	m_pFollowedBy = NULL;
-	m_pBasedOn = NULL;
+	m_pFollowedBy = nullptr;
+	m_pBasedOn = nullptr;
 	return bres;
 }
 
 size_t PD_Style::getAttributeCount(void) const
 {
-  	const PP_AttrProp * pAP = NULL;
-	
+	const PP_AttrProp * pAP = nullptr;
+
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return 0;
 	else
-	        return pAP->getAttributeCount();
+		return pAP->getAttributeCount();
 }
 
 
 size_t PD_Style::getPropertyCount(void) const
 {
-  	const PP_AttrProp * pAP = NULL;
-	
+	const PP_AttrProp * pAP = nullptr;
+
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return 0;
 	else
-	        return pAP->getPropertyCount();
+		return pAP->getPropertyCount();
 }
-	
+
 bool PD_Style::getNthAttribute (int ndx, const gchar *&szName,
 			     const gchar *&szValue) const
 {
-  	const PP_AttrProp * pAP = NULL;
-	
+	const PP_AttrProp * pAP = nullptr;
+
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
 	else
@@ -410,8 +410,8 @@ bool PD_Style::getNthAttribute (int ndx, const gchar *&szName,
 bool PD_Style::getNthProperty (int ndx, const gchar *&szName,
 			       const gchar *&szValue) const
 {
-  	const PP_AttrProp * pAP = NULL;
-	
+	const PP_AttrProp * pAP = nullptr;
+
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
 	else
@@ -432,8 +432,8 @@ bool PD_Style::getAllAttributes(PP_PropertyVector & vAttribs, UT_sint32 depth) c
 // This method will be recursively called to basedon style
 //
 	UT_sint32 count = getAttributeCount();
-	const gchar * szName = NULL;
-	const gchar * szValue = NULL;
+	const gchar * szName = nullptr;
+	const gchar * szValue = nullptr;
 	for (UT_sint32 i = 0; i < count; i++) {
 		getNthAttribute(i, szName, szValue);
 		bool bfound = false;
@@ -448,7 +448,7 @@ bool PD_Style::getAllAttributes(PP_PropertyVector & vAttribs, UT_sint32 depth) c
 			vAttribs.push_back(szValue);
 		}
 	}
-	if (depth < pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)	{
+	if (depth < pp_BASEDON_DEPTH_LIMIT && getBasedOn() != nullptr)	{
 		getBasedOn()->getAllAttributes(vAttribs,depth +1);
 	}
 	return true;
@@ -466,8 +466,8 @@ bool PD_Style::getAllProperties(PP_PropertyVector & vProps, UT_sint32 depth) con
 // This method will be recursively called to basedon style
 //
 	UT_sint32 count = getPropertyCount();
-	const gchar * szName = NULL;
-	const gchar * szValue = NULL;
+	const gchar * szName = nullptr;
+	const gchar * szValue = nullptr;
 
 	for (UT_sint32 i = 0; i < count; i++) {
 		getNthProperty(i, szName, szValue);
@@ -483,7 +483,7 @@ bool PD_Style::getAllProperties(PP_PropertyVector & vProps, UT_sint32 depth) con
 			vProps.push_back(szValue);
 		}
 	}
-	if (depth < pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL) {
+	if (depth < pp_BASEDON_DEPTH_LIMIT && getBasedOn() != nullptr) {
 		getBasedOn()->getAllProperties(vProps,depth +1);
 	}
 	return true;

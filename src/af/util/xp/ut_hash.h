@@ -421,8 +421,8 @@ const gchar ** UT_GenericStringMap<T>::list()
 			m_list[index++] = static_cast<gchar *>(const_cast<char *>(key));
 			m_list[index++] = static_cast<gchar *>(const_cast<char *>(value));
 		}
-		m_list[index++] = NULL;
-		m_list[index  ] = NULL;
+		m_list[index++] = nullptr;
+		m_list[index  ] = nullptr;
 	}
 	return const_cast<const gchar **>(m_list);
 }
@@ -564,7 +564,7 @@ UT_GenericVector<T>* UT_GenericStringMap<T>::enumerate (bool strip_null_values) 
 
 	UT_Cursor cursor(this);
 
-	T val = NULL;
+	T val = nullptr;
 
 	for (val = cursor.first(); cursor.is_valid(); val = cursor.next ())
 	{
@@ -590,7 +590,7 @@ UT_GenericVector<const UT_String*>* UT_GenericStringMap<T>::keys (bool strip_nul
 
 	UT_Cursor cursor(this);
 
-	T val = NULL;
+	T val = nullptr;
 
 	for (val = cursor.first(); cursor.is_valid(); val = cursor.next ())
 	{
@@ -727,7 +727,7 @@ UT_GenericStringMap<T>::find_slot(const char *k,
 {
 	if ( m_nSlots == 0 )
 	  {
-	    key_found = false ; return NULL ;
+	    key_found = false ; return nullptr ;
 	  }
 
 	hashval = (hashval_in ? hashval_in : key_wrapper::compute_hash(k));

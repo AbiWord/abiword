@@ -146,7 +146,7 @@ void AP_UnixDialog_MergeCells::destroy(void)
 {
 	finalize();
 	gtk_widget_destroy(m_windowMain); // TOPLEVEL
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 }
 void AP_UnixDialog_MergeCells::activate(void)
 {
@@ -212,7 +212,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	GtkWidget *wMergeBelow;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	frame1 = gtk_frame_new (NULL);
+	frame1 = gtk_frame_new (nullptr);
 	gtk_widget_show (frame1);
 	gtk_container_add (GTK_CONTAINER (wContents), frame1);
 	XAP_gtk_widget_set_margin(frame1, 3);
@@ -224,29 +224,29 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	g_object_set(G_OBJECT(grid1),
 	             "row-spacing", 6,
 	             "column-spacing", 12,
-	             NULL);
+	             nullptr);
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Left,s);
 	wlMergeLeft = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
-                                     "xalign", 0.0, "yalign", 0.5, NULL);
+                                     "xalign", 0.0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlMergeLeft);
 	gtk_grid_attach(GTK_GRID(grid1), wlMergeLeft, 0, 0, 1, 1);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Right,s);
 	wlMergeRight = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
-                                      "xalign", 0, "yalign", 0.5, NULL);
+                                      "xalign", 0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlMergeRight);
 	gtk_grid_attach(GTK_GRID(grid1), wlMergeRight, 0, 1, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Above,s);
 	wlMergeAbove = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
-                                      "xalign", 0.0, "yalign", 0.5, NULL);
+                                      "xalign", 0.0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlMergeAbove);
 	gtk_grid_attach(GTK_GRID(grid1), wlMergeAbove, 0, 2, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Below,s);
 	wlMergeBelow = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
-                                      "xalign", 0.0, "yalign", 0.5, NULL);
+                                      "xalign", 0.0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlMergeBelow);
 	gtk_grid_attach(GTK_GRID(grid1), wlMergeBelow, 0, 3, 1, 1);
 

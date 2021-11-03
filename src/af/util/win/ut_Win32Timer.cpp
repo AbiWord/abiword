@@ -84,7 +84,7 @@ UT_sint32 UT_Win32Timer::set(UT_uint32 iMilliseconds)
 	// made to work with "Windows 3.1" ! Theses drivers filter out bits
 	// higher than 16.
 	
-	m_win32ID = SetTimer(NULL, 0, iMilliseconds,
+	m_win32ID = SetTimer(nullptr, 0, iMilliseconds,
 						 (TIMERPROC) Global_Win32TimerProc);
 	
 	if (m_win32ID == 0)
@@ -105,7 +105,7 @@ void UT_Win32Timer::stop(void)
 	// stop the OS timer from firing, but do not delete the class.
 	if (m_bStarted)
 	{
-		KillTimer(NULL, m_win32ID);
+		KillTimer(nullptr, m_win32ID);
 		m_bStarted = false;
 	}
 }
@@ -134,5 +134,5 @@ UT_Win32Timer* UT_Win32Timer::findWin32Timer(UINT win32ID)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }

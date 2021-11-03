@@ -55,8 +55,8 @@ AP_UnixDialog_Insert_DateTime::AP_UnixDialog_Insert_DateTime(XAP_DialogFactory *
 															 XAP_Dialog_Id id)
 	: AP_Dialog_Insert_DateTime(pDlgFactory,id)
 {
-	m_windowMain = NULL;
-	m_tvFormats = NULL;
+	m_windowMain = nullptr;
+	m_tvFormats = nullptr;
 }
 
 AP_UnixDialog_Insert_DateTime::~AP_UnixDialog_Insert_DateTime(void)
@@ -158,7 +158,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 							 renderer,
 							 "text", 
 							 0,
-							 NULL);
+							 nullptr);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_tvFormats), column);	
 
 	g_signal_connect_after(G_OBJECT(m_tvFormats),
@@ -184,7 +184,7 @@ void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
 	// this constant comes from ap_Dialog_Insert_DateTime.h
     char szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
 	
-    time_t tim = time(NULL);
+    time_t tim = time(nullptr);
 	
     struct tm *pTime = localtime(&tim);
 	
@@ -197,14 +197,14 @@ void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
 	                            );
 	
  	// build a list of all items
-    for (i = 0; InsertDateTimeFmts[i] != NULL; i++)
+    for (i = 0; InsertDateTimeFmts[i] != nullptr; i++)
 	{
 		gsize bytes_read = 0, bytes_written = 0;
 		char * utf;
 
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
 
-		utf = g_locale_to_utf8(szCurrentDateTime, -1, &bytes_read, &bytes_written, NULL);
+		utf = g_locale_to_utf8(szCurrentDateTime, -1, &bytes_read, &bytes_written, nullptr);
 		if (utf) {
 			// Add a new row to the model
 			gtk_list_store_append (model, &iter);

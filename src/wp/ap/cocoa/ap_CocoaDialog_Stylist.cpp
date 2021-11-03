@@ -144,7 +144,7 @@ void AP_CocoaDialog_Stylist::setStyleInGUI(void)
 {
 	UT_sint32 row,col;
 	std::string sCurStyle = getCurStyle();
-	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
+	if((getStyleTree() == nullptr) || (sCurStyle.size() == 0))
 	{
 		updateDialog();
 	}
@@ -291,7 +291,7 @@ void  AP_CocoaDialog_Stylist::_fillTree(void)
 	StyleNode *currentChild;
 	
 	Stylist_tree * pStyleTree = getStyleTree();
-	if(pStyleTree == NULL)
+	if(pStyleTree == nullptr)
 	{
 		updateDialog();
 		pStyleTree = getStyleTree();
@@ -352,7 +352,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 - (id)initFromNib
 {
 	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Stylist"]) {
-		_xap = NULL; 
+		_xap = nullptr;
 		_enabled = true;
 	}
 	return self;
@@ -360,7 +360,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 - (void)dealloc

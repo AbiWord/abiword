@@ -102,7 +102,7 @@ void AP_CocoaDialog_SplitCells::_storeWindowData(void)
 - (id)initFromNib
 {
 	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_SplitCells"]) {
-        _xap = NULL;
+        _xap = nullptr;
 	}
 	return self;
 }

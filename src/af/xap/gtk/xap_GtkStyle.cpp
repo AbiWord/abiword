@@ -38,7 +38,7 @@ append_element (GtkWidgetPath *path,
   char type;
 
   next = strpbrk (selector, "#.:");
-  if (next == NULL)
+  if (next == nullptr)
     next = selector + strlen (selector);
 
   name = g_strndup (selector, next - selector);
@@ -71,7 +71,7 @@ append_element (GtkWidgetPath *path,
       type = *next;
       selector = next + 1;
       next = strpbrk (selector, "#.:");
-      if (next == NULL)
+      if (next == nullptr)
         next = selector + strlen (selector);
       name = g_strndup (selector, next - selector);
 

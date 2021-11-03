@@ -44,7 +44,7 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		AttachConsole_t p_AttachConsole =
 			(AttachConsole_t) GetProcAddress (GetModuleHandleW(L"kernel32.dll"), "AttachConsole");
 
-		if (p_AttachConsole != NULL && p_AttachConsole (ATTACH_PARENT_PROCESS))
+		if (p_AttachConsole != nullptr && p_AttachConsole (ATTACH_PARENT_PROCESS))
 		{
 			_wfreopen (L"CONOUT$", L"w", stdout);
 			dup2 (fileno (stdout), 1);
@@ -77,7 +77,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		AttachConsole_t p_AttachConsole =
 			(AttachConsole_t) GetProcAddress (GetModuleHandle ("kernel32.dll"), "AttachConsole");
 
-		if (p_AttachConsole != NULL && p_AttachConsole (ATTACH_PARENT_PROCESS))
+		if (p_AttachConsole != nullptr && p_AttachConsole (ATTACH_PARENT_PROCESS))
 		{
 			freopen ("CONOUT$", "w", stdout);
 			dup2 (fileno (stdout), 1);

@@ -55,7 +55,7 @@
 #include <libgnomedb/gnome-db-login.h>
 #include <libgnomedb/gnome-db-util.h>
 
-static GdaClient * connection_pool = NULL;
+static GdaClient * connection_pool = nullptr;
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
@@ -115,8 +115,8 @@ private:
 
 		if (m_generatedModel) {
 			// write out a header - add a section and a paragraph to the document
-			X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
-			X_ReturnNoMemIfError(appendStrux(PTX_Block, NULL));
+			X_ReturnNoMemIfError(appendStrux(PTX_Section, nullptr));
+			X_ReturnNoMemIfError(appendStrux(PTX_Block, nullptr));
 		} else {
 			// tell IE_Imp that we're actually pasting stuff
 			PT_DocPosition dpos = 0;
@@ -168,7 +168,7 @@ private:
 
 		if (m_generatedModel) {
 			// append a final empty paragraph into the doc
-			X_ReturnNoMemIfError(appendStrux(PTX_Block, NULL));	
+			X_ReturnNoMemIfError(appendStrux(PTX_Block, nullptr));	
 		}
 
 		return UT_OK;
@@ -177,13 +177,13 @@ private:
 	void openTable()
 	{
 		m_row = m_col = 0;
-		X_CheckError(appendStrux(PTX_SectionTable,NULL));
+		X_CheckError(appendStrux(PTX_SectionTable,nullptr));
 	}
 
 	void closeTable()
 	{
 		m_row = m_col = 0;
-		X_CheckError(appendStrux(PTX_EndTable,NULL));	
+		X_CheckError(appendStrux(PTX_EndTable,nullptr));	
 	}
 
 	void openRow()
@@ -232,7 +232,7 @@ private:
 #endif
 
 		X_CheckError(appendStrux(PTX_SectionCell,table_props));
-		X_CheckError(appendStrux(PTX_Block,NULL));	
+		X_CheckError(appendStrux(PTX_Block,nullptr));	
 
 		if (value) {
 			UT_UCS4String ucs4 (value);
@@ -243,7 +243,7 @@ private:
 		}
 
 		m_col++;
-		X_CheckError(appendStrux(PTX_EndCell,NULL));
+		X_CheckError(appendStrux(PTX_EndCell,nullptr));
 	}
 
 	// private data
@@ -291,10 +291,10 @@ gda_ok_pressed (GtkWidget * login, GtkWidget * txt, PD_Document * pDoc)
 	
 	/* execute command */
 	cmd = gda_command_new (sql.utf8_str(), GDA_COMMAND_TYPE_SQL, (GdaCommandOptions)0);
-	recset = gda_connection_execute_single_command (cnc, cmd, NULL);
+	recset = gda_connection_execute_single_command (cnc, cmd, nullptr);
 	gda_command_free (cmd);
 	
-	if (recset == NULL || !GDA_IS_DATA_MODEL (recset))
+	if (recset == nullptr || !GDA_IS_DATA_MODEL (recset))
 		return false;
 	else
 		return handle_recordset (recset, pDoc);  
@@ -326,19 +326,19 @@ GDA_execSQL(AV_View* v, EV_EditMethodCallData *d)
 	abiAddStockButton(GTK_DIALOG(dlg), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	abiAddStockButton(GTK_DIALOG(dlg), GTK_STOCK_OK, GTK_RESPONSE_OK);
 
-	db_login = gnome_db_login_new (NULL);
+	db_login = gnome_db_login_new (nullptr);
 	text = gnome_db_editor_new ();
 
 	table = gnome_db_new_table_widget (4, 2, FALSE);
 	XAP_gtk_widget_set_margin(table, 12);
 
-	label = gnome_db_new_label_widget (NULL);
+	label = gnome_db_new_label_widget (nullptr);
 	gtk_label_set_markup (GTK_LABEL (label), "<b>Data Source</b>");
 	gtk_table_attach (GTK_TABLE (table), label, 0, 2, 0, 1, GTK_FILL, GTK_FILL, 6, 6);
 	gtk_table_attach (GTK_TABLE (table), db_login, 1, 2, 1, 2,
 			  GTK_EXPAND, GTK_EXPAND, 6, 6);
 
-	label = gnome_db_new_label_widget (NULL);
+	label = gnome_db_new_label_widget (nullptr);
 	gtk_label_set_markup (GTK_LABEL (label), "<b>Command to Execute</b>");
 	gtk_table_attach (GTK_TABLE (table), label, 0, 2, 2, 3, GTK_FILL, GTK_FILL, 6, 6);
 	gtk_table_attach (GTK_TABLE (table), text, 1, 2, 3, 4,
@@ -348,7 +348,7 @@ GDA_execSQL(AV_View* v, EV_EditMethodCallData *d)
 
 	gtk_widget_show_all (dlg);
 
-	switch (abiRunModalDialog (GTK_DIALOG(dlg), pFrame, NULL, GTK_RESPONSE_CANCEL, false))
+	switch (abiRunModalDialog (GTK_DIALOG(dlg), pFrame, nullptr, GTK_RESPONSE_CANCEL, false))
 		{
 		case GTK_RESPONSE_OK:
 			ret = gda_ok_pressed (db_login, text, pView->getDocument ());
@@ -370,10 +370,10 @@ GDA_viewDataSources(AV_View* v, EV_EditMethodCallData *d)
 
 	/* run gnome-database-properties config tool */
 	argv[0] = (char *) "gnome-database-properties";
-	argv[1] = NULL;
+	argv[1] = nullptr;
 
-	return g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
-			      NULL, NULL, NULL, NULL);
+	return g_spawn_async (nullptr, argv, nullptr, G_SPAWN_SEARCH_PATH,
+			      nullptr, nullptr, nullptr, nullptr);
 }
 
 const static struct {
@@ -403,7 +403,7 @@ GDA_removeFromMenus()
 	
 	UT_uint32 i;
 	for (i = 0; i < G_N_ELEMENTS (gda_menus); i++) {
-		pFact->removeMenuItem("Main",NULL,gda_menus[i].label);
+		pFact->removeMenuItem("Main",nullptr,gda_menus[i].label);
 		pEM = ev_EditMethod_lookup ( gda_menus[i].methodName ) ;
 		pEMC->removeEditMethod ( pEM ) ;
 		DELETEP( pEM ) ;
@@ -451,15 +451,15 @@ GDA_addToMenus()
 		const char *prev = "S&cripts";
 		if (i != 0)
 			prev = gda_menus[i - 1].label;
-		XAP_Menu_Id newID = pFact->addNewMenuAfter("Main",NULL,
+		XAP_Menu_Id newID = pFact->addNewMenuAfter("Main",nullptr,
 							   prev,
 							   gda_menus[i].flags);
-		pFact->addNewLabel(NULL,newID,gda_menus[i].label, gda_menus[i].description);
+		pFact->addNewLabel(nullptr,newID,gda_menus[i].label, gda_menus[i].description);
 	
 		// Create the Action that will be called.
 		EV_Menu_Action* myAction = new EV_Menu_Action(newID, 0, 1, 0, 0,
 							      (const char *) gda_menus[i].methodName,
-							      NULL, NULL);
+							      nullptr, nullptr);
 	
 		// Now what we need to do is add this particular action to the ActionSet
 		// of the application.  This forms the link between our new ID that we 
@@ -519,7 +519,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	
 	if (GDA_IS_CLIENT (connection_pool)) {
 		g_object_unref (G_OBJECT (connection_pool));
-		connection_pool = NULL;
+		connection_pool = nullptr;
 	}
 	
 	return 1;

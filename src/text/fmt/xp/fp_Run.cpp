@@ -128,12 +128,12 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pHyperlink(nullptr),
 	m_eVisibility(FP_VISIBLE),
 	m_bIsCleared(true),
-	m_FillType(NULL,this,FG_FILL_TRANSPARENT),
+	m_FillType(nullptr,this,FG_FILL_TRANSPARENT),
 	m_bPrinting(false),
 	m_iTmpX(0),
 	m_iTmpY(0),
 	m_iTmpWidth(0),
-	m_pTmpLine(NULL),
+	m_pTmpLine(nullptr),
 	m_bDrawSelection(false),
 	m_iSelLow(0),
 	m_iSelHigh(0),
@@ -155,10 +155,10 @@ fp_Run::~fp_Run()
 
 // Zero these to trap mem errors.
 #if 1
-	m_pPrev = NULL;
-	m_pNext = NULL;
-	m_pBL = NULL;
-	m_pLine = NULL;
+	m_pPrev = nullptr;
+	m_pNext = nullptr;
+	m_pBL = nullptr;
+	m_pLine = nullptr;
 #endif
 }
 
@@ -397,9 +397,9 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 
 void fp_Run::lookupProperties(GR_Graphics * pG)
 {
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr; // TODO do we care about section-level inheritance?
 	bool bGraphicsNull = false;
 	getBlockAP(pBlockAP);
 
@@ -454,7 +454,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	_setColorHL(pszBGcolor);
 	//	m_FillType.setColor(pszBGcolor); // we should clear with screen color
 	// and draw with background color
-	if(pG == NULL)
+	if(pG == nullptr)
 	{
 		m_bPrinting = false;
 		pG = getGraphics();
@@ -467,18 +467,18 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	if(!m_pBL->isContainedByTOC())
 	{
 		if(bGraphicsNull)
-			_lookupProperties(pSpanAP, pBlockAP, pSectionAP,NULL);
+			_lookupProperties(pSpanAP, pBlockAP, pSectionAP,nullptr);
 		else
 			_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
 	}
 	else
 	{
 		if(bGraphicsNull)
-			_lookupProperties(NULL, pBlockAP, pSectionAP,NULL);
+			_lookupProperties(nullptr, pBlockAP, pSectionAP,nullptr);
 		else
-			_lookupProperties(NULL, pBlockAP, pSectionAP,pG);
+			_lookupProperties(nullptr, pBlockAP, pSectionAP,pG);
 	}
-	const char * szAuthorInt = NULL;	
+	const char * szAuthorInt = nullptr;
 	if(pSpanAP && pDoc->isShowAuthors())
 	{
 		if(pSpanAP->getAttribute(PT_AUTHOR_NAME,szAuthorInt))
@@ -525,7 +525,7 @@ bool fp_Run::hasLayoutProperties(void) const
 
 /*!
   Find previous Run in block which holds property information
-  \return Run with property information or NULL
+  \return Run with property information or nullptr
 */
 fp_Run*
 fp_Run::_findPrevPropertyRun(void) const
@@ -533,7 +533,7 @@ fp_Run::_findPrevPropertyRun(void) const
 	fp_Run* pRun = getPrevRun();
 	while (pRun && (!pRun->hasLayoutProperties() || pRun->isHidden() || (pRun->getType() == FPRUN_IMAGE)))
 	    pRun = pRun->getPrevRun();
-	if(pRun == NULL)
+	if(pRun == nullptr)
 	{
 		pRun = getPrevRun();
 		while (pRun && (!pRun->hasLayoutProperties() || pRun->isHidden()))
@@ -584,9 +584,9 @@ fp_Run::_inheritProperties(void)
 	{
 		// look for fonts in this DocLayout's font cache
 		//UT_DEBUGMSG(("fp_Run::_inheritProperties: from current font\n"));
-		const PP_AttrProp * pSpanAP = NULL;
-		const PP_AttrProp * pBlockAP = NULL;
-		const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
+		const PP_AttrProp * pSpanAP = nullptr;
+		const PP_AttrProp * pBlockAP = nullptr;
+		const PP_AttrProp * pSectionAP = nullptr; // TODO do we care about section-level inheritance?
 
 		//m_pBL->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
 		getSpanAP(pSpanAP);
@@ -664,7 +664,7 @@ void fp_Run::unlinkFromRunList()
 
 			while(pRun && pRun->getHyperlink() == pH)
 			{
-				pRun->setHyperlink(NULL);
+				pRun->setHyperlink(nullptr);
 				pRun = pRun->getNextRun();
 			}
 		}
@@ -697,8 +697,8 @@ void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
 */
 const PP_AttrProp * fp_Run::getSpanAP(void)
 {
-	const PP_AttrProp * pAP = NULL; 
-	getSpanAP(pAP); 
+	const PP_AttrProp * pAP = nullptr;
+	getSpanAP(pAP);
 	return pAP;
 }
 
@@ -732,7 +732,7 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 		getBlock()->getSpanAttrProp(getBlockOffset(), true, &pSpanAP, revisions, bShow, iId, bHiddenRevision);
 	}
 	m_pRevisions = revisions.unwrap();
-	if(pSpanAP == NULL)
+	if(pSpanAP == nullptr)
 	{
 		// FIXME for now lets work around this
 		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN); track these down later.
@@ -812,13 +812,13 @@ void fp_Run::setLine(fp_Line* pLine)
 		clearScreen();
 
 	m_pLine = pLine;
-	if(pLine != NULL)
+	if(pLine != nullptr)
 	{
 		m_FillType.setParent(&pLine->getFillType());
 	}
 	else
 	{
-		m_FillType.setParent(NULL);
+		m_FillType.setParent(nullptr);
 	}
 }
 
@@ -1040,7 +1040,7 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing Run_ClearScreen in run %x \n",this));
 	getLine()->getFillType().setIgnoreLineLevel(true);
-	if(getLine()->getContainer() != NULL)
+	if(getLine()->getContainer() != nullptr)
 	{
 		if (getLine()->getContainer()->getPage() != nullptr)
 		{
@@ -1094,7 +1094,7 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 			_clearScreen(bFullLineHeightRect);
 			if(isSelectionDraw())
 			{
-				getGraphics()->setClipRect(NULL);
+				getGraphics()->setClipRect(nullptr);
 			}
 			// make sure we only get erased once
 			_setDirty(true);
@@ -1141,10 +1141,10 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	{
 		bool bMark = pView->isMarkRevisions();
 		UT_uint32 iId = 0;
-		const PP_Revision * r = NULL;
+		const PP_Revision * r = nullptr;
 		r = m_pRevisions->getLastRevision();
 
-		UT_return_val_if_fail(r != NULL, _getColorFG());
+		UT_return_val_if_fail(r != nullptr, _getColorFG());
 
 		bool bRevColor = false;
 
@@ -1368,7 +1368,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		GR_Painter painter(pG);
 		const PP_Revision * r = m_pRevisions->getLastRevision();
-		UT_ASSERT(r != NULL);
+		UT_ASSERT(r != nullptr);
 
 		if (r) {
 			PP_RevisionType r_type = r->getType();
@@ -1484,8 +1484,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		// The font will be reset by refreshRunProperties()
 		// After the print has finished.
 		//
-		_setFont(NULL);
-		lookupProperties(NULL);
+		_setFont(nullptr);
+		lookupProperties(nullptr);
 	}
 }
 
@@ -1698,15 +1698,15 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
 	const bool b_Bottomline = isBottomline();
 
 	// again, need to do this in visual space
-	const bool b_Firstrun = (P_Run == NULL) || (getLine()->getFirstVisRun()== this);
-	const bool b_Lastrun = (N_Run == NULL) || (getLine()->getLastVisRun()== this);
+	const bool b_Firstrun = (P_Run == nullptr) || (getLine()->getFirstVisRun()== this);
+	const bool b_Lastrun = (N_Run == nullptr) || (getLine()->getLastVisRun()== this);
 
-	/* If the previous run is NULL or if this is the first run of a
+	/* If the previous run is nullptr or if this is the first run of a
 	   line, we are on the first run of the line so set the linethickness,
 	   start of the line span and the overline and underline positions from
 	   the current measurements.
 	*/
-	if(P_Run == NULL || b_Firstrun )
+	if(P_Run == nullptr || b_Firstrun )
 	{
 		setLinethickness(cur_linewidth);
 		if(b_Underline)
@@ -1774,11 +1774,11 @@ or overline set the underline and overline locations with the current data.
 	m_iLineWidth = getLinethickness();
 	pG->setLineWidth(m_iLineWidth);
 	/*
-	  If the next run returns NULL or if we are on the last run
+	  If the next run returns nullptr or if we are on the last run
  we've reached the of the line of text so the overlines and underlines must
 be drawn.
 	*/
-	if(N_Run == NULL  || b_Lastrun)
+	if(N_Run == nullptr  || b_Lastrun)
 	{
 		if ( b_Underline)
 		{
@@ -1850,9 +1850,9 @@ text so we can keep the original code.
 	UT_sint32 ithick = getToplineThickness();
 
 	UT_RGBColor clrFG;
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	PD_Document * pDoc = getBlock()->getDocument();
 	
@@ -1984,7 +1984,7 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     getGraphics()->setFont(pFont);
 
     UT_uint32 iTextLen = UT_UCS4_strlen(pText);
-    UT_uint32 iTextWidth = getGraphics()->measureString(pText,0,iTextLen,NULL);
+    UT_uint32 iTextWidth = getGraphics()->measureString(pText,0,iTextLen,nullptr);
     UT_uint32 iTextHeight = getGraphics()->getFontHeight(pFont);
 
     UT_uint32 xoffText = xoff + (iWidth - iTextWidth) / 2;
@@ -2019,10 +2019,10 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 {
 	bool bChanged = false;
 
-	fd_Field * fd = NULL;
+	fd_Field * fd = nullptr;
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
-	if(pG == NULL)
+	if(pG == nullptr)
 	{
 		pG = getGraphics();
 	}
@@ -2088,7 +2088,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		{
 			_orDecorations(TEXT_DECOR_BOTTOMLINE);
 		}
-		q = strtok(NULL, " ");
+		q = strtok(nullptr, " ");
 	}
 	g_free(p);
 
@@ -2361,9 +2361,9 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_uint32 iRunBase = getBlock()->getPosition() + getOffsetFirstVis(); //getBlockOffset();
 
 	UT_RGBColor clrFG;
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	PD_Document * pDoc = getBlock()->getDocument();
 
@@ -2477,10 +2477,10 @@ void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 											  GR_Graphics * pG)
 {
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::lookupProperties\n"));
-	fd_Field * fd = NULL;
+	fd_Field * fd = nullptr;
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
-	if(pG == NULL)
+	if(pG == nullptr)
 	{
 		pG = getGraphics();
 	}
@@ -2506,7 +2506,7 @@ void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics());
 			getGraphics()->setFont(pFont);
 		}
-		_setWidth(getGraphics()->measureString(pEOP, 0, iTextLen, NULL));
+		_setWidth(getGraphics()->measureString(pEOP, 0, iTextLen, nullptr));
 		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", getWidth()));
 	}
 	else
@@ -2645,9 +2645,9 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     }
 	else
     {
-		const PP_AttrProp * pSpanAP = NULL;
-		const PP_AttrProp * pBlockAP = NULL;
-		const PP_AttrProp * pSectionAP = NULL;
+		const PP_AttrProp * pSpanAP = nullptr;
+		const PP_AttrProp * pBlockAP = nullptr;
+		const PP_AttrProp * pSectionAP = nullptr;
 
 		getSpanAP(pSpanAP);
 		getBlockAP(pBlockAP);
@@ -2667,7 +2667,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	//	if(!getWidth())
 	//		bWidthChange = true;
 
-	_setWidth(getGraphics()->measureString(pEOP, 0, iTextLen, NULL));
+	_setWidth(getGraphics()->measureString(pEOP, 0, iTextLen, nullptr));
 	// 	if(bWidthChange)
 	//	{
 	//		getLine()->layout();
@@ -2715,7 +2715,7 @@ void fp_FieldStartRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 										 const PP_AttrProp * /*pSectionAP*/,
 										 GR_Graphics *)
 {
-	fd_Field * fd = NULL;
+	fd_Field * fd = nullptr;
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
 	_setWidth(0);
@@ -2775,7 +2775,7 @@ void fp_FieldEndRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 									   const PP_AttrProp * /*pSectionAP*/,
 									   GR_Graphics *)
 {
-	fd_Field * fd = NULL;
+	fd_Field * fd = nullptr;
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
 	_setWidth(0);
@@ -3046,8 +3046,8 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 								UT_uint32 /*iLen*/)
 	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK)
     , m_bIsStart(false)
-    , m_pTarget(NULL)
-    , m_pTitle(NULL)
+    , m_pTarget(nullptr)
+    , m_pTitle(nullptr)
 {
 	_setLength(1);
 	_setDirty(false);
@@ -3125,7 +3125,7 @@ void fp_HyperlinkRun::_draw(dg_DrawArgs* /*pDA*/)
 
 void fp_HyperlinkRun::_setTargetFromAPAttribute( const gchar* pAttrName )
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 
 	getSpanAP(pAP);
 	
@@ -3155,14 +3155,14 @@ void fp_HyperlinkRun::_setTargetFromAPAttribute( const gchar* pAttrName )
 	else
 	{
 		m_bIsStart = false;
-		m_pTarget = NULL;
-		_setHyperlink(NULL);
+		m_pTarget = nullptr;
+		_setHyperlink(nullptr);
 	}
 }
 
 void fp_HyperlinkRun::_setTitleFromAPAttribute( const gchar* pAttrName )
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	getSpanAP(pAP);
 	
 	const gchar *pTitle;
@@ -3171,7 +3171,7 @@ void fp_HyperlinkRun::_setTitleFromAPAttribute( const gchar* pAttrName )
 	    _setTitle(pTitle);
 	} else
 	{
-	    m_pTitle = NULL;
+	    m_pTitle = nullptr;
 	}
 }
 
@@ -3223,7 +3223,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties this %x block %x \n",this,getBlock()));
 	_inheritProperties();
 	xxx_UT_DEBUGMSG(("After Inherit props Height is %d \n",getHeight()));
-	const gchar* pRevision = NULL;
+	const gchar* pRevision = nullptr;
 
 	if(pBlockAP && pBlockAP->getAttribute("revision", pRevision))
 	{
@@ -3231,7 +3231,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 
 	FV_View* pView = _getView();
-	if(pG == NULL)
+	if(pG == nullptr)
 	{
 		pG = getGraphics();
 	}
@@ -3255,7 +3255,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics());
 			pG->setFont(pFont);
 		}
-		m_iDrawWidth  = pG->measureString(pEOP, 0, iTextLen, NULL);
+		m_iDrawWidth  = pG->measureString(pEOP, 0, iTextLen, nullptr);
 		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", getWidth()));
 	}
 	else
@@ -3424,9 +3424,9 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		const PP_AttrProp * pSpanAP = NULL;
-		const PP_AttrProp * pBlockAP = NULL;
-		const PP_AttrProp * pSectionAP = NULL;
+		const PP_AttrProp * pSpanAP = nullptr;
+		const PP_AttrProp * pBlockAP = nullptr;
+		const PP_AttrProp * pSectionAP = nullptr;
 
 		getSpanAP(pSpanAP);
 		getBlockAP(pBlockAP);
@@ -3446,7 +3446,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 //	if(!m_iDrawWidth)
 //		bWidthChange = true;
 
-	m_iDrawWidth  = getGraphics()->measureString(pEOP, 0, iTextLen, NULL);
+	m_iDrawWidth  = getGraphics()->measureString(pEOP, 0, iTextLen, nullptr);
 // 	if(bWidthChange)
 //	{
 //		getLine()->layout();
@@ -3494,7 +3494,7 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
 	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_IMAGE),
 	m_pFGraphic(std::move(pFG)),
 	m_iPointHeight(0),
-	m_pSpanAP(NULL),
+	m_pSpanAP(nullptr),
 	m_bImageForPrinter (false),
 	m_OH(oh)
 {
@@ -3502,7 +3502,7 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
 	UT_ASSERT(pImage);
 #endif
 
-	m_pImage = m_pFGraphic->generateImage(getGraphics(), NULL, 0, 0);
+	m_pImage = m_pFGraphic->generateImage(getGraphics(), nullptr, 0, 0);
 	m_sCachedWidthProp = m_pFGraphic->getWidthProp();
 	m_sCachedHeightProp = m_pFGraphic->getHeightProp();
 	m_iGraphicTick = pBL->getDocLayout()->getGraphicTick();
@@ -3528,24 +3528,24 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pSectionAP*/,
 									GR_Graphics * pG)
 {
-	fd_Field * fd = NULL;
+	fd_Field * fd = nullptr;
 	UT_return_if_fail(pSpanAP);
 	m_pSpanAP = pSpanAP;
 	getBlock()->getField(getBlockOffset(), fd);
 	_setField(fd);
-	const gchar * szWidth = NULL;
+	const gchar * szWidth = nullptr;
 	pSpanAP->getProperty("width", szWidth);
-	if(szWidth == NULL)
+	if(szWidth == nullptr)
 	{
 		szWidth = "0in";
 	}
-	const gchar * szHeight = NULL;
+	const gchar * szHeight = nullptr;
 	pSpanAP->getProperty("height", szHeight);
-	if(pG == NULL)
+	if(pG == nullptr)
 	{
 		pG = getGraphics();
 	}
-	if(szHeight == NULL)
+	if(szHeight == nullptr)
 	{
 		szHeight = "0in";
 	}
@@ -3663,8 +3663,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	_setAscent(_getHeight());
 	_setDescent(0);
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	getBlockAP(pBlockAP);
 
@@ -3913,13 +3913,13 @@ GR_Image* fp_ImageRun::getImage() const
 //////////////////////////////////////////////////////////////////
 
 #define  _FIELD(type,desc,tag)  /*nothing*/
-#define  _FIELDTYPE(type,desc)  {FPFIELDTYPE_##type, NULL, desc},
+#define  _FIELDTYPE(type,desc)  {FPFIELDTYPE_##type, nullptr, desc},
 
 fp_FieldTypeData fp_FieldTypes[] = {
 
 #include "fp_Fields.h"
 
-	{FPFIELDTYPE_END, NULL, 0} };
+	{FPFIELDTYPE_END, nullptr, 0} };
 
 #undef  _FIELD
 #undef  _FIELDTYPE
@@ -3927,14 +3927,14 @@ fp_FieldTypeData fp_FieldTypes[] = {
 // The way to turn macro argument into string constant
 #define xstr2(x) #x
 #define xstr(x) xstr2(x)
-#define _FIELD(type,desc,tag)  {FPFIELDTYPE_##type, FPFIELD_##tag, NULL, xstr(tag), desc},
+#define _FIELD(type,desc,tag)  {FPFIELDTYPE_##type, FPFIELD_##tag, nullptr, xstr(tag), desc},
 #define _FIELDTYPE(type,desc)  /*nothing*/
 
 fp_FieldData fp_FieldFmts[] = {
 
 #include "fp_Fields.h"
 
-	{FPFIELDTYPE_END, FPFIELD_end, NULL, NULL, 0} };
+	{FPFIELDTYPE_END, FPFIELD_end, nullptr, nullptr, 0} };
 
 #undef  xstr2
 #undef  xstr
@@ -3981,7 +3981,7 @@ bool fp_FieldRun::_recalcWidth()
 		iNewWidth = getGraphics()->measureString(m_sFieldValue,
 									 0,
 									 UT_UCS4_strlen(m_sFieldValue),
-									 NULL);
+									 nullptr);
 	}
 	if (iNewWidth != getWidth())
 	{
@@ -4054,7 +4054,7 @@ bool fp_FieldRun::_setValue(const UT_UCSChar *p_new_value)
 				getGraphics()->measureString(m_sFieldValue,
 											 0,
 											 UT_UCS4_strlen(m_sFieldValue),
-											 NULL);
+											 nullptr);
 			if (iNewWidth != getWidth())
 			{
 				_setWidth(iNewWidth);
@@ -4074,12 +4074,12 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * pSectionAP,
 									GR_Graphics * pG)
 {
-	if(pG == NULL)
+	if(pG == nullptr)
 	{
 		pG = getGraphics();
 	}
 	PD_Document * pDoc = getBlock()->getDocument();
-	fd_Field * fd = NULL;
+	fd_Field * fd = nullptr;
 	if(!getBlock()->isContainedByTOC())
 	{
 		getBlock()->getField(getBlockOffset() /*+1*/,fd); // Next Pos?
@@ -4087,9 +4087,9 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	else
 	{
-		_setField(NULL);
+		_setField(nullptr);
 	}
-	if(getField() != NULL)
+	if(getField() != nullptr)
 	{
 		getField()->setBlock(getBlock());
 	}
@@ -4100,10 +4100,10 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true), clrFG);
 	_setColorFG(clrFG);
 
-	const char * pszFieldColor = NULL;
+	const char * pszFieldColor = nullptr;
 	pszFieldColor = PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true);
 
-	const char * pszBGColor = NULL;
+	const char * pszBGColor = nullptr;
 	pszBGColor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true);
 
 //
@@ -4126,8 +4126,8 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 
 	
-	const gchar* pszType = NULL;
-	const gchar* pszParam = NULL;
+	const gchar* pszType = nullptr;
+	const gchar* pszParam = nullptr;
 
 	if(pSpanAP)
 	{
@@ -4148,9 +4148,9 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if (!pszType) return;
 
 	int i;
-	if(pszType != NULL)
+	if(pszType != nullptr)
 	{
-		for( i = 0; fp_FieldFmts[i].m_Tag != NULL; i++ )
+		for( i = 0; fp_FieldFmts[i].m_Tag != nullptr; i++ )
 		{
 			if (0 == strcmp(pszType, fp_FieldFmts[i].m_Tag))
 			{
@@ -4158,7 +4158,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 				break;
 			}
 		}
-		if( fp_FieldFmts[i].m_Tag == NULL )
+		if( fp_FieldFmts[i].m_Tag == nullptr )
 		{
 			// probably new type of field
 			//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -4229,7 +4229,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		{
 			_orDecorations(TEXT_DECOR_BOTTOMLINE);
 		}
-		q = strtok(NULL, " ");
+		q = strtok(nullptr, " ");
 	}
 
 	g_free(p);
@@ -4283,7 +4283,7 @@ void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 
 	bBOL = false;
-	if(getNextRun() == NULL)
+	if(getNextRun() == nullptr)
 	{
 		bEOL = true;
 	}
@@ -4377,9 +4377,9 @@ bool fp_FieldRun::calculateValue(void)
 
 /*  UT_sint32 count = 0;
     fp_Run* pNext = getNextRun();
-	while(pNext != NULL && pNext->getField() != NULL )
+	while(pNext != nullptr && pNext->getField() != nullptr )
 	{
-	    if(getField() == NULL)
+	    if(getField() == nullptr)
 		{
 		        getField() = pNext->getField();
 		}
@@ -4397,8 +4397,9 @@ bool fp_FieldRun::calculateValue(void)
 		setWidth(pNext->getWidth());
 		_setHeight(pNext->getHeight());
 	}
-	if(getField() != NULL)
-	getField()->update();
+	if(getField() != nullptr) {
+		getField()->update();
+	}
 */
 	return true;
 }
@@ -4491,7 +4492,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		return;
 	}
 
-	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, NULL);
+	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, nullptr);
 //
 // Draw underline/overline/strikethough
 //
@@ -4623,7 +4624,7 @@ bool fp_FieldMMDDYYRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%m/%d/%y", pTime);
@@ -4647,7 +4648,7 @@ bool fp_FieldDDMMYYRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%d/%m/%y", pTime);
@@ -4671,7 +4672,7 @@ bool fp_FieldMonthDayYearRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%B %d, %Y", pTime);
@@ -4694,7 +4695,7 @@ bool fp_FieldMthDayYearRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%b %d, %Y", pTime);
@@ -4717,7 +4718,7 @@ bool fp_FieldDefaultDateRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%c", pTime);
@@ -4740,7 +4741,7 @@ bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%x", pTime);
@@ -4763,7 +4764,7 @@ bool fp_FieldWkdayRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A", pTime);
@@ -4786,7 +4787,7 @@ bool fp_FieldDOYRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%j", pTime);
@@ -4809,7 +4810,7 @@ bool fp_FieldMilTimeRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%H:%M:%S", pTime);
@@ -4832,7 +4833,7 @@ bool fp_FieldAMPMRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%p", pTime);
@@ -4852,7 +4853,7 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 {
 	UT_UTF8String szFieldValue;
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	UT_UTF8String_sprintf(szFieldValue, "%ld", static_cast<long>(tim));
 	if (getField())
 		getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
@@ -4878,7 +4879,7 @@ bool fp_FieldDateTimeCustomRun::calculateValue(void)
 	  
 	  char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 	  
-	  time_t	tim = time(NULL);
+	  time_t	tim = time(nullptr);
 	  struct tm *pTime = localtime(&tim);
 	  
 	  strftime(szFieldValue, FPFIELD_MAX_LENGTH, param, pTime);
@@ -4904,7 +4905,7 @@ bool fp_FieldTimeZoneRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%Z", pTime);
@@ -5013,11 +5014,11 @@ fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iO
 bool fp_FieldFootnoteRefRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getSpanAP();
-	if(pp == NULL)
+	if(pp == nullptr)
 	{
 		return false;
 	}
-	const gchar * footid = NULL;
+	const gchar * footid = nullptr;
 	bool bRes = pp->getAttribute("footnote-id", footid);
         
 	if(!bRes || !footid)
@@ -5027,7 +5028,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	}
 	FV_View * pView = _getView();
 	UT_uint32 iPID = atoi(footid);
-        const gchar *szCitation = NULL;
+        const gchar *szCitation = nullptr;
         bool bHaveCitation = pp->getAttribute("text:note-citation", szCitation);
 	UT_sint32 footnoteNo = bHaveCitation ? 
             atoi(szCitation) : pView->getLayout()->getFootnoteVal(iPID);
@@ -5053,7 +5054,7 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uin
 	const PP_AttrProp * pp = getSpanAP();
 	UT_return_if_fail(pp);
 
-	const gchar * footid = NULL;
+	const gchar * footid = nullptr;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	if(!bRes || !footid)
@@ -5073,7 +5074,7 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	const PP_AttrProp * pp = getSpanAP();
 	UT_return_val_if_fail(pp, false);
 
-	const gchar * footid = NULL;
+	const gchar * footid = nullptr;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	if(!bRes || !footid)
@@ -5083,7 +5084,7 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	}
 	UT_uint32 iPID = atoi(footid);
 	FV_View * pView = _getView();
-        const gchar *szCitation = NULL;
+        const gchar *szCitation = nullptr;
         bool bHaveCitation = pp->getAttribute("text:note-citation", szCitation);
 	UT_sint32 footnoteNo = bHaveCitation ? 
             atoi(szCitation) : pView->getLayout()->getFootnoteVal(iPID);
@@ -5106,7 +5107,7 @@ fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint3
 	const PP_AttrProp * pp = getSpanAP();
 	UT_return_if_fail(pp);
 
-	const gchar * footid = NULL;
+	const gchar * footid = nullptr;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	if(!bRes || !footid)
@@ -5126,7 +5127,7 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 	const PP_AttrProp * pp = getSpanAP();
 	UT_return_val_if_fail(pp, false);
 
-	const gchar * footid = NULL;
+	const gchar * footid = nullptr;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	if(!bRes || !footid)
@@ -5176,7 +5177,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	const PP_AttrProp * pp = getSpanAP();
 	UT_return_val_if_fail(pp, false);
 
-	const gchar * footid = NULL;
+	const gchar * footid = nullptr;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	if(!bRes || !footid)
@@ -5216,7 +5217,7 @@ bool fp_FieldTimeRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%X", pTime);
@@ -5239,7 +5240,7 @@ bool fp_FieldDateRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	time_t	tim = time(NULL);
+	time_t	tim = time(nullptr);
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A %B %d, %Y", pTime);
@@ -5359,7 +5360,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	if(!pView)
 		return false;
 
-	fp_Run* pRun = NULL;
+	fp_Run* pRun = nullptr;
 	fl_BlockLayout * pBlock;
 	fl_SectionLayout * pSection = pView->getLayout()->getFirstSection();
 	UT_ASSERT(pSection);
@@ -5593,7 +5594,7 @@ void fp_ForcedColumnBreakRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 												const PP_AttrProp * /*pSectionAP*/,
 												GR_Graphics *)
 {
-	fd_Field * fd = NULL;
+	fd_Field * fd = nullptr;
 
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
@@ -5711,7 +5712,7 @@ void fp_ForcedPageBreakRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 											  const PP_AttrProp * /*pSectionAP*/,
 											  GR_Graphics *)
 {
-	fd_Field * fd = NULL;
+	fd_Field * fd = nullptr;
 
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
@@ -5871,7 +5872,7 @@ UT_uint32 fp_Run::getOffsetLog(UT_uint32 iVisOff) const
 fp_Run * fp_Run::getNextVisual()
 {
 	if(!getLine())
-		return NULL;
+		return nullptr;
 
 	UT_uint32 iIndxVis = getLine()->getVisIndx(this);
 
@@ -5881,12 +5882,12 @@ fp_Run * fp_Run::getNextVisual()
 fp_Run * fp_Run::getPrevVisual()
 {
 	if(!getLine())
-		return NULL;
+		return nullptr;
 
 	UT_uint32 iIndxVis = getLine()->getVisIndx(this);
 
 	if(!iIndxVis)
-		return NULL;
+		return nullptr;
 
 	return getLine()->getRunAtVisPos(iIndxVis - 1);
 }
@@ -5971,7 +5972,7 @@ void fp_Run::setVisDirection(UT_BidiCharType iDir)
 #if 0
 void fp_Run::setDirectionProperty(UT_BidiCharType dir)
 {
-	const gchar * prop[] = {NULL, NULL, 0};
+	const gchar * prop[] = {nullptr, nullptr, 0};
 	const gchar direction[] = "dir";
 	const gchar rtl[] = "rtl";
 	const gchar ltr[] = "ltr";
@@ -5996,7 +5997,7 @@ void fp_Run::setDirectionProperty(UT_BidiCharType dir)
 	};
 
 	UT_uint32 offset = getBlock()->getPosition() + getBlockOffset();
-	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + getLength(),NULL,prop);
+	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + getLength(),nullptr,prop);
 	UT_DEBUGMSG(("fp_Run::setDirectionProperty: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1]));
 }
 #endif

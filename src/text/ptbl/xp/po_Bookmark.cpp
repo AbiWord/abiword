@@ -28,8 +28,8 @@
 po_Bookmark::po_Bookmark(BookmarkType bookmarkType, const gchar* name)
     : m_iBookmarkType(bookmarkType)
 {
-	m_pBlock = NULL;
-	m_pName = NULL;
+	m_pBlock = nullptr;
+	m_pName = nullptr;
 	setName(name);
 }
 

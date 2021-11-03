@@ -28,30 +28,30 @@
 extern "C"  UT_uint16    wvLangToLIDConverter(const char * lang);
 extern "C"  const char * wvLIDToLangConverter(UT_uint16);
 
-HINSTANCE GR_Win32USPGraphics::s_hUniscribe = NULL;
+HINSTANCE GR_Win32USPGraphics::s_hUniscribe = nullptr;
 UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_Win32USPGraphics::s_Version;
-const SCRIPT_PROPERTIES ** GR_Win32USPGraphics::s_ppScriptProperties = NULL;
+const SCRIPT_PROPERTIES ** GR_Win32USPGraphics::s_ppScriptProperties = nullptr;
 int GR_Win32USPGraphics::s_iMaxScript = 0;
 UT_UTF8String GR_Win32USPGraphics::s_sDescription;
 UT_UTF8String GR_Win32USPGraphics::s_sUSPVersion;
 
 
-tScriptItemize       GR_Win32USPGraphics::fScriptItemize       = NULL;
-tScriptShape         GR_Win32USPGraphics::fScriptShape         = NULL;
-tScriptFreeCache     GR_Win32USPGraphics::fScriptFreeCache     = NULL;
-tScriptStringOut     GR_Win32USPGraphics::fScriptStringOut     = NULL;
-tScriptStringAnalyse GR_Win32USPGraphics::fScriptStringAnalyse = NULL;
-tScriptStringFree    GR_Win32USPGraphics::fScriptStringFree    = NULL;
-tScriptTextOut       GR_Win32USPGraphics::fScriptTextOut       = NULL;
-tScriptPlace         GR_Win32USPGraphics::fScriptPlace         = NULL;
-tScriptJustify       GR_Win32USPGraphics::fScriptJustify       = NULL;
-tScriptCPtoX         GR_Win32USPGraphics::fScriptCPtoX         = NULL;
-tScriptXtoCP         GR_Win32USPGraphics::fScriptXtoCP         = NULL;
-tScriptBreak         GR_Win32USPGraphics::fScriptBreak         = NULL;
-tScriptIsComplex     GR_Win32USPGraphics::fScriptIsComplex     = NULL;
-tScriptGetProperties GR_Win32USPGraphics::fScriptGetProperties = NULL;
-tScriptRecordDigitSubstitution GR_Win32USPGraphics::fScriptRecordDigitSubstitution = NULL;
+tScriptItemize       GR_Win32USPGraphics::fScriptItemize       = nullptr;
+tScriptShape         GR_Win32USPGraphics::fScriptShape         = nullptr;
+tScriptFreeCache     GR_Win32USPGraphics::fScriptFreeCache     = nullptr;
+tScriptStringOut     GR_Win32USPGraphics::fScriptStringOut     = nullptr;
+tScriptStringAnalyse GR_Win32USPGraphics::fScriptStringAnalyse = nullptr;
+tScriptStringFree    GR_Win32USPGraphics::fScriptStringFree    = nullptr;
+tScriptTextOut       GR_Win32USPGraphics::fScriptTextOut       = nullptr;
+tScriptPlace         GR_Win32USPGraphics::fScriptPlace         = nullptr;
+tScriptJustify       GR_Win32USPGraphics::fScriptJustify       = nullptr;
+tScriptCPtoX         GR_Win32USPGraphics::fScriptCPtoX         = nullptr;
+tScriptXtoCP         GR_Win32USPGraphics::fScriptXtoCP         = nullptr;
+tScriptBreak         GR_Win32USPGraphics::fScriptBreak         = nullptr;
+tScriptIsComplex     GR_Win32USPGraphics::fScriptIsComplex     = nullptr;
+tScriptGetProperties GR_Win32USPGraphics::fScriptGetProperties = nullptr;
+tScriptRecordDigitSubstitution GR_Win32USPGraphics::fScriptRecordDigitSubstitution = nullptr;
 
 // some macros to ease logging of critical exceptions
 // all of these macros log the file name and line where the exception occurred, plus some
@@ -131,22 +131,22 @@ class ABI_EXPORT GR_Win32USPRenderInfo : public GR_RenderInfo
   public:
 	GR_Win32USPRenderInfo(GR_ScriptType type):
 		GR_RenderInfo(type),
-	    m_pIndices(NULL),
-	    m_pVisAttr(NULL),
+	    m_pIndices(nullptr),
+	    m_pVisAttr(nullptr),
 		m_iIndicesSize(0),
-		m_pClust(NULL),
+		m_pClust(nullptr),
 		m_iClustSize(0),
 		m_iIndicesCount(0),
 		m_iCharCount(0),
-		m_pGoffsets(NULL),
-	    m_pAdvances(NULL),
-		m_pJustify(NULL),
+		m_pGoffsets(nullptr),
+	    m_pAdvances(nullptr),
+		m_pJustify(nullptr),
 		m_iZoom(100),
 		m_eJustification(SCRIPT_JUSTIFY_NONE),
 		m_bRejustify(true),
 		m_bShapingFailed(false),
 		m_bNeedsReshaping(true),
-		m_hdc(NULL)
+		m_hdc(nullptr)
 	{
 		s_iInstanceCount++;
 		if(s_iInstanceCount == 1)
@@ -165,17 +165,17 @@ class ABI_EXPORT GR_Win32USPRenderInfo : public GR_RenderInfo
 			s_iInstanceCount--;
 			if(!s_iInstanceCount)
 			{
-				delete [] s_pAdvances; s_pAdvances = NULL;
-				delete [] s_pJustifiedAdvances; s_pJustifiedAdvances = NULL;
-				delete [] s_pJustify;  s_pJustify  = NULL;
-				delete [] s_pLogAttr;  s_pLogAttr  = NULL;
-				delete [] s_pChars;    s_pChars    = NULL;
-				delete [] s_pGoffsets; s_pGoffsets = NULL;
+				delete [] s_pAdvances; s_pAdvances = nullptr;
+				delete [] s_pJustifiedAdvances; s_pJustifiedAdvances = nullptr;
+				delete [] s_pJustify;  s_pJustify  = nullptr;
+				delete [] s_pLogAttr;  s_pLogAttr  = nullptr;
+				delete [] s_pChars;    s_pChars    = nullptr;
+				delete [] s_pGoffsets; s_pGoffsets = nullptr;
 				s_iAdvancesSize = 0;
 
-				s_pOwnerDraw = NULL;
-				s_pOwnerCP   = NULL;
-				s_pOwnerChar = NULL;
+				s_pOwnerDraw = nullptr;
+				s_pOwnerCP   = nullptr;
+				s_pOwnerChar = nullptr;
 			}
 		}
 
@@ -188,22 +188,22 @@ class ABI_EXPORT GR_Win32USPRenderInfo : public GR_RenderInfo
 	inline bool       allocStaticBuffers(UT_uint32 iSize)
 	    {
 			s_iAdvancesSize = 0;
-			if(s_pAdvances) { delete [] s_pAdvances; s_pAdvances = NULL;}
+			if(s_pAdvances) { delete [] s_pAdvances; s_pAdvances = nullptr;}
 			s_pAdvances = new int [iSize];
 
-			if(s_pJustifiedAdvances) { delete [] s_pJustifiedAdvances; s_pJustifiedAdvances = NULL;}
+			if(s_pJustifiedAdvances) { delete [] s_pJustifiedAdvances; s_pJustifiedAdvances = nullptr;}
 			s_pJustifiedAdvances = new int [iSize];
 
-			if(s_pJustify) { delete [] s_pJustify; s_pJustify = NULL; }
+			if(s_pJustify) { delete [] s_pJustify; s_pJustify = nullptr; }
 			s_pJustify  = new int [iSize];
 
-			if(s_pLogAttr) { delete [] s_pLogAttr; s_pLogAttr = NULL; }
+			if(s_pLogAttr) { delete [] s_pLogAttr; s_pLogAttr = nullptr; }
 			s_pLogAttr  = new SCRIPT_LOGATTR[iSize]; // log attr. correspont to characters, not glyphs, but since there are
 												   // always at least as many glyphs, this is OK
-			if(s_pChars) { delete [] s_pChars; s_pChars = NULL; }
+			if(s_pChars) { delete [] s_pChars; s_pChars = nullptr; }
 			s_pChars    = new WCHAR[iSize];
 
-			if(s_pGoffsets) { delete [] s_pGoffsets; s_pGoffsets = NULL; }
+			if(s_pGoffsets) { delete [] s_pGoffsets; s_pGoffsets = nullptr; }
 			s_pGoffsets  = new GOFFSET[iSize];
 			
 			UT_return_val_if_fail(s_pAdvances && s_pJustifiedAdvances && s_pJustify &&
@@ -211,9 +211,9 @@ class ABI_EXPORT GR_Win32USPRenderInfo : public GR_RenderInfo
 
 			s_iAdvancesSize = iSize;
 			
-			s_pOwnerDraw = NULL;
-			s_pOwnerCP = NULL;
-			s_pOwnerChar = NULL;
+			s_pOwnerDraw = nullptr;
+			s_pOwnerCP = nullptr;
+			s_pOwnerChar = nullptr;
 			
 			return true;
 	    }
@@ -262,17 +262,17 @@ class ABI_EXPORT GR_Win32USPRenderInfo : public GR_RenderInfo
 										 // _scriptBreak, etc.)
 };
 
-int *           GR_Win32USPRenderInfo::s_pAdvances          = NULL;
-int *           GR_Win32USPRenderInfo::s_pJustifiedAdvances = NULL;
-int *           GR_Win32USPRenderInfo::s_pJustify           = NULL;
+int *           GR_Win32USPRenderInfo::s_pAdvances          = nullptr;
+int *           GR_Win32USPRenderInfo::s_pJustifiedAdvances = nullptr;
+int *           GR_Win32USPRenderInfo::s_pJustify           = nullptr;
 UT_uint32       GR_Win32USPRenderInfo::s_iInstanceCount     = 0;
 UT_uint32       GR_Win32USPRenderInfo::s_iAdvancesSize      = 0;
-SCRIPT_LOGATTR *GR_Win32USPRenderInfo::s_pLogAttr           = NULL;
-WCHAR *         GR_Win32USPRenderInfo::s_pChars             = NULL;
-GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerDraw         = NULL;
-GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerCP           = NULL;
-GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerChar         = NULL;
-GOFFSET *       GR_Win32USPRenderInfo::s_pGoffsets          = NULL;
+SCRIPT_LOGATTR *GR_Win32USPRenderInfo::s_pLogAttr           = nullptr;
+WCHAR *         GR_Win32USPRenderInfo::s_pChars             = nullptr;
+GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerDraw         = nullptr;
+GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerCP           = nullptr;
+GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerChar         = nullptr;
+GOFFSET *       GR_Win32USPRenderInfo::s_pGoffsets          = nullptr;
 
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd)
@@ -454,7 +454,7 @@ GR_Win32USPGraphics::~GR_Win32USPGraphics()
 	// have to delete all fonts before we unload usp10.dll
 	// ~GR_Win32Graphics() from deleting it
 	delete m_pFontGUI;
-	m_pFontGUI = NULL;
+	m_pFontGUI = nullptr;
 
 	_destroyFonts();
 	
@@ -465,7 +465,7 @@ GR_Win32USPGraphics::~GR_Win32USPGraphics()
 		if(s_hUniscribe)
 		{
 			FreeLibrary(s_hUniscribe);
-			s_hUniscribe = NULL;
+			s_hUniscribe = nullptr;
 		}
 	}
 }
@@ -482,11 +482,11 @@ const char *    GR_Win32USPGraphics::getUSPVersion()
 
 GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
-	UT_return_val_if_fail(info.getType() == GRID_WIN32, NULL);
+	UT_return_val_if_fail(info.getType() == GRID_WIN32, nullptr);
 	
 	GR_Win32AllocInfo &AI = (GR_Win32AllocInfo&)info;
 
-	GR_Win32USPGraphics * pG = NULL;
+	GR_Win32USPGraphics * pG = nullptr;
 
 	if(AI.m_pDocInfo)
 	{
@@ -502,7 +502,7 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 	if(pG->m_bConstructorSucceeded)
 		return pG;
 	else
-		return NULL;
+		return nullptr;
 }
 
 UT_uint32 GR_Win32USPGraphics::getFontHeight(GR_Font * fnt)
@@ -589,7 +589,7 @@ void GR_Win32USPGraphics::setFont(const GR_Font* pFont)
 {
 	m_pFont = const_cast<GR_Win32Font *>(static_cast<const GR_Win32Font *>(pFont));
 
-	UT_ASSERT_HARMLESS(pFont);	// TODO should we allow pFont == NULL?
+	UT_ASSERT_HARMLESS(pFont);	// TODO should we allow pFont == nullptr?
 
 	if(pFont)
 		m_iFontAllocNo = pFont->getAllocNumber();
@@ -666,18 +666,18 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 	
 	if(bAllocNoMismatch || (HFONT) GetCurrentObject(hdc, OBJ_FONT) != hFont)
 	{
-		if(NULL == SelectObject(hdc, hFont))
+		if(nullptr == SelectObject(hdc, hFont))
 		{
 			DWORD e = GetLastError();
 			LPVOID lpMsgBuf;
  
 			FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-						  NULL,
+						  nullptr,
 						  e,
 						  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 						  (LPWSTR) &lpMsgBuf,
 						  0,
-						  NULL);
+						  nullptr);
 
 			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			LOGFONTW lf;
@@ -788,7 +788,7 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 			UT_return_val_if_fail(pItems, false);
 			bDeleteItems = true;
 
-			hRes = fScriptItemize(pInChars, iLen, iItemBuffSize, /*sc*/NULL, &ss, pItems, &iItemCount);
+			hRes = fScriptItemize(pInChars, iLen, iItemBuffSize, /*sc*/nullptr, &ss, pItems, &iItemCount);
 			
 		}while(hRes == E_OUTOFMEMORY);
 
@@ -845,7 +845,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 
 	// remove any justification information -- it will have to be recalculated
-	delete[] RI->m_pJustify; RI->m_pJustify = NULL;
+	delete[] RI->m_pJustify; RI->m_pJustify = nullptr;
 	
 	// to save time we will use a reasonably sized static buffer and
 	// will only allocate one on heap if the static one is too small.
@@ -898,8 +898,8 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	int iGlyphCount = 0;
 
-	HDC hdc = 0;
-	if(*(pFont->getScriptCache()) == NULL)
+	HDC hdc = nullptr;
+	if(*(pFont->getScriptCache()) == nullptr)
 	{
 		// need to make sure that the HDC has the correct font set
 		// so that ScriptShape measures it correctly for the cache
@@ -939,9 +939,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			{
 				delete [] pGlyphs;
 				delete [] pVa;
-				if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
-				if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
-				if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
+				if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = nullptr;}
+				if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = nullptr;}
+				if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = nullptr;}
 			}
 
 			bCopyGlyphs = true; // glyphs not in RI
@@ -991,9 +991,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		RI->m_pIndices = pGlyphs;
 		RI->m_pVisAttr = pVa;
 
-		if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
-		if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
-		if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
+		if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = nullptr;}
+		if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = nullptr;}
+		if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = nullptr;}
 	}
 	else if(!bDeleteGlyphs && bCopyGlyphs)
 	{
@@ -1011,9 +1011,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			// we also have to delete the other related arrays we do
 			// not need just yet to ensure that the size of all the
 			// arrays will remain in sync
-			if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
-			if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
-			if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
+			if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = nullptr;}
+			if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = nullptr;}
+			if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = nullptr;}
 			
 			UT_return_val_if_fail(RI->m_pIndices && RI->m_pVisAttr, false);
 		
@@ -1029,9 +1029,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		// size for the buffers
 		RI->m_iIndicesSize = iGlyphBuffSize;
 
-		if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
-		if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
-		if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
+		if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = nullptr;}
+		if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = nullptr;}
+		if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = nullptr;}
 	}
 	else
 	{
@@ -1082,12 +1082,12 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	{
 		// this might not be strictly necessary, but it is safer to do so
 		// no, this is necessary
-		RI->s_pOwnerChar = NULL;
+		RI->s_pOwnerChar = nullptr;
 	}
 
 	if(RI->s_pOwnerDraw == RI)
 	{
-		RI->s_pOwnerDraw = NULL;
+		RI->s_pOwnerDraw = nullptr;
 	}
 	
 	return true;
@@ -1284,7 +1284,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_bInvalidateFontCache)
 	{
 		fScriptFreeCache(pFont->getScriptCache());
-		*(pFont->getScriptCache()) = NULL;
+		*(pFont->getScriptCache()) = nullptr;
 		RI.m_bInvalidateFontCache = false;
 	}
 
@@ -1322,7 +1322,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 		yoff = _tduY(RI.m_yoff + iAscentPrint - iAscentScreen);
 	}
 	
-	int * pJustify = RI.m_pJustify && RI.m_bRejustify ? RI.s_pJustify + iGlyphOffset : NULL;
+	int * pJustify = RI.m_pJustify && RI.m_bRejustify ? RI.s_pJustify + iGlyphOffset : nullptr;
 	
 	// not sure how expensive SetBkMode is, but GetBkMode() should not
 	// be ...
@@ -1342,9 +1342,9 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	
 	HRESULT hRes = fScriptTextOut(m_hdc, pFont->getScriptCache(), xoff, yoff,
 								  dFlags, /*option flags*/
-								  NULL, /*not sure about this*/
+								  nullptr, /*not sure about this*/
 								  & pItem->m_si.a,
-								  NULL, 0, /*reserved*/
+								  nullptr, 0, /*reserved*/
 								  RI.m_pIndices  + iGlyphOffset,
 								  iGlyphCount,
 								  RI.s_pAdvances + iGlyphOffset,
@@ -1444,10 +1444,10 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	if(pFont->getPrintDC() != getPrintDC())
 	{
 		// the zoom factor has changed; make sure we invalidate the cache
-		if(*(pFont->getScriptCache()) != NULL)
+		if(*(pFont->getScriptCache()) != nullptr)
 		{
 			fScriptFreeCache(pFont->getScriptCache());
-			*(pFont->getScriptCache()) = NULL;
+			*(pFont->getScriptCache()) = nullptr;
 		}
 
 		if(getPrintDC())
@@ -1476,10 +1476,10 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 	// store the print DC used to measure the font in the font ...
 	pFont->setPrintDC(getPrintDC());
-	
-	HDC hdc = 0; // this is the hdc to use if all fails
-	HDC hdc1 = 0; // this is the hdc to use in the first pass (null if we have script cache)
-	if(*(pFont->getScriptCache()) == NULL)
+
+	HDC hdc = nullptr; // this is the hdc to use if all fails
+	HDC hdc1 = nullptr; // this is the hdc to use in the first pass (null if we have script cache)
+	if(*(pFont->getScriptCache()) == nullptr)
 	{
 		// need to make sure that the HDC has the correct font set
 		// we do not scale the font by zoom
@@ -1488,7 +1488,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			_setupFontOnDC(pFont, false);
 			bFontSetUpOnDC = true;
 		}
-		
+
 		hdc = m_printHDC ? m_printHDC : m_hdc;
 
 		// we remember the hdc for which we measured so we can remeasure when hdc changes
@@ -1498,17 +1498,17 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	else
 	{
 		hdc = pFont->getPrintDC() ? pFont->getPrintDC() : m_hdc;
-		hdc1 = 0;
+		hdc1 = nullptr;
 		RI.m_hdc = hdc;
 	}
-	
 
-	
+
+
 	// need to disapble shaping if call to ScriptShape failed ...
 	WORD eScript = pItem->m_si.a.eScript;
 	if(RI.m_bShapingFailed)
 		pItem->m_si.a.eScript = GRScriptType_Undefined;
-	
+
 	HRESULT hRes = fScriptPlace(hdc1, pFont->getScriptCache(), RI.m_pIndices,
 								RI.m_iIndicesCount, RI.m_pVisAttr,
 								& pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
@@ -1568,7 +1568,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		}
 		
 		
-		SCRIPT_CACHE sc = NULL;
+		SCRIPT_CACHE sc = nullptr;
 		HRESULT hResFSP = fScriptPlace(m_hdc, &sc, RI.m_pIndices, RI.m_iIndicesCount, RI.m_pVisAttr,
 									& pItem->m_si.a, pAdvances, pGoffsets, & stABC);
 
@@ -1596,13 +1596,13 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	if(RI.s_pOwnerDraw == & ri)
 	{
 		// we currently own the static buffers; invalidate
-		RI.s_pOwnerDraw = NULL;
+		RI.s_pOwnerDraw = nullptr;
 	}
 
 	if(RI.s_pOwnerCP == & ri)
 	{
 		// we currently own the static buffers; invalidate
-		RI.s_pOwnerCP = NULL;
+		RI.s_pOwnerCP = nullptr;
 	}
 
 	// now convert the whole lot to layout units
@@ -1990,7 +1990,7 @@ UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri, bool bPerm
 	if(bPermanent)
 	{
 		delete [] RI.m_pJustify;
-		RI.m_pJustify = NULL;
+		RI.m_pJustify = nullptr;
 	}
 	else
 	{
@@ -1998,10 +1998,10 @@ UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri, bool bPerm
 	}
 	
 	if(RI.s_pOwnerDraw == & RI)
-		RI.s_pOwnerDraw = NULL;
+		RI.s_pOwnerDraw = nullptr;
 
 	if(RI.s_pOwnerCP == & RI)
-		RI.s_pOwnerCP = NULL;
+		RI.s_pOwnerCP = nullptr;
 	
 	return -iWidth2;
 }
@@ -2138,10 +2138,10 @@ void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
 
 	// mark the static width caches dirty
 	if(RI.s_pOwnerDraw == & RI)
-		RI.s_pOwnerDraw = NULL;
+		RI.s_pOwnerDraw = nullptr;
 
 	if(RI.s_pOwnerCP == & RI)
-		RI.s_pOwnerCP = NULL;
+		RI.s_pOwnerCP = nullptr;
 	
 	UT_return_if_fail(RI.m_pJustify);
 	memset(RI.m_pJustify, 0, RI.m_iIndicesSize * sizeof(int));
@@ -2302,7 +2302,7 @@ void GR_Win32USPGraphics::_drawChars(const UT_UCSChar* pChars,
 	_setupFontOnDC(pFont, true);
 	
 	HRESULT hRes = fScriptStringAnalyse(m_hdc, pwChars, iLength, iLength*3/2 + 1,
-						-1, flags, 0, NULL, NULL, NULL, NULL, NULL, &SSA);
+						-1, flags, 0, nullptr, nullptr, nullptr, nullptr, nullptr, &SSA);
 
 	if(hRes)
 	{
@@ -2315,7 +2315,7 @@ void GR_Win32USPGraphics::_drawChars(const UT_UCSChar* pChars,
 	if(SSA)
 	{
 		hRes = fScriptStringOut(SSA, (UT_sint32)((double)_tduX(xoff) * m_fXYRatio), _tduY(yoff),
-								0, NULL, 0, 0, FALSE);
+								0, nullptr, 0, 0, FALSE);
 	}
 	else
 	{
@@ -2554,7 +2554,7 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool /*bReverse*/)
 
 	if(s_pOwnerChar == &RI)
 	{
-		s_pOwnerChar = NULL;
+		s_pOwnerChar = nullptr;
 	}
 	
 	return true;
@@ -2571,7 +2571,7 @@ bool GR_Win32USPRenderInfo::cut(UT_uint32 /*offset*/, UT_uint32 /*iLen*/, bool /
 
 bool GR_Win32USPRenderInfo::isJustified() const
 {
-	return (m_pJustify != NULL);
+	return (m_pJustify != nullptr);
 }
 
 GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONTW &lf, double fPoints, HDC hdc, HDC printHDC)
@@ -2581,7 +2581,7 @@ GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONTW &lf, double fPoints, HDC hd
 	if(!f || !f->getFontHandle())
 	{
 		delete f;
-		f = NULL;
+		f = nullptr;
 	}
 
 	return f;
@@ -2589,18 +2589,18 @@ GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONTW &lf, double fPoints, HDC hd
 
 GR_Win32USPFont::GR_Win32USPFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 	: GR_Win32Font(lf, fPoints, hdc, printHDC),
-	  m_sc(NULL),
-	  m_printHDC(NULL),
+	  m_sc(nullptr),
+	  m_printHDC(nullptr),
 	  m_iScreenAscent(0)
 {
 }
 
 void GR_Win32USPFont::_clearAnyCachedInfo()
 {
-	if(m_sc != NULL)
+	if(m_sc != nullptr)
 	{
 		GR_Win32USPGraphics::fScriptFreeCache(&m_sc);
-		m_sc = NULL;
+		m_sc = nullptr;
 	}
 }
 

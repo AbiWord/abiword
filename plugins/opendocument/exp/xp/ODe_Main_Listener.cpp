@@ -74,7 +74,7 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
     // Info about headers and footers goes into OpenDocument <style:master-page>.
     // Into about columns goes into OpenDocument <text:section>.
 
-    ODe_Style_MasterPage* pMPStyle = NULL;
+    ODe_Style_MasterPage* pMPStyle = nullptr;
     bool pendingMasterPageStyleChange = false;
     UT_UTF8String masterPageStyleName;
     ODe_Text_Listener* pTextListener;
@@ -200,7 +200,7 @@ bool ODe_Main_Listener::_isHeaderFooterSection(const PP_AttrProp* pAP) const {
     bool ok;
     
     ok = pAP->getAttribute("type", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (!strcmp(pValue, "header") || !strcmp(pValue, "header-even") || 
             !strcmp(pValue, "footer") || !strcmp(pValue, "footer-even")) {
             return true;
@@ -218,19 +218,19 @@ void ODe_Main_Listener::_openHeaderFooterSection(
                                                   const PP_AttrProp* pAP,
                                                   ODe_ListenerAction& rAction) {
     const gchar* pValue;
-    const gchar* pId = NULL;
+    const gchar* pId = nullptr;
     bool ok;
     UT_GenericVector<ODe_Style_MasterPage*>* pMasterPageVector;
     UT_uint32 count, i;
     const ODe_Style_MasterPage* pMPageStyle;
-    GsfOutput* pTextOutput = NULL;
+    GsfOutput* pTextOutput = nullptr;
     
     pMasterPageVector = m_rDocumentData.m_masterStyles.enumerate();
     count = pMasterPageVector->getItemCount();
 
     
     ok = pAP->getAttribute("id", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         pId = pValue;
     } else {
         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -238,7 +238,7 @@ void ODe_Main_Listener::_openHeaderFooterSection(
     
 
     ok = pAP->getAttribute("type", pValue);
-    if (!ok || pValue == NULL) {
+    if (!ok || pValue == nullptr) {
         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
     }
     

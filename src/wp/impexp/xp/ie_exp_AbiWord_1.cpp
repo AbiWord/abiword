@@ -260,7 +260,7 @@ void s_AbiWord_1_Listener::_closeBlock(void)
 	m_bInBlock = false;
 	if (--m_iBlockLevel == 0) {
 		m_pie->setPrettyPrint(true);
-		m_pie->addString(NULL, "\n");
+		m_pie->addString(nullptr, "\n");
 	}
 	return;
 }
@@ -286,10 +286,9 @@ void s_AbiWord_1_Listener::_closeField(void)
 {
 	if (!m_pCurrentField)
 		return;
-    _closeSpan();
+	_closeSpan();
 	m_pie->endElement();
-    m_pCurrentField = NULL;
-	return;
+	m_pCurrentField = nullptr;
 }
 
 void s_AbiWord_1_Listener::_closeHyperlink(void)
@@ -344,7 +343,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, bool bHasContent,
 									PT_AttrPropIndex api, UT_uint32 iXID,
 									bool bIgnoreProperties)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	const gchar * szValue;
 	xxx_UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n", api, bHaveProp));
@@ -418,9 +417,9 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, bool bHasContent,
 	}
 	if(strcmp(szPrefix,"math") == 0)
 	{
-		const char * szPropVal = NULL;
+		const char * szPropVal = nullptr;
 		pAP->getAttribute("dataid",szPropVal);
-		if(szPropVal != NULL)
+		if(szPropVal != nullptr)
 		{
 			m_pie->startElement("image");
 			std::string tag = "snapshot-svg-";
@@ -449,14 +448,14 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, bool bHasContent,
 	}
 	else if(strcmp(szPrefix,"embed") == 0)
 	{
-		const char * szPropVal = NULL;
+		const char * szPropVal = nullptr;
 		pAP->getAttribute("dataid",szPropVal);
-		if(szPropVal != NULL)
+		if(szPropVal != nullptr)
 		{
 			m_pie->startElement("image");
 			std::string tag = std::string("snapshot-svg-") + szPropVal;
 			UT_ConstByteBufPtr bb;
-			if (!m_pDocument->getDataItemDataByName(tag.c_str (), bb, NULL, NULL))
+			if (!m_pDocument->getDataItemDataByName(tag.c_str (), bb, nullptr, nullptr))
 				tag = std::string("snapshot-png-") + szPropVal;
 			m_pie->addString("dataid", tag);
 			bool bFound = pAP->getProperty("height", szPropVal);
@@ -525,14 +524,14 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// NOTE we output the following preamble in XML comments.
 	// NOTE this information is for human viewing only.
 
-	m_pie->addString(NULL, "\n");
+	m_pie->addString(nullptr, "\n");
 	m_pie->addComment("========================================================================");
 	m_pie->addComment("This file is an AbiWord document.                                       ");
 	m_pie->addComment("AbiWord is a free, Open Source word processor.                          ");
 	m_pie->addComment("More information about AbiWord is available at http://www.abisource.com/");
 	m_pie->addComment("You should not edit this file by hand.                                  ");
 	m_pie->addComment("========================================================================");
-	m_pie->addString(NULL, "\n");
+	m_pie->addString(nullptr, "\n");
 		
 	// end of preamble.
 	// now we begin the actual document.
@@ -565,7 +564,7 @@ s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 const gchar*
 s_AbiWord_1_Listener::getObjectKey(const PT_AttrPropIndex& api, const gchar* key)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	if (bHaveProp && pAP)
 	{
@@ -594,7 +593,7 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
 			_openSpan(api);
 
 			PT_BufIndex bi = pcrs->getBufIndex();
-			m_pie->addString(NULL, m_pDocument->getPointer(bi), pcrs->getLength());
+			m_pie->addString(nullptr, m_pDocument->getPointer(bi), pcrs->getLength());
 
 			return true;
 		}
@@ -663,7 +662,7 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
 						m_vecSnapNames.push_back(sPNGname);
 						sPNGname += image_name;
 						UT_ConstByteBufPtr bb;
-						if (!m_pDocument->getDataItemDataByName(sPNGname.c_str(), bb, NULL, NULL)) {
+						if (!m_pDocument->getDataItemDataByName(sPNGname.c_str(), bb, nullptr, nullptr)) {
 							sPNGname = std::string("snapshot-png-") + image_name;
 						}
 						UT_DEBUGMSG(("resource name #%s# recorded \n",
@@ -685,7 +684,7 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
    					_closeSpan();
    					_closeField();
 					_closeHyperlink();
-					const PP_AttrProp * pAP = NULL;
+					const PP_AttrProp * pAP = nullptr;
 					m_pDocument->getAttrProp(api,&pAP);
 					const gchar * pName;
 					const gchar * pValue;
@@ -714,7 +713,7 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
    					_closeSpan();
    					_closeField();
 					_closeAnnotation();
-					const PP_AttrProp * pAP = NULL;
+					const PP_AttrProp * pAP = nullptr;
 					m_pDocument->getAttrProp(api,&pAP);
 					const gchar * pName;
 					const gchar * pValue;
@@ -741,7 +740,7 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
    				{
    					_closeSpan();
    					_closeField();
-					const PP_AttrProp * pAP = NULL;
+					const PP_AttrProp * pAP = nullptr;
 					m_pDocument->getAttrProp(api,&pAP);
                     RDFAnchor a( pAP );
                     if( !a.isEnd() )
@@ -1049,7 +1048,7 @@ UT_Error IE_Exp_AbiWord_1::_writeDocument(void)
 	}
 	
 	delete m_pListener;
-	m_pListener = NULL;
+	m_pListener = nullptr;
 	closeHandle();
 
 	if (!bStatusTellListener)
@@ -1071,7 +1070,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 {
 	bool bWroteOpenStyleSection = false;
 
-	const PD_Style * pStyle=NULL;
+	const PD_Style * pStyle=nullptr;
 	UT_GenericVector<PD_Style *> vecStyles;
 	m_pDocument->getAllUsedStyles(&vecStyles);
 	UT_sint32 k = 0;
@@ -1088,7 +1087,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 		_openTag("s",false,api,0);
 	}
 
-	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	UT_GenericVector<PD_Style*> * pStyles = nullptr;
 	m_pDocument->enumStyles(pStyles);
 	UT_ASSERT_HARMLESS( pStyles );
 	UT_sint32 iStyleCount = m_pDocument->getStyleCount();
@@ -1183,7 +1182,7 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 
 #if 0
   // get the saved time, remove trailing newline
-  time_t now = time ( NULL ) ;
+  time_t now = time ( nullptr ) ;
   std::string now_str(ctime(&now));
   now_str = now_str.substr ( 0, now_str.size() -1 ) ;
   m_pDocument->setMetaDataProp ( PD_META_KEY_DATE_LAST_CHANGED, UT_UTF8String(now_str.c_str()) ) ;
@@ -1205,7 +1204,7 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 	  if( !iter->second.empty() ) {
 	      m_pie->startElement("m");
 		  m_pie->addString("key", iter->first);
-	      m_pie->addString(NULL, iter->second);
+	      m_pie->addString(nullptr, iter->second);
 	      m_pie->endElement() ;
 	  }
   }
@@ -1249,7 +1248,7 @@ void s_AbiWord_1_Listener::_handleRDF(void)
           }
           m_pie->addString("xsdtype", object.getXSDType());
           UT_UTF8String esc = object.toString().c_str();
-          m_pie->addString(NULL, esc.utf8_str());
+          m_pie->addString(nullptr, esc.utf8_str());
          m_pie->endElement();
        }
   }
@@ -1288,7 +1287,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	UT_DEBUGMSG(("Used images are... \n"));
 	for (UT_uint32 k=0;
 		 
-		 (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf, &mimeType));
+		 (m_pDocument->enumDataItems(k, nullptr, &szName, pByteBuf, &mimeType));
 		 k++)
 	{
 		string_set::iterator it(m_pUsedImages.find(szName));
@@ -1375,7 +1374,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		    {
 			   	m_pie->addString("base64", "no");
 			}
-			m_pie->addStringUnchecked(NULL, reinterpret_cast<const char*>(bbEncoded->getPointer(0)));
+			m_pie->addStringUnchecked(nullptr, reinterpret_cast<const char*>(bbEncoded->getPointer(0)));
 			m_pie->endElement();
 			m_pie->setPrettyPrint(true);
 
@@ -1413,7 +1412,7 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 
 		if (rev.getDescription())
 		{
-			m_pie->addString(NULL, rev.getDescription(), UT_UCS4_strlen(rev.getDescription()));
+			m_pie->addString(nullptr, rev.getDescription(), UT_UCS4_strlen(rev.getDescription()));
 		}
 		
 
@@ -1486,8 +1485,8 @@ void s_AbiWord_1_Listener::_handleAuthors(void)
 		if(pAP->getPropertyCount()>0)
 		{
 			std::ostringstream buf;
-			const gchar * szName = NULL;
-			const gchar * szValue = NULL;
+			const gchar * szName = nullptr;
+			const gchar * szValue = nullptr;
 			UT_uint32 j = 0;
 			while (pAP->getNthProperty(j++,szName,szValue))
 			{

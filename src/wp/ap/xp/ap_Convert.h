@@ -51,7 +51,7 @@ class ABI_EXPORT AP_Convert
 	void setVerbose(int level);
 	void setMergeSource (const char * source);
 
-	bool print(const char * file, GR_Graphics * pGraphics, const char * szFileExtension = NULL);
+	bool print(const char * file, GR_Graphics * pGraphics, const char * szFileExtension = nullptr);
 	bool printFirstPage(GR_Graphics * pGraphics, PD_Document * pDoc);
 
 	void setImpProps (const char * props) {

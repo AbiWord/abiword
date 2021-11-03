@@ -151,7 +151,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 													   renderer,
 													   "text", 
 													   0,
-													   NULL);
+													   nullptr);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_listWindows), column);
 	
 	// connect a dbl-clicked signal to the column

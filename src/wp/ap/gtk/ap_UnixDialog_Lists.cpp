@@ -70,7 +70,7 @@ XAP_Dialog * AP_UnixDialog_Lists::static_constructor(XAP_DialogFactory * pFactor
 
 AP_UnixDialog_Lists::~AP_UnixDialog_Lists(void)
 {
-	if(m_pPreviewWidget != NULL)
+	if(m_pPreviewWidget != nullptr)
 		DELETEP (m_pPreviewWidget);
 }
 
@@ -333,7 +333,7 @@ void AP_UnixDialog_Lists::destroy(void)
 		m_glFonts.clear();
 		modeless_cleanup();
 		abiDestroyWidget(m_windowMain);
-		m_windowMain = NULL;
+		m_windowMain = nullptr;
 		DELETEP(m_pAutoUpdateLists);
 		DELETEP (m_pPreviewWidget);
 	}
@@ -357,7 +357,7 @@ void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 	{
 		return;
 	}
-	GtkWidget * wF = NULL;
+	GtkWidget * wF = nullptr;
 	UT_uint32 ID =0;
 	if(!bSet)
 	{
@@ -674,7 +674,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkWidget *text_align_lb;
 	GtkWidget *label_align_lb;
 	GtkWidget *preview_lb;
-	GSList *action_group = NULL;
+	GSList *action_group = nullptr;
 	GtkWidget *start_list_rb;
 	GtkWidget *apply_list_rb;
 	GtkWidget *resume_list_rb;
@@ -682,14 +682,14 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	std::string s;
-	GtkWidget * wNoteBook = NULL;
+	GtkWidget * wNoteBook = nullptr;
 
 	list_grid = gtk_grid_new();
 	g_object_set(G_OBJECT(list_grid),
 		         "row-spacing", 6,
 	             "column-spacing", 12,
 	             "border-width", 12,
-	             NULL);
+	             nullptr);
 	gtk_widget_show(list_grid);
 	if(!isModal())
 	{
@@ -715,7 +715,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 			         "row-spacing", 6,
 		             "column-spacing", 12,
 		             "border-width", 12,
-		             NULL);
+		             nullptr);
 		gtk_widget_show(lbPageFolding);
 		gtk_widget_show(wFoldingGrid);
 		gtk_notebook_append_page(GTK_NOTEBOOK(wNoteBook),wFoldingGrid,lbPageFolding);
@@ -734,7 +734,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 // RadioButtons
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel0,s);
 		
-		GtkWidget * wF = gtk_radio_button_new_with_label(NULL, s.c_str());
+		GtkWidget * wF = gtk_radio_button_new_with_label(nullptr, s.c_str());
 		GSList *wG = gtk_radio_button_get_group(GTK_RADIO_BUTTON(wF));
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"0");
 		ID = g_signal_connect(G_OBJECT(wF),
@@ -812,7 +812,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	g_object_set(G_OBJECT(grid1),
 	             "row-spacing", 6,
 	             "column-spacing", 12,
-	             NULL);
+	             nullptr);
 	gtk_widget_show(grid1);
 	gtk_grid_attach(GTK_GRID(list_grid), grid1, 0, 0, 1, 1);
 
@@ -852,13 +852,13 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type,s);
 	type_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
-                              NULL);
+                              nullptr);
 	gtk_widget_show (type_lb);
 	gtk_grid_attach(GTK_GRID(grid1), type_lb, 0, 0, 1, 1);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Style,s);
 	style_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                                "xalign", 0.0, "yalign", 0.5,
-                               NULL);
+                               nullptr);
 	gtk_widget_show (style_lb);
 	gtk_grid_attach(GTK_GRID(grid1), style_lb, 0, 1, 1, 1);
 
@@ -877,7 +877,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	             "row-spacing", 6,
 	             "column-spacing", 12,
 	             "margin-top", 12,
-	             NULL);
+	             nullptr);
 	gtk_widget_show(grid2);
 	gtk_grid_attach(GTK_GRID(list_grid), grid2, 0, 1, 1, 1);
 	gtk_widget_set_sensitive (grid2, TRUE);
@@ -922,42 +922,42 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Format,s);
 	format_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
-                              NULL);
+                              nullptr);
 	gtk_widget_show (format_lb);
 	gtk_grid_attach (GTK_GRID (grid2), format_lb, 0, 0, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Font,s);
 	font_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
-                              NULL);
+                              nullptr);
 	gtk_widget_show (font_lb);
 	gtk_grid_attach (GTK_GRID (grid2), font_lb, 0, 1, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_DelimiterString,s);
 	delimiter_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
-                              NULL);
+                              nullptr);
 	gtk_widget_show (delimiter_lb);
 	gtk_grid_attach (GTK_GRID (grid2), delimiter_lb, 0, 2, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start,s);
 	start_at_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
-                              NULL);
+                              nullptr);
 	gtk_widget_show (start_at_lb);
 	gtk_grid_attach (GTK_GRID (grid2), start_at_lb, 0, 3, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Align,s);
 	text_align_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
-                              NULL);
+                              nullptr);
 	gtk_widget_show (text_align_lb);
 	gtk_grid_attach (GTK_GRID (grid2), text_align_lb, 0, 4, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Indent,s);
 	label_align_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
-                              NULL);
+                              nullptr);
 	gtk_widget_show (label_align_lb);
 	gtk_grid_attach (GTK_GRID (grid2), label_align_lb, 0, 5, 1, 1);
 
@@ -967,7 +967,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Preview,s);
 	preview_lb = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
-                              NULL);
+                              nullptr);
 	gtk_widget_show(preview_lb);
 	gtk_grid_attach(GTK_GRID(grid3), preview_lb, 0, 0, 1, 1);
 
@@ -1068,7 +1068,7 @@ void AP_UnixDialog_Lists::_getGlistFonts (std::vector<std::string> & glFonts)
 	{
 	    const std::string & lgn  = *i;
 	    if(currentfont.empty() ||
-	       (strstr(currentfont.c_str(), lgn.c_str()) == NULL) ||
+	       (strstr(currentfont.c_str(), lgn.c_str()) == nullptr) ||
 	       currentfont.size() != lgn.size())
 	    {
 			currentfont = lgn;
@@ -1241,7 +1241,7 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 	//
 	// Code to work out which is active Font
 	//
-	if(getFont() == "NULL")
+	if(getFont() == "nullptr")
 	{
 		gtk_combo_box_set_active(m_wFontOptions, 0 );
 	}
@@ -1355,7 +1355,7 @@ void AP_UnixDialog_Lists::_gatherData(void)
 	gint ifont = gtk_combo_box_get_active(m_wFontOptions);
 	if(ifont == 0)
 	{
-		copyCharToFont("NULL");
+		copyCharToFont("nullptr");
 	}
 	else
 	{

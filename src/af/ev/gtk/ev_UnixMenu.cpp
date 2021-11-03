@@ -101,7 +101,7 @@ void EV_UnixMenu::_wd::s_onMenuItemSelect(GtkWidget * /*widget*/, gpointer data)
 	UT_return_if_fail(pFrame);
 	EV_Menu_Label * pLabel = wd->m_pUnixMenu->getLabelSet()->getLabel(wd->m_id);
 	if (!pLabel) {
-		pFrame->setStatusMessage(NULL);
+		pFrame->setStatusMessage(nullptr);
 		return;
 	}
 
@@ -121,7 +121,7 @@ void EV_UnixMenu::_wd::s_onMenuItemDeselect(GtkWidget * /*widget*/, gpointer dat
 	XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
 	UT_return_if_fail(pFrame);
 
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 }
 
 void EV_UnixMenu::_wd::s_onInitMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data)
@@ -140,7 +140,7 @@ void EV_UnixMenu::_wd::s_onDestroyMenu(GtkMenuItem * /*menuItem*/, gpointer call
 	// leave a message behind
 	XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
 	UT_return_if_fail(pFrame);
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 }
 
 // GTK wants to run popup menus asynchronously, but we want synchronous,
@@ -172,11 +172,11 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 									  const EV_Menu_Action * pAction,
 									  const EV_Menu_Label * pLabel)
 {
-	static const char * data[2] = {NULL, NULL};
+	static const char * data[2] = {nullptr, nullptr};
 
 	// hit the static pointers back to null each time around
-	data[0] = NULL;
-	data[1] = NULL;
+	data[0] = nullptr;
+	data[1] = nullptr;
 	
 	const char * szLabelName;
 	
@@ -242,7 +242,7 @@ void EV_UnixMenu::_convertStringToAccel(const char *str,
 				       guint &accel_key,
 				       GdkModifierType &ac_mods)
 {
-	if (str == NULL || *str == '\0')
+	if (str == nullptr || *str == '\0')
 		return;
 
 	if (strncmp (str, "Ctrl+", 5) == 0) {
@@ -409,7 +409,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 	std::stack<GtkWidget*> stack;
 	stack.push(wMenuRoot);
 
-	GSList *group = NULL; // for radio button groups.
+	GSList *group = nullptr; // for radio button groups.
 
 	for (size_t k = 0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -445,7 +445,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 					gtk_radio_menu_item_set_group(GTK_RADIO_MENU_ITEM(w), group);
 					group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(w));
 				} else
-					group = NULL; // radio buton items should be consecutive
+					group = nullptr; // radio buton items should be consecutive
 
 				// find parent menu item
 				GtkWidget * wParent = stack.top();
@@ -470,7 +470,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 		{
 			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pFrame, pAction, pLabel);
 			szLabelName = data[0];
-			group = NULL; // assuming there is no submenu inside a radio button menus list
+			group = nullptr; // assuming there is no submenu inside a radio button menus list
 			
 			if (szLabelName && *szLabelName)
 			{				
@@ -516,18 +516,18 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				{
 					EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 					UT_ASSERT(pEEM);
-					EV_EditMethod * pEM = NULL;
+					EV_EditMethod * pEM = nullptr;
 					pEEM->Keystroke(EV_EKP_PRESS|EV_EMS_ALT|keyCode,&pEM);
 
 					// if the pointer is valid, there is a conflict
-					bConflict = (pEM != NULL);
+					bConflict = (pEM != nullptr);
 				}
 				
 				if (bConflict)
 				{
 					// construct the label with NO underlined text and
 					// no accelerators bound
-					char * dup = NULL;
+					char * dup = nullptr;
 
 					// clone string just for the space it gives us, the data
 					// is trashed by _ev_strip_underlines()
@@ -601,7 +601,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 			w = stack.top();
 			stack.pop();
 			UT_ASSERT(w);
-			group = NULL;
+			group = nullptr;
 
 			// item is created (albeit empty in this case), add to vector
 			m_vecMenuWidgets.push_back(w);
@@ -611,7 +611,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 		{
 			GtkWidget * w = gtk_separator_menu_item_new();
 			gtk_widget_set_sensitive(w, FALSE);
-			group = NULL; // assuming there is no separator inside a radio button menus list
+			group = nullptr; // assuming there is no separator inside a radio button menus list
 
 			GtkWidget * wParent = stack.top();
 			UT_ASSERT(wParent);
@@ -626,7 +626,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 
 		case EV_MLF_BeginPopupMenu:
 		case EV_MLF_EndPopupMenu:
-			m_vecMenuWidgets.push_back(NULL);	// reserve slot in vector so indexes will be in sync
+			m_vecMenuWidgets.push_back(nullptr);	// reserve slot in vector so indexes will be in sync
 			break;
 			
 		default:
@@ -674,7 +674,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	// entered into a real menu (only at a top level menu)
 	
 	gint nPositionInThisMenu = -1;
-	GSList *group = NULL; // for radio button groups
+	GSList *group = nullptr; // for radio button groups
 	
 	for (size_t k = 0; k < nrLabelItemsInLayout; ++k)
 	{
@@ -730,7 +730,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 						gtk_radio_menu_item_set_group(GTK_RADIO_MENU_ITEM(w), group);
 						group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(w));
 					} else
-						group = NULL; // radio buton items should be consecutive
+						group = nullptr; // radio buton items should be consecutive
 
 					// find parent menu item
 					GtkWidget * wParent = stack.top();
@@ -847,14 +847,14 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			break;
 		}
 		case EV_MLF_Separator:
-			group = NULL; // assuming there is no separator inside a radio button menus list
+			group = nullptr; // assuming there is no separator inside a radio button menus list
 			nPositionInThisMenu++;			
 			break;
 
 		case EV_MLF_BeginSubMenu:
 		{
 			nPositionInThisMenu = -1;
-			group = NULL; // assuming there is no submenu inside a radio button menus list
+			group = nullptr; // assuming there is no submenu inside a radio button menus list
 
 			// we need to nest sub menus to have some sort of context so
 			// we can parent menu items
@@ -877,7 +877,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		case EV_MLF_EndSubMenu:
 			UT_ASSERT(stack.top());
 			stack.pop();
-			group = NULL;
+			group = nullptr;
 
 			break;
 
@@ -1046,13 +1046,13 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 												 const char *szMnemonicName)
 {
 	// create the item with the underscored label
-	GtkWidget * w = NULL;
+	GtkWidget * w = nullptr;
 	char buf[1024];
 	// convert label into underscored version
 	_ev_convert(buf, szLabelName);
 
 	// an item can't be both a checkable and a radio option
-	UT_return_val_if_fail(!(isCheckable && isRadio), NULL);
+	UT_return_val_if_fail(!(isCheckable && isRadio), nullptr);
 
 	if ( isCheckable )
 	{
@@ -1060,7 +1060,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 	}
 	else if ( isRadio )
 	{
-		w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
+		w = gtk_radio_menu_item_new_with_mnemonic (nullptr, buf);
 	}
 	else
 	{
@@ -1079,7 +1079,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 		  }
 	  }
 
-	UT_return_val_if_fail(w, NULL);
+	UT_return_val_if_fail(w, nullptr);
 	gtk_widget_show(w);
 	
 	// set menu data to relate to class

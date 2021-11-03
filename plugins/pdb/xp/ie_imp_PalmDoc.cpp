@@ -68,12 +68,12 @@ const IE_SuffixConfidence * IE_Imp_PalmDoc_Sniffer::getSuffixConfidence ()
 	return IE_Imp_PalmDoc_Sniffer__SuffixConfidence;
 }
 
-const IE_MimeConfidence * IE_Imp_PalmDoc_Sniffer::getMimeConfidence () 
+const IE_MimeConfidence * IE_Imp_PalmDoc_Sniffer::getMimeConfidence()
 {
 	// mimetypes once getMimeConfidence is implemented (need to check correctness)
 	// "application/x-palm-database"
 	// "application/vnd.palm"
-	return NULL; 
+	return nullptr;
 }
 
 UT_Confidence_t IE_Imp_PalmDoc_Sniffer::recognizeContents(const char * szBuf, 

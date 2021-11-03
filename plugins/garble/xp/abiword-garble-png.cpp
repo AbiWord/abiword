@@ -60,12 +60,12 @@ bool abiword_document::garble_png( void*& data, size_t& size ) {
 
 	// read PNG data
 	{
-		png_structp png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, (void*) NULL, NULL, NULL );
+		png_structp png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, (void*) nullptr, nullptr, nullptr );
 		if (!png_ptr)
 			return false;
 		png_infop info_ptr = png_create_info_struct(png_ptr);
 		if (!info_ptr) {
-			png_destroy_read_struct( &png_ptr, (png_infopp)NULL, (png_infopp)NULL );
+			png_destroy_read_struct( &png_ptr, (png_infopp)nullptr, (png_infopp)nullptr );
 			return false;
 		}
 		png_read_data _png_read_data = { data, size, 0 };
@@ -80,7 +80,7 @@ bool abiword_document::garble_png( void*& data, size_t& size ) {
 		png_set_interlace_handling( png_ptr );
 		png_set_bgr( png_ptr );
 		rowbytes = png_get_rowbytes(png_ptr, info_ptr);
-		png_destroy_read_struct( &png_ptr, &info_ptr, NULL );
+		png_destroy_read_struct( &png_ptr, &info_ptr, nullptr );
 	}
 
 	// we don't care about the image data itself, we just want a random garbled
@@ -94,17 +94,17 @@ bool abiword_document::garble_png( void*& data, size_t& size ) {
 	bool result = false;
 	{
 		// write it back
-		png_structp png_ptrw = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
+		png_structp png_ptrw = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr );
 		if (png_ptrw)
 		{
 			png_infop info_ptrw = png_create_info_struct( png_ptrw );
 			png_set_IHDR( png_ptrw, info_ptrw, width, height, bit_depth, color_type, interlace_type, compression_type, filter_type );
 			string newdata;
-			png_set_write_fn( png_ptrw, (void*)&newdata, &_png_write, NULL );
+			png_set_write_fn( png_ptrw, (void*)&newdata, &_png_write, nullptr );
 			png_write_info( png_ptrw, info_ptrw );
 			png_write_image( png_ptrw, dib );
-			png_write_end( png_ptrw, NULL );
-			png_destroy_write_struct( &png_ptrw, NULL );
+			png_write_end( png_ptrw, nullptr );
+			png_destroy_write_struct( &png_ptrw, nullptr );
 
 			free(data);
 			size = newdata.size();

@@ -130,7 +130,7 @@ abi_table_resize(AbiTable* table)
 		text = g_strdup_printf("%d x %d %s", table->selected_rows, table->selected_cols, table->szTable);
 	}
 	cells_to_pixels(table->total_cols, table->total_rows, &width, &height);
-	gtk_widget_get_preferred_size(GTK_WIDGET(table->window_label), &size, NULL);
+	gtk_widget_get_preferred_size(GTK_WIDGET(table->window_label), &size, nullptr);
 
 	gtk_label_set_text(table->window_label, text);
 	gtk_window_resize(table->window, width + 1, height + size.height);
@@ -321,7 +321,7 @@ on_button_release_event (GtkWidget *, GdkEventButton *ev, gpointer user_data)
 	{
 		GtkRequisition size;
 
-		gtk_widget_get_preferred_size(GTK_WIDGET(table), &size, NULL);
+		gtk_widget_get_preferred_size(GTK_WIDGET(table), &size, nullptr);
 
 		/* And now, precise and slightly slower test.
 		   I wonder if the double test really matters from a speed pov */
@@ -534,11 +534,11 @@ abi_table_dispose (GObject *instance)
 // For some reason I get an alert
 	if(self->szTable) {
 		g_free(self->szTable);
-		self->szTable = NULL;
+		self->szTable = nullptr;
 	}
 	if(self->szCancel) {
 		g_free(self->szCancel);
-		self->szCancel = NULL;
+		self->szCancel = nullptr;
 	}
 
 	g_clear_object(&self->style_context);
@@ -559,7 +559,7 @@ abi_table_class_init (AbiTableClass *klass, gpointer)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (AbiTableClass, selected),
-			      NULL, NULL,
+			      nullptr, nullptr,
 			      g_cclosure_user_marshal_VOID__UINT_UINT,
 			      G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_UINT);
 }
@@ -569,7 +569,7 @@ abi_table_init (AbiTable* table, gpointer)
 {
 	char* text = g_strdup_printf("%d x %d ", init_rows, init_cols);
 
-	table->style_context = XAP_GtkStyle_get_style(NULL, "GtkTreeView.view"); // "textview.view"
+	table->style_context = XAP_GtkStyle_get_style(nullptr, "GtkTreeView.view"); // "textview.view"
 
 	table->button_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
@@ -581,8 +581,8 @@ abi_table_init (AbiTable* table, gpointer)
 	table->handlers = nullptr;
 	table->window_label = GTK_LABEL(gtk_label_new(text));
 	g_free(text);
-	table->szTable = NULL;
-	table->szCancel = NULL;
+	table->szTable = nullptr;
+	table->szCancel = nullptr;
 	gtk_container_add(GTK_CONTAINER(table->window), GTK_WIDGET(table->window_vbox));
 	gtk_box_pack_end(GTK_BOX(table->window_vbox), GTK_WIDGET(table->window_label), FALSE, FALSE, 0);
 	gtk_box_pack_end(GTK_BOX(table->window_vbox), GTK_WIDGET(table->area), TRUE, TRUE, 0);
@@ -597,7 +597,7 @@ abi_table_init (AbiTable* table, gpointer)
 
 	abi_table_resize(table);
 
-	table->icon = NULL;
+	table->icon = nullptr;
 
 	GdkPixbuf* pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)widget_tb_insert_table_xpm);
 	if (pixbuf) {
@@ -648,15 +648,15 @@ abi_table_get_type (void)
 		static const GTypeInfo info =
 			{
 				sizeof (AbiTableClass),
-				NULL,		/* base_init */
-				NULL,		/* base_finalize */
+				nullptr,		/* base_init */
+				nullptr,		/* base_finalize */
 				reinterpret_cast<GClassInitFunc>(abi_table_class_init),
-				NULL,		/* class_finalize */
-				NULL,		/* class_data */
+				nullptr,		/* class_finalize */
+				nullptr,		/* class_data */
 				sizeof (AbiTable),
 				0,		/* n_preallocs */
 				reinterpret_cast<GInstanceInitFunc>(abi_table_init),
-				NULL
+				nullptr
 			};
 
 		type = g_type_register_static (GTK_TYPE_BUTTON, "AbiTable", &info, static_cast<GTypeFlags>(0));
@@ -669,6 +669,6 @@ abi_table_get_type (void)
 abi_table_new (void)
 {
 	UT_DEBUGMSG(("COnstructing ABITABLE widget \n"));
-	return GTK_WIDGET (g_object_new (abi_table_get_type (), NULL));
+	return GTK_WIDGET (g_object_new (abi_table_get_type (), nullptr));
 }
 

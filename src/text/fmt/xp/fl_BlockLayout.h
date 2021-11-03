@@ -20,8 +20,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef FL_BLOCKLAYOUT_H
-#define FL_BLOCKLAYOUT_H
+#pragma once
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -155,7 +154,7 @@ public:
 	virtual void        updateLayout(bool /*bDoAll*/) override {}
 	virtual fp_Container* getNewContainer(const fp_Container* pCon = nullptr) override;
 	FV_View *		getView(void) const {
-		UT_return_val_if_fail( m_pLayout, NULL );
+		UT_return_val_if_fail( m_pLayout, nullptr );
 		return m_pLayout->getView();
 	}
 
@@ -204,7 +203,7 @@ public:
 	FL_ListType getListTypeFromStyle( const gchar * style) const;
 	fl_BlockLayout * getNextList(UT_uint32 id) const;
 	bool isListLabelInBlock(void) const;
-	void StartList( const gchar * style, pf_Frag_Strux* prevSDH = NULL);
+	void StartList( const gchar * style, pf_Frag_Strux* prevSDH = nullptr);
 
 	void StartList( FL_ListType lType, UT_uint32 start,
 					const gchar * lDelim, const gchar * lDecimal,
@@ -409,14 +408,14 @@ public:
 	void                   setLineHeightBlockWithBorders(int whichLine = 0);
 
 #ifdef ENABLE_SPELL
-	/** put in queue for spellchecking after prev. If prev == NULL is put at the head */
+	/** put in queue for spellchecking after prev. If prev == nullptr is put at the head */
 	void enqueueToSpellCheckAfter(fl_BlockLayout *prev);
 	/** remove from the spellchecking queue */
 	void dequeueFromSpellCheck(void);
 	/** call to clear the queue. Warning, you can mess up things */
 	void clearQueueing(void)
 	{
-		m_prevToSpell = m_nextToSpell = NULL;
+		m_prevToSpell = m_nextToSpell = nullptr;
 	}
 	fl_BlockLayout *nextToSpell(void) const
 	{
@@ -425,7 +424,7 @@ public:
 	/** return true if the block is queued */
 	bool isQueued(void) const
 	{
-		return (m_prevToSpell != NULL)
+		return (m_prevToSpell != nullptr)
 			|| (m_pLayout->spellQueueHead() == this);
 	}
 #endif
@@ -655,4 +654,3 @@ public:
 };
 #endif
 
-#endif /* FL_BLOCKLAYOUT_H */

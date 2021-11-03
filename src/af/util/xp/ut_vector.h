@@ -19,16 +19,9 @@
  * 02110-1301 USA.
  */
 
-#ifndef UTVECTOR_H
-#define UTVECTOR_H
+#pragma once
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 // ----------------------------------------------------------------
@@ -168,7 +161,7 @@ public:
  */
 template <class T>
 UT_GenericVector<T>::UT_GenericVector(UT_sint32 sizehint, UT_sint32 baseincr, bool bPrealoc)
-  : m_pEntries(NULL), m_iCount(0), m_iSpace(0),
+  : m_pEntries(nullptr), m_iCount(0), m_iSpace(0),
     m_iCutoffDouble(sizehint), m_iPostCutoffIncrement(baseincr)
 {
 	if(bPrealoc)
@@ -177,7 +170,7 @@ UT_GenericVector<T>::UT_GenericVector(UT_sint32 sizehint, UT_sint32 baseincr, bo
 
 template <class T>
 UT_GenericVector<T>::UT_GenericVector(const UT_GenericVector<T>& utv)
-  : m_pEntries(NULL), m_iCount(0), m_iSpace(0),
+  : m_pEntries(nullptr), m_iCount(0), m_iSpace(0),
   m_iCutoffDouble(utv.m_iCutoffDouble),
   m_iPostCutoffIncrement(utv.m_iPostCutoffIncrement)
 {
@@ -476,6 +469,3 @@ const T UT_GenericVector<T>::operator[](UT_sint32 i) const
 {
 	return this->getNthItem(i);
 }
-
-
-#endif /* UTVECTOR_H */

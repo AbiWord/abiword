@@ -93,7 +93,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
                                                     GTK_DIALOG_DESTROY_WITH_PARENT,
                                                     convertMnemonics(s).c_str(),
                                                     GTK_RESPONSE_NONE,
-                                                    NULL);
+                                                    nullptr);
         GtkWidget* w = GTK_WIDGET(c->createEditor());
         g_object_set_data_full( G_OBJECT(w),
                                 G_OBJECT_SEMITEM,
@@ -126,7 +126,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
                                                     GTK_DIALOG_DESTROY_WITH_PARENT,
                                                     convertMnemonics(s).c_str(),
                                                     GTK_RESPONSE_NONE,
-                                                    NULL);
+                                                    nullptr);
         GtkNotebook* notebook = GTK_NOTEBOOK(gtk_notebook_new());
         gtk_container_add( GTK_CONTAINER(gtk_dialog_get_content_area( GTK_DIALOG (d))),
                            GTK_WIDGET(notebook) );

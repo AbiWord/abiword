@@ -58,7 +58,7 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									  const PP_AttrProp * pSectionAP,
 									  GR_Graphics * pG)
 {
-	if(pG == NULL)
+	if(pG == nullptr)
 	{
 		pG = getGraphics();
 	}
@@ -198,7 +198,7 @@ void fp_DummyRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									  const PP_AttrProp * pSectionAP,
 									  GR_Graphics * pG)
 {
-	if(pG == NULL)
+	if(pG == nullptr)
 	{
 		pG = getGraphics();
 	}

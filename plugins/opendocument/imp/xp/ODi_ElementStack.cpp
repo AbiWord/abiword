@@ -33,7 +33,7 @@
  * Constructor
  */
 ODi_ElementStack::ODi_ElementStack() :
-                   m_pStartTags(NULL),
+                   m_pStartTags(nullptr),
                    m_stackSize(0) {
             
 }
@@ -56,7 +56,7 @@ ODi_ElementStack::~ODi_ElementStack() {
 void ODi_ElementStack::startElement (const gchar* pName,
                                                  const gchar** ppAtts) {
 
-    ODi_StartTag* pStartTag = NULL;
+    ODi_StartTag* pStartTag = nullptr;
 
     if (!m_pStartTags) {
         m_pStartTags = new UT_GenericVector <ODi_StartTag*> (10, 10);
@@ -86,7 +86,7 @@ void ODi_ElementStack::startElement (const gchar* pName,
  * class.
  */
 void ODi_ElementStack::endElement (const gchar* /*pName*/) {
-    UT_ASSERT(m_pStartTags != NULL);
+    UT_ASSERT(m_pStartTags != nullptr);
     UT_return_if_fail(m_stackSize > 0);
     m_stackSize--;
 }
@@ -108,10 +108,10 @@ const ODi_StartTag* ODi_ElementStack::getStartTag(UT_sint32 level) {
             // level max is m_pStartTags[0]
             return (*m_pStartTags)[m_stackSize - (level+1)];
         } else {
-            return NULL;
+            return nullptr;
         }
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -137,7 +137,7 @@ bool ODi_ElementStack::hasElement(const gchar* pName) const {
 
 
 /**
- * Returns the closest parent with the given name. It returns NULL if there
+ * Returns the closest parent with the given name. It returns nullptr if there
  * is no parent with the given name.
  * 
  * @param pName Element name.
@@ -164,7 +164,7 @@ const ODi_StartTag* ODi_ElementStack::getClosestElement(
     }
     
     // Nothing was found.
-    return NULL;
+    return nullptr;
 }
 
 

@@ -158,10 +158,10 @@ public:
 	fp_Run* 		        getNextRun() const					{ return m_pNext; }
 	fp_Run*			        getPrevRun() const					{ return m_pPrev; }
 	bool isInSelectedTOC(void) const;
-	virtual fp_ContainerObject * getNext(void) const override { return NULL;}
-	virtual fp_ContainerObject * getPrev(void) const override { return NULL;}
-	virtual fp_Container *       getNextContainerInSection(void) const override { return NULL;}
-	virtual fp_Container *       getPrevContainerInSection(void) const override { return NULL;}
+	virtual fp_ContainerObject * getNext(void) const override { return nullptr;}
+	virtual fp_ContainerObject * getPrev(void) const override { return nullptr;}
+	virtual fp_Container *       getNextContainerInSection(void) const override { return nullptr;}
+	virtual fp_Container *       getPrevContainerInSection(void) const override { return nullptr;}
 	virtual void                 setNext(fp_ContainerObject * /*pNull*/) override {}
 	virtual void                 setPrev(fp_ContainerObject * /*pNull*/) override {}
 	virtual void                 draw(GR_Graphics * /*pG*/) override {}
@@ -185,7 +185,7 @@ public:
 	void				insertIntoRunListBeforeThis(fp_Run& newRun);
 	void				insertIntoRunListAfterThis(fp_Run& newRun);
 	fd_Field*			getField(void) const { return m_pField; }
-	bool				isField(void) const { return (bool) (m_pField != NULL); }
+	bool				isField(void) const { return (bool) (m_pField != nullptr); }
 	void				unlinkFromRunList();
 
 	const UT_RGBColor 	getFGColor(void) const;
@@ -226,8 +226,8 @@ public:
 	virtual bool        isHBreakable(void) override {return false;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32 i) override {return i;}
 	virtual UT_sint32   wantHBreakAt(UT_sint32 i) override {return i;}
-	virtual fp_ContainerObject * VBreakAt(UT_sint32) override { return NULL;}
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) override { return NULL;}
+	virtual fp_ContainerObject * VBreakAt(UT_sint32) override { return nullptr;}
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) override { return nullptr;}
 
 	void				markAsDirty(void);
 	void                setCleared(void);
@@ -260,7 +260,7 @@ public:
 										UT_sint32& x2, UT_sint32& y2, UT_sint32& height,
 										bool& bDirection) = 0;
 
-	void			    lookupProperties(GR_Graphics * pG=NULL);
+	void			    lookupProperties(GR_Graphics * pG=nullptr);
 	virtual bool		doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
 	void                drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG);
 	virtual bool		isSuperscript(void) const { return false; }
@@ -423,7 +423,7 @@ protected:
 	virtual void	    _lookupProperties(const PP_AttrProp * pSpanAP,
 										  const PP_AttrProp * pBlockAP,
 										  const PP_AttrProp * pSectionAP,
-										  GR_Graphics * pG = NULL) = 0;
+										  GR_Graphics * pG = nullptr) = 0;
 
 	virtual bool        _canContainPoint(void) const;
 	virtual bool        _letPointPass(void) const;
@@ -534,7 +534,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual bool			_letPointPass(void) const override;
 
@@ -560,7 +560,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void			_draw(dg_DrawArgs*) override;
 	virtual void			_clearScreen(bool bFullLineHeightRect) override;
@@ -580,7 +580,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void			_draw(dg_DrawArgs*) override;
 	virtual void			_clearScreen(bool bFullLineHeightRect) override;
@@ -600,7 +600,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void			_draw(dg_DrawArgs*) override;
 	virtual void			_clearScreen(bool bFullLineHeightRect) override;
@@ -621,7 +621,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void			_draw(dg_DrawArgs*) override;
 	virtual void			_clearScreen(bool bFullLineHeightRect) override;
@@ -642,7 +642,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void			_draw(dg_DrawArgs*) override;
 	virtual void			_clearScreen(bool bFullLineHeightRect) override;
@@ -668,7 +668,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void			_draw(dg_DrawArgs*) override;
 	virtual void       		_clearScreen(bool bFullLineHeightRect) override;
@@ -721,7 +721,7 @@ private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void _clearScreen(bool /* bFullLineHeightRect */) override;
 	virtual void _draw(dg_DrawArgs* /*pDA */) override;
@@ -773,7 +773,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void _clearScreen(bool /* bFullLineHeightRect */) override;
 	virtual void _draw(dg_DrawArgs* /*pDA */) override;
@@ -810,7 +810,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void			_draw(dg_DrawArgs*) override;
 	virtual void			_clearScreen(bool bFullLineHeightRect) override;
@@ -917,7 +917,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void			_draw(dg_DrawArgs*) override {};
 	virtual void			_defaultDraw(dg_DrawArgs*);
@@ -1579,7 +1579,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	virtual void			_draw(dg_DrawArgs*) override;
 	virtual void			_clearScreen(bool bFullLineHeightRect) override;

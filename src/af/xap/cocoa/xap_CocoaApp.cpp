@@ -69,9 +69,9 @@ XAP_CocoaApp::XAP_CocoaApp(const char* szAppName, const char* /*app_id*/)
     : XAP_App(szAppName)
     , m_dialogFactory(new AP_CocoaDialogFactory(this))
     , m_controlFactory(new AP_CocoaToolbar_ControlFactory)
-    , m_pCocoaMenu(NULL)
-    , m_szMenuLayoutName(NULL)
-    , m_szMenuLabelSetName(NULL)
+    , m_pCocoaMenu(nullptr)
+    , m_szMenuLayoutName(nullptr)
+    , m_szMenuLabelSetName(nullptr)
     , m_priv(new Priv)
 {
     m_pCocoaToolbarIcons = 0;
@@ -224,7 +224,7 @@ const char* XAP_CocoaApp::getUserPrivateDirectory() const
     }
 
     if (strlen(szHome) + strlen(szAbiDir) + 2 >= PATH_MAX)
-        return NULL;
+        return nullptr;
 
     strcpy(upd_buffer, szHome);
     strcat(upd_buffer, "/");
@@ -359,7 +359,7 @@ void XAP_CocoaApp::setTimeOfLastEvent(NSTimeInterval timestamp)
 
 XAP_Frame* XAP_CocoaApp::_getFrontFrame(void)
 {
-    XAP_Frame* myFrame = NULL;
+    XAP_Frame* myFrame = nullptr;
     NSArray* array = [NSApp orderedWindows];
 
     NSEnumerator* e = [array objectEnumerator];

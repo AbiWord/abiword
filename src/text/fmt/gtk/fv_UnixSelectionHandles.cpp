@@ -51,7 +51,7 @@ static void handle_dragged_cb (FvTextHandle         *handle,
 
 FV_UnixSelectionHandles::FV_UnixSelectionHandles(FV_View *view, FV_Selection selection)
 	: FV_SelectionHandles (view, selection)
-	, m_text_handle(NULL)
+	, m_text_handle(nullptr)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(m_pView->getParentData());
 	// When saving to PDF (and printing) we don't have a frame

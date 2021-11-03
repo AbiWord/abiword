@@ -49,19 +49,19 @@ ODe_Style_MasterPage::ODe_Style_MasterPage (const gchar* pName,
  * Destructor
  */
 ODe_Style_MasterPage::~ODe_Style_MasterPage() {
-    if (m_pHeaderContentTemp != NULL) {
+    if (m_pHeaderContentTemp != nullptr) {
         ODe_gsf_output_close(m_pHeaderContentTemp);
     }
  
-    if (m_pHeaderEvenContentTemp != NULL) {
+    if (m_pHeaderEvenContentTemp != nullptr) {
         ODe_gsf_output_close(m_pHeaderEvenContentTemp);
     }
 
-    if (m_pFooterContentTemp != NULL) {
+    if (m_pFooterContentTemp != nullptr) {
         ODe_gsf_output_close(m_pFooterContentTemp);
     }
 
-    if (m_pFooterEvenContentTemp != NULL) {
+    if (m_pFooterEvenContentTemp != nullptr) {
         ODe_gsf_output_close(m_pFooterEvenContentTemp);
     }
 }
@@ -75,22 +75,22 @@ void ODe_Style_MasterPage::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     bool ok;
     
     ok = pAP->getAttribute("header", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_abiHeaderId = pValue;
     }
 
     ok = pAP->getAttribute("header-even", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_abiHeaderEvenId = pValue;
     }
 
     ok = pAP->getAttribute("footer", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_abiFooterId = pValue;
     }
 
     ok = pAP->getAttribute("footer-even", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_abiFooterEvenId = pValue;
     }
 }

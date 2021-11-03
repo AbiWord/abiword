@@ -96,7 +96,7 @@ void GR_UnixCroppedImage::crop(double left, double top, double right, double bot
  * reference count on the GdkPixbuf's and keep the liberal asserts I've placed.
  */
 GR_UnixImage::GR_UnixImage(const char* szName)
-  : m_image(NULL)
+  : m_image(nullptr)
 {
   if (szName)
   {
@@ -127,7 +127,7 @@ GR_UnixImage::GR_UnixImage(const char* szName,GdkPixbuf * pPixbuf )
 
 
 GR_UnixImage::GR_UnixImage(const char* szName, GR_Image::GRType imageType)
-  : m_image(NULL)
+  : m_image(nullptr)
 {
   if (szName)
   {
@@ -142,7 +142,7 @@ GR_UnixImage::GR_UnixImage(const char* szName, GR_Image::GRType imageType)
 
 GR_UnixImage::~GR_UnixImage()
 {
-	if(m_image != NULL)
+	if(m_image != nullptr)
 	{
 		UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 		g_object_unref(G_OBJECT(m_image));
@@ -159,15 +159,15 @@ GR_UnixImage *GR_UnixImage::makeSubimage(const std::string & name,
                            UT_sint32 x, UT_sint32 y,
                            UT_sint32 width, UT_sint32 height) const
 {
-    if(m_image == NULL)
-	    return NULL;
+    if(m_image == nullptr)
+	    return nullptr;
 	GR_UnixCroppedImage * pImage = new GR_UnixCroppedImage(name.c_str());
 
     pImage->m_image = gdk_pixbuf_copy(m_image);
-	if (pImage->m_image == NULL)
+	if (pImage->m_image == nullptr)
 	{
 		delete pImage;
-		return NULL;
+		return nullptr;
 	}
 	pImage->setDisplaySize (getDisplayWidth(), getDisplayHeight());
 
@@ -219,14 +219,14 @@ bool  GR_UnixImage::convertToBuffer(UT_ConstByteBufPtr & pBB) const
 
   if (pixels)
   {
-    GError    * error =NULL;
+    GError    * error =nullptr;
     UT_ByteBufPtr bb(new UT_ByteBuf);
     gdk_pixbuf_save_to_callback(m_image,
 				convCallback,
 				reinterpret_cast<gpointer>(bb.get()),
 				"png",
-				&error,NULL,NULL);
-    if(error != NULL)
+				&error,nullptr,nullptr);
+    if(error != nullptr)
       {
 	g_error_free (error);
       }
@@ -241,8 +241,8 @@ bool GR_UnixImage::saveToPNG(const char * szFile)
 {
         UT_return_val_if_fail(m_image,false);
 
-	GError * error = NULL;
-	gboolean res = gdk_pixbuf_save (m_image, szFile, "png", &error, NULL);
+	GError * error = nullptr;
+	gboolean res = gdk_pixbuf_save (m_image, szFile, "png", &error, nullptr);
 	if (res != FALSE) {
 		if (error) {
 			g_error_free (error);
@@ -349,19 +349,19 @@ bool GR_UnixImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
 	
 	if ( !gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),static_cast<gsize>(pBB->getLength ()), &err) )
 	{
-		if(err != NULL)
+		if(err != nullptr)
 		{
 			UT_DEBUGMSG(("DOM: couldn't write to loader:%s \n", err->message));
 			g_error_free(err);
 		}
-		gdk_pixbuf_loader_close (ldr, NULL);
+		gdk_pixbuf_loader_close (ldr, nullptr);
 		g_object_unref(G_OBJECT(ldr));
 		return false;
 	}
 
 	if ( !gdk_pixbuf_loader_close (ldr, &err) )
 	{
-		if(err != NULL)
+		if(err != nullptr)
 		{
 			UT_DEBUGMSG(("DOM: couldn't close loader:%s \n", err->message));
 			g_error_free(err);
@@ -378,7 +378,7 @@ bool GR_UnixImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
 	if (!m_image)
 	{
 		UT_DEBUGMSG (("GdkPixbuf: couldn't get image from loader!\n"));
-		gdk_pixbuf_loader_close (ldr, NULL);
+		gdk_pixbuf_loader_close (ldr, nullptr);
 		g_object_unref(G_OBJECT(ldr));
 		return false;
 	}

@@ -417,7 +417,7 @@ private:
 	// UT_GenericVector<fl_BlockLayout *> m_vecUncheckedBlocks;
 	fl_BlockLayout      *m_toSpellCheckHead;
 	fl_BlockLayout      *m_toSpellCheckTail;
-	const fl_BlockLayout*		m_pPendingBlockForSpell;	// if NULL, then ignore m_pPendingWordForSpell
+	const fl_BlockLayout*		m_pPendingBlockForSpell;	// if nullptr, then ignore m_pPendingWordForSpell
 	fl_PartOfBlockPtr		m_pPendingWordForSpell;
 	bool				m_bSpellCheckCaps;
 	bool				m_bSpellCheckNumbers;
@@ -427,7 +427,7 @@ private:
 	bool                         m_bStopSpellChecking; // Handshaking
 	bool                         m_bImSpellCheckingNow; // Variables
 	// smart quote latent instance
-	fl_BlockLayout*		m_pPendingBlockForSmartQuote;  // if NULL, ignore m_uOffsetForSmartQuote
+	fl_BlockLayout*		m_pPendingBlockForSmartQuote;  // if nullptr, ignore m_uOffsetForSmartQuote
 	UT_uint32           m_uOffsetForSmartQuote;
 	char                m_szCurrentTransparentColor[10];
 	UT_Worker*			m_pBackgroundCheckTimer;

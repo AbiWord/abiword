@@ -90,7 +90,7 @@ void ODi_StylesStream_ListenerState::startElement (const gchar* pName,
 
     } else if (!strcmp (pName, "style:style")) {
 
-        ODi_ListenerState* pStyle=NULL;
+        ODi_ListenerState* pStyle=nullptr;
 
         pStyle = m_pStyles->addStyle(ppAtts, m_rElementStack,m_rAbiData);
         
@@ -143,9 +143,9 @@ void ODi_StylesStream_ListenerState::startElement (const gchar* pName,
       //
       // Need to add the Heading style name to the attributes list
       //
-      ODi_ListenerState* pStyle=NULL;
+      ODi_ListenerState* pStyle=nullptr;
       UT_sint32 icnt = 0;
-      for(icnt=0; ppAtts[icnt] != NULL;icnt++);
+      for(icnt=0; ppAtts[icnt] != nullptr;icnt++);
       const gchar ** ppExtra = new const gchar*[icnt+3];
       UT_sint32 i = 0;
       UT_UTF8String sLName="BaseHeading";
@@ -155,7 +155,7 @@ void ODi_StylesStream_ListenerState::startElement (const gchar* pName,
       }
       ppExtra[i++] = "style:name";
       ppExtra[i++] = sLName.utf8_str();
-      ppExtra[i] = NULL;
+      ppExtra[i] = nullptr;
       pStyle = m_pStyles->addList(ppExtra, m_rElementStack);
       delete [] ppExtra;
       rAction.pushState(pStyle, false);

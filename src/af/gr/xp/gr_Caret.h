@@ -56,7 +56,7 @@ public:
 	// and the timer restarts from 0 for the next 500ms cycle.
 	void							setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 										   UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0,
-				 						  bool bPointDirection = false, const UT_RGBColor * pClr = NULL);
+										  bool bPointDirection = false, const UT_RGBColor * pClr = nullptr);
 
 	// The caret needs to know about this to clip the save/restore rects.
 	void setWindowSize(UT_uint32 width, UT_uint32 height);

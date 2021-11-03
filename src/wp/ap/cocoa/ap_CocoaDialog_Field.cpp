@@ -121,7 +121,7 @@ void AP_CocoaDialog_Field::event_OK(void)
 
 	fp_FieldTypesEnum FType = fp_FieldTypes[m_iTypeIndex].m_Type;
 
-	for (int i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) {
+	for (int i = 0; fp_FieldFmts[i].m_Tag != nullptr; i++) {
 		if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch ) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref  ) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
@@ -171,7 +171,7 @@ void AP_CocoaDialog_Field::setTypesList(void)
 
 	[m_typeList removeAllStrings];
 
-	for (int i = 0; fp_FieldTypes[i].m_Desc != NULL; i++) {
+	for (int i = 0; fp_FieldTypes[i].m_Desc != nullptr; i++) {
 		[m_typeList addString:[NSString stringWithUTF8String:fp_FieldTypes[i].m_Desc]];
 	}
 	
@@ -186,7 +186,7 @@ void AP_CocoaDialog_Field::setFieldsList(void)
 
 	[m_fieldList removeAllStrings];
 
-	for (int i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) {
+	for (int i = 0; fp_FieldFmts[i].m_Tag != nullptr; i++) {
 		if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch ) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref  ) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
@@ -206,7 +206,7 @@ void AP_CocoaDialog_Field::setFieldsList(void)
 - (id)initFromNib
 {
 	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Field"]) {
-		_xap = NULL;
+		_xap = nullptr;
 	}
 	return self;
 }

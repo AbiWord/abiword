@@ -57,7 +57,7 @@ bool  IE_Imp_PasteListener::populate(fl_ContainerLayout* /* sfh */,
 					 const PX_ChangeRecord * pcr)
 {
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
-	const PP_AttrProp* pAP = NULL;
+	const PP_AttrProp* pAP = nullptr;
 	UT_DEBUGMSG(("SEVIOR: Doing Populate Section in PasteListener \n"));
 	PP_PropertyVector atts;
 	PP_PropertyVector props;
@@ -117,7 +117,7 @@ bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* sdh,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
-	const PP_AttrProp* pAP = NULL;
+	const PP_AttrProp* pAP = nullptr;
 	UT_DEBUGMSG(("SEVIOR: Doing Populate Strux in PasteListener \n"));
 	PP_PropertyVector atts;
 	PP_PropertyVector props;
@@ -142,9 +142,9 @@ bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* sdh,
 //
 // Now these can be found via the properties of the spans and strux's
 //
-			PD_DataItemHandle pHandle = NULL;
+			PD_DataItemHandle pHandle = nullptr;
 			std::string mimeType;
-			const char * szName= NULL;
+			const char * szName= nullptr;
 			UT_ConstByteBufPtr pBuf;
 			UT_sint32 k = 0;
 			while (m_pSourceDoc->enumDataItems(k, &pHandle, &szName, pBuf, &mimeType))

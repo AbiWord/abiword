@@ -56,7 +56,7 @@ ODe_Note_Listener::ODe_Note_Listener(ODe_Styles& rStyles,
 void ODe_Note_Listener::openFootnote(const PP_AttrProp* pAP,
                                      ODe_ListenerAction& rAction) {
     bool ok;
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     UT_UTF8String str;
     
     ok = pAP->getAttribute("footnote-id", pValue);
@@ -80,7 +80,7 @@ void ODe_Note_Listener::closeFootnote(ODe_ListenerAction& rAction) {
 void ODe_Note_Listener::openEndnote(const PP_AttrProp* pAP,
                                     ODe_ListenerAction& rAction) {
     bool ok;
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     UT_UTF8String str;
     
     ok = pAP->getAttribute("endnote-id", pValue);

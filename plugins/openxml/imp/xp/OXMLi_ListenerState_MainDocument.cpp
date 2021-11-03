@@ -47,7 +47,7 @@ OXMLi_ListenerState_MainDocument::~OXMLi_ListenerState_MainDocument()
 
 void OXMLi_ListenerState_MainDocument::startElement (OXMLi_StartElementRequest * rqst)
 {
-	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
+	UT_return_if_fail( this->_error_if_fail(rqst != nullptr) );
 
 	if (nameMatches(rqst->pName, NS_W_KEY, "body")) {
 		//This signals the start of the first section.
@@ -117,7 +117,7 @@ void OXMLi_ListenerState_MainDocument::startElement (OXMLi_StartElementRequest *
 
 void OXMLi_ListenerState_MainDocument::endElement (OXMLi_EndElementRequest * rqst)
 {
-	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
+	UT_return_if_fail( this->_error_if_fail(rqst != nullptr) );
 
 	if (nameMatches(rqst->pName, NS_W_KEY, "body")) {
 		//end of the body, append all sections one by one in reverse order
@@ -132,7 +132,7 @@ void OXMLi_ListenerState_MainDocument::endElement (OXMLi_EndElementRequest * rqs
 			OXML_SharedSection sect = reversedStck.top();
 			reversedStck.pop();
 			OXML_Document * doc = OXML_Document::getInstance();
-			UT_return_if_fail(_error_if_fail(doc != NULL)); 
+			UT_return_if_fail(_error_if_fail(doc != nullptr));
 			UT_return_if_fail(_error_if_fail( UT_OK == doc->appendSection(sect) )); 
 		}
 		rqst->handled = true;

@@ -160,7 +160,7 @@ IE_Exp_Applix::IE_Exp_Applix(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
 	m_error = 0;
-	m_pListener = NULL;
+	m_pListener = nullptr;
 }
 
 IE_Exp_Applix::~IE_Exp_Applix()

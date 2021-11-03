@@ -46,7 +46,7 @@ EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage_)
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
 	EV_Toolbar_LabelSet * pLabelSet = new EV_Toolbar_LabelSet(szLanguage,AP_TOOLBAR_ID__BOGUS1__,AP_TOOLBAR_ID__BOGUS2__);
-	pLabelSet->setLabel(0 /*AP_TOOLBAR_ID_BOGUS1__*/, NULL, "NoIcon", NULL, NULL);
+	pLabelSet->setLabel(0 /*AP_TOOLBAR_ID_BOGUS1__*/, nullptr, "NoIcon", nullptr, nullptr);
 
 	UT_String iconname;
 	

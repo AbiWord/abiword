@@ -444,7 +444,7 @@ AP_UnixDialog_PageSetup::static_constructor(XAP_DialogFactory * pFactory,
 
 AP_UnixDialog_PageSetup::AP_UnixDialog_PageSetup (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id) 
 	: AP_Dialog_PageSetup (pDlgFactory, id),
-    m_pBuilder(NULL),
+    m_pBuilder(nullptr),
     m_PageSize(fp_PageSize::psLetter)
 {
 	// nada
@@ -508,7 +508,7 @@ void AP_UnixDialog_PageSetup::_connectSignals (void)
 
 GtkWidget * AP_UnixDialog_PageSetup::_getWidget(const char * szNameBase, UT_sint32 iLevel)
 {
-	UT_return_val_if_fail(m_pBuilder, NULL);
+	UT_return_val_if_fail(m_pBuilder, nullptr);
 
 	UT_String sLocal = szNameBase;
 	if(iLevel > 0)
@@ -521,7 +521,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_getWidget(const char * szNameBase, UT_sint
 
 void Markup(GtkWidget * widget, const XAP_StringSet * /*pSS*/, char *string)
 {
-	gchar * unixstr = NULL;	// used for conversions
+	gchar * unixstr = nullptr;	// used for conversions
 	UT_XML_cloneNoAmpersands(unixstr, string);
 	UT_String markupStr(UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), unixstr));
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());

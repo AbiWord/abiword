@@ -56,12 +56,12 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 		} else if (nameMatches(rqst->pName, NS_A_KEY, "prstClr")) {
 			//parse preset color
 			const gchar * val = attrMatches(NS_A_KEY, "val", rqst->ppAtts);
-			UT_return_if_fail( this->_error_if_fail(val != NULL) );
+			UT_return_if_fail( this->_error_if_fail(val != nullptr) );
 			color = _getHexFromPreset(val);
 		} else if (nameMatches(rqst->pName, NS_A_KEY, "schemeClr")) {
 			//parse scheme color
 			const gchar * val = attrMatches(NS_A_KEY, "val", rqst->ppAtts);
-			UT_return_if_fail( this->_error_if_fail(val != NULL) );
+			UT_return_if_fail( this->_error_if_fail(val != nullptr) );
 			if (!strcmp(val, "lt1")) { color = m_theme->getColor(LIGHT1);
 			} else if (!strcmp(val, "lt2")) { color = m_theme->getColor(LIGHT2);
 			} else if (!strcmp(val, "dk1")) { color = m_theme->getColor(DARK1);
@@ -80,7 +80,7 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 			const gchar * r = attrMatches(NS_A_KEY, "r", rqst->ppAtts);
 			const gchar * g = attrMatches(NS_A_KEY, "g", rqst->ppAtts);
 			const gchar * b = attrMatches(NS_A_KEY, "b", rqst->ppAtts);
-			UT_return_if_fail( this->_error_if_fail(r != NULL && g != NULL && b != NULL ));
+			UT_return_if_fail( this->_error_if_fail(r != nullptr && g != nullptr && b != nullptr ));
 			char dR, dG, dB; //test these conversions for data loss
 			dR = 255 * (UT_convertDimensionless(r) / 100000);
 			dG = 255 * (UT_convertDimensionless(g) / 100000);
@@ -88,19 +88,19 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 
 			UT_HashColor conv;
 			const gchar * result = conv.setColor(dR, dG, dB);
-			UT_ASSERT(result != NULL);
+			UT_ASSERT(result != nullptr);
 			color = result;
 
 		} else if (nameMatches(rqst->pName, NS_A_KEY, "srgbClr")) {
 			//parse RGB color, hex variant
 			const gchar * val = attrMatches(NS_A_KEY, "val", rqst->ppAtts);
-			UT_return_if_fail( this->_error_if_fail(val != NULL) );
+			UT_return_if_fail( this->_error_if_fail(val != nullptr) );
 			color = "#";
 			color += val;
 		} else if (nameMatches(rqst->pName, NS_A_KEY, "sysClr")) {
 			//parse system color; for now we only worry about last computed color.
 			const gchar * hexVal = attrMatches(NS_A_KEY, "lastClr", rqst->ppAtts);
-			if(hexVal != NULL) {
+			if(hexVal != nullptr) {
 				color = "#";
 				color += hexVal;
 			}
@@ -143,9 +143,9 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 				nameMatches(rqst->pName, NS_A_KEY, "cs") ||
 				nameMatches(rqst->pName, NS_A_KEY, "font") ) {
 		const gchar * typeface = attrMatches(NS_A_KEY, "typeface", rqst->ppAtts);
-		UT_return_if_fail( this->_error_if_fail(typeface != NULL) );
+		UT_return_if_fail( this->_error_if_fail(typeface != nullptr) );
 
-		const gchar * script = NULL;
+		const gchar * script = nullptr;
 		if ( nameMatches(rqst->pName, NS_A_KEY, "latin")) {
 			script = "latin";
 		} else if ( nameMatches(rqst->pName, NS_A_KEY, "ea")) {
@@ -154,7 +154,7 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 			script = "cs";
 		} else {
 			script = attrMatches(NS_A_KEY, "script", rqst->ppAtts);
-			UT_return_if_fail( this->_error_if_fail(script != NULL) );
+			UT_return_if_fail( this->_error_if_fail(script != nullptr) );
 		}
 		//TODO: check for unicode compatibility for typeface name
 		std::string contextTag = rqst->context->back();
@@ -200,11 +200,11 @@ void OXMLi_ListenerState_Theme::charData (OXMLi_CharDataRequest * /*rqst*/)
 
 UT_Error OXMLi_ListenerState_Theme::_initializeTheme()
 {
-	if (m_theme.get() == NULL) {
+	if (m_theme.get() == nullptr) {
 		OXML_Document * doc = OXML_Document::getInstance();
-		UT_return_val_if_fail(_error_if_fail(doc != NULL), UT_ERROR);
+		UT_return_val_if_fail(_error_if_fail(doc != nullptr), UT_ERROR);
 		m_theme = doc->getTheme();
-		UT_return_val_if_fail(_error_if_fail(m_theme.get() != NULL), UT_ERROR);
+		UT_return_val_if_fail(_error_if_fail(m_theme.get() != nullptr), UT_ERROR);
 	}
 	return UT_OK;
 }
@@ -230,7 +230,7 @@ std::string OXMLi_ListenerState_Theme::_getHexFromPreset(std::string preset)
 	//Get the hex value and return as string
 	UT_HashColor conv;
 	const gchar * ret = conv.lookupNamedColor(preset.c_str());
-	UT_ASSERT(ret != NULL);
-	return ret != NULL ? ret : "#000000";
+	UT_ASSERT(ret != nullptr);
+	return ret != nullptr ? ret : "#000000";
 }
 

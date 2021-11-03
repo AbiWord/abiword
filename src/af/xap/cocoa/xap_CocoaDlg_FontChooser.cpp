@@ -51,7 +51,7 @@ XAP_CocoaDialog_FontChooser::XAP_CocoaDialog_FontChooser(XAP_DialogFactory * pDl
 	XAP_Dialog_FontChooser(pDlgFactory,dlgid),
 	m_bSuperScriptInitialValue(false),
 	m_bSubScriptInitialValue(false),
-	m_currentFamily(NULL),
+	m_currentFamily(nullptr),
 	m_dlg(nil)
 {
 	// 
@@ -366,7 +366,7 @@ void	XAP_CocoaDialog_FontChooser::_createGC(XAP_CocoaNSView* owner)
 void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 {
 	DELETEP(m_pGraphics);
-	m_pGraphics = NULL;
+	m_pGraphics = nullptr;
 }
 
 @implementation XAP_CocoaDialog_FontChooserController
@@ -380,7 +380,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 {
 	if (_xap) {
 		_xap->_deleteGC();
-		_xap = NULL;
+		_xap = nullptr;
 	}
 }
 
@@ -449,7 +449,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 					[m_sizeDataSource addString:[NSString stringWithUTF8String:str]];
 				}
 				else {
-					NSLog(@"attempting to add NULL to string data source (%s:%d)", __FILE__, __LINE__);
+					NSLog(@"attempting to add nullptr to string data source (%s:%d)", __FILE__, __LINE__);
 				}
 			}
 		}
@@ -584,7 +584,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 		}
 	}
 	else {
-		UT_DEBUGMSG(("selectFont: called with NULL value\n"));
+		UT_DEBUGMSG(("selectFont: called with nullptr value\n"));
 		[_fontList setAllowsEmptySelection:YES];
 		[_fontList deselectAll:nil];
 		return;
@@ -605,8 +605,8 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 	int idx;
 	char sizeString[60];
 
-	if (value == NULL) {
-		UT_DEBUGMSG(("selectSize: called with NULL value\n"));
+	if (value == nullptr) {
+		UT_DEBUGMSG(("selectSize: called with nullptr value\n"));
 		[_sizeList setAllowsEmptySelection:YES];
 		[_sizeList deselectAll:nil];
 		return;

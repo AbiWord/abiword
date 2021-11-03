@@ -118,7 +118,7 @@ void AP_Win32Dialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 		setDialogTitle(m_WindowName);
 
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
@@ -128,14 +128,14 @@ void AP_Win32Dialog_Replace::notifyCloseFrame(XAP_Frame *pFrame)
 	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, 0);
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
 
 void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 {
-	LPCWSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = nullptr;
 	if (m_id == AP_DIALOG_ID_REPLACE)
 		lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_REPLACE);
 	else if (m_id == AP_DIALOG_ID_FIND)
@@ -261,14 +261,14 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPara
 		{
 		bool currentVal = (IsDlgButtonChecked(hWnd,AP_RID_DIALOG_REPLACE_CHECK_REVERSEFIND)==BST_CHECKED);
 		setReverseFind(currentVal);
-		
-		if (!m_pView->isSelectionEmpty()) 
+
+		if (!m_pView->isSelectionEmpty())
 		{
 		// if there's a selection, clear it
 			UT_UCS4Char * pSelection;
 			m_pView->getSelectionText(pSelection);
-			
-			if ( pSelection != NULL) 
+
+			if ( pSelection != nullptr)
 			{
 				PT_DocPosition pt = m_pView->getSelectionAnchor();
 				PT_DocPosition ln = UT_UCS4_strlen (pSelection);
@@ -311,9 +311,9 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPara
 
 BOOL AP_Win32Dialog_Replace::_onBtn_Find(HWND hWnd, tFindType tFindType)
 {
-	wchar_t * pBufFromDialogFind = NULL;
-	wchar_t * pBufFromDialogReplace = NULL;
-	UT_UCSChar * pUCSReplace = NULL;
+	wchar_t * pBufFromDialogFind = nullptr;
+	wchar_t * pBufFromDialogReplace = nullptr;
+	UT_UCSChar * pUCSReplace = nullptr;
     UT_Win32LocaleString findstr;    
     UT_Win32LocaleString replacestr;
 

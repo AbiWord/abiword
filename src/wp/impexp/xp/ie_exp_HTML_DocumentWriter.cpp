@@ -44,7 +44,7 @@ void IE_Exp_HTML_DocumentWriter::openSpan(const gchar *szStyleName,
 	const UT_UTF8String& style)
 {
     m_pTagWriter->openTag("span", true);
-    _handleStyleAndId(szStyleName, NULL, style.utf8_str());
+    _handleStyleAndId(szStyleName, nullptr, style.utf8_str());
 }
 
 void IE_Exp_HTML_DocumentWriter::closeSpan()
@@ -56,7 +56,7 @@ void IE_Exp_HTML_DocumentWriter::openBlock(const gchar* szStyleName,
 										   const UT_UTF8String& style, const PP_AttrProp * /*pAP*/)
 {
     m_pTagWriter->openTag("p", true);
-    _handleStyleAndId(szStyleName, NULL, style.utf8_str());
+    _handleStyleAndId(szStyleName, nullptr, style.utf8_str());
 }
 
 void IE_Exp_HTML_DocumentWriter::closeBlock()
@@ -88,7 +88,7 @@ void IE_Exp_HTML_DocumentWriter::openHeading(size_t level,
     }
     
     
-    _handleStyleAndId(szStyleName, szId, NULL);
+    _handleStyleAndId(szStyleName, szId, nullptr);
 }
 
 void IE_Exp_HTML_DocumentWriter::closeHeading()
@@ -99,7 +99,7 @@ void IE_Exp_HTML_DocumentWriter::closeHeading()
 void IE_Exp_HTML_DocumentWriter::openSection(const gchar* szStyleName)
 {
     m_pTagWriter->openTag("div");
-    _handleStyleAndId(szStyleName, NULL, NULL);
+    _handleStyleAndId(szStyleName, nullptr, nullptr);
 }
 
 void IE_Exp_HTML_DocumentWriter::closeSection()
@@ -111,9 +111,9 @@ void IE_Exp_HTML_DocumentWriter::openHyperlink(const gchar *szUri,
     const gchar *szStyleName, const gchar *szId)
 {
     m_pTagWriter->openTag("a", true);
-    _handleStyleAndId(szStyleName, szId, NULL);
+    _handleStyleAndId(szStyleName, szId, nullptr);
 
-    if (szUri != NULL)
+    if (szUri != nullptr)
     {
         m_pTagWriter->addAttribute("href", szUri);
     }
@@ -130,7 +130,7 @@ void IE_Exp_HTML_DocumentWriter::openTable(const UT_UTF8String &style,
     m_pTagWriter->openTag("table");
 	m_pTagWriter->addAttribute("border", border.utf8_str());
 	m_pTagWriter->addAttribute("cellpadding", cellPadding.utf8_str());
-	_handleStyleAndId(NULL, NULL, style.utf8_str());
+	_handleStyleAndId(nullptr, nullptr, style.utf8_str());
 }
 
 void IE_Exp_HTML_DocumentWriter::closeTable()
@@ -154,7 +154,7 @@ void IE_Exp_HTML_DocumentWriter::openCell(const UT_UTF8String &style,
 	m_pTagWriter->openTag("td");
 	m_pTagWriter->addAttribute("rowspan", rowspan.utf8_str());
 	m_pTagWriter->addAttribute("colspan", colspan.utf8_str());
-	_handleStyleAndId(NULL, NULL, style.utf8_str());
+	_handleStyleAndId(nullptr, nullptr, style.utf8_str());
 }
 
 void IE_Exp_HTML_DocumentWriter::closeCell()
@@ -184,7 +184,7 @@ void IE_Exp_HTML_DocumentWriter::openList(bool ordered, const gchar *szStyleName
     {
         m_pTagWriter->openTag("ul");
     }
-    _handleStyleAndId(szStyleName, NULL, NULL);
+    _handleStyleAndId(szStyleName, nullptr, nullptr);
 }
 
 void IE_Exp_HTML_DocumentWriter::closeList()
@@ -311,7 +311,7 @@ void IE_Exp_HTML_DocumentWriter::closeBody()
 void IE_Exp_HTML_DocumentWriter::openTextbox(const UT_UTF8String& style)
 {
     m_pTagWriter->openTag("div", false, false);
-    _handleStyleAndId(NULL, NULL, style.utf8_str());
+    _handleStyleAndId(nullptr, nullptr, style.utf8_str());
 }
 
 void IE_Exp_HTML_DocumentWriter::closeTextbox()
@@ -321,17 +321,17 @@ void IE_Exp_HTML_DocumentWriter::closeTextbox()
 void IE_Exp_HTML_DocumentWriter::_handleStyleAndId(const gchar* szStyleName, 
     const gchar* szId, const gchar* szStyle)
 {
-    if ((szStyleName != NULL)  && (szStyle != NULL) && (strlen(szStyle) > 0))
+    if ((szStyleName != nullptr)  && (szStyle != nullptr) && (strlen(szStyle) > 0))
     {
         m_pTagWriter->addAttribute("class", szStyleName);
     }
 
-    if ((szId != NULL) && (strlen(szId) > 0))
+    if ((szId != nullptr) && (strlen(szId) > 0))
     {
         m_pTagWriter->addAttribute("id", szId);
     }
 	
-	if ((szStyle != NULL) && (strlen(szStyle) > 0))
+	if ((szStyle != nullptr) && (strlen(szStyle) > 0))
 	{
 		m_pTagWriter->addAttribute("style", szStyle);
 	}
@@ -348,7 +348,7 @@ void IE_Exp_HTML_DocumentWriter::insertImage(const UT_UTF8String& url,
     const UT_UTF8String &title, const UT_UTF8String &alt)
 {
     m_pTagWriter->openTag("img", true, true);
-	_handleStyleAndId(NULL, NULL, style.utf8_str());
+    _handleStyleAndId(nullptr, nullptr, style.utf8_str());
     m_pTagWriter->addAttribute("src", url.utf8_str());
     m_pTagWriter->addAttribute("title", title.utf8_str());
     m_pTagWriter->addAttribute("alt", alt.utf8_str());
@@ -594,15 +594,15 @@ void IE_Exp_HTML_XHTMLWriter::openHead()
 
 void IE_Exp_HTML_XHTMLWriter::_handleAwmlStyle(const PP_AttrProp *pAP)
 {
-    if (!m_bUseAwml || (pAP == NULL))
+    if (!m_bUseAwml || (pAP == nullptr))
     {
         return;
     }
 
-    const gchar *szStyleName = NULL;
+    const gchar *szStyleName = nullptr;
     pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szStyleName);
     
-    if (szStyleName != NULL)
+    if (szStyleName != nullptr)
     {
         m_pTagWriter->addAttribute("awml:style", szStyleName);
     }
@@ -641,7 +641,7 @@ IE_Exp_HTML_DefaultWriterFactory::IE_Exp_HTML_DefaultWriterFactory(
 IE_Exp_HTML_DocumentWriter *IE_Exp_HTML_DefaultWriterFactory::constructDocumentWriter(
     IE_Exp_HTML_OutputWriter *pOutputWriter)
 {
-	IE_Exp_HTML_DocumentWriter *pWriter = NULL;
+	IE_Exp_HTML_DocumentWriter *pWriter = nullptr;
 	if (m_exp_opt.bIs4) {
 		pWriter = new IE_Exp_HTML_HTML4Writer(pOutputWriter);
 	}

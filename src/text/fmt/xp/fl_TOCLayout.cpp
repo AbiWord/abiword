@@ -100,7 +100,7 @@ void TOCEntry::calculateLabel(TOCEntry * pPrevLevel)
 	UT_String sVal;
 	sVal.clear();
 	m_pBlock->getView()->getLayout()->getStringFromFootnoteVal(sVal,m_iPosInList,m_iFType);
-	if((pPrevLevel == NULL) || !m_bInherit)
+	if((pPrevLevel == nullptr) || !m_bInherit)
 	{
 		m_sLabel = sVal.c_str();
 		return;
@@ -158,14 +158,14 @@ fl_TOCLayout::~fl_TOCLayout()
 		fp_TOCContainer * pNext = static_cast<fp_TOCContainer *>(pTC->getNext());
 		if(pTC == static_cast<fp_TOCContainer *>(getLastContainer()))
 		{
-			pNext = NULL;
+			pNext = nullptr;
 		}
 		delete pTC;
 		pTC = pNext;
 	}
 
-	setFirstContainer(NULL);
-	setLastContainer(NULL);
+	setFirstContainer(nullptr);
+	setLastContainer(nullptr);
 	m_pLayout->removeTOC(this);
 }
 	
@@ -210,7 +210,7 @@ void fl_TOCLayout::setSelected(bool bIsSelected)
 UT_uint32 fl_TOCLayout::getLength(void)
 {
 	PT_DocPosition startPos = getDocPosition();
-	pf_Frag_Strux* sdhEnd = NULL;
+	pf_Frag_Strux* sdhEnd = nullptr;
 	pf_Frag_Strux* sdhStart = getStruxDocHandle();
 	UT_DebugOnly<bool> bres;
 	bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndTOC,&sdhEnd);
@@ -286,7 +286,7 @@ fl_SectionLayout * fl_TOCLayout::getSectionLayout(void) const
 		}
 		pDSL = pDSL->myContainingLayout();
 	}
-	return NULL;
+	return nullptr;
 }
 
 FootnoteType fl_TOCLayout::getNumType(UT_sint32 iLevel)
@@ -337,7 +337,7 @@ eTabLeader fl_TOCLayout::getTabLeader(UT_sint32 iLevel)
 UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel, const fl_BlockLayout * pBlock)
 {
 	fp_TOCContainer * pTOCC = static_cast<fp_TOCContainer *>(getFirstContainer());
-	if(pTOCC == NULL)
+	if(pTOCC == nullptr)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
@@ -417,7 +417,7 @@ bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock, bool bVerifyRange)
 			UT_uint32 i = 0;
 			fp_Run * pRun;
 			fl_BlockLayout * pBL;
-			fp_BookmarkRun * pB[2] = {NULL,NULL};
+			fp_BookmarkRun * pB[2] = {nullptr,nullptr};
 			fl_ContainerLayout * pDSL = m_pLayout->getFirstSection();
 			fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pDSL);
 			bool bFound = false;
@@ -426,7 +426,7 @@ bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock, bool bVerifyRange)
 			{
 				pCL = pCL->getFirstLayout();
 			}
-			if(pCL == NULL)
+			if(pCL == nullptr)
 			{
 				return false;
 			}
@@ -630,9 +630,9 @@ void fl_TOCLayout::_createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPositio
 {
 	UT_return_if_fail(pszStyle);
 	
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	m_pDoc->getStyle(pszStyle,&pStyle);
-	if(pStyle == NULL)
+	if(pStyle == nullptr)
 	{
 		m_pDoc->getStyle("Normal",&pStyle);
 	}
@@ -652,7 +652,7 @@ void fl_TOCLayout::_createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPositio
 	else
 	{
 		pNewBlock = static_cast<fl_BlockLayout *>(getFirstLayout());
-		if(pNewBlock && (pNewBlock->getNext() != NULL))
+		if(pNewBlock && (pNewBlock->getNext() != nullptr))
 		{
 			pNewBlock = static_cast<fl_BlockLayout *>(pNewBlock->getNext());
 		}
@@ -706,8 +706,8 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 {
 	// First find where to put the block.
 	PT_DocPosition posNew = pBlock->getPosition();
-	TOCEntry * pEntry = NULL;
-	fl_BlockLayout * pPrevBL = NULL;
+	TOCEntry * pEntry = nullptr;
+	fl_BlockLayout * pPrevBL = nullptr;
 	UT_sint32 i = 0;
 	bool bFound = false;
 	
@@ -733,14 +733,14 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 		}
 		else
 		{
-			pEntry = NULL;
-			pPrevBL = NULL;
+			pEntry = nullptr;
+			pPrevBL = nullptr;
 		}
 	}
 	
 	iAllBlocks = i;
 
-	if(pPrevBL == NULL)
+	if(pPrevBL == nullptr)
 	{
 		pPrevBL = static_cast<fl_BlockLayout *>(getFirstLayout());
 	}
@@ -757,7 +757,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 
 		if(posEnd2 == posStart)
 		{
-			fl_BlockLayout * pPrevBL2 = NULL;
+			fl_BlockLayout * pPrevBL2 = nullptr;
 			UT_return_if_fail( pEntry && iAllBlocks > 0 );
 			UT_UTF8String sDispStyle = pEntry->getDispStyle();
 			UT_sint32 iNewLevel = pEntry->getLevel();
@@ -771,7 +771,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 			// it works whether passed the shaddow block or the main doc block)
 
 			_removeBlockInVec(pPrevBL, true);
-			pPrevBL = NULL;
+			pPrevBL = nullptr;
 
 			UT_sint32 iOldLevel = m_iCurrentLevel;
 			m_iCurrentLevel = iNewLevel;
@@ -808,8 +808,8 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock, 
 								   UT_GenericVector<TOCEntry *>* pVecEntries)
 {
-	TOCEntry * pThisEntry = NULL;
-	fl_BlockLayout * pThisBL = NULL;
+	TOCEntry * pThisEntry = nullptr;
+	fl_BlockLayout * pThisBL = nullptr;
 	UT_sint32 i = 0;
 	for(i=0; i< pVecEntries->getItemCount(); i++)
 	{
@@ -852,8 +852,8 @@ bool fl_TOCLayout::removeBlock(fl_BlockLayout * pBlock)
 
 fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
 {
-	TOCEntry * pThisEntry = NULL;
-	fl_BlockLayout * pThisBL = NULL;
+	TOCEntry * pThisEntry = nullptr;
+	fl_BlockLayout * pThisBL = nullptr;
 	UT_sint32 i = 0;
 	bool bFound = false;
 	for(i=0; i< m_vecEntries.getItemCount(); i++)
@@ -870,7 +870,7 @@ fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
 	{
 		return pThisBL;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -881,8 +881,8 @@ fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
 */
 void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool /*bDontRecurse*/)
 {
-	TOCEntry * pThisEntry = NULL;
-	fl_BlockLayout * pThisBL = NULL;
+	TOCEntry * pThisEntry = nullptr;
+	fl_BlockLayout * pThisBL = nullptr;
 	UT_sint32 i = 0;
 	bool bFound = false;
 	for(i=0; i< m_vecEntries.getItemCount(); i++)
@@ -978,10 +978,10 @@ UT_sint32 fl_TOCLayout::_getStartValue(TOCEntry * pEntry)
 void fl_TOCLayout::_calculateLabels(void)
 {
 	UT_sint32 i = 0;
-	TOCEntry * pThisEntry = NULL;
-	TOCEntry * pPrevEntry = NULL;
+	TOCEntry * pThisEntry = nullptr;
+	TOCEntry * pPrevEntry = nullptr;
 	UT_Stack stEntry;
-	stEntry.push(NULL);
+	stEntry.push(nullptr);
 	UT_sint32 iCount = m_vecEntries.getItemCount();
 	if(iCount == 0)
 	{
@@ -991,7 +991,7 @@ void fl_TOCLayout::_calculateLabels(void)
 	stEntry.push(pThisEntry);
 	for(i=0; i<	iCount; i++)
 	{
-		if(pPrevEntry == NULL)
+		if(pPrevEntry == nullptr)
 		{
 			pThisEntry->setPosInList(_getStartValue(pThisEntry));
 			pThisEntry->calculateLabel(pPrevEntry);
@@ -1003,7 +1003,7 @@ void fl_TOCLayout::_calculateLabels(void)
 		if(pThisEntry->getLevel() == pPrevEntry->getLevel())
 		{
 			pThisEntry->setPosInList(pPrevEntry->getPosInList()+1);
-			void * pTmp = NULL;
+			void * pTmp = nullptr;
 			UT_ASSERT(stEntry.getDepth() > 0);
 			stEntry.viewTop(&pTmp);
 			TOCEntry * pPrevLevel = static_cast<TOCEntry*>(pTmp);
@@ -1014,7 +1014,7 @@ void fl_TOCLayout::_calculateLabels(void)
 			}
 			else
 			{
-				pThisEntry->calculateLabel(NULL);
+				pThisEntry->calculateLabel(nullptr);
 			}
 			pPrevEntry = pThisEntry;
 		}
@@ -1052,7 +1052,7 @@ void fl_TOCLayout::_calculateLabels(void)
 				}
 				else
 				{
-					pThisEntry->calculateLabel(NULL);
+					pThisEntry->calculateLabel(nullptr);
 				}
 				pPrevEntry = pThisEntry;
 			}
@@ -1060,7 +1060,7 @@ void fl_TOCLayout::_calculateLabels(void)
 			{
 				pThisEntry->setPosInList(_getStartValue(pThisEntry));
 				pPrevEntry = pThisEntry;
-				pThisEntry->calculateLabel(NULL);
+				pThisEntry->calculateLabel(nullptr);
 			}
 		}
 	}
@@ -1101,12 +1101,12 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 		xxx_UT_DEBUGMSG(("Found initial match \n"));
 		return true;
 	}
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	m_pDoc->getStyle(sTmpStyle.utf8_str(), &pStyle);
-	if(pStyle != NULL)
+	if(pStyle != nullptr)
 	{
 		UT_sint32 iLoop = 0;
-		while((pStyle->getBasedOn()) != NULL && (iLoop < 10))
+		while((pStyle->getBasedOn()) != nullptr && (iLoop < 10))
 		{
 			pStyle = pStyle->getBasedOn();
 			iLoop++;
@@ -1125,7 +1125,7 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 
 bool fl_TOCLayout::isBlockInTOC(fl_BlockLayout * pBlock)
 {
-	TOCEntry * pEntry = NULL;
+	TOCEntry * pEntry = nullptr;
 	pf_Frag_Strux* sdh = pBlock->getStruxDocHandle();
 	UT_sint32 i = 0;
 	for(i=0; i< m_vecEntries.getItemCount(); i++)
@@ -1146,7 +1146,7 @@ UT_UTF8String & fl_TOCLayout::getTOCListLabel(fl_BlockLayout * pBlock)
 {
 	static UT_UTF8String str;
 	str.clear();
-	TOCEntry * pEntry = NULL;
+	TOCEntry * pEntry = nullptr;
 	pf_Frag_Strux* sdh = pBlock->getStruxDocHandle();
 	UT_sint32 i = 0;
 	bool bFound = false;
@@ -1269,7 +1269,7 @@ bool fl_TOCLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	}
 	else
 	{
-		pDSL->setNeedsSectionBreak(true,NULL);
+		pDSL->setNeedsSectionBreak(true,nullptr);
 	}
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
@@ -1357,8 +1357,8 @@ void fl_TOCLayout::_purgeLayout(void)
 	UT_VECTOR_PURGEALL(TOCEntry *, m_vecEntries);
 	m_vecEntries.clear();
 	m_bDoingPurge = false;
-	setFirstLayout(NULL);
-	setLastLayout(NULL);
+	setFirstLayout(nullptr);
+	setLastLayout(nullptr);
 }
 
 
@@ -1368,12 +1368,12 @@ void fl_TOCLayout::_purgeLayout(void)
 void fl_TOCLayout::_createTOCContainer(void)
 {
 	lookupProperties();
-	UT_ASSERT(getFirstLayout() == NULL);
+	UT_ASSERT(getFirstLayout() == nullptr);
 	fp_TOCContainer * pTOCContainer = new fp_TOCContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pTOCContainer);
 	setLastContainer(pTOCContainer);
 	fl_ContainerLayout * pCL = myContainingLayout();
-	while(pCL!= NULL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+	while(pCL!= nullptr && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
 	{
 		pCL = pCL->myContainingLayout();
 	}
@@ -1410,9 +1410,9 @@ void fl_TOCLayout::_insertTOCContainer( fp_TOCContainer * pNewTOC)
 {
 	fl_ContainerLayout * pUPCL = myContainingLayout();
 	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(getPrev());
-	fp_Container * pPrevCon = NULL;
-	fp_Container * pUpCon = NULL;
-	if(pPrevL != NULL)
+	fp_Container * pPrevCon = nullptr;
+	fp_Container * pUpCon = nullptr;
+	if(pPrevL != nullptr)
 	{
 		while(pPrevL && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE) || pPrevL->getContainerType() == FL_CONTAINER_ENDNOTE))
 		{
@@ -1429,7 +1429,7 @@ void fl_TOCLayout::_insertTOCContainer( fp_TOCContainer * pNewTOC)
 				fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
 				fp_TableContainer * pFirst = pTC->getFirstBrokenTable();
 				fp_TableContainer * pLast = pTC->getLastBrokenTable();
-				if((pLast != NULL) && pLast != pFirst)
+				if((pLast != nullptr) && pLast != pFirst)
 				{
 					pPrevCon = static_cast<fp_Container *>(pLast);
 					pUpCon = pLast->getContainer();
@@ -1447,7 +1447,7 @@ void fl_TOCLayout::_insertTOCContainer( fp_TOCContainer * pNewTOC)
 				{
 					pUpCon = pPrevCon->getContainer();
 				}
-				else if(pPrevL->getPrev() == NULL)
+				else if(pPrevL->getPrev() == nullptr)
 				{
 					pUpCon = myContainingLayout()->getFirstContainer();
 				}
@@ -1468,7 +1468,7 @@ void fl_TOCLayout::_insertTOCContainer( fp_TOCContainer * pNewTOC)
 		pUpCon = pUPCL->getLastContainer();
 		UT_return_if_fail(pUpCon);
 	}
-	if(pPrevL == NULL)
+	if(pPrevL == nullptr)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New TOC %x added into %x \n",pNewTOC,pUpCon));
 		pUpCon->addCon(pNewTOC);
@@ -1500,7 +1500,7 @@ void fl_TOCLayout::_insertTOCContainer( fp_TOCContainer * pNewTOC)
 void fl_TOCLayout::format(void)
 {
 	xxx_UT_DEBUGMSG(("SEVIOR: Formatting TOC container is %x \n",getFirstContainer()));
-	if(getFirstContainer() == NULL)
+	if(getFirstContainer() == nullptr)
 	{
 		getNewContainer();
 	}
@@ -1510,7 +1510,7 @@ void fl_TOCLayout::format(void)
 	{
 		pBL->format();
 		UT_sint32 count = 0;
-		while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
+		while(pBL->getLastContainer() == nullptr || pBL->getFirstContainer()==nullptr)
 		{
 			UT_DEBUGMSG(("Error formatting a block try again \n"));
 			count = count + 1;
@@ -1572,7 +1572,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
-	const gchar *pszTOCPID = NULL;
+	const gchar *pszTOCPID = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-id",pszTOCPID))
 	{
 		m_iTOCPID = 0;
@@ -1588,7 +1588,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	m_sNumOff4 = "0.5in";
 
 
-	const gchar *pszINDENT = NULL;
+	const gchar *pszINDENT = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent1",pszINDENT))
 	{
 		m_sNumOff1 = "0.5in";
@@ -1597,7 +1597,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sNumOff1 = pszINDENT;
 	}
-	pszINDENT = NULL;
+	pszINDENT = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent2",pszINDENT))
 	{
 		m_sNumOff2 = "0.5in";
@@ -1607,7 +1607,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_sNumOff2 = pszINDENT;
 	}
 
-	pszINDENT = NULL;
+	pszINDENT = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent3",pszINDENT))
 	{
 		m_sNumOff3 = "0.5in";
@@ -1617,7 +1617,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_sNumOff3 = pszINDENT;
 	}
 
-	pszINDENT = NULL;
+	pszINDENT = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent4",pszINDENT))
 	{
 		m_sNumOff4 = "0.5in";
@@ -1627,7 +1627,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_sNumOff4 = pszINDENT;
 	}
 
-	const gchar *pszTOCSRC = NULL;
+	const gchar *pszTOCSRC = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style1",pszTOCSRC))
 	{
 		m_sSourceStyle1 = getDefaultSourceStyle(1);
@@ -1636,7 +1636,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sSourceStyle1 = pszTOCSRC;
 	}
-	pszTOCSRC = NULL;
+	pszTOCSRC = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style2",pszTOCSRC))
 	{
 		m_sSourceStyle2 = getDefaultSourceStyle(2);
@@ -1645,7 +1645,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sSourceStyle2 = pszTOCSRC;
 	}
-	pszTOCSRC = NULL;
+	pszTOCSRC = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style3",pszTOCSRC))
 	{
 		m_sSourceStyle3 = getDefaultSourceStyle(3);
@@ -1654,7 +1654,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sSourceStyle3 = pszTOCSRC;
 	}
-	pszTOCSRC = NULL;
+	pszTOCSRC = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style4",pszTOCSRC))
 	{
 		m_sSourceStyle4 = getDefaultSourceStyle(4);
@@ -1663,7 +1663,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sSourceStyle4 = pszTOCSRC;
 	}
-	const gchar * pszTOCDEST = NULL;
+	const gchar * pszTOCDEST = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style1",pszTOCDEST))
 	{
 		m_sDestStyle1 = getDefaultDestStyle(1);
@@ -1672,7 +1672,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sDestStyle1 = pszTOCDEST;
 	}
-	pszTOCDEST = NULL;
+	pszTOCDEST = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style2",pszTOCDEST))
 	{
 		m_sDestStyle2 = getDefaultDestStyle(2);
@@ -1681,7 +1681,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sDestStyle2 = pszTOCDEST;
 	}
-	pszTOCDEST = NULL;
+	pszTOCDEST = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style3",pszTOCDEST))
 	{
 		m_sDestStyle3 = getDefaultDestStyle(3);
@@ -1690,7 +1690,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sDestStyle3 = pszTOCDEST;
 	}
-	pszTOCDEST = NULL;
+	pszTOCDEST = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style4",pszTOCDEST))
 	{
 		m_sDestStyle4 = getDefaultDestStyle(4);
@@ -1700,7 +1700,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_sDestStyle4 = pszTOCDEST;
 	}
 
-	const gchar * pszTOCHEADING = NULL;
+	const gchar * pszTOCHEADING = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading",pszTOCHEADING))
 	{
 		m_sTOCHeading = getDefaultHeading();
@@ -1710,7 +1710,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_sTOCHeading = pszTOCHEADING;
 	}
 
-	const gchar * pszTOCHEADINGStyle = NULL;
+	const gchar * pszTOCHEADINGStyle = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading-style",pszTOCHEADINGStyle))
 	{
 		m_sTOCHeadingStyle = "Contents Header";
@@ -1721,7 +1721,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 
 
-	const gchar * pszTOCHASHEADING = NULL;
+	const gchar * pszTOCHASHEADING = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-heading",pszTOCHASHEADING))
 	{
 		m_bTOCHeading = true;
@@ -1740,7 +1740,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label
 //
-	const gchar * pszTOCLABEL = NULL;
+	const gchar * pszTOCLABEL = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label1",pszTOCLABEL))
 	{
 		m_bHasLabel1 = true;
@@ -1756,7 +1756,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_bHasLabel1 = false;
 		}
 	}
-	pszTOCLABEL = NULL;
+	pszTOCLABEL = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label2",pszTOCLABEL))
 	{
 		m_bHasLabel2 = true;
@@ -1772,7 +1772,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_bHasLabel2 = false;
 		}
 	}
-	pszTOCLABEL = NULL;
+	pszTOCLABEL = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label3",pszTOCLABEL))
 	{
 		m_bHasLabel3 = true;
@@ -1788,7 +1788,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_bHasLabel3 = false;
 		}
 	}
-	pszTOCLABEL = NULL;
+	pszTOCLABEL = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label4",pszTOCLABEL))
 	{
 		m_bHasLabel4 = true;
@@ -1807,7 +1807,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label Inherits
 //
-	const gchar * pszTOCLABELINHERITS = NULL;
+	const gchar * pszTOCLABELINHERITS = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits1",pszTOCLABELINHERITS))
 	{
 		m_bInherit1 = true;
@@ -1823,7 +1823,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_bInherit1 = false;
 		}
 	}
-	pszTOCLABELINHERITS = NULL;
+	pszTOCLABELINHERITS = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits2",pszTOCLABELINHERITS))
 	{
 		m_bInherit2 = true;
@@ -1839,7 +1839,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_bInherit2 = false;
 		}
 	}
-	pszTOCLABELINHERITS = NULL;
+	pszTOCLABELINHERITS = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits3",pszTOCLABELINHERITS))
 	{
 		m_bInherit3 = true;
@@ -1855,7 +1855,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_bInherit3 = false;
 		}
 	}
-	pszTOCLABELINHERITS = NULL;
+	pszTOCLABELINHERITS = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits4",pszTOCLABELINHERITS))
 	{
 		m_bInherit4 = true;
@@ -1874,7 +1874,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label Type
 //
-	const gchar * pszTOCLABELTYPE = NULL;
+	const gchar * pszTOCLABELTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type1",pszTOCLABELTYPE))
 	{
 		m_iLabType1 = FOOTNOTE_TYPE_NUMERIC;
@@ -1883,7 +1883,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iLabType1 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
 	}
-	pszTOCLABELTYPE = NULL;
+	pszTOCLABELTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type2",pszTOCLABELTYPE))
 	{
 		m_iLabType2 = FOOTNOTE_TYPE_NUMERIC;
@@ -1892,7 +1892,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iLabType2 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
 	}
-	pszTOCLABELTYPE = NULL;
+	pszTOCLABELTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type3",pszTOCLABELTYPE))
 	{
 		m_iLabType3 = FOOTNOTE_TYPE_NUMERIC;
@@ -1901,7 +1901,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iLabType3 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
 	}
-	pszTOCLABELTYPE = NULL;
+	pszTOCLABELTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type4",pszTOCLABELTYPE))
 	{
 		m_iLabType4 = FOOTNOTE_TYPE_NUMERIC;
@@ -1913,7 +1913,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label Before Text
 //
-	const gchar * pszTOCSTRBEFORE = NULL;
+	const gchar * pszTOCSTRBEFORE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before1",pszTOCSTRBEFORE))
 	{
 		m_sLabBefore1 = "";
@@ -1922,7 +1922,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sLabBefore1 = pszTOCSTRBEFORE;
 	}
-	pszTOCSTRBEFORE = NULL;
+	pszTOCSTRBEFORE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before2",pszTOCSTRBEFORE))
 	{
 		m_sLabBefore2 = "";
@@ -1931,7 +1931,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sLabBefore2 = pszTOCSTRBEFORE;
 	}
-	pszTOCSTRBEFORE = NULL;
+	pszTOCSTRBEFORE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before3",pszTOCSTRBEFORE))
 	{
 		m_sLabBefore3 = "";
@@ -1940,7 +1940,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sLabBefore3 = pszTOCSTRBEFORE;
 	}
-	pszTOCSTRBEFORE = NULL;
+	pszTOCSTRBEFORE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before4",pszTOCSTRBEFORE))
 	{
 		m_sLabBefore4 = "";
@@ -1952,7 +1952,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label After Text
 //
-	const gchar * pszTOCSTRAFTER = NULL;
+	const gchar * pszTOCSTRAFTER = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after1",pszTOCSTRAFTER))
 	{
 		m_sLabAfter1 = "";
@@ -1961,7 +1961,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sLabAfter1 = pszTOCSTRAFTER;
 	}
-	pszTOCSTRAFTER = NULL;
+	pszTOCSTRAFTER = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after2",pszTOCSTRAFTER))
 	{
 		m_sLabAfter2 = "";
@@ -1970,7 +1970,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sLabAfter2 = pszTOCSTRAFTER;
 	}
-	pszTOCSTRAFTER = NULL;
+	pszTOCSTRAFTER = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after2",pszTOCSTRAFTER))
 	{
 		m_sLabAfter2 = "";
@@ -1979,7 +1979,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sLabAfter3 = pszTOCSTRAFTER;
 	}
-	pszTOCSTRAFTER = NULL;
+	pszTOCSTRAFTER = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after4",pszTOCSTRAFTER))
 	{
 		m_sLabAfter4 = "";
@@ -1991,7 +1991,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label Initial Value
 //
-	const gchar * pszTOCLABELSTART = NULL;
+	const gchar * pszTOCLABELSTART = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start1",pszTOCLABELSTART))
 	{
 		m_iStartAt1 = 1;
@@ -2000,7 +2000,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iStartAt1 = atoi(pszTOCLABELSTART);
 	}
-	pszTOCLABELSTART = NULL;
+	pszTOCLABELSTART = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start2",pszTOCLABELSTART))
 	{
 		m_iStartAt2 = 1;
@@ -2009,7 +2009,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iStartAt2 = atoi(pszTOCLABELSTART);
 	}
-	pszTOCLABELSTART = NULL;
+	pszTOCLABELSTART = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start3",pszTOCLABELSTART))
 	{
 		m_iStartAt3 = 1;
@@ -2018,7 +2018,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iStartAt3 = atoi(pszTOCLABELSTART);
 	}
-	pszTOCLABELSTART = NULL;
+	pszTOCLABELSTART = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start4",pszTOCLABELSTART))
 	{
 		m_iStartAt4 = 1;
@@ -2030,7 +2030,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Page Number Type
 //
-	const gchar * pszTOCPAGETYPE = NULL;
+	const gchar * pszTOCPAGETYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type1",pszTOCPAGETYPE))
 	{
 		m_iNumType1 = FOOTNOTE_TYPE_NUMERIC;
@@ -2039,7 +2039,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iNumType1 = m_pLayout->FootnoteTypeFromString(pszTOCPAGETYPE);
 	}
-	pszTOCPAGETYPE = NULL;
+	pszTOCPAGETYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type2",pszTOCPAGETYPE))
 	{
 		m_iNumType2 = FOOTNOTE_TYPE_NUMERIC;
@@ -2048,7 +2048,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iNumType2 = m_pLayout->FootnoteTypeFromString(pszTOCPAGETYPE);
 	}
-	pszTOCPAGETYPE = NULL;
+	pszTOCPAGETYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type3",pszTOCPAGETYPE))
 	{
 		m_iNumType3 = FOOTNOTE_TYPE_NUMERIC;
@@ -2057,7 +2057,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iNumType3 = m_pLayout->FootnoteTypeFromString(pszTOCPAGETYPE);
 	}
-	pszTOCPAGETYPE = NULL;
+	pszTOCPAGETYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type4",pszTOCPAGETYPE))
 	{
 		m_iNumType4 = FOOTNOTE_TYPE_NUMERIC;
@@ -2069,7 +2069,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC TAB leader
 //
-	const gchar * pszTOCTABTYPE = NULL;
+	const gchar * pszTOCTABTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader1",pszTOCTABTYPE))
 	{
 		m_iTabLeader1 = FL_LEADER_DOT;
@@ -2097,7 +2097,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_iTabLeader1 = FL_LEADER_DOT;
 		}
 	}
-	pszTOCTABTYPE = NULL;
+	pszTOCTABTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader2",pszTOCTABTYPE))
 	{
 		m_iTabLeader2 = FL_LEADER_DOT;
@@ -2125,7 +2125,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_iTabLeader2 = FL_LEADER_DOT;
 		}
 	}
-	pszTOCTABTYPE = NULL;
+	pszTOCTABTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader3",pszTOCTABTYPE))
 	{
 		m_iTabLeader3 = FL_LEADER_DOT;
@@ -2153,7 +2153,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_iTabLeader3 = FL_LEADER_DOT;
 		}
 	}
-	pszTOCTABTYPE = NULL;
+	pszTOCTABTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader4",pszTOCTABTYPE))
 	{
 		m_iTabLeader4 = FL_LEADER_DOT;
@@ -2182,7 +2182,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		}
 	}
 
-	pszTOCTABTYPE = NULL;
+	pszTOCTABTYPE = nullptr;
 	if(pSectionAP && pSectionAP->getProperty("toc-range-bookmark",pszTOCTABTYPE))
 	{
 		m_sRangeBookmark = pszTOCTABTYPE;
@@ -2246,11 +2246,11 @@ void fl_TOCLayout::collapse(void)
 // Remove it from the vertical container that contains it.
 //
 		static_cast<fp_VerticalContainer *>(pTC->getContainer())->removeContainer(pTC);
-		pTC->setContainer(NULL);
+		pTC->setContainer(nullptr);
 		delete pTC;
 	}
-	setFirstContainer(NULL);
-	setLastContainer(NULL);
+	setFirstContainer(nullptr);
+	setLastContainer(nullptr);
 	_purgeLayout();
 	setNeedsReformat(nullptr);
 }
@@ -2267,7 +2267,7 @@ fl_TOCListener::fl_TOCListener(fl_TOCLayout* pTOCL, fl_BlockLayout* pPrevBL, PD_
 	m_pTOCL = pTOCL;
 	m_pPrevBL = pPrevBL;
 	m_bListening = false;
-	m_pCurrentBL = NULL;
+	m_pCurrentBL = nullptr;
 	m_pStyle = pStyle;
 	// Mark this style as used, so it will be available in the list of used styles when
 	// exporters need to export this TOC
@@ -2345,7 +2345,7 @@ bool fl_TOCListener::populateStrux(pf_Frag_Strux* sdh,
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	m_bListening = true;
 	fl_BlockLayout * pMyBL = m_pPrevBL;
-	if(pMyBL == NULL)
+	if(pMyBL == nullptr)
 	{
 		pMyBL = static_cast<fl_BlockLayout *>(m_pTOCL->getFirstLayout());
 	}
@@ -2411,13 +2411,13 @@ bool fl_TOCListener::signal(UT_uint32 /*iSignal*/)
 bool fl_TOCLayout::fillTOC(void)
 {
     fl_DocSectionLayout * pDSL = getDocLayout()->getFirstSection();
-    fl_BlockLayout * pBlock = NULL;
+    fl_BlockLayout * pBlock = nullptr;
     fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pDSL);
     while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
     {
 	pCL = pCL->getFirstLayout();
     }
-    if(pCL == NULL)
+    if(pCL == nullptr)
     {
 	return false;
     }
@@ -2429,23 +2429,23 @@ bool fl_TOCLayout::fillTOC(void)
     pBlock = static_cast<fl_BlockLayout *>(pCL);
     bool filled = false;
     
-    const gchar * pBookmark = getRangeBookmarkName().size() ? getRangeBookmarkName().utf8_str() : NULL;
+    const gchar * pBookmark = getRangeBookmarkName().size() ? getRangeBookmarkName().utf8_str() : nullptr;
     
     if(pBookmark)
     {
 	if(m_pDoc->isBookmarkUnique(pBookmark))
 	{
 	    // bookmark does not exist
-	    pBookmark = NULL;
+	    pBookmark = nullptr;
 	}
     }
     
-    fl_BlockLayout * pBlockLast = NULL;
+    fl_BlockLayout * pBlockLast = nullptr;
     
     if(pBookmark)
     {
 	UT_uint32 i = 0;
-	fp_BookmarkRun * pB[2] = {NULL,NULL};
+	fp_BookmarkRun * pB[2] = {nullptr,nullptr};
 	fp_Run * pRun;
 	fl_BlockLayout * pBlockStart = pBlock;
 	bool bFound = false;
@@ -2518,15 +2518,15 @@ bool fl_TOCLayout::fillTOC(void)
     }
     if(m_bTOCHeading)
     {
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	m_pDoc->getStyle(m_sTOCHeadingStyle.utf8_str(), &pStyle);
-	if(pStyle == NULL)
+	if(pStyle == nullptr)
 	{
 	    m_pDoc->getStyle("Heading 1", &pStyle);
 	}
 	PT_AttrPropIndex indexAP = pStyle->getIndexAP();
 	
-	fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,
+	fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),nullptr,
 									  indexAP,FL_CONTAINER_BLOCK));
 	pNewBlock->_doInsertTOCHeadingRun(0);
     }

@@ -443,7 +443,7 @@ abiword_storage_find_statements_get_statement(void* context, int flags)
             
         default:
             UT_DEBUGMSG(("ERROR: Unknown iterator method flag: %d\n", flags));
-            return NULL;
+            return nullptr;
     }
 }
 
@@ -485,7 +485,7 @@ abiword_storage_find_statements_with_context( librdf_storage* storage,
     if(!stream)
     {
         abiword_storage_find_statements_finished((void*)sc);
-        return NULL;
+        return nullptr;
     }
     
     xxx_UT_DEBUGMSG(("abiword_storage_find_statements(done)\n"));
@@ -540,7 +540,7 @@ abiword_storage_add_statement( librdf_storage* storage,
   if( abiword_storage_contains_statement( storage, statement ))
     return 0;
 
-  return abiword_storage_context_add_statement(storage, NULL, statement);
+  return abiword_storage_context_add_statement(storage, nullptr, statement);
 }
 
 static int
@@ -646,7 +646,7 @@ static librdf_model* getRedlandModel( PD_RDFModelHandle abimodel )
     
     librdf_model* model = nullptr;
     /*int rc = */librdf_storage_open( storage, model );
-    model = librdf_new_model( getWorld(), storage, NULL );
+    model = librdf_new_model( getWorld(), storage, nullptr );
     
     xxx_UT_DEBUGMSG(("getRedlandModel(3) storage: %p model: %p\n", storage, model));
     return model;

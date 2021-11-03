@@ -54,7 +54,7 @@ bool DefaultReader::openFile (const char * szFilename)
 #else
 	in = fopen (szFilename, "r");
 #endif
-	return (in != NULL);
+	return (in != nullptr);
 }
 
 UT_uint32 DefaultReader::readBytes (char * buffer, UT_uint32 length)

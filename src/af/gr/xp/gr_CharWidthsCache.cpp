@@ -26,7 +26,7 @@
 #include "gr_Graphics.h"
 #include "gr_CharWidths.h"
 
-GR_CharWidthsCache* GR_CharWidthsCache::s_pInstance = NULL;
+GR_CharWidthsCache* GR_CharWidthsCache::s_pInstance = nullptr;
  
 void GR_CharWidthsCache::_instantiate(void)
 {

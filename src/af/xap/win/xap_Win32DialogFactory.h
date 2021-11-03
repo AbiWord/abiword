@@ -25,7 +25,7 @@
 class ABI_EXPORT AP_Win32DialogFactory : public XAP_DialogFactory
 {
 public:
-	AP_Win32DialogFactory(XAP_App * pApp, XAP_Frame * pFrame = NULL);
+	AP_Win32DialogFactory(XAP_App * pApp, XAP_Frame * pFrame = nullptr);
 	virtual ~AP_Win32DialogFactory(void);
 
 protected:

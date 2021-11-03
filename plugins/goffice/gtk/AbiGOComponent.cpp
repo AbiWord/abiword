@@ -111,7 +111,7 @@ static bool s_AskForGOComponentPathname(XAP_Frame * pFrame,
 				 pFrame));
 
 	UT_return_val_if_fail (ppPathname, false);
-	*ppPathname = NULL;
+	*ppPathname = nullptr;
 
 	pFrame->raise();
 
@@ -140,7 +140,7 @@ static bool s_AskForGOComponentPathname(XAP_Frame * pFrame,
 		k++;
 
 	pDialog->setFileTypeList(szDescList, szSuffixList, static_cast<const UT_sint32 *>(nTypeList));
-	if (iegft != NULL)
+	if (iegft != nullptr)
 	  pDialog->setDefaultFileType(*iegft);
 	pDialog->runModal(pFrame);
 
@@ -197,7 +197,7 @@ AbiGOComponent_FileInsert(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodC
     // Get the current view that the user is in.
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
     PD_Document * pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
-    char* pNewFile = NULL;
+    char* pNewFile = nullptr;
 
 
     IEGraphicFileType iegft = IEGFT_Unknown;
@@ -254,14 +254,14 @@ AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCall
 		GTK_WINDOW(pFrameImpl->getTopLevelWindow()),
 		(GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
 		convertMnemonics(cancel).c_str(), GTK_RESPONSE_CANCEL,
-		convertMnemonics(ok).c_str(), GTK_RESPONSE_OK, NULL));
+		convertMnemonics(ok).c_str(), GTK_RESPONSE_OK, nullptr));
 	GtkListStore *list = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
 	GtkWidget *w = gtk_tree_view_new_with_model (GTK_TREE_MODEL (list));
 	g_signal_connect_swapped(w, "button-press-event", G_CALLBACK(button_press_cb), dialog);
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	renderer = gtk_cell_renderer_text_new ();
-	column = gtk_tree_view_column_new_with_attributes ("Object type:", renderer, "text", 0, NULL);
+	column = gtk_tree_view_column_new_with_attributes ("Object type:", renderer, "text", 0, nullptr);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (w), column);
 	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW (w));
 	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);
@@ -285,13 +285,13 @@ AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCall
 	gtk_widget_show_all (GTK_WIDGET(dialog));
 	gint result = gtk_dialog_run (dialog);
 	if (result == GTK_RESPONSE_OK &&
-		gtk_tree_selection_get_selected (sel, NULL, &iter)) {
+		gtk_tree_selection_get_selected (sel, nullptr, &iter)) {
 		gtk_tree_model_get (GTK_TREE_MODEL (list), &iter, 1, &mime_type, -1);
 		GOComponent *component = go_component_new_by_mime_type (mime_type);
 		go_component_set_inline (component, true);
 		go_component_set_use_font_from_app (component, true);
 		g_signal_connect (G_OBJECT (component), "changed",
-								G_CALLBACK (changed_cb), NULL);
+								G_CALLBACK (changed_cb), nullptr);
 		GtkWindow *win = go_component_edit(component);
 		gtk_window_set_transient_for(win, GTK_WINDOW(pFrameImpl->getTopLevelWindow()));
 	}
@@ -313,7 +313,7 @@ GR_AbiGOComponentItems::~GR_AbiGOComponentItems(void)
 GR_GOComponentManager::GR_GOComponentManager(GR_Graphics* pG)
   : GR_EmbedManager(pG), 
     m_CurrentUID(-1),
-    m_pDoc(NULL)
+    m_pDoc(nullptr)
 {
   m_vecGOComponentView.clear();
   m_vecItems.clear();
@@ -358,7 +358,7 @@ void GR_GOComponentManager::setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize)
 
 UT_sint32 GR_GOComponentManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, G_GNUC_UNUSED const char * szDataID)
 {
-  if(m_pDoc == NULL)
+  if(m_pDoc == nullptr)
   {
     m_pDoc = static_cast<PD_Document *>(pDoc);
   }
@@ -380,10 +380,10 @@ void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & 
 	GR_AbiGOComponentItems * pItem = m_vecItems.getNthItem(uid);
 	UT_return_if_fail(pItem);  
 	GOComponentView * pGOComponentView = m_vecGOComponentView.getNthItem(uid);
-	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
 	PT_AttrPropIndex api = pItem->m_iAPI;
 	/* bool b = */ m_pDoc->getAttrProp(api, &pSpanAP);
-	const char * pszDataID = NULL;
+	const char * pszDataID = nullptr;
 	pSpanAP->getAttribute("dataid", pszDataID);
 	UT_ConstByteBufPtr pBuf;
 	std::string mime_type;
@@ -397,7 +397,7 @@ void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & 
 		  }
 		else
 		  {
-			m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mime_type, NULL);
+			m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mime_type, nullptr);
 			pItem->m_bHasSnapshot = true;
 		  }
 	  }
@@ -424,12 +424,12 @@ void GR_GOComponentManager::loadEmbedData(G_GNUC_UNUSED UT_sint32 uid)
 {
 	GOComponentView * pGOComponentView = m_vecGOComponentView.getNthItem(uid);
 	UT_return_if_fail(pGOComponentView);
-	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
 	GR_AbiGOComponentItems * pItem = m_vecItems.getNthItem(uid);
 	UT_return_if_fail(pItem);  
 	PT_AttrPropIndex api = pItem->m_iAPI;
 	/* bool b = */ m_pDoc->getAttrProp(api, &pSpanAP);
-	const char * pszDataID = NULL;
+	const char * pszDataID = nullptr;
 	bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
 	std::string mime_type;
 
@@ -438,7 +438,7 @@ void GR_GOComponentManager::loadEmbedData(G_GNUC_UNUSED UT_sint32 uid)
 		UT_ConstByteBufPtr pByteBuf;
 		bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID,
 							pByteBuf,
-							&mime_type, NULL);
+							&mime_type, nullptr);
 		UT_return_if_fail(bFoundDataID);
 		UT_return_if_fail(pszDataID);
 		UT_DEBUGMSG(("GO Component string is... \n %s \n", pByteBuf->getPointer(0)));
@@ -450,7 +450,7 @@ UT_sint32 GR_GOComponentManager::getWidth(UT_sint32 uid)
 {
 	GOComponentView * pGOComponentView = m_vecGOComponentView.getNthItem(uid);
 	double dim;
-	g_object_get (G_OBJECT (pGOComponentView->getComponent ()), "width", &dim, NULL);
+	g_object_get (G_OBJECT (pGOComponentView->getComponent ()), "width", &dim, nullptr);
 	return pGOComponentView->width =  (UT_sint32) rint (dim * UT_LAYOUT_RESOLUTION);
 }
 
@@ -459,7 +459,7 @@ UT_sint32 GR_GOComponentManager::getAscent(UT_sint32 uid)
 {
 	GOComponentView * pGOComponentView = m_vecGOComponentView.getNthItem(uid);
 	double dim;
-	g_object_get (G_OBJECT (pGOComponentView->getComponent ()), "ascent", &dim, NULL);
+	g_object_get (G_OBJECT (pGOComponentView->getComponent ()), "ascent", &dim, nullptr);
 	return pGOComponentView->ascent = (UT_sint32) rint (dim* UT_LAYOUT_RESOLUTION);
 }
 
@@ -468,7 +468,7 @@ UT_sint32 GR_GOComponentManager::getDescent(UT_sint32 uid)
 {
 	GOComponentView * pGOComponentView = m_vecGOComponentView.getNthItem(uid);
 	double dim;
-	g_object_get (G_OBJECT (pGOComponentView->getComponent ()), "descent", &dim, NULL);
+	g_object_get (G_OBJECT (pGOComponentView->getComponent ()), "descent", &dim, nullptr);
 	return pGOComponentView->descent = (UT_sint32) rint (dim * UT_LAYOUT_RESOLUTION);
 }
 
@@ -485,7 +485,7 @@ void GR_GOComponentManager::render(UT_sint32 uid, UT_Rect & rec)
 {
   GOComponentView * pGOComponentView = m_vecGOComponentView.getNthItem(uid);
   UT_return_if_fail(pGOComponentView);
-	if (pGOComponentView->getComponent () != NULL)
+	if (pGOComponentView->getComponent () != nullptr)
 		pGOComponentView->render(rec);
 	else
 		GR_EmbedManager::render (uid, rec);
@@ -495,7 +495,7 @@ void GR_GOComponentManager::releaseEmbedView(UT_sint32 uid)
 {
   GOComponentView * pGOComponentView = m_vecGOComponentView.getNthItem(uid);
   delete pGOComponentView;
-  m_vecGOComponentView.setNthItem(uid,NULL,NULL); //NULL it out so we don't affect the other uid's
+  m_vecGOComponentView.setNthItem(uid,nullptr,nullptr); //nullptr it out so we don't affect the other uid's
 }
 
 bool GR_GOComponentManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED const UT_ConstByteBufPtr & From, G_GNUC_UNUSED const UT_ByteBufPtr & To)
@@ -536,12 +536,12 @@ void GR_GOComponentManager:: updateData(UT_sint32 uid, UT_sint32 api)
 
 GOComponentView::GOComponentView(GR_GOComponentManager * pGOMan): m_pGOMan(pGOMan)
 {
-	m_Image = NULL;
+	m_Image = nullptr;
 	width = ascent = descent = 0;
 	pix_width = pix_height = 0;
-	pixbuf = NULL;
-	m_pRun = NULL;
-	component = NULL;
+	pixbuf = nullptr;
+	m_pRun = nullptr;
+	component = nullptr;
 }
 
 GOComponentView::~GOComponentView(void)
@@ -565,7 +565,7 @@ void GOComponentView::render(UT_Rect & rec)
 	{
 		double _ascent, _descent;
 		go_component_set_size (component, (double) rec.width / UT_LAYOUT_RESOLUTION, (double) rec.height / UT_LAYOUT_RESOLUTION);
-		g_object_get (G_OBJECT (component), "ascent", &_ascent, "descent", &_descent, NULL);
+		g_object_get (G_OBJECT (component), "ascent", &_ascent, "descent", &_descent, nullptr);
 		ascent =  (UT_sint32) rint (_ascent * UT_LAYOUT_RESOLUTION);
 		descent =  (UT_sint32) rint (_descent * UT_LAYOUT_RESOLUTION);
 	}
@@ -583,7 +583,7 @@ void GOComponentView::render(UT_Rect & rec)
 static void
 changed_cb (GOComponent *component, gpointer data)
 {
-	if (data != NULL)
+	if (data != nullptr)
 	{
 		GOComponentView * pGOComponentView = static_cast<GOComponentView*> (data);
 		pGOComponentView->update ();
@@ -595,7 +595,7 @@ changed_cb (GOComponent *component, gpointer data)
 		UT_Byte *buf;
 		int length;
 		void (*clearfunc) (gpointer);
-		gpointer user_data = NULL;
+		gpointer user_data = nullptr;
 		if (go_component_get_data (component, (void**) &buf, &length, &clearfunc, &user_data)) {
 			if (buf && length) {
 				UT_ByteBufPtr myByteBuf(new UT_ByteBuf);
@@ -604,7 +604,7 @@ changed_cb (GOComponent *component, gpointer data)
 				guint i, nbprops;
 				GType    prop_type;
 				GValue	 value = G_VALUE_INIT;
-				char *prop = NULL;
+				char *prop = nullptr;
 				GParamSpec **specs = g_object_class_list_properties (
 							G_OBJECT_GET_CLASS (component), &nbprops);
 				for (i = 0; i < nbprops; i++) {
@@ -639,14 +639,14 @@ changed_cb (GOComponent *component, gpointer data)
 							}
 		
 							default:
-								prop = NULL;
+								prop = nullptr;
 								break;
 						}
 						g_value_unset (&value);
 						if (prop) {
 							Props += UT_String_sprintf("; %s:%s", specs[i]->name, prop);
 							g_free (prop);
-							prop = NULL;
+							prop = nullptr;
 						}
 					}
 				}
@@ -672,7 +672,7 @@ void GOComponentView::loadBuffer(const UT_ConstByteBufPtr & sGOComponentData, co
 	go_component_set_use_font_from_app (component, true);
 	g_signal_connect (G_OBJECT (component), "changed",
 								G_CALLBACK (changed_cb), this);
-	if (component == NULL) {
+	if (component == nullptr) {
 		// we should do something intelligent in that case
 		return;
 	}
@@ -704,7 +704,7 @@ void GOComponentView::loadBuffer(const UT_ConstByteBufPtr & sGOComponentData, co
 	width = 0; // force pixbuf update
 	// update ascent and descent now, otherwise it will not be updated when loading
 	double _ascent, _descent;
-	g_object_get (G_OBJECT (component), "ascent", &_ascent, "descent", &_descent, NULL);
+	g_object_get (G_OBJECT (component), "ascent", &_ascent, "descent", &_descent, nullptr);
 	ascent =  (UT_sint32) rint (_ascent * UT_LAYOUT_RESOLUTION);
 	descent =  (UT_sint32) rint (_descent * UT_LAYOUT_RESOLUTION);
 }
@@ -733,7 +733,7 @@ void GOComponentView::update ()
 	UT_Byte *buf;
 	int length;
 	void (*clearfunc) (gpointer);
-	gpointer user_data = NULL;
+	gpointer user_data = nullptr;
 	FV_View *pView = m_pRun->getBlock ()->getView ();
 	if (go_component_get_data (component, (void**) &buf, &length, &clearfunc, &user_data)) {
 		if (buf && length) {
@@ -744,7 +744,7 @@ void GOComponentView::update ()
 		guint i, nbprops;
 		GType    prop_type;
 		GValue	 value = G_VALUE_INIT;
-		char *prop = NULL;
+		char *prop = nullptr;
 		GParamSpec **specs = g_object_class_list_properties (
 					G_OBJECT_GET_CLASS (component), &nbprops);
 		for (i = 0; i < nbprops; i++) {
@@ -777,14 +777,14 @@ void GOComponentView::update ()
 					}
 
 					default:
-						prop = NULL;
+						prop = nullptr;
 						break;
 				}
 				g_value_unset (&value);
 				if (prop) {
 					Props += UT_String_sprintf("; %s:%s", specs[i]->name, prop);
 					g_free (prop);
-					prop = NULL;
+					prop = nullptr;
 				}
 			}
 		}
@@ -798,15 +798,15 @@ void GOComponentView::update ()
 
 UT_ConstByteBufPtr GOComponentView::getSnapShot(std::string &snap_mime_type)
 {
-	UT_return_val_if_fail (component, NULL);
+	UT_return_val_if_fail (component, nullptr);
 	int height = ascent + descent;
 	if (height == 0 || (int) width == 0)
-		return NULL;
+		return nullptr;
 	size_t length;
 	GOSnapshotType type;
 	const UT_Byte *buf = reinterpret_cast <const UT_Byte*> (go_component_get_snapshot (component, &type, &length));
 	if (!buf || !length)
-		return NULL;
+		return nullptr;
 	switch (type) {
 		case GO_SNAPSHOT_PNG:
 			snap_mime_type = "image/png";
@@ -815,7 +815,7 @@ UT_ConstByteBufPtr GOComponentView::getSnapShot(std::string &snap_mime_type)
 			snap_mime_type = "image/svg";
 			break;
 		default:
-			return NULL;
+			return nullptr;
 	}
 	UT_ByteBufPtr pBuf(new UT_ByteBuf);
 	pBuf->append (buf, length);

@@ -122,7 +122,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BookmarkOK)
 	PT_DocPosition posEnd = pView->getSelectionAnchor();
 	fl_BlockLayout * pBL1 = pView->getBlockAtPosition(posStart);
 	fl_BlockLayout * pBL2 = pView->getBlockAtPosition(posEnd);
-	if((pBL1 == NULL) || (pBL2 == NULL)) // make sure we get valid blocks from selection beginning and end
+	if((pBL1 == nullptr) || (pBL2 == nullptr)) // make sure we get valid blocks from selection beginning and end
 	{
 		s = EV_TIS_Gray;
 		return s;
@@ -147,7 +147,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK)
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 	if ( pView->isSelectionEmpty())
 	  {
-		  if(pView->getHyperLinkRun(pView->getPoint()) == NULL)
+		  if(pView->getHyperLinkRun(pView->getPoint()) == nullptr)
 		  {
 			  s = EV_TIS_Gray ;
 			  return s;
@@ -163,7 +163,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK)
 	PT_DocPosition posEnd = pView->getSelectionAnchor();
 	fl_BlockLayout * pBL1 = pView->getBlockAtPosition(posStart);
 	fl_BlockLayout * pBL2 = pView->getBlockAtPosition(posEnd);
-	if((pBL1 == NULL) || (pBL2 == NULL)) // make sure we get valid blocks from selection beginning and end
+	if((pBL1 == nullptr) || (pBL2 == nullptr)) // make sure we get valid blocks from selection beginning and end
 	{
 		s = EV_TIS_Gray;
 		return s;
@@ -229,12 +229,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 		return s;
 	}
 	if (pszState)
-		*pszState = NULL;
+		*pszState = nullptr;
 
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_FILE_SAVE: // see bug 7580
-	  if (!pView->getDocument()->isDirty() /*|| !pView->canDo(true)*/ /*|| pView->getDocument()->getFilename() == NULL */)
+	  if (!pView->getDocument()->isDirty() /*|| !pView->canDo(true)*/ /*|| pView->getDocument()->getFilename() == nullptr */)
 	    s = EV_TIS_Gray;
 	  break;
 	case AP_TOOLBAR_ID_EDIT_UNDO:
@@ -261,7 +261,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 	CHECK_INC_LOAD;
 
 	if (pszState)
-		*pszState = NULL;
+		*pszState = nullptr;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -287,7 +287,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 	ABIWORD_VIEW;
 
 	if (pszState)
-		*pszState = NULL;
+		*pszState = nullptr;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -320,7 +320,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HdrFtr)
 	UT_return_val_if_fail (pView, EV_TIS_Gray);
 
 	if (pszState)
-		*pszState = NULL;
+		*pszState = nullptr;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -354,7 +354,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 	{
 	case AP_TOOLBAR_ID_FMT_STYLE:
 		{
-			const gchar * sz = NULL;
+			const gchar * sz = nullptr;
 			if (!pView->getStyle(&sz))
 			{
 				static const char * sz2 ="None";
@@ -478,8 +478,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	bool bSize = false;
 	bool bString = false;
 
-	const gchar * prop = NULL;
-	const gchar * val  = NULL;
+	const gchar * prop = nullptr;
+	const gchar * val  = nullptr;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -622,10 +622,10 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 	CHECK_INC_LOAD;
 
 	if (pszState)
-		*pszState = NULL;
+		*pszState = nullptr;
 
 	const gchar * prop = "";
-	const gchar * val  = NULL;
+	const gchar * val  = nullptr;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -703,12 +703,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 	CHECK_INC_LOAD;
 
 	if (pszState)
-		*pszState = NULL;
+		*pszState = nullptr;
 
 	bool bPoints = false;
 
 	const gchar * prop = "text-align";
-	const gchar * val  = NULL;
+	const gchar * val  = nullptr;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -917,7 +917,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableOK)
   {
 	  return EV_TIS_Gray;
   } 
-  else if(pView->getHyperLinkRun(pView->getPoint()) != NULL)
+  else if(pView->getHyperLinkRun(pView->getPoint()) != nullptr)
   {
 	  return EV_TIS_Gray;
   }

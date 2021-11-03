@@ -947,7 +947,7 @@ private:
 	std::vector<RTF_msword97_listOverride*> m_vecWord97ListOverride;
 	void _appendHdrFtr ();
 	bool _appendField (const gchar *xmlField,
-                       const gchar ** pszAttribs=NULL);
+                       const gchar ** pszAttribs=nullptr);
 	gchar *_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField,
                                   bool & isXML);
 	bool                m_bAppendAnyway;

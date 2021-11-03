@@ -30,7 +30,7 @@
 TFTEST_MAIN("UT_LocaleTransactor")
 {
 	char msg[128];
-	if (setlocale(LC_ALL, "fr_FR") == NULL)
+	if (setlocale(LC_ALL, "fr_FR") == nullptr)
 	{
 		printf("Test skipped, fr_FR locale is unknown on this system\n");
 		return;
@@ -39,16 +39,16 @@ TFTEST_MAIN("UT_LocaleTransactor")
 	sprintf(msg, "%f", 1.0f);
 	TFPASS(strstr(msg, "1,0") == msg);
 
-	TFPASS(strcmp(setlocale(LC_NUMERIC, NULL), "fr_FR") == 0);
+	TFPASS(strcmp(setlocale(LC_NUMERIC, nullptr), "fr_FR") == 0);
 
 	{
 		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		TFFAIL(strcmp(setlocale(LC_NUMERIC, NULL), "fr_FR") == 0);
+		TFFAIL(strcmp(setlocale(LC_NUMERIC, nullptr), "fr_FR") == 0);
 		sprintf(msg, "%f", 1.0f);
 		TFPASS(strstr(msg, "1.0") == msg);
-		TFPASS(strcmp(setlocale(LC_NUMERIC, NULL), "C") == 0);
+		TFPASS(strcmp(setlocale(LC_NUMERIC, nullptr), "C") == 0);
 	}
-	TFPASS(strcmp(setlocale(LC_NUMERIC, NULL), "fr_FR") == 0);
+	TFPASS(strcmp(setlocale(LC_NUMERIC, nullptr), "fr_FR") == 0);
 	sprintf(msg, "%f", 1.0f);
 	TFPASS(strstr(msg, "1,0") == msg);
 }

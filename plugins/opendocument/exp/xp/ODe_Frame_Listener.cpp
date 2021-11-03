@@ -62,7 +62,7 @@ ODe_Frame_Listener::ODe_Frame_Listener(ODe_Styles& rStyles,
 void ODe_Frame_Listener::openFrame(const PP_AttrProp* pAP,
                                    ODe_ListenerAction& rAction) {
     bool ok = false;
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     
     ok = pAP->getProperty("frame-type", pValue);
     
@@ -133,7 +133,7 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
     UT_UTF8String output;
     UT_UTF8String str;
     bool ok;
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     ODe_Style_Style* pStyle;
     
     pStyle = new ODe_Style_Style();
@@ -211,13 +211,13 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
 
 	    ok = rAP.getProperty("frame-col-xpos", pValue);
 	    double xCol = 0.;
-	    if(ok && pValue != NULL)
+	    if(ok && pValue != nullptr)
 	    {
 		xCol =  UT_convertToInches(pValue);
 	    }
 	    ok = rAP.getProperty("frame-col-ypos", pValue);
 	    double yCol = 0.;
-	    if(ok && pValue != NULL)
+	    if(ok && pValue != nullptr)
 	    {
 		yCol =  UT_convertToInches(pValue);
 	    }
@@ -251,7 +251,7 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
     
     
     ok = rAP.getProperty("frame-width", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         ODe_writeAttribute(output, "svg:width", pValue);
     }
     
@@ -268,7 +268,7 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
     output += "<draw:text-box";
     
     ok = rAP.getProperty("frame-height", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         ODe_writeAttribute(output, "fo:min-height", pValue);
     }
     

@@ -27,7 +27,7 @@
 
 AiksaurusApp::AiksaurusApp()
 {
-	m_hInstance = NULL;
+	m_hInstance = nullptr;
 }
 
 AiksaurusApp::~AiksaurusApp()
@@ -40,10 +40,10 @@ void AiksaurusApp::initialize()
 {
 	// Ensure that common control DLL is loaded
 	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
-	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
-	if( hinstCC != NULL )
+	InitCommonControlsEx_fn  pInitCommonControlsEx = nullptr;
+	if( hinstCC != nullptr )
 		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx" );
-	if( pInitCommonControlsEx != NULL )
+	if( pInitCommonControlsEx != nullptr )
 	{
 		INITCOMMONCONTROLSEX icex;
 		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);

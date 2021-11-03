@@ -171,7 +171,7 @@ bool ap_LoadBindings_viInput(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 	pThis->_loadNVK(pebm,viIn_NVKTable,G_N_ELEMENTS(viIn_NVKTable),NVKTable_P,NVKTable_P_len);
 
 	//pThis->_loadChar(pebm,s_CharTable,G_N_ELEMENTS(s_CharTable),s_CharPrefixTable,G_N_ELEMENTS(s_CharPrefixTable));
-	pThis->_loadChar(pebm,CharTable,CharTable_len,NULL,0);
+	pThis->_loadChar(pebm,CharTable,CharTable_len,nullptr,0);
 
 	return true;
 }

@@ -70,7 +70,7 @@ class ABI_EXPORT XAP_Dialog
 public:
 
 	XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id,
-		   const char * helpUrl = NULL );
+		   const char * helpUrl = nullptr );
 	virtual ~XAP_Dialog(void);
 
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
@@ -129,7 +129,7 @@ protected:
 	   \return a newly allocated XAP_Widget. Caller is responsible from
 	   freeing it.
 	*/
-	virtual XAP_Widget *getWidget(xap_widget_id /*wid*/) { return NULL; };
+	virtual XAP_Widget *getWidget(xap_widget_id /*wid*/) { return nullptr; };
 
 	XAP_App *				m_pApp;
 	XAP_DialogFactory *			m_pDlgFactory;
@@ -143,7 +143,7 @@ private:
 class ABI_EXPORT XAP_Dialog_NonPersistent : public XAP_Dialog
 {
 public:
-	XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
+	XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = nullptr );
 	virtual ~XAP_Dialog_NonPersistent(void);
 
 	virtual void			runModal(XAP_Frame * pFrame) override = 0;
@@ -157,7 +157,7 @@ protected:
 class ABI_EXPORT XAP_TabbedDialog_NonPersistent : public XAP_Dialog_NonPersistent
 {
 public:
-	XAP_TabbedDialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
+	XAP_TabbedDialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = nullptr );
 	virtual ~XAP_TabbedDialog_NonPersistent(void);
 
 	virtual void			setInitialPageNum 	(int which) { m_pageNum = which; } // support for dialogs with pages (tabs?)
@@ -171,7 +171,7 @@ protected:
 class ABI_EXPORT XAP_Dialog_Persistent : public XAP_Dialog
 {
 public:
-	XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
+	XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = nullptr );
 	virtual ~XAP_Dialog_Persistent(void);
 
 	virtual void				useStart(void);
@@ -185,7 +185,7 @@ protected:
 class ABI_EXPORT XAP_Dialog_FramePersistent : public XAP_Dialog_Persistent
 {
 public:
-	XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
+	XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = nullptr );
 	virtual ~XAP_Dialog_FramePersistent(void);
 
 	virtual void				useStart(void) override;
@@ -200,7 +200,7 @@ protected:
 class ABI_EXPORT XAP_Dialog_AppPersistent : public XAP_Dialog_Persistent
 {
 public:
-	XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
+	XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = nullptr );
 	virtual ~XAP_Dialog_AppPersistent(void);
 
 	virtual void				useStart(void) override;
@@ -216,7 +216,7 @@ protected:
 class ABI_EXPORT XAP_Dialog_Modeless : public XAP_Dialog_AppPersistent
 {
 public:
-	XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
+	XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = nullptr );
 	virtual ~XAP_Dialog_Modeless(void);
 
 	void						useStart(void) override;
@@ -243,7 +243,7 @@ public:
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
 
 	// ugly hack necessary for Win32
-	virtual void *				pGetWindowHandle(void) { return NULL; }
+	virtual void *				pGetWindowHandle(void) { return nullptr; }
 
 protected:
         XAP_Dialog_Modeless *                    m_pDialog;

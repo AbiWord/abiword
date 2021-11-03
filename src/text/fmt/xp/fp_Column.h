@@ -140,8 +140,8 @@ public:
 	virtual bool        isHBreakable(void) override {return false;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32) override {return 0;}
 	virtual UT_sint32   wantHBreakAt(UT_sint32) override {return 0;}
-	virtual fp_ContainerObject * VBreakAt(UT_sint32) override {return NULL;}
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return NULL;}
+	virtual fp_ContainerObject * VBreakAt(UT_sint32) override {return nullptr;}
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return nullptr;}
 	virtual void        recalcMaxWidth(bool bDontClearIfNeeded = false) override
 	{
 		UT_UNUSED(bDontClearIfNeeded);
@@ -150,9 +150,9 @@ public:
 	virtual UT_sint32   getMarginAfter(void) const override{ return 0;}
 	virtual void        setAssignedScreenHeight(UT_sint32) override {}
 	virtual fp_Container * getNextContainerInSection(void) const override
-		{return NULL;}
+		{return nullptr;}
 	virtual fp_Container * getPrevContainerInSection(void) const override
-		{return NULL;}
+		{return nullptr;}
 	bool                validate(void);
 	FV_View*			getView(void) const;
 	UT_sint32           getNumWrapped(void) const
@@ -164,7 +164,7 @@ public:
 	fp_Line *           getNthWrappedLine(UT_sint32 i)
 		{ return m_vecWrappedLines.getNthItem(i);}
 	/* Virtual functions for vertical breakable containers*/
-	virtual fp_Container * getFirstBrokenContainer() const {UT_ASSERT(0);return NULL;}
+	virtual fp_Container * getFirstBrokenContainer() const {UT_ASSERT(0);return nullptr;}
 	virtual UT_sint32      getLastWantedVBreak(void) const {return 0;}
 	virtual void           setLastWantedVBreak(UT_sint32) {;}
 	virtual void           deleteBrokenAfter(bool) {;}

@@ -115,11 +115,11 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		{
 			CREATESTRUCTW* lpCreate = (CREATESTRUCTW *) lParam;
 			UT_DebugOnly<HWND> separator = CreateWindowW(L"STATIC",
-								     NULL,
+								     nullptr,
 				SS_ETCHEDHORZ | WS_CHILD | WS_VISIBLE,
 				0, lpCreate->cy / 2, lpCreate->cx, LINE_HEIGHT,
 				hwnd, (HMENU) IDC_LINE_SEPARATOR,
-				lpCreate->hInstance, NULL);
+				lpCreate->hInstance, nullptr);
 			UT_ASSERT_HARMLESS(separator);
 			return 0;
 		}
@@ -184,7 +184,7 @@ bool XAP_Win32LabelledSeparator_RegisterClass(XAP_Win32App * app)
 	}
 
 	// get base class information
-	if( ! GetClassInfoExW(NULL, L"STATIC", &wndclass))
+	if( ! GetClassInfoExW(nullptr, L"STATIC", &wndclass))
 	{
 		return false;
 	}
@@ -194,7 +194,7 @@ bool XAP_Win32LabelledSeparator_RegisterClass(XAP_Win32App * app)
 	wndclass.lpfnWndProc   = _LabelledSeparatorWndProc;
 	wndclass.hInstance     = hinst;
 	wndclass.lpszClassName = s_LabelledSeparatorWndClassName;
-	wndclass.lpszMenuName  = NULL;
+	wndclass.lpszMenuName  = nullptr;
 
 	a = RegisterClassExW(&wndclass);
 	UT_ASSERT(a);

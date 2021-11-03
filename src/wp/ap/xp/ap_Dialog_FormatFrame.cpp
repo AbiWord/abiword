@@ -87,7 +87,7 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
 	  m_lineStyle(LS_NORMAL),
 	
 	  m_answer(a_OK),
-	  m_pFormatFramePreview(NULL),
+	  m_pFormatFramePreview(nullptr),
 	  m_bSettingsChanged(false),
 
 	  m_borderColorRight(0,0,0),
@@ -112,13 +112,13 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
 	  m_sBorderThicknessTop("1.00pt"),
 	  m_sBorderThicknessBottom("1.00pt"),
 
-	  m_pAutoUpdaterMC(NULL),
+	  m_pAutoUpdaterMC(nullptr),
 	  m_bDestroy_says_stopupdating(false),
 	  m_bAutoUpdate_happening_now(false),
 	  m_iOldPos(0),
 	  m_sImagePath(""),
 	  m_iGraphicType(0),
-	  m_pImage(NULL),
+	  m_pImage(nullptr),
 	  m_bSensitive(false),
 	  m_bSetWrapping(false),
 	  m_bLineToggled(false),
@@ -146,7 +146,7 @@ void AP_Dialog_FormatFrame::setActiveFrame(XAP_Frame * /*pFrame*/)
 void AP_Dialog_FormatFrame::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	gchar * tmp = NULL;
+	gchar * tmp = nullptr;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FormatFrameTitle));
 	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),sizeof(m_WindowName));  
 	FREEP(tmp);
@@ -163,14 +163,14 @@ void AP_Dialog_FormatFrame::startUpdater(void)
 
 void AP_Dialog_FormatFrame::stopUpdater(void)
 {
-	if(m_pAutoUpdaterMC == NULL)
+	if(m_pAutoUpdaterMC == nullptr)
 	{
 		return;
 	}
 	m_bDestroy_says_stopupdating = true;
 	m_pAutoUpdaterMC->stop();
 	DELETEP(m_pAutoUpdaterMC);
-	m_pAutoUpdaterMC = NULL;
+	m_pAutoUpdaterMC = nullptr;
 }
 /*!
  Autoupdater of the dialog.
@@ -687,7 +687,7 @@ void AP_Dialog_FormatFrame::applyChanges()
 
 	//Check if the position mode changed. Update xpos and ypos parameters if necessary
 	fl_FrameLayout * pFL = pView->getFrameLayout();
-	fl_BlockLayout * pCloseBL = NULL;
+	fl_BlockLayout * pCloseBL = nullptr;
 	const std::string sMode = PP_getAttribute("position-to", m_vecProps);
 
 	if (((pFL->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK) &&
@@ -702,7 +702,7 @@ void AP_Dialog_FormatFrame::applyChanges()
 		if (pFrameC)
 		{
 			fv_FrameStrings FrameStrings;
-			fp_Page * pPage = NULL;
+			fp_Page * pPage = nullptr;
 			UT_sint32 iXposPage = pFrameC->getX() - pFrameC->getXPad();
 			UT_sint32 iYposPage = pFrameC->getY() - pFrameC->getYPad();
 			UT_sint32 xp = 0;

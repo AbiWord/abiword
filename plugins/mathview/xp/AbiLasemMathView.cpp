@@ -94,19 +94,19 @@ lsm_itex_to_mathml (const char *itex, gsize size)
 {
 	char *mathml;
 
-	if (itex == NULL)
-		return NULL;
+	if (itex == nullptr)
+		return nullptr;
 
 	if (size < 1)
 		size = strlen (itex);
 
 	mathml = itex2MML_parse (itex, size);
-	if (mathml == NULL)
-		return NULL;
+	if (mathml == nullptr)
+		return nullptr;
 
 	if (mathml[0] == '\0') {
 		itex2MML_free_string (mathml);
-		return NULL;
+		return nullptr;
 	}
 
 	return mathml;
@@ -115,14 +115,14 @@ lsm_itex_to_mathml (const char *itex, gsize size)
 static void
 lsm_itex_free_mathml_buffer (char *mathml)
 {
-	if (mathml == NULL)
+	if (mathml == nullptr)
 		return;
 
 	itex2MML_free_string (mathml);
 }
 #endif
 
-static GR_LasemMathManager * pMathManager = NULL; // single plug-in instance of GR_MathManager
+static GR_LasemMathManager * pMathManager = nullptr; // single plug-in instance of GR_MathManager
 
 //
 // AbiMathView_addToMenus
@@ -142,12 +142,12 @@ static const char* AbiMathView_MenuTooltipFileInsert = "Insert MathML from a fil
 static const char* AbiMathView_MenuLabelLatexInsert = "From Latex";
 static const char* AbiMathView_MenuTooltipLatexInsert = "Insert Equation from a Latex expression";
 */
-static const char * AbiMathView_MenuLabelEquation = NULL;
-static const char * AbiMathView_MenuTooltipEquation = NULL;
-static const char* AbiMathView_MenuLabelFileInsert = NULL;
-static const char* AbiMathView_MenuTooltipFileInsert = NULL;
-static const char* AbiMathView_MenuLabelLatexInsert = NULL;
-static const char* AbiMathView_MenuTooltipLatexInsert = NULL;
+static const char * AbiMathView_MenuLabelEquation = nullptr;
+static const char * AbiMathView_MenuTooltipEquation = nullptr;
+static const char* AbiMathView_MenuLabelFileInsert = nullptr;
+static const char* AbiMathView_MenuTooltipFileInsert = nullptr;
+static const char* AbiMathView_MenuLabelLatexInsert = nullptr;
+static const char* AbiMathView_MenuTooltipLatexInsert = nullptr;
 static const char* AbiMathView_MenuEndEquation= "EndEquation";
 static XAP_Menu_Id newEquationID;
 static XAP_Menu_Id FromFileID;
@@ -204,11 +204,11 @@ static void AbiMathView_addToMenus()
 
 // Put it after Insert Picture in the Main menu
 
-    newEquationID= pFact->addNewMenuAfter("Main",NULL,AP_MENU_ID_INSERT_GRAPHIC,EV_MLF_BeginSubMenu);
+    newEquationID= pFact->addNewMenuAfter("Main",nullptr,AP_MENU_ID_INSERT_GRAPHIC,EV_MLF_BeginSubMenu);
    UT_DEBUGMSG(("newEquationID %d \n",newEquationID));
 
 
-    pFact->addNewLabel(NULL,newEquationID,AbiMathView_MenuLabelEquation, AbiMathView_MenuTooltipEquation);
+    pFact->addNewLabel(nullptr,newEquationID,AbiMathView_MenuLabelEquation, AbiMathView_MenuTooltipEquation);
 
     // Create the Action that will be called.
     EV_Menu_Action* myEquationAction = new EV_Menu_Action(
@@ -217,9 +217,9 @@ static void AbiMathView_addToMenus()
 	0,                      // no, we don't raise a dialog.
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
-	NULL,                   //  no callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   //  no callback function to call.
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
         );
 
     // Now what we need to do is add this particular action to the ActionSet
@@ -229,10 +229,10 @@ static void AbiMathView_addToMenus()
 
     pActionSet->addAction(myEquationAction);
 
-    FromFileID= pFact->addNewMenuAfter("Main",NULL,newEquationID,EV_MLF_Normal);
+    FromFileID= pFact->addNewMenuAfter("Main",nullptr,newEquationID,EV_MLF_Normal);
     UT_DEBUGMSG(("FromFile ID %d \n",FromFileID));
 
-    pFact->addNewLabel(NULL,FromFileID,AbiMathView_MenuLabelFileInsert, AbiMathView_MenuTooltipFileInsert);
+    pFact->addNewLabel(nullptr,FromFileID,AbiMathView_MenuLabelFileInsert, AbiMathView_MenuTooltipFileInsert);
 
 
     // Create the Action that will be called.
@@ -243,8 +243,8 @@ static void AbiMathView_addToMenus()
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
 	"AbiMathView_FileInsert",  // name of callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
         );
 
     // Now what we need to do is add this particular action to the ActionSet
@@ -254,10 +254,10 @@ static void AbiMathView_addToMenus()
 
     pActionSet->addAction(myFileAction);
 
-   FromLatexID= pFact->addNewMenuAfter("Main",NULL,FromFileID,EV_MLF_Normal);
+   FromLatexID= pFact->addNewMenuAfter("Main",nullptr,FromFileID,EV_MLF_Normal);
    UT_DEBUGMSG(("Latex ID %d \n",FromLatexID));
  
-    pFact->addNewLabel(NULL,FromLatexID,AbiMathView_MenuLabelLatexInsert, AbiMathView_MenuTooltipLatexInsert);
+    pFact->addNewLabel(nullptr,FromLatexID,AbiMathView_MenuLabelLatexInsert, AbiMathView_MenuTooltipLatexInsert);
 
 
     // Create the Action that will be called.
@@ -268,16 +268,16 @@ static void AbiMathView_addToMenus()
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
 	"AbiMathView_LatexInsert",  // name of callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
         );
 
 
     pActionSet->addAction(myLatexAction);
 
-   endEquationID= pFact->addNewMenuAfter("Main",NULL,AbiMathView_MenuLabelLatexInsert,EV_MLF_EndSubMenu);
+   endEquationID= pFact->addNewMenuAfter("Main",nullptr,AbiMathView_MenuLabelLatexInsert,EV_MLF_EndSubMenu);
    UT_DEBUGMSG(("End Equation ID %d \n",endEquationID));
-    pFact->addNewLabel(NULL,endEquationID,AbiMathView_MenuEndEquation,NULL);
+    pFact->addNewLabel(nullptr,endEquationID,AbiMathView_MenuEndEquation,nullptr);
 
  
  // Create the Action that will be called.
@@ -287,9 +287,9 @@ static void AbiMathView_addToMenus()
 	0,                      // no, we raise a dialog.
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
-	NULL,                   // name of callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   // name of callback function to call.
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
         );
 
 
@@ -316,10 +316,10 @@ AbiMathView_removeFromMenus()
 	// now remove crap from the menus
 	XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 
-	pFact->removeMenuItem("Main",NULL,newEquationID);
-	pFact->removeMenuItem("Main",NULL,FromFileID);
-	pFact->removeMenuItem("Main",NULL,FromLatexID);
-	pFact->removeMenuItem("Main",NULL, endEquationID);
+	pFact->removeMenuItem("Main",nullptr,newEquationID);
+	pFact->removeMenuItem("Main",nullptr,FromFileID);
+	pFact->removeMenuItem("Main",nullptr,FromLatexID);
+	pFact->removeMenuItem("Main",nullptr, endEquationID);
 
 	pApp->rebuildMenus();
 }
@@ -485,7 +485,7 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	int length;
 	gboolean compact;
 
-	if (go_mathml_to_itex (PbMathml.utf8_str(), &buf, &length, &compact, NULL))
+	if (go_mathml_to_itex (PbMathml.utf8_str(), &buf, &length, &compact, nullptr))
 	{
 		UT_UTF8String Pbitex(buf, length);
 		pView->cmdInsertLatexMath(Pbitex, PbMathml, compact);
@@ -500,12 +500,12 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 		UT_uint32 uid = pDoc->getUID(UT_UniqueId::Image);
 		UT_UTF8String sUID;
 		UT_UTF8String_sprintf(sUID,"%d",uid);
-		pDoc->createDataItem(sUID.utf8_str(), false, pImpMathML->getByteBuf(), 
-		                     "application/mathml+xml", NULL); 
+		pDoc->createDataItem(sUID.utf8_str(), false, pImpMathML->getByteBuf(),
+		                     "application/mathml+xml", nullptr);
 
 		/* Insert the MathML Object */
 		PT_DocPosition pos = pView->getPoint();
-		pView->cmdInsertMathML(sUID.utf8_str(),pos); 
+		pView->cmdInsertMathML(sUID.utf8_str(),pos);
 	}
 
 	DELETEP(pImpMathML);
@@ -559,7 +559,7 @@ AbiMathView_LatexInsert(AV_View* v, EV_EditMethodCallData* /*d*/)
 GR_LasemMathManager::GR_LasemMathManager(GR_Graphics* pG)
   : GR_EmbedManager(pG), 
     m_CurrentUID(-1),
-    m_pDoc(NULL)
+    m_pDoc(nullptr)
 {
   m_vecLasemMathView.clear();
   m_vecItems.clear();
@@ -580,7 +580,7 @@ const char * GR_LasemMathManager::getObjectType(void) const
   return "mathml";
 }
 
-LasemMathView * GR_LasemMathManager::last_created_view = NULL;
+LasemMathView * GR_LasemMathManager::last_created_view = nullptr;
 
 void GR_LasemMathManager::initialize(void)
 {
@@ -613,7 +613,7 @@ void GR_LasemMathManager::_loadMathMl(UT_sint32 uid, UT_UTF8String& sMathBuf)
 
 UT_sint32 GR_LasemMathManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, G_GNUC_UNUSED const char * szDataID)
 {
-        if(m_pDoc == NULL)
+        if(m_pDoc == nullptr)
         {
           m_pDoc = static_cast<PD_Document *>(pDoc);
         }
@@ -635,10 +635,10 @@ void GR_LasemMathManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & re
 	GR_AbiMathItems * pItem = m_vecItems.getNthItem(uid);
 	UT_return_if_fail(pItem);  
 	LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
-	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
 	PT_AttrPropIndex api = pItem->m_iAPI;
 	/* bool b = */ m_pDoc->getAttrProp(api, &pSpanAP);
-	const char * pszDataID = NULL;
+	const char * pszDataID = nullptr;
 	pSpanAP->getAttribute("dataid", pszDataID);
 	UT_ConstByteBufPtr pBuf;
 	std::string mime_type;
@@ -652,7 +652,7 @@ void GR_LasemMathManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & re
 		  }
 		else
 		  {
-			m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mime_type, NULL);
+			m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mime_type, nullptr);
 			pItem->m_bHasSnapshot = true;
 		  }
 	  }
@@ -666,13 +666,13 @@ void GR_LasemMathManager::loadEmbedData(UT_sint32 uid)
 {
   LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
   UT_return_if_fail(pLasemMathView);
-  const PP_AttrProp * pSpanAP = NULL;
+  const PP_AttrProp * pSpanAP = nullptr;
   GR_AbiMathItems * pItem = m_vecItems.getNthItem(uid);
   UT_return_if_fail(pItem);  
   PT_AttrPropIndex api = pItem->m_iAPI;
   bool bHaveProp = m_pDoc->getAttrProp(api, &pSpanAP);
   UT_return_if_fail(bHaveProp);
-  const char * pszDataID = NULL;
+  const char * pszDataID = nullptr;
   bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
   UT_UTF8String sMathML;
   if (bFoundDataID && pszDataID)
@@ -680,7 +680,7 @@ void GR_LasemMathManager::loadEmbedData(UT_sint32 uid)
        UT_ConstByteBufPtr pByteBuf;
        bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID,
 						    pByteBuf,
-						    NULL, NULL);
+						    nullptr, nullptr);
        if (bFoundDataID)
        {
             UT_UCS4_mbtowc myWC;
@@ -746,7 +746,7 @@ void GR_LasemMathManager::releaseEmbedView(UT_sint32 uid)
 {
        LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
        delete pLasemMathView;
-       m_vecLasemMathView.setNthItem(uid,NULL,NULL); //NULL it out so we don't affect the other uid's
+       m_vecLasemMathView.setNthItem(uid,nullptr,nullptr); //nullptr it out so we don't affect the other uid's
 }
 
 void GR_LasemMathManager::setRun(UT_sint32 uid, fp_Run *pRun)
@@ -829,21 +829,21 @@ LasemMathView::LasemMathView(GR_LasemMathManager * pMathMan): m_pMathMan(pMathMa
 	width = height = 0;
 	ascent = descent = 0;
 
-	font = NULL;
-	color = NULL;
-	itex = NULL;
+	font = nullptr;
+	color = nullptr;
+	itex = nullptr;
         
-	view=NULL;
-	mathml = lsm_dom_implementation_create_document(NULL, "math");
+	view=nullptr;
+	mathml = lsm_dom_implementation_create_document(nullptr, "math");
 
-	m_Guru = NULL;
+	m_Guru = nullptr;
 }
 
 LasemMathView::~LasemMathView(void)
 {
-	if(mathml!=NULL)
+	if(mathml!=nullptr)
 		g_object_unref(mathml);		
-	if(view!=NULL)
+	if(view!=nullptr)
 		g_object_unref(view);
 	if (m_Guru)
 		gtk_widget_destroy(m_Guru); // TOPLEVEL
@@ -853,12 +853,12 @@ void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 {
 	if (mathml)
 		g_object_unref(mathml);
-	if (view != NULL)	
+	if (view != nullptr)
 		g_object_unref(view);
-	math_element = NULL;
-	style_element = NULL;
-	mathml = lsm_dom_document_new_from_memory(sMathml.utf8_str(),sMathml.length(),NULL);
-	if (mathml == NULL)
+	math_element = nullptr;
+	style_element = nullptr;
+	mathml = lsm_dom_document_new_from_memory(sMathml.utf8_str(),sMathml.length(),nullptr);
+	if (mathml == nullptr)
 		return;
 	math_element = LSM_DOM_NODE (lsm_dom_document_get_document_element (mathml));
 	style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
@@ -884,7 +884,7 @@ void LasemMathView::render(UT_Rect & rec)
 	cairo_t *cr = pUGG->getCairo();
 	UT_sint32 _width = pUGG->tdu(rec.width * UT_LAYOUT_RESOLUTION);
 	double zoom;
-	if (mathml == NULL || height == 0 || width == 0)
+	if (mathml == nullptr || height == 0 || width == 0)
 		return;
 	zoom = _width / width / 72.;
 	cairo_save (cr);
@@ -905,7 +905,7 @@ cairo_status_t abi_CairoWrite(UT_ByteBuf* buf, unsigned char * data, unsigned in
 
 UT_ConstByteBufPtr LasemMathView::getSnapShot()
 {
-	UT_return_val_if_fail (mathml, NULL);
+	UT_return_val_if_fail (mathml, nullptr);
 	int _height = ascent + descent;
 	if (_height == 0 || (int) width == 0) {
 		return UT_ConstByteBufPtr();
@@ -935,7 +935,7 @@ UT_ConstByteBufPtr LasemMathView::getSnapShot()
     UT_return_if_fail(pFont && mathml);
 	const GR_PangoFont *pPF = dynamic_cast<const GR_PangoFont *>(pFont);
 	UT_return_if_fail(pPF);      
-    if (pPF->getPangoDescription()!= NULL) 
+    if (pPF->getPangoDescription()!= nullptr)
     {
 		LsmDomElement *_style_element;
 		char *value;
@@ -1026,7 +1026,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
     
 	// Add to AbiWord's plugin listeners
 	XAP_App * pApp = XAP_App::getApp();	
-	pMathManager = new GR_LasemMathManager(NULL);
+	pMathManager = new GR_LasemMathManager(nullptr);
 	pApp->registerEmbeddable(pMathManager);
 
 	// Add to AbiWord's menus

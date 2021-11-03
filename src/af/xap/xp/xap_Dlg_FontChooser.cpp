@@ -36,8 +36,8 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogfont")
 {
 	m_answer				= a_CANCEL;
-	m_pGraphics				= NULL;
-	m_pFontPreview          = NULL;
+	m_pGraphics				= nullptr;
+	m_pFontPreview          = nullptr;
 	m_bUnderline			= false;
 	m_bOverline				= false;
 	m_bStrikeout			= false;
@@ -113,7 +113,7 @@ void XAP_Dialog_FontChooser::addOrReplaceVecProp(const std::string & sProp, cons
  */
 void XAP_Dialog_FontChooser::event_previewInvalidate(const UT_UCSChar * pszChars)
 {
-	UT_UCSChar * pszNew = NULL;
+	UT_UCSChar * pszNew = nullptr;
 	if(!pszChars || UT_UCS4_strlen(pszChars) <= 0)
 	{
 		//FREEP(pszChars); // we should not g_free it here
@@ -185,11 +185,11 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(const std::vector<std::string> &
 // Do the Text decorations
 //
 	const std::string sDecor = getVal("text-decoration");
-	m_bUnderline = (NULL != strstr(sDecor.c_str(),"underline"));
-	m_bOverline = (NULL != strstr(sDecor.c_str(),"overline"));
-	m_bStrikeout = (NULL != strstr(sDecor.c_str(),"line-through"));
-	m_bTopline = (NULL != strstr(sDecor.c_str(),"topline"));
-	m_bBottomline = (NULL != strstr(sDecor.c_str(),"bottomline"));
+	m_bUnderline = (nullptr != strstr(sDecor.c_str(),"underline"));
+	m_bOverline = (nullptr != strstr(sDecor.c_str(),"overline"));
+	m_bStrikeout = (nullptr != strstr(sDecor.c_str(),"line-through"));
+	m_bTopline = (nullptr != strstr(sDecor.c_str(),"topline"));
+	m_bBottomline = (nullptr != strstr(sDecor.c_str(),"bottomline"));
 
 	const std::string sDisplay = getVal("display");
 	m_bHidden = sDisplay != "none";
@@ -412,7 +412,7 @@ bool XAP_Dialog_FontChooser::getChangedColor(std::string& szColor) const
 }
 
 /*!
- * Compare two prop values and gracefully handle the cases of NULL pointers
+ * Compare two prop values and gracefully handle the cases of nullptr pointers
  */
 bool XAP_Dialog_FontChooser::didPropChange(const std::string & v1, const std::string & v2) const
 {
@@ -483,12 +483,12 @@ bool XAP_Dialog_FontChooser::getChangedBottomline(bool * pbBottomline) const
 
 XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackground)
 	: XAP_Preview(gc),
-		m_pFont(NULL),
+		m_pFont(nullptr),
 		m_iAscent(0),
 		m_iDescent(0),
 		m_iHeight(0)
 {
-	if(pszClrBackground != NULL && strcmp(pszClrBackground,"transparent")!=0)
+	if(pszClrBackground != nullptr && strcmp(pszClrBackground,"transparent")!=0)
 		UT_parseColor(pszClrBackground,m_clrBackground);
 	else
 		UT_setColor(m_clrBackground,255,255,255);
@@ -533,9 +533,9 @@ void XAP_Preview_FontPreview::drawImmediate(const UT_Rect* clip)
 	const std::string sDecor = getVal("text-decoration");
 	if(!sDecor.empty())
 	{
-		isUnder = (NULL != strstr(sDecor.c_str(),"underline"));
-		isOver = (NULL != strstr(sDecor.c_str(),"overline"));
-		isStrike = (NULL != strstr(sDecor.c_str(),"line-through"));
+		isUnder = (nullptr != strstr(sDecor.c_str(),"underline"));
+		isOver = (nullptr != strstr(sDecor.c_str(),"overline"));
+		isStrike = (nullptr != strstr(sDecor.c_str(),"line-through"));
 	}
 	else
 	{
@@ -587,7 +587,7 @@ void XAP_Preview_FontPreview::drawImmediate(const UT_Rect* clip)
 	m_pFont = m_gc->findFont(sFamily.c_str(), sStyle.c_str(),
 							 sVariant.c_str(), sWeight.c_str(),
 							 sStretch.c_str(), sSize.c_str(),
-							 NULL);
+							 nullptr);
 
 	UT_ASSERT_HARMLESS(m_pFont);
 	if(!m_pFont)
@@ -613,7 +613,7 @@ void XAP_Preview_FontPreview::drawImmediate(const UT_Rect* clip)
 	UT_sint32 iWinHeight = m_gc->tlu(getWindowHeight());
 	UT_sint32 iTop = (iWinHeight - m_iHeight)/2;
 	UT_sint32 len = UT_UCS4_strlen(m_pszChars);
-	UT_sint32 twidth = m_gc->measureString(m_pszChars,0,len,NULL);
+	UT_sint32 twidth = m_gc->measureString(m_pszChars,0,len,nullptr);
 	UT_sint32 iLeft = (iWinWidth - twidth)/2;
 //
 // Fill the background color

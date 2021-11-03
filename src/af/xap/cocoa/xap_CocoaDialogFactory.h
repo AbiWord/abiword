@@ -26,7 +26,7 @@
 class AP_CocoaDialogFactory : public XAP_DialogFactory
 {
 public:
-	AP_CocoaDialogFactory(XAP_App * pApp, XAP_Frame *pFrame = NULL);
+	AP_CocoaDialogFactory(XAP_App * pApp, XAP_Frame *pFrame = nullptr);
 	virtual ~AP_CocoaDialogFactory(void);
 
 protected:

@@ -123,7 +123,7 @@ TF_Test::TF_Test(const char *_suite, const char *_descr,
     : m_suite(_suite)
     , descr(_descr)
     , main(_main)
-    , next(NULL)
+    , next(nullptr)
 {
     const char *cptr = strrchr(_idstr, '/');
     if (cptr) {
@@ -159,7 +159,7 @@ int TF_Test::run(const char * const *prefixes, const char *suite)
     signal(SIGALRM, alarm_handler);
     // signal(SIGALRM, SIG_IGN);
     alarm(MAX_TEST_TIME);
-    TF_Test::start_time() = time(NULL);
+    TF_Test::start_time() = time(nullptr);
 
     fails() = 0;
     runs() = 0;
@@ -201,12 +201,12 @@ int TF_Test::run(const char * const *prefixes, const char *suite)
 
 int TF_Test::run_all(const char * const *prefixes)
 {
-    return run(prefixes, NULL);
+    return run(prefixes, nullptr);
 }
 
 int TF_Test::run_suite(const char *suite)
 {
-    return run(NULL, suite);
+    return run(nullptr, suite);
 }
 
 void TF_Test::start(const char *file, int line, const char *condstr)
@@ -236,10 +236,10 @@ void TF_Test::check(bool cond)
 {
     alarm(MAX_TEST_TIME); // restart per-test timeout
     if (!TF_Test::start_time()) {
-        TF_Test::start_time() = time(NULL);
+        TF_Test::start_time() = time(nullptr);
     }
 
-    if (time(NULL) - TF_Test::start_time() > MAX_TOTAL_TIME) {
+    if (time(nullptr) - TF_Test::start_time() > MAX_TOTAL_TIME) {
         printf("\n! TF_Test   Total run time exceeded %d seconds!  FAILED\n",
                MAX_TOTAL_TIME);
         abort();
@@ -322,7 +322,7 @@ bool TF_Test::ensure_test_data(const char* file, std::string & path)
 
     bool exists = false;
     GFile *f = g_file_new_for_uri(path.c_str());
-    exists = g_file_query_exists(f, NULL);
+    exists = g_file_query_exists(f, nullptr);
     g_object_unref(f);
 
     return exists;

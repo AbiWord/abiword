@@ -37,7 +37,7 @@ GR_RSVGVectorImage::GR_RSVGVectorImage(const char* name)
 	  m_scaleX(1.0), 
 	  m_scaleY(1.0), 
 	  m_needsNewSurface(false),
-	  m_rasterImage(NULL)
+	  m_rasterImage(nullptr)
 {
 	if (name)
 		{
@@ -104,11 +104,11 @@ bool GR_RSVGVectorImage::convertFromBuffer(const UT_ConstByteBufPtr & pBB,
 void GR_RSVGVectorImage::cairoSetSource(cairo_t *cr)
 {
 	createSurface(cr);
-	if (m_surface == NULL) 
+	if (m_surface == nullptr)
     {
 		return;
 	}
-	
+
 	cairo_set_source_surface(cr, m_surface, 0, 0);
 }
 
@@ -260,6 +260,6 @@ GR_Image *GR_RSVGVectorImage::createImageSegment(GR_Graphics * pG, const UT_Rect
 	}
 	return m_rasterImage->createImageSegment(pG, rec);
 #else
-	return NULL;
+	return nullptr;
 #endif
 }

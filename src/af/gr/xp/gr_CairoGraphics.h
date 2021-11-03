@@ -197,7 +197,7 @@ public:
 										  const char * pszLang);
 
 	virtual void           setFont(const GR_Font *) override;
-	virtual void           clearFont(void) override {m_pPFont = NULL;}
+	virtual void           clearFont(void) override {m_pPFont = nullptr;}
 
 	virtual void           setZoomPercentage(UT_uint32 iZoom) override;
 
@@ -283,7 +283,7 @@ public:
 	static  const std::vector<std::string> &       getAllFontNames(void);
 	static  UT_uint32                         getAllFontCount();
 	virtual GR_Font * getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman,
-									 const char * pszLang = NULL);
+									 const char * pszLang = nullptr);
 
 	int dtpu(int d) const;
 	int ptdu(int p) const;

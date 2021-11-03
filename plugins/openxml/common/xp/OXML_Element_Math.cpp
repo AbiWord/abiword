@@ -42,7 +42,7 @@ void OXML_Element_Math::setMathML(const std::string & sMathML)
 
 const char * OXML_Element_Math::getMathML()
 {
-    UT_return_val_if_fail(!m_MathML.empty(), NULL);
+    UT_return_val_if_fail(!m_MathML.empty(), nullptr);
     return m_MathML.c_str();
 }
 
@@ -83,13 +83,13 @@ UT_Error OXML_Element_Math::addToPT(PD_Document * pDocument)
     UT_UTF8String sLatex,sitex;
     sMathml.assign(m_MathML.c_str());
 
-    pDocument->createDataItem(mID.c_str(), false, mathBuf, "", NULL);
+    pDocument->createDataItem(mID.c_str(), false, mathBuf, "", nullptr);
 
     if(convertMathMLtoLaTeX(sMathml, sLatex) && convertLaTeXtoEqn(sLatex,sitex))
     {
         // Conversion of MathML to LaTeX and the Equation Form suceeds
         latexBuf->ins(0, reinterpret_cast<const UT_Byte *>(sitex.utf8_str()), static_cast<UT_uint32>(sitex.size()));
-        pDocument->createDataItem(lID.c_str(), false, latexBuf, "", NULL);
+        pDocument->createDataItem(lID.c_str(), false, latexBuf, "", nullptr);
     }
 
     const PP_PropertyVector atts = {

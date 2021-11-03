@@ -42,7 +42,7 @@ ODi_TableOfContent_ListenerState::ODi_TableOfContent_ListenerState (
             : ODi_ListenerState("TableOfContent", rElementStack),
               m_pAbiDocument ( pDocument ),
               m_pStyles(pStyles),
-              m_pTOCStrux(NULL),
+              m_pTOCStrux(nullptr),
               m_acceptingText(false)
 {
 }
@@ -120,7 +120,7 @@ void ODi_TableOfContent_ListenerState::endElement (const gchar* pName,
     if (!strcmp(pName, "text:table-of-content")) {
 
         m_pAbiDocument->appendStrux(PTX_SectionTOC, PP_NOPROPS, &m_pTOCStrux);
-        UT_ASSERT(m_pTOCStrux != NULL);
+        UT_ASSERT(m_pTOCStrux != nullptr);
 
         m_pAbiDocument->appendStrux(PTX_EndTOC, PP_NOPROPS);
 

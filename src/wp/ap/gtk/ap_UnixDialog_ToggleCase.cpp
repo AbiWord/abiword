@@ -103,7 +103,7 @@ GtkWidget * AP_UnixDialog_ToggleCase::_constructWindow (void)
 
 void AP_UnixDialog_ToggleCase::_constructWindowContents (GtkWidget *vbox1)
 {
-  GSList *vbox1_group = NULL;
+  GSList *vbox1_group = nullptr;
   GtkWidget *sentenceCase;
   GtkWidget *lowerCase;
   GtkWidget *upperCase;

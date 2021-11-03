@@ -113,8 +113,8 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
 void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * container )
 {
    GtkWidget *vbox1;
-   GSList *vbox1_group = NULL;
-   GtkWidget *radiobutton1 = NULL;
+   GSList *vbox1_group = nullptr;
+   GtkWidget *radiobutton1 = nullptr;
    GtkWidget *lbl1;
    GtkWidget *radiobutton2;
    GtkWidget *lbl2;
@@ -125,7 +125,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
    gtk_box_pack_start (GTK_BOX (container), vbox1, TRUE, TRUE, 0);
    XAP_gtk_widget_set_margin(vbox1, 3);
 
-   if(getRadio1Label() != NULL)
+   if(getRadio1Label() != nullptr)
      {
 		 if(isRev())
 		 {
@@ -180,7 +180,7 @@ void AP_UnixDialog_MarkRevisions::event_FocusToggled ()
 	gboolean second_active = FALSE ;
 	
 	if ( ( mRadio2 && gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(mRadio2) ) )
-		 || getRadio1Label() == NULL )
+		 || getRadio1Label() == nullptr )
 		second_active = TRUE ;
 	
 	if ( mEntryLbl )

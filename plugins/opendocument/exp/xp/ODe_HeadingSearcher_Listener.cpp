@@ -54,12 +54,12 @@ void ODe_HeadingSearcher_Listener::openTOC(const PP_AttrProp* pAP) {
 
     for (UT_sint32 iLevel = 1; iLevel <= 4; iLevel++) {
         bool ok = FALSE;
-        const gchar* pValue = NULL;
+        const gchar* pValue = nullptr;
 
         // gather the source style names for all levels
         UT_UTF8String sSourceStyle = UT_UTF8String_sprintf("toc-source-style%d", iLevel);
         ok = pAP->getProperty(sSourceStyle.utf8_str(), pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             m_rAuxiliaryData.m_headingStyles.addStyleName(pValue, iLevel);
         } else {
             const PP_Property* pProp = PP_lookupProperty(sSourceStyle.utf8_str());

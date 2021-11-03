@@ -452,7 +452,7 @@ void AP_UnixDialog_Border_Shading::destroy(void)
 {
 	finalize();
 	gtk_widget_destroy(m_windowMain); // TOPLEVEL
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 }
 
 void AP_UnixDialog_Border_Shading::activate(void)

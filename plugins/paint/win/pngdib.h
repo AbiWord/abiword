@@ -40,10 +40,10 @@ typedef struct PNGD_D2PINFO_struct {
 	LPBITMAPINFOHEADER    lpdib;
 	int             dibsize;        // can be 0
 
-	VOID*           lpbits;         // can be NULL
+	VOID*           lpbits;         // can be nullptr
 	int             bitssize;       // can be 0
 
-	char*           software;       // (NULL==don't include)
+	char*           software;       // (nullptr==don't include)
 // added in v2.0
 	char*           errmsg;          // user can set to null or 100-char buffer
 } PNGD_D2PINFO;

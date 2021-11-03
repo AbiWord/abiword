@@ -177,16 +177,11 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 
 	UT_ASSERT(pPixel == (pInfo + sizeofStructure));
 	pPixel = (UT_Byte *)(pInfo + sizeof(BITMAPINFOHEADER) + sizeofColorData);
-	
+
 	HBITMAP hBitmap = CreateDIBitmap(hdc,pbmih,CBM_INIT,pPixel,pbmi,DIB_RGB_COLORS);
 	*pBitmap = hBitmap;
 
 	g_free(pInfo);
-	
-	return (hBitmap != 0);
-}
 
-		
-			
-		
-		
+	return (hBitmap != nullptr);
+}

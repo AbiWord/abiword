@@ -35,9 +35,9 @@ public:
 
 	GR_UnixCairoAllocInfo(bool bPreview)
 		: GR_CairoAllocInfo(bPreview, true, false),
-		  m_win(NULL){}
+		  m_win(nullptr){}
 
-	cairo_t *createCairo() override {return NULL;} // we need this since otherwise the class would be abstract
+	cairo_t *createCairo() override {return nullptr;} // we need this since otherwise the class would be abstract
 	GtkWidget     * m_win;
 };
 

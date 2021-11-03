@@ -117,7 +117,7 @@ void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
 	UT_sint32 row,col;
 	std::string sCurStyle = getCurStyle();
 
-	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
+	if((getStyleTree() == nullptr) || (sCurStyle.size() == 0))
 		updateDialog();
 
 	if(isStyleTreeChanged())
@@ -130,7 +130,7 @@ void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
 	UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.c_str()));
 
 	HWND hTree = GetDlgItem(m_hDlg, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
-	HTREEITEM hitem = NULL;
+	HTREEITEM hitem = nullptr;
 
 	hitem = TreeView_GetRoot(hTree);
 	UT_sint32 i;
@@ -234,7 +234,7 @@ void AP_Win32Dialog_Stylist::_populateWindowData(void)
 void AP_Win32Dialog_Stylist::_fillTree(void)
 {
 	Stylist_tree * pStyleTree = getStyleTree();
-	if(pStyleTree == NULL)
+	if(pStyleTree == nullptr)
 	{
 		updateDialog();
 		pStyleTree = getStyleTree();
@@ -363,7 +363,7 @@ BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
 
 	// Retrieve the row/column information from the treeview
 	// This maps back to the pStyleList's row&column identifiers
-	if (TreeView_GetParent(hTree, tvi.hItem) == NULL)
+	if (TreeView_GetParent(hTree, tvi.hItem) == nullptr)
 	{
 		if (tvi.cChildren >= 1)
 			return 0; // we've clicked on a style category, not a style

@@ -177,11 +177,11 @@ XAP_Dialog * AP_UnixDialog_FormatTOC::static_constructor(XAP_DialogFactory * pFa
 AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
 	: AP_Dialog_FormatTOC(pDlgFactory, id),
-	  m_wApply(NULL),
-	  m_wClose(NULL),
-	  m_wLabelChoose(NULL),
-	  m_wPageNumberingChoose(NULL),
-	  m_pBuilder(NULL),
+	  m_wApply(nullptr),
+	  m_wClose(nullptr),
+	  m_wLabelChoose(nullptr),
+	  m_wPageNumberingChoose(nullptr),
+	  m_pBuilder(nullptr),
 	  m_iIndentValue(1),
 	  m_iStartValue(1)
 {
@@ -226,7 +226,7 @@ void AP_UnixDialog_FormatTOC::destroy(void)
 {
 	finalize();
 	gtk_widget_destroy(m_windowMain); // TOPLEVEL
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 }
 
 void AP_UnixDialog_FormatTOC::activate(void)
@@ -341,7 +341,7 @@ void AP_UnixDialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 
 GtkWidget * AP_UnixDialog_FormatTOC::_getWidget(const char * szNameBase, UT_sint32 iLevel)
 {
-	UT_return_val_if_fail(m_pBuilder, NULL);
+	UT_return_val_if_fail(m_pBuilder, nullptr);
 
 	UT_String sLocal = szNameBase;
 	if(iLevel > 0)

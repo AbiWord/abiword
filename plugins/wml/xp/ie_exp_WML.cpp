@@ -52,7 +52,7 @@ IE_Exp_WML::IE_Exp_WML(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
 	m_error = 0;
-	m_pListener = NULL;
+	m_pListener = nullptr;
 }
 
 IE_Exp_WML::~IE_Exp_WML()
@@ -302,9 +302,9 @@ void s_WML_Listener::_closeSection(void)
 
 void s_WML_Listener::_openSection(PT_AttrPropIndex api)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	const gchar * szValue = NULL;
+	const gchar * szValue = nullptr;
 
 	if(pAP && bHaveProp && (pAP->getAttribute("strux-image-dataid", szValue)))
 	{
@@ -370,7 +370,7 @@ void s_WML_Listener::_openParagraph(PT_AttrPropIndex api)
 {
 	xxx_UT_DEBUGMSG(("WML Export: OpenParagraph called!\n"));
 
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	if(!m_bInSection)
@@ -810,7 +810,7 @@ void s_WML_Listener::_handleEmbedded(PT_AttrPropIndex api)
 	}
 
 	const gchar* szValue = nullptr;
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
@@ -868,8 +868,8 @@ void s_WML_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_AttrPr
 		return;
 	}
 
-	const PP_AttrProp * pAP = NULL;
-	const gchar* szValue = NULL;
+	const PP_AttrProp * pAP = nullptr;
+	const gchar* szValue = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("type", szValue));
@@ -903,8 +903,8 @@ void s_WML_Listener::_handleBookmark(PT_AttrPropIndex api)
 		return;
 	}
 
-	const PP_AttrProp * pAP = NULL;
-	const gchar* szValue = NULL;
+	const PP_AttrProp * pAP = nullptr;
+	const gchar* szValue = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_UTF8String buf;
 
@@ -940,8 +940,8 @@ void s_WML_Listener::_handleHyperlink(PT_AttrPropIndex api)
 		return;
 	}
 
-	const PP_AttrProp * pAP = NULL;
-	const gchar* szValue = NULL;
+	const PP_AttrProp * pAP = nullptr;
+	const gchar* szValue = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_UTF8String buf;
 
@@ -979,7 +979,7 @@ void s_WML_Listener::_handleMath(PT_AttrPropIndex api)
 	}
 
 	const gchar* szValue = nullptr;
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("dataid", szValue));
@@ -1019,8 +1019,8 @@ void s_WML_Listener::_handleImage(PT_AttrPropIndex api, bool bPos)
 		return;
 	}
 
-	const PP_AttrProp * pAP = NULL;
-	const gchar* szValue = NULL;
+	const PP_AttrProp * pAP = nullptr;
+	const gchar* szValue = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	if(!(bHaveProp && pAP))
@@ -1108,7 +1108,7 @@ void s_WML_Listener::_handleDataItems(void)
     std::string mimeType;
 	UT_ConstByteBufPtr pByteBuf;
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf,
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, nullptr, &szName, pByteBuf,
                                                     &mimeType)); k++)
 	{
 		UT_sint32 loc = -1;
@@ -1126,7 +1126,7 @@ void s_WML_Listener::_handleDataItems(void)
 			UT_UTF8String fname;
 			UT_UTF8String_sprintf(fname, "%s_data", m_pie->getFileName());
 
-			/* UT_sint32 result = */ UT_go_directory_create(fname.utf8_str(), NULL);
+			/* UT_sint32 result = */ UT_go_directory_create(fname.utf8_str(), nullptr);
 			if (0 /* result < 0 */)
 			{
 				UT_DEBUGMSG(("WML Export: Failed to create directory\n"));
@@ -1155,7 +1155,7 @@ void s_WML_Listener::_handleDataItems(void)
 				UT_DEBUGMSG(("WML export: Unhandled/ignored mime type: %s\n", mimeType.c_str()));
 			}
 
-			GsfOutput *fp = UT_go_file_create (fname.utf8_str(), NULL);
+			GsfOutput *fp = UT_go_file_create (fname.utf8_str(), nullptr);
 			
 			if(!fp)
 			  continue;
@@ -1177,12 +1177,12 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 		return;
 	}
 	
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	if (bHaveProp && pAP)
 	{
-		const gchar * szValue = NULL;
+		const gchar * szValue = nullptr;
 
 		if ((pAP->getProperty("font-weight", szValue))
 			&& !strcmp(szValue, "bold"))
@@ -1315,7 +1315,7 @@ void s_WML_Listener::_closeSpan(void)
 	
 	if (pAP)
 	{
-		const gchar * szValue = NULL;
+		const gchar * szValue = nullptr;
 		
 		if (pAP->getProperty("text-position", szValue))
 		{
@@ -1347,7 +1347,7 @@ void s_WML_Listener::_closeSpan(void)
 		  m_pie->write("</b>");
 		}
 
-		m_pAP_Span = NULL;
+		m_pAP_Span = nullptr;
 	}
 
 	m_bInSpan = false;

@@ -53,17 +53,17 @@ XAP_Dialog * AP_Win32Dialog_FormatTable::static_constructor(XAP_DialogFactory * 
 AP_Win32Dialog_FormatTable::AP_Win32Dialog_FormatTable(XAP_DialogFactory * pDlgFactory,
 										             XAP_Dialog_Id id)
 	: AP_Dialog_FormatTable(pDlgFactory,id),
-	m_hBitmapBottom(NULL),	
-	m_hBitmapTop(NULL), 
-	m_hBitmapRight(NULL),
-	m_hBitmapLeft(NULL),
-	m_pPreviewWidget(NULL)
-{		
+	m_hBitmapBottom(nullptr),
+	m_hBitmapTop(nullptr),
+	m_hBitmapRight(nullptr),
+	m_hBitmapLeft(nullptr),
+	m_pPreviewWidget(nullptr)
+{
 	UT_sint32 i = 0;
 	for(i=0; i < FORMAT_TABLE_NUMTHICKNESS ;i++)
 		m_dThickness[i] = UT_convertToInches(sThicknessTable[i]);
-}   
-    
+}
+
 AP_Win32Dialog_FormatTable::~AP_Win32Dialog_FormatTable(void)
 {
 	if (m_pPreviewWidget) delete m_pPreviewWidget;			
@@ -239,7 +239,7 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*l
 				setBorderColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));		
 				m_borderButton.setColour(cc.rgbResult);
 				/*Force redraw*/
-				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR), NULL, FALSE);
+				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR), nullptr, FALSE);
 				event_previewExposed();	
 			}
 			return 1;
@@ -261,7 +261,7 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*l
 				setBackgroundColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));						
 				m_backgButton.setColour(cc.rgbResult);
 				/*Force redraw*/
-				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), NULL, FALSE);
+				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), nullptr, FALSE);
 				event_previewExposed();	
 			}
 			return 1;
@@ -280,7 +280,7 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*l
 					getComboTextItem(AP_RID_DIALOG_FORMATTABLE_COMBO_THICKNESS, nSelected, thickness);
                     setBorderThickness(thickness_utf8);                                        
                     /*Force redraw*/
-					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), NULL, FALSE);
+					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), nullptr, FALSE);
 					event_previewExposed();	
 				}
 			}
@@ -334,7 +334,7 @@ void AP_Win32Dialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
 {
 	m_backgButton.setColour(RGB(clr.m_red,clr.m_grn,clr.m_blu));
 	/* force redraw */
-	InvalidateRect(GetDlgItem(m_hDlg, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), NULL, FALSE);
+	InvalidateRect(GetDlgItem(m_hDlg, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), nullptr, FALSE);
 }
 
 void AP_Win32Dialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & /*sThick*/)
@@ -376,7 +376,7 @@ void AP_Win32Dialog_FormatTable::notifyActiveFrame(XAP_Frame *pFrame)
 		setDialogTitle(m_WindowName);
 
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }

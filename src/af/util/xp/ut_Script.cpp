@@ -52,7 +52,7 @@ UT_Script::~UT_Script()
 
 /************************************************************************/
 /************************************************************************/
-UT_ScriptLibrary * UT_ScriptLibrary::m_pInstance = NULL;
+UT_ScriptLibrary * UT_ScriptLibrary::m_pInstance = nullptr;
 
 UT_ScriptLibrary::UT_ScriptLibrary ()
   :     mSniffers (new UT_GenericVector<UT_ScriptSniffer *>(5)),
@@ -76,7 +76,7 @@ UT_ScriptLibrary * UT_ScriptLibrary::instance ()
 UT_Error UT_ScriptLibrary::execute (const char * script,
 									UT_ScriptIdType type )
 {
-	UT_Script* pScript = NULL;
+	UT_Script* pScript = nullptr;
 	UT_ScriptIdType scriptId = -1;
 
 	UT_Error err = UT_OK;
@@ -271,8 +271,9 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
 	UT_return_val_if_fail(ieft != -1, UT_ERROR);
 	
 	// tell the caller the type of importer they got
-	if (pieft != NULL) 
+	if (pieft != nullptr) {
 		*pieft = ieft;
+	}
   
 	// use the importer for the specified file type
 	UT_uint32 nrElements = getNumScripts();

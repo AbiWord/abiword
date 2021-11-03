@@ -56,7 +56,7 @@ ABI_EXPORT std::string UT_std_string_sprintf(const char * inFormat, ...)
 
 /**
  * Create a string form a Unicode stream. Will be UTF8 encoded.
- * @param unicode the Unicode UCS4 string. Can't be NULL
+ * @param unicode the Unicode UCS4 string. Can't be nullptr
  * @param len the length of the Unicode UCS4 string. Must match the length.
  * @return the std::string. Empty string if an invalid parameter or error.
  */
@@ -64,8 +64,8 @@ ABI_EXPORT std::string UT_std_string_unicode(const UT_UCS4Char * unicode,
                                              UT_uint32 len);
 /**
  * Returns a std::string (UTF-8) converted from an encoding.
- * \param bytes the input bytes (not NULL)
- * \param encoding the encoding (not NULL)
+ * \param bytes the input bytes (not nullptr)
+ * \param encoding the encoding (not nullptr)
  * \return an UTF-8 enconded std::string
  */
 ABI_EXPORT std::string UT_std_stringFromEncoding(const char* bytes,

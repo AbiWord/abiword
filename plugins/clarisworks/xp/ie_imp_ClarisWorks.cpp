@@ -266,7 +266,7 @@ UT_Error IE_Imp_ClarisWorks::_parseFile(GsfInput * fp)
    }
    
    
-   while (gsf_input_read(fp, 1, &c) != NULL)
+   while (gsf_input_read(fp, 1, &c) != nullptr)
    {
        switch (c)
        {

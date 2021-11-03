@@ -318,7 +318,7 @@ void AP_CocoaDialog_Tab::_clearList()
 
 - (void)discardXAP
 {
-	_xap = NULL;
+	_xap = nullptr;
 	DELETEP(_proxy);
 }
 

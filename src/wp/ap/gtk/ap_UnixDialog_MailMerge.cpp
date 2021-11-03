@@ -216,7 +216,7 @@ void AP_UnixDialog_MailMerge::setFieldList()
 	model = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
 	column = gtk_tree_view_get_column (GTK_TREE_VIEW(m_treeview), 0);
 	if (!column) {
-		column = gtk_tree_view_column_new_with_attributes ("Format", gtk_cell_renderer_text_new (), "text", 0, NULL);
+		column = gtk_tree_view_column_new_with_attributes ("Format", gtk_cell_renderer_text_new (), "text", 0, nullptr);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(m_treeview), column);
 	}
 	

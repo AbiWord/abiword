@@ -34,7 +34,7 @@ public:
 
   virtual const IE_SuffixConfidence * getSuffixConfidence() override;
 
-  virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
+  virtual const IE_MimeConfidence * getMimeConfidence() override { return nullptr; }
 
   virtual UT_Confidence_t recognizeContents(GsfInput * input) override;
 

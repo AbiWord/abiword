@@ -190,8 +190,8 @@ PD_Document::PD_Document()
 	  m_indexAP(0xffffffff),
 	  m_bDontImmediatelyLayout(false),
 	  m_iLastDirMarker(0),
-	  m_pVDBl(NULL),
-	  m_pVDRun(NULL),
+	  m_pVDBl(nullptr),
+	  m_pVDRun(nullptr),
 	  m_iVDLastPos(0xffffffff),
 	  m_iNewHdrHeight(0), 
 	  m_iNewFtrHeight(0),
@@ -216,8 +216,8 @@ PD_Document::PD_Document()
 	const gchar *name = g_get_real_name();
 	if(strcmp(name, "Unknown") == 0)
 		name = g_get_user_name();
-	gchar *utf8name = g_locale_to_utf8(name, -1, NULL, NULL, NULL);
-	if (utf8name != NULL)
+	gchar *utf8name = g_locale_to_utf8(name, -1, nullptr, nullptr, nullptr);
+	if (utf8name != nullptr)
 	{
 		m_sUserName = utf8name;
 		g_free(utf8name);
@@ -374,7 +374,7 @@ ImagePage * PD_Document::getNthImagePage(UT_sint32 iImagePage)
 	{
 		return m_pPendingImagePage.getNthItem(iImagePage);
 	}
-	return NULL;
+	return nullptr;
 }
 
 TextboxPage * PD_Document::getNthTextboxPage(UT_sint32 iTextboxPage)
@@ -383,7 +383,7 @@ TextboxPage * PD_Document::getNthTextboxPage(UT_sint32 iTextboxPage)
 	{
 		return m_pPendingTextboxPage.getNthItem(iTextboxPage);
 	}
-	return NULL;
+	return nullptr;
 }
 
 void PD_Document::clearAllPendingObjects(void)
@@ -446,8 +446,8 @@ bool PD_Document::_buildAuthorProps(pp_Author * pAuthor, PP_PropertyVector & pro
 	UT_DEBUGMSG(("_buildAuthorProps getAuthorInt %d \n",pAuthor->getAuthorInt()));
 	props.push_back("id");
 	props.push_back(UT_std_string_sprintf("%d",pAuthor->getAuthorInt()));
-	const gchar * szName = NULL;
-	const gchar * szValue = NULL;
+	const gchar * szName = nullptr;
+	const gchar * szValue = nullptr;
 
 	for (UT_uint32 i = 0; i < iCnt; i++) {
 		pAP->getNthProperty(i, szName, szValue);
@@ -464,7 +464,7 @@ UT_sint32 PD_Document::findFirstFreeAuthorInt(void) const
 	UT_sint32 i= 0;
 	for(i=0;i<1000;i++)
 	{
-		if(getAuthorByInt(i) == NULL)
+		if(getAuthorByInt(i) == nullptr)
 			break;
 	}
 	return i;
@@ -477,7 +477,7 @@ pp_Author * PD_Document::getAuthorByInt(UT_sint32 i) const
 		if(m_vecAuthors.getNthItem(j)->getAuthorInt() == i)
 			return m_vecAuthors.getNthItem(j);
 	}
-	return NULL;
+	return nullptr;
 }
 /*!
  * True if the Author attributes should be exported.
@@ -588,7 +588,7 @@ bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
 		p_AttrProp = &p;
 		return false;
 	}
-	const gchar * sz = NULL;
+	const gchar * sz = nullptr;
 	if(p_AttrProp->getAttribute(PT_AUTHOR_NAME,sz))
 	{
 		xxx_UT_DEBUGMSG(("Found athor att %s \n",sz));
@@ -690,7 +690,7 @@ UT_Error PD_Document::_importFile(const char * szFilename, int ieft,
 {
 	GsfInput * input;
 
-	input = UT_go_file_open(szFilename, NULL);
+	input = UT_go_file_open(szFilename, nullptr);
 	if (!input)
 	{
 		UT_DEBUGMSG(("PD_Document::importFile -- invalid filename\n"));
@@ -820,14 +820,14 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 	
 	m_bLoading = false;
 
-	setLastOpenedTime(time(NULL));
+	setLastOpenedTime(time(nullptr));
 	
 	// get document-wide settings from the AP
 	const PP_AttrProp * pAP = getAttrProp();
 	
 	if(pAP)
 	{
-		const gchar * pA = NULL;
+		const gchar * pA = nullptr;
 
 		// TODO this should probably be stored as an attribute of the
 		// styles section rather then the whole doc ...
@@ -859,7 +859,7 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 	bHidden |= (!isMarkRevisions() && !isShowRevisions() && getRevisions().size());
 
 	// note: the GsfInput could be a memory stream, and thus we have could have no filename yet
-	if(pFrame && szFilename && (strstr(szFilename, "normal.awt") == NULL))
+	if(pFrame && szFilename && (strstr(szFilename, "normal.awt") == nullptr))
 		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
 
 	if(pFrame && bHidden)
@@ -887,7 +887,7 @@ AP_StatusBar *  PD_Document::getStatusBar(void)
 		if(pData)
 			return static_cast<AP_StatusBar *>(pData->m_pStatusBar);
 	}
-	return NULL;
+	return nullptr;
 }
 
 UT_Error PD_Document::createRawDocument(void)
@@ -971,7 +971,7 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocP
 		return UT_NOPIECETABLE;
 	}
 
-	IE_Imp * pie = NULL;
+	IE_Imp * pie = nullptr;
 	UT_Error errorCode;
 
 	// don't use IE_Imp::loadFile () here, because of the setLoadStylesOnly below. it doesn't do us much good anyway
@@ -1057,7 +1057,7 @@ UT_Error PD_Document::newDocument(void)
 
 	setDocVersion(0);
 	setEditTime(0);
-	setLastOpenedTime(time(NULL));
+	setLastOpenedTime(time(nullptr));
 
 	// set document metadata from context
 	setMetaDataProp(PD_META_KEY_CREATOR, m_sUserName);
@@ -1083,7 +1083,7 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft,
 UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 							  const char * expProps)
 {
-	IE_Exp * pie = NULL;
+	IE_Exp * pie = nullptr;
 	UT_Error errorCode;
 	IEFileType newFileType;
 
@@ -1142,7 +1142,7 @@ UT_Error PD_Document::_saveAs(GsfOutput *output, int ieft, bool cpy, const char 
 
 	const char * szFilename = gsf_output_name(output);
 
-	IE_Exp * pie = NULL;
+	IE_Exp * pie = nullptr;
 	UT_Error errorCode;
 	IEFileType newFileType;
 
@@ -1202,7 +1202,7 @@ UT_Error PD_Document::_save(void)
 	if (m_lastSavedAsType == IEFT_Unknown)
 		return UT_EXTENSIONERROR;
 
-	IE_Exp * pie = NULL;
+	IE_Exp * pie = nullptr;
 	UT_Error errorCode;
 
 	errorCode = IE_Exp::constructExporter(this, getFilename().c_str(),
@@ -1269,7 +1269,7 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 	PP_PropertyVector newattrs(attributes);
 	addAuthorAttributeIfBlank(newattrs);
 	if (pField) {
-		pf_Frag_Object * pfo = NULL;
+		pf_Frag_Object * pfo = nullptr;
 		bool b = m_pPieceTable->insertObject(dpos, pto, newattrs, properties, &pfo);
 		*pField = pfo->getField();
 		return b;
@@ -1289,7 +1289,7 @@ bool PD_Document::insertSpan( PT_DocPosition dpos,
 /*!
  * Note that the text will be set to exactly the properties of given by
  *  p_AttrProp.
- * If pAttrProp is set to NULL, the text will be set to exactly
+ * If pAttrProp is set to nullptr, the text will be set to exactly
  * the properties of the style of the current paragraph.
  */
 bool PD_Document::insertSpan(PT_DocPosition dpos, const UT_UCSChar * pbuf,
@@ -1614,8 +1614,8 @@ bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const PP_PropertyVector & 
  */
 bool PD_Document::repairDoc(void)
 {
-	pf_Frag * pf = NULL;
-	pf_Frag_Strux * pfs = NULL;
+	pf_Frag * pf = nullptr;
+	pf_Frag_Strux * pfs = nullptr;
 	bool bRepaired = false;
 	//
 	// First check there is *some* content.
@@ -1700,7 +1700,7 @@ bool PD_Document::repairDoc(void)
 						
 					}
 				}
-				else if(pfs->getStruxType() == PTX_EndTable && pfNext == NULL)
+				else if(pfs->getStruxType() == PTX_EndTable && pfNext == nullptr)
 				{
 					appendStrux(PTX_Block, PP_NOPROPS);
 				}
@@ -1867,12 +1867,12 @@ bool PD_Document::repairDoc(void)
  */
 bool PD_Document::_removeRepeatedHdrFtr(pf_Frag_Strux * pfs ,UT_GenericVector<pf_Frag_Strux *> * vecHdrFtrs,UT_sint32 iStart)
 {
-	const char * pszMyHdrFtr = NULL;
-	const char * pszMyID = NULL;
-	const char * pszThisID = NULL;
-	const char * pszThisHdrFtr = NULL;
+	const char * pszMyHdrFtr = nullptr;
+	const char * pszMyID = nullptr;
+	const char * pszThisID = nullptr;
+	const char * pszThisHdrFtr = nullptr;
 	UT_sint32 i=0;
-	pf_Frag_Strux * pfsS = NULL;
+	pf_Frag_Strux * pfsS = nullptr;
 	getAttributeFromSDH(pfs,false,0,"type",&pszMyHdrFtr);
 	getAttributeFromSDH(pfs,false,0,"id",&pszMyID);
 	if(pszMyHdrFtr && *pszMyHdrFtr && pszMyID && *pszMyID)
@@ -1905,8 +1905,8 @@ bool PD_Document::_removeRepeatedHdrFtr(pf_Frag_Strux * pfs ,UT_GenericVector<pf
  */
 bool PD_Document::_checkAndFixTable(pf_Frag_Strux * pfs)
 {
-	pf_Frag * pf =NULL;
-	pf_Frag_Strux * pfsn = NULL;
+	pf_Frag * pf =nullptr;
+	pf_Frag_Strux * pfsn = nullptr;
 	if(pfs->getStruxType() == PTX_SectionTable)
 	{
 		pf = pfs->getNext();
@@ -1958,9 +1958,9 @@ bool PD_Document::_checkAndFixTable(pf_Frag_Strux * pfs)
  */
 bool PD_Document::_pruneSectionAPI(pf_Frag_Strux * pfs,const char * szHType, UT_GenericVector<pf_Frag_Strux *> *vecHdrFtrs)
 {
-	const char * pszHdrFtr = NULL;
-	const char * pszHFID = NULL;
-	const char * pszID = NULL;
+	const char * pszHdrFtr = nullptr;
+	const char * pszHFID = nullptr;
+	const char * pszID = nullptr;
 	UT_sint32 i = 0;
 	getAttributeFromSDH(pfs,false,0,szHType,&pszID);
 	if(!pszID)
@@ -2004,8 +2004,8 @@ bool PD_Document::_pruneSectionAPI(pf_Frag_Strux * pfs,const char * szHType, UT_
 bool PD_Document::_removeHdrFtr(pf_Frag_Strux * pfs)
 {
 	UT_DEBUGMSG(("Removing HdrFtr %p \n", (void*)pfs));
-	pf_Frag * pf = NULL;
-	pf_Frag * pfNext = NULL;
+	pf_Frag * pf = nullptr;
+	pf_Frag * pfNext = nullptr;
 	pfNext = pfs->getNext();
 	pf = static_cast<pf_Frag *>(pfs);
 	while(pf )
@@ -2032,9 +2032,9 @@ bool PD_Document::_removeHdrFtr(pf_Frag_Strux * pfs)
  */
 bool PD_Document::_matchSection(pf_Frag_Strux * pfs, UT_GenericVector<pf_Frag_Strux *> *vecSections)
 {
-	const char * pszHdrFtr = NULL;
-	const char * pszHFID = NULL;
-	const char * pszID = NULL;
+	const char * pszHdrFtr = nullptr;
+	const char * pszHFID = nullptr;
+	const char * pszID = nullptr;
 	UT_sint32 i = 0;
 	getAttributeFromSDH(pfs,false,0,"type",&pszHdrFtr);
 	if(!pszHdrFtr)
@@ -2070,7 +2070,7 @@ bool PD_Document::_matchSection(pf_Frag_Strux * pfs, UT_GenericVector<pf_Frag_St
 bool PD_Document::checkForSuspect(void)
 {
 	pf_Frag * pf = getLastFrag();
-	if(pf == NULL)
+	if(pf == nullptr)
 	{
 		return true;
 	}
@@ -2227,8 +2227,8 @@ bool PD_Document::getAttributeFromSDH(pf_Frag_Strux* sdh, bool bShowRevisions, U
 {
 	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
-	const PP_AttrProp * pAP = NULL;
-	const gchar * pszValue = NULL;
+	const PP_AttrProp * pAP = nullptr;
+	const gchar * pszValue = nullptr;
 
 	bool bHiddenRevision = false;
 	UT_Option<std::unique_ptr<PP_RevisionAttr>> unused;
@@ -2236,9 +2236,9 @@ bool PD_Document::getAttributeFromSDH(pf_Frag_Strux* sdh, bool bShowRevisions, U
 
 	UT_return_val_if_fail (pAP, false);
 	(pAP)->getAttribute(szAttribute, pszValue);
-	if(pszValue == NULL)
+	if(pszValue == nullptr)
 	{
-		*pszRetValue = NULL;
+		*pszRetValue = nullptr;
 		return false;
 	}
 	*pszRetValue = pszValue;
@@ -2277,8 +2277,8 @@ bool PD_Document::getPropertyFromSDH(const pf_Frag_Strux* sdh, bool bShowRevisio
 {
 	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
-	const PP_AttrProp * pAP = NULL;
-	const gchar * pszValue = NULL;
+	const PP_AttrProp * pAP = nullptr;
+	const gchar * pszValue = nullptr;
 
 	bool bHiddenRevision = false;
 
@@ -2288,9 +2288,9 @@ bool PD_Document::getPropertyFromSDH(const pf_Frag_Strux* sdh, bool bShowRevisio
 	UT_return_val_if_fail (pAP, false);
 	(pAP)->getProperty(szProperty, pszValue);
 
-	if(pszValue == NULL)
+	if(pszValue == nullptr)
 	{
-		*pszRetValue = NULL;
+		*pszRetValue = nullptr;
 		return false;
 	}
 	*pszRetValue = pszValue;
@@ -2361,17 +2361,17 @@ bool PD_Document::changeDocPropeties(const PP_PropertyVector & pAtts, const PP_P
 	if(!pProps.empty()) {
 		AP.setProperties(pProps);
 	}
-	const gchar * szValue=NULL;
+	const gchar * szValue=nullptr;
 	bool b= AP.getAttribute( PT_DOCPROP_ATTRIBUTE_NAME,szValue);
-	if(!b || (szValue == NULL))
+	if(!b || (szValue == nullptr))
 		return false;
 	gchar * szLCValue = g_utf8_strdown (szValue, -1);
 	if(strcmp(szLCValue,"revision") == 0)
     {
-		const gchar * szID=NULL;
-		const gchar * szDesc=NULL;
-		const gchar * szTime=NULL;
-		const gchar * szVersion=NULL;
+		const gchar * szID=nullptr;
+		const gchar * szDesc=nullptr;
+		const gchar * szTime=nullptr;
+		const gchar * szVersion=nullptr;
 		AP.getAttribute(PT_REVISION_ATTRIBUTE_NAME,szID);
 		AP.getAttribute(PT_REVISION_DESC_ATTRIBUTE_NAME,szDesc);
 		AP.getAttribute(PT_REVISION_TIME_ATTRIBUTE_NAME,szTime);
@@ -2381,7 +2381,7 @@ bool PD_Document::changeDocPropeties(const PP_PropertyVector & pAtts, const PP_P
 		UT_UTF8String sDesc = szDesc; 
 		time_t iTime = atoi(szTime);
 		UT_uint32 iVer = atoi(szVersion);
-		UT_UCS4Char * pD = NULL;
+		UT_UCS4Char * pD = nullptr;
 		UT_uint32 iLen = sDesc.ucs4_str().size();
 		pD = new UT_UCS4Char [iLen+1];
 		UT_UCS4_strncpy(pD,sDesc.ucs4_str().ucs4_str(),iLen);
@@ -2393,8 +2393,8 @@ bool PD_Document::changeDocPropeties(const PP_PropertyVector & pAtts, const PP_P
 #if 0 // some debug code. XXX remove this
 		UT_sint32 i = 0;
 		UT_DEBUGMSG(("pagesize docprop received \n"));
-		const gchar * szP = pProps ? pProps[i] : NULL;
-		while(szP != NULL)
+		const gchar * szP = pProps ? pProps[i] : nullptr;
+		while(szP != nullptr)
 		{
 			UT_DEBUGMSG(("property %s value %s \n",pProps[i],pProps[i+1]));
 			i += 2;
@@ -2417,7 +2417,7 @@ bool PD_Document::changeDocPropeties(const PP_PropertyVector & pAtts, const PP_P
 	}
 	else if(strcmp(szLCValue,"addauthor") == 0)
 	{
-		const gchar * szInt=NULL;
+		const gchar * szInt=nullptr;
 		AP.getProperty("id",szInt);
 		UT_DEBUGMSG(("addauthor docprop CR received int %s \n",szInt));
 		if(szInt)
@@ -2425,8 +2425,8 @@ bool PD_Document::changeDocPropeties(const PP_PropertyVector & pAtts, const PP_P
 			UT_sint32 iAuthor = atoi(szInt);
 			pp_Author * pA = addAuthor(iAuthor);
 			UT_uint32 j = 0;
-			const gchar * szName = NULL;
-			szValue = NULL;
+			const gchar * szName = nullptr;
+			szValue = nullptr;
 			PP_AttrProp * pAP = pA->getAttrProp();
 			while(AP.getNthProperty(j++,szName,szValue))
 			{
@@ -2440,8 +2440,8 @@ bool PD_Document::changeDocPropeties(const PP_PropertyVector & pAtts, const PP_P
 	}
 	else if(strcmp(szLCValue,"changeauthor") == 0)
 	{
-		const gchar * szInt=NULL;
-		pp_Author * pA = NULL;
+		const gchar * szInt=nullptr;
+		pp_Author * pA = nullptr;
 		if(AP.getProperty("id",szInt) && szInt && *szInt)
 	    {
 			UT_sint32 iAuthor = atoi(szInt);
@@ -2451,7 +2451,7 @@ bool PD_Document::changeDocPropeties(const PP_PropertyVector & pAtts, const PP_P
 		{
 			PP_AttrProp * pAP = pA->getAttrProp();
 			UT_uint32 j = 0;
-			const gchar * szName = NULL;
+			const gchar * szName = nullptr;
 			while(AP.getNthProperty(j++,szName,szValue))
 			{
 				if(strcmp(szName,"id") == 0)
@@ -2495,13 +2495,13 @@ bool PD_Document::deleteStrux(PT_DocPosition dpos,
 							  bool bRecordChange)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	m_pPieceTable->getFragFromPosition(dpos,&pf,&pOffset);
 	while(pf && pf->getLength() == 0)
 		pf = pf->getPrev();
-	if(pf == NULL)
+	if(pf == nullptr)
 		return false;
-	pf_Frag_Strux* sdh = NULL;
+	pf_Frag_Strux* sdh = nullptr;
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
@@ -2547,7 +2547,7 @@ bool PD_Document::deleteFragNoUpdate(pf_Frag * pf)
 bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf && (pf->getType() != pf_Frag::PFT_Strux) )
 	{
@@ -2563,10 +2563,10 @@ bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 			else
 			{
 				PT_AttrPropIndex iAP = pf->	getIndexAP();
-				const PP_AttrProp * pAP = NULL;
+				const PP_AttrProp * pAP = nullptr;
 				m_pPieceTable->getAttrProp(iAP,&pAP);
 				UT_return_val_if_fail (pAP, false);
-				const gchar * pszXlink = NULL;
+				const gchar * pszXlink = nullptr;
 				(pAP)->getAttribute(PT_HYPERLINK_TARGET_NAME,pszXlink);
 				if(pszXlink)
 				{
@@ -2608,7 +2608,7 @@ bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 const pf_Frag_Strux*  PD_Document::getLastSectionSDH(void) const
 {
 	const pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-	const pf_Frag_Strux * pfSecLast = NULL;
+	const pf_Frag_Strux * pfSecLast = nullptr;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		UT_return_val_if_fail(currentFrag, nullptr);
@@ -2631,7 +2631,7 @@ const pf_Frag_Strux*  PD_Document::getLastSectionSDH(void) const
 pf_Frag_Strux*  PD_Document::getLastSectionMutableSDH(void)
 {
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-	pf_Frag_Strux * pfSecLast = NULL;
+	pf_Frag_Strux * pfSecLast = nullptr;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		UT_return_val_if_fail(currentFrag, nullptr);
@@ -2656,10 +2656,10 @@ pf_Frag_Strux*  PD_Document::getLastSectionMutableSDH(void)
 pf_Frag_Strux*  PD_Document::getLastStruxOfType(PTStruxType pts )
 {
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getLast();
-	pf_Frag_Strux * pfSecLast = NULL;
+	pf_Frag_Strux * pfSecLast = nullptr;
 	bool bFound = false;
 	UT_sint32 nest = 0;
-	pf_Frag_Strux * pfSec = NULL;
+	pf_Frag_Strux * pfSec = nullptr;
 	if(pts == PTX_SectionTable)
 		nest = 1;
 	if(currentFrag->getType()  == pf_Frag::PFT_Strux)
@@ -2710,10 +2710,10 @@ bool PD_Document::verifySectionID(const gchar * pszId)
 		     if(pfSec->getStruxType() == PTX_Section)
 		     {
 				 indexAP = currentFrag->getIndexAP();
-				 const PP_AttrProp * pAP = NULL;
+				 const PP_AttrProp * pAP = nullptr;
 				 m_pPieceTable->getAttrProp(indexAP,&pAP);
 				 UT_return_val_if_fail (pAP,false);
-				 const gchar * pszIDName = NULL;
+				 const gchar * pszIDName = nullptr;
 				 (pAP)->getAttribute("header", pszIDName);
 				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
@@ -2740,7 +2740,7 @@ bool PD_Document::verifySectionID(const gchar * pszId)
 					 return true;
 
 				 // the id could also be hidden in a revision attribute ...
-				 const gchar * pszRevisionAttr = NULL;
+				 const gchar * pszRevisionAttr = nullptr;
 				 
 				 if((pAP)->getAttribute("revision", pszRevisionAttr))
 				 {
@@ -2798,7 +2798,7 @@ bool PD_Document::verifySectionID(const gchar * pszId)
 \param const char * pszHdrFtr The particular attribute that identifies the
                                strux as "header" "footer" "header-even" etc.
 \param const char * pszHdrFtrID the unique string to match with Docsection.
-\returns a pf_Frag_Strux* of the matching frag or NULL if none found.
+\returns a pf_Frag_Strux* of the matching frag or nullptr if none found.
  */
 pf_Frag_Strux* PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
 											const gchar * pszHdrFtrID)
@@ -2814,11 +2814,11 @@ pf_Frag_Strux* PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
 		     if(pfSec->getStruxType() == PTX_SectionHdrFtr)
 		     {
 				 indexAP = pfSec->getIndexAP();
-				 const PP_AttrProp * pAP = NULL;
+				 const PP_AttrProp * pAP = nullptr;
 				 m_pPieceTable->getAttrProp(indexAP,&pAP);
-				 UT_return_val_if_fail (pAP, NULL);
-				 const gchar * pszIDName = NULL;
-				 const gchar * pszHeaderName = NULL;
+				 UT_return_val_if_fail (pAP, nullptr);
+				 const gchar * pszIDName = nullptr;
+				 const gchar * pszHeaderName = nullptr;
 				 (pAP)->getAttribute(PT_TYPE_ATTRIBUTE_NAME, pszHeaderName);
 				 (pAP)->getAttribute(PT_ID_ATTRIBUTE_NAME, pszIDName);
 				 if(pszIDName && pszHeaderName && (strcmp(pszIDName,pszHdrFtrID) == 0) && (strcmp(pszHeaderName,pszHdrFtr) == 0))
@@ -2830,14 +2830,14 @@ pf_Frag_Strux* PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
 //
 		currentFrag = currentFrag->getNext();
 	}
-	return NULL;
+	return nullptr;
 }
 
 
 /*!
  * This method returns the offset to a an embedded strux 
  * And a pointer to the embedded strux found.
- * If no emebedded strux is found in the block we return -1 ans NULL
+ * If no emebedded strux is found in the block we return -1 ans nullptr
  */ 
 UT_sint32 PD_Document::getEmbeddedOffset(pf_Frag_Strux* sdh, PT_DocPosition posoff, pf_Frag_Strux* & sdhEmbedded)
 {
@@ -2850,23 +2850,23 @@ UT_sint32 PD_Document::getEmbeddedOffset(pf_Frag_Strux* sdh, PT_DocPosition poso
 	{
 		pf = pf->getNext();
 	}
-	if(pf == NULL)
+	if(pf == nullptr)
 	{
-		sdhEmbedded = NULL;
+		sdhEmbedded = nullptr;
 		return -1;
 	}
 	while(pf && pf->getType() != pf_Frag::PFT_Strux)
 	{
 		pf = pf ->getNext();
 	}
-	if(pf == NULL)
+	if(pf == nullptr)
 	{
-		sdhEmbedded = NULL;
+		sdhEmbedded = nullptr;
 		return -1;
 	}
 	if(!m_pPieceTable->isFootnote(pf))
     {
-		sdhEmbedded = NULL;
+		sdhEmbedded = nullptr;
 		return -1;
 	}
 	pf_Frag_Strux * pfsNew = static_cast<pf_Frag_Strux *>(pf);
@@ -2897,7 +2897,7 @@ bool PD_Document::hasEmbedStruxOfTypeInRange(PT_DocPosition posStart, PT_DocPosi
 bool PD_Document::isFootnoteAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf && (pf->getLength() == 0))
     {
@@ -2923,7 +2923,7 @@ bool PD_Document::isFootnoteAtPos(PT_DocPosition pos)
 bool PD_Document::isTOCAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf && (pf->getLength() == 0))
     {
@@ -2957,7 +2957,7 @@ bool PD_Document::isTOCAtPos(PT_DocPosition pos)
 bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf && (pf->getLength() == 0))
 	{
@@ -2987,7 +2987,7 @@ bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
 bool PD_Document::isFrameAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	if(!pf)
 		return false;
@@ -3013,7 +3013,7 @@ bool PD_Document::isFrameAtPos(PT_DocPosition pos)
 bool PD_Document::isEndFrameAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	if(!pf)
 		return false;
@@ -3038,7 +3038,7 @@ bool PD_Document::isEndFrameAtPos(PT_DocPosition pos)
 bool PD_Document::isHdrFtrAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	if(!pf)
 		return false;
@@ -3064,7 +3064,7 @@ bool PD_Document::isHdrFtrAtPos(PT_DocPosition pos)
 bool PD_Document::isSectionAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	if(!pf)
 		return false;
@@ -3089,7 +3089,7 @@ bool PD_Document::isSectionAtPos(PT_DocPosition pos)
 bool PD_Document::isBlockAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	if(!pf)
 		return false;
@@ -3118,7 +3118,7 @@ bool PD_Document::isBlockAtPos(PT_DocPosition pos)
 bool PD_Document::isTableAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	if(!pf)
 		return false;
@@ -3143,7 +3143,7 @@ bool PD_Document::isTableAtPos(PT_DocPosition pos)
 bool PD_Document::isEndTableAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	if(!pf)
 		return false;
@@ -3168,7 +3168,7 @@ bool PD_Document::isEndTableAtPos(PT_DocPosition pos)
 bool PD_Document::isCellAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	if(!pf)
 		return false;
@@ -3187,7 +3187,7 @@ bool PD_Document::isCellAtPos(PT_DocPosition pos)
 
 /*!
  * This method returns the end table strux associated with the table strux tableSDH
- * Returns NULL on failure to find it.
+ * Returns nullptr on failure to find it.
  */
 pf_Frag_Strux* PD_Document::getEndTableStruxFromTableSDH(pf_Frag_Strux* tableSDH)
 {
@@ -3217,11 +3217,11 @@ pf_Frag_Strux* PD_Document::getEndTableStruxFromTableSDH(pf_Frag_Strux* tableSDH
 //
 		currentFrag = currentFrag->getNext();
 	}
-	return NULL;
+	return nullptr;
 }
 /*!
  * This method returns the end cell strux associated with the cell strux cellSDH
- * Returns NULL on failure to find it.
+ * Returns nullptr on failure to find it.
  */
 pf_Frag_Strux* PD_Document::getEndCellStruxFromCellSDH(pf_Frag_Strux* cellSDH)
 {
@@ -3244,11 +3244,11 @@ pf_Frag_Strux* PD_Document::getEndCellStruxFromCellSDH(pf_Frag_Strux* cellSDH)
 			}
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
-				return NULL;
+				return nullptr;
 			}
 			else if(pfSec->getStruxType() == PTX_EndTable)
 			{
-				return NULL;
+				return nullptr;
 			}
 		}
 //
@@ -3259,20 +3259,20 @@ pf_Frag_Strux* PD_Document::getEndCellStruxFromCellSDH(pf_Frag_Strux* cellSDH)
 			currentFrag = currentFrag->getNext();
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*!
  * This method returns the end table strux associated with the table strux tableSDH
- * Returns NULL on failure to find it.
+ * Returns nullptr on failure to find it.
  */
 pf_Frag_Strux* PD_Document::getEndTableStruxFromTablePos(PT_DocPosition tablePos)
 {
-	pf_Frag_Strux* tableSDH = NULL;
-	pf_Frag_Strux* EndTableSDH = NULL;
+	pf_Frag_Strux* tableSDH = nullptr;
+	pf_Frag_Strux* EndTableSDH = nullptr;
 	bool bRes =	getStruxOfTypeFromPosition(tablePos, PTX_SectionTable, &tableSDH);
 	if(!bRes)
-		return NULL;
+		return nullptr;
 	EndTableSDH = getEndTableStruxFromTableSDH(tableSDH);
 	return EndTableSDH;
 }
@@ -3288,8 +3288,8 @@ bool PD_Document::getRowsColsFromTableSDH(pf_Frag_Strux* tableSDH, bool bShowRev
 {
 	UT_sint32 iRight = 0;
     UT_sint32 iBot = 0;
-	const char * szRight = NULL;
-	const char * szBot = NULL;
+	const char * szRight = nullptr;
+	const char * szBot = nullptr;
 	pf_Frag_Strux* cellSDH;
 	*numRows = 0;
 	*numCols = 0;
@@ -3352,7 +3352,7 @@ void  PD_Document::miniDump(pf_Frag_Strux* sdh, UT_sint32 nstruxes)
 			pf = pf->getPrev();
 		pfs = static_cast<const pf_Frag_Strux *>(pf);
 	}
-	if(pfs == NULL)
+	if(pfs == nullptr)
 	{
 		pf =  m_pPieceTable->getFragments().getFirst();
 		while(pf && (pf->getType() != pf_Frag::PFT_Strux))
@@ -3364,7 +3364,7 @@ void  PD_Document::miniDump(pf_Frag_Strux* sdh, UT_sint32 nstruxes)
 	{
 		pf = pfs;
 		pfs = static_cast<const pf_Frag_Strux *>(pf);
-		const char * szStrux = NULL;
+		const char * szStrux = nullptr;
 		if(pfs->getStruxType() == PTX_Block)
 			szStrux = "Block";
 		else if(pfs->getStruxType() == PTX_SectionTable)
@@ -3407,15 +3407,15 @@ void  PD_Document::miniDump(pf_Frag_Strux* sdh, UT_sint32 nstruxes)
 		{
 			UT_DEBUGMSG(("MiniDump Actual Frag %p Type %s \n", (void*)pfs, szStrux));
 		}
-		const char * szLeft=NULL;
-		const char * szRight=NULL;
-		const char * szTop=NULL;
-		const char * szBot = NULL;
+		const char * szLeft=nullptr;
+		const char * szRight=nullptr;
+		const char * szTop=nullptr;
+		const char * szBot = nullptr;
 		getPropertyFromSDH(pfs,true, PD_MAX_REVISION,"left-attach",&szLeft);
 		getPropertyFromSDH(pfs,true, PD_MAX_REVISION,"right-attach",&szRight);
 		getPropertyFromSDH(pfs,true, PD_MAX_REVISION,"top-attach",&szTop);
 		getPropertyFromSDH(pfs,true, PD_MAX_REVISION,"bot-attach",&szBot);
-		if(szLeft != NULL)
+		if(szLeft != nullptr)
 		{
 			UT_DEBUGMSG(("left-attach %s right-attach %s top-attach %s bot-attach %s \n",szLeft,szRight,szTop,szBot));
 		}
@@ -3442,7 +3442,7 @@ PD_Document::dumpDoc( const char* msg, PT_DocPosition currentpos, PT_DocPosition
 
 /*!
  * The method returns the SDH of the cell at the location given by (rows,columns) in table 
- * pointed to by tableSDH. Returns NULL if the requested location is not contained in the
+ * pointed to by tableSDH. Returns nullptr if the requested location is not contained in the
  * cell.
 \param pf_Frag_Strux* tableSDH SDH of the table in question
 \param UT_sint32 row row location.
@@ -3455,17 +3455,17 @@ pf_Frag_Strux* PD_Document::getCellSDHFromRowCol(pf_Frag_Strux* tableSDH,
 													UT_sint32 col)
 {
 	UT_sint32 Top,Left,Bot,Right;
-	const char * szLeft = NULL;
-	const char * szTop = NULL;
-	const char * szRight = NULL;
-	const char * szBot = NULL;
+	const char * szLeft = nullptr;
+	const char * szTop = nullptr;
+	const char * szRight = nullptr;
+	const char * szBot = nullptr;
 	pf_Frag_Strux* cellSDH;
 //
 // Do the scan
 //
 	pf_Frag * currentFrag = tableSDH;
 
-	UT_return_val_if_fail(currentFrag != NULL, NULL);
+	UT_return_val_if_fail(currentFrag != nullptr, nullptr);
 
 	currentFrag = currentFrag->getNext();
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
@@ -3484,9 +3484,9 @@ pf_Frag_Strux* PD_Document::getCellSDHFromRowCol(pf_Frag_Strux* tableSDH,
 			else if(pfSec->getStruxType() == PTX_EndTable)
 			{
 //
-// end of table before the requested cell was found. Return NULL
+// end of table before the requested cell was found. Return nullptr
 //
-				return NULL;
+				return nullptr;
 			}
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
@@ -3521,7 +3521,7 @@ pf_Frag_Strux* PD_Document::getCellSDHFromRowCol(pf_Frag_Strux* tableSDH,
 		if(currentFrag)
 			currentFrag = currentFrag->getNext();
 	}
-	return NULL;
+	return nullptr;
 }
 
 //===================================================================================
@@ -3534,7 +3534,7 @@ void PD_Document::getAllUsedStyles(UT_GenericVector <PD_Style*>* pVecStyles)
 {
 	UT_sint32 i = 0;
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		UT_return_if_fail (currentFrag);
@@ -3555,15 +3555,15 @@ void PD_Document::getAllUsedStyles(UT_GenericVector <PD_Style*>* pVecStyles)
 			indexAP = static_cast<pf_Frag_Object *>(currentFrag)->getIndexAP();
 		else if(currentFrag->getType()  == pf_Frag::PFT_FmtMark)
 			indexAP = static_cast<pf_Frag_FmtMark *>(currentFrag)->getIndexAP();
-		const PP_AttrProp * pAP = NULL;
+		const PP_AttrProp * pAP = nullptr;
 		m_pPieceTable->getAttrProp(indexAP,&pAP);
 		UT_return_if_fail (pAP);
-		const gchar * pszStyleName = NULL;
+		const gchar * pszStyleName = nullptr;
 		(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 //
 // We've found a style...
 //
-		if(pszStyleName != NULL)
+		if(pszStyleName != nullptr)
 		{
 			m_pPieceTable->getStyle(pszStyleName,&pStyle);
 			UT_return_if_fail (pStyle);
@@ -3573,7 +3573,7 @@ void PD_Document::getAllUsedStyles(UT_GenericVector <PD_Style*>* pVecStyles)
 					pVecStyles->addItem(pStyle);
 				PD_Style * pBasedOn = pStyle->getBasedOn();
 				i = 0;
-				while(pBasedOn != NULL && i <  pp_BASEDON_DEPTH_LIMIT)
+				while(pBasedOn != nullptr && i <  pp_BASEDON_DEPTH_LIMIT)
 				{
 					if(pVecStyles->findItem(pBasedOn) < 0)
 						pVecStyles->addItem(pBasedOn);
@@ -3621,13 +3621,13 @@ bool PD_Document::removeStyle(const gchar * pszName)
 //
 // First replace all occurrences of pszName with "Normal"
 //
-	PD_Style * pNormal = NULL;
-	PD_Style * pNuke = NULL;
+	PD_Style * pNormal = nullptr;
+	PD_Style * pNuke = nullptr;
 	m_pPieceTable->getStyle(pszName,&pNuke);
 	UT_return_val_if_fail (pNuke, false);
 	pNormal = pNuke->getBasedOn();
-	const gchar * szBack = NULL;
-	if(pNormal == NULL)
+	const gchar * szBack = nullptr;
+	if(pNormal == nullptr)
 	{
 		m_pPieceTable->getStyle("Normal",&pNormal);
 		szBack = "None";
@@ -3652,7 +3652,7 @@ bool PD_Document::removeStyle(const gchar * pszName)
 	UT_GenericVector<prevStuff *> vFrag;
 
 	PT_DocPosition pos = 0;
-	pf_Frag_Strux * pfs = NULL;
+	pf_Frag_Strux * pfs = nullptr;
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	UT_return_val_if_fail (currentFrag,false);
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
@@ -3683,15 +3683,15 @@ bool PD_Document::removeStyle(const gchar * pszName)
 		{
 			indexAP = static_cast<pf_Frag_FmtMark *>(currentFrag)->getIndexAP();
 		}
-		const PP_AttrProp * pAP = NULL;
+		const PP_AttrProp * pAP = nullptr;
 		m_pPieceTable->getAttrProp(indexAP,&pAP);
 		UT_return_val_if_fail (pAP, false);
-		const gchar * pszStyleName = NULL;
+		const gchar * pszStyleName = nullptr;
 		(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 //
 // It does so remember this frag and set the old indexAP to Normal
 //
-		if(pszStyleName != NULL && strcmp(pszStyleName,pszName)==0)
+		if(pszStyleName != nullptr && strcmp(pszStyleName,pszName)==0)
 		{
 			prevStuff *  pStuff = new prevStuff;
 			pf_Frag::PFType cType = currentFrag->getType();
@@ -3720,9 +3720,9 @@ bool PD_Document::removeStyle(const gchar * pszName)
 //
 // Now recursively search to see if has our style in the basedon list
 //
-		else if(pszStyleName != NULL)
+		else if(pszStyleName != nullptr)
 		{
-			PD_Style * cStyle = NULL;
+			PD_Style * cStyle = nullptr;
 			m_pPieceTable->getStyle(pszStyleName,&cStyle);
 			UT_ASSERT_HARMLESS(cStyle);
 			if(!cStyle)
@@ -3730,7 +3730,7 @@ bool PD_Document::removeStyle(const gchar * pszName)
 			PD_Style * pBasedOn = cStyle->getBasedOn();
 			PD_Style * pFollowedBy = cStyle->getFollowedBy();
 			UT_uint32 i =0;
-			for(i=0; (i < pp_BASEDON_DEPTH_LIMIT) && (pBasedOn != NULL) && (pBasedOn!= pNuke); i++)
+			for(i=0; (i < pp_BASEDON_DEPTH_LIMIT) && (pBasedOn != nullptr) && (pBasedOn!= pNuke); i++)
 			{
 				pBasedOn = pBasedOn->getBasedOn();
 			}
@@ -3773,7 +3773,7 @@ bool PD_Document::removeStyle(const gchar * pszName)
 //
 	UT_uint32 nstyles = getStyleCount();
 	UT_uint32 i;
-	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	UT_GenericVector<PD_Style*> * pStyles = nullptr;
 	enumStyles(pStyles);
 	UT_return_val_if_fail( pStyles, false );
 	
@@ -3829,8 +3829,8 @@ bool PD_Document::removeStyle(const gchar * pszName)
 //
 	UT_sint32 countChanges = vFrag.getItemCount();
 	UT_sint32 j;
-	pf_Frag * pfsLast = NULL;
-	PX_ChangeRecord * pcr = NULL;
+	pf_Frag * pfsLast = nullptr;
+	PX_ChangeRecord * pcr = nullptr;
 	for(j = 0; j<countChanges; j++)
 	{
 		prevStuff * pStuff = static_cast<prevStuff *>(vFrag.getNthItem(j));
@@ -3951,7 +3951,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 	for (k=0; k<kLimit; k++)
 		if (m_vecListeners.getNthItem(k) == nullptr)
 		{
-			m_vecListeners.setNthItem(k,pListener,NULL);
+			m_vecListeners.setNthItem(k,pListener,nullptr);
 			goto ClaimThisK;
 		}
 
@@ -3979,7 +3979,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 bool PD_Document::removeListener(PL_ListenerId listenerId)
 {
 	xxx_UT_DEBUGMSG(("Removing lid %d from document %x \n",listenerId,this));
-	bool res = (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
+	bool res = (m_vecListeners.setNthItem(listenerId,nullptr,nullptr) == 0);
 
 	// clear out all format handles that this listener has created
 	pf_Frag* pFrag = m_pPieceTable->getFragments().getFirst();
@@ -3988,7 +3988,7 @@ bool PD_Document::removeListener(PL_ListenerId listenerId)
 		if (pFrag->getType() == pf_Frag::PFT_Strux)
 		{
 			pf_Frag_Strux* pFS = static_cast<pf_Frag_Strux*>(pFrag);
-			pFS->setFmtHandle(listenerId, NULL);
+			pFS->setFmtHandle(listenerId, nullptr);
 		}
 	}
 
@@ -4105,10 +4105,10 @@ void PD_Document::getAllViews(UT_GenericVector<AV_View *> * vecViews) const
 				{
 					fl_DocListener * pLayoutList = static_cast<fl_DocListener *>(pListener);
 					const FL_DocLayout * pLayout = pLayoutList->getLayout();
-					if(pLayout != NULL)
+					if(pLayout != nullptr)
 					{
 						AV_View * pView = reinterpret_cast<AV_View *>(pLayout->getView());
-						if(pView != NULL)
+						if(pView != nullptr)
 						 {
 							 vecViews->addItem(pView);
 						 }
@@ -4126,7 +4126,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux* pfs, PX_ChangeRecord* pcr
 	//pcr->__dump();
 #endif
 	m_iUpdateCount = 0;
-	if(pcr->getDocument() == NULL)
+	if(pcr->getDocument() == nullptr)
 	{
 	        pcr->setDocument(this);
 			pcr->setCRNumber();
@@ -4156,7 +4156,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux* pfs, PX_ChangeRecord* pcr
 			if(sfh && (pListener->getType() < PTL_CollabExport ))
 				pListener->change(sfh,pcr);
 			else if(pListener->getType() >= PTL_CollabExport)
-				pListener->change(NULL,pcr);	
+				pListener->change(nullptr, pcr);
 		}
 	}
 
@@ -4292,7 +4292,7 @@ fl_ContainerLayout* PD_Document::getNthFmtHandle(pf_Frag_Strux* sdh, UT_uint32 n
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	UT_uint32 nListen = m_vecListeners.getItemCount();
 	if(n >= nListen)
-		return NULL;
+		return nullptr;
 	PL_ListenerId lid = static_cast<PL_ListenerId>(n);
 	fl_ContainerLayout* sfh = pfs->getFmtHandle(lid);
 	return sfh;
@@ -4322,7 +4322,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 	//pcr->__dump();
 #endif
 	m_iUpdateCount = 0;
-	if(pcr->getDocument() == NULL)
+	if(pcr->getDocument() == nullptr)
 	{
 	        pcr->setDocument(this);
 			pcr->setCRNumber();
@@ -4345,7 +4345,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 		if (pListener)
 		{
 			pf_Frag_Strux* sdhNew = static_cast<pf_Frag_Strux*>(pfsNew);
-			fl_ContainerLayout* sfh = NULL;
+			fl_ContainerLayout* sfh = nullptr;
 			if(pListener->getType() < PTL_CollabExport)
 				sfh = pfs->getFmtHandle(lid);
 			if (pListener->insertStrux(sfh,pcr,sdhNew,lid,s_BindHandles))
@@ -4400,8 +4400,8 @@ bool PD_Document::isConnected(void)
 const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAttr>& pRevisions, const PP_AttrProp * pAP,
 												  bool bShow, UT_uint32 iId, bool &bHiddenRevision) const
 {
-	PP_AttrProp * pNewAP = NULL;
-	const gchar* pRevision = NULL;
+	PP_AttrProp * pNewAP = nullptr;
+	const gchar* pRevision = nullptr;
 	bHiddenRevision = false;
 
 	bool bMark = isMarkRevisions();
@@ -4411,7 +4411,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 		if(!pRevisions)
 			pRevisions.reset(new PP_RevisionAttr(pRevision));
 
-		UT_return_val_if_fail(pRevisions, NULL);
+		UT_return_val_if_fail(pRevisions, nullptr);
 
 		//first we need to ascertain if this revision is visible
 		bool bDeleted = false;
@@ -4421,7 +4421,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 		UT_uint32 iMinId;
 
 		pRev = pRevisions->getLastRevision();
-		UT_return_val_if_fail(pRev, NULL);
+		UT_return_val_if_fail(pRev, nullptr);
 
 		UT_uint32 iMaxId = pRev->getId();
 
@@ -4445,7 +4445,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 					if(iMinId == PD_MAX_REVISION)
 					{
 						UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-						return NULL;
+						return nullptr;
 					}
 
 					// jump directly to the first revision ...
@@ -4459,11 +4459,11 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 			   ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
 			{
 				bHiddenRevision = true;
-				return NULL;
+				return nullptr;
 			}
 
 			bHiddenRevision = false;
-			return NULL;
+			return nullptr;
 		}
 		
 		if((bMark || !bShow) && iId != 0)
@@ -4503,7 +4503,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 					if(!pNewAP)
 					{
 						pNewAP = new PP_AttrProp;
-						UT_return_val_if_fail(pNewAP,NULL);
+						UT_return_val_if_fail(pNewAP,nullptr);
 				
 						(*pNewAP) = *pAP;
 						(*pNewAP) = *pRev;
@@ -4522,7 +4522,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 					if(pNewAP)
 					{
 						delete pNewAP;
-						pNewAP = NULL;
+						pNewAP = nullptr;
 					}
 
 					bDeleted = true;
@@ -4552,7 +4552,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 					pNewAP->markReadOnly();
 					
 					PT_AttrPropIndex api;
-					UT_return_val_if_fail(getPieceTable()->getVarSet().addIfUniqueAP(pNewAP, &api), NULL);
+					UT_return_val_if_fail(getPieceTable()->getVarSet().addIfUniqueAP(pNewAP, &api), nullptr);
 					pAP->setRevisedIndex(api,iId,bShow,bMark,bHiddenRevision);
 
 					// the above might have resulted in the deletion
@@ -4573,7 +4573,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 			// we are to show revisions with id <= iId
 			bHiddenRevision = true;
 			UT_ASSERT_HARMLESS(!pNewAP);
-			return NULL;
+			return nullptr;
 		}
 
 		//next step is to find any fmt changes, layering them as
@@ -4617,7 +4617,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 				if(!pNewAP)
 				{
 					pNewAP = new PP_AttrProp;
-					UT_return_val_if_fail(pNewAP, NULL);
+					UT_return_val_if_fail(pNewAP, nullptr);
 				
 					(*pNewAP) = *pAP;
 					(*pNewAP) = *pRev;
@@ -4642,7 +4642,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(std::unique_ptr<PP_RevisionAtt
 		pNewAP->markReadOnly();
 
 		PT_AttrPropIndex api;
-		UT_return_val_if_fail(getPieceTable()->getVarSet().addIfUniqueAP(pNewAP, &api), NULL);
+		UT_return_val_if_fail(getPieceTable()->getVarSet().addIfUniqueAP(pNewAP, &api), nullptr);
 		pAP->setRevisedIndex(api,iId,bShow,bMark,bHiddenRevision);
 
 		// the above might have resulted in the deletion
@@ -4730,7 +4730,7 @@ pf_Frag * PD_Document::findBookmark(const char * pName, bool bEnd, pf_Frag * pfS
 		pfStart = getPieceTable()->getFragments().getFirst();
 	}
 
-	UT_return_val_if_fail(pfStart, NULL);
+	UT_return_val_if_fail(pfStart, nullptr);
 
 	pf_Frag * pf = pfStart;
 	while(pf)
@@ -4760,19 +4760,19 @@ pf_Frag * PD_Document::findBookmark(const char * pName, bool bEnd, pf_Frag * pfS
 		pf = pf->getNext();
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
 po_Bookmark * PD_Document::getBookmark(pf_Frag_Strux* sdh, UT_uint32 offset)
 {
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
-	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux, NULL);
+	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux, nullptr);
 	const pf_Frag_Strux * pfsBlock = static_cast<const pf_Frag_Strux *> (pf);
-	UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block, NULL);
+	UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block, nullptr);
 
 	UT_uint32 cumOffset = 0;
-	pf_Frag_Object * pfo = NULL;
+	pf_Frag_Object * pfo = nullptr;
 	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
 	{
 		cumOffset += pfTemp->getLength();
@@ -4784,12 +4784,12 @@ po_Bookmark * PD_Document::getBookmark(pf_Frag_Strux* sdh, UT_uint32 offset)
 					pfo = static_cast<pf_Frag_Object *> (pfTemp);
 					return pfo->getBookmark();
 				default:
-					return NULL;
+					return nullptr;
 			}
 		}
 
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool PD_Document::getField(pf_Frag_Strux* sdh, UT_uint32 offset,
@@ -4802,7 +4802,7 @@ bool PD_Document::getField(pf_Frag_Strux* sdh, UT_uint32 offset,
 	UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block, false);
 
 	UT_uint32 cumOffset = 0;
-	pf_Frag_Text * pft = NULL;
+	pf_Frag_Text * pft = nullptr;
 	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
 	{
 		cumOffset += pfTemp->getLength();
@@ -5030,14 +5030,14 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
                                  const std::string & mime_type,
                                  PD_DataItemHandle* ppHandle)
 {
-	PD_DataItemHandle pPair = NULL;
+	PD_DataItemHandle pPair = nullptr;
 
 	UT_return_val_if_fail (pByteBuf, false);
 
 	// verify unique name
 	UT_DEBUGMSG(("Create data item name %s \n",szName));
 	UT_ConstByteBufPtr bb;
-	if (getDataItemDataByName(szName, bb, NULL, NULL) == true)
+	if (getDataItemDataByName(szName, bb, nullptr, nullptr) == true)
     {
         UT_DEBUGMSG(("Data item %s already exists! \n",szName));
 		return false;
@@ -5086,7 +5086,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
 		m_pPieceTable->getVarSet().storeAP(attributes, &iAP);
 		PX_ChangeRecord * pcr =  new PX_ChangeRecord(PX_ChangeRecord::PXT_CreateDataItem,0,iAP,getXID());
 		UT_DEBUGMSG(("indexAP %d \n",iAP)); 
-		notifyListeners(NULL, pcr);
+		notifyListeners(nullptr, pcr);
 		delete pcr;
 	}
 	return true;
@@ -5164,7 +5164,7 @@ bool PD_Document::getDataItemFileExtension(const char *szDataID, std::string &sE
     std::string mimeType;
 	UT_ConstByteBufPtr bb;
 
-	if(getDataItemDataByName(szDataID, bb, &mimeType, NULL))
+	if(getDataItemDataByName(szDataID, bb, &mimeType, nullptr))
 	{
 		if(mimeType.empty())
 			return false;
@@ -5415,25 +5415,25 @@ bool	PD_Document::addStyleAttributes(const gchar * szStyleName, const PP_Propert
 
 /*!
  * The method returns the style defined in a sdh. If there is no style it returns
- * NULL
+ * nullptr
  */
 PD_Style * PD_Document::getStyleFromSDH( pf_Frag_Strux* sdh)
 {
 	const pf_Frag_Strux * pfs = sdh;
 	PT_AttrPropIndex indexAP = pfs->getIndexAP();
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	m_pPieceTable->getAttrProp(indexAP,&pAP);
-	UT_return_val_if_fail (pAP, NULL);
-	const gchar * pszStyleName = NULL;
+	UT_return_val_if_fail (pAP, nullptr);
+	const gchar * pszStyleName = nullptr;
 	(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
-	if(pszStyleName == NULL  || strcmp(pszStyleName,"Current Settings") == 0 || strcmp(pszStyleName,"None") == 0)
+	if(pszStyleName == nullptr  || strcmp(pszStyleName,"Current Settings") == 0 || strcmp(pszStyleName,"None") == 0)
 	{
-		return NULL;
+		return nullptr;
 	}
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	if(!m_pPieceTable->getStyle(pszStyleName, &pStyle))
 	{
-		return NULL;
+		return nullptr;
 	}
 	return pStyle;
 }
@@ -5441,24 +5441,24 @@ PD_Style * PD_Document::getStyleFromSDH( pf_Frag_Strux* sdh)
 /*!
  * Find previous style of type numbered heading or basedon numbered heading
 \param sdh The StruxDocHandle of the fragment where we start to look from.
-\returns PD_Style of the first Numbered Heading, otherwise NULL
+\returns PD_Style of the first Numbered Heading, otherwise nullptr
 */
 pf_Frag_Strux* PD_Document::getPrevNumberedHeadingStyle(pf_Frag_Strux* sdh)
 {
 	pf_Frag * pf = sdh;
 	bool bFound = false;
 	pf = pf->getPrev();
-	PD_Style * pStyle = NULL;
-	pf_Frag_Strux* foundSDH = NULL;
-	PD_Style * pBasedOn = NULL;
-	const char * szStyleName = NULL;
+	PD_Style * pStyle = nullptr;
+	pf_Frag_Strux* foundSDH = nullptr;
+	PD_Style * pBasedOn = nullptr;
+	const char * szStyleName = nullptr;
 	while(pf && !bFound)
 	{
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
 			foundSDH = static_cast<pf_Frag_Strux*>(pf);
 			pStyle = getStyleFromSDH(foundSDH);
-			if(pStyle != NULL)
+			if(pStyle != nullptr)
 			{
 				szStyleName = pStyle->getName();
 				if (strstr(szStyleName, "Numbered Heading") != nullptr)
@@ -5468,7 +5468,7 @@ pf_Frag_Strux* PD_Document::getPrevNumberedHeadingStyle(pf_Frag_Strux* sdh)
 				}
 				pBasedOn  = pStyle->getBasedOn();
 				UT_uint32 i = 0;
-				while(pBasedOn != NULL && i < 10 && !bFound)
+				while(pBasedOn != nullptr && i < 10 && !bFound)
 				{
 					if (strstr(pBasedOn->getName(), "Numbered Heading") != nullptr)
 					{
@@ -5495,7 +5495,7 @@ pf_Frag_Strux* PD_Document::getPrevNumberedHeadingStyle(pf_Frag_Strux* sdh)
 	}
 	if(!bFound)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return foundSDH;
 }
@@ -5538,9 +5538,9 @@ bool	PD_Document::setAllStyleAttributes(const gchar * szStyleName, const PP_Prop
 */
 pf_Frag_Strux* PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_DocPosition pos)
 {
-	pf_Frag_Strux* sdh = NULL;
+	pf_Frag_Strux* sdh = nullptr;
 	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
-	pf_Frag_Strux * pfs = NULL;
+	pf_Frag_Strux * pfs = nullptr;
 	pf_Frag * currentFrag = sdh;
 	bool bFound = false;
     while (currentFrag && currentFrag != m_pPieceTable->getFragments().getFirst() && !bFound)
@@ -5552,12 +5552,12 @@ pf_Frag_Strux* PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_Doc
 //
 			pfs = static_cast<pf_Frag_Strux *> (currentFrag);
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
-			const PP_AttrProp * pAP = NULL;
+			const PP_AttrProp * pAP = nullptr;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
 			UT_return_val_if_fail(pAP, nullptr);
-			const gchar * pszStyleName = NULL;
+			const gchar * pszStyleName = nullptr;
 			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
-			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
+			if(pszStyleName != nullptr && strcmp(pszStyleName,szStyle)==0)
 			{
 				bFound = true;
 			}
@@ -5573,7 +5573,7 @@ pf_Frag_Strux* PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_Doc
 	}
 	else
 	{
-		sdh = NULL;
+		sdh = nullptr;
 	}
 	return sdh;
 }
@@ -5587,9 +5587,9 @@ pf_Frag_Strux* PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_Doc
 */
 pf_Frag_Strux* PD_Document::findForwardStyleStrux(const gchar * szStyle, PT_DocPosition pos)
 {
-	pf_Frag_Strux* sdh = NULL;
+	pf_Frag_Strux* sdh = nullptr;
 	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
-	pf_Frag_Strux * pfs = NULL;
+	pf_Frag_Strux * pfs = nullptr;
 	pf_Frag * currentFrag = sdh;
 	bool bFound = false;
     while (currentFrag != m_pPieceTable->getFragments().getLast() && !bFound)
@@ -5601,12 +5601,12 @@ pf_Frag_Strux* PD_Document::findForwardStyleStrux(const gchar * szStyle, PT_DocP
 //
 			pfs = static_cast<pf_Frag_Strux *> (currentFrag);
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
-			const PP_AttrProp * pAP = NULL;
+			const PP_AttrProp * pAP = nullptr;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
 			UT_return_val_if_fail(pAP, nullptr);
-			const gchar * pszStyleName = NULL;
+			const gchar * pszStyleName = nullptr;
 			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
-			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
+			if(pszStyleName != nullptr && strcmp(pszStyleName,szStyle)==0)
 			{
 				bFound = true;
 			}
@@ -5622,7 +5622,7 @@ pf_Frag_Strux* PD_Document::findForwardStyleStrux(const gchar * szStyle, PT_DocP
 	}
 	else
 	{
-		sdh = NULL;
+		sdh = nullptr;
 	}
 	return sdh;
 }
@@ -5639,8 +5639,8 @@ bool   PD_Document::updateDocForStyleChange(const gchar * szStyle,
 {
 	PT_DocPosition pos = 0;
 	PT_DocPosition posLastStrux = 0;
-	pf_Frag_Strux * pfs = NULL;
-	PD_Style * pStyle = NULL;
+	pf_Frag_Strux * pfs = nullptr;
+	PD_Style * pStyle = nullptr;
 	m_pPieceTable->getStyle(szStyle,&pStyle);
 	UT_return_val_if_fail (pStyle, false);
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
@@ -5660,17 +5660,17 @@ bool   PD_Document::updateDocForStyleChange(const gchar * szStyle,
 //
 				pfs = static_cast<pf_Frag_Strux *> (currentFrag);
 				PT_AttrPropIndex indexAP = pfs->getIndexAP();
-				const PP_AttrProp * pAP = NULL;
+				const PP_AttrProp * pAP = nullptr;
 				m_pPieceTable->getAttrProp(indexAP,&pAP);
 				UT_return_val_if_fail (pAP, false);
-				const gchar * pszStyleName = NULL;
+				const gchar * pszStyleName = nullptr;
 				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 				bool bUpdate = false;
 //
 // It does so signal all the layouts to update themselves for the new definition
 // of the style.
 //
-				if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
+				if(pszStyleName != nullptr && strcmp(pszStyleName,szStyle)==0)
 				{
 					bUpdate = true;
 				}
@@ -5681,16 +5681,16 @@ bool   PD_Document::updateDocForStyleChange(const gchar * szStyle,
 //
 // Look if the style in the basedon ancestory is our style
 //
-				else if (pszStyleName != NULL)
+				else if (pszStyleName != nullptr)
 				{
-					PD_Style * cStyle = NULL;
+					PD_Style * cStyle = nullptr;
 					m_pPieceTable->getStyle(pszStyleName,&cStyle);
 					UT_ASSERT_HARMLESS(cStyle);
 					if(cStyle)
 					{
 						PD_Style * pBasedOn = cStyle->getBasedOn();
 						UT_uint32 i =0;
-						for(i=0; (i < pp_BASEDON_DEPTH_LIMIT) && (pBasedOn != NULL) && (pBasedOn!= pStyle); i++)
+						for(i=0; (i < pp_BASEDON_DEPTH_LIMIT) && (pBasedOn != nullptr) && (pBasedOn!= pStyle); i++)
 						{
 							pBasedOn = pBasedOn->getBasedOn();
 						}
@@ -5729,17 +5729,17 @@ bool   PD_Document::updateDocForStyleChange(const gchar * szStyle,
 //
 				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (currentFrag);
 				PT_AttrPropIndex indexAP = pft->getIndexAP();
-				const PP_AttrProp * pAP = NULL;
+				const PP_AttrProp * pAP = nullptr;
 				m_pPieceTable->getAttrProp(indexAP,&pAP);
 				UT_return_val_if_fail (pAP, false);
-				const gchar * pszStyleName = NULL;
+				const gchar * pszStyleName = nullptr;
 				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 
 //
 // It does so signal all the layouts to update themselves for the new definition
 // of the style.
 //
-				if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
+				if(pszStyleName != nullptr && strcmp(pszStyleName,szStyle)==0)
 				{
 					UT_uint32 blockoffset = (UT_uint32) (pos - posLastStrux -1);
 					PX_ChangeRecord_SpanChange * pcr = new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
@@ -5854,8 +5854,8 @@ void PD_Document::notifyPieceTableChangeStart(void)
 // Invalidate visible direction cache variables. PieceTable manipulations of
 // any sort can screw these.
 //
-	m_pVDBl = NULL;
-	m_pVDRun = NULL;
+	m_pVDBl = nullptr;
+	m_pVDRun = nullptr;
 	m_iVDLastPos = 0;
 }
 
@@ -5866,8 +5866,8 @@ void PD_Document::notifyPieceTableChangeEnd(void)
 
 void PD_Document::invalidateCache(void)
 {
-	m_pVDBl = NULL;
-	m_pVDRun = NULL;
+	m_pVDBl = nullptr;
+	m_pVDRun = nullptr;
 	m_iVDLastPos = 0;
 }
 
@@ -5949,11 +5949,11 @@ void PD_Document::StopList(pf_Frag_Strux* sdh )
 
 bool PD_Document::appendList(const PP_PropertyVector & attributes)
 {
-	const std::string *szID = NULL;
-	const std::string *szPid = NULL;
-	const std::string *szType = NULL;
-	const std::string *szStart = NULL;
-	const std::string *szDelim = NULL;
+	const std::string *szID = nullptr;
+	const std::string *szPid = nullptr;
+	const std::string *szType = nullptr;
+	const std::string *szStart = nullptr;
+	const std::string *szDelim = nullptr;
 	std::string szDec;
 	UT_uint32 id, parent_id, start;
 	FL_ListType type;
@@ -6079,7 +6079,7 @@ bool PD_Document::fixListHierarchy(void)
             for (UT_uint32 i = 0; i < iNumLists; i++)
             {
                     fl_AutoNumPtr pAutoNum = m_vecLists.at(i);
-                    if (pAutoNum->getFirstItem() == NULL)
+                    if (pAutoNum->getFirstItem() == nullptr)
                     {
                         itemsToRemove.push_back(i);
                     }
@@ -6139,17 +6139,17 @@ bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String &
 {
 	double width = m_docPageSize.Width(DIM_IN);
 	const pf_Frag_Strux* sdhSec = getLastSectionSDH();
-	const char * szLeftMargin = NULL;
-	const char * szRightMargin = NULL;
+	const char * szLeftMargin = nullptr;
+	const char * szRightMargin = nullptr;
 
 	// TODO -- probably needs to get revision settings from some view ...
 	getPropertyFromSDH(sdhSec,true,PD_MAX_REVISION,"page-margin-left",&szLeftMargin);
 	getPropertyFromSDH(sdhSec,true,PD_MAX_REVISION,"page-margin-right",&szRightMargin);
-	if(szLeftMargin == NULL)
+	if(szLeftMargin == nullptr)
 	{
 		szLeftMargin = "0.5in";
 	}
-	if(szRightMargin == NULL)
+	if(szRightMargin == nullptr)
 	{
 		szRightMargin = "0.5in";
 	}
@@ -6220,7 +6220,7 @@ bool PD_Document::isBookmarkUnique(const gchar * pName) const
 bool PD_Document::isBookmarkRelativeLink(const gchar * pName) const
 {
 	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(gchar));
-	return strchr(static_cast<const char *>(pName), '.') != NULL;
+	return strchr(static_cast<const char *>(pName), '.') != nullptr;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -6239,20 +6239,20 @@ const PP_AttrProp * PD_Document::getAttrProp() const
     
     \param const gchar ** ppAttr: array of attribute/value pairs
 
-	    if ppAttr == NULL and m_indexAP == 0xffffffff, the function
+	    if ppAttr == nullptr and m_indexAP == 0xffffffff, the function
     	creates a new AP and sets it to the default values hardcoded
     	in it
 
-        if ppAttr == NULL and m_indexAP != 0xffffffff, the function
+        if ppAttr == nullptr and m_indexAP != 0xffffffff, the function
         does nothing
 
-        if ppAttr != NULL the function overlays passed attributes over
+        if ppAttr != nullptr the function overlays passed attributes over
         the existing attributes (creating a new AP first if necessary)
 
     When initialising document attributes and props, we need to set
-    m_indexAP to 0xffffffff and then call setAttributes(NULL).
+    m_indexAP to 0xffffffff and then call setAttributes(nullptr).
 
-    Importers should just call setAttributes(NULL) in the
+    Importers should just call setAttributes(nullptr) in the
     initialisation stage, this ensures that default values are set
     without overwriting existing values if those were set by the
     caller of the importer.
@@ -6274,7 +6274,7 @@ bool PD_Document::setAttrProp(const PP_PropertyVector & ppAttr)
 		// AP not initialised, do so and set standard document attrs
 		// and properties
 
-		// first create an empty AP by passing NULL to storeAP
+		// first create an empty AP by passing nullptr to storeAP
 		// cast needed to disambiguate function signature
 		bRet = VARSET.storeAP(PP_NOPROPS, &m_indexAP);
 
@@ -6340,12 +6340,12 @@ bool PD_Document::setAttrProp(const PP_PropertyVector & ppAttr)
 		// Yes, we have to set default properties for all document-level items, because
 		// some piece of code (exporter, plugin) may want to get the value of that default,
 		// not unitialized memory.  When a hashing solution is factored out of the PT,
-		// it may be tempting to return NULLs.  Not good enough either.
+		// it may be tempting to return nullptrs.  Not good enough either.
 		// I'm going to ask Dom the preferred way to make this rather more concise. -MG
 		//
 		// Actually, we do not set these because of uninitialised memory; you never get a
 		// uninitialised memory from the the PP_AttrProp chain; nor do we set these
-		// because we cannot return NULLs. We set these, because without them we cannot
+		// because we cannot return nullptrs. We set these, because without them we cannot
 		// lay the document out, and it is much better to have the defaults gathered in
 		// one place than having all kinds of fallback values hardcoded all over the
 		// place. Tomas
@@ -6517,13 +6517,13 @@ bool PD_Document::_exportInitVisDirection(PT_DocPosition pos)
 {
 	if(m_bLoading)
 		return true;
-	m_pVDBl = NULL;
-	m_pVDRun = NULL;
+	m_pVDBl = nullptr;
+	m_pVDRun = nullptr;
 
 	// find the first DocLayout listener
 	UT_uint32 count = m_vecListeners.getItemCount();
-    fl_DocListener* pDocListener = NULL;
-	
+	fl_DocListener* pDocListener = nullptr;
+
 	for(UT_uint32 i = 0; i < count; i++)
 	{
 		PL_Listener * pL = (PL_Listener *) m_vecListeners.getNthItem(i);
@@ -6570,7 +6570,7 @@ bool PD_Document::_exportFindVisDirectionRunAtPos(PT_DocPosition pos)
 		// now try to use the present block and any blocks that are
 		// chained with it
 		const fl_BlockLayout * pBL        = m_pVDBl;
-		fp_Run *         pRunResult = NULL;
+		fp_Run *         pRunResult = nullptr;
 
 		while (1)
 		{
@@ -6794,14 +6794,14 @@ bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const PP_PropertyVector 
 
 pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, pf_Frag * pfStart) const
 {
-	UT_return_val_if_fail(m_pPieceTable,NULL);
+	UT_return_val_if_fail(m_pPieceTable,nullptr);
 
 	pf_Frag * pf = pfStart;
 	
 	if(!pf)
 		pf = m_pPieceTable->getFragments().getFirst();
 
-	UT_return_val_if_fail(pf, NULL);
+	UT_return_val_if_fail(pf, nullptr);
 
 	while(pf)
 	{
@@ -6851,7 +6851,7 @@ pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, 
 
 pf_Frag * PD_Document::getLastFrag() const
 {
-	UT_return_val_if_fail(m_pPieceTable,NULL);
+	UT_return_val_if_fail(m_pPieceTable,nullptr);
 	return m_pPieceTable->getFragments().getLast();
 }
 
@@ -6921,7 +6921,7 @@ bool PD_Document::areDocumentStylesheetsEqual(const AD_Document &D) const
 
 		// must print all digits to make this unambigous
 		std::string s = UT_std_string_sprintf("%08x%08x", ap1, ap2);
-		bool bAreSame = hFmtMap.contains(s,NULL);
+		bool bAreSame = hFmtMap.contains(s,nullptr);
 		
 		if(!bAreSame)
 		{
@@ -6931,7 +6931,7 @@ bool PD_Document::areDocumentStylesheetsEqual(const AD_Document &D) const
 			}
 			else
 			{
-				hFmtMap.insert(s,NULL);
+				hFmtMap.insert(s,nullptr);
 			}
 		}
 	}
@@ -7033,7 +7033,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					// of rev. marking mode for a moment ...
 					bool bMark = isMarkRevisions();
 					_setMarkRevisions(false);
-					bRet = deleteSpan(iStart,iEndDelete,NULL,iRealDeleteCount);
+					bRet = deleteSpan(iStart,iEndDelete,nullptr,iRealDeleteCount);
 					_setMarkRevisions(bMark);
 
 					if(!bRet)
@@ -7045,7 +7045,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 			case PP_REVISION_DELETION:
 				// remove the revision (and any higher ones) from the attribute
 				RevAttr.removeAllHigherOrEqualIds(pRev->getId());
-				pRev = NULL;
+				pRev = nullptr;
 				
 				ppAttr[0] = rev;
 				ppAttr[1] = RevAttr.getXMLstring();
@@ -7066,7 +7066,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				// need to set a new revision attribute
 				// first remove current revision from pRevAttr
 				RevAttr.removeAllHigherOrEqualIds(pRev->getId());
-				pRev = NULL;
+				pRev = nullptr;
 				
 				ppAttr[0] = rev;
 				ppAttr[1] = RevAttr.getXMLstring();
@@ -7116,7 +7116,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					// of rev. marking mode for a moment ...
 					bool bMark = isMarkRevisions();
 					_setMarkRevisions(false);
-					bRet = deleteSpan(iStart,iEndDelete,NULL,iRealDeleteCount);
+					bRet = deleteSpan(iStart,iEndDelete,nullptr,iRealDeleteCount);
 					_setMarkRevisions(bMark);
 
 					if(!bRet)
@@ -7163,7 +7163,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					// need to set a new revision attribute
 					// first remove current revision from pRevAttr
 					RevAttr.removeAllHigherOrEqualIds(pRev->getId());
-					pRev = NULL;
+					pRev = nullptr;
 
 					std::string revision = RevAttr.getXMLstring();
 
@@ -7235,7 +7235,7 @@ bool PD_Document::acceptAllRevisions()
 		
 		PT_AttrPropIndex API = pf->getIndexAP();
 
-		const PP_AttrProp * pAP = NULL;
+		const PP_AttrProp * pAP = nullptr;
 		m_pPieceTable->getAttrProp(API,&pAP);
 		if(!pAP)
 		{
@@ -7245,10 +7245,10 @@ bool PD_Document::acceptAllRevisions()
 			return false;
 		}
 		
-		const gchar * pszRevision = NULL;
+		const gchar * pszRevision = nullptr;
 		pAP->getAttribute("revision", pszRevision);
 		
-		if(pszRevision == NULL)
+		if(pszRevision == nullptr)
 		{
 			// no revisions on this fragment
 			t += pf->getLength();
@@ -7257,7 +7257,7 @@ bool PD_Document::acceptAllRevisions()
 			
 		PP_RevisionAttr RevAttr(pszRevision);
 		RevAttr.pruneForCumulativeResult(this);
-		const PP_Revision * pRev = NULL;
+		const PP_Revision * pRev = nullptr;
 		if(RevAttr.getRevisionsCount())
 			pRev = RevAttr.getNthRevision(0);
 		
@@ -7278,9 +7278,9 @@ bool PD_Document::acceptAllRevisions()
 		// resulted in deletion and/or merging of fragments; we have
 		// to reset the iterator
 		if(bDeleted)
-			t.reset(iStart, NULL);
+			t.reset(iStart, nullptr);
 		else
-			t.reset(iEnd, NULL);
+			t.reset(iEnd, nullptr);
 	}
 
 	// _acceptRejectRevison() function unfortunately leaves some unwanted fmt marks in the
@@ -7317,7 +7317,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 		
 		PT_AttrPropIndex API = pf->getIndexAP();
 
-		const PP_AttrProp * pAP = NULL;
+		const PP_AttrProp * pAP = nullptr;
 		m_pPieceTable->getAttrProp(API,&pAP);
 		if(!pAP)
 		{
@@ -7327,10 +7327,10 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 			return false;
 		}
 		
-		const gchar * pszRevision = NULL;
+		const gchar * pszRevision = nullptr;
 		pAP->getAttribute("revision", pszRevision);
 		
-		if(pszRevision == NULL)
+		if(pszRevision == nullptr)
 		{
 			// no revisions on this fragment
 			t += pf->getLength();
@@ -7356,9 +7356,9 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 		// resulted in deletion and/or merging of fragments; we have
 		// to reset the iterator
 		if(bDeleted)
-			t.reset(iStart, NULL);
+			t.reset(iStart, nullptr);
 		else
-			t.reset(iEnd, NULL);
+			t.reset(iEnd, nullptr);
 	}
 
 	// _acceptRejectRevison() function unfortunately leaves some unwanted fmt marks in the
@@ -7428,7 +7428,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 
 		PT_AttrPropIndex API = pf->getIndexAP();
 
-		const PP_AttrProp * pAP = NULL;
+		const PP_AttrProp * pAP = nullptr;
 		m_pPieceTable->getAttrProp(API,&pAP);
 		if(!pAP)
 		{
@@ -7438,10 +7438,10 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 			return false;
 		}
 		
-		const gchar * pszRevision = NULL;
+		const gchar * pszRevision = nullptr;
 		pAP->getAttribute("revision", pszRevision);
 		
-		if(pszRevision == NULL)
+		if(pszRevision == nullptr)
 		{
 			// no revisions on this fragment
 			t += iFragLen;
@@ -7467,9 +7467,9 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 		// resulted in deletion and/or merging of fragments; we have
 		// to reset the iterator
 		if(bDeleted)
-			t.reset(iStart, NULL);
+			t.reset(iStart, nullptr);
 		else
-			t.reset(iEnd, NULL);
+			t.reset(iEnd, nullptr);
 	}
 
 	endUserAtomicGlob();
@@ -7505,7 +7505,7 @@ void PD_Document::purgeRevisionTable(bool bUnconditional /* = false */)
 
 			UT_String_sprintf(sAPI, "%08x", api);
 
-			if(!hAPI.contains(sAPI, NULL))
+			if(!hAPI.contains(sAPI, nullptr))
 			{
 				const PP_AttrProp * pAP;
 				UT_return_if_fail(getAttrProp(api, &pAP));
@@ -7518,7 +7518,7 @@ void PD_Document::purgeRevisionTable(bool bUnconditional /* = false */)
 
 				// cache this api so we do not need to do this again if we
 				// come across it
-				hAPI.insert(sAPI,NULL);
+				hAPI.insert(sAPI,nullptr);
 			}
 
 			t += pf->getLength();
@@ -7981,7 +7981,7 @@ bool PD_Document::areDocumentFormatsEqual(const AD_Document &D, UT_uint32 &pos) 
 
 		UT_String s;
 		UT_String_sprintf(s,"%08x%08x", ap1, ap2);
-		bool bAreSame = hFmtMap.contains(s,NULL);
+		bool bAreSame = hFmtMap.contains(s,nullptr);
 		
 		if(!bAreSame)
 		{
@@ -7992,7 +7992,7 @@ bool PD_Document::areDocumentFormatsEqual(const AD_Document &D, UT_uint32 &pos) 
 			}
 			else
 			{
-				hFmtMap.insert(s,NULL);
+				hFmtMap.insert(s,nullptr);
 			}
 		}
 		
@@ -8046,7 +8046,7 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 	bool bRevisionAttrNeeded = !!pRevisions;
 	bHiddenRevision = false;
 
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 
 	if(!getAttrProp(apIndx,&pAP))
 		return false;
@@ -8057,7 +8057,7 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
 
-		const gchar* pRevision = NULL;
+		const gchar* pRevision = nullptr;
 
 		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
 		{
@@ -8104,7 +8104,7 @@ bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLe
 								  bool bShowRevisions, UT_uint32 iRevisionId,
 								  bool &bHiddenRevision) const
 {
-	const PP_AttrProp *pAP = NULL;
+	const PP_AttrProp *pAP = nullptr;
 	bool bRevisionAttrNeeded = !!pRevisions;
 	std::unique_ptr<PP_RevisionAttr> pRevAttr;
 
@@ -8117,9 +8117,9 @@ bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLe
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
 
-		const gchar* pRevision = NULL;
+		const gchar* pRevision = nullptr;
 
-		// only do this if the pRevisions pointer is set to NULL
+		// only do this if the pRevisions pointer is set to nullptr
 		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
 		{
 			pRevisions.unwrap_ref().reset(new PP_RevisionAttr(pRevision));
@@ -8288,7 +8288,7 @@ PD_XMLIDCreator::rebuildCache()
     {
         pt_PieceTable* m_pPieceTable = m_doc->getPieceTable();
         
-        pf_Frag * pf = NULL;
+        pf_Frag * pf = nullptr;
         pf = m_pPieceTable->getFragments().getFirst();
         while(pf)
         {

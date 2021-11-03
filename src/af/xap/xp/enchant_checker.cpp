@@ -55,15 +55,15 @@ EnchantChecker::EnchantChecker()
 		s_enchant_broker = enchant_broker_init ();
 #ifdef _MSC_VER
 		// hack: the old dictionary installers download to the "dictionary" path...
-		gchar* ispell_path1 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", NULL);
+		gchar* ispell_path1 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", nullptr);
 		// ... while in the new situation we support multiple types of dictionaries
-		gchar* ispell_path2 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "ispell", NULL);
+		gchar* ispell_path2 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "ispell", nullptr);
 		std::string ispell_path = std::string(ispell_path1) + ";" + std::string(ispell_path2);
 		enchant_broker_set_param(s_enchant_broker,  "enchant.ispell.dictionary.path", ispell_path.c_str());
 		g_free(ispell_path1);
 		g_free(ispell_path2);
 
-		gchar* myspell_path = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "myspell", NULL);
+		gchar* myspell_path = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "myspell", nullptr);
 		enchant_broker_set_param(s_enchant_broker,  "enchant.myspell.dictionary.path", myspell_path);
 		g_free(myspell_path);
 #endif
@@ -194,5 +194,5 @@ EnchantChecker::_requestDictionary (const char * szLang)
 	m_dict = enchant_broker_request_dict(s_enchant_broker, lang);
 	FREEP(lang);
 
-	return (m_dict != NULL);
+	return (m_dict != nullptr);
 }

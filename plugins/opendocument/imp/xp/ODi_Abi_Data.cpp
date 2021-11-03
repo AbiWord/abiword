@@ -130,7 +130,7 @@ bool ODi_Abi_Data::addImageDataItem(UT_String& rDataId, const gchar** ppAtts) {
                                         false,
                                         pPictData,
                                         pFG->getMimeType(),
-                                        NULL)) {
+                                        nullptr)) {
             
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         return false;
@@ -224,9 +224,9 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
         return false;
     }
 #endif
-	char *content_type = g_content_type_guess(NULL, object_buf->getPointer(0),
-	                                          object_buf->getLength(), NULL);
-	char *mime_type = NULL;
+	char *content_type = g_content_type_guess(nullptr, object_buf->getPointer(0),
+	                                          object_buf->getLength(), nullptr);
+	char *mime_type = nullptr;
 	if (content_type)
 	{
 		mime_type = g_content_type_get_mime_type(content_type);
@@ -242,7 +242,7 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     UT_UTF8String PbMathml = (const char*)(object_buf->getPointer(0));
     UT_UTF8String PbLatex,Pbitex;
 	
-    if (!m_pAbiDocument->createDataItem(rDataId.c_str(), false, object_buf,"application/mathml+xml", NULL))
+    if (!m_pAbiDocument->createDataItem(rDataId.c_str(), false, object_buf,"application/mathml+xml", nullptr))
     {            
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         return false;
@@ -253,7 +253,7 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
         
 	// Conversion of MathML to LaTeX and the Equation Form suceeds
 	latexBuf->ins(0, reinterpret_cast<const UT_Byte *>(Pbitex.utf8_str()), static_cast<UT_uint32>(Pbitex.size()));
-	if(!m_pAbiDocument->createDataItem(rLatexId.c_str(), false, latexBuf, "", NULL))
+	if(!m_pAbiDocument->createDataItem(rLatexId.c_str(), false, latexBuf, "", nullptr))
 	{
 	    UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	    return false;
@@ -272,7 +272,7 @@ UT_Error ODi_Abi_Data::_loadStream (GsfInfile* oo,
                                    const char* stream,
                                    const UT_ByteBufPtr & buf)
 {
-    guint8 const *data = NULL;
+    guint8 const *data = nullptr;
     size_t len = 0;
     static const size_t BUF_SZ = 4096;
   
@@ -286,7 +286,7 @@ UT_Error ODi_Abi_Data::_loadStream (GsfInfile* oo,
     if (gsf_input_size (input) > 0) {
         while ((len = gsf_input_remaining (input)) > 0) {
             len = UT_MIN (len, BUF_SZ);
-            if (NULL == (data = gsf_input_read (input, len, NULL))) {
+            if (nullptr == (data = gsf_input_read (input, len, nullptr))) {
                 g_object_unref (G_OBJECT (input));
                 return UT_ERROR;
             }

@@ -60,7 +60,7 @@ FG_GraphicPtr FG_GraphicRaster::createFromChangeRecord(const fl_ContainerLayout*
 			std::string mime_type;
 			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID,
                                                          pFG->m_pbb,
-                                                         &mime_type, NULL);
+                                                         &mime_type, nullptr);
             if(bFoundDataItem) 
             {
                 if(mime_type == "image/jpeg") 
@@ -100,7 +100,7 @@ FG_GraphicPtr FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
 			std::string mime_type;
 			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, 
                                                          pFG->m_pbb,
-                                                         &mime_type, NULL);
+                                                         &mime_type, nullptr);
             if(bFoundDataItem) 
             {
                 if(mime_type == "image/jpeg") 
@@ -124,13 +124,13 @@ FG_GraphicPtr FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
 
 FG_GraphicRaster::FG_GraphicRaster()
     : m_format(PNG_FORMAT)
-    , m_pbb(NULL)
+    , m_pbb(nullptr)
 	, m_iWidth(0)
 	, m_iHeight(0)
 	, m_iMaxW(0)
 	, m_iMaxH(0)
-	, m_pSpanAP(NULL)
-	, m_pszDataID(NULL)
+	, m_pSpanAP(nullptr)
+	, m_pszDataID(nullptr)
 {
 	xxx_UT_DEBUGMSG(("GraphRaster created %x \n",this));
 }
@@ -190,9 +190,9 @@ double FG_GraphicRaster::getHeight(void) const
  */
 const char * FG_GraphicRaster::getWidthProp(void)
 {
-	const gchar * szWidth = NULL;
+	const gchar * szWidth = nullptr;
 	m_pSpanAP->getProperty("width", szWidth);
-	if(szWidth == NULL)
+	if(szWidth == nullptr)
 	{
 		szWidth = "0in";
 	}
@@ -205,9 +205,9 @@ const char * FG_GraphicRaster::getWidthProp(void)
  */
 const char * FG_GraphicRaster::getHeightProp(void)
 {
-	const gchar * szHeight = NULL;
+	const gchar * szHeight = nullptr;
 	m_pSpanAP->getProperty("height", szHeight);
-	if(szHeight == NULL)
+	if(szHeight == nullptr)
 	{
 		szHeight = "0in";
 	}
@@ -240,7 +240,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 
 	const gchar *pszWidth;
 	const gchar *pszHeight;
-	if(pSpanAP != NULL)
+	if(pSpanAP != nullptr)
 	{
 		m_pSpanAP = pSpanAP;
 	}
@@ -332,7 +332,7 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	/*
 	  Create the data item
 	*/
-   	pDoc->createDataItem(szName, false, m_pbb, getMimeType(), NULL);
+	pDoc->createDataItem(szName, false, m_pbb, getMimeType(), nullptr);
 
 	/*
 	  Insert the object into the document.
@@ -356,10 +356,10 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 
 const char *  FG_GraphicRaster::createDataItem(PD_Document *pDoc, const char * szName) const
 {
-	UT_return_val_if_fail(pDoc,NULL);
+	UT_return_val_if_fail(pDoc,nullptr);
 	UT_ASSERT(szName);
 
-   	pDoc->createDataItem(szName, false, m_pbb, getMimeType(), NULL);
+	pDoc->createDataItem(szName, false, m_pbb, getMimeType(), nullptr);
 	return szName;
 }
 
@@ -380,7 +380,7 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 	/*
 	  Create the data item
 	*/
-   	pDoc->createDataItem(szName, false, m_pbb, getMimeType(), NULL);
+	pDoc->createDataItem(szName, false, m_pbb, getMimeType(), nullptr);
 
 	/*
 	  Insert the object into the document.

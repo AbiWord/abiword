@@ -52,7 +52,7 @@ public:
 	virtual ~IE_Imp_Psion_Word_Sniffer() {}
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
-	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return nullptr; }
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									           UT_uint32 iNumbytes) override;
 	virtual bool getDlgLabels (const char ** szDesc,
@@ -71,7 +71,7 @@ public:
 	virtual ~IE_Imp_Psion_TextEd_Sniffer() {}
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
-	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return nullptr; }
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									           UT_uint32 iNumbytes) override;
 	virtual bool getDlgLabels (const char ** szDesc,

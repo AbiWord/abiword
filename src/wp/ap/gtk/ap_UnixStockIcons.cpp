@@ -143,8 +143,8 @@ static struct AbiStockEntry {
   { ABIWORD_SEMITEM_STYLESHEET_APPLY,
 	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY,	"tb_semitem_stylesheet_apply" },
 
-  { NULL,
-	0, 											NULL }
+  { nullptr,
+	0, 											nullptr }
 };
 
 /*
@@ -197,7 +197,7 @@ static struct AbiStockMapping {
   { ABIWORD_SCRIPT_PLAY,			AP_MENU_ID_TOOLS_SCRIPTS,		"system-run" },
   { ABIWORD_FMT_STRIKE,				AP_MENU_ID_FMT_STRIKE,			"format-text-strikethrough" },
   { ABIWORD_VIEW_FULL_SCREEN,       0,                              "view-fullscreen" },
-  { NULL, 					0,					NULL }
+  { nullptr, 					0,					nullptr }
 };
 
 /*!
@@ -267,7 +267,7 @@ abi_stock_from_toolbar_id (const gchar *toolbar_id)
 		g_free (stock_id);
 		stock_id = g_strdup (tmp2);
 	} else {
-		xxx_UT_DEBUGMSG(("abi_stock_get_gtk_stock_id returned NULL for stock_id: %s\n", stock_id));
+		xxx_UT_DEBUGMSG(("abi_stock_get_gtk_stock_id returned nullptr for stock_id: %s\n", stock_id));
 	}
 
 	return stock_id;
@@ -298,5 +298,5 @@ abi_stock_get_gtk_stock_id (const gchar * abi_stock_id)
 		i++;
 	}
 
-	return NULL;
+	return nullptr;
 }

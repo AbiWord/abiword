@@ -205,9 +205,9 @@ IE_Exp_S5::~IE_Exp_S5()
 
 UT_Error IE_Exp_S5::_writeDocument(void)
 {
-    GR_Graphics *layout_graphics = NULL;
-    FL_DocLayout *pDocLayout = NULL;
-    FV_View *layoutView = NULL;
+    GR_Graphics *layout_graphics = nullptr;
+    FL_DocLayout *pDocLayout = nullptr;
+    FV_View *layoutView = nullptr;
 
 	layout_graphics = GR_Graphics::newNullGraphics();
 	if (!layout_graphics)
@@ -251,7 +251,7 @@ void IE_Exp_S5::_writeHeader()
 	else
 		title = prop;
 
-	if (title.size() == 0 && getFileName () != NULL) 
+	if (title.size() == 0 && getFileName() != nullptr)
 		title = UT_basename(getFileName ());
 
 	prop = getProperty("author");

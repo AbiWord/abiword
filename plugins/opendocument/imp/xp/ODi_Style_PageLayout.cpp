@@ -84,7 +84,7 @@ void ODi_Style_PageLayout::startElement(const gchar* pName,
         if(m_columnLine.empty()) {
             pVal = UT_getAttribute ("style:style", ppAtts);
         } else {
-            pVal = NULL; //m_columnLine is already set to "on" - don't bother looking up more props
+            pVal = nullptr; //m_columnLine is already set to "on" - don't bother looking up more props
         }
 
         if (pVal) {
@@ -167,7 +167,7 @@ const std::string ODi_Style_PageLayout::getSectionProps(bool hasHeader, bool has
  */
 void ODi_Style_PageLayout::_parseHeaderFooterProperties(const gchar** ppAtts) {
     
-    const gchar* pVal = NULL;
+    const gchar* pVal = nullptr;
     pVal = UT_getAttribute ("svg:height", ppAtts);
     
     if (m_rElementStack.hasElement("style:header-style")) {
@@ -194,7 +194,7 @@ void ODi_Style_PageLayout::_parseHeaderFooterProperties(const gchar** ppAtts) {
  */
 void ODi_Style_PageLayout::_parsePageLayoutProperties(const gchar** ppAtts) {
     
-    const gchar* pVal = NULL;
+    const gchar* pVal = nullptr;
     
     pVal = UT_getAttribute ("fo:page-width", ppAtts);
     if (pVal) {
@@ -243,7 +243,7 @@ void ODi_Style_PageLayout::_parsePageLayoutProperties(const gchar** ppAtts) {
  */
 void ODi_Style_PageLayout::_parseBackgroundImage(const gchar** ppAtts) {
     
-    const gchar* pVal = NULL;
+    const gchar* pVal = nullptr;
     
     pVal = UT_getAttribute ("xlink:href", ppAtts);
     if(!pVal) {

@@ -115,7 +115,7 @@ void AP_CocoaDialog_HdrFtr::RestartSpinChanged(UT_sint32 RestartValue)
 
 -(void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 -(void)dealloc

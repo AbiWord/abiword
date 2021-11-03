@@ -93,11 +93,11 @@ bool UT_IsWin95(void)
  the sub-dialogs.
  */
 DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCWSTR lpszResName)
-{ 
-    HRSRC hrsrc = FindResourceW(NULL, lpszResName,  (LPWSTR)RT_DIALOG); 
-    HGLOBAL hglb = LoadResource(hinst, hrsrc); 
-    return (DLGTEMPLATE *) LockResource(hglb); 	
-} 
+{
+    HRSRC hrsrc = FindResourceW(nullptr, lpszResName,  (LPWSTR)RT_DIALOG);
+    HGLOBAL hglb = LoadResource(hinst, hrsrc);
+    return (DLGTEMPLATE *) LockResource(hglb);
+}
 
 /*!
     This code is based on function by Philippe Randour <philippe_randour at hotmail dot
@@ -115,19 +115,19 @@ DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCWSTR lpszResName)
 wchar_t * UT_GetDefaultPrinterName()
 {
 	UT_uint32 iBufferSize = 128; // will become 2x bigger immediately in the loop
-	wchar_t * pPrinterName = NULL; 
+	wchar_t * pPrinterName = nullptr;
 	DWORD rc;
-	
+
 	do
 	{
 		iBufferSize *= 2;
 
 		if(pPrinterName)
 			g_free(pPrinterName);
-		
+
 		pPrinterName = (wchar_t *) UT_calloc(sizeof(wchar_t),iBufferSize);
-		UT_return_val_if_fail( pPrinterName, NULL );
-		
+		UT_return_val_if_fail( pPrinterName, nullptr );
+
 		// the method of obtaining the name is version specific ...
 		OSVERSIONINFOW osvi;
 		DWORD iNeeded, iReturned, iBuffSize;
@@ -140,23 +140,23 @@ wchar_t * UT_GetDefaultPrinterName()
 		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
 		{
 			// get size of the buffer needed to call enum printers
-			if (!EnumPrintersW(PRINTER_ENUM_DEFAULT,NULL,5,NULL,0,&iNeeded,&iReturned))
+			if (!EnumPrintersW(PRINTER_ENUM_DEFAULT,nullptr,5,nullptr,0,&iNeeded,&iReturned))
 			{
 				if ((rc = GetLastError()) != ERROR_INSUFFICIENT_BUFFER)
 				{
-					return NULL;
+					return nullptr;
 				}
 			}
 
 			// allocate the buffer
-			if ((pPrinterInfo = (LPPRINTER_INFO_5W)LocalAlloc(LPTR,iNeeded)) == NULL)
+			if ((pPrinterInfo = (LPPRINTER_INFO_5W)LocalAlloc(LPTR,iNeeded)) == nullptr)
 			{
 				rc = GetLastError();
 			}
 			else
 			{
 				// now get the default printer
-				if (!EnumPrintersW(PRINTER_ENUM_DEFAULT,NULL,5,
+				if (!EnumPrintersW(PRINTER_ENUM_DEFAULT,nullptr,5,
 								  (LPBYTE) pPrinterInfo,iNeeded,&iNeeded,&iReturned))
 				{
 					rc = GetLastError();
@@ -194,7 +194,7 @@ wchar_t * UT_GetDefaultPrinterName()
 
 				HMODULE hWinSpool = LoadLibraryW(L"winspool.drv");
 				if (!hWinSpool)
-					return NULL;
+					return nullptr;
 
 				HRESULT (WINAPI * fnGetDefaultPrinter)(LPWSTR, LPDWORD) =
 					(HRESULT (WINAPI * )(LPWSTR, LPDWORD)) GetProcAddress(hWinSpool, GETDEFAULTPRINTER);
@@ -202,7 +202,7 @@ wchar_t * UT_GetDefaultPrinterName()
 				if (!fnGetDefaultPrinter)
 				{
 					FreeLibrary(hWinSpool);
-					return NULL;
+					return nullptr;
 				}
 
                 bool i =false;
@@ -248,14 +248,14 @@ HDC  UT_GetDefaultPrinterDC()
 	wchar_t * pPrinterName  = UT_GetDefaultPrinterName();
 
 	if(!pPrinterName || !*pPrinterName)
-		return NULL;
+		return nullptr;
 
 	//	HANDLE hPrinter;
-	//	if(!OpenPrinter(pPrinterName, &hPrinter, NULL))
-	//		return NULL;
+	//	if(!OpenPrinter(pPrinterName, &hPrinter, nullptr))
+	//		return nullptr;
 
-	const wchar_t * pDriver = UT_IsWinNT() ? L"WINSPOOL" : NULL;
-	HDC hdc = CreateDCW(pDriver, pPrinterName, NULL, NULL);
+	const wchar_t * pDriver = UT_IsWinNT() ? L"WINSPOOL" : nullptr;
+	HDC hdc = CreateDCW(pDriver, pPrinterName, nullptr, nullptr);
 	g_free(pPrinterName);
 	return hdc;
 }

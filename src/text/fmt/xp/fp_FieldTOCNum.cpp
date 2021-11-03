@@ -47,7 +47,7 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 	PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 	fl_BlockLayout * pBlockInDoc = pLayout->findBlockAtPosition(pos);
-	if(pBlockInDoc == NULL)
+	if(pBlockInDoc == nullptr)
 	{
 		sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');
 		sz_ucs_FieldValue[1] = 0;
@@ -71,7 +71,7 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 		pLine = static_cast<fp_Line *>(pLine->getNext());
 	    }
 	}
-	if(pLine == NULL)
+	if(pLine == nullptr)
 	{
 		sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');
 		sz_ucs_FieldValue[1] = 0;
@@ -79,7 +79,7 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 	}
 
 	fp_Page * pPage = pLine->getPage();
-        if (pPage == NULL)
+        if (pPage == nullptr)
         {
             UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
             return false;

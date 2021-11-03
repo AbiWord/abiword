@@ -40,7 +40,7 @@ public:
 										   const UT_Rect & /*rec*/) override
 		// TODO: we need createImageSegment for converting inline images to positioned images
 		// via the context menu
-		{ UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED) ; return NULL; }
+		{ UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED) ; return nullptr; }
 
 	virtual GRType		getType() const override { return GRT_Vector; }
 	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) override;

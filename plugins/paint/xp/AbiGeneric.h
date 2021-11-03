@@ -173,14 +173,14 @@ extern XAP_PrefsScheme * prefsScheme;
 extern const gchar * szAbiPluginSchemeName;
 
 
-/* Note:  Make sure the methodName field is Not NULL, otherwise
+/* Note:  Make sure the methodName field is Not nullptr, otherwise
  *        AbiWord.exe will probably segfault -- actual results
  *        depend on where other plugins add menu items.
  * Note2: Make sure the label is unique across ALL plugins (and
- *        internal menu labels), any duplicates [including NULL]
+ *        internal menu labels), any duplicates [including nullptr]
  *        may cause the menu to display incorrectly.  This is
  *        most notable on the end of a submenu; its probably ok
- *        for separators to share a NULL label.
+ *        for separators to share a nullptr label.
  */
 typedef struct AbiMenuOptions
 {
@@ -208,7 +208,7 @@ typedef struct AbiMenuOptions
  *   num_menuitems is how many entries are in the array (usually sizeof(amo)/sizeof(amo[0]))
  *   prevMM is the [English] Main menu item we place our 1st menu item after
  *   prevCM is the [English] Context menu item we place our 1st context menu item after
- *     prevMM and prevCM should not be NULL unless there is no entry added to the respective menu
+ *     prevMM and prevCM should not be nullptr unless there is no entry added to the respective menu
  */
 UT_Error addToMenus(AbiMenuOptions amo[], UT_uint32 num_menuitems, XAP_Menu_Id prevMM, XAP_Menu_Id prevCM);
 UT_Error removeFromMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems);

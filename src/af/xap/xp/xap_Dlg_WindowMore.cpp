@@ -51,7 +51,7 @@ XAP_Dialog_WindowMore::tAnswer XAP_Dialog_WindowMore::getAnswer(void) const
 
 XAP_Frame * XAP_Dialog_WindowMore::getSelFrame(void) const
 {
-	XAP_Frame * pSelFrame = NULL;
+	XAP_Frame * pSelFrame = nullptr;
 
 	UT_ASSERT(m_answer == a_OK);
 	UT_ASSERT_HARMLESS(m_pApp);

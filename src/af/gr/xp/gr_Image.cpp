@@ -109,7 +109,7 @@ UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32
   UT_sint32 diHeight = pG->tdu(height);
   double ddTop = static_cast<double>(diTop);
   double ddHeight = static_cast<double>(diHeight);
-  GR_Image_Point * pPoint = NULL;
+  GR_Image_Point * pPoint = nullptr;
   UT_uint32 nPts = m_vecOutLine.getItemCount()/2;
   for(i=0; i < nPts;i++)
   {
@@ -192,7 +192,7 @@ UT_sint32 GR_Image::GetOffsetFromRight(GR_Graphics * pG, UT_sint32 pad, UT_sint3
   UT_sint32 diHeight = pG->tdu(height);
   double ddTop = static_cast<double>(diTop);
   double ddHeight = static_cast<double>(diHeight);
-  GR_Image_Point * pPoint = NULL;
+  GR_Image_Point * pPoint = nullptr;
   UT_sint32 nPts = m_vecOutLine.getItemCount()/2;
   for(i=nPts; i < m_vecOutLine.getItemCount();i++)
   {

@@ -113,7 +113,7 @@ void AP_CocoaDialog_InsertBookmark::event_Cancel(void)
 
 -(void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 -(void)dealloc

@@ -107,7 +107,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 	m_widths.clear();
 
 	// dup the string for harmful chunkification
-	UT_UCSChar * clone = NULL;
+	UT_UCSChar * clone = nullptr;
 	UT_UCS4_cloneString(&clone, text);
 
 	UT_UCSChar * i = clone;
@@ -124,7 +124,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 			m_words.addItem(clone);
 
 			// measure clone item
-			m_widths.addItem(m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), NULL));
+			m_widths.addItem(m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), nullptr));
 
 			// advance clone pointer for new word
 			clone = i + 1;
@@ -135,10 +135,10 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 	// add last word
 	m_words.addItem(clone);
 	// measure last word
-	m_widths.addItem(m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), NULL));
+	m_widths.addItem(m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), nullptr));
 }
 
-// ignores NULL parameters, otherwise scales dimensioned strings into
+// ignores nullptr parameters, otherwise scales dimensioned strings into
 // pixel constants for drawing this block.  It's 72/2, since we'll
 // be converting all units to inches, then to points (72 dpi),
 // and cutting in half (/2) for mini-view
@@ -269,7 +269,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 {
 	UT_ASSERT_HARMLESS(text && dlg);
 
-	m_font = NULL;
+	m_font = nullptr;
 	m_fontHeight = 0;
 
 	m_y = DEFAULT_TOP_MARGIN;
@@ -287,12 +287,12 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														 m_gc,
 														 AP_Dialog_Paragraph::align_LEFT,
 														 m_fontHeight);
-		m_previousBlock->setFormat(NULL,
-									NULL,
+		m_previousBlock->setFormat(nullptr,
+									nullptr,
 									AP_Dialog_Paragraph::align_LEFT,
-									NULL,
+									nullptr,
 									AP_Dialog_Paragraph::indent_NONE,
-									NULL,NULL,NULL,NULL,NULL,
+									nullptr,nullptr,nullptr,nullptr,nullptr,
 									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
 
@@ -304,8 +304,8 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 													   m_fontHeight);
 		// read these from the dialog's members
 #if 0
-		m_activeBlock->setFormat(NULL,
-									NULL,
+		m_activeBlock->setFormat(nullptr,
+									nullptr,
 									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT),
 									(AP_Dialog_Paragraph::tIndentState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT),
@@ -324,12 +324,12 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														  m_gc,
 														  AP_Dialog_Paragraph::align_LEFT,
 														  m_fontHeight);
-		m_followingBlock->setFormat(NULL,
-									NULL,
+		m_followingBlock->setFormat(nullptr,
+									nullptr,
 									AP_Dialog_Paragraph::align_LEFT,
-									NULL,
+									nullptr,
 									AP_Dialog_Paragraph::indent_NONE,
-									NULL,NULL,NULL,NULL,NULL,
+									nullptr,nullptr,nullptr,nullptr,nullptr,
 									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
 
@@ -353,7 +353,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
   // rather than auto-generating defaults
 	UT_ASSERT_HARMLESS(text && dlg);
 
-	m_font = NULL;
+	m_font = nullptr;
 	m_fontHeight = 0;
 
 	m_y = DEFAULT_TOP_MARGIN;
@@ -409,7 +409,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 {
 	UT_ASSERT_HARMLESS(text && dlg);
 
-	m_font = NULL;
+	m_font = nullptr;
 	m_fontHeight = 0;
 
 	m_y = DEFAULT_TOP_MARGIN;
@@ -430,9 +430,9 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 		m_previousBlock->setFormat(dlg->m_pageLeftMargin.c_str(),
 								   dlg->m_pageRightMargin.c_str(),
 									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
-									NULL,
+									nullptr,
 									AP_Dialog_Paragraph::indent_NONE,
-									NULL,NULL,NULL,NULL,NULL,
+									nullptr,nullptr,nullptr,nullptr,nullptr,
 									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
 
@@ -468,9 +468,9 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 		m_followingBlock->setFormat(dlg->m_pageLeftMargin.c_str(),
 									dlg->m_pageRightMargin.c_str(),
 									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
-									NULL,
+									nullptr,
 									AP_Dialog_Paragraph::indent_NONE,
-									NULL,NULL,NULL,NULL,NULL,
+									nullptr,nullptr,nullptr,nullptr,nullptr,
 									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
 
@@ -544,7 +544,7 @@ bool AP_Preview_Paragraph::_loadDrawFont(const char *name)
 	GR_Font * font = m_gc->findFont(name ? name : "Times New Roman",
 									"normal", "", "normal",
 									"", "7pt",
-									NULL); // might need to get the real lang
+									nullptr); // might need to get the real lang
 										   // from somewhere
 
 	if (font)
@@ -754,7 +754,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_GenericVector<UT_UCSChar*> * word
 	GR_Painter painter(m_gc);
 
 	UT_UCS4String s;
-	UT_UCS4Char *pBuf = NULL;
+	UT_UCS4Char *pBuf = nullptr;
 	UT_uint32 size = 0;
 	for (k = startWithWord; k < i; k++)
 	{

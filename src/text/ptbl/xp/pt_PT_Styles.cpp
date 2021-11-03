@@ -106,7 +106,7 @@ ST_LOCALISED_STYLES stLocalised[] =
 	{"Numbered Heading 3",      XAP_STRING_ID_STYLE_NUMHEAD3},		
 	{"Implies List",	       	XAP_STRING_ID_STYLE_IMPLIES_LIST},		
 	{"None",                    XAP_STRING_ID_STYLE_NONE},		
-	{NULL,	0}	
+	{nullptr,	0}
 };
 
 
@@ -328,7 +328,7 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, co
 		return false;
 
 	// verify unique name
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	if (getStyle(szName,&pStyle) == true)
 		return false;		// duplicate name
 
@@ -360,7 +360,7 @@ bool pt_PieceTable::appendStyle(const PP_PropertyVector & attributes)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return true;		// silently ignore unnamed styles
 	}
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	if (getStyle(name.c_str(), &pStyle) == true)
 	{
 		// duplicate name
@@ -465,7 +465,7 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 
-	UT_GenericVector<PD_Style*> * vStyle = NULL;
+	UT_GenericVector<PD_Style*> * vStyle = nullptr;
 	enumStyles(vStyle);
 	//vStyle->qsort(compareStyleNames);
 

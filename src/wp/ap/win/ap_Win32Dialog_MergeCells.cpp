@@ -48,15 +48,15 @@ XAP_Dialog * AP_Win32Dialog_MergeCells::static_constructor(XAP_DialogFactory * p
 AP_Win32Dialog_MergeCells::AP_Win32Dialog_MergeCells(XAP_DialogFactory * pDlgFactory,
 										             XAP_Dialog_Id id)
 	: AP_Dialog_MergeCells(pDlgFactory,id)
-{		
-	m_hBitmapLeft = NULL; 
-	m_hBitmapRight = NULL; 
-	m_hBitmapAbove = NULL; 
-	m_hBitmapBelow = NULL; 
-}   
-    
+{
+	m_hBitmapLeft = nullptr;
+	m_hBitmapRight = nullptr;
+	m_hBitmapAbove = nullptr;
+	m_hBitmapBelow = nullptr;
+}
+
 AP_Win32Dialog_MergeCells::~AP_Win32Dialog_MergeCells(void)
-{	
+{
 	if (m_hBitmapRight) DeleteObject(m_hBitmapRight);		
 	if (m_hBitmapAbove) DeleteObject(m_hBitmapAbove);		
 	if (m_hBitmapLeft) DeleteObject(m_hBitmapLeft);		
@@ -163,7 +163,7 @@ void AP_Win32Dialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
 		setDialogTitle (m_WindowName);
 
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 	setAllSensitivities();

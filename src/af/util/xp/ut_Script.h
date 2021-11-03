@@ -117,7 +117,7 @@ private:
 	UT_Error	constructScript(const char * szFilename,
 								UT_ScriptIdType ieft,
 								UT_Script ** ppscript,
-								UT_ScriptIdType * pieft = NULL);
+								UT_ScriptIdType * pieft = nullptr);
 
 	UT_ScriptLibrary(const UT_ScriptLibrary&);
 	UT_ScriptLibrary& operator=(const UT_ScriptLibrary&);

@@ -66,7 +66,7 @@ XAP_Menu_Id EV_Menu_Action::getMenuId() const
 
 bool EV_Menu_Action::hasDynamicLabel() const
 {
-	return (m_pfnGetLabel != NULL);
+	return (m_pfnGetLabel != nullptr);
 }
 
 const char * EV_Menu_Action::getDynamicLabel(const EV_Menu_Label * pLabel) const
@@ -74,12 +74,12 @@ const char * EV_Menu_Action::getDynamicLabel(const EV_Menu_Label * pLabel) const
 	if (m_pfnGetLabel)
 		return m_pfnGetLabel(pLabel,m_id);
 	else
-		return NULL;
+		return nullptr;
 }
 
 bool EV_Menu_Action::hasGetStateFunction() const
 {
-	return (m_pfnGetState != NULL);
+	return (m_pfnGetState != nullptr);
 }
 
 EV_Menu_ItemState EV_Menu_Action::getMenuItemState(AV_View * pView) const
@@ -130,7 +130,7 @@ EV_Menu_ActionSet::EV_Menu_ActionSet(XAP_Menu_Id first, XAP_Menu_Id last)
 	size_t i;
 	
 	for (i = 0; i < nb_items; ++i)
-		m_actionTable.addItem(NULL);
+		m_actionTable.addItem(nullptr);
 }
 
 EV_Menu_ActionSet::~EV_Menu_ActionSet()
@@ -148,7 +148,7 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
 								  const UT_String& stScriptName)
 {
-	EV_Menu_Action * pTmpAction = NULL;
+	EV_Menu_Action * pTmpAction = nullptr;
 
 	if ((id < m_first) || (id >= m_first + static_cast<UT_sint32>(m_actionTable.size())))
 		return false;
@@ -166,7 +166,7 @@ const EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
 {
 	xxx_UT_DEBUGMSG(("JCA: EV_Menu_ActionSet::getAction(%d) m_first = [%d], size_table = [%d]\n", id, m_first, m_actionTable.size()));
 	if ((id < m_first) || (id > m_first + static_cast<UT_sint32>(m_actionTable.size())))
-		return NULL;
+		return nullptr;
 
 	UT_uint32 index = (id - m_first);
 	const EV_Menu_Action * pAction = static_cast<const EV_Menu_Action *> (m_actionTable[index]);

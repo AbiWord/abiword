@@ -54,42 +54,42 @@ XAP_Dialog * AP_UnixDialog_Styles::static_constructor(XAP_DialogFactory * pFacto
 
 AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-  : AP_Dialog_Styles(pDlgFactory,id), m_selectedStyle(NULL), m_whichType(AP_UnixDialog_Styles::USED_STYLES)
+  : AP_Dialog_Styles(pDlgFactory,id), m_selectedStyle(nullptr), m_whichType(AP_UnixDialog_Styles::USED_STYLES)
 {
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 
-	m_btApply = NULL;
-	m_btClose = NULL;
-	m_wGnomeButtons = NULL;
-	m_wParaPreviewArea = NULL;
-	m_pParaPreviewWidget = NULL;
-	m_wCharPreviewArea = NULL;
-	m_pCharPreviewWidget = NULL;
+	m_btApply = nullptr;
+	m_btClose = nullptr;
+	m_wGnomeButtons = nullptr;
+	m_wParaPreviewArea = nullptr;
+	m_pParaPreviewWidget = nullptr;
+	m_wCharPreviewArea = nullptr;
+	m_pCharPreviewWidget = nullptr;
 
-	m_listStyles = NULL;
-	m_tvStyles = NULL;
-	m_rbList1 = NULL;
-	m_rbList2 = NULL;
-	m_rbList3 = NULL;
-	m_lbAttributes = NULL;
+	m_listStyles = nullptr;
+	m_tvStyles = nullptr;
+	m_rbList1 = nullptr;
+	m_rbList2 = nullptr;
+	m_rbList3 = nullptr;
+	m_lbAttributes = nullptr;
 
-	m_wModifyDialog = NULL;
-	m_wStyleNameEntry = NULL;
-	m_wBasedOnCombo = NULL;
-	m_wBasedOnEntry = NULL;
-	m_wFollowingCombo = NULL;
-	m_wFollowingEntry = NULL;
-	m_wStyleTypeCombo = NULL;
-	m_wStyleTypeEntry = NULL;
-	m_wLabDescription = NULL;
+	m_wModifyDialog = nullptr;
+	m_wStyleNameEntry = nullptr;
+	m_wBasedOnCombo = nullptr;
+	m_wBasedOnEntry = nullptr;
+	m_wFollowingCombo = nullptr;
+	m_wFollowingEntry = nullptr;
+	m_wStyleTypeCombo = nullptr;
+	m_wStyleTypeEntry = nullptr;
+	m_wLabDescription = nullptr;
 
-	m_pAbiPreviewWidget = NULL;
-	m_wModifyDrawingArea = NULL;
+	m_pAbiPreviewWidget = nullptr;
+	m_wModifyDrawingArea = nullptr;
 
-	m_wModifyOk = NULL;
-	m_wModifyCancel = NULL;
-	m_wFormatMenu = NULL;
-	m_wModifyShortCutKey = NULL;
+	m_wModifyOk = nullptr;
+	m_wModifyCancel = nullptr;
+	m_wFormatMenu = nullptr;
+	m_wModifyShortCutKey = nullptr;
 
 	m_bBlockModifySignal = false;
 }
@@ -402,7 +402,7 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 	if (m_selectedStyle)
     {
 		m_sNewStyleName = "";
-		gchar * style = NULL;
+		gchar * style = nullptr;
 
 		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
 		GtkTreeIter iter;
@@ -607,7 +607,7 @@ void AP_UnixDialog_Styles::_populateCList(void)
 	size_t nStyles = getDoc()->getStyleCount();
 	xxx_UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
 	
-	if (m_listStyles == NULL) {
+	if (m_listStyles == nullptr) {
 		m_listStyles = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 		GtkTreeModel *sort = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (m_listStyles));
 		gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (sort), 0, GTK_SORT_ASCENDING);
@@ -621,13 +621,13 @@ void AP_UnixDialog_Styles::_populateCList(void)
 	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW(m_tvStyles), 0);
 	if (!column) 
 	{
-		column = gtk_tree_view_column_new_with_attributes ("Style", gtk_cell_renderer_text_new (), "text", 0, NULL);
+		column = gtk_tree_view_column_new_with_attributes ("Style", gtk_cell_renderer_text_new (), "text", 0, nullptr);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(m_tvStyles), column);
 	}
 
 	GtkTreeIter iter, pHighlightIter;
 	bool highlight = false;
-	UT_GenericVector<PD_Style*> *pStyles = NULL;
+	UT_GenericVector<PD_Style*> *pStyles = nullptr;
 	getDoc()->enumStyles(pStyles);
 	for (UT_uint32 i = 0; i < nStyles; i++)
 	{
@@ -666,7 +666,7 @@ void AP_UnixDialog_Styles::_populateCList(void)
 		gtk_tree_model_sort_convert_child_iter_to_iter(GTK_TREE_MODEL_SORT(sort), &iter, &pHighlightIter);
 		gtk_tree_selection_select_iter(selection, &iter);
 		GtkTreePath *path = gtk_tree_model_get_path(sort, &iter); 
-		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_tvStyles), path, NULL, FALSE, 0, 0);
+		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_tvStyles), path, nullptr, FALSE, 0, 0);
 		gtk_tree_path_free(path);
 	}
 	else {
@@ -699,9 +699,9 @@ const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
 	UT_ASSERT(m_tvStyles);
 
 	if (!m_selectedStyle)
-		return NULL;
+		return nullptr;
 
-	gchar * style = NULL;
+	gchar * style = nullptr;
 
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
 	GtkTreeIter iter;
@@ -709,7 +709,7 @@ const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
 	gtk_tree_model_get(model, &iter, 1, &style, -1);
 
 	if (!style)
-		return NULL;
+		return nullptr;
 
 	sStyleBuf = style;
 	g_free(style);
@@ -751,29 +751,29 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container)
 {
 
-	GtkWidget *dialog_vbox1 = NULL;
-	GtkWidget *OverallVbox = NULL;
-	GtkWidget *comboTable  = NULL;
-	GtkWidget *nameLabel  = NULL;
-	GtkWidget *basedOnLabel  = NULL;
-	GtkWidget *followingLabel = NULL;
-	GtkWidget *styleTypeLabel = NULL;
-	GtkWidget *styleNameEntry = NULL;
-	GtkWidget *basedOnCombo = NULL;
-	GtkWidget *basedOnEntry = NULL;
-	GtkWidget *followingCombo = NULL;
-	GtkWidget *followingEntry = NULL;
-	GtkWidget *styleTypeCombo = NULL;
-	GtkWidget *styleTypeEntry = NULL;
-	GtkWidget *previewFrame = NULL;
-	GtkWidget *modifyDrawingArea = NULL;
-	GtkWidget *DescriptionText = NULL;
-	GtkWidget *checkBoxRow = NULL;
-	GtkWidget *checkAddTo = NULL;
-	GtkWidget *checkAutoUpdate = NULL;
-	GtkWidget *deletePropCombo = NULL;
-	GtkWidget *deletePropEntry = NULL;
-	GtkWidget *deletePropButton = NULL;
+	GtkWidget *dialog_vbox1 = nullptr;
+	GtkWidget *OverallVbox = nullptr;
+	GtkWidget *comboTable  = nullptr;
+	GtkWidget *nameLabel  = nullptr;
+	GtkWidget *basedOnLabel  = nullptr;
+	GtkWidget *followingLabel = nullptr;
+	GtkWidget *styleTypeLabel = nullptr;
+	GtkWidget *styleNameEntry = nullptr;
+	GtkWidget *basedOnCombo = nullptr;
+	GtkWidget *basedOnEntry = nullptr;
+	GtkWidget *followingCombo = nullptr;
+	GtkWidget *followingEntry = nullptr;
+	GtkWidget *styleTypeCombo = nullptr;
+	GtkWidget *styleTypeEntry = nullptr;
+	GtkWidget *previewFrame = nullptr;
+	GtkWidget *modifyDrawingArea = nullptr;
+	GtkWidget *DescriptionText = nullptr;
+	GtkWidget *checkBoxRow = nullptr;
+	GtkWidget *checkAddTo = nullptr;
+	GtkWidget *checkAutoUpdate = nullptr;
+	GtkWidget *deletePropCombo = nullptr;
+	GtkWidget *deletePropEntry = nullptr;
+	GtkWidget *deletePropButton = nullptr;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	dialog_vbox1 = container;
@@ -796,7 +796,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	nameLabel = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                                     "xalign", 0.0, "yalign", 0.5,
                                     "justify", GTK_JUSTIFY_LEFT,
-                                    "xpad", 2, "ypad", 2, "hexpand", TRUE, NULL);
+                                    "xpad", 2, "ypad", 2, "hexpand", TRUE, nullptr);
 	gtk_widget_show (nameLabel);
 	gtk_grid_attach(GTK_GRID (comboTable), nameLabel, 0, 0, 1, 1);
 
@@ -804,7 +804,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	styleTypeLabel = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
                                         "xalign", 0.0, "yalign", 0.5,
                                         "justify", GTK_JUSTIFY_LEFT,
-                                        "xpad", 2, "ypad", 2, "hexpand", TRUE, NULL);
+                                        "xpad", 2, "ypad", 2, "hexpand", TRUE, nullptr);
 	gtk_widget_show (styleTypeLabel);
 	gtk_grid_attach (GTK_GRID (comboTable), styleTypeLabel, 1, 0, 1, 1);
 
@@ -812,14 +812,14 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	basedOnLabel = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                                        "xalign", 0.0, "yalign", 0.5,
                                        "justify", GTK_JUSTIFY_LEFT,
-                                       "xpad", 2, "ypad", 2, NULL);
+                                       "xpad", 2, "ypad", 2, nullptr);
 	gtk_widget_show (basedOnLabel);
 	gtk_grid_attach (GTK_GRID (comboTable), basedOnLabel, 0, 2, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFollowing,s);
 	followingLabel = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                                          "xalign", 0.0, "yalign", 0.5,
-                                         "xpad", 2, "ypad", 2, NULL);
+                                         "xpad", 2, "ypad", 2, nullptr);
 	gtk_widget_show (followingLabel);
 	gtk_grid_attach (GTK_GRID (comboTable), followingLabel, 1, 2, 1, 1);
 
@@ -866,17 +866,17 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyPreview,s);
 	s = "<b>" + s + "</b>";
-	GtkWidget *lbPrevFrame = gtk_label_new(NULL);
+	GtkWidget *lbPrevFrame = gtk_label_new(nullptr);
 	gtk_label_set_markup(GTK_LABEL(lbPrevFrame), s.c_str());
 	gtk_widget_show(lbPrevFrame);
-	previewFrame = gtk_frame_new(NULL);
+	previewFrame = gtk_frame_new(nullptr);
 	gtk_frame_set_label_widget(GTK_FRAME(previewFrame), lbPrevFrame);
 	gtk_frame_set_shadow_type(GTK_FRAME(previewFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (previewFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), previewFrame, TRUE, TRUE, 0);
 	XAP_gtk_widget_set_margin(previewFrame, 3);
 
-	GtkWidget *wDrawFrame = gtk_frame_new(NULL);
+	GtkWidget *wDrawFrame = gtk_frame_new(nullptr);
 	gtk_frame_set_shadow_type(GTK_FRAME(wDrawFrame), GTK_SHADOW_NONE);
 	gtk_widget_show(wDrawFrame);
 	gtk_container_add(GTK_CONTAINER(previewFrame), wDrawFrame);
@@ -889,14 +889,14 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyDescription,s);
 	s = "<b>" + s + "</b>";
-	GtkWidget *lbDescrFrame = gtk_label_new(NULL);
+	GtkWidget *lbDescrFrame = gtk_label_new(nullptr);
 	gtk_label_set_markup(GTK_LABEL(lbDescrFrame), s.c_str());
 	gtk_widget_show(lbDescrFrame);
 	GtkWidget *descriptionFrame
 	  = gtk_widget_new(GTK_TYPE_FRAME,
 			   "label-widget", lbDescrFrame,
 			   "shadow-type", GTK_SHADOW_NONE,
-			   "border-width", 5, NULL);
+			   "border-width", 5, nullptr);
 	gtk_widget_show (descriptionFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), descriptionFrame, FALSE, FALSE, 0);
 
@@ -904,7 +904,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 					  "xpad", 0, "ypad", 6,
 					  "wrap", TRUE,
 					  "max-width-chars", 64,
-					  NULL);
+					  nullptr);
 	gtk_widget_show (DescriptionText);
 	gtk_container_add (GTK_CONTAINER (descriptionFrame), DescriptionText);
 	gtk_widget_set_size_request(DescriptionText, 438, -1);
@@ -1305,7 +1305,7 @@ void AP_UnixDialog_Styles::event_ModifyPreviewDraw(void)
 
 void AP_UnixDialog_Styles::event_ModifyClicked(void)
 {
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	const char * szCurrentStyle = getCurrentStyle ();
 	m_sNewStyleName = szCurrentStyle;
 
@@ -1402,7 +1402,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 // Get Style name and put in in the text entry
 //
-	const char * szCurrentStyle = NULL;
+	const char * szCurrentStyle = nullptr;
 	std::string s;
 
 	if(!isNew())
@@ -1429,13 +1429,13 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 // Next interogate the current style and find the based on and followed by
 // Styles
 //
-	const char * szBasedOn = NULL;
-	const char * szFollowedBy = NULL;
-	PD_Style * pBasedOnStyle = NULL;
-	PD_Style * pFollowedByStyle = NULL;
+	const char * szBasedOn = nullptr;
+	const char * szFollowedBy = nullptr;
+	PD_Style * pBasedOnStyle = nullptr;
+	PD_Style * pFollowedByStyle = nullptr;
 	if(!isNew())
 	{
-		PD_Style * pStyle = NULL;
+		PD_Style * pStyle = nullptr;
 		if(szCurrentStyle)
 			getDoc()->getStyle(szCurrentStyle,&pStyle);
 		if(!pStyle)
@@ -1455,7 +1455,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 // Next make a glists of all styles and attach them to the BasedOn and FollowedBy
 //
-	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	UT_GenericVector<PD_Style*> * pStyles = nullptr;
 	getDoc()->enumStyles(pStyles);
 	UT_sint32 nStyles = pStyles->getItemCount();
 	for (UT_sint32 i = 0; i < nStyles; i++)
@@ -1472,7 +1472,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 			szFollowedBy = name;
 		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
 			m_gbasedOnStyles.push_back(sLoc);
-		else if(szCurrentStyle == NULL)
+		else if(szCurrentStyle == nullptr)
 			m_gbasedOnStyles.push_back(sLoc);
 
 		m_gfollowedByStyles.push_back(sLoc);
@@ -1502,7 +1502,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 	{
 		std::string sLoc;
 
-		if(pBasedOnStyle != NULL)
+		if(pBasedOnStyle != nullptr)
 		{
 			pt_PieceTable::s_getLocalisedStyleName(szBasedOn, sLoc);
 			XAP_gtk_entry_set_text(GTK_ENTRY(m_wBasedOnEntry), sLoc.c_str());
@@ -1513,7 +1513,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 			XAP_gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), s.c_str());
 		}
 
-		if(pFollowedByStyle != NULL)
+		if(pFollowedByStyle != nullptr)
 		{
 			pt_PieceTable::s_getLocalisedStyleName(szFollowedBy, sLoc);
 			XAP_gtk_entry_set_text(GTK_ENTRY(m_wFollowingEntry), sLoc.c_str());

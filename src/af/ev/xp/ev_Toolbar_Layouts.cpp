@@ -92,7 +92,7 @@ bool EV_Toolbar_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Toolbar_Id 
 	UT_ASSERT(indexLayoutItem < m_nrLayoutItems);
 	DELETEP(m_layoutTable[indexLayoutItem]);
 	m_layoutTable[indexLayoutItem] = new EV_Toolbar_LayoutItem(id,flags);
-	return (m_layoutTable[indexLayoutItem] != NULL);
+	return (m_layoutTable[indexLayoutItem] != nullptr);
 }
 
 EV_Toolbar_LayoutItem * EV_Toolbar_Layout::getLayoutItem(UT_uint32 indexLayoutItem) const

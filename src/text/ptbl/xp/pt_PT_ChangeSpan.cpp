@@ -59,7 +59,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	if(m_pDocument->isMarkRevisions() && dpos1 != dpos2)
 	{
 		const gchar name[] = "revision";
-		const gchar * pRevision = NULL;
+		const gchar * pRevision = nullptr;
 
 		// we cannot retrieve the start and end fragments here and
 		// then work between them in a loop using getNext() because
@@ -83,7 +83,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			
 			// get attributes for this fragement
 			const PP_AttrProp * pAP;
-			pRevision = NULL;
+			pRevision = nullptr;
 			
 			if(_getSpanAttrPropHelper(pf1, &pAP))
 			{
@@ -438,7 +438,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 //
 		const std::string & szStyle = PP_getAttribute(PT_STYLE_ATTRIBUTE_NAME,
 													  attributes);
-		PD_Style * pStyle = NULL;
+		PD_Style * pStyle = nullptr;
 		UT_return_val_if_fail (!szStyle.empty(),false);
 		getDocument()->getStyle(szStyle.c_str(),&pStyle);
 		UT_return_val_if_fail (pStyle,false);
@@ -510,7 +510,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 		beginMultiStepGlob();
     // UT_DEBUGMSG(("ODTCT: realChangeSpanFmt() bSimple:%d\n", bSimple ));
 
-	pf_Frag_Strux * pfsContainer = NULL;
+	pf_Frag_Strux * pfsContainer = nullptr;
 	pf_Frag * pfNewEnd;
 	UT_uint32 fragOffsetNewEnd;
 

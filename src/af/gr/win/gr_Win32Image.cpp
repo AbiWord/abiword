@@ -42,7 +42,7 @@
 
 
 GR_Win32Image::GR_Win32Image(const char* szName)
-:	m_pDIB(0)
+:	m_pDIB(nullptr)
 {
 	if (szName)
 	{
@@ -142,8 +142,8 @@ bool GR_Win32Image::convertToBuffer(UT_ConstByteBufPtr& ppBB) const
 	png_infop info_ptr;
 
 	// initialize some libpng stuff
-	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, (png_voidp)NULL,
-									  (png_error_ptr)NULL, (png_error_ptr)NULL);
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, (png_voidp)nullptr,
+									  (png_error_ptr)nullptr, (png_error_ptr)nullptr);
 	
 	info_ptr = png_create_info_struct(png_ptr);
 
@@ -151,7 +151,7 @@ bool GR_Win32Image::convertToBuffer(UT_ConstByteBufPtr& ppBB) const
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		/* If we get here, we had a problem reading the file */
-		png_destroy_write_struct(&png_ptr,  (png_infopp)NULL);
+		png_destroy_write_struct(&png_ptr,  (png_infopp)nullptr);
 		ppBB = UT_ByteBufPtr();
 		
 		return false;
@@ -359,7 +359,7 @@ bool GR_Win32Image::convertToBuffer(UT_ConstByteBufPtr& ppBB) const
 	png_write_end(png_ptr, info_ptr);
 
 	/* clean up after the write, and g_free any memory allocated */
-	png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+	png_destroy_write_struct(&png_ptr, (png_infopp)nullptr);
 
 	// And pass the ByteBuf back to our caller
 	ppBB = pBB;
@@ -375,7 +375,7 @@ bool GR_Win32Image::convertToBuffer(UT_ConstByteBufPtr& ppBB) const
 GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & rec)
 {
 	// this code assumes 24 bit RGB bitmaps ...
-	UT_return_val_if_fail(pG && m_pDIB && m_pDIB->bmiHeader.biBitCount == 24, NULL);
+	UT_return_val_if_fail(pG && m_pDIB && m_pDIB->bmiHeader.biBitCount == 24, nullptr);
 
 	// the ration of x and y coords for the graphics class
 	double fXYRatio = ((GR_Win32Graphics *)pG)->getXYRatio();
@@ -461,7 +461,7 @@ GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & re
 	sName += sSub;
 	GR_Win32Image * pImage = new GR_Win32Image(sName.c_str());
 
-	UT_return_val_if_fail( pImage, NULL );
+	UT_return_val_if_fail( pImage, nullptr );
 	
 	// now allocate memory -- mostly copied from convertFromBuffer()
 	UT_uint32 iBytesInRow = widthDIB * 3;
@@ -471,7 +471,7 @@ GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & re
 	}
 
 	pImage->m_pDIB = (BITMAPINFO*) g_try_malloc(sizeof(BITMAPINFOHEADER) + heightDIB * iBytesInRow);
-	UT_return_val_if_fail( pImage->m_pDIB, NULL );
+	UT_return_val_if_fail( pImage->m_pDIB, nullptr );
 
 	// simply copy the whole header
 	memcpy(pImage->m_pDIB, m_pDIB, sizeof(BITMAPINFOHEADER));
@@ -527,19 +527,19 @@ bool GR_Win32Image::_convertFromPNG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDi
 	png_uint_32 width, height;
 	int bit_depth, color_type, interlace_type;
 
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, (void*) NULL,
-									 NULL, NULL);
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, (void*) nullptr,
+									 nullptr, nullptr);
 
-	if (png_ptr == NULL)
+	if (png_ptr == nullptr)
 	{
 		return false;
 	}
 
 	/* Allocate/initialize the memory for image information.  REQUIRED. */
 	info_ptr = png_create_info_struct(png_ptr);
-	if (info_ptr == NULL)
+	if (info_ptr == nullptr)
 	{
-		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr, (png_infopp)nullptr, (png_infopp)nullptr);
 		return false;
 	}
 
@@ -550,7 +550,7 @@ bool GR_Win32Image::_convertFromPNG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDi
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		/* Free all of the memory associated with the png_ptr and info_ptr */
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)nullptr);
 
 		/* If we get here, we had a problem reading the file */
 		return false;
@@ -568,7 +568,7 @@ bool GR_Win32Image::_convertFromPNG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDi
 	png_read_info(png_ptr, info_ptr);
 
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
-				 &interlace_type, NULL, NULL);
+				 &interlace_type, nullptr, nullptr);
 
 	/* Extract multiple pixels with bit depths of 1, 2, and 4 from a single
 	 * byte into separate bytes (useful for paletted and grayscale images).
@@ -603,7 +603,7 @@ bool GR_Win32Image::_convertFromPNG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDi
 	m_pDIB = (BITMAPINFO*) g_try_malloc(sizeof(BITMAPINFOHEADER) + height * iBytesInRow);
 	if (!m_pDIB)
 	{
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)nullptr);
 		return false;
 	}
 
@@ -635,7 +635,7 @@ bool GR_Win32Image::_convertFromPNG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDi
 		{
 			UT_Byte* pRow = pBits + (height - iRow - 1) * iBytesInRow;
 
-			png_read_rows(png_ptr, &pRow, NULL, 1);
+			png_read_rows(png_ptr, &pRow, nullptr, 1);
 		}
 	}
 
@@ -643,7 +643,7 @@ bool GR_Win32Image::_convertFromPNG(const UT_ConstByteBufPtr& pBB, UT_sint32 iDi
 	png_read_end(png_ptr, info_ptr);
 
 	/* clean up after the read, and g_free any memory allocated - REQUIRED */
-	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)nullptr);
 
 	return true;
 }

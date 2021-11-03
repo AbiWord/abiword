@@ -86,7 +86,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	UT_return_if_fail (pPrefs);
 
-	AP_FrameData *pFrameData = NULL;
+	AP_FrameData *pFrameData = nullptr;
 	if(m_pFrame) {
 		pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
 		UT_return_if_fail (pFrameData);
@@ -264,7 +264,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	UT_return_if_fail (pPrefs);
 
-	AP_FrameData *pFrameData = NULL;
+	AP_FrameData *pFrameData = nullptr;
 	if(m_pFrame) {
 		pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
 		UT_return_if_fail (pFrameData);

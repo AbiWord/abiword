@@ -56,10 +56,10 @@ AP_UnixDialog_Field::AP_UnixDialog_Field(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_Field(pDlgFactory,id)
 {
-	m_windowMain = NULL;
-	m_listTypes = NULL;
-	m_listFields = NULL;
-	m_entryParam = NULL;
+	m_windowMain = nullptr;
+	m_listTypes = nullptr;
+	m_listFields = nullptr;
+	m_entryParam = nullptr;
 }
 
 AP_UnixDialog_Field::~AP_UnixDialog_Field(void)
@@ -202,7 +202,7 @@ void AP_UnixDialog_Field::setTypesList(void)
 	                            );
 	
  	// build a list of all items
-    for (i = 0; fp_FieldTypes[i].m_Desc != NULL; i++)
+    for (i = 0; fp_FieldTypes[i].m_Desc != nullptr; i++)
 	{
 		// Add a new row to the model
 		gtk_list_store_append (model, &iter);
@@ -247,7 +247,7 @@ void AP_UnixDialog_Field::setFieldsList(void)
 	                            );
 	
  	// build a list of all items
-    for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
+    for (i = 0; fp_FieldFmts[i].m_Tag != nullptr; i++)
 	{
 		if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref) &&
@@ -318,7 +318,7 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 							 renderer,
 							 "text", 
 							 0,
-							 NULL);
+							 nullptr);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_listTypes), column);
 
 	renderer = gtk_cell_renderer_text_new ();
@@ -326,7 +326,7 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 							 renderer,
 							 "text", 
 							 0,
-							 NULL);
+							 nullptr);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_listFields), column);	
 
 	// connect a clicked signal to the column

@@ -61,7 +61,7 @@ class AbiGO_LocaleTransactor
 AbiGO_LocaleTransactor::AbiGO_LocaleTransactor (int category, const char * locale)
   : mCategory (category), mOldLocale(nullptr)
 {
-	mOldLocale = g_strdup(setlocale(category, NULL));
+	mOldLocale = g_strdup(setlocale(category, nullptr));
 	go_setlocale (category, locale);
 
 	// TODO: win32 may need to free old_locale
@@ -127,10 +127,10 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 	/* Ignore changes while we are insensitive. useful for displaying
 	 * values, without storing then as Data.  Also ignore updates if the
 	 * dataset has been cleared via the weakref handler  */
-	if (!gtk_widget_get_sensitive (GTK_WIDGET(gee)) || editor->dataset == NULL)
+	if (!gtk_widget_get_sensitive (GTK_WIDGET(gee)) || editor->dataset == nullptr)
 		return;
 
-	GOData *data = NULL;
+	GOData *data = nullptr;
 	double val;
 	char *end;
 #if 0
@@ -139,9 +139,9 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 	sep[1] = col_sep[1]= 0;
 #endif
 	char const* str = XAP_gtk_entry_get_text (gee);
-	if (str == NULL)
+	if (str == nullptr)
 		return;
-	data = NULL;
+	data = nullptr;
 	switch (editor->data_type) {
 	case GOG_DATA_SCALAR:
 		if (!*str)
@@ -155,29 +155,29 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 	case GOG_DATA_VECTOR:
 	{
 		// try to get values, but on error, get strings
-		data = go_data_vector_val_new (NULL, 0, NULL);
-		if (go_data_unserialize (data, str, NULL))
+		data = go_data_vector_val_new (nullptr, 0, nullptr);
+		if (go_data_unserialize (data, str, nullptr))
 			break;
 		g_object_unref (data);
-		data = go_data_vector_str_new (NULL, 0, NULL);
-		if (go_data_unserialize (data, str, NULL))
+		data = go_data_vector_str_new (nullptr, 0, nullptr);
+		if (go_data_unserialize (data, str, nullptr))
 			break;
 		g_object_unref (data);
-		data = NULL;
+		data = nullptr;
 	}
 		break;
 	case GOG_DATA_MATRIX:
-		data = go_data_matrix_val_new (NULL, 0, 0, NULL);
-		if (go_data_unserialize (data, str, NULL))
+		data = go_data_matrix_val_new (nullptr, 0, 0, nullptr);
+		if (go_data_unserialize (data, str, nullptr))
 			break;
 		g_object_unref (data);
-		data = NULL;
+		data = nullptr;
 	}
 
 	if (!data) {
 		/* display "Invalid Data message" */
 	} else
-		gog_dataset_set_dim (editor->dataset, editor->dim_i, data, NULL);
+		gog_dataset_set_dim (editor->dataset, editor->dim_i, data, nullptr);
 }
 
 static void
@@ -207,8 +207,8 @@ typedef GtkEntry AbiDataEntry;
 typedef GtkEntryClass AbiDataEntryClass;
 
 GSF_CLASS_FULL (AbiDataEntry, abi_data_entry,
-		NULL, NULL, NULL, NULL,
-		NULL, GTK_TYPE_ENTRY, 0,
+		nullptr, nullptr, nullptr, nullptr,
+		nullptr, GTK_TYPE_ENTRY, 0,
 		GSF_INTERFACE (abi_data_editor_init, GOG_TYPE_DATA_EDITOR))
 
 static void
@@ -227,7 +227,7 @@ static void
 cb_dim_editor_weakref_notify (GraphDimEditor *editor, GogDataset *dataset)
 {
 	g_return_if_fail (editor->dataset == dataset);
-	editor->dataset = NULL;
+	editor->dataset = nullptr;
 }
 
 static void
@@ -251,7 +251,7 @@ abi_data_allocator_editor (G_GNUC_UNUSED GogDataAllocator *dalloc,
 	editor->dataset		= dataset;
 	editor->dim_i		= dim_i;
 	editor->data_type	= data_type;
-	editor->entry  		= GTK_ENTRY (g_object_new (abi_data_entry_get_type (), NULL));
+	editor->entry  		= GTK_ENTRY (g_object_new (abi_data_entry_get_type (), nullptr));
 	g_object_weak_ref (G_OBJECT (editor->dataset),
 		(GWeakNotify) cb_dim_editor_weakref_notify, editor);
 
@@ -259,8 +259,8 @@ abi_data_allocator_editor (G_GNUC_UNUSED GogDataAllocator *dalloc,
 //		GTK_UPDATE_DISCONTINUOUS);
 
 	val = gog_dataset_get_dim (dataset, dim_i);
-	if (val != NULL) {
-		char *txt = go_data_serialize (val, NULL);
+	if (val != nullptr) {
+		char *txt = go_data_serialize (val, nullptr);
 		XAP_gtk_entry_set_text (editor->entry, txt);
 		g_free (txt);
 	}
@@ -296,7 +296,7 @@ static void
 abi_control_gui_init (GObject *object, gpointer)
 {
 	AbiControlGUI *control = ABI_CONTROL_GUI (object);
-	control->object_id = NULL;
+	control->object_id = nullptr;
 }
 
 static GObjectClass *parent_klass;
@@ -318,7 +318,7 @@ abi_control_gui_class_init (GObjectClass *klass, gpointer)
 }
 
 GSF_CLASS_FULL (AbiControlGUI, abi_control_gui,
-		NULL, NULL, abi_control_gui_class_init, NULL,
+		nullptr, nullptr, abi_control_gui_class_init, nullptr,
 		abi_control_gui_init, G_TYPE_OBJECT, 0,
 		GSF_INTERFACE (abi_go_plot_data_allocator_init, GOG_TYPE_DATA_ALLOCATOR);
 		/*GSF_INTERFACE (abi_cmd_context_init, GO_CMD_CONTEXT_TYPE)*/)
@@ -328,7 +328,7 @@ graph_user_config_free_data (gpointer data,
 					  GClosure *closure)
 {
 	g_object_unref (data);
-	closure->data = NULL;
+	closure->data = nullptr;
 }
 
 static void
@@ -340,7 +340,7 @@ cb_update_graph (GogGraph *graph, gpointer data)
 	AbiGO_LocaleTransactor tm(LC_MONETARY, "C");
 	GsfOutput* output = gsf_output_memory_new ();
 	GsfXMLOut* xml = gsf_xml_out_new (output);
-	gog_object_write_xml_sax(GOG_OBJECT (graph), xml, NULL);
+	gog_object_write_xml_sax(GOG_OBJECT (graph), xml, nullptr);
 	UT_Byte const *bytes = gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (output));
 	UT_ByteBufPtr myByteBuf(new UT_ByteBuf);
 	myByteBuf->append(bytes, gsf_output_size (output));
@@ -348,7 +348,7 @@ cb_update_graph (GogGraph *graph, gpointer data)
 	const char * szProps="embed-type: GOChart";
 	if (acg->pView)
 	{
-		acg->pView->SetGuru (NULL);
+		acg->pView->SetGuru (nullptr);
 		FV_View* pView = acg->pView->getRun ()->getBlock ()->getView ();
 		UT_DEBUGMSG(("Doing Embed Update from GOG callback \n"));
 		pView->cmdUpdateEmbed(acg->pView->getRun (), myByteBuf, mimetypeGOChart, szProps);
@@ -367,7 +367,7 @@ static void
 guru_destroyed_cb (GOChartView *pView)
 {
 	if (pView)
-		pView->SetGuru (NULL);
+		pView->SetGuru (nullptr);
 }
 
 //
@@ -383,15 +383,15 @@ AbiGOChart_Create(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCallData 
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
 	UT_ByteBufPtr myByteBuf(new UT_ByteBuf);
 
-	AbiControlGUI *acg = ABI_CONTROL_GUI(g_object_new (ABI_TYPE_CONTROL_GUI, NULL));
+	AbiControlGUI *acg = ABI_CONTROL_GUI(g_object_new (ABI_TYPE_CONTROL_GUI, nullptr));
 
-	GogGraph *graph = (GogGraph *) g_object_new(GOG_TYPE_GRAPH, NULL);
+	GogGraph *graph = (GogGraph *) g_object_new(GOG_TYPE_GRAPH, nullptr);
 	/* by default, create one chart and add it to the graph */
-	gog_object_add_by_name(GOG_OBJECT(graph), "Chart", NULL);
+	gog_object_add_by_name(GOG_OBJECT(graph), "Chart", nullptr);
 	GClosure *closure = g_cclosure_new(G_CALLBACK (cb_update_graph), acg,
 					(GClosureNotify) graph_user_config_free_data);
 	GtkWidget *dialog = gog_guru(graph, GOG_DATA_ALLOCATOR (acg),
-		       NULL /*GO_CMD_CONTEXT (wbcg)*/, closure);
+		       nullptr /*GO_CMD_CONTEXT (wbcg)*/, closure);
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pFrameImpl->getTopLevelWindow()));
 	g_closure_sink(closure);
 	gtk_widget_show_all (dialog);
@@ -415,7 +415,7 @@ GR_AbiGOChartItems::~GR_AbiGOChartItems(void)
 GR_GOChartManager::GR_GOChartManager(GR_Graphics* pG)
   : GR_EmbedManager(pG), 
     m_CurrentUID(-1),
-    m_pDoc(NULL)
+    m_pDoc(nullptr)
 {
   m_vecGOChartView.clear();
   m_vecItems.clear();
@@ -437,7 +437,7 @@ const char * GR_GOChartManager::getObjectType(void) const
   return "GOChart";
 }
 
-GOChartView * GR_GOChartManager::last_created_view = NULL;
+GOChartView * GR_GOChartManager::last_created_view = nullptr;
 
 void GR_GOChartManager::initialize(void)
 {
@@ -470,7 +470,7 @@ void GR_GOChartManager::setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize)
 
 UT_sint32 GR_GOChartManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, G_GNUC_UNUSED const char * szDataID)
 {
-  if(m_pDoc == NULL)
+  if(m_pDoc == nullptr)
   {
     m_pDoc = static_cast<PD_Document *>(pDoc);
   }
@@ -496,11 +496,11 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
   GR_AbiGOChartItems * pItem = m_vecItems.getNthItem(uid);
   UT_return_if_fail(pItem);  
   GOChartView * pGOChartView = m_vecGOChartView.getNthItem(uid);
-  const PP_AttrProp * pSpanAP = NULL;
+  const PP_AttrProp * pSpanAP = nullptr;
   PT_AttrPropIndex api = pItem->m_iAPI;
   bool bHaveProp = m_pDoc->getAttrProp(api, &pSpanAP);
   UT_return_if_fail(bHaveProp);
-  const char * pszDataID = NULL;
+  const char * pszDataID = nullptr;
   pSpanAP->getAttribute("dataid", pszDataID);
   UT_ByteBufPtr pBuf;
   if ((pBuf = pGOChartView->exportToSVG ()))
@@ -514,7 +514,7 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
       else
         {
           const std::string mimetypeSVG = "image/svg";
-          m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mimetypeSVG, NULL);
+          m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mimetypeSVG, nullptr);
           pItem->m_bHasSnapshot = true;
         }
     }
@@ -530,7 +530,7 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
       else
         {
           const std::string mimetypePNG = "image/png";
-          m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mimetypePNG, NULL);
+          m_pDoc->createDataItem(sID.utf8_str(), false, pBuf, mimetypePNG, nullptr);
           pItem->m_bHasSnapshot = true;
         }
     }
@@ -562,20 +562,20 @@ void GR_GOChartManager::loadEmbedData(UT_sint32 uid)
 {
   GOChartView * pGOChartView = m_vecGOChartView.getNthItem(uid);
   UT_return_if_fail(pGOChartView);
-  const PP_AttrProp * pSpanAP = NULL;
+  const PP_AttrProp * pSpanAP = nullptr;
   GR_AbiGOChartItems * pItem = m_vecItems.getNthItem(uid);
   UT_return_if_fail(pItem);  
   PT_AttrPropIndex api = pItem->m_iAPI;
   bool bHaveProp = m_pDoc->getAttrProp(api, &pSpanAP);
   UT_return_if_fail(bHaveProp);
-  const char * pszDataID = NULL;
+  const char * pszDataID = nullptr;
   bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
   UT_UTF8String sGOChartXML;
   if (bFoundDataID && pszDataID)
   {
        UT_ConstByteBufPtr pByteBuf;
        bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID, pByteBuf,
-						    NULL, NULL);
+						    nullptr, nullptr);
        if (bFoundDataID)
        {
             UT_UCS4_mbtowc myWC;
@@ -630,7 +630,7 @@ void GR_GOChartManager::releaseEmbedView(UT_sint32 uid)
 {
   GOChartView * pGOChartView = m_vecGOChartView.getNthItem(uid);
   delete pGOChartView;
-  m_vecGOChartView.setNthItem(uid,NULL,NULL); //NULL it out so we don't affect the other uid's
+  m_vecGOChartView.setNthItem(uid,nullptr,nullptr); //nullptr it out so we don't affect the other uid's
 }
 
 bool GR_GOChartManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED const UT_ConstByteBufPtr & From, G_GNUC_UNUSED const UT_ByteBufPtr & To)
@@ -659,12 +659,12 @@ void GR_GOChartManager::buildContextualMenu ()
     EV_Menu_ActionSet* pActionSet = pApp->getMenuActionSet();
 	XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 	ChartMenuID = pFact->createContextMenu("AbiGOChart");
-	pFact->addNewMenuBefore("AbiGOChart",NULL,0,EV_MLF_Normal,AP_MENU_ID_EDIT_DELETEEMBED);
-	pFact->addNewMenuBefore("AbiGOChart",NULL,0,EV_MLF_Normal,AP_MENU_ID_EDIT_COPYEMBED);
-	pFact->addNewMenuBefore("AbiGOChart",NULL,0,EV_MLF_Normal,AP_MENU_ID_EDIT_CUTEMBED);
-    pFact->addNewMenuBefore("AbiGOChart",NULL,0,EV_MLF_Normal,AP_MENU_ID_FMT_EMBED);
-	XAP_Menu_Id separatorID = pFact->addNewMenuAfter("AbiGOChart",NULL,AP_MENU_ID_FMT_EMBED,EV_MLF_Separator);
-	pFact->addNewLabel(NULL,separatorID,NULL,NULL);
+	pFact->addNewMenuBefore("AbiGOChart",nullptr,0,EV_MLF_Normal,AP_MENU_ID_EDIT_DELETEEMBED);
+	pFact->addNewMenuBefore("AbiGOChart",nullptr,0,EV_MLF_Normal,AP_MENU_ID_EDIT_COPYEMBED);
+	pFact->addNewMenuBefore("AbiGOChart",nullptr,0,EV_MLF_Normal,AP_MENU_ID_EDIT_CUTEMBED);
+    pFact->addNewMenuBefore("AbiGOChart",nullptr,0,EV_MLF_Normal,AP_MENU_ID_FMT_EMBED);
+	XAP_Menu_Id separatorID = pFact->addNewMenuAfter("AbiGOChart",nullptr,AP_MENU_ID_FMT_EMBED,EV_MLF_Separator);
+	pFact->addNewLabel(nullptr,separatorID,nullptr,nullptr);
 	// Create the Action that will be called.
 	EV_Menu_Action* mySeparatorAction = new EV_Menu_Action(
 								   separatorID,          // id that the layout said we could use
@@ -672,9 +672,9 @@ void GR_GOChartManager::buildContextualMenu ()
 		0,                      // no, we raise a dialog.
 		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
-		NULL,                   // name of callback function to call.
-		NULL,                   // don't know/care what this is for
-		NULL                    // don't know/care what this is for
+		nullptr,                   // name of callback function to call.
+		nullptr,                   // don't know/care what this is for
+		nullptr                    // don't know/care what this is for
 		);
 	
 	  pActionSet->addAction(mySeparatorAction);
@@ -689,12 +689,12 @@ void GR_GOChartManager::removeContextualMenu ()
 
 GOChartView::GOChartView(GR_GOChartManager * pGOMan): m_pGOMan(pGOMan)
 {
-	m_Graph = NULL;
-	m_Image = NULL;
-	m_Renderer = GOG_RENDERER(g_object_new(GOG_TYPE_RENDERER, NULL));
+	m_Graph = nullptr;
+	m_Image = nullptr;
+	m_Renderer = GOG_RENDERER(g_object_new(GOG_TYPE_RENDERER, nullptr));
 	pix_width = pix_height = 0;
 	width = height = 5000;
-	m_Guru = NULL;
+	m_Guru = nullptr;
 }
 
 GOChartView::~GOChartView(void)
@@ -741,7 +741,7 @@ void GOChartView::render(UT_Rect & rec)
 
 UT_ByteBufPtr GOChartView::exportToPNG ()
 {
-	UT_return_val_if_fail (m_Graph, NULL);
+	UT_return_val_if_fail (m_Graph, nullptr);
 	UT_ByteBufPtr pBuf(new UT_ByteBuf);
 	int w = width * 300 / UT_LAYOUT_RESOLUTION, h = height * 300 / UT_LAYOUT_RESOLUTION;
 	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
@@ -757,7 +757,7 @@ UT_ByteBufPtr GOChartView::exportToPNG ()
 
 UT_ByteBufPtr GOChartView::exportToSVG ()
 {
-	UT_return_val_if_fail (m_Graph, NULL);
+	UT_return_val_if_fail (m_Graph, nullptr);
 	UT_ByteBufPtr pBuf(new UT_ByteBuf);
 	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (
           reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
@@ -773,14 +773,14 @@ void GOChartView::loadBuffer(UT_UTF8String & sGOChartXML)
 {
 	if (m_Graph)
 		g_object_unref (m_Graph);
-	m_Graph = NULL;
+	m_Graph = nullptr;
 	AbiGO_LocaleTransactor tn(LC_NUMERIC, "C");
 	AbiGO_LocaleTransactor tm(LC_MONETARY, "C");
 	GsfInput *input = gsf_input_memory_new(reinterpret_cast<const guint8*>(sGOChartXML.utf8_str()), sGOChartXML.byteLength(), FALSE);
-	m_Graph = GOG_GRAPH(gog_object_new_from_input(input, NULL));
+	m_Graph = GOG_GRAPH(gog_object_new_from_input(input, nullptr));
 	g_object_unref(G_OBJECT(input));
 	if (m_Graph)
-		g_object_set (G_OBJECT (m_Renderer), "model", m_Graph, NULL);
+		g_object_set (G_OBJECT (m_Renderer), "model", m_Graph, nullptr);
 	pix_width = pix_height = 0; // force pixbuf update
 }
 
@@ -795,7 +795,7 @@ void GOChartView::modify()
 	UT_return_if_fail (m_Graph);
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
-	AbiControlGUI *acg = ABI_CONTROL_GUI (g_object_new (ABI_TYPE_CONTROL_GUI, NULL));
+	AbiControlGUI *acg = ABI_CONTROL_GUI (g_object_new (ABI_TYPE_CONTROL_GUI, nullptr));
 
 	acg->pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
 	acg->pView = this;
@@ -803,7 +803,7 @@ void GOChartView::modify()
 	GClosure *closure = g_cclosure_new (G_CALLBACK (cb_update_graph), acg,
 					(GClosureNotify) graph_user_config_free_data);
 	GtkWidget *dialog = gog_guru (m_Graph, GOG_DATA_ALLOCATOR (acg),
-		       NULL /*GO_CMD_CONTEXT (wbcg)*/, closure);
+		       nullptr /*GO_CMD_CONTEXT (wbcg)*/, closure);
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pFrameImpl->getTopLevelWindow()));
 	gtk_widget_show_all (dialog);
 	g_closure_sink (closure);

@@ -53,7 +53,7 @@ XAP_Dialog * AP_CocoaDialog_Columns::static_constructor(XAP_DialogFactory * pFac
 AP_CocoaDialog_Columns::AP_CocoaDialog_Columns(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id dlgid)
 	: AP_Dialog_Columns(pDlgFactory,dlgid),
-		m_pPreviewWidget(NULL),
+		m_pPreviewWidget(nullptr),
 		m_dlg(nil)
 {
 }
@@ -217,7 +217,7 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool /*bState*/)
 
 -(void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 -(void)dealloc

@@ -77,15 +77,15 @@ public:
 							m_xrFirstLineIndent(0),
 							m_xrRightIndent(0),
 							m_xrTabStop(0),
-							m_pfnEnumTabStops(NULL),
-							m_pVoidEnumTabStopsData(NULL),
+							m_pfnEnumTabStops(nullptr),
+							m_pVoidEnumTabStopsData(nullptr),
 							m_iTabStops(0),
 							m_iDefaultTabInterval(0),
-							m_pszTabStops(NULL),
+							m_pszTabStops(nullptr),
 							m_iCurrentColumn(0),
 							m_iNumColumns(0),
-							m_vecTableColInfo (NULL),
-							m_vecFullTable(NULL),
+							m_vecTableColInfo (nullptr),
+							m_vecFullTable(nullptr),
 							m_iTablePadding(0),
 							m_iCells(0),
 							m_iCurCell(0)
@@ -119,7 +119,7 @@ public:
 					delete m_vecFullTable->getNthItem(i);
 				}
 				delete m_vecFullTable;
-				m_vecFullTable = NULL;
+				m_vecFullTable = nullptr;
 			}
 		}
 

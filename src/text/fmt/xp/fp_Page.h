@@ -87,8 +87,8 @@ public:
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
 	PT_DocPosition		getFirstLastPos(bool bFirst) const;
-	void				mapXYToPosition(bool bNotFrames,UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool & isTOC, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL) const;
-	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC,bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL) const;
+	void				mapXYToPosition(bool bNotFrames,UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool & isTOC, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = nullptr) const;
+	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC,bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = nullptr) const;
 	void				getScreenOffsets(const fp_Container*, UT_sint32& xoff, UT_sint32& yoff) const;
 
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);

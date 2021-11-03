@@ -34,7 +34,7 @@ void IE_Exp_XML::setupFile(bool compressed)
 	UT_ASSERT_HARMLESS (!m_xml);
 	if (compressed)
 	{
-		m_zip = gsf_output_gzip_new(getFp (), NULL);
+		m_zip = gsf_output_gzip_new(getFp (), nullptr);
 		m_xml = gsf_xml_out_new (m_zip);
 	}
 	else
@@ -194,5 +194,5 @@ void IE_Exp_XML::addUint(char const *id, unsigned value)
 
 void IE_Exp_XML::setPrettyPrint(bool pretty)
 {
-	g_object_set (m_xml, "pretty-print", pretty, NULL);
+	g_object_set (m_xml, "pretty-print", pretty, nullptr);
 }

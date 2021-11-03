@@ -325,7 +325,7 @@ UT_String UT_String_vprintf(const UT_String & inFormat, va_list args1)
 
 /*!
  * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
- * Return the value of the property sProp or NULL if it is not present.
+ * Return the value of the property sProp or nullptr if it is not present.
  * This UT_String * should be deleted by the calling programming after it is finished with it.
  */
 UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_String & sProp)
@@ -336,7 +336,7 @@ UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_Strin
 	const char * szWork = sWork.c_str();
 	const char * szProps = sPropertyString.c_str();
 	const char * szLoc = strstr(szProps,szWork);
-	if(szLoc == NULL)
+	if(szLoc == nullptr)
 	{
 		return UT_String();
 	}
@@ -344,7 +344,7 @@ UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_Strin
 // Look if this is the last property in the string.
 //
 	const char * szDelim = strchr(szLoc,';');
-	if(szDelim == NULL)
+	if(szDelim == nullptr)
 	{
 //
 // Remove trailing spaces
@@ -364,7 +364,7 @@ UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_Strin
 	else
 	{
 		szDelim = strchr(szLoc,';');
-		if(szDelim == NULL)
+		if(szDelim == nullptr)
 		{
 //
 // bad property string
@@ -400,8 +400,8 @@ void UT_String_addPropertyString(UT_String & sPropertyString, const UT_String & 
 	UT_String sProp;
 	UT_String sVal;
 	UT_String sSubStr;
-	const char * szWork = NULL;
-	const char * szLoc = NULL;
+	const char * szWork = nullptr;
+	const char * szLoc = nullptr;
 	while(iBase < iSize)
 	{
 		bool bBreakAtEnd = false;
@@ -476,7 +476,7 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 	const char * szWork = sWork.c_str();
 	const char * szProps = sPropertyString.c_str();
 	const char * szLoc = strstr(szProps,szWork);
-	if(szLoc == NULL)
+	if(szLoc == nullptr)
 	{
 		//Not here, do nothing
 		return ;
@@ -521,7 +521,7 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 
 	// Look for ";" to get right part
 	const char * szDelim = strchr(szLoc,';');
-	if(szDelim == NULL)
+	if(szDelim == nullptr)
 	{
 		// No properties after this, just assign and return
 		sPropertyString = sNew;
@@ -899,7 +899,7 @@ UT_UTF8String  UT_UTF8String::substr(size_t iStart, size_t nChars) const
 
 /*!
  * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
- * Return the value of the property sProp or NULL if it is not present.
+ * Return the value of the property sProp or nullptr if it is not present.
  * This UT_UTF8String * should be deleted by the calling programming after it is finished with it.
  */
 UT_UTF8String UT_UTF8String_getPropVal(const UT_UTF8String & sPropertyString, const UT_UTF8String & sProp)
@@ -910,7 +910,7 @@ UT_UTF8String UT_UTF8String_getPropVal(const UT_UTF8String & sPropertyString, co
 	const char * szWork = sWork.utf8_str();
 	const char * szProps = sPropertyString.utf8_str();
 	const char * szLoc = strstr(szProps,szWork);
-	if(szLoc == NULL)
+	if(szLoc == nullptr)
 	{
 		return UT_UTF8String();
 	}
@@ -918,7 +918,7 @@ UT_UTF8String UT_UTF8String_getPropVal(const UT_UTF8String & sPropertyString, co
 // Look if this is the last property in the string.
 //
 	const char * szDelim = strchr(szLoc,';');
-	if(szDelim == NULL)
+	if(szDelim == nullptr)
 	{
 //
 // Remove trailing spaces
@@ -938,7 +938,7 @@ UT_UTF8String UT_UTF8String_getPropVal(const UT_UTF8String & sPropertyString, co
 	else
 	{
 		szDelim = strchr(szLoc,';');
-		if(szDelim == NULL)
+		if(szDelim == nullptr)
 		{
 //
 // bad property string
@@ -974,8 +974,8 @@ void UT_UTF8String_addPropertyString(UT_UTF8String & sPropertyString, const UT_U
 	UT_UTF8String sProp;
 	UT_UTF8String sVal;
 	UT_UTF8String sSubStr;
-	const char * szWork = NULL;
-	const char * szLoc = NULL;
+	const char * szWork = nullptr;
+	const char * szLoc = nullptr;
 	while(iBase < iSize)
 	{
 		bool bBreakAtEnd = false;
@@ -1110,7 +1110,7 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 	// Look for ";" to get right part
 	//
 	const char * szDelim = strchr(szLoc + offset,';');
-	if(szDelim == NULL)
+	if(szDelim == nullptr)
 	{
 		// No properties after this, just assign and return
 		sPropertyString = sNew;

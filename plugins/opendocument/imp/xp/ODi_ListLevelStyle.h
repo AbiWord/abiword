@@ -76,7 +76,7 @@ public:
      * @param rProps Will have the properties string appended.
      * @param pStyle Pointer to the paragraph style used on this list paragraph.
      */
-    void getAbiProperties(std::string& rProps, const ODi_Style_Style* pStyle = NULL) const;
+    void getAbiProperties(std::string& rProps, const ODi_Style_Style* pStyle = nullptr) const;
 
     void defineAbiList(PD_Document* pDocument);
 

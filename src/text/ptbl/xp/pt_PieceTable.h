@@ -19,8 +19,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef PT_PIECETABLE_H
-#define PT_PIECETABLE_H
+#pragma once
 
 #include <stdio.h>
 #include <list>
@@ -103,7 +102,7 @@ protected:
 											UT_uint32 length,
 											const PP_PropertyVector & attributes,
 											const PP_PropertyVector & properties,
-											fd_Field * pField = NULL,
+											fd_Field * pField = nullptr,
 											bool bAddChangeRec = true);
 
 	bool					_realDeleteSpan(PT_DocPosition dpos1,
@@ -116,7 +115,7 @@ protected:
 	// this is for fields and so should not be needed with revisions
 	bool					_realInsertSpan_norec(PT_DocPosition dpos,
 											 const UT_UCSChar * p,
-											 UT_uint32 length, fd_Field * pField = NULL);
+											 UT_uint32 length, fd_Field * pField = nullptr);
 	bool                	_realDeleteFieldFrag(pf_Frag * pf);
 #endif
 
@@ -168,7 +167,7 @@ public:
 
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
-									   UT_uint32 length, fd_Field * pField = NULL,
+									   UT_uint32 length, fd_Field * pField = nullptr,
 									   bool bAddChangeRec = true);
 
     pf_Frag* getEndOfBlock( PT_DocPosition currentpos, PT_DocPosition endpos );
@@ -361,7 +360,7 @@ public:
 	const std::map<std::string, PD_Style *> & getAllStyles()const {return m_hashStyles;}
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;
-	bool                    isInsideFootnote(PT_DocPosition dpos, pf_Frag ** pfBegin = NULL) const;
+	bool                    isInsideFootnote(PT_DocPosition dpos, pf_Frag ** pfBegin = nullptr) const;
 	bool                    hasEmbedStruxOfTypeInRange(PT_DocPosition posStart, PT_DocPosition posEnd, 
 													   PTStruxType iType) const;
 
@@ -430,7 +429,7 @@ protected:
 										PT_BlockOffset fragOffset,
 										UT_uint32 length,
 										PT_AttrPropIndex indexAP,
-                                        fd_Field * pField = NULL);
+                                        fd_Field * pField = nullptr);
 	bool                    _StruxIsNotTable(pf_Frag_Strux * pfs);
 	bool					_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 										PT_BufIndex bi, UT_uint32 length,
@@ -617,7 +616,7 @@ protected:
 	bool					_lastUndoIsThisFmtMark(PT_DocPosition dpos);
 
 	bool					_changePointWithNotify(PT_DocPosition dpos);
-	bool                    _checkSkipFootnote(PT_DocPosition dpos1, PT_DocPosition dpos2, pf_Frag * pf_End = NULL) const;
+	bool                    _checkSkipFootnote(PT_DocPosition dpos1, PT_DocPosition dpos2, pf_Frag * pf_End = nullptr) const;
 	// helper methods for the appned and insert*BeforeFrag methods
 	bool					_makeStrux(PTStruxType pts, const PP_PropertyVector & attributes,
 									   pf_Frag_Strux * &pfs);
@@ -663,5 +662,3 @@ protected:
 
 	std::list <embeddedStrux> m_embeddedStrux;
 };
-
-#endif /* PT_PIECETABLE_H */

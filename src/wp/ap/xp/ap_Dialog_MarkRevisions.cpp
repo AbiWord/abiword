@@ -32,7 +32,7 @@
 AP_Dialog_MarkRevisions::AP_Dialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogmarkrevisions"), m_answer(a_CANCEL),
-		m_pDoc(NULL), m_pComment2(NULL),m_pRev(NULL),m_bForceNew(false)
+		m_pDoc(nullptr), m_pComment2(nullptr),m_pRev(nullptr),m_bForceNew(false)
 {
 	m_pSS = XAP_App::getApp()->getStringSet();
 }
@@ -59,13 +59,13 @@ void AP_Dialog_MarkRevisions::_initRevision()
 
 const char * AP_Dialog_MarkRevisions::getTitle()
 {
-	UT_return_val_if_fail(m_pSS,NULL);
+	UT_return_val_if_fail(m_pSS,nullptr);
 	return m_pSS->getValue(AP_STRING_ID_DLG_MarkRevisions_Title);
 }
 
 const char * AP_Dialog_MarkRevisions::getComment2Label()
 {
-	UT_return_val_if_fail(m_pSS,NULL);
+	UT_return_val_if_fail(m_pSS,nullptr);
 	return m_pSS->getValue(AP_STRING_ID_DLG_MarkRevisions_Comment2Label);
 }
 
@@ -74,12 +74,12 @@ char * AP_Dialog_MarkRevisions::getRadio1Label()
 	_initRevision();
 
 	if(!m_pRev || m_bForceNew)
-		return NULL;
+		return nullptr;
 
-	UT_return_val_if_fail(m_pSS,NULL);
+	UT_return_val_if_fail(m_pSS,nullptr);
 	const char * pLabel = m_pSS->getValue(AP_STRING_ID_DLG_MarkRevisions_Check1Label);
 
-	UT_return_val_if_fail(pLabel,NULL);
+	UT_return_val_if_fail(pLabel,nullptr);
 	char * pBuff = (char*)UT_calloc(strlen(pLabel) + 35, sizeof(char));
 
 	
@@ -90,7 +90,7 @@ char * AP_Dialog_MarkRevisions::getRadio1Label()
 
 const char * AP_Dialog_MarkRevisions::getRadio2Label()
 {
-	UT_return_val_if_fail(m_pSS,NULL);
+	UT_return_val_if_fail(m_pSS,nullptr);
 	return m_pSS->getValue(AP_STRING_ID_DLG_MarkRevisions_Check2Label);
 }
 
@@ -99,14 +99,14 @@ char * AP_Dialog_MarkRevisions::getComment1(bool utf8)
 	_initRevision();
 
 	if(!m_pRev || m_bForceNew)
-		return NULL;
+		return nullptr;
 
 	bool bFree = false;
 
 	const UT_UCS4Char * pC = m_pRev->getDescription();
 
 	if(!pC)
-		return NULL;
+		return nullptr;
 
 	// now we run this string through fribidi
 	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
@@ -115,7 +115,7 @@ char * AP_Dialog_MarkRevisions::getComment1(bool utf8)
 		UT_uint32 iLen = UT_UCS4_strlen(pC);
 
 		pStr2  = (UT_UCS4Char *)UT_calloc( iLen + 1, sizeof(UT_UCS4Char));
-		UT_return_val_if_fail(pStr2,NULL);
+		UT_return_val_if_fail(pStr2,nullptr);
 		bFree = true;
 
 		UT_BidiCharType iDomDir = UT_bidiGetCharType(pC[0]);
@@ -131,13 +131,13 @@ char * AP_Dialog_MarkRevisions::getComment1(bool utf8)
 	{
 		UT_UTF8String comment(pC);
 		pComment = (char *)UT_calloc(comment.byteLength() + 1, sizeof(char));
-		UT_return_val_if_fail(pComment,NULL);
+		UT_return_val_if_fail(pComment,nullptr);
 		pComment = strcpy(pComment, comment.utf8_str());
 	}
 	else
 	{
 		pComment = (char *)UT_calloc(UT_UCS4_strlen(pC) + 1, sizeof(char));
-		UT_return_val_if_fail(pComment,NULL);
+		UT_return_val_if_fail(pComment,nullptr);
 		UT_UCS4_strcpy_to_char(pComment,pC);
 	}
 
@@ -182,8 +182,8 @@ void AP_Dialog_MarkRevisions::addRevision()
 	if(m_pRev)
 		iId = m_pRev->getId() + 1;
 
-	time_t tStart = time(NULL);
+	time_t tStart = time(nullptr);
 	m_pDoc->addRevision(iId, m_pComment2->ucs4_str().ucs4_str(), UT_UCS4_strlen(m_pComment2->ucs4_str().ucs4_str()), tStart, 0, true);
-	m_pRev = NULL;
+	m_pRev = nullptr;
 }
 

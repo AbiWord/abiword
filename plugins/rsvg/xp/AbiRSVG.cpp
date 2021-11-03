@@ -89,7 +89,7 @@ public:
 			return err ;
 
 		FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
-		if(pFGR == NULL)
+		if(pFGR == nullptr)
 			{
 				return UT_IE_NOMEMORY;
 			}
@@ -107,9 +107,9 @@ private:
 
 	UT_Error _importGraphic(const UT_ConstByteBufPtr & pBB)
 	{
-		GdkPixbuf * pixbuf = NULL;		
-		GError * err = NULL;
-		
+		GdkPixbuf * pixbuf = nullptr;
+		GError * err = nullptr;
+
 		RsvgHandle * rsvg = rsvg_handle_new ();
 		if ( FALSE == rsvg_handle_write ( rsvg, static_cast<const guchar *>(pBB->getPointer (0)),
 										  static_cast<gsize>(pBB->getLength ()), &err ) )
@@ -213,19 +213,17 @@ private:
 	UT_Error Initialize_PNG(void)
 	{
 		/* Set up png structures for writing */
-		m_pPNG = png_create_write_struct( PNG_LIBPNG_VER_STRING, 
-										  static_cast<void*>(NULL),
-										  NULL, 
-										  NULL );
-		if( m_pPNG == NULL )
+		m_pPNG = png_create_write_struct(PNG_LIBPNG_VER_STRING,
+										  nullptr, nullptr, nullptr);
+		if( m_pPNG == nullptr )
 			{
 				return UT_ERROR;
 			}
 		
 		m_pPNGInfo = png_create_info_struct(m_pPNG);
-		if ( m_pPNGInfo == NULL )
+		if ( m_pPNGInfo == nullptr )
 			{
-				png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(NULL));
+				png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(nullptr));
 				return UT_ERROR;
 		}
 		
@@ -284,8 +282,8 @@ public:
   virtual UT_Confidence_t recognizeContents(const char * szBuf, UT_uint32 /*iNum*/)
 	{
 		// todo: make me better
-		if ( strstr ( szBuf, "xml" ) != NULL && 
-			 strstr ( szBuf, "svg" ) != NULL )
+		if (strstr(szBuf, "xml") != nullptr &&
+			 strstr(szBuf, "svg") != nullptr)
 			return UT_CONFIDENCE_PERFECT;
 		return UT_CONFIDENCE_ZILCH;
 	}
@@ -299,7 +297,7 @@ public:
 		image/vnd.adobe.svg+xml
 		text/xml-svg
 		*/
-		return NULL;
+		return nullptr;
 	}
 
 	virtual bool getDlgLabels(const char ** pszDesc,
@@ -316,7 +314,7 @@ public:
 	virtual UT_Error constructImporter(IE_ImpGraphic **ppieg)
 	{
 		*ppieg = new IE_RSVGBitmapGraphic();
-		if (*ppieg == NULL)
+		if (*ppieg == nullptr)
 			return UT_IE_NOMEMORY;
 		return UT_OK;
 	}

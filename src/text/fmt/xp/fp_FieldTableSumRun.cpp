@@ -190,7 +190,7 @@ static void sFormatDouble(UT_UTF8String & sVal, double d)
 bool fp_FieldTableSumRows::calculateValue(void)
 {
 	FV_View * pView = _getView();
-	pf_Frag_Strux* tableSDH= NULL;
+	pf_Frag_Strux* tableSDH= nullptr;
 	UT_sint32 numRows =0;
 	UT_sint32 numCols = 0;
 	bUseCurrency = false;
@@ -201,17 +201,17 @@ bool fp_FieldTableSumRows::calculateValue(void)
 	{
 		return false;
 	}
-	if(getLine() == NULL)
+	if(getLine() == nullptr)
 	{
 		return false;
 	}
 	fp_Container * pCol = getLine()->getColumn();
-	if(pCol == NULL)
+	if(pCol == nullptr)
 	{
 		return false;
 	}
-	fp_ShadowContainer * pShad =NULL;
-	fl_HdrFtrShadow * pShadL = NULL;
+	fp_ShadowContainer * pShad =nullptr;
+	fl_HdrFtrShadow * pShadL = nullptr;
 	if(pCol->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 	{
 		pShad = static_cast<fp_ShadowContainer *>(pCol);
@@ -226,7 +226,7 @@ bool fp_FieldTableSumRows::calculateValue(void)
 		sValF = "???";
 		return _setValue(sValF.ucs4_str().ucs4_str());
 	}
-	fl_CellLayout * pCell = NULL;
+	fl_CellLayout * pCell = nullptr;
 	UT_sint32 myLeft,myRight,myTop,myBot;
 	pView->getCellParams(pos,&myLeft,&myRight,&myTop,&myBot);
 	UT_sint32 row = 0;
@@ -261,7 +261,7 @@ bool fp_FieldTableSumRows::calculateValue(void)
 					{
 						pBL = static_cast<fl_BlockLayout *>(pShadL->findMatchingContainer(pBL));
 					}
-					if(pBL == NULL)
+					if(pBL == nullptr)
 					{
 						continue;
 					}
@@ -275,8 +275,8 @@ bool fp_FieldTableSumRows::calculateValue(void)
 							sValF.clear();
 							sValF.appendUCS4(szVal);
 							dSum += dGetVal(sValF.utf8_str());
-							pRun = NULL;
-							pC = NULL;
+							pRun = nullptr;
+							pC = nullptr;
 							break;
 						}
 						pRun = pRun->getNextRun();
@@ -307,7 +307,7 @@ bool fp_FieldTableSumRows::calculateValue(void)
 bool fp_FieldTableSumCols::calculateValue(void)
 {
 	FV_View * pView = _getView();
-	pf_Frag_Strux* tableSDH= NULL;
+	pf_Frag_Strux* tableSDH= nullptr;
 	UT_sint32 numRows =0;
 	UT_sint32 numCols = 0;
 	bUseCurrency = false;
@@ -318,17 +318,17 @@ bool fp_FieldTableSumCols::calculateValue(void)
 	{
 		return false;
 	}
-	if(getLine() == NULL)
+	if(getLine() == nullptr)
 	{
 		return false;
 	}
 	fp_Container * pCol = getLine()->getColumn();
-	if(pCol == NULL)
+	if(pCol == nullptr)
 	{
 		return false;
 	}
-	fp_ShadowContainer * pShad =NULL;
-	fl_HdrFtrShadow * pShadL = NULL;
+	fp_ShadowContainer * pShad =nullptr;
+	fl_HdrFtrShadow * pShadL = nullptr;
 	if(pCol->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 	{
 		pShad = static_cast<fp_ShadowContainer *>(pCol);
@@ -345,7 +345,7 @@ bool fp_FieldTableSumCols::calculateValue(void)
 		return _setValue(sValF.ucs4_str().ucs4_str());
 	}
 
-	fl_CellLayout * pCell = NULL;
+	fl_CellLayout * pCell = nullptr;
 	UT_sint32 myLeft,myRight,myTop,myBot;
 	pView->getCellParams(pos,&myLeft,&myRight,&myTop,&myBot);
 	UT_sint32 col = 0;
@@ -380,7 +380,7 @@ bool fp_FieldTableSumCols::calculateValue(void)
 					{
 						pBL = static_cast<fl_BlockLayout *>(pShadL->findMatchingContainer(pBL));
 					}
-					if(pBL == NULL)
+					if(pBL == nullptr)
 					{
 						continue;
 					}
@@ -394,8 +394,8 @@ bool fp_FieldTableSumCols::calculateValue(void)
 							sValF.clear();
 							sValF.appendUCS4(szVal);
 							dSum += dGetVal(sValF.utf8_str());
-							pRun = NULL;
-							pC = NULL;
+							pRun = nullptr;
+							pC = nullptr;
 							break;
 						}
 						pRun = pRun->getNextRun();

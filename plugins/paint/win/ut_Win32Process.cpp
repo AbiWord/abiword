@@ -46,12 +46,12 @@ BOOL CreateChildProcess(char * appName, char *cmdline,
 	return CreateProcess(
 			appName,   // application module to execute
 			cmdline,   // command line 
-			NULL,      // process security attributes 
-			NULL,      // primary thread security attributes 
+			nullptr,      // process security attributes
+			nullptr,      // primary thread security attributes
 			FALSE,     // handles not are inherited 
 			0,         // creation flags 
-			NULL,      // use parent's environment 
-			NULL,      // use parent's current directory 
+			nullptr,      // use parent's environment
+			nullptr,      // use parent's current directory
 			startInfo, // STARTUPINFO pointer 
 			procInfo   // receives PROCESS_INFORMATION 
 	);
@@ -65,7 +65,7 @@ bool createChildProcess(const char *app, const char *args, ProcessInfo *pI)
   cmdline += " ";
   cmdline += args;
 
-  return CreateChildProcess(NULL, const_cast<char *>(cmdline.c_str()), pI, &startInfo) != FALSE;
+  return CreateChildProcess(nullptr, const_cast<char *>(cmdline.c_str()), pI, &startInfo) != FALSE;
 }
 
 // will [try to] kill the process if it is still running

@@ -419,9 +419,9 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
     NSArray* docAreaSubviews = [[docArea subviews] copy];
     if ([docAreaSubviews count] > 0) {
 		[docAreaSubviews makeObjectsPerformSelector:@selector(removeFromSuperviewWithoutNeedingDisplay)];
-        m_hScrollbar = NULL;
-        m_vScrollbar = NULL;
-        m_docAreaGRView = NULL;
+        m_hScrollbar = nullptr;
+        m_vScrollbar = nullptr;
+        m_docAreaGRView = nullptr;
     }
 	[docAreaSubviews release];
 
@@ -546,8 +546,8 @@ void AP_CocoaFrameImpl::_createDocumentWindow()
 	bool bShowRulers = pData->m_bShowRuler;
 
 	// create the rulers
-	AP_CocoaTopRuler * pCocoaTopRuler = NULL;
-	AP_CocoaLeftRuler * pCocoaLeftRuler = NULL;
+	AP_CocoaTopRuler * pCocoaTopRuler = nullptr;
+	AP_CocoaLeftRuler * pCocoaLeftRuler = nullptr;
 
 	if ( bShowRulers )
 	{
@@ -618,7 +618,7 @@ bool AP_CocoaFrameImpl::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 	FV_View * pView = static_cast<FV_View *>(pCocoaFrame->getCurrentView());
 
 	UT_DEBUGMSG(("AP_CocoaFrameImpl::_graphicsUpdateCB()\n"));
-	if(pView != NULL) {
+	if(pView != nullptr) {
 		UT_Rect rClip;
 		rClip.left = (UT_sint32)rint(pG->tluD(aRect->origin.x));
 		rClip.top = (UT_sint32)rint(pG->tluD(aRect->origin.y));

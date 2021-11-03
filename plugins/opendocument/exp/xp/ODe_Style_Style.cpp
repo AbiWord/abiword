@@ -49,14 +49,14 @@ std::map<std::string, std::string> ODe_Style_Style::m_NCStyleMappings;
  */
 ODe_Style_Style::ODe_Style_Style() :
     m_defaultStyle(false),
-    m_pSectionProps(NULL),
-    m_pParagraphProps(NULL),
-    m_pTextProps(NULL),
-    m_pTableProps(NULL),
-    m_pColumnProps(NULL),
-    m_pRowProps(NULL),
-    m_pCellProps(NULL),
-    m_pGraphicProps(NULL)
+    m_pSectionProps(nullptr),
+    m_pParagraphProps(nullptr),
+    m_pTextProps(nullptr),
+    m_pTableProps(nullptr),
+    m_pColumnProps(nullptr),
+    m_pRowProps(nullptr),
+    m_pCellProps(nullptr),
+    m_pGraphicProps(nullptr)
 {
 }
 
@@ -175,57 +175,57 @@ bool ODe_Style_Style::hasTextStyleProps(const PP_AttrProp* pAP) {
     bool ok;
     
     ok = pAP->getProperty("color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("bgcolor", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("text-decoration", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("text-position", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("font-family", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("font-size", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("lang", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("font-style", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("font-weight", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("display", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("text-transform", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
@@ -243,162 +243,162 @@ bool ODe_Style_Style::hasParagraphStyleProps(const PP_AttrProp* pAP) {
     bool ok;
     
     ok = pAP->getProperty("bgcolor", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("line-height", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("text-align", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("text-indent", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("widows", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("orphans", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("margin-left", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("margin-right", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("margin-top", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("margin-bottom", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("keep-with-next", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("shading-pattern", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("shading-foreground-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("border-merge", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("bot-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("bot-style", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("bot-thickness", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("bot-space", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("left-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("left-style", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("left-thickness", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("left-space", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("right-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("right-style", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("right-thickness", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("right-space", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("top-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("top-style", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("top-thickness", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("top-space", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("default-tab-interval", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("tabstops", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
@@ -414,41 +414,41 @@ bool ODe_Style_Style::hasSectionInfo(const PP_AttrProp* pAP) {
     bool ok;
     
     ok = pAP->getProperty("columns", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("column-gap", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     ok= pAP->getProperty("page-margin-top",pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok= pAP->getProperty("page-margin-left",pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok= pAP->getProperty("page-margin-right",pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok= pAP->getProperty("page-margin-bottom",pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("page-margin-header", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("page-margin-footer", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     return false;
@@ -474,9 +474,9 @@ bool ODe_Style_Style::isEquivalentTo(const ODe_Style_Style& rStyle) {
 
 
 #define ODE_EQUAL_STYLE_PROPS(m_pProps) \
-    if (m_pProps == NULL && rStyle.m_pProps == NULL) { \
+    if (m_pProps == nullptr && rStyle.m_pProps == nullptr) { \
         isEqual = true; \
-    } else if (m_pProps != NULL && rStyle.m_pProps != NULL) { \
+    } else if (m_pProps != nullptr && rStyle.m_pProps != nullptr) { \
         isEqual = (*m_pProps) == (*rStyle.m_pProps); \
     } else { \
         isEqual = false; \
@@ -532,7 +532,7 @@ ODe_Style_Style& ODe_Style_Style::operator=(const ODe_Style_Style& rStyle) {
 
 #define ODE_COPY_STYLE_PROPS(m_pStyleProps, StyleProps) \
     if (rStyle.m_pStyleProps) { \
-        if (m_pStyleProps == NULL) { \
+        if (m_pStyleProps == nullptr) { \
             m_pStyleProps = new StyleProps(); \
         } \
         *m_pStyleProps = *(rStyle.m_pStyleProps); \
@@ -571,7 +571,7 @@ bool ODe_Style_Style::fetchAttributesFromAbiStyle(const PP_AttrProp* pAP) {
     m_name = pValue;
     
     ok = pAP->getAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         
         if (strcmp("Current Settings", pValue) != 0) {
             m_nextStyleName = pValue;
@@ -579,7 +579,7 @@ bool ODe_Style_Style::fetchAttributesFromAbiStyle(const PP_AttrProp* pAP) {
     }
     
     ok = pAP->getAttribute(PT_BASEDON_ATTRIBUTE_NAME, pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (strcmp(pValue, "None") != 0) {
             // OpenDocument don't use a "None" to say that is has no parent.
             // To say that it simply doesn't define this attribute.
@@ -588,12 +588,12 @@ bool ODe_Style_Style::fetchAttributesFromAbiStyle(const PP_AttrProp* pAP) {
     }
     
     
-    if (m_pTextProps == NULL) {
+    if (m_pTextProps == nullptr) {
         m_pTextProps = new TextProps();
     }
     m_pTextProps->fetchAttributesFromAbiProps(*pAP);
     
-    if (m_pParagraphProps == NULL) {
+    if (m_pParagraphProps == nullptr) {
         m_pParagraphProps = new ParagraphProps(m_defaultStyle);
     }
     m_pParagraphProps->fetchAttributesFromAbiProps(*pAP);
@@ -610,12 +610,12 @@ void ODe_Style_Style::fetchAttributesFromAbiSpan(const PP_AttrProp* pAP) {
     bool ok;
     
     ok = pAP->getAttribute("style", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_parentStyleName = pValue;
     }
     
     
-    if (m_pTextProps == NULL) {
+    if (m_pTextProps == nullptr) {
         m_pTextProps = new TextProps();
     }
     m_pTextProps->fetchAttributesFromAbiProps(*pAP);
@@ -631,22 +631,22 @@ void ODe_Style_Style::fetchAttributesFromAbiBlock(const PP_AttrProp* pAP,
     bool ok;
     
     ok = pAP->getAttribute("style", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_parentStyleName = pValue;
     }
     
-    if (m_pTextProps == NULL) {
+    if (m_pTextProps == nullptr) {
         m_pTextProps = new TextProps();
     }
     m_pTextProps->fetchAttributesFromAbiProps(*pAP);
     
-    if (m_pParagraphProps == NULL) {
+    if (m_pParagraphProps == nullptr) {
         m_pParagraphProps = new ParagraphProps(m_defaultStyle);
     }
     m_pParagraphProps->fetchAttributesFromAbiProps(*pAP);
     
     ok = pAP->getAttribute("listid", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         // text:space-before and text:min-label-width are not paragraph properties,
         // so we'll ignore those.
         // We could also skip the fo:text-indent and fo:margin-left when they are
@@ -670,7 +670,7 @@ void ODe_Style_Style::fetchAttributesFromAbiBlock(const PP_AttrProp* pAP,
  * an OpenDocument <style:style style:family="section"> element.
  */
 void ODe_Style_Style::fetchAttributesFromAbiSection(const PP_AttrProp* pAP) {
-    if (m_pSectionProps == NULL) {
+    if (m_pSectionProps == nullptr) {
         m_pSectionProps = new SectionProps();
     }
     m_pSectionProps->fetchAttributesFromAbiProps(*pAP);
@@ -681,7 +681,7 @@ void ODe_Style_Style::fetchAttributesFromAbiSection(const PP_AttrProp* pAP) {
  * Defines the style from attributes and properties of an AbiWord <table>.
  */
 void ODe_Style_Style::fetchAttributesFromAbiTable(const PP_AttrProp* pAP) {
-    if (m_pTableProps == NULL) {
+    if (m_pTableProps == nullptr) {
         m_pTableProps = new TableProps();
     }
     m_pTableProps->fetchAttributesFromAbiProps(*pAP);
@@ -692,7 +692,7 @@ void ODe_Style_Style::fetchAttributesFromAbiTable(const PP_AttrProp* pAP) {
  * Defines the style from attributes and properties of an AbiWord <cell>.
  */
 void ODe_Style_Style::fetchAttributesFromAbiCell(const PP_AttrProp* pAP) {
-    if (m_pCellProps == NULL) {
+    if (m_pCellProps == nullptr) {
         m_pCellProps = new CellProps();
     }
     m_pCellProps->fetchAttributesFromAbiProps(*pAP);
@@ -703,7 +703,7 @@ void ODe_Style_Style::fetchAttributesFromAbiCell(const PP_AttrProp* pAP) {
  * Defines the style from attributes and properties of an AbiWord <frame>.
  */
 void ODe_Style_Style::fetchAttributesFromAbiFrame(const PP_AttrProp& rAP) {
-    if (m_pGraphicProps == NULL) {
+    if (m_pGraphicProps == nullptr) {
         m_pGraphicProps = new GraphicProps();
     }
     m_pGraphicProps->fetchAttributesFromAbiProps(rAP);
@@ -714,7 +714,7 @@ void ODe_Style_Style::fetchAttributesFromAbiFrame(const PP_AttrProp& rAP) {
  * 
  */
 void ODe_Style_Style::setBreakBefore(const gchar* pBreakBefore) {
-    if (m_pParagraphProps == NULL) {
+    if (m_pParagraphProps == nullptr) {
         m_pParagraphProps = new ParagraphProps(m_defaultStyle);
     }
     m_pParagraphProps->m_breakBefore = pBreakBefore;
@@ -725,7 +725,7 @@ void ODe_Style_Style::setBreakBefore(const gchar* pBreakBefore) {
  * 
  */
 const UT_UTF8String& ODe_Style_Style::getFontName() {
-    if (m_pTextProps == NULL) {
+    if (m_pTextProps == nullptr) {
         m_pTextProps = new TextProps();
     }
     return m_pTextProps->m_fontName;
@@ -736,14 +736,14 @@ const UT_UTF8String& ODe_Style_Style::getFontName() {
  * 
  */
 void ODe_Style_Style::setColumnWidth(const gchar* pColumnWidth) {
-    if (m_pColumnProps == NULL) {
+    if (m_pColumnProps == nullptr) {
         m_pColumnProps = new ColumnProps();
     }
     m_pColumnProps->m_columnWidth = pColumnWidth;
 }
 
 void ODe_Style_Style::setRelColumnWidth(const gchar* pRelColumnWidth) {
-    if (m_pColumnProps == NULL) {
+    if (m_pColumnProps == nullptr) {
         m_pColumnProps = new ColumnProps();
     }
     m_pColumnProps->m_RelColumnWidth = pRelColumnWidth;
@@ -754,7 +754,7 @@ void ODe_Style_Style::setRelColumnWidth(const gchar* pRelColumnWidth) {
  * 
  */
 void ODe_Style_Style::setRowHeight(const gchar* pRowHeight) {
-    if (m_pRowProps == NULL) {
+    if (m_pRowProps == nullptr) {
         m_pRowProps = new RowProps();
     }
     m_pRowProps->m_rowHeight = pRowHeight;
@@ -765,7 +765,7 @@ void ODe_Style_Style::setRowHeight(const gchar* pRowHeight) {
  * 
  */
 void ODe_Style_Style::setMinRowHeight(const gchar* pMinRowHeight) {
-    if (m_pRowProps == NULL) {
+    if (m_pRowProps == nullptr) {
         m_pRowProps = new RowProps();
     }
     m_pRowProps->m_minRowHeight = pMinRowHeight;
@@ -780,68 +780,68 @@ bool ODe_Style_Style::hasTableStyleProps(const PP_AttrProp* pAP) {
     bool ok;
     
     ok = pAP->getProperty("background-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
     ok = pAP->getProperty("table-column-props", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-width", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
 
     ok = pAP->getProperty("table-rel-width", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-margin-left", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-margin-top", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-margin-right", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-margin-bottom", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-line-thickness", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-col-spacing", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-row-spacing", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-column-leftpos", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
 
     ok = pAP->getProperty("table-rel-column-props", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return true;
     }
     
@@ -856,7 +856,7 @@ bool ODe_Style_Style::hasTableStyleProps(const PP_AttrProp* pAP) {
  */
 void ODe_Style_Style::inheritTableCellProperties(const ODe_Style_Style& tableStyle) {
     UT_return_if_fail(tableStyle.m_pCellProps);
-    if (m_pCellProps == NULL) {
+    if (m_pCellProps == nullptr) {
         m_pCellProps = new CellProps();
     }
 
@@ -881,7 +881,7 @@ void ODe_Style_Style::inheritTableCellProperties(const ODe_Style_Style& tableSty
  * 
  */
 void ODe_Style_Style::setWrap(const UT_UTF8String& rWrap) {
-    if (m_pGraphicProps == NULL) {
+    if (m_pGraphicProps == nullptr) {
         m_pGraphicProps = new GraphicProps();
     }
     
@@ -893,7 +893,7 @@ void ODe_Style_Style::setWrap(const UT_UTF8String& rWrap) {
  * 
  */
 void ODe_Style_Style::setRunThrough(const UT_UTF8String& rRunThrough) {
-    if (m_pGraphicProps == NULL) {
+    if (m_pGraphicProps == nullptr) {
         m_pGraphicProps = new GraphicProps();
     }
     
@@ -905,7 +905,7 @@ void ODe_Style_Style::setRunThrough(const UT_UTF8String& rRunThrough) {
  * 
  */
 void ODe_Style_Style::setPadding(const UT_UTF8String& rPadding) {
-    if (m_pGraphicProps == NULL) {
+    if (m_pGraphicProps == nullptr) {
         m_pGraphicProps = new GraphicProps();
     }
     
@@ -917,7 +917,7 @@ void ODe_Style_Style::setPadding(const UT_UTF8String& rPadding) {
  * 
  */
 void ODe_Style_Style::setHorizontalPos(const UT_UTF8String& rHorizontalPos) {
-    if (m_pGraphicProps == NULL) {
+    if (m_pGraphicProps == nullptr) {
         m_pGraphicProps = new GraphicProps();
     }
     
@@ -929,7 +929,7 @@ void ODe_Style_Style::setHorizontalPos(const UT_UTF8String& rHorizontalPos) {
  * 
  */
 void ODe_Style_Style::setVerticalPos(const UT_UTF8String& rVerticalPos) {
-    if (m_pGraphicProps == NULL) {
+    if (m_pGraphicProps == nullptr) {
         m_pGraphicProps = new GraphicProps();
     }
     
@@ -937,7 +937,7 @@ void ODe_Style_Style::setVerticalPos(const UT_UTF8String& rVerticalPos) {
 }
 
 void ODe_Style_Style::setVerticalRel(const UT_UTF8String& rVerticalRel) {
-    if (m_pGraphicProps == NULL) {
+    if (m_pGraphicProps == nullptr) {
         m_pGraphicProps = new GraphicProps();
     }
     
@@ -949,7 +949,7 @@ void ODe_Style_Style::setVerticalRel(const UT_UTF8String& rVerticalRel) {
  * 
  */
 const UT_UTF8String& ODe_Style_Style::getDefaultTabInterval() {
-    if (m_pParagraphProps == NULL) {
+    if (m_pParagraphProps == nullptr) {
         m_pParagraphProps = new ParagraphProps(m_defaultStyle);
     }
     return m_pParagraphProps->m_defaultTabInterval;
@@ -959,7 +959,7 @@ const UT_UTF8String& ODe_Style_Style::getDefaultTabInterval() {
  * 
  */
 void ODe_Style_Style::setDefaultTabInterval(const UT_UTF8String& rDefaultTabInterval) {
-    if (m_pParagraphProps == NULL) {
+    if (m_pParagraphProps == nullptr) {
         m_pParagraphProps = new ParagraphProps(m_defaultStyle);
     }
     m_pParagraphProps->m_defaultTabInterval = rDefaultTabInterval;
@@ -1025,12 +1025,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     bool ok;
     
     ok = rAP.getProperty("columns", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_columnCount = pValue;
     }
     
     ok = rAP.getProperty("column-gap", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_columnGap = pValue;
     }
 }
@@ -1173,7 +1173,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
 	m_backgroundColor = "transparent";
     }
     ok = rAP.getProperty("line-height", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         UT_LocaleTransactor t(LC_NUMERIC, "C");
         if(strstr(pValue, "+")) { // "at least" spacing
             int len = strlen(pValue);
@@ -1196,7 +1196,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     }
     
     ok = rAP.getProperty("text-align", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if(!strcmp(pValue, "right")) {
             m_textAlign = "end"; //see Bug 10719
         } else {
@@ -1205,12 +1205,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     }
 
     ok = rAP.getProperty("text-indent", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_textIndent = pValue;
     }
 
     ok = rAP.getProperty("dom-dir", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if(!strcmp(pValue, "rtl")) {
             m_writingMode = "rl";
         } else {
@@ -1219,37 +1219,37 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     }
     
     ok = rAP.getProperty("widows", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_widows = pValue;
     }
     
     ok = rAP.getProperty("orphans", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_orphans = pValue;
     }
     
     ok = rAP.getProperty("margin-left", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_marginLeft = pValue;
     }
     
     ok = rAP.getProperty("margin-right", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_marginRight = pValue;
     }
     
     ok = rAP.getProperty("margin-top", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_marginTop = pValue;
     }
     
     ok = rAP.getProperty("margin-bottom", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_marginBottom = pValue;
     }
     
     ok = rAP.getProperty("keep-with-next", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (!strcmp(pValue, "yes")) {
             m_keepWithNext = "always";
         } else {
@@ -1265,12 +1265,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
       m_borderLeft.clear();
     } else {
         ok = rAP.getProperty("left-thickness", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             m_borderLeft = pValue;
         }
         
         ok = rAP.getProperty("left-color", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             if (!m_borderLeft.empty()) {
                 m_borderLeft += " ";
             }
@@ -1287,12 +1287,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
       m_borderRight.clear();
     } else {
         ok = rAP.getProperty("right-thickness", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             m_borderRight = pValue;
         }
         
         ok = rAP.getProperty("right-color", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             if (!m_borderRight.empty()) {
                 m_borderRight += " ";
             }
@@ -1309,12 +1309,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
       m_borderTop.clear();
     } else {
         ok = rAP.getProperty("top-thickness", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             m_borderTop = pValue;
         }
         
         ok = rAP.getProperty("top-color", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             if (!m_borderTop.empty()) {
                 m_borderTop += " ";
             }
@@ -1331,12 +1331,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
       m_borderBottom.clear();
     } else {
         ok = rAP.getProperty("bot-thickness", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             m_borderBottom = pValue;
         }
         
         ok = rAP.getProperty("bot-color", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             if (!m_borderBottom.empty()) {
                 m_borderBottom += " ";
             }
@@ -1393,7 +1393,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     }
 
     ok = rAP.getProperty("default-tab-interval", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_defaultTabInterval = pValue;
     }
     
@@ -1436,7 +1436,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
                     // decimal tab character. See fp_Line::_calculateWidthOfRun()
                     // for details.
 					lconv *loc = localeconv();
-                    UT_UCSChar *pDecimalStr = NULL;
+                    UT_UCSChar *pDecimalStr = nullptr;
 					UT_UCS4_cloneString_char(&pDecimalStr, loc->decimal_point);
                     
                     tabStop.m_type = "char";
@@ -1669,7 +1669,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     }
     
     ok = rAP.getProperty("text-decoration", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (strstr(pValue, "underline"))
             m_underlineType = "single";
 
@@ -1679,7 +1679,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("text-position", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (!strcmp("subscript", pValue)) {
             // Hard coded, it's ugly but I can't do otherwise.
             m_textPosition = "-33%";
@@ -1694,19 +1694,19 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("font-family", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_fontName = pValue;
     }
     
     
     ok = rAP.getProperty("font-size", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_fontSize = pValue;
     }
     
     
     ok = rAP.getProperty("lang", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (!strcmp(pValue, "-none-")) {
             m_language = "none";
             m_country = "none";
@@ -1746,7 +1746,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("font-style", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (!strcmp(pValue, "italic")) {
             m_fontStyle = "italic";
         }
@@ -1754,7 +1754,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("font-weight", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (!strcmp(pValue, "bold")) {
             m_fontWeight = "bold";
         } else if (!strcmp(pValue, "normal")) {
@@ -1763,7 +1763,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     }
 
     ok = rAP.getProperty("display", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (!strcmp(pValue, "none")) {
             m_display = "none";
         } else {
@@ -1893,7 +1893,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     }
     
     ok = rAP.getProperty("table-column-props", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         std::string buffer;
         double tableWidth = 0.0;
         UT_Dimension dimension = DIM_none;
@@ -1925,7 +1925,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("table-column-leftpos", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_align = "margins";
         m_marginLeft = pValue;
     } else {
@@ -1933,8 +1933,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     }
 
     ok = rAP.getProperty("table-rel-width", pValue);
-    if (ok && pValue != NULL) 
-    {
+    if (ok && pValue != nullptr) {
         m_RelTableWidth = pValue;
     }
 
@@ -2147,14 +2146,14 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Left border
 
     ok = rAP.getProperty("left-thickness", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_leftThickness = pValue;
     } else if (m_leftThickness.empty()) {
         m_leftThickness = "0.72pt";
     }
     
     ok = rAP.getProperty("left-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_leftColor = UT_colorToHex(pValue, true);
     } else if (m_leftColor.empty()) {
         m_leftColor = "#000000";
@@ -2163,14 +2162,14 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Right border
 
     ok = rAP.getProperty("right-thickness", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_rightThickness = pValue;
     } else if (m_rightThickness.empty()) {
         m_rightThickness = "0.72pt";
     }
     
     ok = rAP.getProperty("right-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_rightColor = UT_colorToHex(pValue, true);
     } else if (m_rightColor.empty()) {
         m_rightColor = "#000000";
@@ -2179,14 +2178,14 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Top border
 
     ok = rAP.getProperty("top-thickness", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_topThickness = pValue;
     } else if (m_topThickness.empty()) {
         m_topThickness = "0.72pt";
     }
     
     ok = rAP.getProperty("top-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_topColor = UT_colorToHex(pValue, true);
     } else if (m_topColor.empty()) {
         m_topColor = "#000000";
@@ -2195,14 +2194,14 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Bottom border
 
     ok = rAP.getProperty("bot-thickness", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_bottomThickness = pValue;
     } else if (m_bottomThickness.empty()) {
         m_bottomThickness = "0.72pt";
     }
     
     ok = rAP.getProperty("bot-color", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         m_bottomColor = UT_colorToHex(pValue, true);
     } else if (m_bottomColor.empty()) {
         m_bottomColor = "#000000";
@@ -2218,7 +2217,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
 
     // Background Image
     ok = rAP.getAttribute("strux-image-dataid", pValue);
-    if (ok && pValue != NULL) 
+    if (ok && pValue != nullptr)
     {
         m_backgroundImage = "Pictures/";
         m_backgroundImage += pValue;
@@ -2226,7 +2225,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
 
     // Vertical alignment
     ok = rAP.getProperty("vert-align", pValue);
-    if (ok && pValue != NULL){
+    if (ok && pValue != nullptr) {
 	if(atoi(pValue) < 33)
 		m_verticalAlign = "top";
 	else if(atoi(pValue) < 66)
@@ -2350,7 +2349,7 @@ bool ODe_Style_Style::GraphicProps::isEmpty() const {
  */
 void ODe_Style_Style::GraphicProps::
 fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     bool ok;
     
     // Left border
@@ -2361,12 +2360,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
         m_borderLeft = "none";
     } else {
         ok = rAP.getProperty("left-thickness", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             m_borderLeft = pValue;
         }
         
         ok = rAP.getProperty("left-color", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             if (!m_borderLeft.empty()) {
                 m_borderLeft += " ";
             }
@@ -2384,12 +2383,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
         m_borderRight = "none";
     } else {
         ok = rAP.getProperty("right-thickness", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             m_borderRight = pValue;
         }
         
         ok = rAP.getProperty("right-color", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             if (!m_borderRight.empty()) {
                 m_borderRight += " ";
             }
@@ -2407,12 +2406,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
         m_borderTop = "none";
     } else {
         ok = rAP.getProperty("top-thickness", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             m_borderTop = pValue;
         }
         
         ok = rAP.getProperty("top-color", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             if (!m_borderTop.empty()) {
                 m_borderTop += " ";
             }
@@ -2431,12 +2430,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
         m_borderBottom = "none";
     } else {
         ok = rAP.getProperty("bot-thickness", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             m_borderBottom = pValue;
         }
         
         ok = rAP.getProperty("bot-color", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             if (!m_borderBottom.empty()) {
                 m_borderBottom += " ";
             }
@@ -2462,7 +2461,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("wrap-mode", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (!strcmp(pValue, "above-text")) {
             m_wrap = "run-through";
             m_runThrough = "foreground";
@@ -2475,7 +2474,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("position-to", pValue);
-    UT_ASSERT (ok && pValue != NULL);
+    UT_ASSERT (ok && pValue != nullptr);
     if (ok && pValue && !strcmp(pValue, "block-above-text")) {
         m_horizontalRel = "paragraph";
         m_verticalRel = "paragraph";

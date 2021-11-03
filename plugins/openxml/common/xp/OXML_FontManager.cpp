@@ -80,12 +80,16 @@ std::string OXML_FontManager::getValidFont(OXML_FontLevel level, OXML_CharRange 
 
 	// 2) Retrieve the font name mapped with this country string in the Theme
 	OXML_Document * doc = OXML_Document::getInstance();
-	if (NULL == doc) return m_defaultFont;
+	if (nullptr == doc) {
+		return m_defaultFont;
+	}
 	OXML_SharedTheme theme = doc->getTheme();
-	if (theme.get() == NULL) return m_defaultFont;
+	if (theme.get() == nullptr) {
+		return m_defaultFont;
+	}
 	if (level == MAJOR_FONT)
 		font_name = theme->getMajorFont(script);
-	else 
+	else
 		font_name = theme->getMinorFont(script);
 
 	// 2a) If no mapping exists, return the return default document font

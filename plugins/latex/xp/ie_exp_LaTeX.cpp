@@ -166,7 +166,7 @@ IE_Exp_LaTeX::IE_Exp_LaTeX(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
 	m_error = 0;
-	m_pListener = NULL;
+	m_pListener = nullptr;
 }
 
 IE_Exp_LaTeX::~IE_Exp_LaTeX()
@@ -595,7 +595,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		return;
 	}
 	
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	m_iBlockType = BT_NORMAL;
 	
@@ -610,7 +610,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			int indent = 0;
 			bool bNewList = false;
 			const gchar * szIndent, * szLeft, * szListStyle;
-			szIndent = szLeft = szListStyle = NULL;
+			szIndent = szLeft = szListStyle = nullptr;
 			FL_ListType this_list_type = NOT_A_LIST;
 			pAP->getProperty("list-style", szListStyle);
 			
@@ -791,8 +791,8 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 
 void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 {
-	const PP_AttrProp* pAP = NULL;
-	const gchar* pszNbCols = NULL;
+	const PP_AttrProp* pAP = nullptr;
+	const gchar* pszNbCols = nullptr;
 
 	m_bBetweenQuotes = false;
 	m_bInList = false;
@@ -801,26 +801,26 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 
 	if (m_pDocument->getAttrProp(api, &pAP) && pAP)
 	{
-		const gchar* pszPageMarginLeft = NULL;
-		const gchar* pszPageMarginRight = NULL;
+		const gchar* pszPageMarginLeft = nullptr;
+		const gchar* pszPageMarginRight = nullptr;
 
 		pAP->getProperty("columns", pszNbCols);
 		pAP->getProperty("page-margin-right", pszPageMarginLeft);
 		pAP->getProperty("page-margin-left", pszPageMarginRight);
 
-		if (pszNbCols != NULL && ((0 == strcmp(pszNbCols, "2"))
+		if (pszNbCols != nullptr && ((0 == strcmp(pszNbCols, "2"))
 						|| (0 == strcmp(pszNbCols, "3"))))
 		{
 			m_bMultiCols = true;
 		}
-		if (pszPageMarginLeft != NULL)
+		if (pszPageMarginLeft != nullptr)
 		{
 			m_pie->write("\\setlength{\\oddsidemargin}{");
 			m_pie->write(static_cast<const char *> (pszPageMarginLeft));
 			m_pie->write("-1in");
 			m_pie->write("}\n");
 		}
-		if (pszPageMarginRight != NULL)
+		if (pszPageMarginRight != nullptr)
 		{
 			m_pie->write("\\setlength{\\textwidth}{\\paperwidth - ");
 			m_pie->write(static_cast<const char *> (pszPageMarginRight));
@@ -848,9 +848,9 @@ void s_LaTeX_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 	}
 	UT_LocaleTransactor lt (LC_NUMERIC, "C");
 	UT_String_sprintf (szDest, "%.3f,%.3f,%.3f",
-			   strtol (&colors[0][0],NULL,16)/255.,
-			   strtol (&colors[1][0],NULL,16)/255.,
-			   strtol (&colors[2][0],NULL,16)/255.);
+			   strtol (&colors[0][0],nullptr,16)/255.,
+			   strtol (&colors[1][0],nullptr,16)/255.,
+			   strtol (&colors[2][0],nullptr,16)/255.);
 }
 
 struct LaTeX_Font_Size
@@ -882,7 +882,7 @@ static const LaTeX_Font_Size fontsizes[]=
 void s_LaTeX_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)
 {
 	double fSizeInPoints = UT_convertToPoints(pszFontSize);
-	const LaTeX_Font_Size *fs = NULL;
+	const LaTeX_Font_Size *fs = nullptr;
 
 	if(m_bInScript) {
 		fSizeInPoints -= 4;
@@ -950,7 +950,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		return;
 	}
 	
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	m_bOverline = false;
 	m_NumCloseBrackets = 0;
@@ -991,7 +991,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			}
 		}
 		
-		const gchar* pszColor = NULL;
+		const gchar* pszColor = nullptr;
 		pAP->getProperty("color", pszColor);
 		if (pszColor)
 		{
@@ -1007,7 +1007,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		    }
 		}
 		
-		const gchar* pszBgColor = NULL;
+		const gchar* pszBgColor = nullptr;
 		pAP->getProperty("bgcolor", pszBgColor);
 
 		if (pszBgColor)
@@ -1082,7 +1082,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 					m_pie->write("\\sout{");
 					m_NumCloseBrackets++;
 			    }
-			    q = strtok(NULL, " ");
+			    q = strtok(nullptr, " ");
 			}
 			
 			/* This should be at the very last, in order to match
@@ -1150,7 +1150,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 		for(; m_NumCloseBrackets>0; m_NumCloseBrackets--)
 			m_pie->write("}");
 
-		m_pAP_Span = NULL;
+		m_pAP_Span = nullptr;
 	}
 
 	m_bInSpan = false;
@@ -1164,7 +1164,7 @@ void s_LaTeX_Listener::_closeTable(void)
 		for(unsigned int i=0; i<m_pqRect->size(); i++)
 		{
 			delete m_pqRect->at(i);
-			m_pqRect->at(i) = NULL;
+			m_pqRect->at(i) = nullptr;
 		}
 		m_pqRect->clear();
     }
@@ -1379,7 +1379,7 @@ void s_LaTeX_Listener::_outputBabelPackage(void)
 	// Language appears in <abiword> as property "lang",
 	// es-ES, en-US, and so forth...
 	
-	const gchar * szLangCode = NULL;
+	const gchar * szLangCode = nullptr;
 	m_pDocument->getAttrProp()->getProperty("lang", szLangCode); // language code
 	if(szLangCode && *szLangCode)
 	{
@@ -1438,7 +1438,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_DefaultFontSize(12),
 	m_NumCloseBrackets(0),
 	list_type(BULLETED_LIST),
-	m_pqRect(NULL)
+	m_pqRect(nullptr)
 {
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
@@ -1480,7 +1480,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	    m_pie->write(",landscape");
 	
 	//retrieve the actual font size
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 	pDocument->getStyle ("Normal", &pStyle);
 	if(pStyle)
 	{
@@ -1554,7 +1554,7 @@ s_LaTeX_Listener::~s_LaTeX_Listener()
 	    for(unsigned int i=0; i<m_pqRect->size(); i++)
 	    {
 		delete m_pqRect->at(i);
-		m_pqRect->at(i) = NULL;
+		m_pqRect->at(i) = nullptr;
 	    }
 	    delete m_pqRect;
 	}
@@ -1593,12 +1593,12 @@ bool s_LaTeX_Listener::populate(fl_ContainerLayout* /*sfh*/,
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
 
-			const PP_AttrProp * pAP = NULL;
+			const PP_AttrProp * pAP = nullptr;
 			bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
-			const gchar* szValue = NULL;
+			const gchar* szValue = nullptr;
 
-			fd_Field* field = NULL;
+			fd_Field* field = nullptr;
 
 			switch (pcro->getObjectType())
 			{
@@ -1669,7 +1669,7 @@ bool s_LaTeX_Listener::populate(fl_ContainerLayout* /*sfh*/,
 					{					
 						bool bFoundLatex = m_pDocument->getDataItemDataByName(szValue, 
 						    pByteBuf,
-						    NULL, NULL);
+						    nullptr, nullptr);
 						if(!bFoundLatex)
 						{
 							UT_DEBUGMSG(("Equation %s not found in document \n", szValue));
@@ -1688,7 +1688,7 @@ bool s_LaTeX_Listener::populate(fl_ContainerLayout* /*sfh*/,
 						UT_UTF8String sMathML;
 						bool bFoundMathML = m_pDocument->getDataItemDataByName(szValue, 
 						    pByteBuf,
-						    NULL, NULL);
+						    nullptr, nullptr);
 						if(!bFoundMathML)
 						{
 							UT_DEBUGMSG(("Equation %s not found in document \n", szValue));
@@ -1738,10 +1738,10 @@ bool s_LaTeX_Listener::populateStrux(pf_Frag_Strux* sdh,
 		_closeSection();
 
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
-		const PP_AttrProp* pAP = NULL;
+		const PP_AttrProp* pAP = nullptr;
 		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
 		{
-			const gchar* pszSectionType = NULL;
+			const gchar* pszSectionType = nullptr;
 			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
@@ -1769,10 +1769,10 @@ bool s_LaTeX_Listener::populateStrux(pf_Frag_Strux* sdh,
 		_closeSection();
 
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
-		const PP_AttrProp* pAP = NULL;
+		const PP_AttrProp* pAP = nullptr;
 		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
 		{
-			const gchar* pszSectionType = NULL;
+			const gchar* pszSectionType = nullptr;
 			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
@@ -1920,7 +1920,7 @@ UT_Error IE_Exp_LaTeX::_writeDocument(void)
 		return UT_ERROR;
 	delete m_pListener;
 
-	m_pListener = NULL;
+	m_pListener = nullptr;
 	
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
@@ -1938,7 +1938,7 @@ void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
 {	
 	/* Part of code taken from the HTML exporter */
 	UT_ConstByteBufPtr pByteBuf;
-	const gchar *szHeight = NULL, *szWidth = NULL, *szDataID = NULL;
+	const gchar *szHeight = nullptr, *szWidth = nullptr, *szDataID = nullptr;
     std::string mimeType;
 	
 	if (! pAP)
@@ -1947,7 +1947,7 @@ void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
 		return;
 
 	if(!m_pDocument->getDataItemDataByName(szDataID, pByteBuf,
-                                             &mimeType, NULL))
+                                             &mimeType, nullptr))
 		return;
 	if ((pByteBuf == nullptr) || (mimeType.empty()))
         return; // ??

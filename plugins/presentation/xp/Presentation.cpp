@@ -160,11 +160,11 @@ Presentation_registerMethod ()
 
 // Put it after 
 
-    presentationID= pFact->addNewMenuAfter("Main",NULL,AP_MENU_ID_VIEW_SHOWPARA,EV_MLF_Normal);
+    presentationID= pFact->addNewMenuAfter("Main",nullptr,AP_MENU_ID_VIEW_SHOWPARA,EV_MLF_Normal);
     UT_DEBUGMSG(("presentationID %d \n",presentationID));
 
 
-    pFact->addNewLabel(NULL,presentationID,szPresentation,szPresentationStatus);
+    pFact->addNewLabel(nullptr,presentationID,szPresentation,szPresentationStatus);
 
     // Create the Action that will be called.
     EV_Menu_Action* myPresentationAction = new EV_Menu_Action(
@@ -174,8 +174,8 @@ Presentation_registerMethod ()
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
 	"Presentation_start",   //  callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
         );
 
     // Now what we need to do is add this particular action to the ActionSet
@@ -190,12 +190,12 @@ Presentation_registerMethod ()
     // OK Now build a context menu
     //
     PresentationContextID = pFact->createContextMenu("PresentationContext");
-    prevSlideID = pFact->addNewMenuBefore("PresentationContext",NULL,0,EV_MLF_Normal,0);
-    pFact->addNewLabel(NULL,prevSlideID,szPrevSlide, NULL);
-    nextSlideID = pFact->addNewMenuBefore("PresentationContext",NULL,0,EV_MLF_Normal,0);
-    pFact->addNewLabel(NULL,nextSlideID,szNextSlide, NULL);
-    endPresentationID = pFact->addNewMenuBefore("PresentationContext",NULL,0,EV_MLF_Normal,0);
-    pFact->addNewLabel(NULL,endPresentationID,szEndPresentation, NULL);
+    prevSlideID = pFact->addNewMenuBefore("PresentationContext",nullptr,0,EV_MLF_Normal,0);
+    pFact->addNewLabel(nullptr,prevSlideID,szPrevSlide, nullptr);
+    nextSlideID = pFact->addNewMenuBefore("PresentationContext",nullptr,0,EV_MLF_Normal,0);
+    pFact->addNewLabel(nullptr,nextSlideID,szNextSlide, nullptr);
+    endPresentationID = pFact->addNewMenuBefore("PresentationContext",nullptr,0,EV_MLF_Normal,0);
+    pFact->addNewLabel(nullptr,endPresentationID,szEndPresentation, nullptr);
 
     myPresentationAction = new EV_Menu_Action(
 	prevSlideID,          // id that the layout said we could use
@@ -204,8 +204,8 @@ Presentation_registerMethod ()
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
 	"Presentation_prevPage",   //  callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
         );
     pActionSet->addAction(myPresentationAction);
     myPresentationAction = new EV_Menu_Action(
@@ -215,8 +215,8 @@ Presentation_registerMethod ()
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
 	"Presentation_nextPage",   //  callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
         );
     pActionSet->addAction(myPresentationAction);
     myPresentationAction = new EV_Menu_Action(
@@ -226,8 +226,8 @@ Presentation_registerMethod ()
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
 	"Presentation_end",   //  callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
         );
     pActionSet->addAction(myPresentationAction);
 
@@ -265,7 +265,7 @@ Presentation_RemoveFromMethods ()
 
 	XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 
-	pFact->removeMenuItem("Main",NULL,presentationID);
+	pFact->removeMenuItem("Main",nullptr,presentationID);
 }
 
 // -----------------------------------------------------------------------
@@ -413,8 +413,8 @@ static UT_String sPresBindings[] = {"name, Presentation\n",
 			       ""};
 
 Presentation::Presentation(void):
-  m_pApp(NULL),
-  m_pView(NULL),
+  m_pApp(nullptr),
+  m_pView(nullptr),
   m_iPage(0),
   m_bDrewNext(false),
   m_bDrewPrev(false)
@@ -432,7 +432,7 @@ bool Presentation::_loadPresentationBindings(AV_View * pView)
 {
   EV_EditMethodContainer * pEMC = m_pApp->getEditMethodContainer();
   g_return_val_if_fail(pEMC != nullptr, FALSE);
-  if(m_pApp->getBindingMap("Presentation") != NULL)
+  if(m_pApp->getBindingMap("Presentation") != nullptr)
   {
       return true;
   }
@@ -581,7 +581,7 @@ GR_Image * Presentation::renderPageToImage(UT_sint32 iPage, UT_uint32 iZoom)
 	r.width = pG->tlu(iWidth);
 	r.height = pG->tlu(iHeight);
 	GR_Image * pImage = pPaint->genImageFromRectangle(r);
-	m_pView->getLayout()->setQuickPrint(NULL);
+	m_pView->getLayout()->setQuickPrint(nullptr);
 	DELETEP(pPaint);
 	DELETEP(pG);
 	return pImage;

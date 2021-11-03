@@ -85,8 +85,8 @@ static inline size_t priv_max(size_t a, size_t b)
 }
 
 UT_UCS2Stringbuf::UT_UCS2Stringbuf()
-:	m_psz(0),
-	m_pEnd(0),
+:	m_psz(nullptr),
+	m_pEnd(nullptr),
 	m_size(0)
 {
 }
@@ -168,8 +168,8 @@ void UT_UCS2Stringbuf::clear()
 	if (m_psz)
 	{
 		delete[] m_psz;
-		m_psz = 0;
-		m_pEnd = 0;
+		m_psz = nullptr;
+		m_pEnd = nullptr;
 		m_size = 0;
 	}
 }
@@ -309,7 +309,7 @@ UT_UTF8String UT_Win32LocaleString::utf8_str() const
 							  size () * sizeof (wchar_t),
 							  "UCS-2LE",
 							  "UTF-8",
-							  NULL, NULL);
+							  nullptr, nullptr);
 
 	UT_UTF8String str (pText);
 	g_free(pText);
@@ -322,7 +322,7 @@ UT_UCS4String UT_Win32LocaleString::ucs4_str() const
 							  (size()+1) * sizeof (wchar_t),
 							  "UCS-2LE",
 							  "UCS-4LE",
-							  NULL, NULL);
+							  nullptr, nullptr);
 
 	UT_UCS4String str (pText);
 	g_free(pText);
@@ -347,7 +347,7 @@ void UT_Win32LocaleString::fromUCS4 (const UT_UCS4Char* usc4_in)
 							  (UT_UCS4_strlen(usc4_in)+1) * 4,
 							  "UCS-4LE",
 							  "UCS-2LE",
-							  NULL, NULL);
+							  nullptr, nullptr);
 	if (!pText || !*pText) {
     	pimpl->clear ();
     	return;
@@ -360,13 +360,13 @@ void UT_Win32LocaleString::fromUCS4 (const UT_UCS4Char* usc4_in)
 void UT_Win32LocaleString::fromUTF8 (const char* utf8str)
 {
 #ifdef DEBUG
-	if (!utf8str) utf8str="FIXME: NULL passed to UT_Win32LocaleString::fromUTF8";
+	if (!utf8str) utf8str="FIXME: nullptr passed to UT_Win32LocaleString::fromUTF8";
 #endif
 	UT_UCS2Char * pText = (UT_UCS2Char *) UT_convert (utf8str,
 							  strlen(utf8str)+1,
 							  "UTF-8",
 							  "UCS-2LE",
-							  NULL, NULL);
+							  nullptr, nullptr);
 
 	if (!pText || !*pText) {
 		pimpl->clear ();
@@ -380,7 +380,7 @@ void UT_Win32LocaleString::fromUTF8 (const char* utf8str)
 void UT_Win32LocaleString::fromASCII (const char* szASCII, size_t sz)
 {
 #ifdef DEBUG
-	if (!szASCII) szASCII="FIXME: NULL passed to UT_Win32LocaleString::fromASCII";
+	if (!szASCII) szASCII="FIXME: nullptr passed to UT_Win32LocaleString::fromASCII";
 #endif
 	size_t len = (sz == -1) ? strlen(szASCII) : sz;
 	UT_UCS2Char * src = new UT_UCS2Char [len + 1];

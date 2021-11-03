@@ -162,7 +162,7 @@ bool TOC_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
       }
     case PTX_Block:
       {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = mDocument->getAttrProp (pcr->getIndexAP(), &pAP);
 
 	if (bHaveProp) {
@@ -295,7 +295,7 @@ UT_UTF8String IE_TOCHelper::getNthTOCEntry(int nth, int * out_level) const
 {
   UT_return_val_if_fail(nth < getNumTOCEntries(), "");
 
-  if (out_level != NULL)
+  if (out_level != nullptr)
     *out_level = mTOCLevels[nth];
 
   return *mTOCStrings.getNthItem(nth);

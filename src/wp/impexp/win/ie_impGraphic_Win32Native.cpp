@@ -117,7 +117,7 @@ static PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
   
   // Retrieve the bitmap's color format, width, and height. 
   if (!GetObject(hBmp, sizeof(BITMAP), (LPSTR)&bmp)) 
-    return NULL;
+    return nullptr;
   
   if (bmp.bmBitsPixel==16) 
     bmp.bmBitsPixel = 24;	// 16 bit BMPs are not supported by all programs
@@ -185,7 +185,7 @@ UT_Error IE_ImpGraphic_Win32Native::importGraphic(const UT_ConstByteBufPtr& pBB,
     /* Send Data back to AbiWord as PNG */
     FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
     
-    if(pFGR == NULL)
+    if(pFGR == nullptr)
 		return UT_IE_NOMEMORY;
     
 	if (mimetype == "image/jpeg")
@@ -211,7 +211,7 @@ UT_Error IE_ImpGraphic_Win32Native::importGraphic(const UT_ConstByteBufPtr& pBB,
   //
 UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(const UT_ConstByteBufPtr& pBB, std::string& mimetype)
 {
-    IPicture* pPicture = NULL;
+    IPicture* pPicture = nullptr;
     IStream* stream;	
     HGLOBAL hG;		
     HBITMAP hBitmap;
@@ -312,11 +312,11 @@ UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(const UT_ConstByteBufPtr& pB
 		bmi.bmiHeader.biYPelsPerMeter = 0; 
 		bmi.bmiHeader.biClrImportant = 0;
 		bmi.bmiHeader.biClrUsed = 0; // we are not using palette
-			
-		hBit = CreateDIBSection(hMemDC,&bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);						
-		hOld = (HBITMAP) SelectObject(hMemDC, hBit);			
 
-		
+		hBit = CreateDIBSection(hMemDC, &bmi, DIB_RGB_COLORS, (void**)&imagedata, nullptr, 0);
+		hOld = (HBITMAP) SelectObject(hMemDC, hBit);
+
+
 		rect.left = 0;
         rect.top = nScaleToHeight;
         rect.right = nScaleToWidth;
@@ -476,22 +476,20 @@ UT_Error IE_ImpGraphic_Win32Native::Read_BMP_Header(UT_ByteBuf* pBB)
 UT_Error IE_ImpGraphic_Win32Native::Initialize_PNG()
 {
     /* Set up png structures for writing */
-    m_pPNG = png_create_write_struct( PNG_LIBPNG_VER_STRING, 
-									  static_cast<void*>(NULL),
-									  NULL, 
-									  NULL );
-    if( m_pPNG == NULL )
+    m_pPNG = png_create_write_struct(PNG_LIBPNG_VER_STRING,
+									 nullptr, nullptr, nullptr);
+    if( m_pPNG == nullptr )
 	{
 		return UT_ERROR;
 	}
-    
+
     m_pPNGInfo = png_create_info_struct(m_pPNG);
-    if ( m_pPNGInfo == NULL )
+    if ( m_pPNGInfo == nullptr )
 	{
-		png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(NULL));
+		png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(nullptr));
 		return UT_ERROR;
 	}
-    
+
     /* Set error handling if you are using the setjmp/longjmp method (this is
      * the normal method of doing things with libpng).  REQUIRED unless you
      * set up your own error handlers in the png_create_read_struct() earlier.
@@ -760,7 +758,7 @@ bool IE_ImpGraphicWin32Native_Sniffer::getDlgLabels (const char ** pszDesc,
 UT_Error IE_ImpGraphicWin32Native_Sniffer::constructImporter (IE_ImpGraphic ** ppieg)
 {
     *ppieg = new IE_ImpGraphic_Win32Native();
-    if (*ppieg == NULL)
+    if (*ppieg == nullptr)
 		return UT_IE_NOMEMORY;
     
     return UT_OK;

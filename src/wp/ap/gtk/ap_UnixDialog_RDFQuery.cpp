@@ -178,7 +178,7 @@ AP_UnixDialog_RDFQuery::setupBindingsView( std::map< std::string, std::string >&
         std::string cname = iter->first;
         
         ren = gtk_cell_renderer_text_new ();
-        w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( cname.c_str(), ren, "text", colid, NULL);
+        w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( cname.c_str(), ren, "text", colid, nullptr);
         gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
         gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
 //        gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
@@ -326,7 +326,7 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
     colid = C_SUBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Subject, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, nullptr);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
@@ -334,7 +334,7 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
     colid = C_PRED_COLUMN;
     ren = gtk_cell_renderer_text_new ();
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Predicate, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, nullptr);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
@@ -342,7 +342,7 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
     colid = C_OBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Object, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, nullptr);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
@@ -414,7 +414,7 @@ AP_UnixDialog_RDFQuery::destroy ()
 	modeless_cleanup ();
 	if (m_wDialog) {
 		gtk_widget_destroy(m_wDialog); // TOPLEVEL
-		m_wDialog = NULL;
+		m_wDialog = nullptr;
 	}
 }
 

@@ -142,7 +142,7 @@ void AP_UnixDialog_WordCount::destroy(void)
 	m_answer = AP_Dialog_WordCount::a_CANCEL;	
 	modeless_cleanup();
 	gtk_widget_destroy(m_windowMain); // TOPLEVEL
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 	DELETEP(m_pAutoUpdateWC);
 }
 
@@ -155,7 +155,7 @@ XAP_Widget *AP_UnixDialog_WordCount::getWidget(xap_widget_id wid)
 		return new XAP_UnixWidget(m_windowMain);
 		break;
 	case CLOSE_BTN_WID:
-		return new XAP_UnixWidget(NULL);
+		return new XAP_UnixWidget(nullptr);
 		break;
 	case TITLE_LBL_WID:
 	  {
@@ -209,7 +209,7 @@ XAP_Widget *AP_UnixDialog_WordCount::getWidget(xap_widget_id wid)
 	default:
 		UT_ASSERT(UT_NOT_REACHED);
 	}
-	return NULL;
+	return nullptr;
 }
 
 void AP_UnixDialog_WordCount::constructDialog(void)

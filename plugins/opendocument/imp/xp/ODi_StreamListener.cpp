@@ -52,7 +52,7 @@ ODi_StreamListener::ODi_StreamListener(PD_Document* pAbiDocument,
       m_rAbiData(rAbiData),
       m_fontFaceDecls(*pElementStack),
       m_currentAction(ODI_NONE),
-      m_pCurrentState(NULL),
+      m_pCurrentState(nullptr),
       m_deleteCurrentWhenPop(false),
       m_ownStack(false)
 {
@@ -63,7 +63,7 @@ ODi_StreamListener::ODi_StreamListener(PD_Document* pAbiDocument,
 
     // This is done for supporting nested StreamListeners, used when we are
     // resuming postponed elements.    
-    if (pElementStack == NULL) {
+    if (pElementStack == nullptr) {
         m_pElementStack = new ODi_ElementStack;
         m_ownStack = true;
     } 
@@ -119,7 +119,7 @@ void ODi_StreamListener::_startElement (const gchar* pName,
             pState = m_pCurrentState;
             _handleStateAction();
             
-            if (m_pCurrentState != NULL && pState != m_pCurrentState) {
+            if (m_pCurrentState != nullptr && pState != m_pCurrentState) {
                 // The state has changed.
                 this->_startElement(pName, ppAtts, true);
             }
@@ -145,7 +145,7 @@ void ODi_StreamListener::_startElement (const gchar* pName,
  */
 void ODi_StreamListener::_endElement (const gchar* pName, bool doingRecursion)
 {
-    UT_return_if_fail(m_pCurrentState != NULL);
+    UT_return_if_fail(m_pCurrentState != nullptr);
     
     if (m_currentAction != ODI_IGNORING) {
         m_stateAction.reset();
@@ -157,7 +157,7 @@ void ODi_StreamListener::_endElement (const gchar* pName, bool doingRecursion)
             pState = m_pCurrentState;
             _handleStateAction();
             
-            if (m_pCurrentState != NULL && pState != m_pCurrentState) {
+            if (m_pCurrentState != nullptr && pState != m_pCurrentState) {
                 // The state has changed.
                 this->_endElement(pName, true);
             }
@@ -213,7 +213,7 @@ UT_Error ODi_StreamListener::setState(const char* pStateName)
 {
     
     UT_ASSERT(m_stateStack.getItemCount() == 0);
-    UT_ASSERT(m_pCurrentState == NULL);
+    UT_ASSERT(m_pCurrentState == nullptr);
     _clear();
     
     m_pCurrentState = _createState(pStateName);
@@ -233,7 +233,7 @@ UT_Error ODi_StreamListener::setState(const char* pStateName)
 void ODi_StreamListener::setState(ODi_ListenerState* pState, bool deleteWhenPop) {
     
     UT_ASSERT(m_stateStack.getItemCount() == 0);
-    UT_ASSERT(m_pCurrentState == NULL);
+    UT_ASSERT(m_pCurrentState == nullptr);
     _clear();
     
     m_pCurrentState = pState;
@@ -255,7 +255,7 @@ void ODi_StreamListener::_handleStateAction ()
             m_stateStack.push_back(
                 ODi_StreamListener::StackCell(m_pCurrentState, m_deleteCurrentWhenPop));
                 
-            if (m_stateAction.getState() != NULL) {
+            if (m_stateAction.getState() != nullptr) {
                 m_pCurrentState = m_stateAction.getState();
                 m_deleteCurrentWhenPop = m_stateAction.getDeleteWhenPop();
             } else {
@@ -285,7 +285,7 @@ void ODi_StreamListener::_handleStateAction ()
             if (m_deleteCurrentWhenPop) {
                 DELETEP(m_pCurrentState);
             } else {
-                m_pCurrentState = NULL;
+                m_pCurrentState = nullptr;
             }
 
             if (m_stateStack.getItemCount() > 0) {
@@ -305,7 +305,7 @@ void ODi_StreamListener::_handleStateAction ()
             
             ODi_Postpone_ListenerState* pPostponeState;
             
-            if (m_stateAction.getState() != NULL) {
+            if (m_stateAction.getState() != nullptr) {
                 pPostponeState = new ODi_Postpone_ListenerState(
                                                   m_stateAction.getState(),
                                                   m_stateAction.getDeleteWhenPop(),
@@ -418,7 +418,7 @@ void ODi_StreamListener::_clear ()
     if (m_pCurrentState && m_deleteCurrentWhenPop) {
         DELETEP(m_pCurrentState);
     } else {
-        m_pCurrentState = NULL;
+        m_pCurrentState = nullptr;
     }
     
     UT_sint32 i;
@@ -440,7 +440,7 @@ void ODi_StreamListener::_clear ()
  */
 ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
     
-    ODi_ListenerState* pState = NULL;
+    ODi_ListenerState* pState = nullptr;
     UT_DEBUGMSG(("ODi ListenerState name %s \n",pStateName));
     if (!strcmp("StylesStream", pStateName)) {
         
@@ -495,9 +495,9 @@ ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
  */
 void ODi_StreamListener::_resumeParsing(ODi_Postpone_ListenerState* pPostponeState){
     UT_uint32 i, count;
-    const ODi_XMLRecorder::StartElementCall* pStartCall = NULL;
-    const ODi_XMLRecorder::EndElementCall* pEndCall = NULL;
-    const ODi_XMLRecorder::CharDataCall* pCharDataCall = NULL;
+    const ODi_XMLRecorder::StartElementCall* pStartCall = nullptr;
+    const ODi_XMLRecorder::EndElementCall* pEndCall = nullptr;
+    const ODi_XMLRecorder::CharDataCall* pCharDataCall = nullptr;
     const ODi_XMLRecorder* pXMLRecorder;
     
     pXMLRecorder = pPostponeState->getXMLRecorder();    
@@ -548,9 +548,9 @@ void ODi_StreamListener::_resumeParsing(ODi_Postpone_ListenerState* pPostponeSta
  */
 void ODi_StreamListener::_playRecordedElement() {
     UT_uint32 i, count;
-    const ODi_XMLRecorder::StartElementCall* pStartCall = NULL;
-    const ODi_XMLRecorder::EndElementCall* pEndCall = NULL;
-    const ODi_XMLRecorder::CharDataCall* pCharDataCall = NULL;
+    const ODi_XMLRecorder::StartElementCall* pStartCall = nullptr;
+    const ODi_XMLRecorder::EndElementCall* pEndCall = nullptr;
+    const ODi_XMLRecorder::CharDataCall* pCharDataCall = nullptr;
     ODi_XMLRecorder xmlRecorder;
     
     xmlRecorder = m_xmlRecorder;

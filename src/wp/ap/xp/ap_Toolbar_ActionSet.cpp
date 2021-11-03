@@ -43,7 +43,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 
 	EV_Toolbar_ActionSet * pActionSet = new EV_Toolbar_ActionSet(AP_TOOLBAR_ID__BOGUS1__,
 																 AP_TOOLBAR_ID__BOGUS2__);
-	UT_return_val_if_fail (pActionSet, NULL);
+	UT_return_val_if_fail (pActionSet, nullptr);
 
 	// The following is a list of all toolbar id's that we define,
 	// the actions that they should be bound to, and various
@@ -75,25 +75,25 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 
 	//( __id__,          			type,					szMethodName,	mask,				pfn);
 
-	_s(AP_TOOLBAR_ID__BOGUS1__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
+	_s(AP_TOOLBAR_ID__BOGUS1__,		EV_TBIT_BOGUS,			nullptr,			0,					nullptr);
 
-	_s(AP_TOOLBAR_ID_FILE_NEW,		EV_TBIT_PushButton,		"fileNew",		AV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FILE_OPEN,		EV_TBIT_PushButton,		"fileOpen",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_NEW,		EV_TBIT_PushButton,		"fileNew",		AV_CHG_NONE,		nullptr);
+	_s(AP_TOOLBAR_ID_FILE_OPEN,		EV_TBIT_PushButton,		"fileOpen",		AV_CHG_NONE,		nullptr);
 	_s(AP_TOOLBAR_ID_FILE_SAVE,		EV_TBIT_PushButton,		"fileSave",		AV_CHG_ALL,		ap_ToolbarGetState_Changes);
-	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs",	AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs",	AV_CHG_NONE,		nullptr);
 #if TOOLKIT_GTK_ALL
-	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"cairoPrint",		AV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton,	"cairoPrintPreview", AV_CHG_NONE,	NULL);
+	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"cairoPrint",		AV_CHG_NONE,		nullptr);
+	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton,	"cairoPrintPreview", AV_CHG_NONE,	nullptr);
 #else
-	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"printTB",		AV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton,	"printPreview", AV_CHG_NONE,	NULL);
+	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"printTB",		AV_CHG_NONE,		nullptr);
+	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton,	"printPreview", AV_CHG_NONE,	nullptr);
 #endif
 	// AV_CHG_ALL doesn't seem right here. TODO!
 #ifdef ENABLE_SPELL
 	_s(AP_TOOLBAR_ID_SPELLCHECK,	EV_TBIT_PushButton,		"dlgSpell",		AV_CHG_ALL,		ap_ToolbarGetState_Spelling);
 #endif
-	_s(AP_TOOLBAR_ID_IMG,			EV_TBIT_PushButton,		"fileInsertGraphic", AV_CHG_NONE,	NULL);
-	_s(AP_TOOLBAR_ID_HELP,			EV_TBIT_PushButton,		"helpContents",	AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_IMG,			EV_TBIT_PushButton,		"fileInsertGraphic", AV_CHG_NONE,	nullptr);
+	_s(AP_TOOLBAR_ID_HELP,			EV_TBIT_PushButton,		"helpContents",	AV_CHG_NONE,		nullptr);
 	// This changes as a document property only, is there a less frequent action than AV_CHG_FRAMEDATA?
 	_s(AP_TOOLBAR_ID_COLOR_FORE,	EV_TBIT_ColorFore,		"colorForeTB",	AV_CHG_FRAMEDATA,	ap_ToolbarGetState_StylesLocked);
 	_s(AP_TOOLBAR_ID_COLOR_BACK,	EV_TBIT_ColorBack,		"colorBackTB",	AV_CHG_FRAMEDATA,	ap_ToolbarGetState_StylesLocked);
@@ -103,19 +103,19 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_EDIT_COPY,		EV_TBIT_PushButton,		"copy",			AV_CHG_ALL,	ap_ToolbarGetState_Selection);
 	_s(AP_TOOLBAR_ID_EDIT_PASTE,	EV_TBIT_PushButton,		"paste",		AV_CHG_CLIPBOARD,	ap_ToolbarGetState_Clipboard);
 
-	_s(AP_TOOLBAR_ID_EDIT_HEADER,	EV_TBIT_PushButton,		"editHeader",		AV_CHG_NONE,	NULL);
-	_s(AP_TOOLBAR_ID_EDIT_FOOTER,	EV_TBIT_PushButton,		"editFooter",		AV_CHG_NONE,	NULL);
+	_s(AP_TOOLBAR_ID_EDIT_HEADER,	EV_TBIT_PushButton,		"editHeader",		AV_CHG_NONE,	nullptr);
+	_s(AP_TOOLBAR_ID_EDIT_FOOTER,	EV_TBIT_PushButton,		"editFooter",		AV_CHG_NONE,	nullptr);
 	_s(AP_TOOLBAR_ID_EDIT_REMOVEHEADER,	EV_TBIT_PushButton,		"removeHeader",		AV_CHG_MOTION,	ap_ToolbarGetState_HdrFtr);
 	_s(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER,	EV_TBIT_PushButton,		"removeFooter",		AV_CHG_MOTION,	ap_ToolbarGetState_HdrFtr);
 
 	_s(AP_TOOLBAR_ID_FMT_STYLE,		EV_TBIT_ComboBox,		"style",		AV_CHG_FMTSTYLE | AV_CHG_MOTION,	ap_ToolbarGetState_Style);
 	_s(AP_TOOLBAR_ID_FMT_FONT,		EV_TBIT_ComboBox,		"fontFamily",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
-	
+
 #if XAP_SIMPLE_TOOLBAR
-	_s(AP_TOOLBAR_ID_FMT_CHOOSE,	EV_TBIT_PushButton,		"dlgFont",		AV_CHG_NONE,		NULL);	
-	_s(AP_TOOLBAR_ID_VIEW_FULL_SCREEN,	EV_TBIT_PushButton,		"viewFullScreen",		AV_CHG_NONE,		NULL);	
-#endif	
-	
+	_s(AP_TOOLBAR_ID_FMT_CHOOSE,	EV_TBIT_PushButton,		"dlgFont",		AV_CHG_NONE,		nullptr);
+	_s(AP_TOOLBAR_ID_VIEW_FULL_SCREEN,	EV_TBIT_PushButton,		"viewFullScreen",		AV_CHG_NONE,		nullptr);
+#endif
+
 	_s(AP_TOOLBAR_ID_FMT_SIZE,		EV_TBIT_ComboBox,		"fontSize",		AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_BOLD,		EV_TBIT_ToggleButton,	"toggleBold",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_ITALIC,	EV_TBIT_ToggleButton,	"toggleItalic",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
@@ -130,7 +130,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 
 	_s(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	EV_TBIT_ToggleButton,	"toggleSuper",	AV_CHG_FMTCHAR | AV_CHG_MOTION,	ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		EV_TBIT_ToggleButton,	"toggleSub",	AV_CHG_FMTCHAR | AV_CHG_MOTION,	ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_INSERT_SYMBOL,		EV_TBIT_PushButton,	"insSymbol",	AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_INSERT_SYMBOL,		EV_TBIT_PushButton,	"insSymbol",	AV_CHG_NONE,		nullptr);
 
 	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_GroupButton,	"alignLeft",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
 	_s(AP_TOOLBAR_ID_ALIGN_CENTER,	EV_TBIT_GroupButton,	"alignCenter",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
@@ -183,22 +183,22 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_MERGEABOVE, EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table); // FIXME
 	_s(AP_TOOLBAR_ID_MERGEBELOW, EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table); // FIXME
 
-	_s(AP_TOOLBAR_ID_REVISIONS_NEW,        EV_TBIT_PushButton,		"revisionNew",    AV_CHG_NONE, NULL );
+	_s(AP_TOOLBAR_ID_REVISIONS_NEW,        EV_TBIT_PushButton,		"revisionNew",    AV_CHG_NONE, nullptr );
 	_s(AP_TOOLBAR_ID_REVISIONS_SELECT,     EV_TBIT_PushButton,		"revisionSelect", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
 	_s(AP_TOOLBAR_ID_REVISIONS_SHOW_FINAL, EV_TBIT_PushButton,		"toggleShowRevisionsAfter", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
 	_s(AP_TOOLBAR_ID_REVISIONS_FIND_PREV,  EV_TBIT_PushButton,		"revisionFindPrev", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
 	_s(AP_TOOLBAR_ID_REVISIONS_FIND_NEXT,  EV_TBIT_PushButton,		"revisionFindNext", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
     
-	_s(AP_TOOLBAR_ID_SEMITEM_THIS,        EV_TBIT_PushButton,		"rdfAnchorSelectThisReferenceToSemanticItem", AV_CHG_NONE, NULL );
+	_s(AP_TOOLBAR_ID_SEMITEM_THIS,        EV_TBIT_PushButton,		"rdfAnchorSelectThisReferenceToSemanticItem", AV_CHG_NONE, nullptr );
 	_s(AP_TOOLBAR_ID_SEMITEM_NEXT,         EV_TBIT_PushButton,		"rdfAnchorSelectNextReferenceToSemanticItem",  AV_CHG_ALL, ap_ToolbarGetState_CursorInSemItem );
 	_s(AP_TOOLBAR_ID_SEMITEM_PREV,         EV_TBIT_PushButton,		"rdfAnchorSelectPrevReferenceToSemanticItem",  AV_CHG_ALL, ap_ToolbarGetState_CursorInSemItem );
 	_s(AP_TOOLBAR_ID_SEMITEM_EDIT,         EV_TBIT_PushButton,		"rdfAnchorEditSemanticItem",  AV_CHG_ALL, ap_ToolbarGetState_CursorInSemItem );
 	_s(AP_TOOLBAR_ID_SEMITEM_STYLESHEET_APPLY, EV_TBIT_PushButton, "rdfApplyCurrentStyleSheet",  AV_CHG_ALL, ap_ToolbarGetState_CursorInSemItem );
 
 #ifdef ENABLE_MENUBUTTON
-	_s(AP_TOOLBAR_ID_MENU, EV_TBIT_MenuButton, NULL, AV_CHG_NONE, NULL);
+	_s(AP_TOOLBAR_ID_MENU, EV_TBIT_MenuButton, nullptr, AV_CHG_NONE, nullptr);
 #endif
-	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
+	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			nullptr,			0,					nullptr);
 #undef _s
 
 	return pActionSet;

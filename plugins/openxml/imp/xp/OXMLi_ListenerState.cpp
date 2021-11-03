@@ -28,7 +28,7 @@
 
 
 OXMLi_ListenerState::OXMLi_ListenerState() : 
-	m_pListener(NULL)
+	m_pListener(nullptr)
 {
 
 }
@@ -53,7 +53,7 @@ bool OXMLi_ListenerState::nameMatches(const std::string & name, const char* ns, 
 
 const char* OXMLi_ListenerState::attrMatches(const char* ns, const gchar* attr, std::map<std::string, std::string>* atts)
 {
-	UT_return_val_if_fail( ns && attr, NULL );
+	UT_return_val_if_fail( ns && attr, nullptr );
 
 	std::string str(ns);
 	str += ":";
@@ -62,14 +62,14 @@ const char* OXMLi_ListenerState::attrMatches(const char* ns, const gchar* attr, 
 	std::map<std::string, std::string>::iterator iter = atts->find(str);
 
 	if(iter == atts->end())
-		return NULL;
+		return nullptr;
 	else
 		return (iter->second).c_str();
 }
 
 bool OXMLi_ListenerState::_error_if_fail(bool val)
 {
-	if (val != true && m_pListener != NULL) {
+	if (val != true && m_pListener != nullptr) {
 		m_pListener->setStatus(UT_ERROR);
 	}
 	return val;
@@ -127,14 +127,14 @@ const gchar * OXMLi_ListenerState::_EmusToInches(const gchar * emus)
 
 void OXMLi_ListenerState::getFontLevelRange(const gchar * val, OXML_FontLevel& level, OXML_CharRange& range)
 {
-	if (NULL != strstr(val, "major")) {
+	if (nullptr != strstr(val, "major")) {
 		level = MAJOR_FONT;
 	} else {
 		level = MINOR_FONT;
 	}
-	if (NULL != strstr(val, "Bidi")) {
+	if (nullptr != strstr(val, "Bidi")) {
 		range = COMPLEX_RANGE;
-	} else if (NULL != strstr(val, "EastAsia")) {
+	} else if (nullptr != strstr(val, "EastAsia")) {
 		range = EASTASIAN_RANGE;
 	} else {
 		range = ASCII_RANGE;

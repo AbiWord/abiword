@@ -56,7 +56,7 @@ FG_GraphicPtr FG_GraphicVector::createFromChangeRecord(const fl_ContainerLayout*
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), pFG->m_pbbSVG, NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), pFG->m_pbbSVG, nullptr, nullptr);
 		}
 	}
 
@@ -86,7 +86,7 @@ FG_GraphicPtr FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute(PT_STRUX_IMAGE_DATAID, pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, pFG->m_pbbSVG, NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, pFG->m_pbbSVG, nullptr, nullptr);
 		}
 		pFG->m_iWidth = UT_convertToPoints(pFG->getWidthProp());
 		pFG->m_iHeight = UT_convertToPoints(pFG->getHeightProp());
@@ -101,8 +101,8 @@ FG_GraphicPtr FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 
 
 FG_GraphicVector::FG_GraphicVector()
-	: m_pSpanAP(NULL)
-	, m_pszDataID(NULL)
+	: m_pSpanAP(nullptr)
+	, m_pszDataID(nullptr)
 {
 }
 
@@ -156,9 +156,9 @@ double FG_GraphicVector::getHeight(void) const
  */
 const char * FG_GraphicVector::getWidthProp(void)
 {
-	const gchar * szWidth = NULL;
+	const gchar * szWidth = nullptr;
 	m_pSpanAP->getProperty("width", szWidth);
-	if(szWidth == NULL)
+	if(szWidth == nullptr)
 	{
 		szWidth = "0in";
 	}
@@ -171,9 +171,9 @@ const char * FG_GraphicVector::getWidthProp(void)
  */
 const char * FG_GraphicVector::getHeightProp(void)
 {
-	const gchar * szHeight = NULL;
+	const gchar * szHeight = nullptr;
 	m_pSpanAP->getProperty("height", szHeight);
-	if(szHeight == NULL)
+	if(szHeight == nullptr)
 	{
 		szHeight = "0in";
 	}
@@ -206,7 +206,7 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 
 	const gchar *pszWidth;
 	const gchar *pszHeight;
-	if(pSpanAP != NULL)
+	if(pSpanAP != nullptr)
 	{
 		m_pSpanAP = pSpanAP;
 	}
@@ -256,9 +256,9 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 
 const char *  FG_GraphicVector::createDataItem(PD_Document *pDoc, const char * szName) const
 {
-	UT_return_val_if_fail(pDoc,NULL);
+	UT_return_val_if_fail(pDoc,nullptr);
 	UT_ASSERT(szName);
-   	pDoc->createDataItem(szName, false, m_pbbSVG, getMimeType(), NULL);
+	pDoc->createDataItem(szName, false, m_pbbSVG, getMimeType(), nullptr);
 	return szName;
 }
 
@@ -277,7 +277,7 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	/*
 	  Create the data item
 	*/
-   	pDoc->createDataItem(szName, false, m_pbbSVG, getMimeType(), NULL);
+	pDoc->createDataItem(szName, false, m_pbbSVG, getMimeType(), nullptr);
 
 	std::string szProps;
 
@@ -313,7 +313,7 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 	  Create the data item
 	*/
 	const std::string mimetype = "image/svg+xml";
-   	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, NULL);
+	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, nullptr);
 
 
 	/*

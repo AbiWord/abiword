@@ -106,7 +106,7 @@ void AP_CocoaDialog_MergeCells::_storeWindowData(void)
 {
 	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_MergeCells"])
 	{
-		_xap = NULL;
+		_xap = nullptr;
 	}
 	return self;
 }
@@ -123,7 +123,7 @@ void AP_CocoaDialog_MergeCells::_storeWindowData(void)
 
 -(void)discardXAP
 {
-	_xap = 0;
+	_xap = nullptr;
 }
 
 -(void)windowDidLoad

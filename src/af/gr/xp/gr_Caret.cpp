@@ -60,13 +60,13 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		m_yPoint(0),
 		m_xPoint2(0),
 		m_yPoint2(0),
-		m_pClr(NULL),
+		m_pClr(nullptr),
 		m_pG(pG),
 		m_iWindowWidth(0),
 		m_iWindowHeight(0),
-		m_worker(NULL),
-		m_enabler(NULL),
-		m_blinkTimeout(NULL),
+		m_worker(nullptr),
+		m_enabler(nullptr),
+		m_blinkTimeout(nullptr),
 		m_nDisableCount(1),
 		m_bCursorBlink(true),
 		m_bCursorIsOn(false),
@@ -109,13 +109,13 @@ GR_Caret::GR_Caret(GR_Graphics * pG, const std::string& sId)
 		m_yPoint(0),
 		m_xPoint2(0),
 		m_yPoint2(0),
-		m_pClr(NULL),
+		m_pClr(nullptr),
 		m_pG(pG),
 		m_iWindowWidth(0),
 		m_iWindowHeight(0),
-		m_worker(NULL),
-		m_enabler(NULL),
-		m_blinkTimeout(NULL),
+		m_worker(nullptr),
+		m_enabler(nullptr),
+		m_blinkTimeout(nullptr),
 		m_nDisableCount(1),
 		m_bCursorBlink(true),
 		m_bCursorIsOn(false),
@@ -207,7 +207,7 @@ UT_uint32 GR_Caret::_getCursorBlinkTime() const
 	UT_uint32 blink;
 	GtkSettings * settings = gtk_settings_get_default ();
 
-	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-time", &blink, NULL);
+	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-time", &blink, nullptr);
 
 	return (blink/2);
 #elif defined(TOOLKIT_WIN)
@@ -224,7 +224,7 @@ UT_uint32 GR_Caret::_getCursorBlinkTimeout() const
 	GtkSettings * settings = gtk_settings_get_default ();
 
 	// retrieves the blink timeout in seconds
-	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-timeout", &timeout, NULL);
+	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-timeout", &timeout, nullptr);
 	return (timeout == 0 ? 2147483647 : timeout * 1000);
 #elif defined(TOOLKIT_WIN)
 	// just use a wacko high number; we could also use -1 to denote infinite blinking, 
@@ -336,7 +336,7 @@ void GR_Caret::setBlink(bool bBlink)
 	gboolean can;
 	GtkSettings * settings = gtk_settings_get_default ();
 
-	g_object_get (G_OBJECT(settings), "gtk-cursor-blink", &can, NULL);
+	g_object_get (G_OBJECT(settings), "gtk-cursor-blink", &can, nullptr);
 	m_bCursorBlink = (can != FALSE);
 	UT_UNUSED(bBlink);
 #elif defined(TOOLKIT_WIN)

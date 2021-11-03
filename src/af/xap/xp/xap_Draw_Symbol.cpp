@@ -37,8 +37,8 @@ static UT_UCSChar MaxHeightChar = 0;
 
 XAP_Draw_Symbol::XAP_Draw_Symbol(GR_Graphics * gc)
 	: XAP_Preview(gc),
-	  m_areagc(NULL),
-	  m_pFont(NULL),
+	  m_areagc(nullptr),
+	  m_pFont(nullptr),
 	  m_drawWidth(0),
 	  m_drawHeight(0),
 	  m_drawareaWidth(0),
@@ -85,7 +85,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 	UT_ASSERT(MaxWidthAllowable);
 	UT_ASSERT(MaxHeightAllowable);
 
-	GR_Font* font = NULL;
+	GR_Font* font = nullptr;
 
 
 	// Estimate Pointsize
@@ -109,7 +109,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 							  "normal", "",
 							  "normal", "",
 							  temp,
-							  NULL);
+							  nullptr);
 		/* findFont does a fuzzy match.  If the font found doesn't
 		 * have the same family name that we asked for, we retrieve
 		 * the new name and we use it

@@ -55,17 +55,17 @@ XAP_Dialog * AP_Win32Dialog_FormatFrame::static_constructor(XAP_DialogFactory * 
 AP_Win32Dialog_FormatFrame::AP_Win32Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory,
 										             XAP_Dialog_Id id)
 	: AP_Dialog_FormatFrame(pDlgFactory,id),
-	m_hBitmapBottom(NULL),	
-	m_hBitmapTop(NULL), 
-	m_hBitmapRight(NULL),
-	m_hBitmapLeft(NULL),
-	m_pPreviewWidget(NULL)
+	m_hBitmapBottom(nullptr),
+	m_hBitmapTop(nullptr),
+	m_hBitmapRight(nullptr),
+	m_hBitmapLeft(nullptr),
+	m_pPreviewWidget(nullptr)
 {
 	UT_sint32 i = 0;
 	for(i=0; i < FORMAT_FRAME_NUMTHICKNESS ;i++)
-		m_dThickness[i] = UT_convertToInches(sThickness[i]);	 
-}   
-    
+		m_dThickness[i] = UT_convertToInches(sThickness[i]);
+}
+
 AP_Win32Dialog_FormatFrame::~AP_Win32Dialog_FormatFrame(void)
 {
 	if (m_pPreviewWidget) delete m_pPreviewWidget;			
@@ -275,7 +275,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*l
 				m_borderButton.setColour(cc.rgbResult);
 
 				/*Force redraw*/
-				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_BTN_BORDERCOLOR), NULL, FALSE);
+				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_BTN_BORDERCOLOR), nullptr, FALSE);
 				event_previewExposed();	
 			}
 
@@ -302,7 +302,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*l
 				m_backgButton.setColour(cc.rgbResult);
 
 				/*Force redraw*/
-				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_BTN_BACKCOLOR), NULL, FALSE);
+				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_BTN_BACKCOLOR), nullptr, FALSE);
 				event_previewExposed();	
 			}
 
@@ -425,7 +425,7 @@ void AP_Win32Dialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
 		setDialogTitle (m_WindowName);
 
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 
 	}

@@ -33,22 +33,22 @@
 IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
   : IE_Exp (pDocument), 
 	m_pDoc(pDocument),
-	root(NULL),
-	relsDir(NULL),
-	wordDir(NULL),
-	wordRelsDir(NULL),
-	wordMediaDir(NULL),
-	contentTypesStream(NULL),
-	relStream(NULL),
-	wordRelStream(NULL),
-	documentStream(NULL),
-	settingsStream(NULL),
-	stylesStream(NULL),
-	numberingStream(NULL),
-	headerStream(NULL),
-	footerStream(NULL),
-	footnoteStream(NULL),
-	endnoteStream(NULL),
+	root(nullptr),
+	relsDir(nullptr),
+	wordDir(nullptr),
+	wordRelsDir(nullptr),
+	wordMediaDir(nullptr),
+	contentTypesStream(nullptr),
+	relStream(nullptr),
+	wordRelStream(nullptr),
+	documentStream(nullptr),
+	settingsStream(nullptr),
+	stylesStream(nullptr),
+	numberingStream(nullptr),
+	headerStream(nullptr),
+	footerStream(nullptr),
+	footnoteStream(nullptr),
+	endnoteStream(nullptr),
 	isOverline(false)
 {
 }
@@ -85,7 +85,7 @@ UT_Error IE_Exp_OpenXML::_writeDocument ()
  */
 UT_Error IE_Exp_OpenXML::startDocument()
 {
-	GError *err = NULL;	
+	GError *err = nullptr;
 	UT_Error error = UT_OK;
 
 	GsfOutput* sink = getFp();
@@ -1158,8 +1158,8 @@ UT_Error IE_Exp_OpenXML::setParagraphBottomMargin(int target, const gchar* margi
  */
 UT_Error IE_Exp_OpenXML::setLineHeight(int target, const gchar* height)
 {
-	const gchar* twips = NULL;
-	const gchar* lineRule = NULL;
+	const gchar* twips = nullptr;
+	const gchar* lineRule = nullptr;
 
 	if(strstr(height, "pt+")) 
 	{
@@ -1928,7 +1928,7 @@ const gchar * IE_Exp_OpenXML::convertToPoints(const gchar* str)
 }
 
 /**
- * Converts the string str to twips, returns positive whole number or NULL if twips=0
+ * Converts the string str to twips, returns positive whole number or nullptr if twips=0
  */
 const gchar * IE_Exp_OpenXML::convertToPositiveTwips(const gchar* str)
 {
@@ -1941,25 +1941,25 @@ const gchar * IE_Exp_OpenXML::convertToPositiveTwips(const gchar* str)
 }
 
 /**
- * Converts the string str to twips, returns NULL if twips=0
+ * Converts the string str to twips, returns nullptr if twips=0
  */
 const gchar * IE_Exp_OpenXML::convertToTwips(const gchar* str)
 {
 	double pt = UT_convertToPoints(str) * 20;
 	if(pt < 1.0 && pt > -1.0)
-		return NULL;
+		return nullptr;
 	return UT_convertToDimensionlessString(pt, ".0");
 }
 
 /**
- * Converts the string str to lines, returns NULL if lines=0
+ * Converts the string str to lines, returns nullptr if lines=0
  */
 const gchar * IE_Exp_OpenXML::convertToLines(const gchar* str)
 {
 	//1 point == 20 twips; 1 line == 12pts --> 1 line == 20*12=240twips
 	double pt = UT_convertDimensionless(str) * 240;
 	if(pt < 1.0 && pt > -1.0)
-		return NULL;
+		return nullptr;
 	return UT_convertToDimensionlessString(pt, ".0");
 }
 
@@ -1990,7 +1990,7 @@ const gchar * IE_Exp_OpenXML::computeFontSize(const gchar* str)
  */
 void IE_Exp_OpenXML::_cleanup ()
 {
-	m_pDoc = NULL;
+	m_pDoc = nullptr;
 
 	if(footnoteStream && !gsf_output_is_closed(footnoteStream))
 		gsf_output_close(footnoteStream);

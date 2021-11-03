@@ -53,7 +53,7 @@ XAP_Dialog * XAP_CocoaDialog_PluginManager::static_constructor(XAP_DialogFactory
 XAP_CocoaDialog_PluginManager::XAP_CocoaDialog_PluginManager(XAP_DialogFactory * pDlgFactory,
 															 XAP_Dialog_Id dlgid)
 	: XAP_Dialog_PluginManager(pDlgFactory, dlgid),
-	  m_pFrame(NULL)
+	  m_pFrame(nullptr)
 {
 	// 
 }

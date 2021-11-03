@@ -113,11 +113,11 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, L
 		EnableWindow(h, TRUE);
 
 		//move the edit control and its label higher up
-		SetWindowPos(h,0,30,80,0,0,SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
+		SetWindowPos(h, nullptr, 30, 80, 0, 0, SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
 		SetFocus(h);
 
 		h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_LABEL2);
-		SetWindowPos(h,0,30,60,0,0,SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
+		SetWindowPos(h, nullptr, 30, 60, 0, 0, SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
 
 
 	}

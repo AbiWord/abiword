@@ -45,7 +45,7 @@ XAP_FrameImpl::XAP_FrameImpl(XAP_Frame *pFrame) :
 	m_pKeyboard(nullptr),
 	m_iFrameMode(XAP_NormalFrame),
 	m_ViewAutoUpdaterID(0),
-	m_ViewAutoUpdater(NULL),
+	m_ViewAutoUpdater(nullptr),
 	m_szToolbarLabelSetName(nullptr),
 	m_szToolbarAppearance(nullptr),
 	m_szMenuLayoutName(nullptr),
@@ -107,7 +107,7 @@ bool XAP_FrameImpl::_updateTitle()
 	UT_return_val_if_fail(pSS, false);
 
 	std::string s;
-	UT_GOFilePermissions *perm = NULL;
+	UT_GOFilePermissions *perm = nullptr;
 	const std::string & szURI = m_pFrame->m_pDoc->getFilename();
 
 	if (!szURI.empty())

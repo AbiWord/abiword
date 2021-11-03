@@ -102,7 +102,7 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 	// blow away any redo, since it is now invalid.
 	xxx_UT_DEBUGMSG(("Add CR Pos %d Type %d indexAP %x \n",pcr->getPosition(),pcr->getType(),pcr->getIndexAP()));
 	xxx_UT_DEBUGMSG(("Before invalidate Undo pos %d savepos %d iAdjust %d \n",m_undoPosition,m_savePosition,m_iAdjustOffset));
-	if (pcr && pcr->getDocument() == NULL)
+	if (pcr && pcr->getDocument() == nullptr)
 	{
 	    pcr->setDocument(getDoc());
 	}
@@ -173,13 +173,13 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 {
 	if (m_bOverlap)
 	{
-		*ppcr = NULL;
+		*ppcr = nullptr;
 		return false;
 	}
 	UT_sint32 iGLOB = 0;
 	bool bGotOne = false;
-	PX_ChangeRecord * pcr = NULL;
-	PX_ChangeRecord * pcrFirst = NULL;
+	PX_ChangeRecord * pcr = nullptr;
+	PX_ChangeRecord * pcrFirst = nullptr;
 	bool bCorrect = false;
 	UT_sint32 iAdjust = m_iAdjustOffset;
 	UT_sint32 iLoop = 0;
@@ -255,7 +255,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 						lowWork++;
 					if (doesOverlap(pcrTmp,lowWork,highWork))
 					{
-						*ppcr = NULL;
+						*ppcr = nullptr;
 						//
 						// OK now we have to invalidate the undo stack
 						// to just before the first pcr we pulled off.
@@ -311,7 +311,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 					UT_DEBUGMSG(("CR Type %d adj pos %d Overlaps found with CR pos %d \n",pcrOrig->getType(),pcrOrig->getPosition()+iAdj,pcr->getPosition()));
 					UT_DEBUGMSG((" Orig Adj low %d high %d \n",low,high));
 
-					*ppcr = NULL;
+					*ppcr = nullptr;
 					m_iMinUndo = m_undoPosition-m_iAdjustOffset-1;
 					return false;
 			    }
@@ -434,7 +434,7 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 					m_bOverlap = doesOverlap(pcr,low,high);
 			    if (m_bOverlap)
 			    {
-					*ppcr = NULL;
+					*ppcr = nullptr;
 					return false;
 			    }
 			}
@@ -455,7 +455,7 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	    return true;
 	}
 
-	*ppcr = NULL;
+	*ppcr = nullptr;
 	return false;
 }
 

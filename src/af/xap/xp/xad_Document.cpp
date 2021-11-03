@@ -58,7 +58,7 @@ AD_Document::AD_Document() :
 	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
     m_bPieceTableChanging(false),
 	m_lastSavedTime(0),
-	m_lastOpenedTime(time(NULL)),
+	m_lastOpenedTime(time(nullptr)),
     m_iEditTime(0),
     m_iVersion(0),
 	m_bHistoryWasSaved(false),
@@ -68,9 +68,9 @@ AD_Document::AD_Document() :
 	m_iShowRevisionID(0), // show all
 	m_bAutoRevisioning(false),
     m_bForcedDirty(false),
-	m_pUUID(NULL),
-	m_pOrigUUID(NULL),
-	m_pMyUUID(NULL),
+	m_pUUID(nullptr),
+	m_pOrigUUID(nullptr),
+	m_pMyUUID(nullptr),
 	m_bDoNotAdjustHistory(false),
 	m_bAfterFirstSave(false)
 {	// TODO: clear the ignore list
@@ -130,7 +130,7 @@ void AD_Document::setPrintFilename(const std::string & sFilename)
 
 bool AD_Document::isOrigUUID(void) const
 {
-  if((m_pMyUUID== NULL) || (m_pOrigUUID == NULL))
+  if((m_pMyUUID== nullptr) || (m_pOrigUUID == nullptr))
 	  return false;
   std::string sDoc = m_pMyUUID->toString().unwrap_or("");
   std::string sOrig = m_pOrigUUID->toString().unwrap_or("");
@@ -155,11 +155,11 @@ UT_UUIDPtr AD_Document::getNewUUID() const
 	// part of the doc uuid. This will ensure that all uuid's in the
 	// present document are unique even though we no longer use MAC
 	// addrress in them
-	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(), NULL);
-	UT_return_val_if_fail(m_pUUID, NULL);
+	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(), nullptr);
+	UT_return_val_if_fail(m_pUUID, nullptr);
 	UT_UUID * pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID(*m_pUUID);
 
-	UT_return_val_if_fail(pUUID, NULL);
+	UT_return_val_if_fail(pUUID, nullptr);
 	pUUID->resetTime();
 	UT_ASSERT(pUUID->isValid());
 
@@ -226,7 +226,7 @@ const std::string & AD_Document::getFilename(void) const
 
 void AD_Document::setEncodingName(const char *szEncodingName)
 {
-	if (szEncodingName == NULL)
+	if (szEncodingName == nullptr)
 		szEncodingName = "";
 
 	m_szEncodingName = szEncodingName;
@@ -477,7 +477,7 @@ const AD_VersionData * AD_Document::findHistoryRecord(UT_uint32 iVersion) const
 			return &v;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -550,7 +550,7 @@ void AD_Document::setMyUUID(const char * s)
 */
 const char * AD_Document::getDocUUIDString() const
 {
-	UT_return_val_if_fail(m_pUUID, NULL);
+	UT_return_val_if_fail(m_pUUID, nullptr);
 	static std::string s;
 	s = m_pUUID->toString().unwrap_or("");
 	return s.c_str();
@@ -563,7 +563,7 @@ const char * AD_Document::getDocUUIDString() const
 */
 const char * AD_Document::getOrigDocUUIDString() const
 {
-	UT_return_val_if_fail(m_pOrigUUID, NULL);
+	UT_return_val_if_fail(m_pOrigUUID, nullptr);
 	return m_sOrigUUIDString.c_str();
 }
 
@@ -630,7 +630,7 @@ UT_uint32 AD_Document::getHighestRevisionId() const
 const AD_Revision * AD_Document::getHighestRevision() const
 {
 	UT_uint32 iId = 0;
-	const AD_Revision * r = NULL;
+	const AD_Revision * r = nullptr;
 
 	for (UT_uint32 i = 0; i < m_vRevisions.size(); i++)
 	{
@@ -672,7 +672,7 @@ bool AD_Document::addRevision(UT_uint32 iId,
 			return false;
 	}
 
-	UT_UCS4Char * pD = NULL;
+	UT_UCS4Char * pD = nullptr;
 	
 	if(pDesc)
 	{
@@ -769,7 +769,7 @@ void AD_Document::setAutoRevisioning(bool b)
 		// this will allow us to match autorevision id to a document
 		// version number. However, do not increase the version number,
 		// etc., if == 0 (we have a new, unsaved document)
-		time_t t = time(NULL);
+		time_t t = time(nullptr);
 		
 		if(m_bAfterFirstSave)
 		{
@@ -924,7 +924,7 @@ void AD_Document::_adjustHistoryOnSave()
 		// if this is the first save, we will record the time the doc
 		// was opened as the start time, otherwise, we will use the
 		// current time
-		time_t t = !m_bHistoryWasSaved ? m_lastOpenedTime : time(NULL);
+		time_t t = !m_bHistoryWasSaved ? m_lastOpenedTime : time(nullptr);
 		
 		AD_VersionData v(m_iVersion,t,m_bAutoRevisioning,getTopXID());
 		m_lastSavedTime = v.getTime(); // store the time of this save
@@ -954,7 +954,7 @@ void AD_Document::_adjustHistoryOnSave()
 
 		UT_uint32 iId = getRevisionId()+1;
 		setRevisionId(iId);
-		addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(NULL), m_iVersion);
+		addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(nullptr), m_iVersion);
 	}
 }
 
@@ -1023,7 +1023,7 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 		// we succeeded in restoring the document, so now clear the
 		// history record
 		UT_uint32 iCount = getHistoryCount();
-		const AD_VersionData * pVLast = NULL;
+		const AD_VersionData * pVLast = nullptr;
 		time_t iEditTime = 0;
 
 		for(UT_uint32 j = 0; j < iCount; ++j)
@@ -1052,7 +1052,7 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 		// set the document version correctly
 		setDocVersion(iVersion);
 		setLastSavedTime(pVLast->getTime());
-		setLastOpenedTime(time(NULL));
+		setLastOpenedTime(time(nullptr));
 
 		UT_ASSERT(m_iEditTime >= iEditTime);
 		m_iEditTime -= iEditTime;
@@ -1267,7 +1267,7 @@ bool AD_Document::purgeAllRevisions(AV_View * pView)
 //
 // constructor for new entries
 AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev, UT_uint32 xid)
-	:m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(xid)
+	:m_iId(v),m_pUUID(nullptr),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(xid)
 {
 	// we do not create uuid's based on the main doc uuid as
 	// AD_Document::getNewUUID() does; this is because we need to be
@@ -1284,7 +1284,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev, UT_uint3
 
 // constructors for importers
 AD_VersionData::AD_VersionData(UT_uint32 v, const std::string &uuid, time_t start, bool autorev, UT_uint32 iTopXID):
-	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(iTopXID)
+	m_iId(v),m_pUUID(nullptr),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(iTopXID)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
@@ -1294,7 +1294,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, const std::string &uuid, time_t star
 }
 
 AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool autorev, UT_uint32 iTopXID):
-	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(iTopXID)
+	m_iId(v),m_pUUID(nullptr),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(iTopXID)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
@@ -1305,7 +1305,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool
 
 // copy constructor
 AD_VersionData::AD_VersionData(const AD_VersionData & v):
-	m_iId(v.m_iId), m_pUUID(NULL), m_bAutoRevision(v.m_bAutoRevision), m_iTopXID(v.m_iTopXID)
+	m_iId(v.m_iId), m_pUUID(nullptr), m_bAutoRevision(v.m_bAutoRevision), m_iTopXID(v.m_iTopXID)
 {
 	UT_return_if_fail(v.m_pUUID);
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();

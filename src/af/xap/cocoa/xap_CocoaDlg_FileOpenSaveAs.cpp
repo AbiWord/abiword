@@ -130,8 +130,8 @@ XAP_CocoaDialog_FileOpenSaveAs::XAP_CocoaDialog_FileOpenSaveAs(XAP_DialogFactory
     , m_accessoryViewsController(nil)
     , m_panel(nil)
     , m_fileTypes(nil)
-    , m_szFileTypeDescription(0)
-    , m_szFileTypeCount(0)
+    , m_szFileTypeDescription(nullptr)
+    , m_fileTypeCount(0)
 {
     //
 }
@@ -160,7 +160,7 @@ NSSavePanel* XAP_CocoaDialog_FileOpenSaveAs::_makeOpenPanel()
     [openPanel setCanSelectHiddenExtension:NO];
     [openPanel setExtensionHidden:NO];
 
-    for (UT_uint32 i = 0; i < m_szFileTypeCount; i++) {
+    for (UT_uint32 i = 0; i < m_fileTypeCount; i++) {
         addSuffixesToFileTypes(m_fileTypes, m_szSuffixes[i]);
     }
     if ([m_fileTypes count]) {
@@ -198,7 +198,7 @@ NSSavePanel* XAP_CocoaDialog_FileOpenSaveAs::_makeSavePanel(const std::string& f
 
     UT_sint32 defaultFileType = m_nDefaultFileType;
 
-    for (UT_uint32 i = 0; i < m_szFileTypeCount; i++) {
+    for (UT_uint32 i = 0; i < m_fileTypeCount; i++) {
         NSString* title = [NSString stringWithUTF8String:m_szDescriptions[i]];
 
         int type = m_nTypeList[i];
@@ -317,9 +317,9 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame* /*pFrame*/)
     m_panel = nil;
 
     // TODO WTF is this not in XP land?
-    m_szFileTypeCount = g_strv_length((gchar**)m_szDescriptions);
+    m_fileTypeCount = g_strv_length((gchar**)m_szDescriptions);
 
-    UT_ASSERT(g_strv_length((gchar**)m_szSuffixes) == m_szFileTypeCount);
+    UT_ASSERT(g_strv_length((gchar**)m_szSuffixes) == m_fileTypeCount);
 
     if (bOpenPanel) {
         m_panel = _makeOpenPanel();
@@ -496,12 +496,12 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame* /*pFrame*/)
 void XAP_CocoaDialog_FileOpenSaveAs::_setSelectedFileType(UT_sint32 type)
 {
     m_nFileType = type;
-    m_szFileTypeDescription = 0;
+    m_szFileTypeDescription = nullptr;
 
     [m_fileTypes removeAllObjects];
 
     if (m_nFileType != XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO) {
-        for (UT_uint32 i = 0; i < m_szFileTypeCount; i++) {
+        for (UT_uint32 i = 0; i < m_fileTypeCount; i++) {
             if (m_nFileType == m_nTypeList[i]) {
                 m_szFileTypeDescription = m_szDescriptions[i];
 

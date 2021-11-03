@@ -110,7 +110,7 @@ const char * AP_BindingSet::getNextInCycle(const char * szCurrent)
 		}
 
 	if (kMatch == -1)
-		return NULL;
+		return nullptr;
 
 	for (k=kMatch+1; k<m_vecBindings.getItemCount(); k++)
 	  if (m_vecBindings.getNthItem(k)->m_bCanCycle)
@@ -119,7 +119,7 @@ const char * AP_BindingSet::getNextInCycle(const char * szCurrent)
 		if (m_vecBindings.getNthItem(k)->m_bCanCycle)
 			return m_vecBindings.getNthItem(k)->m_name;
 
-	return NULL;
+	return nullptr;
 }
 
 /****************************************************************/
@@ -140,32 +140,32 @@ AP_BindingSet::~AP_BindingSet(void)
 void AP_BindingSet::loadBuiltin(void)
 {
 
-  m_vecBindings.addItem(new c_lb(true,	"default",			ap_LoadBindings_Default,			NULL)); // stock AbiWord bindings
+  m_vecBindings.addItem(new c_lb(true,	"default",			ap_LoadBindings_Default,			nullptr)); // stock AbiWord bindings
 #ifdef ENABLE_EMACS_KEYBINDING
-  m_vecBindings.addItem(new c_lb(true,  "emacs",			ap_LoadBindings_Emacs, 				NULL)); // emacs key bindings
-  m_vecBindings.addItem(new c_lb(false, "emacsctrlx",		ap_LoadBindings_EmacsCtrlX,			NULL)); // emacs ctrl-x key bindings
+  m_vecBindings.addItem(new c_lb(true,  "emacs",			ap_LoadBindings_Emacs, 				nullptr)); // emacs key bindings
+  m_vecBindings.addItem(new c_lb(false, "emacsctrlx",		ap_LoadBindings_EmacsCtrlX,			nullptr)); // emacs ctrl-x key bindings
 #endif
 #ifdef ENABLE_VI_KEYBINDING
-  m_vecBindings.addItem(new c_lb(true,  "viEdit",			ap_LoadBindings_viEdit,				NULL)); // vi Edit-Mode bindings
-  m_vecBindings.addItem(new c_lb(false, "viEdit_colon",		ap_LoadBindings_viEdit_colon,		NULL)); // vi Edit-Mode :-prefix key bindings
-  m_vecBindings.addItem(new c_lb(false, "viEdit_c",			ap_LoadBindings_viEdit_c,			NULL)); // vi Edit-Mode c-prefix key bindings
-  m_vecBindings.addItem(new c_lb(false, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL)); // vi Edit-Mode d-prefix key bindings
-  m_vecBindings.addItem(new c_lb(false, "viEdit_y",			ap_LoadBindings_viEdit_y,			NULL)); // vi Edit-Mode y-prefix key bindings
-  m_vecBindings.addItem(new c_lb(false, "viEdit_r",			ap_LoadBindings_viEdit_r,			NULL)); // vi Edit-Mode r-prefix key bindings
-  m_vecBindings.addItem(new c_lb(false, "viInput",			ap_LoadBindings_viInput,			NULL)); // vi Input-Mode bindings
+  m_vecBindings.addItem(new c_lb(true,  "viEdit",			ap_LoadBindings_viEdit,				nullptr)); // vi Edit-Mode bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_colon",		ap_LoadBindings_viEdit_colon,		nullptr)); // vi Edit-Mode :-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_c",			ap_LoadBindings_viEdit_c,			nullptr)); // vi Edit-Mode c-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_d",			ap_LoadBindings_viEdit_d,			nullptr)); // vi Edit-Mode d-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_y",			ap_LoadBindings_viEdit_y,			nullptr)); // vi Edit-Mode y-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_r",			ap_LoadBindings_viEdit_r,			nullptr)); // vi Edit-Mode r-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viInput",			ap_LoadBindings_viInput,			nullptr)); // vi Input-Mode bindings
 #endif  
-  m_vecBindings.addItem(new c_lb(false, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL)); // subordinate maps for 'dead'
-  m_vecBindings.addItem(new c_lb(false, "deadacute",		ap_LoadBindings_DeadAcute,			NULL)); // key prefixes.
-  m_vecBindings.addItem(new c_lb(false, "deadbreve",		ap_LoadBindings_DeadBreve,			NULL));
-  m_vecBindings.addItem(new c_lb(false, "deadcaron",		ap_LoadBindings_DeadCaron,			NULL));
-  m_vecBindings.addItem(new c_lb(false, "deadcedilla",		ap_LoadBindings_DeadCedilla,		NULL));
-  m_vecBindings.addItem(new c_lb(false, "deadcircumflex",	ap_LoadBindings_DeadCircumflex,		NULL));
-  m_vecBindings.addItem(new c_lb(false, "deaddiaeresis",	ap_LoadBindings_DeadDiaeresis,		NULL));
-  m_vecBindings.addItem(new c_lb(false, "deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	NULL));
-  m_vecBindings.addItem(new c_lb(false, "deadgrave",		ap_LoadBindings_DeadGrave,			NULL));
-  m_vecBindings.addItem(new c_lb(false, "deadmacron",		ap_LoadBindings_DeadMacron,			NULL));
-  m_vecBindings.addItem(new c_lb(false, "deadogonek",		ap_LoadBindings_DeadOgonek,			NULL));
-  m_vecBindings.addItem(new c_lb(false, "deadtilde",		ap_LoadBindings_DeadTilde,			NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		nullptr)); // subordinate maps for 'dead'
+  m_vecBindings.addItem(new c_lb(false, "deadacute",		ap_LoadBindings_DeadAcute,			nullptr)); // key prefixes.
+  m_vecBindings.addItem(new c_lb(false, "deadbreve",		ap_LoadBindings_DeadBreve,			nullptr));
+  m_vecBindings.addItem(new c_lb(false, "deadcaron",		ap_LoadBindings_DeadCaron,			nullptr));
+  m_vecBindings.addItem(new c_lb(false, "deadcedilla",		ap_LoadBindings_DeadCedilla,		nullptr));
+  m_vecBindings.addItem(new c_lb(false, "deadcircumflex",	ap_LoadBindings_DeadCircumflex,		nullptr));
+  m_vecBindings.addItem(new c_lb(false, "deaddiaeresis",	ap_LoadBindings_DeadDiaeresis,		nullptr));
+  m_vecBindings.addItem(new c_lb(false, "deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	nullptr));
+  m_vecBindings.addItem(new c_lb(false, "deadgrave",		ap_LoadBindings_DeadGrave,			nullptr));
+  m_vecBindings.addItem(new c_lb(false, "deadmacron",		ap_LoadBindings_DeadMacron,			nullptr));
+  m_vecBindings.addItem(new c_lb(false, "deadogonek",		ap_LoadBindings_DeadOgonek,			nullptr));
+  m_vecBindings.addItem(new c_lb(false, "deadtilde",		ap_LoadBindings_DeadTilde,			nullptr));
 }
 
 EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
@@ -188,19 +188,19 @@ EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
 			{
 				m_vecBindings.getNthItem(k)->m_pebm = new EV_EditBindingMap(m_pemc);
 				if (!m_vecBindings.getNthItem(k)->m_pebm)
-					return NULL;
+					return nullptr;
 				(m_vecBindings.getNthItem(k)->m_fn)(this,m_vecBindings.getNthItem(k)->m_pebm);
 			}
 			return m_vecBindings.getNthItem(k)->m_pebm;
 		}
 	
-	return NULL;
+	return nullptr;
 }
 
 
 EV_EditBindingMap * AP_BindingSet::createMap(const char * szName)
 {
-  c_lb * pc_lb = new c_lb(false,szName,NULL,NULL);
+  c_lb * pc_lb = new c_lb(false,szName,nullptr,nullptr);
   m_vecBindings.addItem(pc_lb);
   pc_lb->m_pebm = new EV_EditBindingMap(m_pemc);
   return pc_lb->m_pebm;

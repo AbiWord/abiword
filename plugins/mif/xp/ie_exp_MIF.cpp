@@ -80,7 +80,7 @@ IE_Exp_MIF::IE_Exp_MIF(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
 	m_error = 0;
-	m_pListener = NULL;
+	m_pListener = nullptr;
 }
 
 IE_Exp_MIF::~IE_Exp_MIF()

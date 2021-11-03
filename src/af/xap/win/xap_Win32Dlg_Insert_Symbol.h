@@ -46,7 +46,7 @@ public:
 		{
 		}
 
-	void	draw(const UT_Rect *clip=NULL)
+	void	draw(const UT_Rect *clip=nullptr)
 		{
 		UT_UNUSED(clip);
 		m_pSymbolDraw->drawarea(m_CurrentSymbol, m_PreviousSymbol);

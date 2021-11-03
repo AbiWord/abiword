@@ -325,7 +325,7 @@ void UT_iconv_reset(UT_iconv_t cd)
     // this insane code is needed by iconv brokenness.  see
     // http://www.abisource.com/mailinglists/abiword-dev/01/April/0135.html
     if (XAP_EncodingManager::get_instance()->cjk_locale())
-		UT_iconv(cd, NULL, NULL, NULL, NULL);
+		UT_iconv(cd, nullptr, nullptr, nullptr, nullptr);
 }
 
 /*!
@@ -335,8 +335,8 @@ void UT_iconv_reset(UT_iconv_t cd)
  * \param len Length of the input string to convert.
  * \param from_codeset The "codeset" of the string pointed to by 'str'.
  * \param to_codeset The "codeset" we want for the output.
- * \param bytes_read optional, supply NULL if you don't want this.
- * \param bytes_written optional, supply NULL if you don't want this.
+ * \param bytes_read optional, supply nullptr if you don't want this.
+ * \param bytes_written optional, supply nullptr if you don't want this.
  *
  * \return Returns a freshly allocated output string, which is terminated by
  * a zero byte. Note that if the output codeset's terminator is not
@@ -355,7 +355,7 @@ char * UT_convert(const char*	str,
 		  UT_uint32*	bytes_written_arg)
 {
 	gsize _bytes_read = 0, _bytes_written = 0;
-	char* result = g_convert(str, len, to_codeset, from_codeset, &_bytes_read, &_bytes_written, NULL);
+	char* result = g_convert(str, len, to_codeset, from_codeset, &_bytes_read, &_bytes_written, nullptr);
 
 	if (bytes_read_arg) *bytes_read_arg = _bytes_read;
 	if (bytes_written_arg) *bytes_written_arg = _bytes_written;
@@ -374,7 +374,7 @@ char * UT_convert_cd(const char *str,
 		     UT_uint32 *bytes_written_arg)
 {
 	gsize _bytes_read = 0, _bytes_written = 0;
-	char* result = g_convert_with_iconv(str, len, (GIConv)cd, &_bytes_read, &_bytes_written, NULL);
+	char* result = g_convert_with_iconv(str, len, (GIConv)cd, &_bytes_read, &_bytes_written, nullptr);
 
 	if (bytes_read_arg) *bytes_read_arg = _bytes_read;
 	if (bytes_written_arg) *bytes_written_arg = _bytes_written;

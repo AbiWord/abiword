@@ -266,7 +266,7 @@ bool IE_Imp_RTF::InsertImage (const FG_ConstGraphicPtr& pFG, const char * image_
 		}
 		if (!getDoc()->createDataItem(image_name, false,
 									  pFG->getBuffer(), pFG->getMimeType(), 
-									  NULL))
+									  nullptr))
 		{
 			// taken care of by createDataItem
 			//FREEP(mimetype);
@@ -298,7 +298,7 @@ bool IE_Imp_RTF::InsertImage (const FG_ConstGraphicPtr& pFG, const char * image_
 		for (;;)
 		{
 			szName = UT_std_string_sprintf("%s_%d", image_name, ndx);
-			if (!getDoc()->getDataItemDataByName(szName.c_str(), NULL, NULL, NULL))
+			if (!getDoc()->getDataItemDataByName(szName.c_str(), nullptr, nullptr, nullptr))
 			{
 				break;
 			}
@@ -317,7 +317,7 @@ bool IE_Imp_RTF::InsertImage (const FG_ConstGraphicPtr& pFG, const char * image_
 		bool bOK = false;
 		bOK = getDoc()->createDataItem(szName.c_str(), false, 
 									   pFG->getBuffer(), 
-									   pFG->getMimeType(), NULL);
+									   pFG->getMimeType(), nullptr);
 		UT_return_val_if_fail(bOK, false);
 		/*
 		  Insert the object into the document.
@@ -723,20 +723,20 @@ public:
 
 
 	IE_Imp_ShpPropParser()
-		: m_propPair(NULL), 
+		: m_propPair(nullptr),
 		  m_last_grp(0),
 		  m_last_kwID(RTF_UNKNOWN_KEYWORD),
-		  m_name(NULL),
-		  m_value(NULL), 
-		  m_lastData(NULL),
+		  m_name(nullptr),
+		  m_value(nullptr),
+		  m_lastData(nullptr),
 		  m_found_image(false)
 		{}
 	~IE_Imp_ShpPropParser()
-		{ 
+		{
 
-			DELETEP(m_propPair); 
-			DELETEP(m_name); 
-			DELETEP(m_value); 
+			DELETEP(m_propPair);
+			DELETEP(m_name);
+			DELETEP(m_value);
 			DELETEP(m_lastData);
 		}
 	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
@@ -806,13 +806,13 @@ bool IE_Imp_ShpPropParser::tokenCloseBrace(IE_Imp_RTF * ie)
 			UT_ASSERT(m_lastData);
 			DELETEP(m_name);
 			m_name = m_lastData;
-			m_lastData = NULL;
+			m_lastData = nullptr;
 			break;
 		case RTF_KW_sv:
 			UT_ASSERT(m_lastData || m_found_image);
 			DELETEP(m_value);
 			m_value = m_lastData;
-			m_lastData = NULL;
+			m_lastData = nullptr;
 			break;
 		default:
 			break;
@@ -935,7 +935,7 @@ private:
 
 IE_Imp_ShpGroupParser::IE_Imp_ShpGroupParser(IE_Imp_RTF * ie) 
 							: m_ieRTF(ie),
-							  m_lastData(NULL)
+							  m_lastData(nullptr)
 {
 	m_currentFrame.clear();
 	m_iOrigTableDepth = m_ieRTF->getPasteDepth();
@@ -944,7 +944,7 @@ IE_Imp_ShpGroupParser::IE_Imp_ShpGroupParser(IE_Imp_RTF * ie)
 
 IE_Imp_ShpGroupParser::~IE_Imp_ShpGroupParser()
 {
-	if(m_ieRTF->getTable() != NULL)
+	if(m_ieRTF->getTable() != nullptr)
 	{
 		m_ieRTF->CloseTable(true);
 	}
@@ -1051,7 +1051,7 @@ bool IE_Imp_ShpGroupParser::tokenCloseBrace(IE_Imp_RTF * ie)
 	case RTF_KW_abiframeprops:
 		UT_ASSERT(m_lastData);
 		m_currentFrame.m_abiProps = *m_lastData;
-		m_lastData = NULL;
+		m_lastData = nullptr;
 		m_last_kwID = RTF_UNKNOWN_KEYWORD;
 		break;
 	default:
@@ -1088,7 +1088,7 @@ void IE_Imp_RTF::HandleShape(void)
 	delete parser;
 	
 	// restore state
-	pState = NULL;
+	pState = nullptr;
 	m_stateStack.pop((void**)(&pState));
 	m_currentRTFState = *pState;
 	delete pState;

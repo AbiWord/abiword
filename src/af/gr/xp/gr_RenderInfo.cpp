@@ -42,18 +42,18 @@ void GR_Itemization::clear()
 #define GRIXP_STATIC_BUFFER_SIZE 256
 
 UT_sint32       GR_XPRenderInfo::s_iClassInstanceCount = 0;
-UT_UCS4Char *   GR_XPRenderInfo::s_pCharBuff           = NULL;
-UT_sint32 *     GR_XPRenderInfo::s_pWidthBuff          = NULL;
+UT_UCS4Char *   GR_XPRenderInfo::s_pCharBuff           = nullptr;
+UT_sint32 *     GR_XPRenderInfo::s_pWidthBuff          = nullptr;
 UT_sint32       GR_XPRenderInfo::s_iBuffSize           = 0;
-UT_sint32 *     GR_XPRenderInfo::s_pAdvances           = NULL;
-GR_RenderInfo * GR_XPRenderInfo::s_pOwner              = NULL;
+UT_sint32 *     GR_XPRenderInfo::s_pAdvances           = nullptr;
+GR_RenderInfo * GR_XPRenderInfo::s_pOwner              = nullptr;
 
 GR_XPRenderInfo::GR_XPRenderInfo(GR_ScriptType type)
 		:GR_RenderInfo(type),
-		 m_pChars(NULL),
-		 m_pWidths(NULL),
+		 m_pChars(nullptr),
+		 m_pWidths(nullptr),
 		 m_iBufferSize(0),
-		 m_pSegmentOffset(NULL),
+		 m_pSegmentOffset(nullptr),
 		 m_iSegmentCount(0),
 		 m_iSpaceWidthBeforeJustification(0xfffffff), // note one less 'f'
 		 m_iTotalLength(0)
@@ -69,9 +69,9 @@ GR_XPRenderInfo::GR_XPRenderInfo(UT_UCS4Char *pChar,
 				  GR_ScriptType type)
 		:GR_RenderInfo(type),
 		 m_pChars(pChar),
-		 m_pWidths(NULL),
+		 m_pWidths(nullptr),
 		 m_iBufferSize(iBufferSize),
-		 m_pSegmentOffset(NULL),
+		 m_pSegmentOffset(nullptr),
 		 m_iSegmentCount(0),
 		 m_iSpaceWidthBeforeJustification(0xfffffff) // not one less 'f'
 {
@@ -106,17 +106,17 @@ GR_XPRenderInfo::~GR_XPRenderInfo()
 	--s_iClassInstanceCount;
 	if(!s_iClassInstanceCount)
 	{
-		delete [] s_pCharBuff;    s_pCharBuff = NULL;
-		delete [] s_pWidthBuff;   s_pWidthBuff = NULL;
-		delete [] s_pAdvances;    s_pAdvances = NULL;
+		delete [] s_pCharBuff;    s_pCharBuff = nullptr;
+		delete [] s_pWidthBuff;   s_pWidthBuff = nullptr;
+		delete [] s_pAdvances;    s_pAdvances = nullptr;
 
-		s_pOwner = NULL;
+		s_pOwner = nullptr;
 	}
 	xxx_UT_DEBUGMSG(("Deleting GR_XPRenderInfo %x \n",this));
     delete [] m_pChars;
 	delete [] m_pWidths;
-	m_pChars = NULL;
-	m_pWidths = NULL;
+	m_pChars = nullptr;
+	m_pWidths = nullptr;
 }
 
 /*!
@@ -202,7 +202,7 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 
 	// mark static buffers dirty if needed
 	if(s_pOwner == this)
-		s_pOwner = NULL;
+		s_pOwner = nullptr;
 
 	m_bLastOnLine = RI.m_bLastOnLine;
 	m_iTotalLength = m_iTotalLength + RI.m_iTotalLength;
@@ -398,7 +398,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool /*bReverse*/)
 
 	// mark static buffers dirty if needed
 	if(s_pOwner == this)
-		s_pOwner = NULL;
+		s_pOwner = nullptr;
 	
 	return true;
 }

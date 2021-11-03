@@ -21,9 +21,7 @@
  * 02110-1301 USA.
  */
 
-
-#ifndef PD_DOCUMENT_H
-#define PD_DOCUMENT_H
+#pragma once
 
 #include <stdio.h>
 #include <string>
@@ -238,18 +236,18 @@ public:
 
 	virtual AD_DOCUMENT_TYPE getType() const override {return ADDOCUMENT_ABIWORD;}
 
-	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * impProps = NULL) override;
+	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * impProps = nullptr) override;
 	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true,
-									   const char * impProps = NULL) override;
-	UT_Error		readFromFile(GsfInput *input, int ieft, const char * impProps = NULL);
+									   const char * impProps = nullptr) override;
+	UT_Error		readFromFile(GsfInput *input, int ieft, const char * impProps = nullptr);
 	UT_Error		importFile(GsfInput *input, int ieft, bool markClean = false, bool bImportStylesFirst = true,
-							   const char * impProps = NULL);
+							   const char * impProps = nullptr);
 	virtual UT_Error		importStyles(const char * szFilename, int ieft, bool bDocProps = false);
 	AP_StatusBar *          getStatusBar(void);
 	void                    updateStatus(void);
 	virtual UT_Error		newDocument(void) override;
 
-	UT_Error  		saveAs(GsfOutput * output, int ieft, bool cpy = false, const char * expProps = NULL);
+	UT_Error  		saveAs(GsfOutput * output, int ieft, bool cpy = false, const char * expProps = nullptr);
 
 
 	UT_Error                createRawDocument(void);
@@ -319,11 +317,11 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
 									   UT_uint32 length,
-									   PP_AttrProp *p_AttrProp = NULL,
-									   UT_uint32 * insertedSpanLength = NULL);
+									   PP_AttrProp *p_AttrProp = nullptr,
+									   UT_uint32 * insertedSpanLength = nullptr);
 	bool					insertSpan(PT_DocPosition dpos,
 									   const std::string& s,
-									   PP_AttrProp *p_AttrProp = NULL);
+									   PP_AttrProp *p_AttrProp = nullptr);
 
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
@@ -355,7 +353,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 										PTStruxType pts,
 										const PP_PropertyVector & attributes,
 										const PP_PropertyVector & properties,
-										pf_Frag_Strux ** ppfs_ret = NULL);
+										pf_Frag_Strux ** ppfs_ret = nullptr);
 
 	void                    deleteHdrFtrStrux(pf_Frag_Strux* sdh);
 
@@ -417,7 +415,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const PP_PropertyVector & attributes);
 
 	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
-										   pf_Frag * pfStart = NULL) const;
+										   pf_Frag * pfStart = nullptr) const;
 	pf_Frag *               getLastFrag() const;
 	bool                    checkForSuspect(void);
 	bool                    repairDoc(void);
@@ -551,7 +549,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 									 UT_uint32 offset,
                                      fd_Field * &pField);
 	po_Bookmark * 			getBookmark(pf_Frag_Strux* sdh, UT_uint32 offset);
-	pf_Frag *               findBookmark(const char * pName, bool bEnd = false, pf_Frag * pfStart = NULL);
+	pf_Frag *               findBookmark(const char * pName, bool bEnd = false, pf_Frag * pfStart = nullptr);
 	bool                    hasMath(void) const;
 
 	void					setDontChangeInsPoint(void);
@@ -805,8 +803,8 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 protected:
 	virtual ~PD_Document();
 
-	virtual UT_Error		_saveAs(const char * szFilename, int ieft, const char * expProps = NULL) override;
-	virtual UT_Error   		_saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL) override;
+	virtual UT_Error		_saveAs(const char * szFilename, int ieft, const char * expProps = nullptr) override;
+	virtual UT_Error   		_saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = nullptr) override;
 	virtual UT_Error        _saveAs(GsfOutput *output, int ieft, bool cpy, const char * expProps);
 	virtual UT_Error		_save(void) override;
 
@@ -906,5 +904,3 @@ private:
 public:
 	const std::string &getUserName() const { return m_sUserName; }
 };
-
-#endif /* PD_DOCUMENT_H */

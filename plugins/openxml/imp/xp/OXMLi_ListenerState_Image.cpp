@@ -420,7 +420,7 @@ void OXMLi_ListenerState_Image::charData (OXMLi_CharDataRequest * rqst)
 			contextTag = rqst->context->at(rqst->context->size() - 2);
 		int positionH = contextMatches(contextTag, NS_WP_KEY, "positionH");
 		int positionV = contextMatches(contextTag, NS_WP_KEY, "positionV");
-		if(rqst->buffer == NULL)
+		if(rqst->buffer == nullptr)
 		{
 			UT_DEBUGMSG(("SERHAT: Unexpected situation, request with a null buffer\n"));
 			return;

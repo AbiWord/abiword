@@ -80,8 +80,8 @@ UT_Confidence_t IE_Imp_OpenDocument_Sniffer::recognizeContents (GsfInput * input
 {
     UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
 	
-	GsfInfile * zip  = gsf_infile_zip_new (input, NULL);
-	if (zip != NULL) {
+	GsfInfile * zip  = gsf_infile_zip_new (input, nullptr);
+	if (zip != nullptr) {
 		GsfInput* pInput = gsf_infile_child_by_name(zip, "mimetype");
 		
 		if (pInput) {
@@ -89,7 +89,7 @@ UT_Confidence_t IE_Imp_OpenDocument_Sniffer::recognizeContents (GsfInput * input
 			
 			gsf_off_t size = gsf_input_size (pInput);
 			if (size > 0) {
-				const char * p = (const char *)gsf_input_read(pInput, size, NULL);
+				const char * p = (const char *)gsf_input_read(pInput, size, nullptr);
 				if(p) {
 					mimetype.assign(p, size);
 				}

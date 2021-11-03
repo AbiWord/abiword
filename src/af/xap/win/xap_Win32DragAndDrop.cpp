@@ -78,7 +78,7 @@ STDMETHODIMP_(ULONG) XAP_Win32DropTarget::Release()
 //
 STDMETHODIMP XAP_Win32DropTarget::DragEnter (LPDATAOBJECT pDataObj, DWORD /*grfKeyState*/, POINTL /*pointl*/, LPDWORD pdwEffect)
 {	
-	FORMATETC 	fmte = {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+	FORMATETC 	fmte = {CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
 	
 	m_bSupportedFormat = false;	
 
@@ -121,13 +121,13 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD /*grfKeySta
         
 	FORMATETC  	formatetc;
 	STGMEDIUM	medium;
-	char*		pData;	
+	char*		pData;
 	UT_uint32 	iStrLen;
-	IE_Imp* 	pImp = 0;
-	const char * 	szEncoding = 0;
+	IE_Imp* 	pImp = nullptr;
+	const char * 	szEncoding = nullptr;
 	int 		count = 0;
 	
-	FORMATETC fmte = {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+	FORMATETC fmte = {CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
 	
 	//
 	// Is the user dropping files?
@@ -135,7 +135,7 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD /*grfKeySta
 	if (NOERROR == pDataObj->QueryGetData(&fmte))
 	{
 		if (pDataObj && SUCCEEDED (pDataObj->GetData (&fmte, &medium)))
-			count = DragQueryFileW((HDROP)medium.hGlobal, 0xFFFFFFFF, NULL, 0);
+			count = DragQueryFileW((HDROP)medium.hGlobal, 0xFFFFFFFF, nullptr, 0);
 		
 		// We send an event Message Window to the Win32Frame since historicaly
 		// the file loading was processed there
@@ -151,43 +151,43 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD /*grfKeySta
 	// Is the user dropping RTF text?
 	//				
 	formatetc.cfFormat = m_uCF_RTF;
-	formatetc.ptd = NULL;
+	formatetc.ptd = nullptr;
 	formatetc.dwAspect  = DVASPECT_CONTENT;
 	formatetc.lindex  = -1;
 	formatetc.tymed = TYMED_HGLOBAL;
-	
-	medium.hGlobal = NULL;	
-	medium.pUnkForRelease = NULL;	
-            	
+
+	medium.hGlobal = nullptr;
+	medium.pUnkForRelease = nullptr;
+
       	// Does not support RTF
         if (!SUCCEEDED(pDataObj->GetData(&formatetc, &medium)))
 	       	return S_OK;
-        
-	pData = (char *) GlobalLock (medium.hGlobal);                             		
+
+	pData = (char *) GlobalLock (medium.hGlobal);
 	iStrLen =  strlen(pData);
-	
+
 	// Get document range
 	AP_FrameData* pFrameData = (AP_FrameData*) m_pFrame->getFrameData();
 	FL_DocLayout *pDocLy =	pFrameData->m_pDocLayout;
-	FV_View * pView =  pDocLy->getView();	
+	FV_View * pView =  pDocLy->getView();
 	PD_DocumentRange dr(pView->getDocument(),pView->getPoint(),pView->getPoint());
-			
-	// Import RTF	
-	IE_Imp::constructImporter(dr.m_pDoc, IE_Imp::fileTypeForSuffix(".rtf"), &pImp, 0);
+
+	// Import RTF
+	IE_Imp::constructImporter(dr.m_pDoc, IE_Imp::fileTypeForSuffix(".rtf"), &pImp, nullptr);
 	if (pImp)
-	{		
-		szEncoding = XAP_EncodingManager::get_instance()->getNative8BitEncodingName();		
-						
+	{
+		szEncoding = XAP_EncodingManager::get_instance()->getNative8BitEncodingName();
+
 		pImp->pasteFromBuffer(&dr, (unsigned char *)pData, iStrLen,szEncoding);
-		
-		delete pImp;		
+
+		delete pImp;
 		pView->_generalUpdate();
 	}
-	
+
 	GlobalUnlock(medium.hGlobal);
 	GlobalFree(medium.hGlobal);
-	ReleaseStgMedium(&medium);	     	
-                
+	ReleaseStgMedium(&medium);
+
         return S_OK;
 }
 

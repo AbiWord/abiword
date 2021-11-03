@@ -73,9 +73,9 @@ static gboolean destroy_event(GtkWidget * /*widget*/ ,GdkEvent */*event*/,gpoint
 static gboolean focus_out_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
       XAP_Frame *pFrame=static_cast<XAP_Frame *>(g_object_get_data(G_OBJECT(widget), "frame"));
-      if(pFrame == NULL) return FALSE;
+      if(pFrame == nullptr) return FALSE;
       AV_View * pView = pFrame->getCurrentView();
-      if(pView!= NULL)
+      if(pView!= nullptr)
       {
 	     pView->focusChange(AV_FOCUS_NONE);
       }
@@ -86,22 +86,18 @@ static gboolean focus_out_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,g
 {
       XAP_App *pApp = static_cast<XAP_App *>(g_object_get_data(G_OBJECT(widget), "pApp"));
       XAP_Frame *pFrame = pApp->getLastFocussedFrame();
-      if(pFrame ==static_cast<XAP_Frame *>(NULL)) 
-      {
-             UT_uint32 nframes =  pApp->getFrameCount();
-             if(nframes > 0 && nframes < 10)
-	     {     
-	            pFrame = pApp->getFrame(0);
-	     }
-             else
-	     {
-	            return FALSE;
-	     }
+      if(pFrame ==static_cast<XAP_Frame *>(nullptr)) {
+          UT_uint32 nframes =  pApp->getFrameCount();
+          if(nframes > 0 && nframes < 10) {
+              pFrame = pApp->getFrame(0);
+          } else {
+              return FALSE;
+          }
       }
-      if(pFrame == static_cast<XAP_Frame *>(NULL)) return FALSE;
+      if(pFrame == static_cast<XAP_Frame *>(nullptr)) return FALSE;
       AV_View * pView = pFrame->getCurrentView();
       UT_ASSERT_HARMLESS(pView);
-      if(pView!= NULL)
+      if(pView!= nullptr)
       {
 	     pView->focusChange(AV_FOCUS_NONE);
       }
@@ -113,7 +109,7 @@ static gboolean focus_in_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gp
 {
       XAP_App *pApp=static_cast<XAP_App *>(g_object_get_data(G_OBJECT(widget), "pApp"));
       XAP_Frame *pFrame= pApp->getLastFocussedFrame();
-      if(pFrame ==static_cast<XAP_Frame *>(NULL))
+      if(pFrame ==static_cast<XAP_Frame *>(nullptr))
       {
              UT_uint32 nframes =  pApp->getFrameCount();
              if(nframes > 0 && nframes < 10)
@@ -125,9 +121,9 @@ static gboolean focus_in_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gp
 	            return FALSE;
 	      }
       }
-      if(pFrame == static_cast<XAP_Frame *>(NULL)) return FALSE;
+      if(pFrame == static_cast<XAP_Frame *>(nullptr)) return FALSE;
       AV_View * pView = pFrame->getCurrentView();
-      if(pView!= NULL)
+      if(pView!= nullptr)
       {
             pView->focusChange(AV_FOCUS_MODELESS);
       }
@@ -138,25 +134,21 @@ static gboolean focus_in_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gp
 static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event*/,
 	std::pointer_to_unary_function<int, gboolean> *other_function)
 {
-      XAP_App *pApp=static_cast<XAP_App *>(g_object_get_data(G_OBJECT(widget), "pApp"));
-      XAP_Frame *pFrame= pApp->getLastFocussedFrame();
-      if(pFrame == static_cast<XAP_Frame *>(NULL)) 
-      {
-             UT_uint32 nframes =  pApp->getFrameCount();
-             if(nframes > 0 && nframes < 10)
-	     {     
-	            pFrame = pApp->getFrame(0);
-	     }
-             else
-	     {
-	            return FALSE;
+      XAP_App *pApp = static_cast<XAP_App *>(g_object_get_data(G_OBJECT(widget), "pApp"));
+      XAP_Frame *pFrame = pApp->getLastFocussedFrame();
+      if (pFrame == nullptr) {
+          UT_uint32 nframes =  pApp->getFrameCount();
+          if (nframes > 0 && nframes < 10) {
+              pFrame = pApp->getFrame(0);
+          } else {
+              return FALSE;
 	      }
       }
-      if(pFrame == static_cast<XAP_Frame *>(NULL)) 
-	return FALSE;
+      if (pFrame == nullptr) {
+          return FALSE;
+      }
       AV_View * pView = pFrame->getCurrentView();
-      if(pView!= NULL)
-      {
+      if(pView!= nullptr) {
             pView->focusChange(AV_FOCUS_MODELESS);
             (*other_function)(0);
       }
@@ -193,11 +185,11 @@ void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
       g_object_set_data(G_OBJECT(widget), "frame",
 					  const_cast<void *>(static_cast<const void *>(frame)));
       g_signal_connect(G_OBJECT(widget), "focus_in_event",
-					 G_CALLBACK(focus_in_event), NULL);
+					 G_CALLBACK(focus_in_event), nullptr);
       g_signal_connect(G_OBJECT(widget), "focus_out_event",
-					 G_CALLBACK(focus_out_event), NULL);
+					 G_CALLBACK(focus_out_event), nullptr);
       g_signal_connect(G_OBJECT(widget), "destroy",
-					 G_CALLBACK(destroy_event), NULL);
+					 G_CALLBACK(destroy_event), nullptr);
 }
 
 void connectFocusModelessOther(GtkWidget *widget,const XAP_App * pApp, 
@@ -209,9 +201,9 @@ void connectFocusModelessOther(GtkWidget *widget,const XAP_App * pApp,
 					 G_CALLBACK(focus_in_event_ModelessOther),
 					 (gpointer) other_function); // leave as C-style cast
       g_signal_connect(G_OBJECT(widget), "focus_out_event",
-					 G_CALLBACK(focus_out_event_Modeless), NULL);
+					 G_CALLBACK(focus_out_event_Modeless), nullptr);
       g_signal_connect(G_OBJECT(widget), "destroy",
-					 G_CALLBACK(focus_out_event_Modeless), NULL);
+					 G_CALLBACK(focus_out_event_Modeless), nullptr);
 }
 
 
@@ -220,11 +212,11 @@ void connectFocusModeless(GtkWidget *widget,const XAP_App * pApp)
       g_object_set_data(G_OBJECT(widget), "pApp",
 					  const_cast<void *>(static_cast<const void *>(pApp)));
       g_signal_connect(G_OBJECT(widget), "focus_in_event",
-					 G_CALLBACK(focus_in_event_Modeless), NULL);
+					 G_CALLBACK(focus_in_event_Modeless), nullptr);
       g_signal_connect(G_OBJECT(widget), "focus_out_event",
-					 G_CALLBACK(focus_out_event_Modeless), NULL);
+					 G_CALLBACK(focus_out_event_Modeless), nullptr);
       g_signal_connect(G_OBJECT(widget), "destroy",
-		       G_CALLBACK(destroy_event), NULL);
+		       G_CALLBACK(destroy_event), nullptr);
 }
 
 
@@ -258,7 +250,7 @@ static void sDoHelp ( XAP_Dialog * pDlg )
 	// open the url
 	if ( pDlg->getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ("help", pDlg->getHelpUrl().c_str(), NULL );
+		helpLocalizeAndOpenURL ("help", pDlg->getHelpUrl().c_str(), nullptr );
     }
 	else
     {
@@ -355,7 +347,7 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 				       GTK_WINDOW(parent));
 
 	GdkPixbuf * icon = gtk_window_get_icon(GTK_WINDOW(parent));	
-	if ( NULL != icon )
+	if ( nullptr != icon )
 	{
 		gtk_window_set_icon(GTK_WINDOW(child), icon);
 	}
@@ -541,7 +533,7 @@ GtkWidget * abiGtkMenuFromCStrVector(const UT_GenericVector<const char*> & vec, 
  */
 void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...)
 {
-  if ( title != NULL && strlen ( title ) )
+  if ( title != nullptr && strlen ( title ) )
   {
     UT_String titleStr ( "" ) ;
 
@@ -562,7 +554,7 @@ void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...)
 GtkWidget* abiAddButton(GtkDialog * me, std::string label,
 			gint response_id)
 {
-	UT_return_val_if_fail(me, NULL);
+	UT_return_val_if_fail(me, nullptr);
 
 	// label is UTF-8.
 	GtkWidget * wid = gtk_dialog_add_button(me, convertMnemonics(label).c_str(),
@@ -592,7 +584,7 @@ void abiDestroyWidget(GtkWidget * me)
  */
 void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	gchar * unixstr = NULL;	// used for conversions
+	gchar * unixstr = nullptr;	// used for conversions
 	std::string s;
 	pSS->getValueUTF8(id,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
@@ -663,7 +655,7 @@ void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_S
  */
 void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	gchar * unixstr = NULL;	// used for conversions
+	gchar * unixstr = nullptr;	// used for conversions
 	std::string s;
 	pSS->getValueUTF8(id,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
@@ -677,7 +669,7 @@ void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Stri
  */
 void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	gchar * unixstr = NULL;	// used for conversions
+	gchar * unixstr = nullptr;	// used for conversions
 	std::string s;
 	pSS->getValueUTF8(id,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
@@ -733,7 +725,7 @@ void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Str
  */
 void localizeMenuItem(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	gchar *unixstr = NULL;
+	gchar *unixstr = nullptr;
 	std::string s;
 	pSS->getValueUTF8(id, s);
 	UT_XML_cloneConvAmpersands(unixstr, s.c_str());
@@ -760,7 +752,7 @@ void setLabelMarkup(GtkWidget * widget, const gchar * str)
  */
 void messageBoxOK(const char * message)
 {
-	GtkWidget * msg = gtk_message_dialog_new ( NULL,
+	GtkWidget * msg = gtk_message_dialog_new ( nullptr,
 						   GTK_DIALOG_MODAL,
 						   GTK_MESSAGE_INFO,
 						   GTK_BUTTONS_OK,

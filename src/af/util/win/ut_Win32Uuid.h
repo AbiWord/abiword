@@ -68,7 +68,7 @@ class ABI_EXPORT UT_Win32UUID : public UT_UUID
   protected:
 	friend class UT_Win32UUIDGenerator;
 	/* various protected constructors */
-	// the first constr. constructs NULL uuid; subsequent call to makeUUID() needed
+	// the first constr. constructs nullptr uuid; subsequent call to makeUUID() needed
 	UT_Win32UUID():UT_UUID(){s_iInstCount++;}
 
 	UT_Win32UUID(const std::string &s):UT_UUID(s){s_iInstCount++;}
@@ -100,7 +100,7 @@ class ABI_EXPORT UT_Win32UUIDGenerator : public UT_UUIDGenerator
 	UT_Win32UUIDGenerator():UT_UUIDGenerator(){};
 	virtual ~UT_Win32UUIDGenerator(){};
 
-	// because the default constructor creates NULL uuid, we also need
+	// because the default constructor creates nullptr uuid, we also need
 	// to call makeUUID() with this one
 	virtual UT_UUID * createUUID(){UT_UUID *p=new UT_Win32UUID(); if(p)p->makeUUID(); return p;}
 

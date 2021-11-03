@@ -63,11 +63,11 @@ AP_Win32Dialog_Lists::AP_Win32Dialog_Lists(	XAP_DialogFactory* pDlgFactory,
 :	AP_Dialog_Lists(pDlgFactory,id),
 	m_bDestroy_says_stopupdating(false),
 	m_bAutoUpdate_happening_now(false),
-	m_pAutoUpdateLists(0),
+	m_pAutoUpdateLists(nullptr),
 	_win32Dialog(this),
-	m_pPreviewWidget(0),
+	m_pPreviewWidget(nullptr),
 	m_bEnableCustomControls(true),
-	m_hThisDlg(0)
+	m_hThisDlg(nullptr)
 {
 }
 
@@ -111,7 +111,8 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 
 BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	delete m_pPreviewWidget; m_pPreviewWidget = NULL;
+	delete m_pPreviewWidget;
+	m_pPreviewWidget = nullptr;
 
 	register unsigned int i;
 
@@ -388,7 +389,7 @@ void AP_Win32Dialog_Lists::destroy(void)
 	{
 		setAnswer(AP_Dialog_Lists::a_QUIT);
 		EndDialog(m_hThisDlg, 0);
-		m_hThisDlg = 0;
+		m_hThisDlg = nullptr;
 		return;
 	}
 
@@ -404,7 +405,7 @@ void AP_Win32Dialog_Lists::destroy(void)
 		_win32Dialog.destroyWindow();
 	}
 
-	m_hThisDlg = 0;
+	m_hThisDlg = nullptr;
 }
 
 void AP_Win32Dialog_Lists::activate(void)
@@ -529,7 +530,7 @@ void AP_Win32Dialog_Lists::_onApply()
 	{
 		setAnswer(AP_Dialog_Lists::a_OK);
 		EndDialog(m_hThisDlg, 0);
-		m_hThisDlg = 0;
+		m_hThisDlg = nullptr;
 		return;
 	}
 

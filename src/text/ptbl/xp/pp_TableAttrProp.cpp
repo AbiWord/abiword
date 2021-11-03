@@ -117,7 +117,7 @@ bool pp_TableAttrProp::createAP(UT_sint32 * pSubscript)
 	{
 		// create default empty AP
 		pNew->markReadOnly();
-		m_vecTableSorted.addItem(pNew, NULL);
+		m_vecTableSorted.addItem(pNew, nullptr);
 	} 
 
 	return true;
@@ -208,6 +208,6 @@ const PP_AttrProp * pp_TableAttrProp::getAP(UT_sint32 subscript) const
 	if (subscript < count)
 		return (const PP_AttrProp *)m_vecTable.getNthItem(subscript);
 	else
-		return NULL;
+		return nullptr;
 }
 

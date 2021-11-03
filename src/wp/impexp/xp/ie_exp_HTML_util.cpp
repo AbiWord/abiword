@@ -261,11 +261,11 @@ bool getPropertySize(const PP_AttrProp * pAP, const gchar* szWidthProp,
 	UT_return_val_if_fail(szHeight, false)
 
 	// get the object width as displayed in AbiWord
-	*szWidth = NULL;
+	*szWidth = nullptr;
 	pAP->getProperty (szWidthProp, *szWidth);
 	
 	// get the object height as displayed in AbiWord
-	*szHeight = NULL;
+	*szHeight = nullptr;
 	pAP->getProperty (szHeightProp, *szHeight);
 	
 	// determine the total width of this object, so we can calculate the object's
@@ -353,7 +353,7 @@ void IE_Exp_HTML_FileExporter::_init()
     if (!m_bInitialized)
     {
         UT_go_directory_create((m_baseDirectory + SEPARATOR +  m_fileDirectory).utf8_str(),
-                               NULL);
+                               nullptr);
         UT_DEBUGMSG(("\n\nCREATED DIR: %s\n\n",(m_baseDirectory + SEPARATOR +  m_fileDirectory).utf8_str()));
         m_bInitialized = true;
     }
@@ -365,14 +365,14 @@ UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const gchar *szDataId,
     _init();
     UT_UTF8String filename = szDataId;
     
-    if (extension != NULL)
+    if (extension != nullptr)
     {
         filename += extension;
     }
     
     UT_ConstByteBufPtr pByteBuf;
     if (!m_pDocument->getDataItemDataByName(szDataId, pByteBuf,
-                                            NULL, NULL))
+                                            nullptr, nullptr))
     {
         UT_ASSERT("No data item with specified dataid found\n");
         return "";
@@ -402,7 +402,7 @@ UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const UT_UTF8String &name,
     GsfOutput* output =  
         UT_go_file_create((m_baseDirectory + SEPARATOR  + 
         m_fileDirectory + SEPARATOR + name).utf8_str(), 
-                             NULL);
+                             nullptr);
     
     gsf_output_write(output, data.byteLength(), reinterpret_cast<const guint8*>(data.utf8_str()));
     gsf_output_close(output);
@@ -426,14 +426,14 @@ UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const gchar *szDataId,
 {
     UT_UTF8String filename = szDataId;
     
-    if (extension != NULL)
+    if (extension != nullptr)
     {
         filename += extension;
     }
         
     std::string mime;
     UT_ConstByteBufPtr bb;
-    m_pDocument->getDataItemDataByName(szDataId, bb, &mime, NULL);
+    m_pDocument->getDataItemDataByName(szDataId, bb, &mime, nullptr);
     m_buffer += MULTIPART_FIELD("Content-Type",
                               (mime).c_str());
     m_buffer += MULTIPART_FIELD("Content-Transfer-Encoding", "base64");
@@ -490,7 +490,7 @@ UT_UTF8String IE_Exp_HTML_MultipartExporter::generateHeader(const UT_UTF8String 
     header = MULTIPART_FIELD("From", "<Saved by AbiWord>");;
     header += MULTIPART_FIELD("Subject", m_title.utf8_str());
     
-    time_t tim = time (NULL);
+    time_t tim = time (nullptr);
 	struct tm * pTime = localtime (&tim);
 	char timestr[64];
 	strftime (timestr, 63, "%a, %d %b %Y %H:%M:%S +0100", pTime); // hmm, hard-code time zone
@@ -529,7 +529,7 @@ void IE_Exp_HTML_DataExporter::encodeDataBase64(const gchar* szDataId,
     std::string mimeType;
     UT_ConstByteBufPtr pByteBuf;
     if (!m_pDocument->getDataItemDataByName(szDataId, pByteBuf,
-                                            &mimeType, NULL))
+                                            &mimeType, nullptr))
     {
         UT_ASSERT("No data item with specified dataid found\n");
         return;

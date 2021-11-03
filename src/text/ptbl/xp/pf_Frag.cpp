@@ -26,13 +26,13 @@
 
 pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length):
 	m_type(type),
-	m_pField(NULL),
+	m_pField(nullptr),
 	m_pPieceTable(pPT),
 	m_indexAP(0),
 	m_length(length),
 	m_leftTreeLength(0),
 	m_iXID(0),
-	m_pMyNode(NULL)
+	m_pMyNode(nullptr)
 {
 }
 
@@ -153,8 +153,8 @@ fd_Field * pf_Frag::getField(void) const
 
 pf_Frag* pf_Frag::getNext(void) const
 {
-        UT_return_val_if_fail(m_pMyNode,NULL);
- 	pf_Fragments::Iterator it(&(m_pPieceTable->getFragments()),m_pMyNode);
+	UT_return_val_if_fail(m_pMyNode, nullptr);
+	pf_Fragments::Iterator it(&(m_pPieceTable->getFragments()),m_pMyNode);
 	it++;
 	return it.value();
 }
@@ -162,8 +162,8 @@ pf_Frag* pf_Frag::getNext(void) const
 
 pf_Frag* pf_Frag::getPrev(void) const
 {
-        UT_return_val_if_fail(m_pMyNode,NULL);
- 	pf_Fragments::Iterator it(&(m_pPieceTable->getFragments()),m_pMyNode);
+	UT_return_val_if_fail(m_pMyNode, nullptr);
+	pf_Fragments::Iterator it(&(m_pPieceTable->getFragments()),m_pMyNode);
 	it--;
 	return it.value();
 }
@@ -193,7 +193,7 @@ static bool isStuxType( const pf_Frag* const pf, PTStruxType t )
  */
 pf_Frag_Strux* pf_Frag::getNextStrux(PTStruxType t) const
 {
-    UT_return_val_if_fail(m_pMyNode,NULL);
+    UT_return_val_if_fail(m_pMyNode,nullptr);
     pf_Fragments& fragments = m_pPieceTable->getFragments();
  	pf_Fragments::Iterator it(&(fragments),m_pMyNode);
     // If we are the desired type, move ahead already.
@@ -248,7 +248,7 @@ pf_Frag::getXMLID() const
 {
     std::string ret = "";
 
-    const PP_AttrProp* pAP = NULL;
+    const PP_AttrProp* pAP = nullptr;
     m_pPieceTable->getAttrProp( getIndexAP() ,&pAP );
     if( !pAP )
         return ret;

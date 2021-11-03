@@ -113,8 +113,8 @@ Google_removeFromMenus()
   int frameCount = pApp->getFrameCount();
   XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 
-  pFact->removeMenuItem("Main",NULL,Google_MenuLabel);
-  pFact->removeMenuItem("contextText",NULL,Google_MenuLabel);
+  pFact->removeMenuItem("Main",nullptr,Google_MenuLabel);
+  pFact->removeMenuItem("contextText",nullptr,Google_MenuLabel);
   for(int i = 0;i < frameCount;++i)
     {
       // Get the current frame that we're iterating through.
@@ -165,13 +165,13 @@ Google_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL,"Bullets and &Numbering",EV_MLF_Normal);
-  pFact->addNewLabel(NULL,newID,Google_MenuLabel, Google_MenuTooltip);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",nullptr,"Bullets and &Numbering",EV_MLF_Normal);
+  pFact->addNewLabel(nullptr,newID,Google_MenuLabel, Google_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL,"&Word Count",EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",nullptr,"&Word Count",EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -181,8 +181,8 @@ Google_addToMenus()
 						0,                      // no, we don't have a checkbox.
 						0,                      // not a radio button
 						"AbiGoogle_invoke",  // name of callback function to call.
-						NULL,                   // don't know/care what this is for
-						NULL                    // don't know/care what this is for
+						nullptr,                   // don't know/care what this is for
+						nullptr                    // don't know/care what this is for
 						);
   
   // Now what we need to do is add this particular action to the ActionSet

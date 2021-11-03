@@ -68,7 +68,7 @@ bool         UT_addOrReplacePathSuffix(std::string & sPath, const char* sSuffix)
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar);
 
 /**
- * Get the attribute "name" from atts or NULL if no such attribute is in atts
+ * Get the attribute "name" from atts or nullptr if no such attribute is in atts
  */
 ABI_EXPORT const gchar* UT_getAttribute(const gchar* name,
                                         const gchar** atts);

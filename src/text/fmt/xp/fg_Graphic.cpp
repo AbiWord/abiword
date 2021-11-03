@@ -35,7 +35,7 @@ FG_GraphicPtr FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
 	PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
 	// Get the attribute list for this offset.
-	const PP_AttrProp* pSpanAP = NULL;
+	const PP_AttrProp* pSpanAP = nullptr;
 	pFL->getSpanAP(blockOffset, false, pSpanAP);
 	if (pSpanAP)
 	{
@@ -48,7 +48,7 @@ FG_GraphicPtr FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
 			UT_ConstByteBufPtr bb;
 			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, bb,
                                                                                  &mimeType,
-                                                                                 NULL);
+                                                                                 nullptr);
 
 			// figure out what type to create
 
@@ -67,7 +67,7 @@ FG_GraphicPtr FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
 {
    
 	// Get the attribute list for this offset.
-	const PP_AttrProp* pSpanAP = NULL;
+	const PP_AttrProp* pSpanAP = nullptr;
 	pFL->getAP(pSpanAP);
 	if (pSpanAP)
 	{
@@ -80,7 +80,7 @@ FG_GraphicPtr FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
 			UT_ConstByteBufPtr bb;
 			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, bb,
                                                                                  &mimeType,
-                                                                                 NULL);
+                                                                                 nullptr);
 	   
 			// figure out what type to create
 	   

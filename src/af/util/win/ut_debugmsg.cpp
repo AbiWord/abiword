@@ -65,5 +65,5 @@ void _UT_WarningMessage(const char *s, ...)
 	va_start(marker, s);
 	_vsnprintf(sBuf, sizeof(sBuf), s, marker);
 
-	MessageBoxA(NULL, sBuf, "Warning", MB_OK | MB_ICONWARNING); //!TODO Using ANSI function
+	MessageBoxA(nullptr, sBuf, "Warning", MB_OK | MB_ICONWARNING); //!TODO Using ANSI function
 }

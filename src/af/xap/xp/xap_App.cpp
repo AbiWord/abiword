@@ -77,22 +77,22 @@ XAP_StateData::XAP_StateData()
 }
 
 
-XAP_App * XAP_App::m_pApp = NULL;
+XAP_App * XAP_App::m_pApp = nullptr;
 
 XAP_App * XAP_App::getApp() {return m_pApp;}
 
 XAP_App::XAP_App(const char * szAppName)
 	: m_szAppName(szAppName),
-	  m_szAbiSuiteLibDir(NULL),
-	  m_pEMC(NULL),
-	  m_pBindingSet(NULL),
-	  m_pMenuActionSet(NULL),
-	  m_pToolbarActionSet(NULL),
-	  m_pDict(NULL),
-	  m_prefs(NULL),
-	  m_lastFocussedFrame(NULL),
-	  m_pMenuFactory(NULL),
-	  m_pToolbarFactory(NULL),
+	  m_szAbiSuiteLibDir(nullptr),
+	  m_pEMC(nullptr),
+	  m_pBindingSet(nullptr),
+	  m_pMenuActionSet(nullptr),
+	  m_pToolbarActionSet(nullptr),
+	  m_pDict(nullptr),
+	  m_prefs(nullptr),
+	  m_lastFocussedFrame(nullptr),
+	  m_pMenuFactory(nullptr),
+	  m_pToolbarFactory(nullptr),
 	  m_bAllowCustomizing(true),
 	  m_bAreCustomized(true),
 	  m_bDebugBool(false),
@@ -100,13 +100,13 @@ XAP_App::XAP_App(const char * szAppName)
 	  m_bEnableSmoothScrolling(true),
       m_bDisableDoubleBuffering(false),
       m_bNoGUI(false),
-	  m_pKbdLang(NULL), // must not be deleted by destructor !!!
- 	  m_pUUIDGenerator(NULL),
-	  m_pGraphicsFactory(NULL),
+	  m_pKbdLang(nullptr), // must not be deleted by destructor !!!
+	  m_pUUIDGenerator(nullptr),
+	  m_pGraphicsFactory(nullptr),
 	  m_iDefaultGraphicsId(0),
-	  m_pInputModes(NULL),
-	  m_pImpl(NULL),
-	  m_pScriptLibrary(NULL)
+	  m_pInputModes(nullptr),
+	  m_pImpl(nullptr),
+	  m_pScriptLibrary(nullptr)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
@@ -140,7 +140,7 @@ XAP_App::~XAP_App()
 
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
-	// when can have NULL pointers....
+	// when can have nullptr pointers....
 
 	FREEP(m_szAbiSuiteLibDir);
 	DELETEP(m_pEMC);
@@ -164,7 +164,7 @@ XAP_App::~XAP_App()
 	DELETEP(m_pScriptLibrary);
 
 	/* reset the static pointer, since it is no longer valid */
-	m_pApp = NULL;
+	m_pApp = nullptr;
 }
 
 const char* XAP_App::getBuildId ()
@@ -220,11 +220,11 @@ EV_Toolbar_ActionSet *XAP_App::getToolbarActionSet()
 
 /*!
  * Returns a pointer to the requested plugin if it is loaded.
- * Return NULL otherwise.
+ * Return nullptr otherwise.
  */
 XAP_Module* XAP_App::getPlugin(const char* szPluginName) const
 {
-     XAP_Module * pModule = NULL;
+     XAP_Module * pModule = nullptr;
      const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
      bool bFound = false;
      for (UT_sint32 i = 0; (i < pVec->size()) && !bFound; i++)
@@ -238,7 +238,7 @@ XAP_Module* XAP_App::getPlugin(const char* szPluginName) const
      }
      if(!bFound)
      {
-           return NULL;
+           return nullptr;
      }
      return pModule;
 }
@@ -250,7 +250,7 @@ bool XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed, const char *uid)
 {
 	 UT_return_val_if_fail( pEmbed, false );
 	 
-	 if (uid == NULL)
+	 if (uid == nullptr)
 		uid = pEmbed->getObjectType();
 	 if (uid && *uid && m_mapEmbedManagers.find(uid) == m_mapEmbedManagers.end())
      {
@@ -267,7 +267,7 @@ bool XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed, const char *uid)
  */
 bool XAP_App::unRegisterEmbeddable(const char *uid)
 {
-  if (uid == NULL || *uid == 0)
+  if (uid == nullptr || *uid == 0)
     return false;
   std::map<std::string, GR_EmbedManager *>::iterator i = m_mapEmbedManagers.find(uid);
   if(i != m_mapEmbedManagers.end())
@@ -284,7 +284,7 @@ bool XAP_App::unRegisterEmbeddable(const char *uid)
  */
 GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * szObjectType) const
 {
-	GR_EmbedManager * pCur = NULL;
+	GR_EmbedManager * pCur = nullptr;
 	if (szObjectType && szObjectType != nullptr) {
 		auto iter = m_mapEmbedManagers.find(szObjectType);
 		if (iter != m_mapEmbedManagers.end()) {
@@ -311,7 +311,7 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 
 	// HACK: for now, this works from XAP code
 	// TODO: where should this really go?
-	char * szPathname = g_build_filename(getUserPrivateDirectory(), "custom.dic", NULL);
+	char * szPathname = g_build_filename(getUserPrivateDirectory(), "custom.dic", nullptr);
 	UT_ASSERT(szPathname);
 	m_pDict = new XAP_Dictionary(szPathname);
 	FREEP(szPathname);
@@ -331,12 +331,12 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	//
 	// Need to initialize the random number generator. 
 	//
-	UT_uint32 t = static_cast<UT_uint32>(time(NULL));
+	UT_uint32 t = static_cast<UT_uint32>(time(nullptr));
 	UT_srandom(t);
 
 	// Input mode initilization, taken out of the XAP_Frame
 	std::string bindings;
-	EV_EditBindingMap * pBindingMap = NULL;
+	EV_EditBindingMap * pBindingMap = nullptr;
 
 	if (getPrefsValue(szKeyBindingsKey, bindings) && !bindings.empty()) {
 		pBindingMap = m_pApp->getBindingMap(bindings.c_str());
@@ -402,7 +402,7 @@ bool XAP_App::addListener(AV_Listener * pListener,
 	for (k=0; k<kLimit; k++)
 		if (m_vecPluginListeners.getNthItem(k) == nullptr)
 		{
-			static_cast<void>(m_vecPluginListeners.setNthItem(k,pListener,NULL));
+			static_cast<void>(m_vecPluginListeners.setNthItem(k,pListener,nullptr));
 			goto ClaimThisK;
 		}
 
@@ -571,7 +571,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 		// locate vector of this frame's clones
 		CloneMap::const_iterator iter = m_hashClones.find(pCloneOf->getViewKey());
 		
-		UT_GenericVector<XAP_Frame*> * pvClones = NULL;
+		UT_GenericVector<XAP_Frame*> * pvClones = nullptr;
 
 		if (iter != m_hashClones.end())
 		{
@@ -628,12 +628,12 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 {
 	UT_return_val_if_fail(pFrame,false);
 
-	// If this frame is the currently focussed frame write in NULL
+	// If this frame is the currently focussed frame write in nullptr
 	// until another frame appears
 
 	if(pFrame == m_lastFocussedFrame )
 	{
-		m_lastFocussedFrame = static_cast<XAP_Frame *>(NULL);
+		m_lastFocussedFrame = static_cast<XAP_Frame *>(nullptr);
 	}
 
 	if (pFrame->getViewNumber() > 0)
@@ -659,7 +659,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 			// see how many clones are left
 			UT_uint32 count = pvClones->getItemCount();
 			UT_ASSERT(count > 0);
-			XAP_Frame * f = NULL;
+			XAP_Frame * f = nullptr;
 
 			if (count == 1)
 			{
@@ -735,7 +735,7 @@ bool XAP_App::getClones(UT_GenericVector<XAP_Frame*> *pvClonesCopy, XAP_Frame * 
 
 	// locate vector of this frame's clones
 	CloneMap::const_iterator iter = m_hashClones.find(pFrame->getViewKey());
-	UT_GenericVector<XAP_Frame*> * pvClones = NULL;
+	UT_GenericVector<XAP_Frame*> * pvClones = nullptr;
 	if (iter != m_hashClones.end()) {
 		pvClones = iter->second;
 	}
@@ -760,7 +760,7 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 
 		UT_uint32 count = pvClones->getItemCount();
 		UT_ASSERT(count > 0);
-		XAP_Frame * f = NULL;
+		XAP_Frame * f = nullptr;
 
 		for (UT_uint32 j=0; j<count; j++)
 		{
@@ -786,7 +786,7 @@ UT_sint32 XAP_App::getFrameCount() const
 
 XAP_Frame * XAP_App::getFrame(UT_sint32 ndx) const
 {
-	XAP_Frame * pFrame = NULL;
+	XAP_Frame * pFrame = nullptr;
 	
 	if (ndx < m_vecFrames.getItemCount())
 	{
@@ -950,7 +950,7 @@ void XAP_App::rememberFocussedFrame( void * pJustFocussedFrame)
 	UT_sint32 i = safefindFrame( m_lastFocussedFrame);
 	if(i < 0 ) 
 	{   
-		m_lastFocussedFrame = static_cast<XAP_Frame *>(NULL);
+		m_lastFocussedFrame = static_cast<XAP_Frame *>(nullptr);
 	}
 	notifyModelessDlgsOfActiveFrame(m_lastFocussedFrame);
 }
@@ -971,17 +971,17 @@ UT_sint32 XAP_App::safefindFrame( XAP_Frame * f) const
 
 void XAP_App::clearLastFocussedFrame()
 {
-	m_lastFocussedFrame = static_cast<XAP_Frame *>(NULL);
+	m_lastFocussedFrame = static_cast<XAP_Frame *>(nullptr);
 }
 
 XAP_Frame* XAP_App::getLastFocussedFrame() const
 {
-		if(m_lastFocussedFrame == static_cast<XAP_Frame *>(NULL))
-			return static_cast<XAP_Frame *>(NULL);
+		if(m_lastFocussedFrame == static_cast<XAP_Frame *>(nullptr))
+			return static_cast<XAP_Frame *>(nullptr);
 	UT_sint32 i = safefindFrame(m_lastFocussedFrame);
 	if( i>= 0)
 		return m_lastFocussedFrame;
-	return static_cast<XAP_Frame *>(NULL);
+	return static_cast<XAP_Frame *>(nullptr);
 }
 
 XAP_Frame * XAP_App::findValidFrame() const
@@ -995,7 +995,7 @@ void XAP_App::clearIdTable()
 	for(UT_sint32 i =0; i <= NUM_MODELESSID; i++)
 	{
 		m_IdTable[i].id =  -1;
-		m_IdTable[i].pDialog = static_cast<XAP_Dialog_Modeless *>(NULL);
+		m_IdTable[i].pDialog = static_cast<XAP_Dialog_Modeless *>(nullptr);
 	}
 }
 
@@ -1031,7 +1031,7 @@ void XAP_App::forgetModelessId( UT_sint32 id )
 		return;
 	}
 	m_IdTable[i].id =  -1;
-	m_IdTable[i].pDialog = static_cast<XAP_Dialog_Modeless *>(NULL);
+	m_IdTable[i].pDialog = static_cast<XAP_Dialog_Modeless *>(nullptr);
 }
 
 bool XAP_App::isModelessRunning(UT_sint32 id) const
@@ -1064,12 +1064,12 @@ void XAP_App::closeModelessDlgs()
 	{
 		if(m_IdTable[i].id >= 0)
 		{
-			if(getModelessDialog(i) != static_cast<XAP_Dialog_Modeless *>(NULL))
+			if(getModelessDialog(i) != static_cast<XAP_Dialog_Modeless *>(nullptr))
 			{
 				getModelessDialog(i)->destroy();
 			}
 			m_IdTable[i].id = -1;
-			m_IdTable[i].pDialog = NULL;
+			m_IdTable[i].pDialog = nullptr;
 		}
 	}
 }
@@ -1079,7 +1079,7 @@ void XAP_App::notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame)
 {
 	for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
 	{
-		if(getModelessDialog(i) != static_cast<XAP_Dialog_Modeless *>(NULL))
+		if(getModelessDialog(i) != static_cast<XAP_Dialog_Modeless *>(nullptr))
 		{
 			getModelessDialog(i)->setActiveFrame(p_Frame);
 		}
@@ -1090,7 +1090,7 @@ void XAP_App::notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame)
 {
 	for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
 	{
-		if(getModelessDialog(i) != static_cast<XAP_Dialog_Modeless *>(NULL))
+		if(getModelessDialog(i) != static_cast<XAP_Dialog_Modeless *>(nullptr))
 		{
 			getModelessDialog(i)->notifyCloseFrame(p_Frame);
 		}
@@ -1157,7 +1157,7 @@ void XAP_App::setKbdLanguage(const char * pszLang)
 {
 	if(!pszLang)
 	{
-		m_pKbdLang = NULL;
+		m_pKbdLang = nullptr;
 	}
 	else
 	{
@@ -1235,7 +1235,7 @@ XAP_App::getDocuments( const AD_Document * pExclude ) const
     \param v: UT_Vector into which to store the document pointers
     
     \para pExclude: pointer to a document to exclude from enumeration,
-                    can be NULL (e.g., if this function is called from
+                    can be nullptr (e.g., if this function is called from
                     inside a document, it might be desirable to
                     exclude that document)
 */
@@ -1266,7 +1266,7 @@ void XAP_App::enumerateDocuments(UT_Vector & v, const AD_Document * pExclude) co
 
 EV_EditEventMapper * XAP_App::getEditEventMapper(void) const
 {
-	UT_return_val_if_fail(m_pInputModes,NULL);
+	UT_return_val_if_fail(m_pInputModes,nullptr);
 	return m_pInputModes->getCurrentMap();
 }
 
@@ -1324,7 +1324,7 @@ const char * XAP_App::getInputMode(void) const
 */
 GR_Graphics * XAP_App::newGraphics(GR_AllocInfo &param) const
 {
-	UT_return_val_if_fail(m_pGraphicsFactory, NULL);
+	UT_return_val_if_fail(m_pGraphicsFactory, nullptr);
 
 	if(param.isPrinterGraphics())
 	{
@@ -1341,7 +1341,7 @@ GR_Graphics * XAP_App::newGraphics(GR_AllocInfo &param) const
 */
 GR_Graphics * XAP_App::newGraphics(UT_uint32 iClassId, GR_AllocInfo &param) const
 {
-	UT_return_val_if_fail(m_pGraphicsFactory, NULL);
+	UT_return_val_if_fail(m_pGraphicsFactory, nullptr);
 
 	return m_pGraphicsFactory->newGraphics(iClassId, param);
 }
@@ -1413,7 +1413,7 @@ bool XAP_App::saveState(bool bQuit)
 	
 	for(i = 0, j = 0; i < m_vecFrames.getItemCount(); ++i, ++j)
 	{
-		XAP_Frame * pFrame = NULL;
+		XAP_Frame * pFrame = nullptr;
 
 		if(i == 0)
 			pFrame = pLastFrame;
@@ -1547,7 +1547,7 @@ bool XAP_App::retrieveState()
 	// we should only be restoring state with no docs already
 	// opened
 	UT_return_val_if_fail(m_vecFrames.getItemCount() <= 1, false);
-	XAP_Frame * pFrame = NULL;
+	XAP_Frame * pFrame = nullptr;
 
 	if(m_vecFrames.getItemCount())
 		pFrame = m_vecFrames.getNthItem(0);
@@ -1566,7 +1566,7 @@ bool XAP_App::retrieveState()
 			return false;
 		
 		// Open a complete but blank frame, then load the document into it
-		errorCode = pFrame->loadDocument((const char *)NULL, 0 /*IEFT_Unknown*/);
+		errorCode = pFrame->loadDocument((const char *)nullptr, 0 /*IEFT_Unknown*/);
 
 		bRet &= (errorCode == UT_OK);
 		
@@ -1614,7 +1614,7 @@ bool XAP_App::retrieveState()
 		
 		
 		// frame used -- next doc needs a new one
-		pFrame = NULL;
+		pFrame = nullptr;
 	}
 
 	// set focus to the first frame

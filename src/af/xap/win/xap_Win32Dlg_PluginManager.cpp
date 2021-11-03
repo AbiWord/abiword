@@ -145,7 +145,7 @@ void XAP_Win32Dialog_PluginManager::refreshPluginList()
 	resetContent( XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST );
 
 	// Populate List Box
-	XAP_Module* pModule = 0;
+	XAP_Module* pModule = nullptr;
 	const UT_GenericVector<class XAP_Module *> *pVec = XAP_ModuleManager::instance().enumModules();
 
 	for (UT_sint32 i = 0; i < pVec->size(); i++)
@@ -160,7 +160,7 @@ void XAP_Win32Dialog_PluginManager::refreshPluginInfo()
 
 	const char *pName, *pAuthor, *pDesc, *pVersion;
 	pName = pAuthor = pDesc = pVersion ="";
-	XAP_Module* pModule = NULL;
+	XAP_Module* pModule = nullptr;
 
 	if (m_curSelection!=LB_ERR)
 	{

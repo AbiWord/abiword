@@ -56,7 +56,7 @@ class ABI_EXPORT AP_Dialog_Modeless : public XAP_Dialog_Modeless
     virtual void setStatus( const std::string& msg );
 
 public:
-	AP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
+	AP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = nullptr );
 	virtual ~AP_Dialog_Modeless();
 
 	// these are kinda screwy now, but we never return anything but on

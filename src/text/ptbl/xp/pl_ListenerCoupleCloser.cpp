@@ -49,7 +49,7 @@ PD_Bookmark::PD_Bookmark( PD_Document* pDoc, PT_AttrPropIndex api )
 {
     pDoc->getAttrProp(api,&m_pAP);
     
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     if(m_pAP
        && m_pAP->getAttribute("type",pValue)
        && pValue

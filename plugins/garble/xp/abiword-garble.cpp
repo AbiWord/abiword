@@ -52,7 +52,7 @@ struct auto_free {
 //-----------------------------------------------------------------------------
 abiword_document::abiword_document( abiword_garble* abigarble, const string& filename )
 :	mFilename( filename )
-,	mDocument( NULL )
+,	mDocument( nullptr )
 ,	mAbiGarble( abigarble )
 ,	mCharsGarbled( 0 )
 ,	mImagesGarbled( 0 ) {
@@ -67,11 +67,11 @@ abiword_document::abiword_document( abiword_garble* abigarble, const string& fil
 	auto_free<char*> auto_free_uri( uri );
 
 	// open file
-	GsfInput* in = UT_go_file_open(uri, NULL); // TODO: shouldn't use NULL here, but check for errors
+	GsfInput* in = UT_go_file_open(uri, nullptr); // TODO: shouldn't use nullptr here, but check for errors
 	if (!in)
 		throw string( "failed to open file " ) + mFilename;
 	auto_unref inUnref( in );
-	guint8 const* contents = gsf_input_read(in, static_cast<size_t>( gsf_input_size(in) ), NULL);
+	guint8 const* contents = gsf_input_read(in, static_cast<size_t>( gsf_input_size(in) ), nullptr);
 	if (!contents)
 		throw string( "failed to open file " ) + mFilename;
 
@@ -152,7 +152,7 @@ void abiword_document::garble_image_line( char* line, size_t bytes ) {
 void abiword_document::garble_image_node( xmlNodePtr node ) {
 
 	// find mime type and whether or not it's base64 encoded
-	xmlChar *mimeTypeStr = NULL, *base64EncodedStr = NULL;
+	xmlChar *mimeTypeStr = nullptr, *base64EncodedStr = nullptr;
 	xmlAttr* prop = node->properties;
 	while (prop) {
 		if (!xmlStrcmp( prop->name, BAD_CAST "mime-type" ))
@@ -204,7 +204,7 @@ void abiword_document::garble_image_node( xmlNodePtr node ) {
 //-----------------------------------------------------------------------------
 void abiword_document::garble_node( xmlNodePtr node ) {
 
-	// stop recursion on NULL node
+	// stop recursion on nullptr node
 	if (!node)
 		return;
 
@@ -253,7 +253,7 @@ void abiword_document::save() {
 	string targetFn = mFilename+".garbled.abw";
 
 	// get memory dump of XML file
-	xmlChar* output = NULL;
+	xmlChar* output = nullptr;
 	int len = 0;
 	xmlDocDumpMemoryEnc( mDocument, &output, &len, "UTF-8" );
 	if (!output)
@@ -267,7 +267,7 @@ void abiword_document::save() {
 	auto_free<char*> auto_free_uri( uri );
 
 	// write buffer contents
-	GsfOutput* out = UT_go_file_create( uri, NULL );
+	GsfOutput* out = UT_go_file_create( uri, nullptr );
 	if (!out)
 		throw string( "failed to open output file " ) +targetFn+ " for writing";
 	auto_unref auto_unref_out( out );
@@ -282,7 +282,7 @@ char abiword_document::get_random_char() {
 	static bool seeded = false;
 	if (!seeded) {
 		seeded = true;
-		UT_uint32 t = static_cast<UT_uint32>(time(NULL));
+		UT_uint32 t = static_cast<UT_uint32>(time(nullptr));
 		UT_srandom(t);
 	}
 

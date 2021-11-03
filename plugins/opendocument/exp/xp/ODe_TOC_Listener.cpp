@@ -64,7 +64,7 @@ void ODe_TOC_Listener::openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& /*r
     UT_sint32 iLevel = 0;
 
     // check if this block should appear in the TOC
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     bool ok = pAP->getAttribute("style", pValue);
     if (ok && pValue)
         iLevel = m_rAuxiliaryData.m_headingStyles.getHeadingOutlineLevel(pValue);

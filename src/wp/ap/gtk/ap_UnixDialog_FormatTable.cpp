@@ -366,7 +366,7 @@ void AP_UnixDialog_FormatTable::destroy(void)
 {
 	finalize();
 	gtk_widget_destroy(m_windowMain); // TOPLEVEL
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 }
 
 void AP_UnixDialog_FormatTable::activate(void)

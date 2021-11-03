@@ -61,7 +61,7 @@ AP_Win32Dialog_Styles::AP_Win32Dialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_bisNewStyle(true),
 	m_selectToggle(0)
 {
-	m_pAbiPreviewWidget = NULL;	
+	m_pAbiPreviewWidget = nullptr;
 }
 
 AP_Win32Dialog_Styles::~AP_Win32Dialog_Styles(void)
@@ -132,7 +132,7 @@ void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWN
 	 }
 
 	str.fromUTF8(pText);
-	ExtTextOutW(hdc, (nWidth/6)*1, ((nHeight/4)), 0, NULL, str.c_str(), str.length(), NULL);
+	ExtTextOutW(hdc, (nWidth/6)*1, ((nHeight/4)), 0, nullptr, str.c_str(), str.length(), nullptr);
 		
     // Clean Up
     SelectObject(hdc, pOldPen);       
@@ -273,14 +273,14 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 		// Initialize the controls with appropriate data
 
 		size_t nStyles = getDoc()->getStyleCount();
-		const char * name = NULL;
-		const char * pLocalised = NULL;
-		const PD_Style * pcStyle = NULL;
+		const char * name = nullptr;
+		const char * pLocalised = nullptr;
+		const PD_Style * pcStyle = nullptr;
 		int nIndex;
 		UT_Win32LocaleString str;	
 		std::string utf8;
 
-		UT_GenericVector<PD_Style*> * pStyles = NULL;
+		UT_GenericVector<PD_Style*> * pStyles = nullptr;
 		getDoc()->enumStyles(pStyles);
 		UT_return_val_if_fail( pStyles, FALSE );
 		
@@ -355,13 +355,13 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 		}
 		else
 		{
-			const char * szCurrentStyle = NULL;
-			const char * szBasedOn = NULL;
-			const char * szFollowedBy = NULL;
-			const char * pLocalised = NULL;
-			PD_Style * pStyle = NULL;
-			PD_Style * pBasedOnStyle = NULL;
-			PD_Style * pFollowedByStyle = NULL;
+			const char * szCurrentStyle = nullptr;
+			const char * szBasedOn = nullptr;
+			const char * szFollowedBy = nullptr;
+			const char * pLocalised = nullptr;
+			PD_Style * pStyle = nullptr;
+			PD_Style * pBasedOnStyle = nullptr;
+			PD_Style * pFollowedByStyle = nullptr;
 			
 			szCurrentStyle = m_selectedStyle.c_str();
 			
@@ -390,9 +390,9 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 			pFollowedByStyle = pStyle->getFollowedBy();
 			
 			size_t nStyles = getDoc()->getStyleCount();
-			const char * name = NULL;
-			const PD_Style * pcStyle = NULL;
-			UT_GenericVector<PD_Style*> * pStyles = NULL;
+			const char * name = nullptr;
+			const PD_Style * pcStyle = nullptr;
+			UT_GenericVector<PD_Style*> * pStyles = nullptr;
 			getDoc()->enumStyles(pStyles);
 			UT_return_val_if_fail( pStyles, FALSE );
 	
@@ -414,7 +414,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 
 			delete pStyles;
 			
-			if(pBasedOnStyle != NULL)
+			if(pBasedOnStyle != nullptr)
 			{
 
 				pt_PieceTable::s_getLocalisedStyleName(szBasedOn, utf8);
@@ -436,7 +436,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
 			}
 
-			if(pFollowedByStyle != NULL)
+			if(pFollowedByStyle != nullptr)
 			{
 				pt_PieceTable::s_getLocalisedStyleName(szFollowedBy, utf8);		
 				pLocalised = utf8.c_str();
@@ -580,7 +580,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 			
 			UT_uint32	nData = -1;
 			const char* name;
-			const PD_Style * pcStyle = NULL;
+			const PD_Style * pcStyle = nullptr;
 			
 			int row = _win32Dialog.getListSelectedIndex(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES);					
 			
@@ -654,7 +654,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 			}
 			else
 			{
-				PD_Style * pStyle = NULL;
+				PD_Style * pStyle = nullptr;
 				getDoc()->getStyle(m_selectedStyle.c_str(), &pStyle);
 
 				m_bisNewStyle = false;
@@ -708,16 +708,16 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 								AP_STRING_ID_DLG_Styles_ModifyNumbering,
 								AP_STRING_ID_DLG_Styles_ModifyLanguage
 								};
-	    
+
 		UT_Win32LocaleString str;
 
 	    hWndButton = GetDlgItem(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS);
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
-	    
+
 		// Get button position
 	    GetWindowRect(hWndButton, &rect);
 	    x = rect.left;
-	    y = rect.bottom;	               		
+	    y = rect.bottom;
 
 	    // Menu creation
 	    hMenu =  CreatePopupMenu();
@@ -725,11 +725,11 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 			str.fromUTF8(pSS->getValue(menu_items[i]));
 			AppendMenuW(hMenu, MF_ENABLED|MF_STRING, i+1, (LPCWSTR)str.c_str());
 		}
-	
+
 	    // show and track the menu
     	m_selectToggle = TrackPopupMenu(hMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,
-    						x,y,0, hWndButton,  NULL);		    							    	        						 							    
-	    
+						x,y,0, hWndButton,  nullptr);
+
 	    switch(m_selectToggle)
 		{
 		case 0:	// user has cancelled
@@ -800,8 +800,8 @@ void AP_Win32Dialog_Styles::_populateWindowData(void)
 void AP_Win32Dialog_Styles::_populateCList(void)
 {
 	const PD_Style * pStyle;
-	const char * name = NULL;
-	const char*	pLocalised = NULL;
+	const char * name = nullptr;
+	const char*	pLocalised = nullptr;
 	int nIndex;
 	std::string utf8;
 	UT_String str;						 
@@ -811,7 +811,7 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 
 	_win32Dialog.resetContent(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES);
 	
-	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	UT_GenericVector<PD_Style*> * pStyles = nullptr;
 	getDoc()->enumStyles(pStyles);
 	UT_return_if_fail( pStyles );
 	
@@ -851,7 +851,7 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 
 const char * AP_Win32Dialog_Styles::getCurrentStyle (void) const
 {
-	return m_selectedStyle.size() ? m_selectedStyle.c_str() : 0;
+	return m_selectedStyle.size() ? m_selectedStyle.c_str() : nullptr;
 }
 
 void AP_Win32Dialog_Styles::setDescription (const char * desc) const
@@ -888,7 +888,7 @@ void AP_Win32Dialog_Styles::eventBasedOn()
 	char szTemp[128];
 	int	nSel;
 	int	nData;
-	const PD_Style * pStyle = NULL;
+	const PD_Style * pStyle = nullptr;
 	const char* pText = szTemp;
 		
 	nSel = _win32DialogNewModify.getComboSelectedIndex(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON);		
@@ -913,7 +913,7 @@ void AP_Win32Dialog_Styles::eventFollowedBy()
 	char szTemp[128]; 
 	int	nSel;
 	int	nData;
-	const PD_Style * pStyle = NULL;
+	const PD_Style * pStyle = nullptr;
 	const char* pText = szTemp;
 		
 	nSel = _win32DialogNewModify.getComboSelectedIndex(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA);		
@@ -938,7 +938,7 @@ void AP_Win32Dialog_Styles::eventStyleType()
 	_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
                                           szTemp,
                                           sizeof(szTemp));			
-	if(strstr(szTemp, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)
+	if(strstr(szTemp, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != nullptr)
 		pszSt = "C";
 	
 	PP_addOrSetAttribute("type", pszSt, m_vecAllProps);

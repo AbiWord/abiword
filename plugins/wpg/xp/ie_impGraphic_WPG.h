@@ -37,7 +37,7 @@ public:
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
 	virtual UT_Confidence_t recognizeContents(GsfInput * input) override;
-	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return nullptr; }
 	virtual bool getDlgLabels(const char ** szDesc,
 			const char ** szSuffixList,
 			IEGraphicFileType *ft) override;

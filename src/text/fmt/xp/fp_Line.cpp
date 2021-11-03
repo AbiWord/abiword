@@ -64,13 +64,13 @@ fp_Line* fp_Line::s_pMapOwner = nullptr;
 
 #define STATIC_BUFFER_INITIAL 150
 
-UT_sint32 * fp_Line::s_pOldXs = NULL;
+UT_sint32 * fp_Line::s_pOldXs = nullptr;
 UT_uint32   fp_Line::s_iOldXsSize = 0;
 UT_uint32	fp_Line::s_iClassInstanceCounter = 0;
 
 fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) : 
 	fp_Container(FP_CONTAINER_LINE, pSectionLayout),
-	m_pBlock(NULL),
+	m_pBlock(nullptr),
 	m_iWidth(0),
 	m_iMaxWidth(0),
 	m_iClearToPos(0),
@@ -130,8 +130,8 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 							   //we use this to decide whether the above should be
 							   //deleted by the destructor
 
-	UT_ASSERT((getPrev() == NULL));
-	UT_ASSERT((getNext() == NULL));
+	UT_ASSERT((getPrev() == nullptr));
+	UT_ASSERT((getNext() == nullptr));
 }
 
 fp_Line::~fp_Line()
@@ -140,7 +140,7 @@ fp_Line::~fp_Line()
 	if(!s_iClassInstanceCounter)
 	{
 		delete [] s_pOldXs;
-		s_pOldXs = NULL;
+		s_pOldXs = nullptr;
 		s_iOldXsSize = 0;
 	}
 #ifdef USE_STATIC_MAP
@@ -268,7 +268,7 @@ void fp_Line::drawBorders(GR_Graphics * pG)
   // Now correct for printing
   //
   fp_Page * pPage = getPage();
-  if(pPage == NULL)
+  if(pPage == nullptr)
        return;
   if(pPage->getDocLayout()->getView() && pG->queryProperties(GR_Graphics::DGP_PAPER))
   {
@@ -364,7 +364,7 @@ bool    fp_Line::getAbsLeftRight(UT_sint32& left,UT_sint32& right)
 	// Correct for printing
 	//
 	fp_Page * pPage = getPage();
-	if(pPage == NULL)
+	if(pPage == nullptr)
 	    return false;
 	if(pPage->getDocLayout()->getView() &&  getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 	{
@@ -577,8 +577,8 @@ void fp_Line::calcBorderThickness(void)
 const fp_Line * fp_Line::getFirstInContainer(void) const
 {
   const fp_Container * pMyCon = getContainer();
-  if(pMyCon == NULL)
-    return NULL;
+  if(pMyCon == nullptr)
+    return nullptr;
   const fp_ContainerObject * pPrev = getPrev();
   const fp_ContainerObject * pCurrent = static_cast<const fp_ContainerObject*>(this);
   while(pPrev && (pPrev->getContainerType() == FP_CONTAINER_LINE) &&
@@ -595,8 +595,8 @@ const fp_Line * fp_Line::getFirstInContainer(void) const
 const fp_Line * fp_Line::getLastInContainer(void) const
 {
   const fp_Container * pMyCon = getContainer();
-  if(pMyCon == NULL)
-    return NULL;
+  if(pMyCon == nullptr)
+    return nullptr;
   const fp_ContainerObject * pNext = getNext();
   const fp_ContainerObject * pCurrent = static_cast<const fp_ContainerObject *>(this);
   while(pNext && (pNext->getContainerType() == FP_CONTAINER_LINE) &&
@@ -613,7 +613,7 @@ const fp_Line * fp_Line::getLastInContainer(void) const
 bool fp_Line::canDrawTopBorder(void) const
 {
   const fp_Line * pFirst = getFirstInContainer();
-  if(pFirst == NULL)
+  if(pFirst == nullptr)
     return false;
   //
   // This line could be wrapped at the same Y as the first line
@@ -621,7 +621,7 @@ bool fp_Line::canDrawTopBorder(void) const
   if((pFirst != this) && (pFirst->getY() != getY()))
      return false;
   fp_Container * pMyCon = getContainer();
-  if(pMyCon == NULL)
+  if(pMyCon == nullptr)
     return false;
   if(pFirst == pMyCon->getNthCon(0))
     return true;
@@ -640,7 +640,7 @@ bool fp_Line::canDrawTopBorder(void) const
 bool fp_Line::canDrawBotBorder(void) const
 {
   const fp_Line * pLast = getLastInContainer();
-  if(pLast == NULL)
+  if(pLast == nullptr)
     return false;
   //
   // This line could be wrapped at the same Y as the last line
@@ -648,13 +648,13 @@ bool fp_Line::canDrawBotBorder(void) const
   if((pLast != this) && (pLast->getY() != getY()))
      return false;
   fp_Container * pMyCon = getContainer();
-  if(pMyCon == NULL)
+  if(pMyCon == nullptr)
     return false;
   fp_Container * pNext = pLast->getNextContainerInSection();
-  if(pNext == NULL)
+  if(pNext == nullptr)
     return true;
   fp_Line * pNextL = static_cast<fp_Line *>(pNext);
-  if(pNextL->getContainer() == NULL)
+  if(pNextL->getContainer() == nullptr)
     return true;
   if(pNextL->getContainer() != pMyCon)
     return true;
@@ -694,7 +694,7 @@ bool fp_Line::assertLineListIntegrity(void)
 	UT_sint32 width = 0;
 	xxx_UT_DEBUGMSG(("For line %x \n",this));
 	fp_Run * pRunBlock = getFirstRun();
-	fp_Run * pRunLine = NULL;
+	fp_Run * pRunLine = nullptr;
 	for(k=0;k<getNumRunsInLine();k++)
 	{
 		pRunLine = getRunFromIndex(k);
@@ -832,7 +832,7 @@ UT_Option<UT_Rect> fp_Line::getScreenRect(void) const
 {
 	UT_sint32 xoff = 0;
 	UT_sint32 yoff = 0;
-	getScreenOffsets(NULL,xoff,yoff);
+	getScreenOffsets(nullptr,xoff,yoff);
 	if (getBlock() && getBlock()->hasBorders())
 	{
 		xoff -= getLeftThick();
@@ -873,15 +873,15 @@ void fp_Line::markDirtyOverlappingRuns(const UT_Rect & recScreen)
 fp_Container * fp_Line::getColumn(void) const
 {
 	fp_Container * pCon = getContainer();
-	if(pCon == NULL)
+	if(pCon == nullptr)
 	{
-		return NULL;
+		return nullptr;
 	}
 	else if(pCon->getContainerType() == FP_CONTAINER_FRAME)
         {
 	    fp_Page * pPage = static_cast<fp_FrameContainer *>(pCon)->getPage();
-	    if(pPage == NULL)
-	      return NULL;
+	    if(pPage == nullptr)
+	      return nullptr;
 	    fp_Container * pCol = static_cast<fp_Container *>(pPage->getNthColumnLeader(0));
 	    return pCol;
 
@@ -907,7 +907,7 @@ fp_Page * fp_Line::getPage(void) const
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1004,22 +1004,22 @@ void fp_Line::setContainer(fp_Container* pContainer)
 		return;
 	}
 
-	if (getContainer() && (pContainer != NULL))
+	if (getContainer() && (pContainer != nullptr))
 	{
 		xxx_UT_DEBUGMSG(("SetContainer clearScreen in fp_Line %x page %x \n",this,getPage())); 
 		clearScreen();
 	}
-	if(pContainer != NULL)
+	if(pContainer != nullptr)
 	{
 		getFillType().setParent(&pContainer->getFillType());
 	}
 	else
 	{
-		getFillType().setParent(NULL);
+		getFillType().setParent(nullptr);
 	}
 
 	fp_Container::setContainer(pContainer);
-	if(pContainer == NULL)
+	if(pContainer == nullptr)
 	{
 		return;
 	}
@@ -1088,7 +1088,7 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 	        {
 		     clearScreenFromRunToEnd(pRun);
 		}
-		pRun->setLine(NULL);
+		pRun->setLine(nullptr);
 	}
 
 	UT_sint32 ndx = m_vecRuns.findItem(pRun);
@@ -1204,11 +1204,11 @@ void fp_Line::remove(void)
 	{
 		xxx_UT_DEBUGMSG(("Removing line %x from container \n",this));
 		static_cast<fp_VerticalContainer *>(getContainer())->removeContainer(this);
-		setContainer(NULL);
+		setContainer(nullptr);
 	}
 #ifdef USE_STATIC_MAP
 	if (s_pMapOwner == this)
-		s_pMapOwner = NULL;
+		s_pMapOwner = nullptr;
 #endif
 	fp_Line * pNLine = static_cast<fp_Line *>(pNext);
 	if(pNLine && pNLine->isSameYAsPrevious())
@@ -1256,7 +1256,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 
 	// check all of the runs.
 
-	fp_Run* pClosestRun = NULL;
+	fp_Run* pClosestRun = nullptr;
 	UT_sint32 iClosestDistance = 0;
 
 	for (i=0; i<count; i++)
@@ -1403,9 +1403,9 @@ void fp_Line::setHeight(UT_sint32 i)
 
 void fp_Line::setBlock(fl_BlockLayout * pBlock)
 {
-    if(pBlock != NULL)
+    if(pBlock != nullptr)
     {
-      UT_ASSERT(m_pBlock == NULL);
+      UT_ASSERT(m_pBlock == nullptr);
       //      UT_ASSERT(pBlock->findLineInBlock(this) >= 0);
     }
     m_pBlock = pBlock;
@@ -1627,7 +1627,7 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 		m_iAscent = iNewAscent;
 		m_iDescent = iNewDescent;
 	}
-	if((getHeight() == 0) && (pLastRun != NULL))
+	if((getHeight() == 0) && (pLastRun != nullptr))
 	{
 		setHeight(pLastRun->getHeight());
 		m_iAscent = pLastRun->getAscent();
@@ -1648,7 +1648,7 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
 {
 	UT_sint32 count = m_vecRuns.getItemCount();
-	fp_Run * pRun = NULL;
+	fp_Run * pRun = nullptr;
 	if(count > 0 && static_cast<UT_sint32>(runIndex) < count)
 	{
 		pRun = m_vecRuns.getNthItem(runIndex);
@@ -1658,7 +1658,7 @@ fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
 
 void fp_Line::clearScreen(void)
 {
-	if(getBlock() == NULL)
+	if(getBlock() == nullptr)
 	{
 		return;
 	}
@@ -1725,7 +1725,7 @@ void fp_Line::clearScreen(void)
 			xxx_UT_DEBUGMSG(("ClearScreen height is %d \n",height));
 			// I have added the +1 to clear dirt after squiggles and
 			// revision underlines
-			if(getPage() == NULL)
+			if(getPage() == nullptr)
 			{
 			        getFillType().setIgnoreLineLevel(false);
 				return;
@@ -1857,10 +1857,10 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		UT_sint32 j = runIndex - 1;
 
 		// need to get previous _visual_ run
-		fp_Run * pPrev = j >= 0 ? getRunAtVisPos(j) : NULL;
+		fp_Run * pPrev = j >= 0 ? getRunAtVisPos(j) : nullptr;
 		
 		UT_sint32 leftClear = 0;
-		while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
+		while(j >= 0 && pPrev != nullptr && pPrev->getLength() == 0)
 		{
 			//pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
 			pPrev->markAsDirty();
@@ -1875,17 +1875,17 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 			pPrev->markAsDirty();
  
 		leftClear = pRun->getDescent();
-		if(j>0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
+		if(j>0 && pPrev != nullptr && pPrev->getType() == FPRUN_TEXT)
 		{
 			// the text run is not at the very left edge, so we need
 			// not to clear into the margin
 			leftClear = 0;
 		}
-		else if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_FIELD)
+		else if(j>=0 && pPrev != nullptr && pPrev->getType() == FPRUN_FIELD)
 		{
 			leftClear = 0;
 		}
-		else if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_IMAGE)
+		else if(j>=0 && pPrev != nullptr && pPrev->getType() == FPRUN_IMAGE)
 		{
 			leftClear = 0;
 		}
@@ -1919,13 +1919,13 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		// static_cast might fail after a table
 		// resulting in a runtime error and a potential crash
 		fp_Line * pPrevLine = dynamic_cast<fp_Line *>(getPrevContainerInSection());
-		if(pPrevLine != NULL && (pPrevLine->getContainerType() == FP_CONTAINER_LINE))
+		if(pPrevLine != nullptr && (pPrevLine->getContainerType() == FP_CONTAINER_LINE))
 		{
 			UT_sint32 xPrev=0;
 			UT_sint32 yPrev=0;
 
 			fp_Run * pLastRun = pPrevLine->getLastRun();
-			if(pLastRun != NULL)
+			if(pLastRun != nullptr)
 			{
 				pPrevLine->getScreenOffsets(pLastRun,xPrev,yPrev);
 				if((leftClear >0) && (yPrev > 0) && (yPrev == yoffLine))
@@ -1936,7 +1936,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		}
 		if(xoff == xoffLine)
 		        leftClear = m_iClearLeftOffset;
-		if(getPage() == NULL)
+		if(getPage() == nullptr)
 		{
 			xxx_UT_DEBUGMSG(("pl_Line _doClear no Page \n"));
 			getFillType().setIgnoreLineLevel(false);
@@ -2068,7 +2068,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 		return;
 	}
 
-	fp_Run * pRun = NULL;
+	fp_Run * pRun = nullptr;
 	UT_sint32 count =  m_vecRuns.getItemCount();
 	if(count > 0)
 	{
@@ -2209,7 +2209,7 @@ void fp_Line::draw(GR_Graphics* pG)
 		// shortcircuit drawing if we're not included in the dirty region
 		UT_Rect runRect(da.xoff, da.yoff, pRun->getWidth(), pRun->getHeight());
 
-		if (pRect == NULL || pRect->intersectsRect(&runRect))
+		if (pRect == nullptr || pRect->intersectsRect(&runRect))
 			pRun->draw(&da);
 
 		da.xoff -= pRun->getX();
@@ -2526,7 +2526,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 				}
 				UT_ASSERT(bRes);
 				
-				fp_Run *pScanRun = NULL;
+				fp_Run *pScanRun = nullptr;
 				UT_sint32 iScanWidth = 0;
 				pTabRun->setLeader(iTabLeader);
 				pTabRun->setTabType(iTabType);
@@ -2638,7 +2638,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 
 					case FL_TAB_DECIMAL:
 					{
-						UT_UCSChar *pDecimalStr =NULL;
+						UT_UCSChar *pDecimalStr =nullptr;
 						UT_uint32	runLen = 0;
 
 #if 1
@@ -3211,7 +3211,7 @@ void fp_Line::layout(void)
 
 bool fp_Line::containsFootnoteReference(void)
 {
-	fp_Run * pRun = NULL;
+	fp_Run * pRun = nullptr;
 	UT_sint32 i =0;
 	bool bFound = false;
 	for(i=0; (i< countRuns()) && !bFound; i++)
@@ -3232,10 +3232,10 @@ bool fp_Line::containsFootnoteReference(void)
 
 bool fp_Line::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*> * pvecFoots)
 {
-	fp_Run * pRun = NULL;
+	fp_Run * pRun = nullptr;
 	UT_uint32 i =0;
 	bool bFound = false;
-	fp_FootnoteContainer * pFC = NULL;
+	fp_FootnoteContainer * pFC = nullptr;
 	PT_DocPosition posStart = getBlock()->getPosition();
 	PT_DocPosition posEnd = posStart + getLastRun()->getBlockOffset() + getLastRun()->getLength();
 	posStart += getFirstRun()->getBlockOffset();
@@ -3268,7 +3268,7 @@ bool fp_Line::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*> * pv
 
 bool fp_Line::containsAnnotations(void)
 {
-	fp_Run * pRun = NULL;
+	fp_Run * pRun = nullptr;
 	UT_sint32 i =0;
 	bool bFound = false;
 	for(i=0; (i< countRuns()) && !bFound; i++)
@@ -3294,10 +3294,10 @@ bool fp_Line::containsAnnotations(void)
 
 bool fp_Line::getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*> * pvecAnns)
 {
-	fp_Run * pRun = NULL;
+	fp_Run * pRun = nullptr;
 	UT_uint32 i =0;
 	bool bFound = false;
-	fp_AnnotationContainer * pAC = NULL;
+	fp_AnnotationContainer * pAC = nullptr;
 	PT_DocPosition posStart = getBlock()->getPosition();
 	PT_DocPosition posEnd = posStart + getLastRun()->getBlockOffset() + getLastRun()->getLength();
 	posStart += getFirstRun()->getBlockOffset();
@@ -3487,7 +3487,7 @@ fp_Run* fp_Line::getLastRun(void) const
 fp_Run* fp_Line::getLastTextRun(void) const
 {
 	const UT_sint32 i = m_vecRuns.getItemCount();
-	fp_Run * pRun = NULL;
+	fp_Run * pRun = nullptr;
 	if(i <= 0)
 	{
 		pRun = getBlock()->getFirstRun();
@@ -3496,11 +3496,11 @@ fp_Run* fp_Line::getLastTextRun(void) const
 	else
 	{
 		pRun = m_vecRuns.getLastItem();
-		while(pRun != NULL && pRun->getType() != FPRUN_TEXT)
+		while(pRun != nullptr && pRun->getType() != FPRUN_TEXT)
 		{
 			pRun = pRun->getPrevRun();
 		}
-		if(pRun == NULL)
+		if(pRun == nullptr)
 		{
 			pRun = getBlock()->getFirstRun();
 		}
@@ -3573,7 +3573,7 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 
 void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 {
-	if(m_pBlock == NULL)
+	if(m_pBlock == nullptr)
 	{
 		return;
 	}
@@ -3726,7 +3726,7 @@ fp_Container*	fp_Line::getNextContainerInSection(void) const
 	{
 		return static_cast<fp_Container *>(pNextBlock->getFirstContainer());
 	}
-	return NULL;
+	return nullptr;
 }
 
 fp_Container*	fp_Line::getPrevContainerInSection(void) const
@@ -3766,7 +3766,7 @@ fp_Container*	fp_Line::getPrevContainerInSection(void) const
 	}
 
 
-	return NULL;
+	return nullptr;
 }
 
 bool	fp_Line::containsForcedColumnBreak(void) const
@@ -4373,7 +4373,7 @@ UT_uint32	fp_Line::getVisIndx(fp_Run* pRun)
 fp_Run *	fp_Line::getRunAtVisPos(UT_sint32 i)
 {
 	if(i >= m_vecRuns.getItemCount())
-		return NULL;
+		return nullptr;
 	return m_vecRuns.getNthItem(_getRunLogIndx(i));
 }
 

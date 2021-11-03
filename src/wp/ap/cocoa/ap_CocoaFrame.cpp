@@ -54,8 +54,8 @@ void AP_CocoaFrame::setXScrollRange(void)
 	UT_sint32 visibleWidth = pGr->tlu(lrintf(rect.size.width));
 	pFrameImpl->_setHVisible(visibleWidth);
 	UT_DEBUGMSG(("visibleWidth: %d, doc width:%d\n", visibleWidth, width));
-	if (m_pView == NULL) {
-		UT_DEBUGMSG(("m_pView is NULL\n"));
+	if (m_pView == nullptr) {
+		UT_DEBUGMSG(("m_pView is nullptr\n"));
 	}
 
 	UT_sint32 newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
@@ -80,8 +80,8 @@ void AP_CocoaFrame::setYScrollRange(void)
 	UT_sint32 visibleHeight = pGr->tlu(lrintf(rect.size.height));
 	pFrameImpl->_setVVisible(visibleHeight);
 	UT_DEBUGMSG(("visibleHeight: %d, doc height:%d\n", visibleHeight, height));
-	if (m_pView == NULL) {
-		UT_DEBUGMSG(("m_pView is NULL\n"));
+	if (m_pView == nullptr) {
+		UT_DEBUGMSG(("m_pView is nullptr\n"));
 	}
 
 	UT_sint32 newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
@@ -102,14 +102,14 @@ void AP_CocoaFrame::setYScrollRange(void)
 AP_CocoaFrame::AP_CocoaFrame()
 	: AP_Frame (new AP_CocoaFrameImpl(this))
 {
-	m_pData = NULL;
+	m_pData = nullptr;
 //	static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
 }
 
 AP_CocoaFrame::AP_CocoaFrame(AP_CocoaFrame * f)
 	: AP_Frame(static_cast<AP_Frame *>(f))
 {
-	m_pData = NULL;
+	m_pData = nullptr;
 }
 
 AP_CocoaFrame::~AP_CocoaFrame()
@@ -166,7 +166,7 @@ Cleanup:
 		delete pClone;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -239,7 +239,7 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(getFrameData());
 	UT_ASSERT(pFrameData);
 		
-	AP_CocoaTopRuler * pCocoaTopRuler = NULL;
+	AP_CocoaTopRuler * pCocoaTopRuler = nullptr;
 
 	UT_DEBUGMSG(("AP_CocoaFrame::toggleTopRuler %d, %p\n", 
 		     bRulerOn, (void*)pFrameData->m_pTopRuler));
@@ -271,7 +271,7 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 	else {
 		static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->_hideTopRulerNSView();
 		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
-		static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
+		static_cast<FV_View *>(m_pView)->setTopRuler(nullptr);
 	}
 	static_cast<AP_FrameData*>(m_pData)->m_pTopRuler = pCocoaTopRuler;
 }
@@ -300,7 +300,7 @@ void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 		if (pFrameData->m_pLeftRuler) {
 			DELETEP(pFrameData->m_pLeftRuler);
 			static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->_hideLeftRulerNSView();
-			static_cast<FV_View *>(m_pView)->setLeftRuler(NULL);
+			static_cast<FV_View *>(m_pView)->setLeftRuler(nullptr);
 		}
 		else {
 			UT_DEBUGMSG(("Left Ruler already hidden\n"));

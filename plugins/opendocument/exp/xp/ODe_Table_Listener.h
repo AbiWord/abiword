@@ -46,10 +46,10 @@ class ODe_Styles;
 class ODe_Table_Cell {
 public:
 
-    ODe_Table_Cell() : m_pTextContent(NULL) {}
+    ODe_Table_Cell() : m_pTextContent(nullptr) {}
 
     ~ODe_Table_Cell() {
-        if (m_pTextContent != NULL) {
+        if (m_pTextContent != nullptr) {
             ODe_gsf_output_close(m_pTextContent);
         }
     }
@@ -98,7 +98,7 @@ public:
 
     void write(GsfOutput* pTableOutput, const UT_UTF8String& rSpacesOffset);
 
-    // A NULL value means that this cell is covered, that it's a
+    // A nullptr value means that this cell is covered, that it's a
     // <table:covered-table-cell/> element
     ODe_Table_Cell** m_ppCells;
 

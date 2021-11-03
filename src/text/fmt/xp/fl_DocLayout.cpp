@@ -97,21 +97,21 @@ const FootnoteTypeDesc s_FootnoteTypeDesc[] = {
 	{ FOOTNOTE_TYPE_LOWER_ROMAN_PAREN, "(i), (ii), (iii) ...", "lower-roman-paren" },
 	{ FOOTNOTE_TYPE_UPPER_ROMAN, "I, II, III ...", "upper-roman" },
 	{ FOOTNOTE_TYPE_UPPER_ROMAN_PAREN, "(I), (II), (III) ...", "upper-roman-paren" },
-	{ _FOOTNOTE_TYPE_INVALID, NULL, NULL }
+	{ _FOOTNOTE_TYPE_INVALID, nullptr, nullptr }
 };
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
   : m_docViewPageSize("A4"),
     m_pG(pG),
     m_pDoc(doc),
-    m_pView(NULL),
+    m_pView(nullptr),
     m_lid((PL_ListenerId)-1),
-    m_pFirstSection(NULL),
-    m_pLastSection(NULL),
-	m_toSpellCheckHead(NULL),
-	m_toSpellCheckTail(NULL),
-    m_pPendingBlockForSpell(NULL),
-    m_pPendingWordForSpell(NULL),
+    m_pFirstSection(nullptr),
+    m_pLastSection(nullptr),
+	m_toSpellCheckHead(nullptr),
+	m_toSpellCheckTail(nullptr),
+    m_pPendingBlockForSpell(nullptr),
+    m_pPendingWordForSpell(nullptr),
     m_bSpellCheckCaps(true),
     m_bSpellCheckNumbers(true),
     m_bSpellCheckInternet(true),
@@ -119,11 +119,11 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_uDocBackgroundCheckReasons(0),
     m_bStopSpellChecking(false),
     m_bImSpellCheckingNow(false),
-    m_pPendingBlockForSmartQuote(NULL),
+    m_pPendingBlockForSmartQuote(nullptr),
     m_uOffsetForSmartQuote(0),
-    m_pBackgroundCheckTimer(NULL),
-    m_pPrefs(NULL),
-    m_pRedrawUpdateTimer(NULL),
+    m_pBackgroundCheckTimer(nullptr),
+    m_pPrefs(nullptr),
+    m_pRedrawUpdateTimer(nullptr),
     m_iSkipUpdates(0),
     m_bDeletingLayout(false),
     m_bisLayoutFilling(false),
@@ -144,16 +144,16 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_iFilled(0),
     m_bSpellCheckInProgress(false),
     m_bAutoGrammarCheck(false),
-    m_PendingBlockForGrammar(NULL),
+    m_PendingBlockForGrammar(nullptr),
     m_iGrammarCount(0),
     m_bFinishedInitialCheck(false),
     m_iPrevPos(0),
-    m_pQuickPrintGraphics(NULL),
+    m_pQuickPrintGraphics(nullptr),
     m_bIsQuickPrint(false),
     m_bDisplayAnnotations(false),
     m_bDisplayRDFAnchors(false),
-    m_pSavedContainer(NULL),
-    m_pRebuiltBlockLayout(NULL)
+    m_pSavedContainer(nullptr),
+    m_pRebuiltBlockLayout(nullptr)
 {
 #ifdef FMT_TEST
         m_pDocLayout = this;
@@ -221,7 +221,7 @@ FL_DocLayout::~FL_DocLayout()
 		fp_Page * pPage = static_cast<fp_Page *>(m_vecPages.getNthItem(count));
 		if(pPage->getPrev())
 		{
-			pPage->getPrev()->setNext(NULL);
+			pPage->getPrev()->setNext(nullptr);
 		}
 		m_vecPages.deleteNthItem(count);
 		delete pPage;
@@ -268,7 +268,7 @@ void  FL_DocLayout::setQuickPrint(GR_Graphics * pGraphics)
 	for (j = garbage.begin(); j != jend; j++)
 		delete *j;
 	garbage.clear();
-	if(pGraphics != NULL)
+	if(pGraphics != nullptr)
 	{
 	    m_bIsQuickPrint = true;
 	    m_pQuickPrintGraphics = pGraphics;
@@ -276,7 +276,7 @@ void  FL_DocLayout::setQuickPrint(GR_Graphics * pGraphics)
 	else
 	{
 	    m_bIsQuickPrint = false;
-	    m_pQuickPrintGraphics = NULL;
+	    m_pQuickPrintGraphics = nullptr;
 	    fl_BlockLayout * pBL = getFirstSection()->getFirstBlock();
 	    //
 	    // Clear out any hanging pointers
@@ -304,7 +304,7 @@ GR_Graphics * FL_DocLayout::getQuickPrintGraphics(void) const
 GR_EmbedManager * FL_DocLayout::getQuickPrintEmbedManager(const char * szEmbedType)
 {
   // Look in the current collection first.
-   GR_EmbedManager * pEmbed = NULL;
+   GR_EmbedManager * pEmbed = nullptr;
   std::map<std::string, GR_EmbedManager *>::iterator i;
   if ((i = m_mapQuickPrintEmbedManager.find(szEmbedType)) != m_mapQuickPrintEmbedManager.end())
     return (*i).second;
@@ -338,7 +338,7 @@ GR_EmbedManager * FL_DocLayout::getQuickPrintEmbedManager(const char * szEmbedTy
 GR_EmbedManager * FL_DocLayout::getEmbedManager(const char * szEmbedType)
 {
   // Look in the current collection first.
-  GR_EmbedManager * pEmbed = NULL;
+  GR_EmbedManager * pEmbed = nullptr;
   std::map<std::string, GR_EmbedManager *>::iterator i;
   if ((i = m_mapEmbedManager.find(szEmbedType)) != m_mapEmbedManager.end())
     return (*i).second;
@@ -372,7 +372,7 @@ GR_EmbedManager * FL_DocLayout::getEmbedManager(const char * szEmbedType)
 FootnoteType FL_DocLayout::FootnoteTypeFromString(const gchar * pszFootnoteType)
 {
 	FootnoteType iFootnoteType;
-	if (pszFootnoteType == NULL)
+	if (pszFootnoteType == nullptr)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_NUMERIC;
 	}
@@ -449,17 +449,17 @@ FootnoteType FL_DocLayout::FootnoteTypeFromString(const gchar * pszFootnoteType)
  */
 void FL_DocLayout::_lookupProperties(void)
 {
-	const gchar * pszFootnoteType = NULL;
+	const gchar * pszFootnoteType = nullptr;
 	const PP_AttrProp* pDocAP = getDocument()->getAttrProp();
 	UT_return_if_fail(pDocAP);
 	pDocAP->getProperty("document-footnote-type", (const gchar *&)pszFootnoteType);
 	m_FootnoteType = FootnoteTypeFromString(pszFootnoteType);
 
-	const gchar * pszEndnoteType = NULL;
+	const gchar * pszEndnoteType = nullptr;
 	pDocAP->getProperty("document-endnote-type", (const gchar *&)pszEndnoteType);
 	m_EndnoteType = FootnoteTypeFromString(pszEndnoteType);
 
-	const gchar * pszTmp = NULL;
+	const gchar * pszTmp = nullptr;
 	pDocAP->getProperty("document-footnote-initial", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
@@ -613,7 +613,7 @@ void FL_DocLayout::fillLayouts(void)
 {
 	_lookupProperties();
 	setLayoutIsFilling(true);
-	AP_StatusBar * pStatusBar = NULL;
+	AP_StatusBar * pStatusBar = nullptr;
 	m_docViewPageSize = getDocument()->m_docPageSize;
 	_setDocPageDimensions();
 	if(m_pView)
@@ -683,7 +683,7 @@ void FL_DocLayout::fillLayouts(void)
 	// bookmark in the doc during the fill. These assumptions now need to be verified and, if
 	// required, fixed
 	
-	fl_TOCLayout* pBadTOC = NULL;
+	fl_TOCLayout* pBadTOC = nullptr;
 	
 	//
 	// Maybe one day we can fill TOC's directly from the 
@@ -715,7 +715,7 @@ void FL_DocLayout::fillLayouts(void)
 	{
 		// hard luck -- we need to redo the layout, since the TOC probably changed size
 		fl_SectionLayout * pSL = pBadTOC->getSectionLayout();
-		fl_DocSectionLayout * pDSL = NULL;
+		fl_DocSectionLayout * pDSL = nullptr;
 		
 		if(pSL->getContainerType() == FL_CONTAINER_DOCSECTION)
 		{
@@ -767,7 +767,7 @@ void FL_DocLayout::fillLayouts(void)
 		// The requested page for some frames does not exists.
 		// Insert all remaining frames on the last page.
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		fp_FrameContainer * pFrame = NULL;
+		fp_FrameContainer * pFrame = nullptr;
 		UT_sint32 k = 0;
 		UT_sint32 kmax = m_vecFramesToBeInserted.getItemCount();
 		fp_Page * pPage = getLastPage();
@@ -812,15 +812,15 @@ bool FL_DocLayout::loadPendingObjects(void)
 	if(!pView)
 	        return false;
 	PD_Document * pDoc = getDocument();
-        ImagePage * pImagePage = NULL;
+        ImagePage * pImagePage = nullptr;
 	UT_sint32 i = 0;
 	pImagePage = pDoc->getNthImagePage(i);
 	UT_UTF8String sVal,sProp;
 	bool bOK = false;
 	PT_DocPosition pos = 0;
-	fp_Page * pPage = NULL;
+	fp_Page * pPage = nullptr;
 	UT_UTF8String allProps;
-	fl_DocSectionLayout * pDSL = NULL;
+	fl_DocSectionLayout * pDSL = nullptr;
 	for(i=0;pImagePage;pImagePage = pDoc->getNthImagePage(++i))
         {
 		UT_UTF8String sID = *pImagePage->getImageId();
@@ -847,7 +847,7 @@ bool FL_DocLayout::loadPendingObjects(void)
 			PT_STRUX_IMAGE_DATAID, sID.utf8_str(),
 			"props", allProps.utf8_str()
 		};
-		pf_Frag_Strux * pfFrame = NULL;
+		pf_Frag_Strux * pfFrame = nullptr;
 		pDoc->insertStrux(pos, PTX_SectionFrame, attributes, PP_NOPROPS, &pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
 		pDoc->insertStrux(posFrame+1,PTX_EndFrame);
@@ -892,7 +892,7 @@ bool FL_DocLayout::loadPendingObjects(void)
 	    PP_PropertyVector attributes = {
 			"props", allProps.utf8_str()
 		};
-	    pf_Frag_Strux * pfFrame = NULL;
+	    pf_Frag_Strux * pfFrame = nullptr;
 	    pDoc->insertStrux(pos, PTX_SectionFrame, attributes, PP_NOPROPS, &pfFrame);
 	    PT_DocPosition posFrame = pfFrame->getPos();
 	    pDoc->insertStrux(posFrame+1,PTX_EndFrame);
@@ -946,10 +946,10 @@ bool FL_DocLayout::AnchoredObjectHelper(double x, double y, UT_sint32 iPage, UT_
 	// as the properties that define this as a positioned image
 	// positioned relative to a page.
 	//
-	sVal = UT_formatDimensionedValue(x,"in", NULL);
+	sVal = UT_formatDimensionedValue(x,"in", nullptr);
 	sProp="frame-page-xpos";
 	UT_UTF8String_setProperty(allProps,sProp,sVal);
-	sVal = UT_formatDimensionedValue(y,"in", NULL);
+	sVal = UT_formatDimensionedValue(y,"in", nullptr);
 	sProp="frame-page-ypos";
 	UT_UTF8String_setProperty(allProps,sProp,sVal);
 	sProp="position-to";
@@ -960,7 +960,7 @@ bool FL_DocLayout::AnchoredObjectHelper(double x, double y, UT_sint32 iPage, UT_
 	// Position the object immediately after the closest block
 	//
 	fl_BlockLayout * pBL = findBlockAtPosition(pos);
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 	    return false;
 	}
@@ -977,7 +977,7 @@ bool FL_DocLayout::AnchoredObjectHelper(double x, double y, UT_sint32 iPage, UT_
 	    pPrevBL = pBL;
 	    pBL = pBL->getPrevBlockInDocument();
 	}
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 	    pBL = pPrevBL;
 	}
@@ -1003,7 +1003,7 @@ void FL_DocLayout::setSaveContainerPointer( fp_Container * pContainer)
 {
         m_pSavedContainer = pContainer;
 	pContainer->setAllowDelete(false);
-	m_pRebuiltBlockLayout = NULL;
+	m_pRebuiltBlockLayout = nullptr;
 }
 
 void FL_DocLayout::setRebuiltBlock(fl_BlockLayout *pBlock)
@@ -1039,7 +1039,7 @@ bool FL_DocLayout::needsRebreak(void)
     if(pLastSec)
     {
         fl_ContainerLayout * pCL = pLastSec->getLastLayout();
-	fl_BlockLayout * pBL = NULL;
+	fl_BlockLayout * pBL = nullptr;
 	if(pCL && (pCL->getContainerType() == FL_CONTAINER_BLOCK))
         {
 	    pBL = static_cast<fl_BlockLayout *>(pCL);
@@ -1055,12 +1055,12 @@ bool FL_DocLayout::needsRebreak(void)
 	if(pBL)
 	{
 	    fp_Line * pLine = static_cast<fp_Line *>(pBL->getLastContainer());
-	    if(pLine == NULL)
+	    if(pLine == nullptr)
 	    {
 	        return true;
 	    }
 	    fp_Page * pPage = pLine->getPage();
-	    if(pPage == NULL)
+	    if(pPage == nullptr)
 	    {
 	        return true;
 	    }
@@ -1135,7 +1135,7 @@ void FL_DocLayout::refreshRunProperties(void)
 void FL_DocLayout::setFramePageNumbers(UT_sint32 iStartPage)
 {
       UT_sint32 iPage = 0;
-      fp_Page * pPage = NULL;
+      fp_Page * pPage = nullptr;
       for(iPage=iStartPage; iPage<countPages();iPage++)
       {
 	  pPage = getNthPage(iPage);
@@ -1156,8 +1156,8 @@ fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayo
 		return(pFL);
 	}
 	m_pDoc->beginUserAtomicGlob();
-	const PP_AttrProp* pFrameAP = NULL;
-	PP_AttrProp * pUpdatedFrameAP = NULL;
+	const PP_AttrProp* pFrameAP = nullptr;
+	PP_AttrProp * pUpdatedFrameAP = nullptr;
 	pFL->getAP(pFrameAP);
 	pUpdatedFrameAP = pFrameAP->cloneWithReplacements(attributes, properties, false);
 
@@ -1178,10 +1178,10 @@ fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayo
 
 	// Delete Frame
 	pf_Frag_Strux* sdhStart =  pFL->getStruxDocHandle();
-	pf_Frag_Strux* sdhEnd = NULL;
+	pf_Frag_Strux* sdhEnd = nullptr;
 	posStart = m_pDoc->getStruxPosition(sdhStart);
 	m_pDoc->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
-	if(sdhEnd == NULL)
+	if(sdhEnd == nullptr)
 	{
 		posEnd = posStart+1;
 	}
@@ -1190,11 +1190,11 @@ fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayo
 		posEnd = m_pDoc->getStruxPosition(sdhEnd)+1;
 	}
 	UT_uint32 iRealDeleteCount;
-	PP_AttrProp * p_AttrProp_Before = NULL;
+	PP_AttrProp * p_AttrProp_Before = nullptr;
 	m_pDoc->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
-	pFL = NULL;
+	pFL = nullptr;
 	// Insert the new frame struxes
-	pf_Frag_Strux * pfFrame = NULL;
+	pf_Frag_Strux * pfFrame = nullptr;
 	m_pDoc->insertStrux(newBlock->getPosition(),PTX_SectionFrame,pUpdatedFrameAP->getAttributes(),
 						pUpdatedFrameAP->getProperties(),&pfFrame);
 	PT_DocPosition posFrame = pfFrame->getPos();
@@ -1221,7 +1221,7 @@ fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayo
 	else
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1263,12 +1263,12 @@ fp_FrameContainer * FL_DocLayout::findFramesToBeInserted(fp_Page * pPage)
 	UT_sint32 count = m_vecFramesToBeInserted.getItemCount();
 	if (count == 0)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	UT_sint32 iPage = pPage->getPageNumber();
 	UT_sint32 k = 0;
-	fp_FrameContainer * pFrame = NULL;
+	fp_FrameContainer * pFrame = nullptr;
 	for (k = 0;k < count;k++)
 	{
 		pFrame = m_vecFramesToBeInserted.getNthItem(k);
@@ -1277,7 +1277,7 @@ fp_FrameContainer * FL_DocLayout::findFramesToBeInserted(fp_Page * pPage)
 			return pFrame;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -1305,7 +1305,7 @@ void FL_DocLayout::setView(FV_View* pView)
 			m_pPrefs = pPrefs;
 
 			// initialize the vars here
-			_prefsListener( pPrefs, NULL, this );
+			_prefsListener( pPrefs, nullptr, this );
 
 			// keep updating itself
 			pPrefs->addListener ( _prefsListener, this );
@@ -1331,7 +1331,7 @@ void FL_DocLayout::setView(FV_View* pView)
  */
 void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType) const
 {
-        fl_AutoNum autoCalc(0,0,NUMBERED_LIST,0,NULL,NULL,getDocument(),getView());
+        fl_AutoNum autoCalc(0,0,NUMBERED_LIST,0,nullptr,nullptr,getDocument(),getView());
 	switch (iFootType)
 	{
 	case FOOTNOTE_TYPE_NUMERIC:
@@ -1445,7 +1445,7 @@ fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i) const
 	UT_ASSERT(i>=0);
 	if(i >= m_vecFootnotes.getItemCount())
 	{
-		return NULL;
+		return nullptr;
 	}
 	else
 	{
@@ -1472,8 +1472,8 @@ void FL_DocLayout::removeFootnote(fl_FootnoteLayout * pFL)
 fl_FootnoteLayout * FL_DocLayout::findFootnoteLayout(UT_uint32 footpid) const
 {
 	UT_sint32 i = 0;
-	fl_FootnoteLayout * pTarget = NULL;
- 	fl_FootnoteLayout * pFL = NULL;
+	fl_FootnoteLayout * pTarget = nullptr;
+	fl_FootnoteLayout * pFL = nullptr;
 	for(i=0; i<m_vecFootnotes.getItemCount(); i++)
 	{
 		pFL = getNthFootnote(i);
@@ -1495,15 +1495,15 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid) const
 	UT_sint32 i =0;
 	UT_sint32 pos = m_iFootnoteVal;
 	fl_FootnoteLayout * pTarget = findFootnoteLayout(footpid);
- 	fl_FootnoteLayout * pFL = NULL;
-	if(pTarget== NULL)
+	fl_FootnoteLayout * pFL = nullptr;
+	if(pTarget== nullptr)
 	{
 		return 0;
 	}
 	PT_DocPosition posTarget = pTarget->getDocPosition();
 	fl_DocSectionLayout * pDocSecTarget = pTarget->getDocSectionLayout();
 	fp_Container * pCon = pTarget->getFirstContainer();
-	fp_Page * pPageTarget = NULL;
+	fp_Page * pPageTarget = nullptr;
 	if(pCon)
 	{
 		pPageTarget = pCon->getPage();
@@ -1528,7 +1528,7 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid) const
 		else if(m_bRestartFootPage)
 		{
 			pCon = pFL->getFirstContainer();
-			fp_Page * pPage = NULL;
+			fp_Page * pPage = nullptr;
 			if(pCon)
 			{
 				pPage = pCon->getPage();
@@ -1568,8 +1568,8 @@ UT_uint32 FL_DocLayout::countAnnotations(void) const
  */
 bool  FL_DocLayout::collapseAnnotations(void)
 {
-  fl_AnnotationLayout * pFL = NULL;
-  fl_BlockLayout * pBL = NULL;
+  fl_AnnotationLayout * pFL = nullptr;
+  fl_BlockLayout * pBL = nullptr;
   UT_uint32 i = 0;
   for(i= 0; i<countAnnotations(); i++)
   {
@@ -1618,7 +1618,7 @@ fl_AnnotationLayout * FL_DocLayout::getNthAnnotation(UT_sint32 i) const
 	UT_ASSERT(i>=0);
 	if(i >= m_vecAnnotations.getItemCount())
 	{
-		return NULL;
+		return nullptr;
 	}
 	else
 	{
@@ -1657,8 +1657,8 @@ void FL_DocLayout::removeAnnotation(fl_AnnotationLayout * pFL)
 fl_AnnotationLayout * FL_DocLayout::findAnnotationLayout(UT_uint32 annpid) const
 {
 	UT_sint32 i = 0;
-	fl_AnnotationLayout * pTarget = NULL;
- 	fl_AnnotationLayout * pFL = NULL;
+	fl_AnnotationLayout * pTarget = nullptr;
+	fl_AnnotationLayout * pFL = nullptr;
 	for(i=0; i<m_vecAnnotations.getItemCount(); i++)
 	{
 		pFL = getNthAnnotation(i);
@@ -1679,7 +1679,7 @@ UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid) const
 {
 	UT_sint32 i =0;
 	UT_sint32 pos = 0;
- 	fl_AnnotationLayout * pAL = NULL;
+	fl_AnnotationLayout * pAL = nullptr;
 	for(i=0; i<m_vecAnnotations.getItemCount(); i++)
 	{
 		pAL = getNthAnnotation(i);
@@ -1701,7 +1701,7 @@ UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid) const
  */
 fl_DocSectionLayout * FL_DocLayout::getDocSecForEndnote(fp_EndnoteContainer * pECon) const
 {
-	fl_DocSectionLayout *pDSL = NULL;
+	fl_DocSectionLayout *pDSL = nullptr;
 	if(getPlaceEndAtSecEnd())
 	{
 		fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(pECon->getSectionLayout());
@@ -1760,12 +1760,12 @@ void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
 {
 	fl_DocSectionLayout * pDSL = getDocSecForEndnote(pECon);
 	fp_Container * pCon = pDSL->getFirstEndnoteContainer();
-	if(pCon == NULL)
+	if(pCon == nullptr)
 	{
 		pDSL->setFirstEndnoteContainer(pECon);
 		pDSL->setLastEndnoteContainer(pECon);
-		pECon->setNext(NULL);
-		pECon->setPrev(NULL);
+		pECon->setNext(nullptr);
+		pECon->setPrev(nullptr);
 		fp_Column * pCol2 =  static_cast<fp_Column *>(pDSL->getLastContainer());
 		if(pCol2)
 		{
@@ -1777,7 +1777,7 @@ void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
 		}
 		else
 		{
-			fp_Column * pCol = static_cast<fp_Column *>(pDSL->getNewContainer(NULL));
+			fp_Column * pCol = static_cast<fp_Column *>(pDSL->getNewContainer(nullptr));
 			pCol->addContainer(pECon);
 //
 // No height defined yet. Can't layout
@@ -1831,13 +1831,13 @@ void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
 		pETmp = static_cast<fp_EndnoteContainer *>(pDSL->getLastEndnoteContainer());
 		pETmp->setNext(pECon);
 		pECon->setPrev(pETmp);
-		pECon->setNext(NULL);
+		pECon->setNext(nullptr);
 		pDSL->setLastEndnoteContainer(pECon);
 		fp_Column * pCol = static_cast<fp_Column *>(pETmp->getContainer());
 		if(!pCol)
 		{
 			pCol = static_cast<fp_Column *>(pDSL->getLastContainer());
-			if(pCol == NULL)
+			if(pCol == nullptr)
 			{
 				pCol = static_cast<fp_Column *>(pDSL->getNewContainer());
 			}
@@ -1870,7 +1870,7 @@ fl_EndnoteLayout * FL_DocLayout::getNthEndnote(UT_sint32 i) const
 	UT_ASSERT(i>=0);
 	if(i >= m_vecEndnotes.getItemCount())
 	{
-		return NULL;
+		return nullptr;
 	}
 	else
 	{
@@ -1897,8 +1897,8 @@ void FL_DocLayout::removeEndnote(fl_EndnoteLayout * pFL)
 fl_EndnoteLayout * FL_DocLayout::findEndnoteLayout(UT_uint32 footpid) const
 {
 	UT_sint32 i = 0;
-	fl_EndnoteLayout * pTarget = NULL;
- 	fl_EndnoteLayout * pFL = NULL;
+	fl_EndnoteLayout * pTarget = nullptr;
+	fl_EndnoteLayout * pFL = nullptr;
 	for(i=0; i<m_vecEndnotes.getItemCount(); i++)
 	{
 		pFL = getNthEndnote(i);
@@ -1920,8 +1920,8 @@ UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid) const
 	UT_sint32 i =0;
 	UT_sint32 pos = m_iEndnoteVal;
 	fl_EndnoteLayout * pTarget = findEndnoteLayout(footpid);
- 	fl_EndnoteLayout * pFL = NULL;
-	if(pTarget== NULL)
+	fl_EndnoteLayout * pFL = nullptr;
+	if(pTarget== nullptr)
 	{
 		return 0;
 	}
@@ -1964,7 +1964,7 @@ fl_TOCLayout * FL_DocLayout::getNthTOC(UT_sint32 i) const
 {
 	if( i >= getNumTOCs())
 	{
-		return NULL;
+		return nullptr;
 	}
 	return m_vecTOC.getNthItem(i);
 }
@@ -2231,7 +2231,7 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 				      bool isField) const
 {
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
-	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, true);
+	const char* pszField	= PP_evalProperty("field-font",nullptr,pBlockAP,nullptr, m_pDoc, true);
 	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
@@ -2241,7 +2241,7 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszLang     = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
 	xxx_UT_DEBUGMSG(("findFont::field-font is %s isField %d \n",pszField,isField));
-	if ((pszField != NULL) && isField && (strcmp(pszField, "NULL") != 0))
+	if ((pszField != nullptr) && isField && (strcmp(pszField, "NULL") != 0))
 		pszFamily = pszField;
 
 	xxx_UT_DEBUGMSG(("findFont::pszFamily is %s \n",pszFamily));
@@ -2252,7 +2252,7 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
-	if(pG==NULL)
+	if(pG==nullptr)
 	{
 	    return m_pG->findFont(pszFamily, pszStyle,
 						  pszVariant, pszWeight,
@@ -2277,7 +2277,7 @@ bool FL_DocLayout::setDocViewPageSize(const PP_AttrProp * pAP)
 {
        PP_PropertyVector pProps = pAP->getProperties();
        FV_View * pView = getView();
-       XAP_Frame * pFrame = NULL;
+       XAP_Frame * pFrame = nullptr;
        UT_sint32 iZoom = 100;
        if(pView)
 	    pFrame = static_cast<XAP_Frame *>(pView->getParentData());
@@ -2319,7 +2319,7 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 				      bool isField) const
 {
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
-	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, true);
+	const char* pszField	= PP_evalProperty("field-font",nullptr,pBlockAP,nullptr, m_pDoc, true);
 	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
@@ -2328,7 +2328,7 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszLang     = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
-	if (pszField != NULL && isField && strcmp(pszField, "NULL"))
+	if (pszField != nullptr && isField && strcmp(pszField, "NULL"))
 		pszFamily = pszField;
 
 	// for superscripts and subscripts, we'll automatically shrink the font size
@@ -2348,7 +2348,7 @@ void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, f
 {
 	fl_DocSectionLayout * pCur = pDSL;
 	pDSL->doclistener_changeStrux(pcrx);
-	while(pCur != NULL)
+	while(pCur != nullptr)
 	{
 		if(m_pDoc->isMarginChangeOnly())
 		{
@@ -2365,7 +2365,7 @@ void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, f
 		return;
 	}
 	pCur = pDSL;
-	while(pCur != NULL)
+	while(pCur != nullptr)
 	{
 		pCur->updateDocSection();
 		pCur = pCur->getNextDocSection();
@@ -2394,7 +2394,7 @@ fp_Page* FL_DocLayout::getNthPage(int n) const
 {
 	UT_ASSERT(m_vecPages.getItemCount() > 0);
 	if(n >= m_vecPages.getItemCount())
-	  return NULL;
+	  return nullptr;
 	return m_vecPages.getNthItem(n);
 }
 
@@ -2402,7 +2402,7 @@ fp_Page* FL_DocLayout::getFirstPage() const
 {
 	if (m_vecPages.getItemCount() == 0)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	return m_vecPages.getNthItem(0);
@@ -2412,7 +2412,7 @@ fp_Page* FL_DocLayout::getLastPage() const
 {
 	if (m_vecPages.getItemCount() == 0)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	return m_vecPages.getNthItem(m_vecPages.getItemCount()-1);
@@ -2432,8 +2432,8 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
 	{
 		pPage->getNext()->setPrev(pPage->getPrev());
 	}
-	pPage->setPrev(NULL);
-	pPage->setNext(NULL);
+	pPage->setPrev(nullptr);
+	pPage->setNext(nullptr);
 	m_vecPages.deleteNthItem(ndx);
 	delete pPage;
 	if(ndx < countPages())
@@ -2462,7 +2462,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	}
 	else
 	{
-		pLastPage = NULL;
+		pLastPage = nullptr;
 	}
 
 	fp_Page* pPage = new fp_Page(	this,
@@ -2471,7 +2471,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 									pOwner);
 	if (pLastPage)
 	{
-		UT_ASSERT(pLastPage->getNext() == NULL);
+		UT_ASSERT(pLastPage->getNext() == nullptr);
 
 		pLastPage->setNext(pPage);
 	}
@@ -2495,9 +2495,9 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
   Find block at document position
   \param pos Document position
   \return Block at specified position.
-  If bLookOnlyBefore = true, it returns NULL if no block can be found
+  If bLookOnlyBefore = true, it returns nullptr if no block can be found
   If bLookOnlyBefore = false, it returns the first block to the right of
-  that position (it may still return NULL).
+  that position (it may still return nullptr).
 */
 fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLookOnlyBefore) const
 {
@@ -2538,7 +2538,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLook
 	{
 		fl_Layout * pL = static_cast<fl_Layout *>(sfh);
 		if(!pL)
-			return NULL;
+			return nullptr;
 
 		switch (pL->getType())
 		{
@@ -2555,20 +2555,20 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLook
 		default:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			// We asked for a block, and we got a section.  Bad
-			return NULL;
+			return nullptr;
 		}
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 
-	if(pBL== NULL)
+	if(pBL== nullptr)
 	{
 	  //
 	  // Give up!
 	  //
-	     return NULL;
+	     return nullptr;
 	}
 	
 	fl_ContainerLayout * pMyC = pBL->myContainingLayout();
@@ -2581,7 +2581,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLook
 	if((pMyC->getContainerType() == FL_CONTAINER_HDRFTR)
 	      || (pMyC->getContainerType() == FL_CONTAINER_SHADOW))
 	{
-		fl_HdrFtrShadow * pShadow = NULL;
+		fl_HdrFtrShadow * pShadow = nullptr;
 		FV_View * pView = getView();
 		if(pView && pView->isHdrFtrEdit())
 		{
@@ -2601,7 +2601,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLook
 				  }
 				  pCL = pCL->myContainingLayout();
 				}
-				fl_HdrFtrSectionLayout * pHF = NULL;
+				fl_HdrFtrSectionLayout * pHF = nullptr;
 				if(pCL && pCL->getContainerType() == FL_CONTAINER_HDRFTR)
 				{ 
 				     pHF = static_cast<fl_HdrFtrSectionLayout *>(pCL);
@@ -2618,7 +2618,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLook
 					}
 					else
 					{
-						return NULL;
+						return nullptr;
 					}
 				}
 				// Ok, we're really confused now, point is nowhere to be found.
@@ -2638,8 +2638,8 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLook
 		{
 			pShadow = static_cast<fl_HdrFtrSectionLayout *>(pMyC)->getFirstShadow();
 		}
-		fl_BlockLayout * ppBL = NULL;
-		if(pShadow != NULL)
+		fl_BlockLayout * ppBL = nullptr;
+		if(pShadow != nullptr)
 		{
 			ppBL = static_cast<fl_BlockLayout *>(pShadow->findMatchingContainer(pBL));
 		}
@@ -2701,7 +2701,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos) con
 	{
 		fl_Layout * pL = (fl_Layout *)sfh;
 		if(!pL)
-			return NULL;
+			return nullptr;
 
 		switch (pL->getType())
 		{
@@ -2713,18 +2713,18 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos) con
 		default:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			// We asked for a block, and we got a section.  Bad
-			return NULL;
+			return nullptr;
 		}
 	}
 	else
 	{
 		UT_ASSERT_HARMLESS(0);
-		return NULL;
+		return nullptr;
 	}
 
 	if(pBL->getSectionLayout()->getType() == FL_SECTION_HDRFTR)
 	{
-		fl_HdrFtrShadow * pShadow = NULL;
+		fl_HdrFtrShadow * pShadow = nullptr;
 		FV_View * pView = getView();
 		if(pView && pView->isHdrFtrEdit())
 		{
@@ -2757,8 +2757,8 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos) con
 		{
 			pShadow = ((fl_HdrFtrSectionLayout *) pBL->getSectionLayout())->getFirstShadow();
 		}
-		fl_BlockLayout * ppBL = NULL;
-		if(pShadow != NULL)
+		fl_BlockLayout * ppBL = nullptr;
+		if(pShadow != nullptr)
 			ppBL = (fl_BlockLayout *) pShadow->findMatchingContainer(pBL);
 		else
 		{
@@ -2870,7 +2870,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 //
 	fl_DocSectionLayout * pStart = pFirstDSL;
 //	fl_DocSectionLayout * pStart = pFirstDSL->getPrevDocSection();
-//	if(pStart == NULL)
+//	if(pStart == nullptr)
 //	{
 //		pStart = pFirstDSL;
 //	}
@@ -2953,7 +2953,7 @@ void FL_DocLayout::updateLayout()
 		}
 		pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 	}
-	if(pSL == NULL)
+	if(pSL == nullptr)
 	{
 		deleteEmptyColumnsAndPages();
 		return;
@@ -2991,7 +2991,7 @@ void FL_DocLayout::updateColor()
 		pDSL->setPaperColor();
 		pDSL = pDSL->getNextDocSection();
 	}
-	fp_Page * pPage = NULL;
+	fp_Page * pPage = nullptr;
 	UT_sint32 i =0;
 	for(i=0; i<m_vecPages.getItemCount(); i++)
 	{
@@ -3074,7 +3074,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 			// A pending word would be bad. Not sure why it's not
 			// ignored once autospell is off, but for now it should
 			// definitely be annulled.
-			setPendingWordForSpell(NULL, NULL);
+			setPendingWordForSpell(nullptr, nullptr);
 		}
 	}
 }
@@ -3147,7 +3147,7 @@ FL_DocLayout::_toggleAutoGrammar(bool bGrammar)
 
 void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 {
-	setPendingSmartQuote(NULL, 0);  // avoid surprises
+	setPendingSmartQuote(nullptr, 0);  // avoid surprises
 	if (bSQ)
 	{
 		addBackgroundCheckReason(bgcrSmartQuotes);
@@ -3254,7 +3254,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 
 	fl_BlockLayout *pB = pDocLayout->spellQueueHead();
 	xxx_UT_DEBUGMSG(("Spellchecking block %x \n",pB));
-	if (pB != NULL)
+	if (pB != nullptr)
 	{
 		// This looping seems like a lot of wasted effort when we
 		// don't define meaning for most of the bits, but it's
@@ -3413,7 +3413,7 @@ FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 iReason,
 		// Add block if it's not already in the queue. Add it either
 		// at the head, or at the tail.
 		if (bHead)
-			pBlock->enqueueToSpellCheckAfter(NULL);
+			pBlock->enqueueToSpellCheckAfter(nullptr);
 		else
 			pBlock->enqueueToSpellCheckAfter(m_toSpellCheckTail);
 	}
@@ -3421,24 +3421,24 @@ FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 iReason,
 	{
 		// Block is already in the queue, bubble it to the start
 		pBlock->dequeueFromSpellCheck();
-		pBlock->enqueueToSpellCheckAfter(NULL);
+		pBlock->enqueueToSpellCheckAfter(nullptr);
 	}
 }
 
 void FL_DocLayout::dequeueAll(void)
 {
 	fl_BlockLayout *pB = spellQueueHead();
-	while (pB != NULL)
+	while (pB != nullptr)
 	{
 		fl_BlockLayout *pNext = pB->nextToSpell();
 		pB->clearQueueing();
 		pB = pNext;
 	}
-	setSpellQueueHead(NULL);
-	setSpellQueueTail(NULL);
+	setSpellQueueHead(nullptr);
+	setSpellQueueTail(nullptr);
 	UT_DEBUGMSG(("Dequeue all \n"));
 
-	m_PendingBlockForGrammar = NULL;
+	m_PendingBlockForGrammar = nullptr;
 	m_bStopSpellChecking = true;
 	if(m_pBackgroundCheckTimer)
 	{
@@ -3511,7 +3511,7 @@ void FL_DocLayout::setPendingBlockForGrammar(fl_BlockLayout * pBL)
   xxx_UT_DEBUGMSG(("Pending called with block %x pending %x \n",pBL,m_PendingBlockForGrammar));
   if(!m_bAutoGrammarCheck)
     return;
-  if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
+  if((m_PendingBlockForGrammar != nullptr) && (m_PendingBlockForGrammar != pBL))
     {
       xxx_UT_DEBUGMSG(("Block %x queued \n",m_PendingBlockForGrammar));
       queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar,true);
@@ -3529,10 +3529,10 @@ void FL_DocLayout::triggerPendingBlock(fl_BlockLayout * pBL)
   xxx_UT_DEBUGMSG(("Trigger called with block %x pending %x \n",pBL,m_PendingBlockForGrammar));
   if(!m_bAutoGrammarCheck)
     return;
-  if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
+  if((m_PendingBlockForGrammar != nullptr) && (m_PendingBlockForGrammar != pBL))
     {
       queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar,true);
-      m_PendingBlockForGrammar = NULL;
+      m_PendingBlockForGrammar = nullptr;
      }
 }
 
@@ -3557,10 +3557,10 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	if(pBlock == m_PendingBlockForGrammar)
 	  {
 	    xxx_UT_DEBUGMSG(("Dequeue block %x in dequeue \n",pBlock));
-	    m_PendingBlockForGrammar = NULL;
+	    m_PendingBlockForGrammar = nullptr;
 	  }
 	// When queue is empty, kill timer
-	if (spellQueueHead() == NULL)
+	if (spellQueueHead() == nullptr)
 	{
 		m_bStopSpellChecking = true;
 		if(m_pBackgroundCheckTimer)
@@ -3582,7 +3582,7 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
   \param pBlock Block
   \param pWord  Region
 
-  If called with NULL arguments, any prior marked region will be
+  If called with nullptr arguments, any prior marked region will be
   freed. Callers must reuse pWord (by calling getPendingWordForSpell)
   when set.
 */
@@ -3639,10 +3639,10 @@ FL_DocLayout::checkPendingWordForSpell(void)
 	UT_ASSERT(m_pPendingWordForSpell);
 	bUpdate = m_pPendingBlockForSpell->checkWord(m_pPendingWordForSpell);
 
-	m_pPendingWordForSpell = NULL;	// NB: already freed by checkWord
+	m_pPendingWordForSpell = nullptr;	// NB: already freed by checkWord
 
 	// Not pending any more
-	setPendingWordForSpell(NULL, NULL);
+	setPendingWordForSpell(nullptr, nullptr);
 
 	m_bSpellCheckInProgress = false;
 	
@@ -3695,7 +3695,7 @@ FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock,
  * and updates the m_pFirstSection and m_pLastSection member variables
  * accordingly.
  * The structure of this linked list is as follows.
- *    pDSL->pDSL->....pDSL->pEndnoteSL->pHdrFtrSL->pHdrFtrSL->NULL
+ *    pDSL->pDSL->....pDSL->pEndnoteSL->pHdrFtrSL->pHdrFtrSL->nullptr
  *     ^                ^
  *m_pFirstSection   m_pLastSection
  *ie we have all the DocSections in a linked list followed by all the Header/
@@ -3714,8 +3714,8 @@ void FL_DocLayout::addSection(fl_DocSectionLayout* pSL)
 	}
 	else
 	{
-		pSL->setPrev(NULL);
-		pSL->setNext(NULL);
+		pSL->setPrev(nullptr);
+		pSL->setNext(nullptr);
 		m_pFirstSection = pSL;
 		m_pLastSection = m_pFirstSection;
 	}
@@ -3773,7 +3773,7 @@ void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
 		m_pFirstSection = m_pFirstSection->getNextDocSection();
 		if (!m_pFirstSection)
 		{
-			m_pLastSection = NULL;
+			m_pLastSection = nullptr;
 		}
 	}
 
@@ -3782,12 +3782,12 @@ void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
 		m_pLastSection = m_pLastSection->getPrevDocSection();
 		if (!m_pLastSection)
 		{
-			m_pFirstSection = NULL;
+			m_pFirstSection = nullptr;
 		}
 	}
 
-	pSL->setNext(NULL);
-	pSL->setPrev(NULL);
+	pSL->setNext(nullptr);
+	pSL->setPrev(nullptr);
 }
 
 /*!
@@ -3797,7 +3797,7 @@ void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
  \param fl_SectionLayout * pHdrFtrSL the header/footer layout to be inserted
         into the sectionlayout linked list.
  * The structure of this linked list is as follows.
- *    pDSL->pDSL->pDSL....pDSL->pEndnoteSL->pHdrFtrSL->pHdrFtrSL->NULL
+ *    pDSL->pDSL->pDSL....pDSL->pEndnoteSL->pHdrFtrSL->pHdrFtrSL->nullptr
  *     ^                   ^
  *m_pFirstSection   m_pLastSection
  *
@@ -3846,16 +3846,16 @@ void FL_DocLayout::removeHdrFtrSection(fl_SectionLayout * pHdrFtrSL)
 	{
 		pHdrFtrSL->getNext()->setPrev(pHdrFtrSL->getPrev());
 	}
-	pHdrFtrSL->setNext(NULL);
-	pHdrFtrSL->setPrev(NULL);
+	pHdrFtrSL->setNext(nullptr);
+	pHdrFtrSL->setPrev(nullptr);
 }
 
 fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID) const
 {
 	if(!pszHdrFtrID)
-		return NULL;
+		return nullptr;
 
-	const char* pszAtt = NULL;
+	const char* pszAtt = nullptr;
 
 	fl_DocSectionLayout* pDocSL = m_pFirstSection;
 	while (pDocSL)
@@ -3908,7 +3908,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		pDocSL = pDocSL->getNextDocSection();
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*static*/ void FL_DocLayout::_prefsListener (
@@ -4156,8 +4156,8 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 	FV_View * pView = pDocLayout->getView();
 	bool bEnd,bDir;
 	bEnd = false;
-	fl_BlockLayout * pBlock = NULL;
-	fp_Run *pRun = NULL;
+	fl_BlockLayout * pBlock = nullptr;
+	fp_Run *pRun = nullptr;
 	UT_sint32 x1,x2,y1,y2;
 	UT_uint32 height;
 	UT_sint32 origY;
@@ -4540,7 +4540,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 	if (!m_pView->m_bAllowSmartQuoteReplacement)
 		return;
 
-	setPendingSmartQuote(NULL, 0);  // avoid recursion
+	setPendingSmartQuote(nullptr, 0);  // avoid recursion
 	UT_GrowBuf pgb(1024);
 	block->getBlockBuf(&pgb);
 	// this is for the benefit of the UT_DEBUGMSG and should be changed to
@@ -4744,12 +4744,12 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 {
 	if(pBlock == m_pPendingBlockForSpell)
 	{
-		m_pPendingBlockForSpell = NULL;
+		m_pPendingBlockForSpell = nullptr;
 	}
 
 	if(pBlock == m_pPendingBlockForSmartQuote)
 	{
-		m_pPendingBlockForSmartQuote = NULL;
+		m_pPendingBlockForSmartQuote = nullptr;
 	}
 #ifdef ENABLE_SPELL
 	pBlock->dequeueFromSpellCheck();

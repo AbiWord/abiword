@@ -212,13 +212,13 @@ bool EV_Toolbar_LabelSet::setLabel(XAP_Toolbar_Id id,
 	UT_uint32 index = (id - m_first);
 	DELETEP(m_labelTable[index]);
 	m_labelTable[index] = new EV_Toolbar_Label(id,szToolbarLabel,szIconName,szToolTip,szStatusMsg);
-	return (m_labelTable[index] != NULL);
+	return (m_labelTable[index] != nullptr);
 }
 
 EV_Toolbar_Label * EV_Toolbar_LabelSet::getLabel(XAP_Toolbar_Id id)
 {
 	if ((id < m_first) || (id > m_last))
-		return NULL;
+		return nullptr;
 
 	UT_uint32 index = (id - m_first);
 

@@ -138,7 +138,7 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   // hypertext types
   AddFmt ( AP_CLIPBOARD_TXT_HTML ) ; // actually XHTML, but who's counting?
   AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
-  vec_DynamicFormatsAccepted.insert(vec_DynamicFormatsAccepted.begin(), NULL);
+  vec_DynamicFormatsAccepted.insert(vec_DynamicFormatsAccepted.begin(), nullptr);
 
   // O Dformat. This is provided by a plugin
 
@@ -287,7 +287,7 @@ bool AP_UnixClipboard::isDynamicTag ( const char * tag )
 
 	while (*i && strcmp (tag, *i))
 		i++;
-	return *i != NULL;
+	return *i != nullptr;
 }
 
 void AP_UnixClipboard::addFormat(const char * fmt)

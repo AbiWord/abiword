@@ -366,7 +366,7 @@ class ABI_EXPORT AllCarets
 	void		setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 						  UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0,
 						  bool bPointDirection = false,
-						  const UT_RGBColor * pClr = NULL);
+						  const UT_RGBColor * pClr = nullptr);
 	void		setInsertMode (bool mode);
 	void		forceDraw(void);
 	bool        doBlinkIfNeeded(void);
@@ -398,7 +398,7 @@ class ABI_EXPORT GR_Graphics
 	// the following two static functions have to be implemented by all
 	// derrived classes and registered with GR_GraphicsFactory
 	static const char *    graphicsDescriptor(void){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return "???";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return nullptr;}
 #endif
 
 	AllCarets *	allCarets();
@@ -802,14 +802,14 @@ class ABI_EXPORT GR_Graphics
 						   int iLength,
 						   UT_sint32 xoff,
 						   UT_sint32 yoff,
-						   int* pCharWidths = NULL) = 0;
+						   int* pCharWidths = nullptr) = 0;
 
 	virtual void drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
 											 int iCharOffset,
 											 int iLength,
 											 UT_sint32 xoff,
 											 UT_sint32 yoff,
-											 int* pCharWidths = NULL);
+											 int* pCharWidths = nullptr);
 
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 

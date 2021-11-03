@@ -67,7 +67,7 @@
 	pEM = XAP_App::getApp()->getEditMethodContainer()->findEditMethodByName(method);
 	AV_View * pView = m_pFrame->getCurrentView();
 	EV_Keyboard * pCocoaKeyboard = m_pFrame->getKeyboard();
-	pCocoaKeyboard->invokeKeyboardMethod(pView,pEM,0,0);
+	pCocoaKeyboard->invokeKeyboardMethod(pView, pEM, nullptr, 0);
 }
 
 
@@ -431,7 +431,7 @@
 	 */
 
 	if (FV_View * pView = static_cast<FV_View *>(m_pFrame->getCurrentView())) {
-		NSString * str = 0;
+		NSString * str = nil;
 
 		if ([aString isKindOfClass:[NSString class]]) {
 			str = (NSString *) aString;

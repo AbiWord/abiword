@@ -50,7 +50,7 @@ XAP_Dialog * AP_Win32Dialog_HdrFtr::static_constructor(XAP_DialogFactory * pFact
 AP_Win32Dialog_HdrFtr::AP_Win32Dialog_HdrFtr(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_HdrFtr(pDlgFactory,id), 
-      m_hThisDlg(NULL),
+      m_hThisDlg(nullptr),
       _win32Dialog(this)
 {
 

@@ -145,7 +145,7 @@ bool IE_Exp_Passepartout_Sniffer::getDlgLabels(const char ** pszDesc,
 
 IE_Exp_Passepartout::IE_Exp_Passepartout(PD_Document * pDocument)
 	: IE_Exp(pDocument),
-	  m_pListener(NULL)	  
+	  m_pListener(nullptr)
 {
   m_error = UT_OK;
 }
@@ -251,16 +251,16 @@ void Passepartout_Listener::_closeBlock(void)
 
 void Passepartout_Listener::_openBlock(PT_AttrPropIndex api)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 
-	const char* pszLeftMargin = NULL;
-	const char* pszRightMargin = NULL;
-	const char* pszTopMargin = NULL;
-	const char* pszBottomMargin = NULL;
-        const char* pszFontFamily = NULL;
-        const char* pszFontSize = NULL;
-	const char* pszParaAlign = NULL;
-	const char* pszParaLineHeight = NULL;
+	const char* pszLeftMargin = nullptr;
+	const char* pszRightMargin = nullptr;
+	const char* pszTopMargin = nullptr;
+	const char* pszBottomMargin = nullptr;
+        const char* pszFontFamily = nullptr;
+        const char* pszFontSize = nullptr;
+	const char* pszParaAlign = nullptr;
+	const char* pszParaLineHeight = nullptr;
 
 	if(m_bInBlock)
 	  _closeBlock();
@@ -310,7 +310,7 @@ void Passepartout_Listener::_openBlock(PT_AttrPropIndex api)
 	{
 		m_pie->write("<para");
                 
-                if ( pszFontFamily != NULL )
+                if ( pszFontFamily != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" font-family=\"%s\"", pszFontFamily );
                    m_pie->write(TempStr.utf8_str());
@@ -321,7 +321,7 @@ void Passepartout_Listener::_openBlock(PT_AttrPropIndex api)
                    m_pie->write(TempStr.utf8_str());
                  }
 
-                if ( pszFontSize != NULL )
+                if ( pszFontSize != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" font-size=\"%s\"", pszFontSize );
                    m_pie->write(TempStr.utf8_str());
@@ -332,7 +332,7 @@ void Passepartout_Listener::_openBlock(PT_AttrPropIndex api)
                    m_pie->write(TempStr.utf8_str());
                  }
 
-                if ( pszParaAlign != NULL )
+                if ( pszParaAlign != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" align=\"%s\"", pszParaAlign );
                    m_pie->write(TempStr.utf8_str());
@@ -342,8 +342,8 @@ void Passepartout_Listener::_openBlock(PT_AttrPropIndex api)
                    TempStr = UT_UTF8String_sprintf(" align=\"%s\"", "right" );
                    m_pie->write(TempStr.utf8_str());
                  }
-		
-                if ( pszParaLineHeight != NULL )
+
+                if ( pszParaLineHeight != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" line-height=\"%s\"", pszParaLineHeight );
                    m_pie->write(TempStr.utf8_str());
@@ -354,22 +354,22 @@ void Passepartout_Listener::_openBlock(PT_AttrPropIndex api)
                    m_pie->write(TempStr.utf8_str());
                  }
 
-               	if( pszTopMargin != NULL )
+		if( pszTopMargin != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" margin-top=\"%gpt\"", pszTopMarginDouble );
   		   m_pie->write(TempStr.utf8_str());
                  }
-		if( pszBottomMargin != NULL )
+		if( pszBottomMargin != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" margin-bottom=\"%gpt\"", pszBottomMarginDouble );
   		   m_pie->write(TempStr.utf8_str());
                  }
-		if( pszLeftMargin != NULL )
+		if( pszLeftMargin != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" margin-right=\"%gpt\"", pszRightMarginDouble );
   		   m_pie->write(TempStr.utf8_str());
                  }
-		if( pszRightMargin != NULL )
+		if( pszRightMargin != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" margin-left=\"%gpt\"", pszLeftMarginDouble );
   		   m_pie->write(TempStr.utf8_str());
@@ -395,10 +395,10 @@ void Passepartout_Listener::_closeFont(void)
 
 void Passepartout_Listener::_openFont(PT_AttrPropIndex api)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 
-        const char* pszFontFamily = NULL;
-        const char* pszFontSize = NULL;
+        const char* pszFontFamily = nullptr;
+        const char* pszFontSize = nullptr;
 
 	if(m_inFont)
 	  _closeFont();
@@ -418,7 +418,7 @@ void Passepartout_Listener::_openFont(PT_AttrPropIndex api)
 	{
 		m_pie->write("<font");
                 
-                if ( pszFontFamily != NULL )
+                if ( pszFontFamily != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" font-family=\"%s\"", pszFontFamily );
                    m_pie->write(TempStr.utf8_str());
@@ -429,7 +429,7 @@ void Passepartout_Listener::_openFont(PT_AttrPropIndex api)
                    m_pie->write(TempStr.utf8_str());
                  }
 
-                if ( pszFontSize != NULL )
+                if ( pszFontSize != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" font-size=\"%s\"", pszFontSize );
                    m_pie->write(TempStr.utf8_str());
@@ -460,13 +460,13 @@ Passepartout_Listener::Passepartout_Listener(PD_Document * pDocument,
 	  m_bWasSpace(false)
 {
 	PT_AttrPropIndex api = m_pDocument->getAttrPropIndex();
-	const PP_AttrProp * pAP = NULL;
-	const char* pszLeftMargin = NULL;
-	const char* pszRightMargin = NULL;
-	const char* pszTopMargin = NULL;
-	const char* pszBottomMargin = NULL;
-        const char* pszFontFamily = NULL;
-        const char* pszFontSize = NULL;
+	const PP_AttrProp * pAP = nullptr;
+	const char* pszLeftMargin = nullptr;
+	const char* pszRightMargin = nullptr;
+	const char* pszTopMargin = nullptr;
+	const char* pszBottomMargin = nullptr;
+        const char* pszFontFamily = nullptr;
+        const char* pszFontSize = nullptr;
 
         UT_UTF8String TempStr;
 
@@ -504,32 +504,32 @@ Passepartout_Listener::Passepartout_Listener(PD_Document * pDocument,
 	{
 		m_pie->write("<block-container");
                 
-                if ( pszFontFamily != NULL )
+                if ( pszFontFamily != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" font-family=\"%s\"", pszFontFamily );
                    m_pie->write(TempStr.utf8_str());
                  }
-                if ( pszFontSize != NULL )
+                if ( pszFontSize != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" font-size=\"%s\"", pszFontSize );
                    m_pie->write(TempStr.utf8_str());
                  }
-		if( pszTopMargin != NULL )
+		if( pszTopMargin != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" margin-top=\"%gpt\"", pszTopMarginDouble );
   		   m_pie->write(TempStr.utf8_str());
                  }
-		if( pszBottomMargin != NULL )
+		if( pszBottomMargin != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" margin-bottom=\"%gpt\"", pszBottomMarginDouble );
   		   m_pie->write(TempStr.utf8_str());
                  }
-		if( pszRightMargin != NULL )
+		if( pszRightMargin != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" margin-right=\"%gpt\"", pszRightMarginDouble );
   		   m_pie->write(TempStr.utf8_str());
                  }
-		if( pszLeftMargin != NULL )
+		if( pszLeftMargin != nullptr )
                  {
                    TempStr = UT_UTF8String_sprintf(" margin-left=\"%gpt\"", pszLeftMarginDouble );
   		   m_pie->write(TempStr.utf8_str());
@@ -597,7 +597,7 @@ bool Passepartout_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 		{
 			_closeBlock();
 			PT_AttrPropIndex api = pcr->getIndexAP();
-			const PP_AttrProp * pAP = NULL;
+			const PP_AttrProp * pAP = nullptr;
 			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
 			if (bHaveProp && pAP)

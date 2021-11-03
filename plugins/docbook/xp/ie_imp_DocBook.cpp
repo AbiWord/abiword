@@ -65,7 +65,7 @@ UT_Confidence_t IE_Imp_DocBook_Sniffer::recognizeContents(const char * szBuf,
 {
   // TODO: scan the first few lines
 
-  if(strstr(szBuf, "PUBLIC \"-//OASIS//DTD DocBook XML") == NULL) 
+  if(strstr(szBuf, "PUBLIC \"-//OASIS//DTD DocBook XML") == nullptr)
     return UT_CONFIDENCE_ZILCH;
 
   return UT_CONFIDENCE_PERFECT;
@@ -426,7 +426,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_iSectionDepth++;
 		m_iTitleDepth++;
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("role"), atts);
 		m_bMustNumber = false;
 
@@ -757,9 +757,9 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_iBlockDepth++;
 
 		const gchar *buf[3];
-		buf[2] = NULL;
+		buf[2] = nullptr;
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("renderas"), atts);
 		gchar style_att[10] = "Heading a";
 
@@ -840,7 +840,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		const gchar *buf[3];
 		buf[0] = PT_STYLE_ATTRIBUTE_NAME;
 		buf[1] = "Block Text";
-		buf[2] = NULL;
+		buf[2] = nullptr;
 
 		X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 		X_CheckError(appendFmt(const_cast<const gchar **>(buf)));
@@ -864,7 +864,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	{
 		X_VerifyParseState(_PS_Block);
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("role"), atts);
 
 		if(p_val)
@@ -1016,7 +1016,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 
 	case TT_ULINK:	//an external link
 	{
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue("url", atts);
 
 		if(p_val)
@@ -1036,7 +1036,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 
 	case TT_LINK:  //an internal link
 	{
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue("linkend", atts);
 
 		if(p_val)
@@ -1068,7 +1068,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	{
 		X_VerifyParseState(_PS_Block);
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue("id", atts);
 
 		if(p_val)
@@ -1123,12 +1123,12 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Field) || (m_parseState == _PS_Cell));
 		m_parseState = _PS_Field;
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("linkend"), atts);
 
 		if(p_val)
 		{
-			if(strstr(p_val,"footnote-id-") != NULL)
+			if(strstr(p_val,"footnote-id-") != nullptr)
 			{
 				p_val += 12;
 			}
@@ -1225,7 +1225,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 
 		X_CheckError((m_parseState == _PS_Sec) || (m_parseState == _PS_List));
 		m_parseState = _PS_Table;
-		//X_CheckError(m_TableHelperStack->OpenTable (getDoc(),static_cast<const char *>(NULL)));
+		//X_CheckError(m_TableHelperStack->OpenTable (getDoc(),static_cast<const char *>(nullptr)));
 		X_CheckError(appendStrux(PTX_SectionTable, PP_NOPROPS));
 
 		m_bInTable = true;
@@ -1390,7 +1390,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_parseState = _PS_DataItem;
 		m_iDataDepth++;
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("fileref"), atts);
 
 		if(p_val)
@@ -1448,7 +1448,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_parseState = _PS_DataItem;
 		m_iDataDepth++;
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("fileref"), atts);
 
 		if(p_val)
@@ -2768,8 +2768,8 @@ void IE_Imp_DocBook :: createTitle (void)
 
 	buf[0] = PT_STYLE_ATTRIBUTE_NAME;
 
-	if(buf[1] == NULL) //preventive code for appendStrux() below
-		buf[0] = NULL;
+	if(buf[1] == nullptr) //preventive code for appendStrux() below
+		buf[0] = nullptr;
 
 	X_CheckError(appendStrux(PTX_Block, PP_std_copyProps(buf)));
 	if (m_bMustNumber)
@@ -2842,7 +2842,7 @@ void IE_Imp_DocBook :: createList (void)
 			(const gchar *)lDelim,
 			(const gchar *)"",
 			getDoc (),
-			NULL
+			nullptr
 		));
 	getDoc()->addList(an);
 
@@ -2877,10 +2877,10 @@ void IE_Imp_DocBook::createImage(const char *name, const gchar **atts)
     std::string dataid = UT_std_string_sprintf ("image%u", static_cast<unsigned int>(m_iImages++));
 
 	X_CheckError (getDoc()->createDataItem (dataid.c_str(), false, pBB, 
-                                            pfg->getMimeType(), NULL));
+                                            pfg->getMimeType(), nullptr));
 
 	UT_UTF8String props;
-	const gchar *p_val = NULL;
+	const gchar *p_val = nullptr;
 
 	p_val = _getXMLPropValue(static_cast<const gchar *>("depth"), atts);
 

@@ -27,7 +27,7 @@
 class AP_UnixDialogFactory : public XAP_DialogFactory
 {
 public:
-	AP_UnixDialogFactory(XAP_App * pApp, XAP_Frame * pFrame = NULL);
+	AP_UnixDialogFactory(XAP_App * pApp, XAP_Frame * pFrame = nullptr);
 	virtual ~AP_UnixDialogFactory(void);
 
 protected:

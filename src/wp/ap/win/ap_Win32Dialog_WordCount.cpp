@@ -150,7 +150,7 @@ void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 		setDialogTitle (m_WindowName);
 
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 		
 		event_Update();
@@ -175,7 +175,7 @@ void AP_Win32Dialog_WordCount::_setDlgItemInt(UINT nCtrl, int nValue)
 	wchar_t szFormatted[64], szUnFormatted[64];
 	swprintf(szUnFormatted, L"%d", nValue);
 
-	if (numberfmt.lpThousandSep==NULL)	// We only do this the first time
+	if (numberfmt.lpThousandSep==nullptr)	// We only do this the first time
 	{
 		wchar_t szBuffer[16];
 		

@@ -99,7 +99,7 @@ void AP_UnixDialog_Background::runModal(XAP_Frame * pFrame)
 			eventCancel();
 	}
         abiDestroyWidget(mainWindow);
-        m_dlg = NULL;
+        m_dlg = nullptr;
 }
 
 GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
@@ -166,7 +166,7 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 //
 // Button to clear background color
 //
-	GtkWidget * clearColor = NULL;
+	GtkWidget * clearColor = nullptr;
 	std::string s;
 
 	if(!isForeground())
@@ -182,7 +182,7 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 		}
 		clearColor
 		  = gtk_widget_new(GTK_TYPE_BUTTON, "label", s.c_str(),
-				   "xalign", 1.0, "yalign", 0.5, NULL);
+				   "xalign", 1.0, "yalign", 0.5, nullptr);
 		GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 		gtk_box_pack_end(GTK_BOX(hbox), clearColor, FALSE, FALSE, 0);
 		gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -212,7 +212,7 @@ void AP_UnixDialog_Background::eventCancel (void)
 
 void AP_UnixDialog_Background::colorCleared(void)
 {
-	setColor(NULL);
+	setColor(nullptr);
 	GdkRGBA gcolor;
 	gcolor.red = 1.0;
 	gcolor.blue = 1.0;

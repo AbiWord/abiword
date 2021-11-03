@@ -68,9 +68,9 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_openedODTextboxFrame(false),
                         m_openedODNote(false),
                         m_bIgoreFirstTab(false),
-                        m_pParagraphContent(NULL),
+                        m_pParagraphContent(nullptr),
                         m_currentListLevel(0),
-                        m_pCurrentListStyle(NULL),
+                        m_pCurrentListStyle(nullptr),
                         m_pendingColumnBreak(false),
                         m_pendingPageBreak(false),
                         m_bAfter(false),
@@ -106,9 +106,9 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_openedODTextboxFrame(false),
                         m_openedODNote(false),
 			m_bIgoreFirstTab(false),
-                        m_pParagraphContent(NULL),
+                        m_pParagraphContent(nullptr),
                         m_currentListLevel(0),
-                        m_pCurrentListStyle(NULL),
+                        m_pCurrentListStyle(nullptr),
                         m_pendingColumnBreak(false),
                         m_pendingPageBreak(false),
                         m_pendingMasterPageStyleChange(true),
@@ -134,7 +134,7 @@ ODe_Text_Listener::~ODe_Text_Listener() {
     UT_ASSERT_HARMLESS(!m_openedODSpan);
 
     UT_ASSERT_HARMLESS(m_currentListLevel == 0);
-    UT_ASSERT_HARMLESS(m_pCurrentListStyle == NULL);
+    UT_ASSERT_HARMLESS(m_pCurrentListStyle == nullptr);
 }
 
 
@@ -238,7 +238,7 @@ void ODe_Text_Listener::closeSpan() {
 void ODe_Text_Listener::openFrame(const PP_AttrProp* pAP,
                                   ODe_ListenerAction& rAction) {
     bool ok = false;
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     
     ok = pAP->getProperty("frame-type", pValue);
     
@@ -446,7 +446,7 @@ void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP, const std::string
 {
     UT_UTF8String output = "<office:annotation";
     UT_UTF8String escape;
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
 
     UT_UTF8String generatedID;
     const gchar* xmlid = nullptr;
@@ -743,7 +743,7 @@ void ODe_Text_Listener::openBookmark(const PP_AttrProp* pAP) {
     UT_return_if_fail(pAP);
 
     UT_UTF8String output = "<text:bookmark-start text:name=\"", escape;
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
 
     if(pAP->getAttribute("type",pValue) && pValue && (strcmp(pValue, "start") == 0)) {
         if(pAP->getAttribute("name",pValue) && pValue) {
@@ -774,7 +774,7 @@ void ODe_Text_Listener::closeBookmark(const PP_AttrProp* pAP) {
     UT_return_if_fail(pAP);
 
     UT_UTF8String output = "<text:bookmark-end text:name=\"", escape;
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
 
     if(pAP->getAttribute("type",pValue) && pValue && (strcmp(pValue, "end") == 0)) {
         if(pAP->getAttribute("name",pValue) && pValue) {
@@ -815,8 +815,8 @@ void ODe_Text_Listener::closeBookmark(UT_UTF8String &sBookmarkName) {
 void ODe_Text_Listener::openHyperlink(const PP_AttrProp* pAP) {
     UT_return_if_fail(pAP);
 
-    const gchar* pValue = NULL;
-    const gchar* pTitle = NULL;
+    const gchar* pValue = nullptr;
+    const gchar* pTitle = nullptr;
     bool bHaveTitle = false;
 
     bHaveTitle = pAP->getAttribute("xlink:title", pTitle) && pTitle;
@@ -1001,12 +1001,12 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
     ODe_writeAttribute(output, "draw:style-name", pStyle->getName());
 
     ok = pAP->getProperty("width", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         ODe_writeAttribute(output, "svg:width", pValue);
     }
     
     ok = pAP->getProperty("height", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         ODe_writeAttribute(output, "svg:height", pValue);
     }
     output += "><draw:image xlink:href=\"Pictures/";
@@ -1015,7 +1015,7 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
               " xlink:actuate=\"onLoad\"/>";
 
     ok = pAP->getAttribute("title", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
        escape = pValue;
        escape.escapeXML();
        if(escape.length()) {
@@ -1026,7 +1026,7 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
     }
 
     ok = pAP->getAttribute("alt", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
        escape = pValue;
        escape.escapeXML();
        if(escape.length()) {
@@ -1102,13 +1102,13 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
 	//
 
 	UT_DEBUGMSG(("InsertPosionedObject TextListener %p AutoStyle %p \n",this,&m_rAutomatiStyles));
-	ODe_Style_PageLayout * pPageL = NULL;
+	ODe_Style_PageLayout * pPageL = nullptr;
 	UT_uint32 numPStyles =  m_rAutomatiStyles.getSectionStylesCount();
 	UT_UTF8String stylePName;
 	UT_DEBUGMSG(("Number PageLayoutStyles %d \n",numPStyles));
 	UT_UTF8String_sprintf(stylePName, "PLayout%d", numPStyles + 1);
 	pPageL = m_rAutomatiStyles.getPageLayout(stylePName.utf8_str());
-	if(pPageL == NULL)
+	if(pPageL == nullptr)
 	{
 	    pPageL = m_rAutomatiStyles.getPageLayout("Standard");
 	}
@@ -1117,9 +1117,9 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
 	double yPageL = 0.;
 	
 	ok = pAP->getProperty("frame-col-xpos", pValue);
-	UT_ASSERT(ok && pValue != NULL);
+	UT_ASSERT(ok && pValue != nullptr);
 	double xCol =  UT_convertToInches(pValue);
-	const gchar* pSVal= NULL;
+	const gchar* pSVal= nullptr;
 	if(pPageL)
 	{
 	    pSVal = pPageL->getPageMarginLeft();
@@ -1130,7 +1130,7 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
 	ODe_writeAttribute(output, "svg:x", pValue);
         
 	ok = pAP->getProperty("frame-col-ypos", pValue);
-	UT_ASSERT(ok && pValue != NULL);
+	UT_ASSERT(ok && pValue != nullptr);
 	double yCol =  UT_convertToInches(pValue);
 	if(pPageL)
 	{
@@ -1148,21 +1148,21 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
     else if(ok && pValue && !strcmp(pValue, "page-above-text")) {
         output+="page\"";
         ok = pAP->getProperty("frame-page-xpos", pValue);
-        if (ok && pValue != NULL)
+        if (ok && pValue != nullptr)
             ODe_writeAttribute(output, "svg:x", pValue);
         
         ok = pAP->getProperty("frame-page-ypos", pValue);
-        if (ok && pValue != NULL)
+        if (ok && pValue != nullptr)
             ODe_writeAttribute(output, "svg:y", pValue);
     }
     else { //this handles the block-above-text case and any other unforeseen ones
         output+="paragraph\"";
         ok = pAP->getProperty("xpos", pValue);
-        if (ok && pValue != NULL)
+        if (ok && pValue != nullptr)
             ODe_writeAttribute(output, "svg:x", pValue);
         
         ok = pAP->getProperty("ypos", pValue);
-        if (ok && pValue != NULL)
+        if (ok && pValue != nullptr)
             ODe_writeAttribute(output, "svg:y", pValue);
     }
 
@@ -1171,12 +1171,12 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
     ODe_writeAttribute(output, "draw:style-name", pStyle->getName());
 
     ok = pAP->getProperty("frame-width", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         ODe_writeAttribute(output, "svg:width", pValue);
     }
     
     ok = pAP->getProperty("frame-height", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         ODe_writeAttribute(output, "svg:height", pValue);
     }
     
@@ -1186,7 +1186,7 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
               " xlink:actuate=\"onLoad\"/>";
 
     ok = pAP->getAttribute("title", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
        escape = pValue;
        escape.escapeXML();
        if(escape.length()) {
@@ -1197,7 +1197,7 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
     }
 
     ok = pAP->getAttribute("alt", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
        escape = pValue;
        escape.escapeXML();
        if(escape.length()) {
@@ -1224,12 +1224,12 @@ bool ODe_Text_Listener::_blockIsPlainParagraph(const PP_AttrProp* pAP) const {
     bool ok;
     
     ok = pAP->getAttribute("level", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return false;
     }
     
     ok = pAP->getAttribute("listid", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         return false;
     }
     
@@ -1248,7 +1248,7 @@ void ODe_Text_Listener::_openODListItem(const PP_AttrProp* pAP) {
 
    
     ok = pAP->getAttribute("level", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         level = atoi(pValue);
     } else {
         level = 0; // The list will be completely closed.
@@ -1264,7 +1264,7 @@ void ODe_Text_Listener::_openODListItem(const PP_AttrProp* pAP) {
         pListLevelStyle = m_pCurrentListStyle->getLevelStyle(1);
         
         ok = pAP->getAttribute("listid", pValue);
-        UT_ASSERT_HARMLESS(ok && pValue!=NULL);
+        UT_ASSERT_HARMLESS(ok && pValue!=nullptr);
                 
         if (pValue && pListLevelStyle && (strcmp(pListLevelStyle->getAbiListID().utf8_str(), pValue) != 0)) {
             // This list item belongs to a new list.
@@ -1283,7 +1283,7 @@ void ODe_Text_Listener::_openODListItem(const PP_AttrProp* pAP) {
         if(m_currentListLevel == 0) {
             // It's a "root" list.
             
-            UT_ASSERT(m_pCurrentListStyle == NULL);
+            UT_ASSERT(m_pCurrentListStyle == nullptr);
             
             m_pCurrentListStyle = m_rAutomatiStyles.addListStyle();
             
@@ -1368,7 +1368,7 @@ void ODe_Text_Listener::_openODListItem(const PP_AttrProp* pAP) {
         
         m_spacesOffset++;
     } else {
-        m_pCurrentListStyle = NULL;
+        m_pCurrentListStyle = nullptr;
     }
 }
 
@@ -1425,7 +1425,7 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
     // It's done that way because we may have to write a textbox (<draw:frame>)
     // inside this paragraph, before its text content, which, in AbiWord, comes
     // before the textbox.
-    UT_ASSERT(m_pParagraphContent==NULL);
+    UT_ASSERT(m_pParagraphContent==nullptr);
     m_pParagraphContent = gsf_output_memory_new();
 }
 
@@ -1457,7 +1457,7 @@ void ODe_Text_Listener::_closeODList() {
     }
     
     m_currentListLevel = 0;
-    m_pCurrentListStyle = NULL;
+    m_pCurrentListStyle = nullptr;
 }
 
 
@@ -1518,7 +1518,7 @@ void ODe_Text_Listener::_openParagraphDelayed(){
         // AbiWord that is a paragraph property, but in ODF it belongs in the
         // default style for the "paragraph" family.
         ok = m_delayedAP->getProperty("default-tab-interval", pValue);
-        if (ok && pValue != NULL) {
+        if (ok && pValue != nullptr) {
             UT_DEBUGMSG(("Got a default tab interval:  !!!!!!!!!!!!! %s\n", pValue));
         }
             
@@ -1603,7 +1603,7 @@ void ODe_Text_Listener::_closeODParagraph() {
 			 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(m_pParagraphContent)));
 
         ODe_gsf_output_close(m_pParagraphContent);
-        m_pParagraphContent = NULL;
+        m_pParagraphContent = nullptr;
     
         m_openedODParagraph = false;
         m_spacesOffset--;

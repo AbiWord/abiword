@@ -190,7 +190,7 @@ namespace AiksaurusGTK_impl
     {
         Toolbar* tb = static_cast<Toolbar*>(data);
 		bool popup_visible;
-		g_object_get (tb->d_searchbar_ptr, "popup-shown", &popup_visible, NULL);
+		g_object_get (tb->d_searchbar_ptr, "popup-shown", &popup_visible, nullptr);
 
         if (popup_visible)
             tb->d_searchhack = true;

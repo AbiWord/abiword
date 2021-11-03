@@ -61,8 +61,8 @@ AP_Dialog_SplitCells::AP_Dialog_SplitCells(XAP_DialogFactory * pDlgFactory, XAP_
 	  m_iBot(0),
 	  m_iNumRows(0),
 	  m_iNumCols(0),
-	  m_pTab(NULL),
-	  m_pAutoUpdaterMC(NULL),
+	  m_pTab(nullptr),
+	  m_pAutoUpdaterMC(nullptr),
       m_bDestroy_says_stopupdating(false),
       m_bAutoUpdate_happening_now(false)
 
@@ -87,7 +87,7 @@ void    AP_Dialog_SplitCells::setActiveFrame(XAP_Frame * /*pFrame*/)
 void AP_Dialog_SplitCells::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	gchar * tmp = NULL;
+	gchar * tmp = nullptr;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_SplitCellsTitle));
 	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),sizeof(m_WindowName));
 	FREEP(tmp);
@@ -104,14 +104,14 @@ void AP_Dialog_SplitCells::startUpdater(void)
 
 void AP_Dialog_SplitCells::stopUpdater(void)
 {
-	if(m_pAutoUpdaterMC == NULL)
+	if(m_pAutoUpdaterMC == nullptr)
 	{
 		return;
 	}
 	m_bDestroy_says_stopupdating = true;
 	m_pAutoUpdaterMC->stop();
 	DELETEP(m_pAutoUpdaterMC);
-	m_pAutoUpdaterMC = NULL;
+	m_pAutoUpdaterMC = nullptr;
 }
 
 /*!
@@ -128,7 +128,7 @@ void AP_Dialog_SplitCells::autoUpdateMC(UT_Worker * pTimer)
 	if (pDialog->m_bDestroy_says_stopupdating != true)
 	{
 		FV_View * pView = nullptr;
-		PD_Document * pDoc = NULL;
+		PD_Document * pDoc = nullptr;
 
 		if (XAP_Frame * pFrame = pDialog->getApp()->getLastFocussedFrame())
 		{

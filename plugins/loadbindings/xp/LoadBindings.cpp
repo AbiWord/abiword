@@ -120,8 +120,8 @@ static void LoadBindings_registerMethod ()
 	XAP_Menu_Factory* pFact = pApp->getMenuFactory();
 
 	// add menu item
-	loadBindingID = pFact->addNewMenuAfter("Main",NULL,AP_MENU_ID_FMT_STYLIST,EV_MLF_Normal);	// named _FMT_, but actually in tools menu
-	pFact->addNewLabel(NULL,loadBindingID,szLoadBinding,szLoadBindingStatus);
+	loadBindingID = pFact->addNewMenuAfter("Main",nullptr,AP_MENU_ID_FMT_STYLIST,EV_MLF_Normal);	// named _FMT_, but actually in tools menu
+	pFact->addNewLabel(nullptr,loadBindingID,szLoadBinding,szLoadBindingStatus);
 	EV_Menu_Action* myLoadBindingAction = new EV_Menu_Action(
 		loadBindingID,          // id that the layout said we could use
 		0,                      // no, we don't have a sub menu.
@@ -129,14 +129,14 @@ static void LoadBindings_registerMethod ()
 		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
 		"com.abisource.abiword.loadbindings.loadBindingsDlg",  // callback function to call.
-		NULL,                   // don't know/care what this is for
-		NULL                    // don't know/care what this is for
+		nullptr,                   // don't know/care what this is for
+		nullptr                    // don't know/care what this is for
 		);
     pApp->getMenuActionSet()->addAction(myLoadBindingAction);
 	
 	// add menu item
-	dumpEditMethodsID = pFact->addNewMenuAfter("Main",NULL,loadBindingID,EV_MLF_Normal);
-	pFact->addNewLabel(NULL,dumpEditMethodsID,szDumpEditMethods,szDumpEditMethodsStatus);
+	dumpEditMethodsID = pFact->addNewMenuAfter("Main",nullptr,loadBindingID,EV_MLF_Normal);
+	pFact->addNewLabel(nullptr,dumpEditMethodsID,szDumpEditMethods,szDumpEditMethodsStatus);
 	EV_Menu_Action* myDumpEditMethodsAction = new EV_Menu_Action(
 		dumpEditMethodsID,        // id that the layout said we could use
 		0,                      // no, we don't have a sub menu.
@@ -144,14 +144,14 @@ static void LoadBindings_registerMethod ()
 		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
 		"com.abisource.abiword.loadbindings.dumpEditMethods",  // callback function to call.
-		NULL,                   // don't know/care what this is for
-		NULL                    // don't know/care what this is for
+		nullptr,                   // don't know/care what this is for
+		nullptr                    // don't know/care what this is for
 		);
     pApp->getMenuActionSet()->addAction(myDumpEditMethodsAction);
 	
 	// add menu item
-	saveBindingID = pFact->addNewMenuAfter("Main",NULL,dumpEditMethodsID,EV_MLF_Normal);
-	pFact->addNewLabel(NULL,saveBindingID,szSaveBinding,szSaveBindingStatus);
+	saveBindingID = pFact->addNewMenuAfter("Main",nullptr,dumpEditMethodsID,EV_MLF_Normal);
+	pFact->addNewLabel(nullptr,saveBindingID,szSaveBinding,szSaveBindingStatus);
 	EV_Menu_Action* mySaveBindingAction = new EV_Menu_Action(
 		saveBindingID,          // id that the layout said we could use
 		0,                      // no, we don't have a sub menu.
@@ -159,8 +159,8 @@ static void LoadBindings_registerMethod ()
 		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
 		"com.abisource.abiword.loadbindings.saveCurrent",  // callback function to call.
-		NULL,                   // don't know/care what this is for
-		NULL                    // don't know/care what this is for
+		nullptr,                   // don't know/care what this is for
+		nullptr                    // don't know/care what this is for
 		);
     pApp->getMenuActionSet()->addAction(mySaveBindingAction);
 #endif
@@ -197,9 +197,9 @@ static void LoadBindings_RemoveFromMethods ()
 #if defined(DEBUG)
 	XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 	// remove menu items
-	pFact->removeMenuItem("Main",NULL,loadBindingID);
-	pFact->removeMenuItem("Main",NULL,dumpEditMethodsID);
-	pFact->removeMenuItem("Main",NULL,saveBindingID);
+	pFact->removeMenuItem("Main",nullptr,loadBindingID);
+	pFact->removeMenuItem("Main",nullptr,dumpEditMethodsID);
+	pFact->removeMenuItem("Main",nullptr,saveBindingID);
 #endif
 }
 
@@ -213,7 +213,7 @@ static void LoadKeybindings(const char* uri)
 	UT_DEBUGMSG(("[LoadBindings] trying file %s\n", uri));
 		
 	// find out if the file exists at all
-	GsfInput* in = UT_go_file_open(uri, NULL);
+	GsfInput* in = UT_go_file_open(uri, nullptr);
 	if (in) 
 	{
 		// it seems to exist, cleanup after ourselves ...
@@ -221,7 +221,7 @@ static void LoadKeybindings(const char* uri)
 		// ... and let LoadBindings_invoke do its thing
 		UT_DEBUGMSG(("[LoadBindings] invoking loader on %s\n", uri));
 		EV_EditMethodCallData userFileData(uri, strlen(uri));
-		LoadBindingsFromURI_invoke(NULL, &userFileData);
+		LoadBindingsFromURI_invoke(nullptr, &userFileData);
 	}
 }
 
@@ -299,7 +299,7 @@ static bool LoadBindingsDlg_invoke (AV_View *, EV_EditMethodCallData * /*d*/)
 	
 	// call LoadBindings_invoke
 	EV_EditMethodCallData d2( resultPathname.c_str(), UT_uint32(resultPathname.size()) );
-	return LoadBindingsFromURI_invoke( NULL, &d2 );
+	return LoadBindingsFromURI_invoke( nullptr, &d2 );
 }
 
 // Loads the keybindings from an XML file to a named set of keybindings.
@@ -379,10 +379,10 @@ static bool SaveBindings_invoke(AV_View * /*v*/, EV_EditMethodCallData* d)
 
 	// open file
 	GsfOutput* file;
-	file = UT_go_file_create( targetFilename.c_str(), NULL );
+	file = UT_go_file_create( targetFilename.c_str(), nullptr );
 	if (!file) {
 		const char* URI = UT_go_filename_to_uri(targetFilename.c_str());
-		file = UT_go_file_create( URI, NULL );
+		file = UT_go_file_create( URI, nullptr );
 		FREEP(URI);
 	}
 	UT_return_val_if_fail(file,false);
@@ -532,46 +532,46 @@ static bool SaveBindings_invoke(AV_View * /*v*/, EV_EditMethodCallData* d)
 // 		LoadBindings class
 // -----------------------------------------------------------------------
 
-LoadBindings::LoadBindings (EV_EditMethodCallData * d, _FROM_URI )
-: m_pApp( XAP_App::getApp() )
-, m_pXMLDoc( NULL ) 
-, m_bReplace( false ) 
+LoadBindings::LoadBindings(EV_EditMethodCallData * d, _FROM_URI)
+  : m_pApp(XAP_App::getApp())
+  , m_pXMLDoc(nullptr)
+  , m_bReplace(false)
 {
 	UT_UCS4String ucs4(reinterpret_cast<const UT_UCS4Char *>(d->m_pData),d->m_dataLength);
 	const char* input = ucs4.utf8_str();
 	
 	// check for regular filename
 	struct stat buf;
-	GsfInput* in = NULL;
+	GsfInput* in = nullptr;
 	if (stat(input, &buf)==0) {
-		m_pXMLDoc = xmlReadFile( input, NULL, XML_PARSE_NOBLANKS );
+		m_pXMLDoc = xmlReadFile( input, nullptr, XML_PARSE_NOBLANKS );
 	} 
 	// check for URI
-	else if ( (in = UT_go_file_open(input, NULL)) ) {
+	else if ( (in = UT_go_file_open(input, nullptr)) ) {
 		size_t fileSize = gsf_input_size(in);
-		guint8 const* contents = gsf_input_read(in, fileSize, NULL);
+		guint8 const* contents = gsf_input_read(in, fileSize, nullptr);
 		if (contents) {
-			m_pXMLDoc = xmlReadMemory( reinterpret_cast<const char*>(contents), fileSize, "", NULL, XML_PARSE_NOBLANKS );
+			m_pXMLDoc = xmlReadMemory( reinterpret_cast<const char*>(contents), fileSize, "", nullptr, XML_PARSE_NOBLANKS );
 		}
 		g_object_unref(G_OBJECT(in));
 	}
 }
 
 LoadBindings::LoadBindings (EV_EditMethodCallData * d, _FROM_MEMORY )
-: m_pApp( XAP_App::getApp() )
-, m_pXMLDoc( NULL ) 
-, m_bReplace( false ) 
+  : m_pApp(XAP_App::getApp())
+  , m_pXMLDoc(nullptr)
+  , m_bReplace(false)
 {
 	UT_UCS4String ucs4(reinterpret_cast<const UT_UCS4Char *>(d->m_pData),d->m_dataLength);
 	const char* input = ucs4.utf8_str();
-	m_pXMLDoc = xmlReadMemory( input, strlen(input), "", NULL, XML_PARSE_NOBLANKS ); 
+	m_pXMLDoc = xmlReadMemory(input, strlen(input), "", nullptr, XML_PARSE_NOBLANKS);
 }
 
 LoadBindings::~LoadBindings() 
 {
 	if (m_pXMLDoc) {
 		xmlFreeDoc( m_pXMLDoc );
-		m_pXMLDoc = NULL;
+		m_pXMLDoc = nullptr;
 	}
 }
 
@@ -810,7 +810,7 @@ const char* LoadBindings::FindAttribute( xmlNodePtr node, const char* name )
 		}
 		prop = prop->next;
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool LoadBindings::AddMapping( UT_uint32 binding, const char* command ) 

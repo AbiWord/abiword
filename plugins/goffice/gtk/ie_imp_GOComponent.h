@@ -72,7 +72,7 @@ protected:
 class IE_Imp_Component : public IE_Imp
 {
 public:
-	IE_Imp_Component(PD_Document * pDocument, char *mime_type = NULL);
+	IE_Imp_Component(PD_Document * pDocument, char *mime_type = nullptr);
 	virtual	~IE_Imp_Component();
 
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,

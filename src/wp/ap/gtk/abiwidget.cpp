@@ -96,12 +96,12 @@ struct _AbiPrivData
 {
 public:
 	_AbiPrivData()
-		: m_pDoc(NULL),
-		m_pFrame(NULL),
+		: m_pDoc(nullptr),
+		m_pFrame(nullptr),
 		m_bMappedToScreen(false),
 		m_bUnlinkFileAfterLoad(false),
-		m_pFrameListener(NULL),
-		m_pViewListener(NULL),
+		m_pFrameListener(nullptr),
+		m_pViewListener(nullptr),
 		m_bShowMargin(false),
 		m_bWordSelections(false),
 		m_iContentLength(0),
@@ -381,7 +381,7 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 					  G_TYPE_FROM_CLASS (klazz), \
 					  G_SIGNAL_RUN_LAST, \
 					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
-									  NULL, NULL, \
+									  nullptr, nullptr, \
 									  g_cclosure_marshal_VOID__VOID, \
 									  G_TYPE_NONE, 0); } while(0)
 
@@ -391,7 +391,7 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 					  G_TYPE_FROM_CLASS (klazz), \
 					  G_SIGNAL_RUN_LAST, \
 					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
-									  NULL, NULL, \
+									  nullptr, nullptr, \
 									  g_cclosure_marshal_VOID__BOOLEAN, \
 									  G_TYPE_NONE, 1, G_TYPE_BOOLEAN); } while(0)
 
@@ -401,7 +401,7 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 					  G_TYPE_FROM_CLASS (klazz), \
 					  G_SIGNAL_RUN_LAST, \
 					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
-									  NULL, NULL, \
+									  nullptr, nullptr, \
 									  g_cclosure_marshal_VOID__INT, \
 									  G_TYPE_NONE, 1, G_TYPE_INT); } while(0)
 
@@ -411,7 +411,7 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 					  G_TYPE_FROM_CLASS (klazz), \
 					  G_SIGNAL_RUN_LAST, \
 					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
-									  NULL, NULL, \
+									  nullptr, nullptr, \
 									  g_cclosure_marshal_VOID__DOUBLE, \
 									  G_TYPE_NONE, 1, G_TYPE_DOUBLE); } while(0)
 
@@ -421,7 +421,7 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 					  G_TYPE_FROM_CLASS (klazz), \
 					  G_SIGNAL_RUN_LAST, \
 					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
-									  NULL, NULL, \
+									  nullptr, nullptr, \
 									  g_cclosure_marshal_VOID__STRING, \
 									  G_TYPE_NONE, 1, G_TYPE_STRING); } while(0)
 
@@ -431,7 +431,7 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 					  G_TYPE_FROM_CLASS (klazz), \
 					  G_SIGNAL_RUN_LAST, \
 					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
-									  NULL, NULL, \
+									  nullptr, nullptr, \
 									  g_cclosure_user_marshal_VOID__INT_INT_INT, \
 									  G_TYPE_NONE, 3, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT); } while(0)
 
@@ -520,7 +520,7 @@ const std::string & sz = PP_getAttribute(prop, props_in);                \
 if (!sz.empty())                                                 \
 { bool val; \
 if (multiple) \
-val = (NULL != strstr(sz.c_str(), prop_val));   \
+val = (nullptr != strstr(sz.c_str(), prop_val));   \
 else \
 val = (sz == prop_val);                      \
 if (val != var) { \
@@ -530,7 +530,7 @@ fire(var); \
 } \
 } while(0)
 
-#define FIRE_DOUBLE_CHARFMT(prop, var, fire) do { const std::string & sz = PP_getAttribute(prop, props_in); if (!sz.empty()) { double val = g_ascii_strtod(sz.c_str(), NULL); if (val != var) { var = val; fire(val); } } } while(0)
+#define FIRE_DOUBLE_CHARFMT(prop, var, fire) do { const std::string & sz = PP_getAttribute(prop, props_in); if (!sz.empty()) { double val = g_ascii_strtod(sz.c_str(), nullptr); if (val != var) { var = val; fire(val); } } } while(0)
 
 #define FIRE_STRING_CHARFMT(prop, var, fire) do { const std::string & sz = PP_getAttribute(prop, props_in); if (!sz.empty()) { if (strcmp(var.utf8_str(), sz.c_str()) != 0) { var = sz; fire(sz.c_str()); } } } while(0)
 
@@ -604,9 +604,9 @@ public:
 		if ((AV_CHG_FMTSTYLE | AV_CHG_MOTION) & mask)
 		{
 			// check the current style
-			const gchar * szStyle = NULL;
+			const gchar * szStyle = nullptr;
 			m_pView->getStyle(&szStyle);
-			if (szStyle == NULL)
+			if (szStyle == nullptr)
 				szStyle = "None";
 			FIRE_UTF8STRING(szStyle, style_name_, styleName);				
 		}
@@ -652,7 +652,7 @@ public:
 				m_pView->getDocument()->getPieceTable())
 			{
 				pt_PieceTable* pPt = m_pView->getDocument()->getPieceTable();
-				PX_ChangeRecord* pcr = NULL;
+				PX_ChangeRecord* pcr = nullptr;
 				pPt->getUndo(&pcr);
 
 				// We're trying to be smart here: if the top-most changerecord on the undo stack changed, 
@@ -820,7 +820,7 @@ private:
 		// singals will be emitted to turn the toolbar and menu item 
 		// insensitive
 		//
-		pcr_ = NULL; // the pcr* values are needed to emit a sane 'changed' signal
+		pcr_ = nullptr; // the pcr* values are needed to emit a sane 'changed' signal
 		pcrlen_ = 0;
 		pcrpos_ = 0;
 		pcrbi_ = 0;
@@ -1028,9 +1028,9 @@ private:
 //
 static bool      s_bFirstDrawDone = false;
 static bool      s_bFreshDraw = false;
-static UT_Timer * s_pToUpdateCursor = NULL;
-static XAP_Frame * s_pLoadingFrame = NULL;
-static AD_Document * s_pLoadingDoc = NULL;
+static UT_Timer * s_pToUpdateCursor = nullptr;
+static XAP_Frame * s_pLoadingFrame = nullptr;
+static AD_Document * s_pLoadingDoc = nullptr;
 static UT_sint32 s_iLastYScrollOffset = -1;
 static UT_sint32 s_iLastXScrollOffset = -1;
 
@@ -1041,7 +1041,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 	XAP_Frame * pFrame = s_pLoadingFrame;
 	UT_uint32 iPageCount = 0;
 	
-	if(pFrame == NULL)
+	if(pFrame == nullptr)
 	{
 		s_bFirstDrawDone = false;
 		return;
@@ -1144,15 +1144,15 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 // Can't have multiple loading document yet. Need Vectors of loading frames
 // and auto-updaters. Do this later.
 //
-		if(s_pLoadingFrame != NULL)
+		if(s_pLoadingFrame != nullptr)
 		{
 			return;
 		}
 		s_pLoadingFrame = pFrame;
 		s_pLoadingDoc = pFrame->getCurrentDoc();
-		if(s_pToUpdateCursor == NULL)
+		if(s_pToUpdateCursor == nullptr)
 		{
-			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL);
+			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,nullptr);
 		}
 		s_bFirstDrawDone = false;
 		s_pToUpdateCursor->set(1000);
@@ -1161,12 +1161,12 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 	}
 	else
 	{
-		if(s_pToUpdateCursor != NULL)
+		if(s_pToUpdateCursor != nullptr)
 		{
 			s_pToUpdateCursor->stop();
 			DELETEP(s_pToUpdateCursor);
-			s_pToUpdateCursor = NULL;
-			if(s_pLoadingFrame != NULL)
+			s_pToUpdateCursor = nullptr;
+			if(s_pLoadingFrame != nullptr)
 			{
 				s_pLoadingFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 				FV_View * pView = static_cast<FV_View *>(s_pLoadingFrame->getCurrentView());
@@ -1176,9 +1176,9 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 					pView->focusChange(AV_FOCUS_HERE);
 				}
 			}
-			s_pLoadingFrame = NULL;
+			s_pLoadingFrame = nullptr;
 		}
-		s_pLoadingDoc = NULL;
+		s_pLoadingDoc = nullptr;
 	}
 }
 
@@ -1251,7 +1251,7 @@ abi_widget_set_word_selections(AbiWidget * abi, gboolean gb)
 		return gb;
 	}
 	AP_Frame * pFrame = (AP_Frame *) abi->priv->m_pFrame;
-	if(pFrame == NULL)
+	if(pFrame == nullptr)
 		return gb;
 	pFrame->setDoWordSelections(b);
 	return gb;
@@ -1322,18 +1322,18 @@ s_abi_widget_get_file_type(const char * extension_or_mimetype, const char * cont
 extern "C" gchar *
 abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const char * exp_props, gint * iLength)
 {
-	UT_return_val_if_fail(w && w->priv, NULL);
-	UT_return_val_if_fail(w->priv->m_pDoc, NULL);
+	UT_return_val_if_fail(w && w->priv, nullptr);
+	UT_return_val_if_fail(w->priv->m_pDoc, nullptr);
 
-	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, NULL, 0, false);
+	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, nullptr, 0, false);
 
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 	
-	UT_Error result = w->priv->m_pDoc->saveAs(GSF_OUTPUT(sink), ieft, true, (!exp_props || *exp_props == '\0' ? NULL : exp_props));
+	UT_Error result = w->priv->m_pDoc->saveAs(GSF_OUTPUT(sink), ieft, true, (!exp_props || *exp_props == '\0' ? nullptr : exp_props));
 	if(result != UT_OK)
-		return NULL; // leaks sink??
+		return nullptr; // leaks sink??
 	gsf_output_close(GSF_OUTPUT(sink));
 	guint32 size = gsf_output_size (GSF_OUTPUT(sink));
 	const guint8* ibytes = gsf_output_memory_get_bytes (sink);
@@ -1360,19 +1360,19 @@ abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const 
 extern "C" gchar *
 abi_widget_get_selection(AbiWidget * w, const gchar * extension_or_mimetype, gint * iLength)
 {
-	UT_return_val_if_fail(w && w->priv, NULL);
-	UT_return_val_if_fail(w->priv->m_pDoc, NULL);	
+	UT_return_val_if_fail(w && w->priv, nullptr);
+	UT_return_val_if_fail(w->priv->m_pDoc, nullptr);	
 
 	XAP_Frame * pFrame = w->priv->m_pFrame;
-	UT_return_val_if_fail(w->priv->m_pFrame, NULL); // TODO: remove this restriction
+	UT_return_val_if_fail(w->priv->m_pFrame, nullptr); // TODO: remove this restriction
 
 	FV_View * pView = reinterpret_cast<FV_View *>(pFrame->getCurrentView());
-	UT_return_val_if_fail(pView, NULL); // TODO: remove this restriction
+	UT_return_val_if_fail(pView, nullptr); // TODO: remove this restriction
 
 	if (pView->isSelectionEmpty())
-		return NULL;
+		return nullptr;
 	
-	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, NULL, 0, false);
+	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, nullptr, 0, false);
 	
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
@@ -1388,12 +1388,12 @@ abi_widget_get_selection(AbiWidget * w, const gchar * extension_or_mimetype, gin
 	}
 	PD_DocumentRange * pDocRange = new PD_DocumentRange(w->priv->m_pDoc, low, high);
 	UT_ByteBuf buf;
-	IE_Exp * pie = NULL;
+	IE_Exp * pie = nullptr;
 	UT_Error errorCode;	
 	IEFileType newFileType;
 	errorCode = IE_Exp::constructExporter(w->priv->m_pDoc, GSF_OUTPUT(sink), ieft, &pie, &newFileType);
 	if (errorCode)
-		return NULL;
+		return nullptr;
 	pie->copyToBuffer(pDocRange,&buf);
 	guint32 size = buf.getLength();
 	gchar * szOut = g_new (gchar, size+1);
@@ -1419,10 +1419,10 @@ extern "C" gboolean
 abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y)
 {
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) w->priv->m_pFrame;
-	if(pFrame == NULL)
+	if(pFrame == nullptr)
 		return FALSE;
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-	if(pView == NULL)
+	if(pView == nullptr)
 		return FALSE;
 	UT_sint32 ix,iy;
 	pView->getMousePos(&ix,&iy);
@@ -1447,11 +1447,11 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 	//
 	if(iPage <= 0)
 	{
-		return NULL;
+		return nullptr;
 	}
 	iPage--;
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
-	if(pFrame == NULL)
+	if(pFrame == nullptr)
 		return nullptr;
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 
@@ -1490,7 +1490,7 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 	}
 	pView->getLayout()->setQuickPrint(pG);
 	pView->drawPage(iPage, &da);
-	pView->getLayout()->setQuickPrint(NULL);
+	pView->getLayout()->setQuickPrint(nullptr);
 	pView->getLayout()->incrementGraphicTick();
 	pG->endPaint();
 	cairo_destroy(cr);
@@ -1505,7 +1505,7 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 extern "C" gboolean
 abi_widget_set_font_name(AbiWidget * w, gchar * szName)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
@@ -1517,7 +1517,7 @@ abi_widget_set_font_name(AbiWidget * w, gchar * szName)
 extern "C" gboolean
 abi_widget_set_font_size(AbiWidget * w, gchar * szSize)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
@@ -1529,7 +1529,7 @@ abi_widget_set_font_size(AbiWidget * w, gchar * szSize)
 extern "C" gboolean
 abi_widget_set_style(AbiWidget * w, gchar * szName)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );	
 	
@@ -1551,7 +1551,7 @@ extern "C" void
 abi_widget_toggle_rulers(AbiWidget * abi, gboolean visible)
 {
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
-	if(pFrame != NULL)
+	if(pFrame != nullptr)
 	    pFrame->toggleRuler(visible);
 }
 
@@ -1559,7 +1559,7 @@ extern "C" gboolean
 abi_widget_insert_table(AbiWidget * abi, gint32 rows, gint32 cols)
 {
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
-	if(pFrame == NULL)
+	if(pFrame == nullptr)
 		return FALSE;
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	pView->cmdInsertTable(rows, cols, PP_NOPROPS);
@@ -1569,7 +1569,7 @@ abi_widget_insert_table(AbiWidget * abi, gint32 rows, gint32 cols)
 extern "C" gboolean
 abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );		
 	
@@ -1603,7 +1603,7 @@ abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned)
 extern "C" gboolean
 abi_widget_set_text_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
@@ -1648,7 +1648,7 @@ abi_widget_get_font_names (AbiWidget * /*w*/)
 				fonts_ar[actual_size++] = vFonts[i].c_str();
 		}
 	}
-	fonts_ar[actual_size] = NULL;
+	fonts_ar[actual_size] = nullptr;
 	return fonts_ar;
 }
 
@@ -1663,7 +1663,7 @@ abi_widget_load_file(AbiWidget * w, const gchar * pszFile, const gchar * extensi
 	
 	UT_return_val_if_fail(w && w->priv, false);
 	
-	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, NULL, 0, true);
+	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, nullptr, 0, true);
 	UT_DEBUGMSG(("Will use ieft %d to load file\n", ieft));
 
 	bool res = false;
@@ -1816,7 +1816,7 @@ static gboolean s_abi_widget_map_cb(GObject * /*w*/, gpointer p)
 	else
 	{
 		// we currenly don't have any loaded document; just start with a blank document 
-		pFrame->loadDocument(NULL, IEFT_Unknown, true);
+		pFrame->loadDocument(nullptr, IEFT_Unknown, true);
 	}
 	
 	// setup our view
@@ -1864,14 +1864,14 @@ static void abi_widget_get_prop (GObject  *object,
 	    case CONTENT:
 		{
 			gint i;
-			gchar * bytes = abi_widget_get_content(abi, NULL, NULL, &i);
+			gchar * bytes = abi_widget_get_content(abi, nullptr, nullptr, &i);
 			g_value_set_string(arg,bytes);
 			break;
 		}
 	    case SELECTION:
 		{
 			gint i;
-			gchar * bytes = abi_widget_get_selection(abi, NULL, &i);
+			gchar * bytes = abi_widget_get_selection(abi, nullptr, &i);
 			g_value_set_string(arg,bytes);
 			break;
 		}
@@ -2006,8 +2006,8 @@ static void
 abiwidget_add(GtkContainer *container,
 	      GtkWidget    *widget)
 {
-	UT_return_if_fail (container != NULL);
-	UT_return_if_fail (widget != NULL);
+	UT_return_if_fail (container != nullptr);
+	UT_return_if_fail (widget != nullptr);
 
 	if (GTK_CONTAINER_CLASS (parent_class)->add)
 		GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
@@ -2022,8 +2022,8 @@ static void
 abiwidget_remove (GtkContainer *container,
 		  GtkWidget    *widget)
 {
-	UT_return_if_fail (container != NULL);
-	UT_return_if_fail (widget != NULL);
+	UT_return_if_fail (container != nullptr);
+	UT_return_if_fail (widget != nullptr);
 
 	if (GTK_CONTAINER_CLASS (parent_class)->remove)
 		GTK_CONTAINER_CLASS (parent_class)->remove (container, widget);
@@ -2050,7 +2050,7 @@ abi_widget_init (AbiWidget * abi, gpointer)
 
 	// this isn't really needed, since each widget is
 	// guaranteed to be created with g_new0 and we just
-	// want everything to be 0/NULL/FALSE anyway right now
+	// want everything to be 0/nullptr/FALSE anyway right now
 	// but i'm keeping it around anyway just in case that changes
 	gtk_widget_set_can_focus(GTK_WIDGET(abi), true);
 	gtk_widget_set_receives_default(GTK_WIDGET(abi), true);
@@ -2064,9 +2064,9 @@ abi_widget_size_allocate (GtkWidget     *widget,
 {
 	AbiWidget *abi;
 	
-	UT_return_if_fail (widget != NULL);
+	UT_return_if_fail (widget != nullptr);
 	UT_return_if_fail (IS_ABI_WIDGET (widget));
-	UT_return_if_fail (allocation != NULL);
+	UT_return_if_fail (allocation != nullptr);
 
 	GtkAllocation child_allocation;
 	gtk_widget_set_allocation(widget, allocation);
@@ -2103,7 +2103,7 @@ abi_widget_size_allocate (GtkWidget     *widget,
 static void
 abi_widget_grab_focus (GtkWidget * widget)
 {
-       UT_return_if_fail(widget != NULL);
+       UT_return_if_fail(widget != nullptr);
        UT_return_if_fail(IS_ABI_WIDGET(widget));
 
        XAP_Frame *pFrame = ABI_WIDGET(widget)->priv->m_pFrame;
@@ -2124,7 +2124,7 @@ abi_widget_realize (GtkWidget * widget)
 	// we *must* ensure that we get a GdkWindow to draw into
 	// this here is just boilerplate GTK+ code
 
-	UT_return_if_fail (widget != NULL);
+	UT_return_if_fail (widget != nullptr);
 	UT_return_if_fail (IS_ABI_WIDGET(widget));
 
 	gtk_widget_set_realized(widget, true);
@@ -2167,7 +2167,7 @@ abi_widget_destroy_gtk (GtkWidget *object)
 {
 	AbiWidget * abi;
 	
-	UT_return_if_fail (object != NULL);
+	UT_return_if_fail (object != nullptr);
 	UT_return_if_fail (IS_ABI_WIDGET(object));
 
 	// here we g_free any self-created data
@@ -2356,67 +2356,67 @@ abi_widget_class_init (AbiWidgetClass *abi_class, gpointer)
 	g_object_class_install_property (gobject_class,
 									 CURSOR_ON,
 									 g_param_spec_boolean("cursor-on",
-														  NULL,
-														  NULL,
+														  nullptr,
+														  nullptr,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 UNLINK_AFTER_LOAD,
 									 g_param_spec_boolean("unlink-after-load",
-														  NULL,
-														  NULL,
+														  nullptr,
+														  nullptr,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property(gobject_class,
 								  VIEWPARA,
 								  g_param_spec_boolean("view-para",
-													   NULL,
-													   NULL,
+													   nullptr,
+													   nullptr,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 	g_object_class_install_property(gobject_class,
 								  VIEWPRINTLAYOUT,
 								  g_param_spec_boolean("view-print-layout",
-													   NULL,
-													   NULL,
+													   nullptr,
+													   nullptr,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 	g_object_class_install_property(gobject_class,
 								  VIEWNORMALLAYOUT,
 								  g_param_spec_boolean("view-normal-layout",
-													   NULL,
-													   NULL,
+													   nullptr,
+													   nullptr,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 	g_object_class_install_property(gobject_class,
 								  VIEWWEBLAYOUT,
 								  g_param_spec_boolean("view-web-layout",
-													   NULL,
-													   NULL,
+													   nullptr,
+													   nullptr,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 
 	g_object_class_install_property(gobject_class,
 								  CONTENT,
 								  g_param_spec_string("content",
-													   NULL,
-													   NULL,
+													   nullptr,
+													   nullptr,
 													   nullptr,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
 	g_object_class_install_property(gobject_class,
 								  SELECTION,
 								  g_param_spec_string("selection",
-													   NULL,
-													   NULL,
+													   nullptr,
+													   nullptr,
 													   nullptr,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
 	g_object_class_install_property(gobject_class,
 								  CONTENT_LENGTH,
 								  g_param_spec_int("content_length",
-													   NULL,
-													   NULL,
+													   nullptr,
+													   nullptr,
 													   INT_MIN,
 													   INT_MAX,
 													   0,
@@ -2425,8 +2425,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class, gpointer)
 	g_object_class_install_property(gobject_class,
 								  SELECTION_LENGTH,
 								  g_param_spec_int("selection_length",
-													   NULL,
-													   NULL,
+													   nullptr,
+													   nullptr,
 													   INT_MIN,
 													   INT_MAX,
 													   0,
@@ -2434,7 +2434,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class, gpointer)
 
 	g_object_class_install_property(gobject_class,
 								  SHADOW_TYPE,
-								  g_param_spec_int("shadow_type", NULL, NULL,
+								  g_param_spec_int("shadow_type", nullptr, nullptr,
 													   (int) GTK_SHADOW_NONE,
 													   (int) GTK_SHADOW_ETCHED_OUT,
 													   (int) GTK_SHADOW_IN,
@@ -2481,15 +2481,15 @@ abi_widget_get_type (void)
 		GTypeInfo info =
 		{
 			sizeof (AbiWidgetClass),
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			(GClassInitFunc)abi_widget_class_init,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			sizeof(AbiWidget),
 			0,
 			(GInstanceInitFunc)abi_widget_init,
-                        NULL
+                        nullptr
 		};
 
 		abi_type = g_type_register_static (gtk_bin_get_type (), "AbiWidget",
@@ -2509,7 +2509,7 @@ abi_widget_new (void)
 {
 	AbiWidget * abi;
 	UT_DEBUGMSG(("Constructing AbiWidget \n"));
-	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
+	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), nullptr));
 	abi_widget_construct(abi, nullptr);
 
 	return GTK_WIDGET (abi);
@@ -2530,7 +2530,7 @@ abi_widget_new_with_file (const gchar * file)
 
 	UT_return_val_if_fail(file != nullptr, nullptr);
 
-	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
+	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), nullptr));
 	abi_widget_construct (abi, file);
 
 	return GTK_WIDGET (abi);
@@ -2539,7 +2539,7 @@ abi_widget_new_with_file (const gchar * file)
 extern "C" XAP_Frame * 
 abi_widget_get_frame ( AbiWidget * w )
 {
-	UT_return_val_if_fail ( w != NULL, NULL ) ;
+	UT_return_val_if_fail ( w != nullptr, nullptr ) ;
 	return w->priv->m_pFrame ;
 }
 
@@ -2565,7 +2565,7 @@ abi_widget_get_frame ( AbiWidget * w )
 extern "C" gboolean
 abi_widget_invoke (AbiWidget * w, const char * mthdName)
 {
-	return abi_widget_invoke_ex ( w, mthdName, NULL, 0, 0 ) ;
+	return abi_widget_invoke_ex ( w, mthdName, nullptr, 0, 0 ) ;
 }
 
 /**
@@ -2624,7 +2624,7 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 
 	// construct the call data
 	UT_UCS4String ucs4String = data ? UT_UTF8String(data).ucs4_str() : UT_UCS4String();
-	const UT_UCSChar* actualData = data ? ucs4String.ucs4_str() : NULL;
+	const UT_UCSChar* actualData = data ? ucs4String.ucs4_str() : nullptr;
 	EV_EditMethodCallData calldata(actualData, (actualData ? ucs4String.size() : 0));
 	calldata.m_xPos = x;
 	calldata.m_yPos = y;
@@ -2640,7 +2640,7 @@ abi_widget_draw (AbiWidget * w)
 	if (w->priv->m_pFrame)
 	{
 		// obtain a valid view
-		UT_return_if_fail (w != NULL);
+		UT_return_if_fail (w != nullptr);
 		FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 		if (view)
 			view->queueDraw();
@@ -2650,30 +2650,30 @@ abi_widget_draw (AbiWidget * w)
 extern "C" gboolean 
 abi_widget_save ( AbiWidget * w, const char * fname, const char * extension_or_mimetype, const char * exp_props)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pDoc, FALSE );
-	UT_return_val_if_fail ( fname != NULL, FALSE );
+	UT_return_val_if_fail ( fname != nullptr, FALSE );
 
-	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, NULL, 0, false);
-	return static_cast<AD_Document*>(w->priv->m_pDoc)->saveAs ( fname, ieft, false, (!exp_props || *exp_props == '\0' ? NULL : exp_props) ) == UT_OK ? TRUE : FALSE;
+	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, nullptr, 0, false);
+	return static_cast<AD_Document*>(w->priv->m_pDoc)->saveAs ( fname, ieft, false, (!exp_props || *exp_props == '\0' ? nullptr : exp_props) ) == UT_OK ? TRUE : FALSE;
 }
 
 extern "C" gboolean 
 abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extension_or_mimetype, const char * exp_props )
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	UT_return_val_if_fail ( output != NULL, FALSE );
+	UT_return_val_if_fail ( output != nullptr, FALSE );
 
-	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, NULL, 0, false);
-	return w->priv->m_pDoc->saveAs(output, ieft, false, (!exp_props || *exp_props == '\0' ? NULL : exp_props)) == UT_OK ? TRUE : FALSE;
+	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, nullptr, 0, false);
+	return w->priv->m_pDoc->saveAs(output, ieft, false, (!exp_props || *exp_props == '\0' ? nullptr : exp_props)) == UT_OK ? TRUE : FALSE;
 }
 
 extern "C" gboolean 
 abi_widget_set_zoom_percentage (AbiWidget * w, guint32 zoom)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
@@ -2685,7 +2685,7 @@ abi_widget_set_zoom_percentage (AbiWidget * w, guint32 zoom)
 extern "C" guint32 
 abi_widget_get_zoom_percentage (AbiWidget * w)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
@@ -2696,7 +2696,7 @@ static FV_View*
 _get_fv_view(AbiWidget* w)
 {
 	AV_View* v = w->priv->m_pFrame->getCurrentView();
-	UT_return_val_if_fail(v != nullptr, NULL);
+	UT_return_val_if_fail(v != nullptr, nullptr);
 	return static_cast<FV_View*>( v );
 }
 
@@ -2744,7 +2744,7 @@ abi_widget_find_prev(AbiWidget * w)
 extern "C" guint32
 abi_widget_get_page_count(AbiWidget * w)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
@@ -2760,7 +2760,7 @@ abi_widget_get_page_count(AbiWidget * w)
 extern "C" void
 abi_widget_set_current_page(AbiWidget * w, guint32 curpage)
 {
-	UT_return_if_fail ( w != NULL );
+	UT_return_if_fail ( w != nullptr );
 	UT_return_if_fail ( IS_ABI_WIDGET(w) );
 	UT_return_if_fail ( w->priv->m_pFrame );
 	
@@ -2781,7 +2781,7 @@ abi_widget_set_current_page(AbiWidget * w, guint32 curpage)
 extern "C" guint32
 abi_widget_get_current_page_num(AbiWidget * w)
 {
-	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( w != nullptr, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 

@@ -224,7 +224,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	if (!szName)
 		return nullptr;
 
-	EV_EditMethod *mthd = NULL;
+	EV_EditMethod *mthd = nullptr;
 
 	// TODO: make this also use a hashtable + bsearch
 
@@ -260,9 +260,9 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	{
 		xxx_UT_DEBUGMSG(("Looking at method %d \n",k));
 		EV_EditMethod * pem = m_vecDynamicEditMethods.getNthItem(k);
-		if(pem == NULL)
+		if(pem == nullptr)
 			continue;
-		if(pem->getName() == NULL)
+		if(pem->getName() == nullptr)
 			continue;
 		if (strcmp(szName,pem->getName()) == 0)
 			return pem;
@@ -286,7 +286,7 @@ bool ev_EditMethod_invoke (const EV_EditMethod * pEM,
   // no controlling view == bad joo joo - return false
   // Actually allow this for plugins invoked from the command line
   //
-  AV_View * pView = NULL;
+  AV_View * pView = nullptr;
   XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
   if(!pFrame)
   {
@@ -348,7 +348,7 @@ bool ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS4String & da
 
 bool ev_EditMethod_exists (const char * methodName)
 {
-  return ( ev_EditMethod_lookup ( methodName ) != NULL ) ;
+  return ( ev_EditMethod_lookup ( methodName ) != nullptr ) ;
 }
 
 bool ev_EditMethod_exists (const UT_String & methodName)

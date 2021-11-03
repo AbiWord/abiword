@@ -78,7 +78,7 @@ void AP_Win32Dialog_Goto::notifyActiveFrame(XAP_Frame *pFrame)
 		ConstructWindowName();
         setDialogTitle(m_WindowName);
 		SetWindowLongPtrW(m_hWnd, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hWnd, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
@@ -88,7 +88,7 @@ void AP_Win32Dialog_Goto::notifyCloseFrame(XAP_Frame *pFrame)
 	if((HWND)GetWindowLongPtrW(m_hWnd, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		SetWindowLongPtrW(m_hWnd, GWLP_HWNDPARENT, 0);
-		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hWnd, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
@@ -147,7 +147,7 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*l
 
 	m_iRow = 0;
 	ppszTargets = getJumpTargets();
-	for ( iTarget = 0; ppszTargets[ iTarget ] != NULL; iTarget++ ) {
+	for ( iTarget = 0; ppszTargets[ iTarget ] != nullptr; iTarget++ ) {
 		str.fromUTF8(ppszTargets[ iTarget ] );
 		SendMessageW( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 	}
@@ -186,7 +186,7 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*l
 
 BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	wchar_t * pBuf = NULL;
+	wchar_t * pBuf = nullptr;
 	bool bValueOK = TRUE;
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);

@@ -73,11 +73,11 @@ XAP_Dialog * XAP_UnixDialog_Insert_Symbol::static_constructor(XAP_DialogFactory 
 XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id id)
 	: XAP_Dialog_Insert_Symbol(pDlgFactory,id),
-	m_SymbolMap(NULL)
+	m_SymbolMap(nullptr)
 {
-	m_areaCurrentSym = NULL;
-	m_unixGraphics = NULL;
-	m_unixarea = NULL;
+	m_areaCurrentSym = nullptr;
+	m_unixGraphics = nullptr;
+	m_unixarea = nullptr;
 	m_ix = 0;
 	m_iy = 0;
 }
@@ -218,7 +218,7 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 	
 	modeless_cleanup();
 	gtk_widget_destroy(m_windowMain); // TOPLEVEL
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 }
 
 void XAP_UnixDialog_Insert_Symbol::New_Font(void )
@@ -397,7 +397,7 @@ void XAP_UnixDialog_Insert_Symbol::setSymbolMap_size(UT_uint32 width, UT_uint32 
 	// between window and drawingarea this show stay constant
 	GtkRequisition diff;
 	GtkAllocation alloc;
-	gtk_widget_get_preferred_size (m_windowMain, &diff, NULL);
+	gtk_widget_get_preferred_size (m_windowMain, &diff, nullptr);
 	gtk_widget_get_allocation (m_SymbolMap, &alloc);
 	if (!diff_width || !diff_height)
 	{
@@ -571,7 +571,7 @@ void XAP_UnixDialog_Insert_Symbol::destroy(void)
 	
 	// Just nuke this dialog
 	gtk_widget_destroy(m_windowMain); // TOPLEVEL
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 }
 
 /*****************************************************************/

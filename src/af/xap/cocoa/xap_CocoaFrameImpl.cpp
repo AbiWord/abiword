@@ -63,10 +63,10 @@ NSString* XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar = @"XAP_FrameReleaseToolba
 XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame)
 	: XAP_FrameImpl (frame),
 	  m_dialogFactory(XAP_App::getApp(), frame),
-	  m_pCocoaPopup(NULL),
+	  m_pCocoaPopup(nullptr),
 	  m_frameController(nil)
 {
-//	m_pView = NULL;
+//	m_pView = nullptr;
 
 #if 0
 	// dirty hack to make sure the frame is compiled in as the class is only 
@@ -85,11 +85,11 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame)
 XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_CocoaFrameImpl * f)
 	: XAP_FrameImpl(f),
 	  m_dialogFactory(XAP_App::getApp(), f->m_pFrame),
-	  m_pCocoaMenu(NULL),
-	  m_pCocoaPopup(NULL),
+	  m_pCocoaMenu(nullptr),
+	  m_pCocoaPopup(nullptr),
 	  m_frameController(nil)
 {
-	m_pView = NULL;
+	m_pView = nullptr;
 }
 */
 
@@ -325,7 +325,7 @@ void XAP_CocoaFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 	pToolbar = _newToolbar(pFrame, szTBName,
 						   (const char *) m_szToolbarLabelSetName);
 	static_cast<EV_CocoaToolbar *>(pToolbar)->rebuildToolbar(oldpos);
-	m_vecToolbars.setNthItem(ibar, pToolbar, NULL);
+	m_vecToolbars.setNthItem(ibar, pToolbar, nullptr);
 //
 // Refill the framedata pointers
 //
@@ -365,8 +365,8 @@ bool XAP_CocoaFrameImpl::_show()
 UT_RGBColor XAP_CocoaFrameImpl::getColorSelBackground () const
 {
 	/* this code is disabled as the NSColor returned is not RGB compatible. */
-	static UT_RGBColor * c = NULL;
-	if (c == NULL) {
+	static UT_RGBColor * c = nullptr;
+	if (c == nullptr) {
 		c = new UT_RGBColor();
 		GR_CocoaGraphics::_utNSColorToRGBColor ([[NSColor selectedTextBackgroundColor] 
 					colorUsingColorSpaceName:NSCalibratedRGBColorSpace], *c);
@@ -502,7 +502,7 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 		UT_ASSERT(pFrame);
 		AV_View * pView = pFrame->getCurrentView();	
 		UT_ASSERT(pView);
-		if (pEM->Fn(m_frame->getFrame()->getCurrentView(),NULL))
+		if (pEM->Fn(m_frame->getFrame()->getCurrentView(),nullptr))
 		{
 			// returning YES means close the window
 			// but first let's warn the app controller not to assume our existence
@@ -563,7 +563,7 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 	UT_DEBUGMSG(("windowDidResignKey: '%s'\n", [[[self window] title] UTF8String]));
 
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
-	[pController setCurrentView:0 inFrame:0];
+	[pController setCurrentView:nullptr inFrame:nullptr];
 
 //	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar 
 //			object:self];

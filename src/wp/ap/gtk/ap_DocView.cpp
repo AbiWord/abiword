@@ -53,18 +53,18 @@ ap_DocView_class_init(GtkWidgetClass *widget_class, gpointer)
 	
 	// Disable focus handlers because they emit superfluous expose
 	// events, causing flicker.
-	widget_class->focus_in_event = NULL;
-	widget_class->focus_out_event = NULL;
+	widget_class->focus_in_event = nullptr;
+	widget_class->focus_out_event = nullptr;
 #if 0
 	GType factory_type = AT_DocView_factory_get_type();
-	if (factory_type)	// will return NULL if unable to find gail
+	if (factory_type)	// will return nullptr if unable to find gail
 	{
 		atk_registry_set_factory_type(atk_get_default_registry(), ABI_TYPE_DOCVIEW, factory_type);
 	}
 #endif
 }
 GSF_CLASS(ApDocView, ap_DocView,
-          ap_DocView_class_init, NULL,
+          ap_DocView_class_init, nullptr,
           GTK_TYPE_DRAWING_AREA)
 
 /**
@@ -77,7 +77,7 @@ ap_DocView_new (void)
 {
 	ApDocView * abi;
 	UT_DEBUGMSG(("Constructing ApDocView \n"));
-	abi = static_cast<ApDocView *>(g_object_new (ap_DocView_get_type (), NULL));
+	abi = static_cast<ApDocView *>(g_object_new (ap_DocView_get_type (), nullptr));
 
 	return GTK_WIDGET (abi);
 }

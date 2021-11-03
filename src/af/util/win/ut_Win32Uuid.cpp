@@ -44,7 +44,7 @@ UT_Win32UUID::~UT_Win32UUID ()
  */
 bool UT_Win32UUID::_getRandomBytes(void *buf, UT_sint32 nbytes)
 {
-	if(s_hProv || CryptAcquireContext(&s_hProv,NULL,NULL,PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+	if(s_hProv || CryptAcquireContext(&s_hProv,nullptr,nullptr,PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
 	{
 		if(CryptGenRandom(s_hProv, nbytes,(BYTE *)buf))
 		{
@@ -56,9 +56,9 @@ bool UT_Win32UUID::_getRandomBytes(void *buf, UT_sint32 nbytes)
 	LPVOID lpMsgBuf;
 	DWORD ecode = GetLastError();
 	FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-				  NULL, ecode,
+				  nullptr, ecode,
 				  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-				  (LPWSTR) &lpMsgBuf, 0, NULL);
+				  (LPWSTR) &lpMsgBuf, 0, nullptr);
 
 	UT_DEBUGMSG(("UT_Win32UUID::_getRandomBytes: no Cryptographic services (0x%x; %s)\n",
 				 ecode, lpMsgBuf));

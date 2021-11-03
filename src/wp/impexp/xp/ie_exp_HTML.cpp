@@ -102,7 +102,7 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 {
   
 	// We can't create navigation helper before a
-	m_pNavigationHelper = NULL;
+	m_pNavigationHelper = nullptr;
 
     m_exp_opt.bIs4 = false;
     m_exp_opt.bIsAbiWebDoc = false;
@@ -179,18 +179,18 @@ UT_Error IE_Exp_HTML::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bu
     }
     outDoc->finishRawCreation();
     //
-    // OK now we have a complete and valid document containing our selected 
+    // OK now we have a complete and valid document containing our selected
     // content. We export this to an in memory GSF buffer
     //
-    IE_Exp_HTML * pNewExp = NULL; 
-    char *szTempFileName = NULL;
-    GError *err = NULL;
+    IE_Exp_HTML * pNewExp = nullptr;
+    char *szTempFileName = nullptr;
+    GError *err = nullptr;
     g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
     GsfOutput * outBuf =  gsf_output_stdio_new (szTempFileName,&err);
     IEFileType ftHTML = IE_Exp::fileTypeForMimetype("text/html");
     UT_Error aerr = IE_Exp::constructExporter(outDoc,outBuf,
 											  ftHTML,(IE_Exp**)&pNewExp);
-    if(pNewExp == NULL)
+    if(pNewExp == nullptr)
     {
          return aerr;
     }
@@ -213,7 +213,7 @@ UT_Error IE_Exp_HTML::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bu
 
     GsfInput *  fData = gsf_input_stdio_new(szTempFileName,&err);
     UT_DebugOnly<UT_sint32> siz = gsf_input_size(fData);
-    const UT_Byte * pData = gsf_input_read(fData,gsf_input_size(fData),NULL);
+    const UT_Byte * pData = gsf_input_read(fData,gsf_input_size(fData),nullptr);
     UT_DEBUGMSG(("Writing %d bytes to clipboard \n", (UT_sint32)siz));
     bufHTML->append( pData, gsf_input_size(fData));
     
@@ -230,7 +230,7 @@ void IE_Exp_HTML::_buildStyleTree()
     const PD_Style * p_pds = nullptr;
     const gchar * szStyleName = nullptr;
 
-    UT_GenericVector<PD_Style*> * pStyles = NULL;
+    UT_GenericVector<PD_Style*> * pStyles = nullptr;
     getDoc()->enumStyles(pStyles);
     UT_return_if_fail(pStyles);
     UT_uint32 iStyleCount = getDoc()->getStyleCount();
@@ -560,7 +560,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool /*bClipBoard*/, bool /*bTemplateBody*/
         getDoc()->getBounds(false, posEnd);
         docBegin = posEnd;
         posEnd = 0;
-        currentTitle = m_pNavigationHelper->getNthTOCEntry(0, NULL).utf8_str();
+        currentTitle = m_pNavigationHelper->getNthTOCEntry(0, nullptr).utf8_str();
         bool isIndex = true;
         for (int i = m_pNavigationHelper->getMinTOCIndex();
             i < m_pNavigationHelper->getNumTOCEntries(); i++)
@@ -571,7 +571,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool /*bClipBoard*/, bool /*bTemplateBody*/
 
             if (currentLevel == m_pNavigationHelper->getMinTOCLevel())
             {
-                chapterTitle = m_pNavigationHelper->getNthTOCEntry(i, NULL).utf8_str();
+                chapterTitle = m_pNavigationHelper->getNthTOCEntry(i, nullptr).utf8_str();
                 m_pNavigationHelper->getNthTOCEntryPos(i, posCurrent);
                 posBegin = posEnd;
 
@@ -623,7 +623,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool /*bClipBoard*/, bool /*bTemplateBody*/
         } else
         {
             UT_DEBUGMSG(("Creating single-file HTML document\n"));
-            _createChapter(NULL, "", true);
+            _createChapter(nullptr, "", true);
         }
     }
 
@@ -652,7 +652,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const std::string &tit
 		std::string outputUri = s;
 		g_free(s);
         outputUri += SEPARATOR + filename;
-        output = UT_go_file_create(outputUri.c_str(), NULL);
+        output = UT_go_file_create(outputUri.c_str(), nullptr);
     }
     IE_Exp_HTML_OutputWriter *pOutputWriter = 
         new IE_Exp_HTML_FileWriter(output);
@@ -681,7 +681,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const std::string &tit
     
     pHeaderFooterListener->doHdrFtr(true);
     
-    if (range!= NULL)
+    if (range!= nullptr)
     {
         getDoc()->tellListenerSubset(pListener, range);
     } else
@@ -766,13 +766,13 @@ void IE_Exp_HTML::_createMultipart()
 
 void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
 {
-	if ((m_pWriterFactory != NULL) && (m_bDefaultWriterFactory))
+	if ((m_pWriterFactory != nullptr) && (m_bDefaultWriterFactory))
 	{
 		DELETEP(m_pWriterFactory);
         m_bDefaultWriterFactory = false;
 	}
 	
-	if (pWriterFactory == NULL)
+	if (pWriterFactory == nullptr)
 	{
 		m_pWriterFactory = 
             new IE_Exp_HTML_DefaultWriterFactory(getDoc(),

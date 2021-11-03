@@ -52,7 +52,7 @@ static bool break_into_debugger()
 
 	sigaction(SIGTRAP, &act, &oldact);
 	kill(0, SIGTRAP);
-	sigaction(SIGTRAP, &oldact, NULL);
+	sigaction(SIGTRAP, &oldact, nullptr);
 
 	return !trap_reached;
 }

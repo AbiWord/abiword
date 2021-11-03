@@ -49,7 +49,7 @@
 
 bool UT_XML_cloneNoAmpersands(gchar *& rszDest, const gchar * szSource)
 {
-	if (szSource == NULL)
+	if (szSource == nullptr)
 		return false;
 
 	UT_uint32 length = strlen(szSource) + 1;
@@ -75,7 +75,7 @@ bool UT_XML_cloneNoAmpersands(gchar *& rszDest, const gchar * szSource)
 
 bool UT_XML_cloneConvAmpersands(gchar *& rszDest, const gchar * szSource)
 {
-	if (szSource == NULL)
+	if (szSource == nullptr)
 		return false;
 
 	UT_uint32 length = strlen(szSource) + 1;
@@ -106,11 +106,11 @@ bool UT_XML_cloneConvAmpersands(gchar *& rszDest, const gchar * szSource)
 /* This uses the clone no ampersands but dumps into a static buffer */
 const gchar *UT_XML_transNoAmpersands(const gchar * szSource)
 {
-	static gchar *rszDestBuffer = NULL;
+	static gchar *rszDestBuffer = nullptr;
 	static UT_uint32 iDestBufferLength = 0;
 
-	if (szSource == NULL)
-		return NULL;
+	if (szSource == nullptr)
+		return nullptr;
 
 	UT_uint32 length = strlen(szSource) + 1;
 	if (length > iDestBufferLength) {
@@ -121,7 +121,7 @@ const gchar *UT_XML_transNoAmpersands(const gchar * szSource)
 		rszDestBuffer = static_cast<gchar *>(UT_calloc(length, sizeof(gchar)));
 
 		if (!rszDestBuffer)
-			return NULL;
+			return nullptr;
 
 		iDestBufferLength = length;
 	}
@@ -251,7 +251,7 @@ bool UT_isValidXML(const char *pString)
 	if(!pString)
 		return true;
 
-	if(!g_utf8_validate(pString, -1, NULL))
+	if(!g_utf8_validate(pString, -1, nullptr))
 		return false;
 
 	const UT_Byte * s = reinterpret_cast<const UT_Byte *>(pString);
@@ -696,7 +696,7 @@ char * UT_UCS2_strcpy_to_char(char * dest, const UT_UCS2Char * src)
 
 	UT_ASSERT_NOT_REACHED();
 
-	return NULL;
+	return nullptr;
 }
 
 bool UT_UCS2_cloneString(UT_UCS2Char ** dest, const UT_UCS2Char * src)
@@ -1716,8 +1716,8 @@ bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiChar
 	// compiler should remove this code if the bug does not exist
 	if(sizeof(FriBidiChar) > sizeof(UT_UCS4Char))
 	{
-		static FriBidiChar* pFBDC = NULL;
-		static FriBidiChar* pFBDC2 = NULL;
+		static FriBidiChar* pFBDC = nullptr;
+		static FriBidiChar* pFBDC2 = nullptr;
 		static UT_uint32 iFBDlen = 0;
 
 		if(iFBDlen < len + 1)
@@ -1741,7 +1741,7 @@ bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiChar
 
 		pFBDC[i] = 0;
 
-		int iRet = fribidi_log2vis (pFBDC, len, &baseDir, pFBDC2, NULL, NULL, NULL);
+		int iRet = fribidi_log2vis (pFBDC, len, &baseDir, pFBDC2, nullptr, nullptr, nullptr);
 
 		for(i = 0; i < len; ++i)
 		{
@@ -1754,7 +1754,7 @@ bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiChar
 	}
 	else
 	{
-		return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir, (FriBidiChar*)pStrOut, NULL, NULL, NULL));
+		return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir, (FriBidiChar*)pStrOut, nullptr, nullptr, nullptr));
 	}
 	
 #else
@@ -1775,7 +1775,7 @@ bool UT_bidiMapLog2Vis(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharTyp
 	// if this assert fails, we have a serious problem ...
 	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
 	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir,
-								  NULL, (FriBidiStrIndex*)pL2V, (FriBidiStrIndex*)pV2L, (FriBidiLevel*)pEmbed));
+								  nullptr, (FriBidiStrIndex*)pL2V, (FriBidiStrIndex*)pV2L, (FriBidiLevel*)pEmbed));
 #else
 	UT_return_val_if_fail( pL2V && pV2L && pEmbed, false );
 	for(UT_uint32 i = 0; i < len; ++i)

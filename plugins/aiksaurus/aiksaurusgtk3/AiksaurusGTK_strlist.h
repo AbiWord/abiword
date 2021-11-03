@@ -72,11 +72,11 @@ class AiksaurusGTK_strlist
 		const GList* list() const;
 
 		// look_back: returns pointer to last element in list
-		// or NULL if list is empty.
+		// or nullptr if list is empty.
 		const char* look_back() const;
 
 		// look_front: returns pointer to first element in list
-		// or NULL if list is empty.
+		// or nullptr if list is empty.
 		const char* look_front() const;
 
 

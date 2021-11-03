@@ -71,7 +71,7 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
 	}
 
    	if (!getDoc()->createDataItem("image_0", false,
-					buf, pFG->getMimeType(), NULL)) {
+					buf, pFG->getMimeType(), nullptr)) {
 	   return UT_IE_NOMEMORY;
 	}
 

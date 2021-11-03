@@ -110,9 +110,9 @@ void ODi_XMLRecorder::clear() {
  */
 ODi_XMLRecorder& ODi_XMLRecorder::operator=(const ODi_XMLRecorder& rXMLRecorder) {
     UT_uint32 count, i;
-    const ODi_XMLRecorder::StartElementCall* pStartCall = NULL;
-    const ODi_XMLRecorder::EndElementCall* pEndCall = NULL;
-    const ODi_XMLRecorder::CharDataCall* pCharDataCall = NULL;
+    const ODi_XMLRecorder::StartElementCall* pStartCall = nullptr;
+    const ODi_XMLRecorder::EndElementCall* pEndCall = nullptr;
+    const ODi_XMLRecorder::CharDataCall* pCharDataCall = nullptr;
 
     count = rXMLRecorder.getCallCount();
     for (i=0; i<count; i++) {

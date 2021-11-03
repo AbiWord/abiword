@@ -76,7 +76,7 @@ bool IE_ImpGraphicSVG_Sniffer::getDlgLabels(const char ** pszDesc,
 UT_Error IE_ImpGraphicSVG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_SVG();
-	if (*ppieg == NULL)
+	if (*ppieg == nullptr)
 	  return UT_IE_NOMEMORY;
 
 	return UT_OK;
@@ -87,7 +87,7 @@ UT_Error IE_ImpGraphic_SVG::importGraphic(const UT_ConstByteBufPtr & pBB,
                                           FG_ConstGraphicPtr& pfg)
 {
 	FG_GraphicVectorPtr pFGR(new FG_GraphicVector);
-	if(pFGR == NULL)
+	if(pFGR == nullptr)
 		return UT_IE_NOMEMORY;
 
 	if(!pFGR->setVector_SVG(pBB)) {

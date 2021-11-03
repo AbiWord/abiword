@@ -43,8 +43,8 @@ static wchar_t s_LeftRulerWndClassName[256];
 AP_Win32LeftRuler::AP_Win32LeftRuler(XAP_Frame * pFrame)
 	: AP_LeftRuler(pFrame)
 {
-	m_pG = NULL;
-	m_hwndLeftRuler = NULL;
+	m_pG = nullptr;
+	m_hwndLeftRuler = nullptr;
 }
 
 AP_Win32LeftRuler::~AP_Win32LeftRuler(void)
@@ -84,8 +84,8 @@ bool AP_Win32LeftRuler::registerClass(XAP_Win32App * app)
 	swprintf(s_LeftRulerWndClassName, L"%sLeftRuler",  str.c_str());
 
 	a = UT_RegisterClassEx(CS_DBLCLKS | CS_OWNDC, AP_Win32LeftRuler::_LeftRulerWndProc, app->getInstance(),
-						   NULL, LoadCursor(NULL, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,
-						   NULL, s_LeftRulerWndClassName);
+						   nullptr, LoadCursor(nullptr, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), nullptr,
+						   nullptr, s_LeftRulerWndClassName);
 	
 	UT_ASSERT_HARMLESS(a);
 
@@ -98,11 +98,11 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 {
 		
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(XAP_App::getApp());
-	m_hwndLeftRuler = UT_CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
+	m_hwndLeftRuler = UT_CreateWindowEx(0, s_LeftRulerWndClassName, nullptr,
 									 WS_CHILD | WS_VISIBLE,
 									 left, top, s_iFixedWidth, height,
-									 hwndContainer, NULL, app->getInstance(), NULL);
-	UT_return_val_if_fail (m_hwndLeftRuler,0);
+									 hwndContainer, nullptr, app->getInstance(), nullptr);
+	UT_return_val_if_fail (m_hwndLeftRuler, nullptr);
 	SWL(m_hwndLeftRuler, this);
 	
 	
@@ -111,7 +111,7 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
-	UT_return_val_if_fail (pG, 0);
+	UT_return_val_if_fail (pG, nullptr);
 	pG->init3dColors();
 	
 	RECT rSize;

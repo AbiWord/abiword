@@ -157,7 +157,7 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 
 	if (0 == strcmp(szName, PT_PROPS_ATTRIBUTE_NAME) && *szValue)	// PROPS -- cut value up into properties
 	{
-		char * pOrig = NULL;
+		char * pOrig = nullptr;
 
 		if (!(pOrig = g_strdup(szValue)))
 		{
@@ -266,7 +266,7 @@ bool PP_AttrProp::setProperty(const std::string & name, const std::string & valu
 {
 	UT_return_val_if_fail(!name.empty(), false);
 
-	// if szValue == NULL or *szValue == 0, indicates absent property.
+	// if szValue == nullptr or *szValue == 0, indicates absent property.
 	// We have to set it empty, otherwise the code that changes
 	// properties has no way of knowing that this property is not to
 	// be present
@@ -421,12 +421,12 @@ PP_PropertyVector PP_AttrProp::getProperties () const
 std::unique_ptr<PP_PropertyType> PP_AttrProp::getPropertyType(const gchar * szName, tProperty_type Type) const
 {
 	if (m_properties.empty()) {
-		return NULL;
+		return nullptr;
 	}
 
 	properties_t::const_iterator iter = m_properties.find(szName);
 	if (iter == m_properties.end()) {
-		return NULL;
+		return nullptr;
 	}
 
 	return std::unique_ptr<PP_PropertyType>(PP_PropertyType::createPropertyType(Type, iter->second.c_str()));
@@ -505,15 +505,15 @@ bool PP_AttrProp::areAlreadyPresent(const PP_PropertyVector & attributes,
 		  Is this bogus too? -PL
 
 		  Yes.
-		  We use empty strings and NULL in values to indicate that the
+		  We use empty strings and nullptr in values to indicate that the
 		  attribute/property should be absent. Sometimes these values filter down
 		  here, so we need to handle this. TF
 		*/
 		// UT_return_val_if_fail (p[1] /* && *p[1]*/, false);	// require value for each name
 
-		// first deal with the case where the value is set to NULL or "" -- we want
+		// first deal with the case where the value is set to nullptr or "" -- we want
 		// that attribute to be absent, not present
-		const gchar * szValue = NULL;
+		const gchar * szValue = nullptr;
 
 		if((iter + 1)->empty() && getAttribute(*iter, szValue)
 		   && szValue && *szValue) {
@@ -542,15 +542,15 @@ bool PP_AttrProp::areAlreadyPresent(const PP_PropertyVector & attributes,
 		  *want* to represent no tabstops as an empty string.
 		  If this isn't safe, let me know.   -- PCR
 
-		  We use empty strings and NULL in values to indicate that the
+		  We use empty strings and nullptr in values to indicate that the
 		  attribute/property should be absent. Sometimes these values filter down
 		  here, so we need to handle this. TF
 		*/
 		// UT_return_val_if_fail (p[1] /* && *p[1]*/, false);	// require value for each name
 
-		// first deal with the case where the value is set to NULL or "" -- we want
+		// first deal with the case where the value is set to nullptr or "" -- we want
 		// that attribute to be absent, not present
-		const gchar * szValue = NULL;
+		const gchar * szValue = nullptr;
 
 		if(!(iter + 1)->empty() && getProperty(*iter, szValue)
 		   && szValue && *szValue) {
@@ -580,7 +580,7 @@ bool PP_AttrProp::areAnyOfTheseNamesPresent(const PP_PropertyVector & attributes
 	ASSERT_PV_SIZE(attributes);
 	for (auto iter = attributes.cbegin(); iter != attributes.cend(); iter += 2) {
 
-		const gchar * szValue = NULL;
+		const gchar * szValue = nullptr;
 		if (getAttribute(*iter, szValue)) {
 			return true;
 		}
@@ -588,7 +588,7 @@ bool PP_AttrProp::areAnyOfTheseNamesPresent(const PP_PropertyVector & attributes
 	ASSERT_PV_SIZE(properties);
 	for (auto iter = properties.cbegin(); iter != properties.cend(); iter += 2) {
 
-		const gchar * szValue = NULL;
+		const gchar * szValue = nullptr;
 		if (getProperty(*iter, szValue)) {
 			return true;
 		}
@@ -675,7 +675,7 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp & pMatch) const
 
 
 /*! Create a new AttrProp with exactly the attributes/properties given.
-  \return NULL on failure, the newly-created PP_AttrProp.
+  \return nullptr on failure, the newly-created PP_AttrProp.
 */
 PP_AttrProp * PP_AttrProp::createExactly(const PP_PropertyVector & attributes,
 					 const PP_PropertyVector & properties)
@@ -690,7 +690,7 @@ PP_AttrProp * PP_AttrProp::createExactly(const PP_PropertyVector & attributes,
 }
 
 /*! Create a new AttrProp based upon the given one, adding or replacing the items given.
-	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
+	 \return nullptr on failure, the newly-created PP_AttrProp clone otherwise.
 */
 PP_AttrProp * PP_AttrProp::cloneWithReplacements(const PP_PropertyVector & attributes,
 												 const PP_PropertyVector & properties,
@@ -810,7 +810,7 @@ void PP_AttrProp::_clearEmptyAttributes()
 	 regardless of their value.  See also PP_AttrProp::cloneWithEliminationIfEqual,
 	 which does similarly but only removes the items given if their value is equal
 	 to the value given.
-	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
+	 \return nullptr on failure, the newly-created PP_AttrProp clone otherwise.
 */
 PP_AttrProp * PP_AttrProp::cloneWithElimination(const PP_PropertyVector & attributes,
 												const PP_PropertyVector & properties) const
@@ -834,7 +834,7 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const PP_PropertyVector & attrib
 		for (PP_PropertyVector::const_iterator iter = attributes.begin();
 			 iter != attributes.end(); iter += 2) {
 
-			UT_return_val_if_fail (*iter != PT_PROPS_ATTRIBUTE_NAME, NULL); // cannot handle PROPS here
+			UT_return_val_if_fail (*iter != PT_PROPS_ATTRIBUTE_NAME, nullptr); // cannot handle PROPS here
 			if (*iter == n) {		// found it, so we don't put it in the result.
 				goto DoNotIncludeAttribute;
 			}
@@ -892,7 +892,7 @@ void PP_AttrProp::markReadOnly(void)
 	 if their value is equal to that given.  See also PP_AttrProp::cloneWithElimination,
 	 which does similarly but removes the items given regardless of whether or not
 	 their value is equal to the value given.
-	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
+	 \return nullptr on failure, the newly-created PP_AttrProp clone otherwise.
 */
 PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const PP_PropertyVector & attributes,
 												const PP_PropertyVector & properties) const
@@ -1215,10 +1215,10 @@ bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 	UT_return_val_if_fail(pDoc,false);
 	
 	// expand style if present
-	const gchar * pszStyle = NULL;
+	const gchar * pszStyle = nullptr;
 	if(getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
 	{
-		PD_Style * pStyle = NULL;
+		PD_Style * pStyle = nullptr;
 
         if(pszStyle && (strcmp(pszStyle, "None") != 0) && pDoc->getStyle(pszStyle,&pStyle))
         {

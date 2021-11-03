@@ -35,7 +35,7 @@ class ABI_EXPORT AP_Dialog_Modal : public XAP_Dialog_NonPersistent
   protected:
 
 public:
-	AP_Dialog_Modal(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
+	AP_Dialog_Modal(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = nullptr );
 	virtual ~AP_Dialog_Modal();
 
     virtual void maybeClosePopupPreviewBubbles() override;

@@ -19,13 +19,7 @@
 
 #pragma once
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
 
 class AV_View;
 
@@ -41,7 +35,7 @@ typedef enum _AV_ListenerType
     AV_LISTENER_SCROLLBAR,
     AV_LISTENER_VIEW,
     AV_LISTENER_STATUSBAR,
-	AV_LISTENER_CARET,
+    AV_LISTENER_CARET,
     AV_LISTENER_PLUGIN,
     AV_LISTENER_PLUGIN_EXTRA
 
@@ -106,6 +100,6 @@ public:
 class ABI_EXPORT AV_ListenerExtra : public AV_Listener
 {
 public:
-	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask, void * pPrivateData =NULL) = 0;
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask, void * pPrivateData = nullptr) = 0;
 	virtual AV_ListenerType    getType(void) const override = 0;
 };

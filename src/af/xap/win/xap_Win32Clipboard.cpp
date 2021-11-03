@@ -81,7 +81,7 @@ bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNu
 		return false;
 	
 	void* p = GlobalLock(hData);
-	if(!p) //GlobalLock can return NULL
+	if(!p) //GlobalLock can return nullptr
 	{
 		UT_ASSERT_HARMLESS(p);
 		GlobalFree(hData);
@@ -90,7 +90,7 @@ bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNu
 	memcpy(p, pData, iNumBytes);
 	GlobalUnlock(hData);
 
-	return (SetClipboardData(iFormat, hData) != NULL);
+	return (SetClipboardData(iFormat, hData) != nullptr);
 
 	// TODO if SetClipboardData() fails, do we need to GlobalFree(hData) ??
 }
@@ -100,7 +100,7 @@ HANDLE XAP_Win32Clipboard::getHandleInFormat(const char * format)
 {
 	UT_uintptr iFormat = convertFormatString(format);
 	if (iFormat == 0)
-		return NULL;
+		return nullptr;
 
 	HANDLE hData = GetClipboardData(iFormat);
 	return (hData);
@@ -146,5 +146,5 @@ const char * XAP_Win32Clipboard::convertToFormatString(UT_uintptr fmt) const
 		if (fmt == (UT_uintptr)m_vecCF.getNthItem(k))
 			return (const char *)m_vecFormat.getNthItem(k);
 
-	return NULL;
+	return nullptr;
 }

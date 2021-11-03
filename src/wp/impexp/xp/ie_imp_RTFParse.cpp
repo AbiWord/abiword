@@ -101,7 +101,7 @@ bool IE_Imp_RTF::PushRTFState(void)
 	xxx_UT_DEBUGMSG(("Push RTF state \n"));
 	// Create a new object to store the state in
 	RTFStateStore* pState = new RTFStateStore;
-	if (pState == NULL)	{
+	if (pState == nullptr)	{
 	    UT_DEBUGMSG(("PushRTFState(): no state\n"));
 	    return false;
 	}
@@ -120,10 +120,10 @@ bool IE_Imp_RTF::PushRTFState(void)
 bool IE_Imp_RTF::PopRTFState(void)
 {
 	xxx_UT_DEBUGMSG(("Pop RTF state depth %d \n",m_stateStack.getDepth()));
-	RTFStateStore* pState = NULL;
+	RTFStateStore* pState = nullptr;
 	m_stateStack.pop(reinterpret_cast<void**>(&pState));
 
-	if (pState != NULL)	{
+	if (pState != nullptr)	{
 		bool ok = FlushStoredChars();
 		m_currentRTFState = *pState;
 		delete pState;
@@ -132,7 +132,7 @@ bool IE_Imp_RTF::PopRTFState(void)
 		return ok;
 	}
 	else {
-		UT_DEBUGMSG(("RTF ERROR: pState is NULL! Will try to recover."));
+		UT_DEBUGMSG(("RTF ERROR: pState is nullptr! Will try to recover."));
 		return false;
 	}
 }

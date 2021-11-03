@@ -151,7 +151,7 @@ void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 		UT_Win32LocaleString str;
 			
 		str.fromUTF8 (pSS->getValue(AP_STRING_ID_DLG_Options_Prompt_YouMustRestart));
-		::MessageBoxW(NULL, str.c_str(), L"Abiword",MB_OK);
+		::MessageBoxW(nullptr, str.c_str(), L"Abiword",MB_OK);
 	}
 	
 }	
@@ -176,7 +176,7 @@ static struct {
 */
 HWND	AP_Win32Dialog_Options::getPage(PSH_PAGES page)
 {
-	HWND hWnd = NULL;
+	HWND hWnd = nullptr;
 	
 	switch (page)
 	{			
@@ -200,7 +200,7 @@ HWND	AP_Win32Dialog_Options::getPage(PSH_PAGES page)
 			break;
 	}
 	
-	UT_ASSERT_HARMLESS(hWnd!=NULL);	
+	UT_ASSERT_HARMLESS(hWnd!=nullptr);	
 	return hWnd;
 }
 
@@ -365,7 +365,7 @@ void AP_Win32Dialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
 
 void AP_Win32Dialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
 {
-	int iValue = GetDlgItemInt((HWND)getPage(PG_DOCUMENT), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, NULL, FALSE );
+	int iValue = GetDlgItemInt((HWND)getPage(PG_DOCUMENT), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, nullptr, FALSE );
 	char szTemp[10];
 
 	snprintf( szTemp, 10, "%d", iValue );
@@ -505,7 +505,7 @@ gint AP_Win32Dialog_Options::_gatherInnerQuoteStyle()
 AP_Win32Dialog_Options_Sheet::AP_Win32Dialog_Options_Sheet() :
 XAP_Win32PropertySheet()
 {
-	m_pParent = NULL;
+	m_pParent = nullptr;
 	setCallBack((PFNPROPSHEETCALLBACK)s_sheetInit);
 }
 
@@ -653,7 +653,7 @@ AP_Win32Dialog_Options_General::AP_Win32Dialog_Options_General()
 {
 	setDialogProc(s_pageWndProc);
 	m_nCentered = 0;
-	m_pVecUILangs = NULL;
+	m_pVecUILangs = nullptr;
 }
 
 AP_Win32Dialog_Options_General::~AP_Win32Dialog_Options_General()
@@ -682,7 +682,7 @@ BOOL AP_Win32Dialog_Options_General::_onCommand(HWND /*hWnd*/, WPARAM wParam, LP
 		case AP_RID_DIALOG_OPTIONS_BTN_BGColor:
 		{
 			pColorDialog = (AP_Dialog_Background *)(pParent->getDialogFactory()->requestDialog(AP_DIALOG_ID_BACKGROUND));
-            if (pColorDialog == NULL)
+            if (pColorDialog == nullptr)
 		    	return FALSE;
 	
 			UT_parseColor(pParent->_gatherColorForTransparent(), rgbColor );
@@ -881,7 +881,7 @@ void AP_Win32Dialog_Options_Document::_onInitDialog()
 
 bool AP_Win32Dialog_Options_Document::isAutoSaveInRange()
 {
-	int iValue = GetDlgItemInt(getHandle(), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, NULL, FALSE);
+	int iValue = GetDlgItemInt(getHandle(), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, nullptr, FALSE);
 	char szTemp[10];
 	snprintf( szTemp, 10, "%d", iValue);	
 	
@@ -891,7 +891,7 @@ bool AP_Win32Dialog_Options_Document::isAutoSaveInRange()
 			const XAP_StringSet * pSS = getApp()->getStringSet();
 			
 			str.fromUTF8 (pSS->getValue(AP_STRING_ID_DLG_Options_Label_InvalidRangeForAutoSave));
-			MessageBoxW(NULL, str.c_str(),L"Abiword",MB_OK);
+			MessageBoxW(nullptr, str.c_str(),L"Abiword",MB_OK);
 		
 		return false;
 	}
@@ -943,7 +943,7 @@ void AP_Win32Dialog_Options_SmartQuotes::_onInitDialog()
 		buf[2] = XAP_EncodingManager::smartQuoteStyles[i].rightQuote;
 		buf[3] = 0;
 
-		LPWSTR szDisplayString = (LPWSTR) g_ucs4_to_utf16(buf, -1, NULL, NULL, NULL);
+		LPWSTR szDisplayString = (LPWSTR) g_ucs4_to_utf16(buf, -1, nullptr, nullptr, nullptr);
 		if(szDisplayString)
 		{			
 			SendMessageW(hQIn,  CB_ADDSTRING, 0, (LPARAM)szDisplayString);	

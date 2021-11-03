@@ -108,7 +108,7 @@ struct DragInfo {
 	guint			 count;
 
 	DragInfo()
-		: entries(NULL), count(0)
+		: entries(nullptr), count(0)
 	{
 	}
 
@@ -300,7 +300,7 @@ s_loadDocument (const UT_UTF8String & file, XAP_Frame * pFrame)
 			// TODO: in it, so let's go ahead and open an untitled document
 			// TODO: for now.
 			UT_DEBUGMSG(("DOM: couldn't load document %s\n", file.utf8_str()));
-			pNewFrame->loadDocument((const char *)NULL, 0 /* IEFT_Unknown */);
+			pNewFrame->loadDocument((const char *)nullptr, 0 /* IEFT_Unknown */);
 		}
 }
 
@@ -402,7 +402,7 @@ s_pasteText (XAP_Frame * pFrame, const char * target_name,
 
 	if (file_type != IEFT_Unknown)
 		{
-			IE_Imp * importer = NULL;
+			IE_Imp * importer = nullptr;
 
 			if (UT_OK == IE_Imp::constructImporter (pDoc, file_type, &importer) && importer)
 				{
@@ -422,9 +422,9 @@ s_drag_data_get_cb (GtkWidget        * /*widget*/,
 					guint             /*_time*/,
 					gpointer          /*user_data*/)
 {
-	void * data = NULL;
+	void * data = nullptr;
 	UT_uint32 dataLen = 0;
-	const char * formatFound = NULL;
+	const char * formatFound = nullptr;
 
 	GdkAtom target = gtk_selection_data_get_target(selection);
 	char *targetName = gdk_atom_name(target);
@@ -519,7 +519,7 @@ s_dndDropEvent(GtkWidget        *widget,
 {
 	UT_DEBUGMSG(("DOM: dnd_drop_event being handled\n"));
 
-	UT_return_if_fail(widget != NULL);
+	UT_return_if_fail(widget != nullptr);
 
 	XAP_Frame * pFrame = pFrameImpl->getFrame ();
 	FV_View   * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
@@ -643,7 +643,7 @@ void XAP_UnixFrameImpl::dragText()
 											  target_list,
 											  GDK_ACTION_COPY,
 											  1,
-											  NULL);
+											  nullptr);
 
 	gtk_target_list_unref (target_list);
 #endif
@@ -651,9 +651,9 @@ void XAP_UnixFrameImpl::dragText()
 
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
 	XAP_FrameImpl(pFrame),
-	m_imContext(NULL),
-	m_wTopLevelWindow(NULL),
-	m_pUnixMenu(NULL),
+	m_imContext(nullptr),
+	m_wTopLevelWindow(nullptr),
+	m_pUnixMenu(nullptr),
 	need_im_reset (false),
 	m_bDoZoomUpdate(false),
 	m_iNewX(0),
@@ -662,7 +662,7 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
 	m_iNewHeight(0),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
-	m_pUnixPopup(NULL),
+	m_pUnixPopup(nullptr),
 	m_dialogFactory(XAP_App::getApp(), pFrame),
 	m_iPreeditLen (0),
 	m_iPreeditStart (0)
@@ -743,7 +743,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 						GINT_TO_POINTER(TRUE));
 	if (pFrame->getCurrentView())
 	{
-		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
+		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == nullptr || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
 	}
 	pFrameImpl->focusIMIn ();
 	//
@@ -1017,7 +1017,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 // -- MES
 //
 
-        GtkWindow * pWin = NULL;
+        GtkWindow * pWin = nullptr;
 		if(pFrame->getFrameMode() == XAP_NormalFrame) {
 			pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
 			// worth remembering size?
@@ -1066,7 +1066,7 @@ gint XAP_UnixFrameImpl::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e
 				e = reinterpret_cast<GdkEventMotion *>(eNext);
 				eNext = gdk_event_peek();
 			}
-			if(eNext != NULL)
+			if(eNext != nullptr)
 			{
 				gdk_event_free(eNext);
 			}
@@ -1182,7 +1182,7 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 
 	if (pEM)
 	{
-		if (pEM->Fn(pFrame->getCurrentView(),NULL))
+		if (pEM->Fn(pFrame->getCurrentView(),nullptr))
 		{
 			// returning FALSE means destroy the window, continue along the
 			// chain of Gtk destroy events
@@ -1318,7 +1318,7 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 		if(pG && pG->queryProperties( GR_Graphics::DGP_PAPER))
 			return;
 	}
-	if(getTopLevelWindow() == NULL || (m_iFrameMode != XAP_NormalFrame))
+	if(getTopLevelWindow() == nullptr || (m_iFrameMode != XAP_NormalFrame))
 		return;
 
 	const char* cursor_name = GR_UnixCairoGraphics::_getCursor(c);
@@ -1386,8 +1386,8 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
 		gtk_window_set_role(GTK_WINDOW(m_wTopLevelWindow), "topLevelWindow");
 
-		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
-		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);
+		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", nullptr);
+		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", nullptr);
 
 	}
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindow",
@@ -1399,16 +1399,16 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	_setGeometry ();
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
-					   G_CALLBACK(_fe::realize), NULL);
+					   G_CALLBACK(_fe::realize), nullptr);
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "unrealize",
-					   G_CALLBACK(_fe::unrealize), NULL);
+					   G_CALLBACK(_fe::unrealize), nullptr);
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "size_allocate",
-					   G_CALLBACK(_fe::sizeAllocate), NULL);
+					   G_CALLBACK(_fe::sizeAllocate), nullptr);
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
-					   G_CALLBACK(_fe::focusIn), NULL);
+					   G_CALLBACK(_fe::focusIn), nullptr);
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
-					   G_CALLBACK(_fe::focusOut), NULL);
+					   G_CALLBACK(_fe::focusOut), nullptr);
 
 	DragInfo * dragInfo = s_getDragInfo();
 
@@ -1442,12 +1442,12 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 					  G_CALLBACK (s_drag_data_get_cb), this);
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
-					   G_CALLBACK(_fe::delete_event), NULL);
+					   G_CALLBACK(_fe::delete_event), nullptr);
 	// here we connect the "destroy" event to a signal handler.
 	// This event occurs when we call gtk_widget _destroy() on the window,
 	// or if we return 'FALSE' in the "delete_event" callback.
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "destroy",
-					   G_CALLBACK(_fe::destroy), NULL);
+					   G_CALLBACK(_fe::destroy), nullptr);
 
 	// create a VBox inside it.
 
@@ -1493,7 +1493,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	// if it wants to.  we will put it below the document
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
-	m_wStatusBar = NULL;
+	m_wStatusBar = nullptr;
 
 #ifdef ENABLE_STATUSBAR
 	if(m_iFrameMode == XAP_NormalFrame)
@@ -1600,7 +1600,7 @@ void XAP_UnixFrameImpl::_imPreeditChanged_cb (GtkIMContext *context,
 		}
 
 	// fetch the updated pre-edit string.
-	gtk_im_context_get_preedit_string (context, &text, NULL, &pos);
+	gtk_im_context_get_preedit_string (context, &text, nullptr, &pos);
 
 	if (!text || !(len = strlen (text)))
 		return;
@@ -1634,7 +1634,7 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context,
 		return TRUE;
 	}
 
-	UT_UCSChar * text = NULL;
+	UT_UCSChar * text = nullptr;
 	if (end_p > begin_p)
 		text = pView->getTextBetweenPos (begin_p, end_p);
 
@@ -1868,7 +1868,7 @@ void XAP_UnixFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 	pToolbar = _newToolbar(pFrame, szTBName,
 			       static_cast<const char *>(m_szToolbarLabelSetName));
 	static_cast<EV_UnixToolbar *>(pToolbar)->rebuildToolbar(oldpos);
-	m_vecToolbars.setNthItem(ibar, pToolbar, NULL);
+	m_vecToolbars.setNthItem(ibar, pToolbar, nullptr);
 	// Refill the framedata pointers
 
 	pFrame->refillToolbarsInFrameData();
@@ -1878,7 +1878,7 @@ void XAP_UnixFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 bool XAP_UnixFrameImpl::_close()
 {
 	gtk_widget_destroy(m_wTopLevelWindow); // TOPLEVEL
-    m_wTopLevelWindow = NULL;
+	m_wTopLevelWindow = nullptr;
 	return true;
 }
 
@@ -1901,7 +1901,7 @@ bool XAP_UnixFrameImpl::_show()
 
 bool XAP_UnixFrameImpl::_updateTitle()
 {
-	if (!XAP_FrameImpl::_updateTitle() || (m_wTopLevelWindow== NULL) || (m_iFrameMode != XAP_NormalFrame))
+	if (!XAP_FrameImpl::_updateTitle() || (m_wTopLevelWindow== nullptr) || (m_iFrameMode != XAP_NormalFrame))
 	{
 		// no relevant change, so skip it
 		return false;
@@ -1995,7 +1995,7 @@ EV_Toolbar * XAP_UnixFrameImpl::_newToolbar(XAP_Frame *pFrame,
 											const char *szLayout,
 											const char *szLanguage)
 {
-	EV_UnixToolbar *pToolbar = NULL;
+	EV_UnixToolbar *pToolbar = nullptr;
 #ifdef HAVE_GCONF
 	pToolbar = new EV_GnomeToolbar(static_cast<XAP_UnixApp *>(XAP_App::getApp()), pFrame, szLayout, szLanguage);
 #else

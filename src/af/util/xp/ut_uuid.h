@@ -206,7 +206,7 @@ class ABI_EXPORT UT_UUIDGenerator
 {
   public:
 	UT_UUIDGenerator()
-		:m_pUUID(NULL)
+		:m_pUUID(nullptr)
 	{
 	};
 

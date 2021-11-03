@@ -156,7 +156,7 @@ UT_UTF8String IE_Exp_HTML_NavigationHelper::getFilenameByPosition(
 				{
 					if (posCurrent <= position)
 					{
-						chapterFile = ConvertToClean(getNthTOCEntry(i, NULL)) + m_suffix;
+						chapterFile = ConvertToClean(getNthTOCEntry(i, nullptr)) + m_suffix;
 						break;
 					}
 				}

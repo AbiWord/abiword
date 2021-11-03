@@ -79,7 +79,7 @@ public:
     UT_sint32 getElementLevel(const gchar* pName) const;
 
     /**
-     * Returns the closest parent with the given name. It returns NULL if there
+     * Returns the closest parent with the given name. It returns nullptr if there
      * is no parent with the given name.
      *
      * @param pName Element name.

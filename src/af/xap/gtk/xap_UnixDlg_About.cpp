@@ -56,28 +56,28 @@ static void onAboutDialogActivate (GtkAboutDialog 	* /*about*/,
 void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 {
 	static const gchar *authors[] = {"Abi the Ant <abi@abisource.com>",
-									 NULL};
+									 nullptr};
 
 	static const gchar *documenters[] = {"David Chart <linux@dchart.demon.co.uk>",
-										 NULL};
+										 nullptr};
 
 	static const gchar *copyright = "(c) 1998-2012 Dom Lachowicz and other contributors, GNU GPL v2.0";
 
 	static const gchar *website = "http://www.abisource.com";
 
-	static GdkPixbuf * logo = NULL;
-	static GtkWidget * dlg = NULL;
+	static GdkPixbuf * logo = nullptr;
+	static GtkWidget * dlg = nullptr;
 
 	// TODO Rob: use the more fancy "sidebar.png" logo, just like win32
 	if (!logo) {
 		std::string str (ICONDIR);
 		str += "/hicolor/48x48/apps/abiword.png";
-		logo = gdk_pixbuf_new_from_file (str.c_str(), NULL); // ignore errors
+		logo = gdk_pixbuf_new_from_file (str.c_str(), nullptr); // ignore errors
 	}
 
 	dlg = gtk_about_dialog_new();
 	//JEAN: do we really need the "activate-link" signal?
-	g_signal_connect(dlg, "activate-link", G_CALLBACK(onAboutDialogActivate), NULL);
+	g_signal_connect(dlg, "activate-link", G_CALLBACK(onAboutDialogActivate), nullptr);
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dlg), authors);
 	gtk_about_dialog_set_documenters(GTK_ABOUT_DIALOG(dlg), documenters);
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dlg), copyright);
@@ -89,7 +89,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	gtk_window_set_position(GTK_WINDOW(dlg), GTK_WIN_POS_CENTER);
 	GtkWidget* parent = pFrame ?
 		static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() :
-		NULL;
+		nullptr;
 	if (parent) {
 		gtk_window_set_transient_for(GTK_WINDOW(dlg), GTK_WINDOW(parent));
 	}

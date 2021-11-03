@@ -44,11 +44,11 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 {
 	if(m_pDocument->isMarkRevisions())
 	{
-		PP_RevisionAttr Revisions(NULL);
+		PP_RevisionAttr Revisions(nullptr);
 		PP_PropertyVector ppRevAttrs;
 		PP_PropertyVector ppRevProps;
 
-		pf_Frag * pf = NULL;
+		pf_Frag * pf = nullptr;
 		PT_BlockOffset fragOffset = 0;
 		bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 		UT_return_val_if_fail( bFound, false );
@@ -89,11 +89,11 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 {
 	if(m_pDocument->isMarkRevisions())
 	{
-		PP_RevisionAttr Revisions(NULL);
+		PP_RevisionAttr Revisions(nullptr);
 		PP_PropertyVector ppRevAttrs;
 		PP_PropertyVector ppRevProps;
 
-		pf_Frag * pf = NULL;
+		pf_Frag * pf = nullptr;
 		PT_BlockOffset fragOffset = 0;
 		bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 		UT_return_val_if_fail( bFound, false );
@@ -143,11 +143,11 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	// store the attributes and properties and get an index to them.
 	PT_AttrPropIndex apiOld = 0, indexAP;
 
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_return_val_if_fail (bFound,false);
-	pf_Frag_Strux * pfs = NULL;
+	pf_Frag_Strux * pfs = nullptr;
 	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 
 	UT_return_val_if_fail (bFoundStrux,false);
@@ -165,7 +165,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	// get the fragment at the given document position.
 
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
-        pf_Frag_Object * pfo = NULL;
+	pf_Frag_Object * pfo = nullptr;
 	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))
 		return false;
 
@@ -230,12 +230,12 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 
 	// get the fragment at the given document position.
 
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_return_val_if_fail (bFound,false);
 
-	pf_Frag_Strux * pfs = NULL;
+	pf_Frag_Strux * pfs = nullptr;
 	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_return_val_if_fail (bFoundStrux,false);
 	if(isEndFootnote((pf_Frag *) pfs))
@@ -244,7 +244,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	}
 	UT_return_val_if_fail (bFoundStrux,false);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
-    pf_Frag_Object * pfo = NULL;
+	pf_Frag_Object * pfo = nullptr;
 	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))
 		return false;
 
@@ -271,7 +271,7 @@ bool pt_PieceTable::_createObject(PTObjectType pto,
 	// return *pfo and true if successful.
 	// create an unlinked object fragment.
 
-	pf_Frag_Object * pfo = NULL;
+	pf_Frag_Object * pfo = nullptr;
 	switch(pto)
 	{
 		case PTO_Hyperlink:
@@ -316,7 +316,7 @@ bool pt_PieceTable::_insertObject(pf_Frag * pf,
 									 PT_AttrPropIndex indexAP,
                                      pf_Frag_Object * & pfo)
 {
-	pfo = NULL;
+	pfo = nullptr;
 	if (!_createObject(pto,indexAP,&pfo))
 		return false;
 

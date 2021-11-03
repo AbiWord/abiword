@@ -19,8 +19,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef PT_REVISION_H
-#define PT_REVISION_H
+#pragma once
 
 #include <string>
 
@@ -137,7 +136,7 @@ class ABI_EXPORT PP_RevisionAttr
 {
   public:
 	PP_RevisionAttr()
-		:m_vRev(),m_sXMLstring(),m_bDirty(true),m_iSuperfluous(0),m_pLastRevision(NULL)
+		:m_vRev(), m_sXMLstring(), m_bDirty(true), m_iSuperfluous(0), m_pLastRevision(nullptr)
 		{};
 	PP_RevisionAttr(const gchar * r);
 
@@ -230,5 +229,3 @@ class ABI_EXPORT PP_RevisionAttr
 	// also a cache
 	mutable const PP_Revision * m_pLastRevision;
 };
-
-#endif // #ifndef PT_REVISION_H

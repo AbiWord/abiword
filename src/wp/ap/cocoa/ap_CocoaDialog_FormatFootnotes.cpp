@@ -215,7 +215,7 @@ void AP_CocoaDialog_FormatFootnotes::event_EndRestartSection(NSButton* widget)
 
 -(void)discardXAP
 {
-	_xap = NULL;
+	_xap = nullptr;
 }
 
 -(void)dealloc

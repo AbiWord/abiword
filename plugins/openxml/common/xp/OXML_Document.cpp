@@ -32,7 +32,7 @@
 #include "OXML_Theme.h"
 #include "OXML_FontManager.h"
 
-OXML_Document* OXML_Document::s_docInst = NULL;
+OXML_Document* OXML_Document::s_docInst = nullptr;
 
 OXML_Document* OXML_Document::getNewInstance()
 {
@@ -42,7 +42,7 @@ OXML_Document* OXML_Document::getNewInstance()
 
 OXML_Document* OXML_Document::getInstance()
 {
-	if (s_docInst == NULL)
+	if (s_docInst == nullptr)
 		s_docInst = new OXML_Document();
 	return s_docInst;
 }
@@ -54,7 +54,7 @@ void OXML_Document::destroyInstance()
 
 OXML_SharedSection OXML_Document::getCurrentSection()
 {
-	UT_return_val_if_fail(s_docInst != NULL, OXML_SharedSection() );
+	UT_return_val_if_fail(s_docInst != nullptr, OXML_SharedSection() );
 	return s_docInst->getLastSection();
 }
 
@@ -181,7 +181,7 @@ UT_Error OXML_Document::clearHeaders()
 
 bool OXML_Document::isAllDefault(const bool & header) const
 {
-	const gchar* type = NULL;
+	const gchar* type = nullptr;
 	OXML_SectionMap::const_iterator it;
 	if(!header)
 	{
@@ -213,7 +213,7 @@ bool OXML_Document::isAllDefault(const bool & header) const
 }
 OXML_SharedSection OXML_Document::getHdrFtrById(const bool & header, const std::string & id) const
 {
-	const gchar* hdrFtrId = NULL;
+	const gchar* hdrFtrId = nullptr;
 	OXML_SectionMap::const_iterator it;
 	if(!header)
 	{
@@ -342,7 +342,7 @@ UT_Error OXML_Document::clearSections()
 
 OXML_SharedTheme OXML_Document::getTheme()
 {
-	if (m_theme.get() == NULL) {
+	if (m_theme.get() == nullptr) {
 		try {
 			m_theme.reset(new OXML_Theme());
 		}
@@ -356,7 +356,7 @@ OXML_SharedTheme OXML_Document::getTheme()
 
 OXML_SharedFontManager OXML_Document::getFontManager()
 {
-	if (m_fontManager.get() == NULL) {
+	if (m_fontManager.get() == nullptr) {
 		try {
 			m_fontManager.reset(new OXML_FontManager());
 		}

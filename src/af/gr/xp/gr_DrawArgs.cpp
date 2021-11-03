@@ -20,6 +20,6 @@
 #include "gr_DrawArgs.h"
 
 dg_DrawArgs::dg_DrawArgs()
-  : pG(NULL), xoff(0), yoff(0), bDirtyRunsOnly(false)
+  : pG(nullptr), xoff(0), yoff(0), bDirtyRunsOnly(false)
 {
 }

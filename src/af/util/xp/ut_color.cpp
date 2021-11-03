@@ -415,7 +415,7 @@ UT_ColorPatImpl::~UT_ColorPatImpl()
 
 
 UT_RGBColor::UT_RGBColor()
-    : m_patImpl(NULL)
+    : m_patImpl(nullptr)
 {
 	m_red = 0;
 	m_grn = 0;
@@ -424,7 +424,7 @@ UT_RGBColor::UT_RGBColor()
 }
 
 UT_RGBColor::UT_RGBColor(unsigned char red, unsigned char grn, unsigned char blu, bool bTransparent)
-    : m_patImpl(NULL)
+    : m_patImpl(nullptr)
 {
 	m_red = red;
 	m_grn = grn;
@@ -438,7 +438,7 @@ UT_RGBColor::UT_RGBColor(const UT_RGBColor &c)
 	m_grn = c.m_grn;
 	m_blu = c.m_blu;
 	m_bIsTransparent = c.m_bIsTransparent;
-    m_patImpl = ( c.m_patImpl ? c.m_patImpl->clone() : NULL );
+    m_patImpl = ( c.m_patImpl ? c.m_patImpl->clone() : nullptr );
 }
 
 UT_RGBColor::UT_RGBColor(const UT_ColorPatImpl * pat)
@@ -470,7 +470,7 @@ UT_RGBColor & UT_RGBColor::operator=(const  UT_RGBColor &c)
     if(m_patImpl) {
         delete m_patImpl;
     }
-    m_patImpl = ( c.m_patImpl ? c.m_patImpl->clone() : NULL );
+    m_patImpl = ( c.m_patImpl ? c.m_patImpl->clone() : nullptr );
 
     return *this;
 }

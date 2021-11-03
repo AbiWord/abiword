@@ -32,7 +32,7 @@ public:
 		{
 			_ref();
 		}
-	XAP_GtkObjectHolder(T * _obj = NULL)
+	XAP_GtkObjectHolder(T * _obj = nullptr)
 		: m_obj(_obj)
 		{
 			_ref();

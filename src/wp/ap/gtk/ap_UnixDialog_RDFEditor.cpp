@@ -512,15 +512,15 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     GSimpleActionGroup* action_group = g_simple_action_group_new();
     gtk_widget_insert_action_group(m_wDialog, "rdf", G_ACTION_GROUP(action_group));
     g_object_unref(action_group);
-    m_anewtriple = g_simple_action_new("newtriple", NULL);
+    m_anewtriple = g_simple_action_new("newtriple", nullptr);
     g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_anewtriple));
-    m_acopytriple = g_simple_action_new("copytriple", NULL);
+    m_acopytriple = g_simple_action_new("copytriple", nullptr);
     g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_acopytriple));
-    m_adeletetriple = g_simple_action_new("deletetriple", NULL);
+    m_adeletetriple = g_simple_action_new("deletetriple", nullptr);
     g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_adeletetriple));
-    m_aimportrdfxml = g_simple_action_new("importrdfxml", NULL);
+    m_aimportrdfxml = g_simple_action_new("importrdfxml", nullptr);
     g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_aimportrdfxml));
-    m_aexportrdfxml = g_simple_action_new("exportrdfxml", NULL);
+    m_aexportrdfxml = g_simple_action_new("exportrdfxml", nullptr);
     g_action_map_add_action(G_ACTION_MAP(action_group), G_ACTION(m_aexportrdfxml));
 
     // localization
@@ -543,39 +543,39 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 
     colid = C_SUBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    g_object_set(ren, "editable", 1, 0, NULL);
+    g_object_set(ren, "editable", 1, 0, nullptr);
     g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM,  GINT_TO_POINTER(colid));
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
                            (gpointer)this, nullptr, GConnectFlags(0));
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Subject, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, nullptr);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
     
     colid = C_PRED_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    g_object_set(ren, "editable", 1, 0, NULL );
+    g_object_set(ren, "editable", 1, 0, nullptr );
     g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM, GINT_TO_POINTER(colid) );
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
                            (gpointer)this, nullptr, GConnectFlags(0));
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Predicate, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, nullptr);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
 
     colid = C_OBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    g_object_set(ren, "editable", 1, 0, NULL );
+    g_object_set(ren, "editable", 1, 0, nullptr );
     g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM, GINT_TO_POINTER(colid) );
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
                            (gpointer)this, nullptr, GConnectFlags(0));
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Object, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, nullptr);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
@@ -725,7 +725,7 @@ AP_UnixDialog_RDFEditor::destroy ()
 	modeless_cleanup ();
 	if (m_wDialog) {
 		gtk_widget_destroy(m_wDialog); // TOPLEVEL
-		m_wDialog = NULL;
+		m_wDialog = nullptr;
 	}
 }
 

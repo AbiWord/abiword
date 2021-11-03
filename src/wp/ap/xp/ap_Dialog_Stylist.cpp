@@ -48,11 +48,11 @@
 AP_Dialog_Stylist::AP_Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
 	  m_bIsModal(false),
-	  m_pDoc(NULL),
+	  m_pDoc(nullptr),
 	  m_pAutoUpdater(nullptr),
 	  m_iTick(0),
 	  m_sCurStyle(""),
-	  m_pStyleTree(NULL),
+	  m_pStyleTree(nullptr),
 	  m_bStyleTreeChanged(true),
 	  m_bStyleChanged(true)
 {
@@ -95,18 +95,18 @@ void AP_Dialog_Stylist::Apply(void)
 
 void AP_Dialog_Stylist::stopUpdater(void)
 {
-	if(m_pAutoUpdater == NULL)
+	if(m_pAutoUpdater == nullptr)
 	{
 		return;
 	}
 	m_pAutoUpdater->stop();
 	DELETEP(m_pAutoUpdater);
-	m_pAutoUpdater = NULL;
+	m_pAutoUpdater = nullptr;
 }
 
 UT_sint32 AP_Dialog_Stylist::getNumStyles(void) const
 {
-	if(m_pStyleTree == NULL)
+	if(m_pStyleTree == nullptr)
 	{
 		return 0;
 	}
@@ -143,7 +143,7 @@ void AP_Dialog_Stylist::updateDialog(void)
 			return;
 		}
 		PD_Document * pDoc = pView->getDocument();
-		if(m_pStyleTree == NULL)
+		if(m_pStyleTree == nullptr)
 		{
 			m_pStyleTree = new Stylist_tree(pDoc);
 		}
@@ -248,10 +248,10 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	UT_VECTOR_PURGEALL(Stylist_row *, m_vecStyleRows);
 	m_vecStyleRows.clear();
 	UT_GenericVector<const PD_Style *> vecStyles;
-	const PD_Style * pStyle = NULL;
+	const PD_Style * pStyle = nullptr;
 	UT_DEBUGMSG(("In Build styles num styles in doc %d \n",numStyles));
 
-	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	UT_GenericVector<PD_Style*> * pStyles = nullptr;
 	pDoc->enumStyles(pStyles);
 	UT_return_if_fail( pStyles );
 
@@ -281,7 +281,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 		{
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
+			vecStyles.setNthItem(i,nullptr,nullptr);
 			UT_DEBUGMSG(("Adding heading style %s \n",sTmp.c_str()));
 		}
 	}
@@ -299,7 +299,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 		{
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
+			vecStyles.setNthItem(i,nullptr,nullptr);
 			UT_DEBUGMSG(("Adding List style %s \n",sTmp.c_str()));
 		}
 	}
@@ -317,7 +317,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 		{
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
+			vecStyles.setNthItem(i,nullptr,nullptr);
 			UT_DEBUGMSG(("Adding Footnote style %s \n",sTmp.c_str()));
 		}
 	}
@@ -335,7 +335,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 		{
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
+			vecStyles.setNthItem(i,nullptr,nullptr);
 			iCount++;
 			UT_DEBUGMSG(("Adding User-defined style %s \n",sTmp.c_str()));
 		}
@@ -362,7 +362,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 		{
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
+			vecStyles.setNthItem(i,nullptr,nullptr);
 			UT_DEBUGMSG(("Adding style %s \n",sTmp.c_str()));
 		}
 	}
@@ -373,7 +373,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
  */
 bool Stylist_tree::isHeading(const PD_Style * pStyle, UT_sint32 iDepth) const
 {
-	if(pStyle == NULL)
+	if(pStyle == nullptr)
 	{
 		return false;
 	}
@@ -382,7 +382,7 @@ bool Stylist_tree::isHeading(const PD_Style * pStyle, UT_sint32 iDepth) const
 		return true;
 	}
 	PD_Style * pUpStyle = pStyle->getBasedOn();
-	if(pUpStyle != NULL && iDepth > 0)
+	if(pUpStyle != nullptr && iDepth > 0)
 	{
 		return isHeading(pUpStyle,iDepth-1);
 	}
@@ -395,7 +395,7 @@ bool Stylist_tree::isHeading(const PD_Style * pStyle, UT_sint32 iDepth) const
  */
 bool Stylist_tree::isList(const PD_Style * pStyle, UT_sint32 iDepth) const
 {
-	if(pStyle == NULL)
+	if(pStyle == nullptr)
 	{
 		return false;
 	}
@@ -404,7 +404,7 @@ bool Stylist_tree::isList(const PD_Style * pStyle, UT_sint32 iDepth) const
 		return true;
 	}
 	PD_Style * pUpStyle = pStyle->getBasedOn();
-	if(pUpStyle != NULL && iDepth > 0)
+	if(pUpStyle != nullptr && iDepth > 0)
 	{
 		return isList(pUpStyle,iDepth-1);
 	}
@@ -417,7 +417,7 @@ bool Stylist_tree::isList(const PD_Style * pStyle, UT_sint32 iDepth) const
  */
 bool Stylist_tree::isFootnote(const PD_Style * pStyle, UT_sint32 iDepth) const
 {
-	if(pStyle == NULL)
+	if(pStyle == nullptr)
 	{
 		return false;
 	}
@@ -426,7 +426,7 @@ bool Stylist_tree::isFootnote(const PD_Style * pStyle, UT_sint32 iDepth) const
 		return true;
 	}
 	PD_Style * pUpStyle = pStyle->getBasedOn();
-	if(pUpStyle != NULL && iDepth > 0)
+	if(pUpStyle != nullptr && iDepth > 0)
 	{
 		return isFootnote(pUpStyle,iDepth-1);
 	}
@@ -438,7 +438,7 @@ bool Stylist_tree::isFootnote(const PD_Style * pStyle, UT_sint32 iDepth) const
  */
 bool Stylist_tree::isUser(const PD_Style * pStyle) const
 {
-	if(pStyle == NULL)
+	if(pStyle == nullptr)
 	{
 		return false;
 	}

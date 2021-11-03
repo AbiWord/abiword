@@ -58,8 +58,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		m_pOwner(pOwner),
 		m_pFooter(nullptr),
 		m_pHeader(nullptr),
-		m_FillType(NULL,NULL,FG_FILL_TRANSPARENT),
-		m_pLastMappedTOC(NULL),
+		m_FillType(nullptr,nullptr,FG_FILL_TRANSPARENT),
+		m_pLastMappedTOC(nullptr),
 		m_iCountWrapPasses(0),
 		m_iFieldPageNumber(-1)
 {
@@ -87,25 +87,25 @@ fp_Page::~fp_Page()
 	if (m_pOwner)
 	{
 		fl_DocSectionLayout *pDSL = m_pOwner;
-		m_pOwner = NULL;
+		m_pOwner = nullptr;
 		pDSL->deleteOwnedPage(this);
 	}
-	if((m_pHeader != NULL) || (m_pFooter != NULL))
+	if((m_pHeader != nullptr) || (m_pFooter != nullptr))
 	{
-	    fl_HdrFtrSectionLayout * pHdrFtr = NULL;
-	    if(m_pHeader != NULL)
+	    fl_HdrFtrSectionLayout * pHdrFtr = nullptr;
+	    if(m_pHeader != nullptr)
 	    {
 	         pHdrFtr = m_pHeader->getHdrFtrSectionLayout();
-		 if(pHdrFtr != NULL && pHdrFtr->isPageHere(this))
+		 if(pHdrFtr != nullptr && pHdrFtr->isPageHere(this))
 		 {
 		   pHdrFtr->deletePage(this);
 		   UT_DEBUGMSG(("Remove Page from Hdr %p in page destructor \n", (void*)pHdrFtr));
 		 }
 	    }
-	    if(m_pFooter != NULL)
+	    if(m_pFooter != nullptr)
 	    {
 	         pHdrFtr = m_pFooter->getHdrFtrSectionLayout();
-		 if(pHdrFtr != NULL && pHdrFtr->isPageHere(this))
+		 if(pHdrFtr != nullptr && pHdrFtr->isPageHere(this))
 		 {
 		   pHdrFtr->deletePage(this);
 		   UT_DEBUGMSG(("Remove Page from Ftr %p in page destructor \n", (void*)pHdrFtr));
@@ -166,17 +166,17 @@ void fp_Page::setPageNumberInFrames(void)
  */
 void fp_Page::getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts) const
 {
-	fp_Column * pCol = NULL;
+	fp_Column * pCol = nullptr;
 	UT_sint32 i = 0;
-	fl_ContainerLayout * pPrevCL = NULL;
-	fl_ContainerLayout * pCurCL = NULL;
+	fl_ContainerLayout * pPrevCL = nullptr;
+	fl_ContainerLayout * pCurCL = nullptr;
 	for(i= 0; i< m_vecColumnLeaders.getItemCount(); i++)
 	{
 		pCol = m_vecColumnLeaders.getNthItem(i);
 		while(pCol)
 		{
 			UT_sint32 j= 0;
-			fp_ContainerObject * pCon = NULL;
+			fp_ContainerObject * pCon = nullptr;
 			for(j = 0; j< pCol->countCons(); j++)
 			{
 				pCon = pCol->getNthCon(j);
@@ -255,7 +255,7 @@ void fp_Page::clearCountWrapNumber(void)
  * in the page. 
  * and sets pNextColumn to the first column on the page.
  * fp_ColumnBreaker then lays out the page again.
- * If there are no rebreaks it returns NULL and fp_ColumnBreaker moves on to
+ * If there are no rebreaks it returns nullptr and fp_ColumnBreaker moves on to
  * the next page.
  * pNextCol is the next column fb_ColumnBreaker will evaluate it is used
  * as an output..
@@ -264,7 +264,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 {
 	if(m_iCountWrapPasses > 19)
 	{
-		return NULL;
+		return nullptr;
 	}
 	m_iCountWrapPasses++;
 #if 0
@@ -282,17 +282,17 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	UT_sint32 i= 0;
 	UT_sint32 nWrapped = 0;
-	fp_Container * pFirst2 = NULL;
-	fl_BlockLayout * pFirstBL = NULL;
+	fp_Container * pFirst2 = nullptr;
+	fl_BlockLayout * pFirstBL = nullptr;
 	for(i=0; i < static_cast<UT_sint32>(countColumnLeaders()); i++)
 	{
 		fp_Column * pCol = getNthColumnLeader(i);
 		if(i == 0)
 		{
 			pFirst2 = static_cast<fp_Container *>(pCol->getNthCon(0));
-			if(pFirst2 == NULL)
+			if(pFirst2 == nullptr)
 			{
-				return NULL;
+				return nullptr;
 			}
 		}
 		while(pCol)
@@ -344,20 +344,20 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		}
 		if((nWrappedObjs == 0) &&(m_iCountWrapPasses == 1))
 		{
-			return NULL;
+			return nullptr;
 		}
-		else if((nWrappedObjs == 0) && (getNext() == NULL))
+		else if((nWrappedObjs == 0) && (getNext() == nullptr))
 		{
-				return NULL;
+				return nullptr;
 		}
 		else if(nWrappedObjs == 0)
 		{
 			fp_Column * pNextNoWrapCol = getNext()->getNthColumnLeader(0);
-			if(pNextNoWrapCol == NULL)
+			if(pNextNoWrapCol == nullptr)
 			{
 				// FIXME this appears to happen sometimes.
 				// we should work out a better thing to do this this
-				return NULL;
+				return nullptr;
 			}
 			fp_Container * pNewFirstWrapCon = static_cast<fp_Container *>(pNextNoWrapCol->getNthCon(0));
 			getNext()->clearCountWrapNumber();
@@ -680,7 +680,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	if(vecBL.getItemCount() == 0)
 	{
-		return NULL;
+		return nullptr;
 	}
 	_BL * pBLine = vecBL.getNthItem(0);
 	pFirstBL = pBLine->m_pBL;
@@ -698,7 +698,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		pBLine->m_pBL->formatWrappedFromHere(pBLine->m_pL,this);
 	}
 	UT_VECTOR_PURGEALL(_BL *, vecBL);
-	fp_Container * pNewFirstCon = NULL;
+	fp_Container * pNewFirstCon = nullptr;
 	if(pFirstBL)
 	{
 		pNewFirstCon = pFirstBL->getFirstContainer();
@@ -708,13 +708,13 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	{
 		return pNewFirstCon;
 	}
-	while(pNewFirstCon && pNewFirstCon->getPage() != NULL && pNewFirstCon->getPage() != this)
+	while(pNewFirstCon && pNewFirstCon->getPage() != nullptr && pNewFirstCon->getPage() != this)
 	{
 		pNewFirstCon = static_cast<fp_Container *>(pNewFirstCon->getNext());
 	}
-	if(pNewFirstCon->getColumn() == NULL)
+	if(pNewFirstCon->getColumn() == nullptr)
 	{
-	       return NULL;
+	       return nullptr;
 	}
 	pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
 	pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
@@ -768,12 +768,12 @@ fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
 {
 	if(!m_pView)
 	{
-	    return NULL;
+	    return nullptr;
 	}
 	fp_CellContainer * pCell = m_pView->getCellAtPos(pos);
-	if(pCell == NULL)
+	if(pCell == nullptr)
 	{
-		return NULL;
+		return nullptr;
 	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 	if(m_pView->isInFrame(pos))
@@ -784,7 +784,7 @@ fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
 	UT_sint32 i = 0;
 	UT_sint32 j =0;
 	bool bFound = false;
-	fp_Column * pColumn = NULL;
+	fp_Column * pColumn = nullptr;
 	for(i =0; (i <static_cast<UT_sint32>(countColumnLeaders())) && !bFound; i++)
 	{
 		pColumn = getNthColumnLeader(i);
@@ -817,7 +817,7 @@ fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
 			pColumn = pColumn->getFollower();
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 UT_sint32 fp_Page::getAvailableHeight(void) const
@@ -846,7 +846,7 @@ UT_sint32 fp_Page::getAvailableHeight(void) const
  */
 bool fp_Page::containsPageBreak(void) const
 {
-	fp_Column * pCol = NULL;
+	fp_Column * pCol = nullptr;
 	UT_sint32 i = 0;
 	for(i=0; i<countColumnLeaders();i++)
 	{
@@ -957,7 +957,7 @@ UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 		for (k = 0; k < iLeader; k++)
 		{
 			pCurLeader = getNthColumnLeader(i);
-			if (pCurLeader == NULL)
+			if (pCurLeader == nullptr)
 				continue;
 			if (pDSLFoot == pCurLeader->getDocSectionLayout())
 			{
@@ -996,9 +996,9 @@ UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
 {
 	UT_sint32 totalHeight = 0;
     UT_sint32 maxHeight = 0;
-	fp_Column * pColumn = NULL;
+	fp_Column * pColumn = nullptr;
 	UT_sint32 i =0;
-	fp_Column * prevColumn = NULL;
+	fp_Column * prevColumn = nullptr;
 	bool bstop = false;
 	if(prevContainer)
 	{
@@ -1009,14 +1009,14 @@ UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
 		maxHeight = 0;
 		pColumn = m_vecColumnLeaders.getNthItem(i);
 		totalHeight += pColumn->getDocSectionLayout()->getSpaceAfter();
-		while(pColumn != NULL)
+		while(pColumn != nullptr)
 		{
 			if(prevColumn == pColumn)
 			{
 				bstop = true;
 				fp_Container * pCurContainer = static_cast<fp_Container *>(pColumn->getFirstContainer());
 				UT_sint32 curHeight = 0;
-				while((pCurContainer != NULL) && (pCurContainer != prevContainer))
+				while((pCurContainer != nullptr) && (pCurContainer != prevContainer))
 				{
 					if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
 					{
@@ -1449,19 +1449,20 @@ UT_sint32 fp_Page::countColumnLeaders(void) const
 fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
 {
 	if(n >= m_vecColumnLeaders.getItemCount())
-		return NULL;
+		return nullptr;
 	return m_vecColumnLeaders.getNthItem(n);
 }
 
 
 fp_Container* fp_Page::getNthColumn(UT_uint32 n,fl_DocSectionLayout *pSection) const
 {
-	fp_Column *pCol = NULL;
+	fp_Column *pCol = nullptr;
 	UT_sint32 j = 0;
 	bool b_sectionFound = false;
 	
-	if ((!pSection) || (n > pSection->getNumColumns()))
-	{ return NULL;}
+	if ((!pSection) || (n > pSection->getNumColumns())) {
+		return nullptr;
+	}
 	for (j = 0;j < countColumnLeaders();j++)
 	{
 		pCol = getNthColumnLeader(j);
@@ -1471,8 +1472,9 @@ fp_Container* fp_Page::getNthColumn(UT_uint32 n,fl_DocSectionLayout *pSection) c
 			break;
 		}
 	}
-	if (!b_sectionFound)
-	{ return NULL;}
+	if (!b_sectionFound) {
+		return nullptr;
+	}
 
 	UT_uint32 k = 0;
 	while(pCol && k < n)
@@ -1606,11 +1608,11 @@ bool fp_Page::breakPage(void)
 			}
 		}
 
-		while(pCol != NULL)
+		while(pCol != nullptr)
 		{
 			UT_sint32 countContainers = 0;
 			fp_Container * pContainer = static_cast<fp_Container *>(pCol->getFirstContainer());
-			while(pContainer != NULL && pContainer != static_cast<fp_Container *>(pCol->getLastContainer()))
+			while(pContainer != nullptr && pContainer != static_cast<fp_Container *>(pCol->getLastContainer()))
 			{
 				countContainers++;
 				if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
@@ -1623,7 +1625,7 @@ bool fp_Page::breakPage(void)
 					maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeight());
 				}
 				pContainer = static_cast<fp_Container *>(pContainer->getNext());			}
-			if(pContainer != NULL)
+			if(pContainer != nullptr)
 			{
 				if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 				{
@@ -1662,7 +1664,7 @@ bool fp_Page::breakPage(void)
 //
 			fp_Page * pPNext = getNext();
 			fl_DocSectionLayout * pPrevDSL = getNthColumnLeader(i-1)->getDocSectionLayout();
-			if(pPNext== NULL)
+			if(pPNext== nullptr)
 			{
 				return true;
 			}
@@ -1675,7 +1677,7 @@ bool fp_Page::breakPage(void)
 				return true;
 			}
 			fp_Column * pCNext = pPNext->getNthColumnLeader(0);
-			if(pCNext == NULL)
+			if(pCNext == nullptr)
 			{
 				return true;
 			}
@@ -1719,7 +1721,7 @@ fp_Column * fp_Page::getPrevColOnPages(fp_Column * pCol, fp_Page * pPage)
 {
 	UT_sint32 count = pPage->countColumnLeaders();
 	UT_sint32 i=0;
-	fp_Column * pFound = NULL;
+	fp_Column * pFound = nullptr;
 	for(i=0; i< count: i++)
 	{
 		pFound = static_cast<fp_Column *>(pPage->getNthColumn(i));
@@ -1730,7 +1732,7 @@ fp_Column * fp_Page::getPrevColOnPages(fp_Column * pCol, fp_Page * pPage)
 	}
 	if( i == count)
 	{
-		return NULL;
+		return nullptr;
 	}
 	if(i>0)
 	{
@@ -1740,14 +1742,14 @@ fp_Column * fp_Page::getPrevColOnPages(fp_Column * pCol, fp_Page * pPage)
 	else
 	{
 		fp_Page * pPrev = pPage->getPrev();
-		if(pPrev == NULL)
+		if(pPrev == nullptr)
 		{
-			return NULL;
+			return nullptr;
 		}
 		count = pPage->countColumnLeaders();
 		if(count <1 )
 		{
-			return NULL;
+			return nullptr;
 		}
 	    else
 		{
@@ -1846,7 +1848,7 @@ void fp_Page::_reformatColumns(void)
 		return;
 
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
-	fp_Column * pLastCol = NULL;
+	fp_Column * pLastCol = nullptr;
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
 
@@ -1954,7 +1956,7 @@ void fp_Page::_reformatColumns(void)
 //
 // Look for blank space to put more text
 //
-	fp_Column * pFirstOfNext = NULL;
+	fp_Column * pFirstOfNext = nullptr;
 	fp_Page * pNext = getNext();
 	if(pNext && pLastCol)
 	{
@@ -1972,7 +1974,7 @@ void fp_Page::_reformatColumns(void)
 				return;
 			}
 			fp_Container *pFirstNextContainer = static_cast<fp_Container *>(pFirstOfNext->getFirstContainer());
-			if(pFirstNextContainer == NULL)
+			if(pFirstNextContainer == nullptr)
 			{
 				return;
 			}
@@ -2152,7 +2154,7 @@ void fp_Page::_reformatAnnotations(void)
   Remove column leader from page
   \param pLeader Leader to remove
 
-  This will set the page of all columns in the row to NULL
+  This will set the page of all columns in the row to nullptr
 */
 void fp_Page::removeColumnLeader(fp_Column* pLeader)
 {
@@ -2173,14 +2175,14 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 #if 0
 	// Deassociate this page from the old owner
 	m_pOwner->deleteOwnedPage(this);
-	m_pOwner = NULL;
+	m_pOwner = nullptr;
 #endif
 
 	// The row of columns are not on this page anymore
 	fp_Column* pTmpCol = pLeader;
 	while (pTmpCol)
 	{
-		pTmpCol->setPage(NULL);
+		pTmpCol->setPage(nullptr);
 		pTmpCol = pTmpCol->getFollower();
 	}
 
@@ -2220,7 +2222,7 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 /*!
   Insert column leader on page
   \param pLeader Leader to insert
-  \param pAfter The leader to insert after or NULL
+  \param pAfter The leader to insert after or nullptr
   \return True
 
   This will set the page of all columns in the row to this page.
@@ -2420,10 +2422,10 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 
 void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow ) const
 {
-	fl_HdrFtrShadow * pShad = NULL;
-	if(pShadow == NULL)
+	fl_HdrFtrShadow * pShad = nullptr;
+	if(pShadow == nullptr)
 	{
-		mapXYToPosition(false,x,y,pos,bBOL,bEOL,isTOC, bUseHdrFtr, NULL);
+		mapXYToPosition(false,x,y,pos,bBOL,bEOL,isTOC, bUseHdrFtr, nullptr);
 		return;
 	}
 	else
@@ -2449,17 +2451,17 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 {
 	UT_sint32 count = m_vecColumnLeaders.getItemCount();
 	UT_uint32 iMinDist = 0xffffffff;
-	fp_VerticalContainer * pMinDist = NULL;
-	fp_Column* pColumn = NULL;
+	fp_VerticalContainer * pMinDist = nullptr;
+	fp_Column* pColumn = nullptr;
 	UT_uint32 iMinXDist = 0xffffffff;
-	fp_VerticalContainer* pMinXDist = NULL;
+	fp_VerticalContainer* pMinXDist = nullptr;
 	UT_uint32 iDist = 0;
-	fp_Column* pLeader = NULL;
+	fp_Column* pLeader = nullptr;
 //
 // Start by looking in Frames for this point.
 //
 	UT_sint32 i =0;
-	fp_FrameContainer * pFrameC = NULL;
+	fp_FrameContainer * pFrameC = nullptr;
 	if(!bNotFrames)
 	{
 //
@@ -2594,7 +2596,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 	if (bUseHdrFtr)
 	{
 		if (pShadow)
-			*pShadow = NULL;
+			*pShadow = nullptr;
 		if(m_pView && m_pView->getViewMode() == VIEW_PRINT)
 		{
 			fp_ShadowContainer * hf[2] = { m_pHeader, m_pFooter };
@@ -2602,7 +2604,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 			{
 				fp_ShadowContainer * p = hf[j];
 
-				if(p == NULL || !p->getFirstContainer())
+				if(p == nullptr || !p->getFirstContainer())
 					continue;
 
 				if ((y >= p->getY()) && (y < (p->getY() + p->getHeight())))
@@ -2625,7 +2627,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 
 		pColumn = pLeader;
 		iMinXDist = 0xffffffff;
-		pMinXDist = NULL;
+		pMinXDist = nullptr;
 		while (pColumn)
 		{
 			if (pColumn->getFirstContainer())
@@ -2668,7 +2670,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 //
 // Now look in footnotes
 //
-	fp_FootnoteContainer * pFC = NULL;
+	fp_FootnoteContainer * pFC = nullptr;
 	for (i=0; i<static_cast<UT_sint32>(countFootnoteContainers()); i++)
 	{
 		pFC = getNthFootnoteContainer(i);
@@ -2708,7 +2710,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 //
 	if(getDocLayout()->displayAnnotations())
 	{
-			fp_AnnotationContainer * pAC = NULL;
+			fp_AnnotationContainer * pAC = nullptr;
 			for (i=0; i<static_cast<UT_sint32>(countAnnotationContainers()); i++)
 			{
 					pAC = getNthAnnotationContainer(i);
@@ -2780,18 +2782,18 @@ void fp_Page::removeHdrFtr(HdrFtrType hfType)
 	if(hfType < FL_HDRFTR_FOOTER)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: Deleting header from page %x m_pHeader = %x \n",this, m_pHeader));
-		if(m_pHeader == NULL)
+		if(m_pHeader == nullptr)
 			return;
 		delete m_pHeader;
-		m_pHeader = NULL;
+		m_pHeader = nullptr;
 	}
 	else
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: Deleting footer from page %x m_pFooter = %x \n",this,m_pFooter));
-		if(m_pFooter == NULL)
+		if(m_pFooter == nullptr)
 			return;
 		delete m_pFooter;
-		m_pFooter = NULL;
+		m_pFooter = nullptr;
 	}
 }
 
@@ -2847,7 +2849,7 @@ fp_Page::buildHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL,
 									 pHFSL);
 	}
 
-	UT_return_val_if_fail(*ppHF, NULL);
+	UT_return_val_if_fail(*ppHF, nullptr);
 
 	(*ppHF)->setPage(this);
 	xxx_UT_DEBUGMSG(("SEVIOR: Page for shadow %x is %x \n",*ppHF,this));
@@ -3098,7 +3100,7 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 	}
 	UT_uint32 loc =0;
 	UT_sint32 fVal = pFC->getValue();
-	fp_FootnoteContainer * pFTemp = NULL;
+	fp_FootnoteContainer * pFTemp = nullptr;
 	for(i=0; i< m_vecFootnotes.getItemCount();i++)
 	{
 		pFTemp = m_vecFootnotes.getNthItem(i);
@@ -3108,7 +3110,7 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 			break;
 		}
 	}
-	if(pFTemp == NULL)
+	if(pFTemp == nullptr)
 	{
 		m_vecFootnotes.addItem(pFC);
 	}
@@ -3169,7 +3171,7 @@ fp_AnnotationContainer* fp_Page::getNthAnnotationContainer(UT_sint32 n) const
 
 UT_sint32 fp_Page::getAnnotationPos(UT_uint32 pid) const
 {
-	fp_AnnotationContainer * pACon = NULL;
+	fp_AnnotationContainer * pACon = nullptr;
 	UT_sint32 i = 0;
 	for(i = 0; i< countAnnotationContainers(); i++)
 	{
@@ -3192,7 +3194,7 @@ bool fp_Page::insertAnnotationContainer(fp_AnnotationContainer * pAC)
 	}
 	UT_uint32 loc =0;
 	UT_sint32 fVal = pAC->getValue();
-	fp_AnnotationContainer * pFTemp = NULL;
+	fp_AnnotationContainer * pFTemp = nullptr;
 	for(i=0; i< m_vecAnnotations.getItemCount();i++)
 	{
 		pFTemp = m_vecAnnotations.getNthItem(i);
@@ -3202,7 +3204,7 @@ bool fp_Page::insertAnnotationContainer(fp_AnnotationContainer * pAC)
 			break;
 		}
 	}
-	if(pFTemp == NULL)
+	if(pFTemp == nullptr)
 	{
 		m_vecAnnotations.addItem(pAC);
 	}

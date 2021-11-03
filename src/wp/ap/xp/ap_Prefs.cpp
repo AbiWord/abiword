@@ -158,7 +158,7 @@ void AP_Prefs::overlaySystemPrefs(void)
 #ifdef _MSC_VER
 		const char* subdir = "profiles";
 #else
-		const char* subdir = NULL;
+		const char* subdir = nullptr;
 #endif
 	    if (XAP_App::getApp()->findAbiSuiteAppFile(path, item, subdir))
 			loadSystemDefaultPrefsFile(path.c_str());

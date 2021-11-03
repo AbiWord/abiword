@@ -42,11 +42,11 @@ wchar_t		XAP_Win32PreviewWidget::m_bufClassName[100];
 
 XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hwndParent, UINT style)
 {
-	m_hwndPreview = NULL;
+	m_hwndPreview = nullptr;
 	m_pWin32App = pWin32App;
-	m_pGraphics = NULL;
-	m_pPreview = NULL;
-	m_pInsertSymbol = NULL;
+	m_pGraphics = nullptr;
+	m_pPreview = nullptr;
+	m_pInsertSymbol = nullptr;
 
 	if(!m_atomPreviewWidgetClass)
 	{
@@ -54,18 +54,18 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 
 		m_atomPreviewWidgetClass = UT_RegisterClassEx(CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | style,
 													  _wndProc, m_pWin32App->getInstance(),
-													  NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_BTNFACE+1), NULL,
-													  NULL, m_bufClassName);
+													  nullptr, LoadCursor(nullptr, IDC_ARROW), (HBRUSH)(COLOR_BTNFACE+1), nullptr,
+													  nullptr, m_bufClassName);
 		UT_return_if_fail(m_atomPreviewWidgetClass);
 	}
 
 	RECT rParent;
 	GetClientRect(hwndParent,&rParent);
 	
-	m_hwndPreview = UT_CreateWindowEx(0L, m_bufClassName, NULL,
+	m_hwndPreview = UT_CreateWindowEx(0L, m_bufClassName, nullptr,
 								 WS_CHILD|WS_VISIBLE,
 								 0,0,(rParent.right-rParent.left),(rParent.bottom-rParent.top),
-								 hwndParent,NULL,m_pWin32App->getInstance(),NULL);
+								 hwndParent,nullptr,m_pWin32App->getInstance(),nullptr);
 	UT_ASSERT(m_hwndPreview);
 
 	// bind window back to this object.  note that this will happen

@@ -114,7 +114,7 @@ bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 	// for the other language.
 	
 	bool bResult = false;			// assume failure
-	FILE * fp = NULL;
+	FILE * fp = nullptr;
 	fp = fopen(szFilename, "w");
 	if (!fp)
 	{
@@ -222,7 +222,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 		return XAP_DiskStringSet::setValue(id,szString);
 
 	bool bFoundMultiByte = false;
-	gchar * szDup = NULL;
+	gchar * szDup = nullptr;
 	if (szString && *szString)
 	{
 		UT_GrowBuf gb;
@@ -279,9 +279,9 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 		szDup[length]='\0';
 	}
 
-	gchar * pOldValue = NULL;
+	gchar * pOldValue = nullptr;
 	bool bResult = (m_vecStringsAP.setNthItem(id-AP_STRING_ID__FIRST__,szDup,&pOldValue) == 0);
-	UT_ASSERT_HARMLESS(pOldValue == NULL);		// duplicate string for this id
+	UT_ASSERT_HARMLESS(pOldValue == nullptr);		// duplicate string for this id
 
 	if (bFoundMultiByte)
 	{
@@ -314,7 +314,7 @@ const gchar * AP_DiskStringSet::getValue(XAP_String_Id id) const
 	if (m_pFallbackStringSet)
 		return m_pFallbackStringSet->getValue(id);
 	
-	return NULL;
+	return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////

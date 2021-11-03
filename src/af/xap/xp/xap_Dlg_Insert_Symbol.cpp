@@ -40,8 +40,8 @@ XAP_Dialog_Insert_Symbol::XAP_Dialog_Insert_Symbol(XAP_DialogFactory * pDlgFacto
 {
 	m_Inserted_Symbol = ' ';
 	m_answer = a_CANCEL;
-	m_DrawSymbol = NULL;
-	m_pListener = NULL;
+	m_DrawSymbol = nullptr;
+	m_pListener = nullptr;
 	//	m_pDialog = (XAP_Dialog_Insert_Symbol *) this;
 }
 XAP_Dialog_Insert_Symbol::~XAP_Dialog_Insert_Symbol(void)
@@ -69,7 +69,7 @@ UT_UCSChar  XAP_Dialog_Insert_Symbol::getInsertedSymbol(void)
 
 char * XAP_Dialog_Insert_Symbol::getInsertedFont(void)
 {
-	UT_return_val_if_fail(m_DrawSymbol, NULL);
+	UT_return_val_if_fail(m_DrawSymbol, nullptr);
 	strncpy(m_FontName, m_DrawSymbol->getSelectedFont(), sizeof(m_FontName)-1);
 	m_FontName[sizeof(m_FontName)-1] = '\0';
 
@@ -167,7 +167,7 @@ void XAP_Dialog_Insert_Symbol::setActiveFrame(XAP_Frame *pFrame)
 void  XAP_Dialog_Insert_Symbol::ConstructWindowName()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	gchar * tmp = NULL;											 
+	gchar * tmp = nullptr;
 	std::string sTitle;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert_SymbolTitle,sTitle);
 

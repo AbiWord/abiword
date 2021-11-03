@@ -41,7 +41,7 @@
 #include "fl_TableLayout.h"
 #include "pt_PieceTable.h"
 
-FL_DocLayout* FL_DocLayout::m_pDocLayout = NULL;
+FL_DocLayout* FL_DocLayout::m_pDocLayout = nullptr;
 
 /*!
   Dump AbiWord backend's internal structures

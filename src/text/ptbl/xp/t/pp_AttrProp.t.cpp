@@ -173,7 +173,7 @@ TFTEST_MAIN("PP_cloneAndDecodeAttributes")
     const char *attrs[] = {
         "inline", "&amp; &lt; &gt; &quot;",
         "props", "abc: d; efg: hij",
-        NULL, NULL
+        nullptr, nullptr
     };
     PP_PropertyVector props = PP_cloneAndDecodeAttributes(attrs);
 
@@ -183,7 +183,7 @@ TFTEST_MAIN("PP_cloneAndDecodeAttributes")
 
     const char *attrs2[] = {
         "inline", "&amp; &lt; &gt; &quot;",
-        "props", NULL
+        "props", nullptr
     };
     props = PP_cloneAndDecodeAttributes(attrs2);
     TFPASSEQ(props.size(), 4);
@@ -217,7 +217,7 @@ TFTEST_MAIN("PP_std_copyProps")
     const char *cprops[] = {
         "style", "Normal",
         "lang", "fr",
-        NULL, NULL
+        nullptr, nullptr
     };
     PP_PropertyVector attr = PP_std_copyProps(cprops);
     TFPASSEQ(attr.size(), 4);
@@ -229,8 +229,8 @@ TFTEST_MAIN("PP_std_copyProps")
 
     const char *cprops2[] = {
         "style", "Normal",
-        "lang", NULL,
-        NULL, NULL
+        "lang", nullptr,
+        nullptr, nullptr
     };
 
 

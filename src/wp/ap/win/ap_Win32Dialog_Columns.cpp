@@ -52,7 +52,7 @@ AP_Win32Dialog_Columns::AP_Win32Dialog_Columns(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Columns(pDlgFactory,id)
 {
-	m_pPreviewWidget = NULL;
+	m_pPreviewWidget = nullptr;
 }
 
 AP_Win32Dialog_Columns::~AP_Win32Dialog_Columns(void)

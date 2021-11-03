@@ -110,14 +110,14 @@ static void _errorSAXFunc(void *xmlp,
   UT_XML * pXML = reinterpret_cast<UT_XML *>(xmlp);
   pXML->incMinorErrors();
   char * szErr = g_strdup(errorMessage.c_str() );
-  if(strstr(szErr,"'nbsp' not defined") != NULL)
+  if(strstr(szErr,"'nbsp' not defined") != nullptr)
   {
     UT_DEBUGMSG(("nbsp found in stream errs %d \n",pXML->getNumMinorErrors()));
       pXML->incRecoveredErrors();
       const char buffer []= { (char)0xa0};
       pXML->charData(buffer,1); 
   }
-  else if(strstr(szErr,"not defined") != NULL)
+  else if(strstr(szErr,"not defined") != nullptr)
   {
       pXML->incRecoveredErrors();
   }
@@ -198,7 +198,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 	if (length != 0)
     {
 		ctxt = xmlCreatePushParserCtxt (&hdl, static_cast<void *>(this), buffer, static_cast<int>(length), szFilename);
-		if (ctxt == NULL)
+		if (ctxt == nullptr)
 		{
 			UT_DEBUGMSG (("Unable to create libxml2 push-parser context!\n"));
 			reader->closeFile ();
@@ -282,7 +282,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   hdl.cdataBlock   = _cdata;
 
   ctxt = xmlCreateMemoryParserCtxt (buffer, static_cast<int>(length));
-  if (ctxt == NULL)
+  if (ctxt == nullptr)
     {
       UT_DEBUGMSG (("Unable to create libxml2 memory context!\n"));
       return UT_ERROR;

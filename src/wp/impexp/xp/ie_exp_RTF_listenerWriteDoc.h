@@ -74,7 +74,7 @@ protected:
 	void                _openFrame(PT_AttrPropIndex api);
 	void                _closeFrame(void);
 	void                _writeSPNumProp(const char * prop, UT_sint32 val);
-	void				_openSpan(PT_AttrPropIndex apiSpan,const PP_AttrProp * pSpanAP = NULL );
+	void				_openSpan(PT_AttrPropIndex apiSpan,const PP_AttrProp * pSpanAP = nullptr );
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length, PT_DocPosition pos, bool bIgnorePos);

@@ -72,7 +72,7 @@ bool IE_ImpGraphicPNG_Sniffer::getDlgLabels(const char ** pszDesc,
 UT_Error IE_ImpGraphicPNG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_PNG();
-	if (*ppieg == NULL)
+	if (*ppieg == nullptr)
 	  return UT_IE_NOMEMORY;
 
 	return UT_OK;
@@ -83,7 +83,7 @@ UT_Error IE_ImpGraphic_PNG::importGraphic(const UT_ConstByteBufPtr & pBB,
 										  FG_ConstGraphicPtr &pfg)
 {
 	FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
-	if(pFGR == NULL)
+	if(pFGR == nullptr)
 		return UT_IE_NOMEMORY;
 
 	if(!pFGR->setRaster_PNG(pBB)) {

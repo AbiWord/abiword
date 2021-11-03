@@ -101,14 +101,14 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 	// was found at http://tangentsoft.net/wskfaq/examples/getmac-snmp.html
 	// I adjusted it, so all the libs are dynamically loaded and unloaded
 
-	HINSTANCE m_hWSInst = NULL;
+	HINSTANCE m_hWSInst = nullptr;
 	m_hWSInst = LoadLibraryW(L"ws2_32.dll");
-	pWSAStartup m_WSAStartup = NULL;
+	pWSAStartup m_WSAStartup = nullptr;
 	
 	if(m_hWSInst < (HINSTANCE) HINSTANCE_ERROR)
 	{
 		UT_DEBUGMSG(("UT_getEthernetAddress: could not load ws2_32.dll\n"));
-		m_hWSInst = NULL;
+		m_hWSInst = nullptr;
 		goto  try_netbios;
 	}
 	else
@@ -131,15 +131,15 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 			goto  try_netbios;
 		}
 
-		HINSTANCE            m_hSNMPInst = NULL;
-		pSnmpUtilVarBindFree m_SnmpUtilVarBindFree = NULL;
-		pSnmpUtilOidNCmp     m_SnmpUtilOidNCmp = NULL;
-		pSnmpUtilOidCpy      m_SnmpUtilOidCpy = NULL;
+		HINSTANCE            m_hSNMPInst = nullptr;
+		pSnmpUtilVarBindFree m_SnmpUtilVarBindFree = nullptr;
+		pSnmpUtilOidNCmp     m_SnmpUtilOidNCmp = nullptr;
+		pSnmpUtilOidCpy      m_SnmpUtilOidCpy = nullptr;
 
 		
-		HINSTANCE            m_hInst = NULL;
-		pSnmpExtensionInit   m_Init = NULL;
-		pSnmpExtensionQuery  m_Query = NULL;
+		HINSTANCE            m_hInst = nullptr;
+		pSnmpExtensionInit   m_Init = nullptr;
+		pSnmpExtensionQuery  m_Query = nullptr;
 		HANDLE               PollForTrapEvent;
 		AsnObjectIdentifier  SupportedView;
 
@@ -155,13 +155,13 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 	
 		AsnObjectIdentifier MIB_ifEntryNum = {sizeof(OID_ifEntryNum)/sizeof(UINT),
 											  OID_ifEntryNum};
-	
+
 		RFC1157VarBindList  varBindList;
 		RFC1157VarBind      varBind[2];
 		AsnInteger          errorStatus;
 		AsnInteger          errorIndex;
-		AsnObjectIdentifier MIB_NULL = {0,0};
-	
+		AsnObjectIdentifier MIB_nullptr = {0,nullptr};
+
 		int ret;
 		int dtmp;
 		int j = 0;
@@ -173,7 +173,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 		if(m_hSNMPInst < (HINSTANCE) HINSTANCE_ERROR)
 		{
 			UT_DEBUGMSG(("UT_getEthernetAddress: could not load snmpapi.dll\n"));
-			m_hSNMPInst = NULL;
+			m_hSNMPInst = nullptr;
 			goto  try_netbios;
 		}
 
@@ -201,7 +201,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 		if(m_hInst < (HINSTANCE) HINSTANCE_ERROR)
 		{
 			UT_DEBUGMSG(("UT_getEthernetAddress: could not load inetmib1.dll\n"));
-			m_hInst = NULL;
+			m_hInst = nullptr;
 			FreeLibrary(m_hSNMPInst);
 			goto  try_netbios;
 		}
@@ -221,8 +221,8 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 
 		/* Initialize the variable list to be retrieved by m_Query */
 		varBindList.list = varBind;
-		varBind[0].name  = MIB_NULL;
-		varBind[1].name  = MIB_NULL;
+		varBind[0].name  = MIB_nullptr;
+		varBind[1].name  = MIB_nullptr;
 
 		/* Copy in the OID to find the number of entries in the
 		   Inteface table */
@@ -276,7 +276,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 											&MIB_ifMACEntAddr,
 											MIB_ifMACEntAddr.idLength);
 				
-					if((!ret) && (varBind[1].value.asnValue.address.stream != NULL))
+					if((!ret) && (varBind[1].value.asnValue.address.stream != nullptr))
 					{
 						if(   (varBind[1].value.asnValue.address.stream[0] == 0x44)
 						   && (varBind[1].value.asnValue.address.stream[1] == 0x45)
@@ -296,10 +296,10 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 						   && (varBind[1].value.asnValue.address.stream[5] == 0x00))
 						{
 
-							/* Ignore NULL addresses returned by other network
+							/* Ignore nullptr addresses returned by other network
 							   interfaces */
 							UT_DEBUGMSG(("UT_getEthernetAddress (win32): Interface #%i is "
-										 "a NULL address\n", j));
+										 "a nullptr address\n", j));
 							continue;
 						}
 
@@ -351,7 +351,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 			return false;
 		}
 
-		pNetbios m_Netbios = NULL;
+		pNetbios m_Netbios = nullptr;
 		m_Netbios = (pNetbios) GetProcAddress(m_hInst, "Netbios");
 
 		if(!m_Netbios)
@@ -424,7 +424,7 @@ class ABI_EXPORT UT_Win32AssertDlg
 	
   private:
 	UT_Win32AssertDlg(const char * pCond, const char * pFile, int iLine, int iCount)
-		: m_iLine(iLine), m_pCond(pCond), m_pFile(pFile), m_iCount(iCount), m_myHWND(NULL), m_bTimersPaused(false){};
+		: m_iLine(iLine), m_pCond(pCond), m_pFile(pFile), m_iCount(iCount), m_myHWND(nullptr), m_bTimersPaused(false){};
 	~UT_Win32AssertDlg(){};
 
 	static BOOL CALLBACK  s_dlgProc(HWND,UINT,WPARAM,LPARAM);
@@ -509,9 +509,9 @@ UT_Win32AssertDlg::answer UT_Win32AssertDlg::runModal()
 {
 	LPSTR lpTemplate = MAKEINTRESOURCEA(UT_RID_DIALOG_ASSERT);
 	
-	UT_DebugOnly<int> result = DialogBoxParamA(GetModuleHandleA(NULL),
+	UT_DebugOnly<int> result = DialogBoxParamA(GetModuleHandleA(nullptr),
 								lpTemplate,
-								NULL,
+								nullptr,
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 
 	UT_ASSERT_HARMLESS((result != -1));

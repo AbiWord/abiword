@@ -40,7 +40,7 @@ public:
 	virtual const IE_SuffixConfidence * getSuffixConfidence() override;
 	virtual UT_Confidence_t recognizeContents(const char * szBuf,
 									UT_uint32 iNumbytes) override;
-	virtual const IE_MimeConfidence * getMimeConfidence() override { return NULL; }
+	virtual const IE_MimeConfidence * getMimeConfidence() override { return nullptr; }
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft) override;

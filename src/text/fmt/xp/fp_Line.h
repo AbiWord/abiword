@@ -117,8 +117,8 @@ public:
 	virtual bool        isHBreakable(void) override {return true;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32) override { return 0;}
 	virtual UT_sint32   wantHBreakAt(UT_sint32) override { return 0;}
-	virtual fp_ContainerObject * VBreakAt(UT_sint32) override { return NULL;}
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return NULL;}
+	virtual fp_ContainerObject * VBreakAt(UT_sint32) override { return nullptr;}
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return nullptr;}
 	virtual UT_uint32 distanceFromPoint(UT_sint32, UT_sint32) override {return 0;}
 	virtual fp_Container*	getNextContainerInSection(void) const override;
 	virtual fp_Container*	getPrevContainerInSection(void) const override;
@@ -137,7 +137,7 @@ public:
 
 	inline	bool		isEmpty(void) const				{ return ((m_vecRuns.getItemCount()) == 0); }
 	inline	int 		countRuns(void) const			{ return m_vecRuns.getItemCount(); }
-	inline	fp_Run*     getFirstRun(void) const			{ if(countRuns() > 0)  return ((fp_Run*) m_vecRuns.getFirstItem()); else return NULL; }
+	inline	fp_Run*     getFirstRun(void) const			{ if(countRuns() > 0)  return ((fp_Run*) m_vecRuns.getFirstItem()); else return nullptr; }
 	fp_Run*     getLastRun(void) const ;
 	fp_Run*     getLastTextRun(void) const ;
 
@@ -174,7 +174,7 @@ public:
 	void		align(void);
 	void		layout(void);
 	bool		recalculateFields(UT_uint32 iUpdateCount);
-	void		recalcHeight(fp_Run * pLast = NULL);
+	void		recalcHeight(fp_Run * pLast = nullptr);
 	virtual void	recalcMaxWidth(bool bDontClearIfNeeded = false) override;
 	void            setReformat(void);
 	void		coalesceRuns(void);

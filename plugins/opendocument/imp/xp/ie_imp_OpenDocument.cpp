@@ -63,8 +63,8 @@ IE_Imp_OpenDocument::IE_Imp_OpenDocument (PD_Document * pDocument)
   : IE_Imp (pDocument),
     m_pGsfInfile(nullptr),
     m_sPassword (""),
-    m_pStreamListener(NULL),
-    m_pAbiData(NULL)
+    m_pStreamListener(nullptr),
+    m_pAbiData(nullptr)
 {
 }
 
@@ -130,9 +130,9 @@ bool IE_Imp_OpenDocument::pasteFromBuffer(PD_DocumentRange * pDocRange,
  */
 UT_Error IE_Imp_OpenDocument::_loadFile (GsfInput * oo_src)
 {
-    m_pGsfInfile = GSF_INFILE (gsf_infile_zip_new (oo_src, NULL));
+    m_pGsfInfile = GSF_INFILE (gsf_infile_zip_new (oo_src, nullptr));
     
-    if (m_pGsfInfile == NULL) {
+    if (m_pGsfInfile == nullptr) {
         return UT_ERROR;
     }
 
@@ -287,7 +287,7 @@ UT_Error IE_Imp_OpenDocument::_handleMimetype ()
     
     if (gsf_input_size (pInput) > 0) {
         mimetype.append(
-            (const char *)gsf_input_read(pInput, gsf_input_size (pInput), NULL),
+            (const char *)gsf_input_read(pInput, gsf_input_size (pInput), nullptr),
             gsf_input_size (pInput));
     }
 
@@ -457,7 +457,7 @@ UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInput* pInput,
             return UT_ERROR;
         }
 
-        // Note that although the API docs say you can use NULL for base_uri
+        // Note that although the API docs say you can use nullptr for base_uri
         // you will likely find it an error to try to call that way.
         librdf_uri* base_uri = librdf_new_uri( args->world,
                                                (const unsigned char*)pStream );
@@ -678,7 +678,7 @@ UT_Error IE_Imp_OpenDocument::_handleStream ( GsfInfile* pGsfInfile,
         return UT_ERROR;
 #endif
         
-        GsfInput* pDecryptedInput = NULL;
+        GsfInput* pDecryptedInput = nullptr;
         UT_Error err = ODc_Crypto::decrypt(pInput, (*pos).second, m_sPassword.c_str(), &pDecryptedInput);
         g_object_unref (G_OBJECT (pInput));
 		
@@ -708,7 +708,7 @@ UT_Error IE_Imp_OpenDocument::_handleStream ( GsfInfile* pGsfInfile,
  */
 UT_Error IE_Imp_OpenDocument::_parseStream (GsfInput* pInput, UT_XML & parser)
 {
-    guint8 const *data = NULL;
+    guint8 const *data = nullptr;
     size_t len = 0;
     UT_Error ret = UT_OK;
 
@@ -719,7 +719,7 @@ UT_Error IE_Imp_OpenDocument::_parseStream (GsfInput* pInput, UT_XML & parser)
             // FIXME: we want to pass the stream in chunks, but libXML2 finds this disagreeable.
             // we probably need to pass some magic to our XML parser? 
             // len = UT_MIN (len, BUF_SZ);
-            if (NULL == (data = gsf_input_read (pInput, len, NULL))) {
+            if (nullptr == (data = gsf_input_read (pInput, len, nullptr))) {
                 g_object_unref (G_OBJECT (pInput));
                 return UT_ERROR;
             }

@@ -83,7 +83,7 @@ bool AP_CocoaToolbar_StyleCombo::populate(void)
 	// ALSO: will need to repopulate as new styles added
 	// HYP:  only call this method from shared code? 
 
-	UT_GenericVector<const PD_Styles*> pStyles = NULL;
+	UT_GenericVector<const PD_Styles*> pStyles = nullptr;
 	pDoc->enumStyles(pStyles);
 	UT_uint32 nStyles = pStyles->getItemCount();
 
@@ -118,7 +118,7 @@ bool AP_CocoaToolbar_StyleCombo::repopulate(void)
 
 	m_pDocument = static_cast<PD_Document *>(pAD_Doc);
 
-	UT_GenericVector<PD_Style*>* pStyles = NULL;
+	UT_GenericVector<PD_Style*>* pStyles = nullptr;
 	m_pDocument->enumStyles(pStyles);
 	UT_uint32 nStyles = pStyles->getItemCount();
 

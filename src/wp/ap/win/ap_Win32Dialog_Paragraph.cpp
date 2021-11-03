@@ -58,7 +58,7 @@ AP_Win32Dialog_Paragraph::AP_Win32Dialog_Paragraph(XAP_DialogFactory * pDlgFacto
 												 XAP_Dialog_Id id)
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
-	m_pPreviewWidget = NULL;
+	m_pPreviewWidget = nullptr;
 	m_bEditChanged = false;
 }
 
@@ -111,7 +111,7 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 //	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_PARAGRAPH));
 
-	LPCWSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = nullptr;
 
 	UT_ASSERT(m_id == AP_DIALOG_ID_PARAGRAPH);
 
@@ -247,7 +247,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARA
 
 		XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 		HINSTANCE hinst = pWin32App->getInstance();
-		DLGTEMPLATE * pTemplate = NULL;
+		DLGTEMPLATE * pTemplate = nullptr;
 		UT_DebugOnly<HWND> w;
 
 		tp.pThis = this;
@@ -632,7 +632,7 @@ void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fa
 		{
 		case indent_NONE:
 			// clear the spin control
-			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_BY, NULL);
+			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_BY, nullptr);
 			break;
 
 		default:
@@ -661,7 +661,7 @@ void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fa
 		case spacing_ONEANDHALF:
 		case spacing_DOUBLE:
 			// clear the spin control
-			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_AT, NULL);
+			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_AT, nullptr);
 			break;
 
 		default:

@@ -51,7 +51,7 @@ EV_Toolbar_Control * AP_UnixToolbar_StyleCombo::static_constructor(EV_Toolbar * 
 AP_UnixToolbar_StyleCombo::AP_UnixToolbar_StyleCombo(EV_Toolbar * pToolbar,
 													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/), 
-	  m_pDefaultDesc(NULL)
+	  m_pDefaultDesc(nullptr)
 {
 	UT_DEBUG_ONLY_ARG(id);
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);
@@ -100,7 +100,7 @@ bool AP_UnixToolbar_StyleCombo::populate(void)
 	// HYP:  only call this method from shared code? 
 	const PD_Style * pStyle;
 
-	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	UT_GenericVector<PD_Style*> * pStyles = nullptr;
 	pDocument->enumStyles(pStyles);
 	for (UT_uint32 k=0; k < pStyles->getItemCount(); k++)
 	{
@@ -140,7 +140,7 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 	freeStyles();
 
 	// defaults for style combo
-	if (m_pDefaultDesc == NULL)
+	if (m_pDefaultDesc == nullptr)
 	{
 		// for now this is hardcoded
 		m_pDefaultDesc = pango_font_description_new ();
@@ -149,9 +149,9 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 	}
 
 	const PD_Style * pStyle;
-	GSList *list = NULL;
+	GSList *list = nullptr;
 
-	UT_GenericVector<PD_Style*> *pStyles = NULL;
+	UT_GenericVector<PD_Style*> *pStyles = nullptr;
 	pDocument->enumStyles(pStyles);
 	for (UT_sint32 k=0; k < pStyles->getItemCount(); k++)
 	{
@@ -186,7 +186,7 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 		{
 			m_vecContents.addItem((const char *)list->data);
 
-		} while (NULL != (list = g_slist_next(list)));
+		} while (nullptr != (list = g_slist_next(list)));
 		g_slist_free(real_list);
 	}		
 
@@ -204,7 +204,7 @@ AP_UnixToolbar_StyleCombo::getStyle (const gchar *name)
 	if(iter != m_mapStyles.end()) {
 		return iter->second;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*!
@@ -217,7 +217,7 @@ AP_UnixToolbar_StyleCombo::getPangoAttrs (PD_Style *pStyle,
 	UT_return_if_fail (pStyle);
 	UT_LocaleTransactor t (LC_NUMERIC, "C");
 
-	const gchar *value = NULL;
+	const gchar *value = nullptr;
 
 	if (pStyle->getPropertyExpand ("font-family", value)) {
 		pango_font_description_set_family (desc, value);

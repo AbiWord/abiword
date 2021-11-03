@@ -100,7 +100,7 @@ static PP_Property _props[] =
 	{ "columns",               "1",               false, PP_LEVEL_SECT},
 
 	{ "default-tab-interval",  "0.5in",           false, PP_LEVEL_BLOCK},
-	{ "dir-override",          NULL,              true,  PP_LEVEL_CHAR},
+	{ "dir-override",          nullptr,              true,  PP_LEVEL_CHAR},
 	{ "display",               "inline",          true,  PP_LEVEL_CHAR},
 	{ "dom-dir",               def_dom_dir,       true,  PP_LEVEL_BLOCK | PP_LEVEL_SECT},
 
@@ -296,7 +296,7 @@ static int s_compare (const void * a, const void * b)
 
 const PP_Property * PP_lookupProperty(const gchar * name)
 {
-	PP_Property * prop = NULL;
+	PP_Property * prop = nullptr;
 
 	prop = static_cast<PP_Property *>(bsearch (name, _props, G_N_ELEMENTS(_props), sizeof (_props[0]), s_compare));
 
@@ -342,9 +342,9 @@ void PP_setDefaultFontFamily(const char* pszFamily)
 
 static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, const PD_Document * pDoc)
 {
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 
-	const gchar * szValue = NULL;
+	const gchar * szValue = nullptr;
 //
 // SHIT. This is where the style/name split gets really hairy. This index AP MIGHT be
 // from a style definition in which case the name of the style is PT_NAME_ATTRIBUTE_NAME
@@ -353,7 +353,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, const PD_Document * p
 //
 	if (pAttrProp->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue))
 	{
-		UT_return_val_if_fail (szValue && szValue[0], NULL);
+		UT_return_val_if_fail (szValue && szValue[0], nullptr);
 		if (pDoc)
 			pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
 
@@ -361,7 +361,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, const PD_Document * p
 	}
     else if(pAttrProp->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 	{
-		UT_return_val_if_fail (szValue && szValue[0], NULL);
+		UT_return_val_if_fail (szValue && szValue[0], nullptr);
 		if (pDoc)
 			pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
 
@@ -376,13 +376,15 @@ static const gchar * s_evalProperty (const PP_Property * pProp,
 										const PD_Document * pDoc,
 										bool bExpandStyles)
 {
-	const gchar * szValue = NULL;
+	const gchar * szValue = nullptr;
 
 	if (pAttrProp->getProperty (pProp->getName(), szValue))
 		{
 			return szValue;
 		}
-	if (!bExpandStyles) return NULL;
+	if (!bExpandStyles) {
+		return nullptr;
+	}
 
 	PD_Style * pStyle = _getStyle (pAttrProp, pDoc);
 
@@ -396,7 +398,7 @@ static const gchar * s_evalProperty (const PP_Property * pProp,
 			pStyle = pStyle->getBasedOn ();
 			i++;
 		}
-	return NULL;
+	return nullptr;
 }
 
 const gchar * PP_evalProperty (const gchar *  pszName,
@@ -413,7 +415,7 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 	if (!pszName || !*pszName)
 	{
 		UT_DEBUGMSG(("PP_evalProperty: null property given\n"));
-		return NULL;
+		return nullptr;
 	}
 
 	if (pDoc == nullptr)
@@ -423,7 +425,7 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 	if (!pProp)
 	{
 		UT_DEBUGMSG(("PP_evalProperty: unknown property \'%s\'\n",pszName));
-		return NULL;
+		return nullptr;
 	}
 
 	/* Not all properties can have a value of inherit, but we're not validating here.
@@ -434,7 +436,7 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 
 	// see if the property is on the Span item.
 
-	const gchar * szValue = NULL;
+	const gchar * szValue = nullptr;
 
 	// TODO: ?? make lookup more efficient by tagging each property with scope (block, char, section)
 
@@ -445,10 +447,10 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 		if (szValue)
 			if (strcmp (szValue, "inherit") == 0)
 			{
-				szValue = NULL;
+				szValue = nullptr;
 				bInherit = true;
 			}
-		if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+		if ((szValue == nullptr) && (bInherit || pProp->canInherit ()))
 		{
 			bInherit = false;
 
@@ -459,10 +461,10 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 				if (szValue)
 					if (strcmp (szValue, "inherit") == 0)
 					{
-						szValue = NULL;
+						szValue = nullptr;
 						bInherit = true;
 					}
-				if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+				if ((szValue == nullptr) && (bInherit || pProp->canInherit ()))
 				{
 					bInherit = false;
 
@@ -473,10 +475,10 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 						if (szValue)
 							if (strcmp (szValue, "inherit") == 0)
 							{
-								szValue = NULL;
+								szValue = nullptr;
 								bInherit = true;
 							}
-						if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+						if ((szValue == nullptr) && (bInherit || pProp->canInherit ()))
 						{
 							const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
 							if (pDocAP)
@@ -494,10 +496,10 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 		if (szValue)
 			if (strcmp (szValue, "inherit") == 0)
 			{
-				szValue = NULL;
+				szValue = nullptr;
 				bInherit = true;
 			}
-		if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+		if ((szValue == nullptr) && (bInherit || pProp->canInherit ()))
 		{
 			bInherit = false;
 
@@ -508,10 +510,10 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 				if (szValue)
 					if (strcmp (szValue, "inherit") == 0)
 					{
-						szValue = NULL;
+						szValue = nullptr;
 						bInherit = true;
 					}
-				if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+				if ((szValue == nullptr) && (bInherit || pProp->canInherit ()))
 				{
 					const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
 					if (pDocAP)
@@ -527,10 +529,10 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 		if (szValue)
 			if (strcmp (szValue, "inherit") == 0)
 			{
-				szValue = NULL;
+				szValue = nullptr;
 				bInherit = true;
 			}
-		if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+		if ((szValue == nullptr) && (bInherit || pProp->canInherit ()))
 		{
 			const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
 			if (pDocAP)
@@ -555,9 +557,9 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 	}
 	if (szValue)
 		if (strcmp (szValue, "inherit") == 0) // shouldn't happen, but doesn't hurt to check
-			szValue = NULL;
+			szValue = nullptr;
 
-	if (szValue == NULL)
+	if (szValue == nullptr)
 		if (bExpandStyles)
 		{
 			PD_Style * pStyle = nullptr;
@@ -570,11 +572,11 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 
 				if (szValue)
 					if (strcmp (szValue, "inherit") == 0)
-						szValue = NULL;
+						szValue = nullptr;
 			}
 		}
 
-	if(szValue == NULL && pDoc && (bInherit || pProp->canInherit ()))
+	if(szValue == nullptr && pDoc && (bInherit || pProp->canInherit ()))
 	{
 		// see if the doc has a value for this prop
 		const PP_AttrProp *  pAP = pDoc->getAttrProp();
@@ -584,8 +586,8 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 		}
 	}
 	
-	if (szValue == NULL)
-		szValue = pProp->getInitial (); // which may itself be NULL, but that is a bad thing - FIXME!!
+	if (szValue == nullptr)
+		szValue = pProp->getInitial (); // which may itself be nullptr, but that is a bad thing - FIXME!!
 
 	return szValue;
 }
@@ -605,7 +607,7 @@ std::unique_ptr<PP_PropertyType> PP_evalPropertyType(const gchar *  pszName,
 	if (!pszName || !*pszName)
 	{
 		UT_DEBUGMSG(("PP_evalProperty: null property given\n"));
-		return NULL;
+		return nullptr;
 	}
 
 	std::unique_ptr<PP_PropertyType> p_property;
@@ -613,10 +615,10 @@ std::unique_ptr<PP_PropertyType> PP_evalPropertyType(const gchar *  pszName,
 	if (!pProp)
 	{
 		UT_DEBUGMSG(("PP_evalProperty: unknown property \'%s\'\n",pszName));
-		return NULL;
+		return nullptr;
 	}
 
-	PD_Style * pStyle = NULL;
+	PD_Style * pStyle = nullptr;
 
 	// TODO: make lookup more efficient by tagging each property with scope (block, char, section)
 

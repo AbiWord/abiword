@@ -56,8 +56,8 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	UT_uint32 i;	
 
 	m_answer		   = a_CANCEL;
-	m_pLanguage		   = NULL;
-	m_pLangProperty	   = NULL;
+	m_pLanguage		   = nullptr;
+	m_pLangProperty	   = nullptr;
 	m_bChangedLanguage = false;
 	m_pLangTable = new UT_Language;
 	const gchar ** ppLanguagesTemp = new const gchar * [m_pLangTable->getCount()];	
@@ -176,7 +176,7 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 
 	return vecRslt;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 

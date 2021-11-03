@@ -67,7 +67,7 @@ public:
 	virtual void scroll(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_sint32) override
 			{ UT_ASSERT_NOT_REACHED(); }
 
-    virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) override { UT_ASSERT_NOT_REACHED(); return NULL;}
+	virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) override { UT_ASSERT_NOT_REACHED(); return nullptr;}
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) override { UT_ASSERT_NOT_REACHED(); }
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) override { UT_ASSERT_NOT_REACHED(); }
 

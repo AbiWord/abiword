@@ -38,7 +38,7 @@ ODi_Style_MasterPage::ODi_Style_MasterPage(PD_Document* pDocument,
 										 ODi_ElementStack& rElementStack) :
                             ODi_ListenerState("StyleMasterPage", rElementStack),
                             m_pAbiDocument(pDocument),
-                            m_pPageLayoutStyle(NULL),
+                            m_pPageLayoutStyle(nullptr),
                             m_parsingState(ODI_FIRST_PASS)
 {
 }

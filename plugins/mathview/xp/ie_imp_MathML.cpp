@@ -49,7 +49,7 @@ static const AbiMathViewEntityMapItem mathmlEntitiesMap[] = {
 
 static int compareEntities(const void * pSz, const void * pEnt)
 {
-	AbiMathViewEntityMapItem ** pE = NULL;
+	AbiMathViewEntityMapItem ** pE = nullptr;
 
 	pE  = reinterpret_cast<AbiMathViewEntityMapItem **>(reinterpret_cast<void **>(const_cast<void *>(pEnt)));
 
@@ -61,8 +61,8 @@ static int compareEntities(const void * pSz, const void * pEnt)
 
 static int sortEntities(const void * pEnt1, const void * pEnt2)
 {
-	AbiMathViewEntityMapItem ** pE1 = NULL;
-	AbiMathViewEntityMapItem ** pE2 = NULL;
+	AbiMathViewEntityMapItem ** pE1 = nullptr;
+	AbiMathViewEntityMapItem ** pE2 = nullptr;
 
 	pE1 = reinterpret_cast<AbiMathViewEntityMapItem **>(reinterpret_cast<void **>(const_cast<void *>(pEnt1)));
 	pE2 = reinterpret_cast<AbiMathViewEntityMapItem **>(reinterpret_cast<void **>(const_cast<void *>(pEnt2)));
@@ -317,7 +317,7 @@ UT_Error IE_Imp_MathML::_loadFile(GsfInput * fp)
 	ImportStreamFile * pStream = new ImportStreamFile(fp);
 	UT_Error error;
 
-	pStream->init(NULL);
+	pStream->init(nullptr);
 	X_CleanupIfError(error,_parseStream(pStream));
 	error = UT_OK;
 
@@ -390,7 +390,7 @@ bool IE_Imp_MathML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 	ImportStreamClipboard stream(pData, lenData);
 	setClipboard (pDocRange->m_pos1);
-	stream.init(NULL);
+	stream.init(nullptr);
 	_parseStream(&stream);
 	return true;
 }

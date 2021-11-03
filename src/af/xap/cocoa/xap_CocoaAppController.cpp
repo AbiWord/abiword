@@ -3,20 +3,20 @@
 /* AbiSource Application Framework
  * Copyright (C) 2003-2021 Hubert Figuiere
  * Copyright (C) 2004 Francis James Franklin
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -74,7 +74,7 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 	{	AP_MENU_ID_ALIGN_LEFT,				"{",	NSEventModifierFlagCommand									}, // Cmd-{
 	{	AP_MENU_ID_ALIGN_CENTER,			"|",	NSEventModifierFlagCommand									}, // Cmd-|
 	{	AP_MENU_ID_ALIGN_RIGHT,				"}",	NSEventModifierFlagCommand									}, // Cmd-}
-	{	0,									0,		0													}
+	{	0,									nullptr,		0													}
 };
 
 @implementation XAP_CocoaApplication
@@ -567,7 +567,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		return NO;
 	}
 
-	return (pEM->Fn(0,0) ? YES : NO);
+	return (pEM->Fn(nullptr, nullptr) ? YES : NO);
 }
 
 - (BOOL)applicationOpenFile:(NSApplication *)theApplication
@@ -583,7 +583,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		return NO;
 	}
 
-	return (pEM->Fn(0,0) ? YES : NO);
+	return (pEM->Fn(nullptr, nullptr) ? YES : NO);
 }
 
 - (id)dockFileNew:(id)sender
@@ -650,7 +650,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (const char *)keyEquivalentForMenuID:(int /* XAP_Menu_Id */)menuid modifierMask:(unsigned int *)mask
 {
-	const char * equiv = 0;
+	const char * equiv = nullptr;
 
 	struct EV_CocoaKeyEquiv * pKE = KeyEquiv;
 	while (pKE->equiv)
@@ -891,13 +891,13 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	}
 	if ((m_pViewCurrent == view) && (m_pFrameCurrent == frame))
 	{
-		m_pViewCurrent = NULL;
-		m_pFrameCurrent = NULL;
+		m_pViewCurrent = nullptr;
+		m_pFrameCurrent = nullptr;
 	}
 	if ((m_pViewPrevious == view) && (m_pFramePrevious == frame))
 	{
-		m_pViewPrevious = NULL;
-		m_pFramePrevious = NULL;
+		m_pViewPrevious = nullptr;
+		m_pFramePrevious = nullptr;
 	}
 	[self notifyFrameViewChange];
 }
@@ -1054,16 +1054,16 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
  */
 - (id <NSObject, XAP_CocoaPlugin_ToolProvider>)toolProvider:(NSString *)name
 {
-	id <NSObject, XAP_CocoaPlugin_ToolProvider> matched_provider = 0;
+	id <NSObject, XAP_CocoaPlugin_ToolProvider> matched_provider = nil;
 
 	int count = [m_ToolProviders count];
 	int i;
 
 	if (!name)
-		return 0;
+		return nil;
 
 	if ([name length] == 0)
-		return 0;
+		return nil;
 
 	for (i = 0; i < count; i++)
 		{

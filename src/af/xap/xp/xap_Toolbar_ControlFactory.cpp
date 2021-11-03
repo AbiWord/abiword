@@ -58,10 +58,10 @@ bool XAP_Toolbar_ControlFactory::_find_ControlInTable(XAP_Toolbar_Id id, UT_uint
 EV_Toolbar_Control * XAP_Toolbar_ControlFactory::getControl(EV_Toolbar * pToolbar, XAP_Toolbar_Id id)
 {
 	UT_uint32 index;
-	EV_Toolbar_Control * pControl = NULL;
+	EV_Toolbar_Control * pControl = nullptr;
 	
 	if (!_find_ControlInTable(id,&index)) {
-		return NULL;
+		return nullptr;
 	}
 
 	// create a fresh Toolbar_Control object and return it -- no strings attached.

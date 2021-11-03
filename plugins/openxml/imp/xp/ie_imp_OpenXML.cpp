@@ -65,14 +65,14 @@ UT_Error IE_Imp_OpenXML::_loadFile (GsfInput * oo_src)
 
 	UT_Error ret = UT_OK;
 
-	GsfInfile * pGsfInfile = GSF_INFILE (gsf_infile_zip_new (oo_src, NULL));
+	GsfInfile * pGsfInfile = GSF_INFILE (gsf_infile_zip_new (oo_src, nullptr));
     
-	if (pGsfInfile == NULL) {
+	if (pGsfInfile == nullptr) {
 		return UT_ERROR;
 	}
 
 	OXMLi_PackageManager * mgr = OXMLi_PackageManager::getNewInstance();
-	if (mgr == NULL) {
+	if (mgr == nullptr) {
 		g_object_unref (G_OBJECT(pGsfInfile));
 		_cleanup();
 		return UT_ERROR;
@@ -121,7 +121,7 @@ UT_Error IE_Imp_OpenXML::_loadFile (GsfInput * oo_src)
 	UT_DEBUGMSG(("Data model built.  Building piecetable...\n"));
 
 	OXML_Document * doc = OXML_Document::getInstance();
-	if (doc == NULL) {
+	if (doc == nullptr) {
 		_cleanup();
 		return UT_ERROR;
 	}

@@ -46,13 +46,13 @@
     A helper function which translates a revision attribute associated with fragment of type pts at
     pos dpos into arrays of attributes and properties suitable for passing into formating and other funcitons.
 
-    Revisions -- an instance of an empty PP_RevisionsAttr (i.e., PP_RevisionsAttr(NULL);)
+    Revisions -- an instance of an empty PP_RevisionsAttr (i.e., PP_RevisionsAttr(nullptr);)
     
     ppRevAttrib -- pointers to arrays of attributes and properties; the actual props and attribs are
     ppRevProps     found inside the Revisions variable, so the returned pointers are only valid
                    within the Revisions scope !!!.
 
-    ppAttrib -- pointers to any attributes/properties that are to be added to this revision, can be NULL
+    ppAttrib -- pointers to any attributes/properties that are to be added to this revision, can be nullptr
     ppProps
 */
 bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
@@ -64,14 +64,14 @@ bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_
 {
 	UT_return_val_if_fail(m_pDocument->isMarkRevisions(),false );
 
-	const PP_AttrProp * pRevisedAP = NULL;
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pRevisedAP = nullptr;
+	const PP_AttrProp * pAP = nullptr;
 	getAttrProp(indexAP, &pAP);
 	const gchar name[] = "revision";
 
 	if(pAP)
 	{
-		const gchar * pRev = NULL;
+		const gchar * pRev = nullptr;
 		if(pAP->getAttribute(name, pRev))
 		{
 			// OK, the previous strux had a revision attribute, which was copied into the new
@@ -84,12 +84,12 @@ bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_
 			Revisions.pruneForCumulativeResult(m_pDocument);
 			pRevisedAP = Revisions.getLastRevision();
 
-			// it is legal of pRevisedAP to be NULL here -- it simply means that the cumulative
+			// it is legal of pRevisedAP to be nullptr here -- it simply means that the cumulative
 			// effect of the revisions attribute was nothing at all (i.e., the highest revision
 			// was a deletion)
 			if(pRevisedAP)
 			{
-				PP_RevisionAttr Revisions2(NULL);
+				PP_RevisionAttr Revisions2(nullptr);
 
 				// now add the revision attribute
 				Revisions2.addRevision(m_pDocument->getRevisionId(), eType, ppAttrib, ppProps);
@@ -131,7 +131,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		// previous strux -- we do this by obtaining the index of the AP of the previous strux and
 		// running it through _translateRevisionAttribute() which will gives back all attrs and
 		// props that need to be passed to _realInsertStrux()
-		pf_Frag_Strux * pfsContainer = NULL;
+		pf_Frag_Strux * pfsContainer = nullptr;
 		bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer); // the orig. strux
 		UT_return_val_if_fail(bFoundContainer, false);
 	
@@ -147,7 +147,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 			indexAP = pfsContainer->getIndexAP();
 		}
 
-		PP_RevisionAttr Revisions(NULL);
+		PP_RevisionAttr Revisions(nullptr);
 		PP_PropertyVector ppRevAttrib;
 		PP_PropertyVector ppRevProps;
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
@@ -173,7 +173,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		// This is just like the previous method, except that in addition to calling
 		// _translateRevisionAttribute() we also need to set the attrs and props
 		// passed to us.
-		pf_Frag_Strux * pfsContainer = NULL;
+		pf_Frag_Strux * pfsContainer = nullptr;
 		bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer); // the orig. strux
 		UT_return_val_if_fail(bFoundContainer, false);
 
@@ -189,7 +189,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 			indexAP = pfsContainer->getIndexAP();
 		}
 
-		PP_RevisionAttr Revisions(NULL);
+		PP_RevisionAttr Revisions(nullptr);
 		PP_PropertyVector ppRevAttrs;
 		PP_PropertyVector ppRevProps;
 
@@ -199,7 +199,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		PP_PropertyVector ppRevAttrib = attributes;
 		ppRevAttrib.insert(ppRevAttrib.end(), ppRevAttrs.begin(), ppRevAttrs.end());
 
-		//return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,NULL,pts);
+		//return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,nullptr,pts);
 		bool bRet = _realInsertStrux(dpos, pts, ppRevAttrib, properties, ppfs_ret);
 		return bRet;
 	} else {
@@ -217,7 +217,7 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 
 	// create an unlinked strux fragment.
 
-	pf_Frag_Strux * pfs = NULL;
+	pf_Frag_Strux * pfs = nullptr;
 	switch (pts)
 	{
 	case PTX_Section:
@@ -314,11 +314,11 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 
 	if(pfsNew->getStruxType() == PTX_SectionFrame)
 	{
-		pf_Frag_Strux * pfsNext = NULL;
+		pf_Frag_Strux * pfsNext = nullptr;
 		if(pf->getType() != pf_Frag::PFT_Strux)
 		{
 			_getNextStruxAfterFragSkip(pf, &pfsNext);
-			if(pfsNext != NULL)
+			if(pfsNext != nullptr)
 			{
 				pf = static_cast<pf_Frag *>(pfsNext);
 			}
@@ -435,14 +435,14 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	// get the fragment at the doc postion containing the given
 	// document position.
 
-	pf_Frag * pf = NULL;
+	pf_Frag * pf = nullptr;
 	PT_BlockOffset fragOffset = 0;
 	bool bFoundFrag = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_return_val_if_fail (bFoundFrag, false);
 
 	// get the strux containing the given position.
 
-	pf_Frag_Strux * pfsContainer = NULL;
+	pf_Frag_Strux * pfsContainer = nullptr;
 	bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer);
 	UT_return_val_if_fail (bFoundContainer,false);
 	//
@@ -477,7 +477,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 // Look to see if we're in the middle of a hyperlink span now.
 //
 	pf_Frag * pHype = _findPrevHyperlink(pf);
-	if(pHype != NULL && (pts != PTX_SectionFrame) // allow annotations in
+	if(pHype != nullptr && (pts != PTX_SectionFrame) // allow annotations in
 	                                              // hyperlinks
 	   && (pts != PTX_SectionAnnotation)
 	   && (pts != PTX_EndAnnotation)) // frames are always placed
@@ -508,7 +508,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 			//
 			// Now delete the old endhyperlink.
 			//
-			pf_Frag * pfEnd = NULL;
+			pf_Frag * pfEnd = nullptr;
 			UT_uint32 newOff = 0;
 			posEnd++; // from the insert
 			UT_uint32 offset = 0;
@@ -533,7 +533,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		UT_ASSERT_HARMLESS(bMerged);
 	}
 
-	pf_Frag_Strux * pfsNew = NULL;
+	pf_Frag_Strux * pfsNew = nullptr;
 	if (!_createStrux(pts,indexAP,&pfsNew))
 		return false;
 
@@ -566,7 +566,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		// fixme sevior here
 
 		if ((pf->getType()==pf_Frag::PFT_Text) && (fragOffset == 0) &&
-			(pf->getPrev()!=NULL) && (pf->getPrev()->getType()==pf_Frag::PFT_Strux))
+			(pf->getPrev()!=nullptr) && (pf->getPrev()->getType()==pf_Frag::PFT_Strux))
 		{
 			pf_Frag_Strux *pfsStrux = static_cast<pf_Frag_Strux *>(pf->getPrev());
 			if(pfsStrux->getStruxType() == PTX_Block)
@@ -581,7 +581,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	//
 	if (pfsNew->getStruxType() == PTX_EndCell)
 	{
-		if((pf->getPrev()!=NULL) && (pf->getPrev()->getType()==pf_Frag::PFT_Strux))
+		if((pf->getPrev()!=nullptr) && (pf->getPrev()->getType()==pf_Frag::PFT_Strux))
 		{
 			pf_Frag_Strux *pfsStrux = static_cast<pf_Frag_Strux *>(pf->getPrev());
 			if(pfsStrux->getStruxType() == PTX_Block)
@@ -718,7 +718,7 @@ bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */
 bool pt_PieceTable::_insertNoteInEmbeddedStruxList(pf_Frag_Strux * pfsNew)
 {
 	pf_Frag * pfPrev = pfsNew->getPrev();
-	pf_Frag_Strux * pfsPrev = NULL;
+	pf_Frag_Strux * pfsPrev = nullptr;
 	while(pfPrev)
 	{
 		if (pfPrev->getType() == pf_Frag::PFT_Strux) 

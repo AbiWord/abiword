@@ -44,7 +44,7 @@ static void _assertValidDlgHandle(HWND hDlg)
 void XAP_Win32DialogHelper::runModal(XAP_Frame * pFrame, XAP_Dialog_Id dialog_id, UT_sint32 resource_id, XAP_Dialog *p_dialog)
 {
 	UT_DEBUG_ONLY_ARG(dialog_id);
-	UT_ASSERT(m_pDialog != NULL);
+	UT_ASSERT(m_pDialog != nullptr);
 
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(p_dialog->getApp());
 
@@ -67,7 +67,7 @@ void XAP_Win32DialogHelper::runModeless(XAP_Frame * pFrame, XAP_Dialog_Id dialog
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(p_dialog->getApp());
 
-	LPCWSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = nullptr;
 
 	UT_ASSERT(p_dialog->getDialogId() == dialog_id);
 
@@ -77,7 +77,7 @@ void XAP_Win32DialogHelper::runModeless(XAP_Frame * pFrame, XAP_Dialog_Id dialog
 								static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 	ShowWindow(hWndDialog, SW_SHOW);
-	UT_ASSERT((hWndDialog != NULL));
+	UT_ASSERT((hWndDialog != nullptr));
 
 	p_dialog->getApp()->rememberModelessId(dialog_id, p_dialog);
 
@@ -277,7 +277,7 @@ void XAP_Win32DialogHelper::setControlInt(UT_sint32 controlId, int value)
 int XAP_Win32DialogHelper::getControlInt(UT_sint32 controlId) const
 {
 	_assertValidDlgHandle(m_hDlg);
-	return GetDlgItemInt(m_hDlg, controlId, NULL, FALSE);
+	return GetDlgItemInt(m_hDlg, controlId, nullptr, FALSE);
 }
 
 void XAP_Win32DialogHelper::selectControlText(UT_sint32 controlId, UT_sint32 start, UT_sint32 end)
@@ -332,8 +332,8 @@ bool XAP_Win32DialogHelper::isParentFrame(/*const*/ XAP_Frame& frame) const
 void XAP_Win32DialogHelper::setParentFrame(const XAP_Frame* pFrame)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)(pFrame ? static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() : NULL));
-	SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)(pFrame ? static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() : nullptr));
+	SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 
@@ -387,7 +387,7 @@ HBITMAP XAP_Win32DialogHelper::s_loadBitmap(HWND hWnd, UINT nId,
 					     int width, int height,
 					     const UT_RGBColor & color)
 {
-	HBITMAP hBitmap = NULL;
+	HBITMAP hBitmap = nullptr;
 
 	XAP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width,height, &color,	pName,	&hBitmap);
 	SendDlgItemMessageW(hWnd,  nId,  BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);

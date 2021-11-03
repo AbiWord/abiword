@@ -320,7 +320,7 @@ void XAP_Prefs::log(const char * where, const char * what, XAPPrefsLog_Level lev
 {
 	UT_return_if_fail(where && what);
 
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 
 	// we are inserting the log entries as comments, so we have to
 	// ensure we have no "--" in there (it anoys the parser)
@@ -430,7 +430,7 @@ XAP_PrefsScheme* XAP_Prefs::getScheme(const gchar * szSchemeName) const
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 XAP_PrefsScheme* XAP_Prefs::getPluginScheme(const gchar * szSchemeName) const
@@ -448,7 +448,7 @@ XAP_PrefsScheme* XAP_Prefs::getPluginScheme(const gchar * szSchemeName) const
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
@@ -457,7 +457,7 @@ void XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 	const std::string& thisSchemeName = pNewScheme->getSchemeName();
 
 	if (thisSchemeName == szBuiltinSchemeName) {
-		UT_ASSERT(m_builtinScheme == NULL);
+		UT_ASSERT(m_builtinScheme == nullptr);
 		m_builtinScheme = pNewScheme;
 	}
 
@@ -605,12 +605,12 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 		return;
 	}
 	UT_DEBUGMSG(("Looking for %s \n",name));
-	XAP_PrefsScheme * pNewScheme = NULL; // must be freed
+	XAP_PrefsScheme * pNewScheme = nullptr; // must be freed
 	
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
 
-	xmlToIdMapping * id = NULL;
+	xmlToIdMapping * id = nullptr;
 	id = static_cast<xmlToIdMapping *>(bsearch (static_cast<const void*>(name), static_cast<const void*>(s_Tokens),
 									sizeof(s_Tokens)/sizeof(xmlToIdMapping),
 									sizeof (xmlToIdMapping),
@@ -662,7 +662,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 			}
 			
 			const gchar ** a = atts;
-			const gchar * pName = NULL;
+			const gchar * pName = nullptr;
 			
 			while (a && *a)
 			{
@@ -786,7 +786,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 
 			//		bool bIsNamed = false;
 		
-		pNewScheme = new XAP_PrefsScheme(this, NULL);
+		pNewScheme = new XAP_PrefsScheme(this, nullptr);
 		if (!pNewScheme)
 			goto MemoryError;
 		
@@ -827,7 +827,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 
 		addScheme(pNewScheme);
 
-		pNewScheme = NULL;				// we don't own it anymore
+		pNewScheme = nullptr;				// we don't own it anymore
 		break;
 		}
 		case TT_PLUGIN:
@@ -837,7 +837,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 
 			//		bool bIsNamed = false;
 		
-		pNewScheme = new XAP_PrefsScheme(this, NULL);
+		pNewScheme = new XAP_PrefsScheme(this, nullptr);
 		if (!pNewScheme)
 			goto MemoryError;
 		
@@ -870,7 +870,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 
 		addPluginScheme(pNewScheme);
 
-		pNewScheme = NULL;				// we don't own it anymore
+		pNewScheme = nullptr;				// we don't own it anymore
 		break;
 		}
 		case TT_RECENT:
@@ -1021,7 +1021,7 @@ bool XAP_Prefs::loadPrefsFile(void)
 	m_parserState.m_parserStatus = true;
 	m_parserState.m_bFoundAbiPreferences = false;
 	m_parserState.m_bFoundSelect = false;
-	m_parserState.m_szSelectedSchemeName = NULL;
+	m_parserState.m_szSelectedSchemeName = nullptr;
 	m_parserState.m_bFoundRecent = false;
 	m_parserState.m_bFoundGeometry = false;
 	m_parserState.m_bFoundFonts = false;
@@ -1086,7 +1086,7 @@ bool XAP_Prefs::savePrefsFile(void)
 {
 	bool bResult = false;			// assume failure
 	const char * szFilename;
-	FILE * fp = NULL;
+	FILE * fp = nullptr;
 #ifdef _WIN32
 	UT_Win32LocaleString str;
 #endif

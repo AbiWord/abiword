@@ -80,5 +80,5 @@ UT_Timer* UT_Timer::findTimer(UT_uint32 iIdentifier)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }

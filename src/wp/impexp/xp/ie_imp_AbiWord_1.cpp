@@ -719,7 +719,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 // Have to see if the style already exists. If it does, replace it with this.
 //
 		const std::string & sName = PP_getAttribute(PT_NAME_ATTRIBUTE_NAME, atts);
-		PD_Style * pStyle = NULL;
+		PD_Style * pStyle = nullptr;
 		if(getDoc()->getStyle(sName.c_str(), &pStyle)) {
 			X_CheckError(pStyle->addAttributes(atts));
 			pStyle->getBasedOn();
@@ -1212,7 +1212,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		X_CheckError(getDoc()->createDataItem(m_currentDataItemName.c_str(),
                                               m_currentDataItemEncoded,
                                               m_currentDataItem,
-                                              m_currentDataItemMimeType, NULL));
+                                              m_currentDataItemMimeType, nullptr));
 		m_currentDataItemName.clear();
 		m_currentDataItemMimeType.clear();
 #endif
@@ -1265,7 +1265,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		if(m_currentRevisionId != 0) {
 			// the revision had no comment associated, so it was not
 			// added to the doc by the xml paraser
-			X_CheckError(getDoc()->addRevision(m_currentRevisionId, NULL, 0,
+			X_CheckError(getDoc()->addRevision(m_currentRevisionId, nullptr, 0,
 											   m_currentRevisionTime,
 											   m_currentRevisionVersion, true));
 			m_currentRevisionId = 0;
@@ -1556,7 +1556,7 @@ bool IE_Imp_AbiWord_1::_handleResource (const gchar ** atts, bool isResource)
 			const gchar * r_64 = 0;
 
 			enum { mt_unknown, mt_png, mt_svg, mt_mathml,mt_embed } mt = mt_unknown;
-			const gchar * pszEmbed = NULL;
+			const gchar * pszEmbed = nullptr;
 			const gchar ** attr = atts;
 			while (*attr)
 				{

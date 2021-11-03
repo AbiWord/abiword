@@ -150,10 +150,10 @@ EV_EditBindingMap::EV_EditBindingMap(EV_EditMethodContainer * pemc):
 	UT_sint32 i = 0;
 	for (i=0; i<EV_COUNT_EMB; i++)
 	{
-	  m_pebMT[i] = (ev_EB_MouseTable*) NULL;
+	  m_pebMT[i] = (ev_EB_MouseTable*) nullptr;
 	}
-	m_pebNVK = (ev_EB_NVK_Table*) NULL;
-	m_pebChar = (ev_EB_Char_Table*) NULL;
+	m_pebNVK = (ev_EB_NVK_Table*) nullptr;
+	m_pebChar = (ev_EB_Char_Table*) nullptr;
 }
 
 EV_EditBindingMap::~EV_EditBindingMap()
@@ -398,7 +398,7 @@ bool EV_EditBindingMap::setBinding(EV_EditBits eb, const char * szMethodName)
 	{
 	        if(strcmp(szMethodName,"NULL") == 0)
 		{
-		    EV_EditBinding * ev = NULL;
+		    EV_EditBinding * ev = nullptr;
 		    return setBinding(eb,ev);
 		}
 		UT_DEBUGMSG(("Unknown method name [%s] in binding table.\n",szMethodName));
@@ -550,7 +550,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 {
 	UT_ASSERT(pEM);
 	if(!m_pebChar)
-	  return NULL;
+	  return nullptr;
 	// lookup the keyboard shortcut bound to pEM, if any
 
 	EV_EditModifierState ems = 0;
@@ -620,7 +620,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	
 	
 	if (!bChar && !bNVK) 
-	  return (const char *) NULL;
+	  return (const char *) nullptr;
 
 	// translate into displayable string
 	static char buf[128];
@@ -652,7 +652,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	else
 	{
 		// translate NVK
-	  const char * szNVK = (const char *) NULL;
+	  const char * szNVK = (const char *) nullptr;
 
 		// TODO: look these up from table, rather than switch
 		switch(EV_NamedKey(shortcut))

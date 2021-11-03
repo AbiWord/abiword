@@ -38,13 +38,13 @@
 bool ODe_ThumbnailsWriter::writeThumbnails(PD_Document* /*pDoc*/, GsfOutfile* oo) {
 
 	GsfOutput* thumbnailsDir = gsf_outfile_new_child (oo, "Thumbnails", TRUE);
-	if(thumbnailsDir == NULL){
+	if(thumbnailsDir == nullptr){
 		return false;
 	}
 
 	GsfOutput* thumbnail = gsf_outfile_new_child(GSF_OUTFILE(thumbnailsDir),
 			 "thumbnail.png", FALSE);
-	if(thumbnail == NULL){
+	if(thumbnail == nullptr){
 		return false;
 	}
 
@@ -69,7 +69,7 @@ bool ODe_ThumbnailsWriter::writeThumbnails(PD_Document* /*pDoc*/, GsfOutfile* oo
 	GR_Painter painter(pVG);
 	GR_Image * pImage = painter.genImageFromRectangle(rect);
 
-	if(pImage == NULL){
+	if(pImage == nullptr){
 		gsf_output_close(thumbnail);
 		gsf_output_close(thumbnailsDir);
 		return false;

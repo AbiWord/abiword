@@ -59,7 +59,7 @@ protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
-											  GR_Graphics * pG = NULL) override;
+											  GR_Graphics * pG = nullptr) override;
 
 	void                    _lookupLocalProperties();
 

@@ -30,8 +30,8 @@ class FL_DocLayout
 {
 public:
 	FL_DocLayout()
-		: m_toSpellCheckHead(NULL),
-		  m_toSpellCheckTail(NULL)
+		: m_toSpellCheckHead(nullptr),
+		  m_toSpellCheckTail(nullptr)
 		{
 		}
 	fl_BlockLayout *spellQueueHead(void) const
@@ -57,8 +57,8 @@ class fl_BlockLayout
 public:
 	fl_BlockLayout(FL_DocLayout *l)
 		: m_pLayout(l),
-		  m_nextToSpell(NULL),
-		  m_prevToSpell(NULL)
+		  m_nextToSpell(nullptr),
+		  m_prevToSpell(nullptr)
 		{
 		}
 	void enqueueToSpellCheckAfter(fl_BlockLayout *prev);
@@ -81,7 +81,7 @@ private:
 
 void fl_BlockLayout::enqueueToSpellCheckAfter(fl_BlockLayout *prev)
 {
-	if (prev != NULL) {
+	if (prev != nullptr) {
 		m_nextToSpell = prev->m_nextToSpell;
 		prev->m_nextToSpell = this;
 	}
@@ -89,7 +89,7 @@ void fl_BlockLayout::enqueueToSpellCheckAfter(fl_BlockLayout *prev)
 		m_nextToSpell = m_pLayout->spellQueueHead();
 		m_pLayout->setSpellQueueHead(this);
 	}
-	if (m_nextToSpell != NULL) {
+	if (m_nextToSpell != nullptr) {
 		m_nextToSpell->m_prevToSpell = this;
 	}
 	else {
@@ -101,19 +101,19 @@ void fl_BlockLayout::enqueueToSpellCheckAfter(fl_BlockLayout *prev)
 
 void fl_BlockLayout::dequeueFromSpellCheck(void)
 {
-	if (m_prevToSpell != NULL) {
+	if (m_prevToSpell != nullptr) {
 		m_prevToSpell->m_nextToSpell = m_nextToSpell;
 	}
 	else {
 		m_pLayout->setSpellQueueHead(m_nextToSpell);
 	}
-	if (m_nextToSpell != NULL) {
+	if (m_nextToSpell != nullptr) {
 		m_nextToSpell->m_prevToSpell = m_prevToSpell;
 	}
 	else {
 		m_pLayout->setSpellQueueTail(m_prevToSpell);
 	}
-	m_nextToSpell = m_prevToSpell = NULL;
+	m_nextToSpell = m_prevToSpell = nullptr;
 }
 
 
@@ -124,7 +124,7 @@ main(int argc, char **argv)
 	FL_DocLayout layout;
 
 	fl_BlockLayout *pHead = new fl_BlockLayout(&layout);;
-	pHead->enqueueToSpellCheckAfter(NULL);
+	pHead->enqueueToSpellCheckAfter(nullptr);
 	std::cout << "4 checks to go" << std::endl;
 	if(layout.m_toSpellCheckHead == pHead) {
 		std::cout << " head checked" << std::endl;
@@ -132,11 +132,11 @@ main(int argc, char **argv)
 	if(layout.m_toSpellCheckTail == pHead) {
 		std::cout << " tail checked" << std::endl;
 	}
-	if(pHead->nextToSpell() == NULL) {
-		std::cout << " head->next link checked (NULL)" << std::endl;
+	if(pHead->nextToSpell() == nullptr) {
+		std::cout << " head->next link checked (nullptr)" << std::endl;
 	}
-	if(pHead->prevToSpell() == NULL) {
-		std::cout << " head->prev link checked (NULL)" << std::endl;
+	if(pHead->prevToSpell() == nullptr) {
+		std::cout << " head->prev link checked (nullptr)" << std::endl;
 	}
 
 
@@ -170,8 +170,8 @@ main(int argc, char **argv)
 	if(layout.m_toSpellCheckTail == pBlock) {
 		std::cout << " tail checked" << std::endl;
 	}
-	if(pHead->prevToSpell() == NULL) {
-		std::cout << " pHead->prev link checked (NULL)" << std::endl;
+	if(pHead->prevToSpell() == nullptr) {
+		std::cout << " pHead->prev link checked (nullptr)" << std::endl;
 	}
 	if(pHead->nextToSpell() == pBlock2) {
 		std::cout << " pHead->next link checked" << std::endl;
@@ -185,8 +185,8 @@ main(int argc, char **argv)
 	if(pBlock->prevToSpell() == pBlock2) {
 		std::cout << " block->prev link checked" << std::endl;
 	}
-	if(pBlock->nextToSpell() == NULL) {
-		std::cout << " block->next link checked (NULL)" << std::endl;
+	if(pBlock->nextToSpell() == nullptr) {
+		std::cout << " block->next link checked (nullptr)" << std::endl;
 	}
 
 
@@ -198,8 +198,8 @@ main(int argc, char **argv)
 	if(layout.m_toSpellCheckTail == pBlock) {
 		std::cout << " tail checked" << std::endl;
 	}
-	if(pHead->prevToSpell() == NULL) {
-		std::cout << " pHead->prev link checked (NULL)" << std::endl;
+	if(pHead->prevToSpell() == nullptr) {
+		std::cout << " pHead->prev link checked (nullptr)" << std::endl;
 	}
 	if(pHead->nextToSpell() == pBlock) {
 		std::cout << " pHead->next link checked" << std::endl;
@@ -207,14 +207,14 @@ main(int argc, char **argv)
 	if(pBlock->prevToSpell() == pHead) {
 		std::cout << " block->prev link checked" << std::endl;
 	}
-	if(pBlock->nextToSpell() == NULL) {
-		std::cout << " block->next link checked (NULL)" << std::endl;
+	if(pBlock->nextToSpell() == nullptr) {
+		std::cout << " block->next link checked (nullptr)" << std::endl;
 	}
-	if(pBlock2->nextToSpell() == NULL) {
-		std::cout << " block2->next link checked (NULL)" << std::endl;
+	if(pBlock2->nextToSpell() == nullptr) {
+		std::cout << " block2->next link checked (nullptr)" << std::endl;
 	}
-	if(pBlock2->prevToSpell() == NULL) {
-		std::cout << " block2->prev link checked (NULL)" << std::endl;
+	if(pBlock2->prevToSpell() == nullptr) {
+		std::cout << " block2->prev link checked (nullptr)" << std::endl;
 	}
 	delete pBlock2;
 
@@ -227,33 +227,33 @@ main(int argc, char **argv)
 	if(layout.m_toSpellCheckTail == pBlock) {
 		std::cout << " tail checked" << std::endl;
 	}
-	if(pBlock->prevToSpell() == NULL) {
-		std::cout << " block->prev link checked (NULL)" << std::endl;
+	if(pBlock->prevToSpell() == nullptr) {
+		std::cout << " block->prev link checked (nullptr)" << std::endl;
 	}
-	if(pBlock->nextToSpell() == NULL) {
-		std::cout << " block->next link checked (NULL)" << std::endl;
+	if(pBlock->nextToSpell() == nullptr) {
+		std::cout << " block->next link checked (nullptr)" << std::endl;
 	}
-	if(pHead->nextToSpell() == NULL) {
-		std::cout << " head->next link checked (NULL)" << std::endl;
+	if(pHead->nextToSpell() == nullptr) {
+		std::cout << " head->next link checked (nullptr)" << std::endl;
 	}
-	if(pHead->prevToSpell() == NULL) {
-		std::cout << " head->prev link checked (NULL)" << std::endl;
+	if(pHead->prevToSpell() == nullptr) {
+		std::cout << " head->prev link checked (nullptr)" << std::endl;
 	}
 	delete pHead;
 
 	std::cout << "4 checks to go" << std::endl;
 	pBlock->dequeueFromSpellCheck();
-	if(layout.m_toSpellCheckHead == NULL) {
-		std::cout << " head checked (NULL)" << std::endl;
+	if(layout.m_toSpellCheckHead == nullptr) {
+		std::cout << " head checked (nullptr)" << std::endl;
 	}
-	if(layout.m_toSpellCheckTail == NULL) {
-		std::cout << " tail checked (NULL)" << std::endl;
+	if(layout.m_toSpellCheckTail == nullptr) {
+		std::cout << " tail checked (nullptr)" << std::endl;
 	}
-	if(pBlock->prevToSpell() == NULL) {
-		std::cout << " block->prev link checked (NULL)" << std::endl;
+	if(pBlock->prevToSpell() == nullptr) {
+		std::cout << " block->prev link checked (nullptr)" << std::endl;
 	}
-	if(pBlock->nextToSpell() == NULL) {
-		std::cout << " block->next link checked (NULL)" << std::endl;
+	if(pBlock->nextToSpell() == nullptr) {
+		std::cout << " block->next link checked (nullptr)" << std::endl;
 	}
 
 	delete pBlock;

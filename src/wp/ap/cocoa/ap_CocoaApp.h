@@ -93,7 +93,7 @@ public:
 								 UT_Error error);
 	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);
 	virtual GR_Graphics * newDefaultScreenGraphics() const
-		{ UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL; };
+		{ UT_ASSERT(UT_NOT_IMPLEMENTED); return nullptr; };
 
 private:	// JCA: Why in the hell we have so many (any) protected variables?
 	XAP_StringSet *			m_pStringSet;

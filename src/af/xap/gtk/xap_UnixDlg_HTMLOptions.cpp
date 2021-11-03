@@ -33,15 +33,15 @@ XAP_Dialog * XAP_UnixDialog_HTMLOptions::static_constructor (XAP_DialogFactory *
 XAP_UnixDialog_HTMLOptions::XAP_UnixDialog_HTMLOptions (XAP_DialogFactory * pDlgFactory,
 														XAP_Dialog_Id id)
 	: XAP_Dialog_HTMLOptions(pDlgFactory,id),
-	  m_windowMain(NULL),
-	  m_wIs4(NULL),
-	  m_wAbiWebDoc(NULL),
-	  m_wDeclareXML(NULL),
-	  m_wAllowAWML(NULL),
-	  m_wEmbedCSS(NULL),
-	  m_wEmbedImages(NULL),
-          m_wMathMLRenderPNG(NULL),
-	  m_wSplitDocument(NULL)
+	  m_windowMain(nullptr),
+	  m_wIs4(nullptr),
+	  m_wAbiWebDoc(nullptr),
+	  m_wDeclareXML(nullptr),
+	  m_wAllowAWML(nullptr),
+	  m_wEmbedCSS(nullptr),
+	  m_wEmbedImages(nullptr),
+	  m_wMathMLRenderPNG(nullptr),
+	  m_wSplitDocument(nullptr)
 {
 	// 
 }
@@ -61,13 +61,17 @@ typedef enum
 
 void XAP_UnixDialog_HTMLOptions::runModal (XAP_Frame * pFrame)
 {
-	if (pFrame == NULL) return;
+	if (pFrame == nullptr) {
+		return;
+	}
 
 	/* Build the window's widgets and arrange them
 	 */
 	GtkWidget * mainWindow = _constructWindow ();
 
-	if (mainWindow == NULL) return;
+	if (mainWindow == nullptr) {
+		return;
+	}
 
 	bool stop = false;
 	while (!stop)
@@ -281,8 +285,8 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	 */
 	m_windowMain = abiDialogNew ("HTML export options dialog", true, title);
 
-	if (m_windowMain == NULL)
-		return NULL;
+	if (m_windowMain == nullptr)
+		return nullptr;
 
 	/* This is the top level organization widget, which packs things vertically
 	 */
@@ -295,7 +299,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 											   "xalign", 0.0,  "yalign", 0.0,
 											   "xpad", 10, "ypad", 5,
 											   "justify", GTK_JUSTIFY_LEFT,
-											   NULL);
+											   nullptr);
 	if (labelActivate)
 	{
 		gtk_widget_show (labelActivate);

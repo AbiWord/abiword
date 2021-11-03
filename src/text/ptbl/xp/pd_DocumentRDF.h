@@ -1063,9 +1063,9 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 
     PD_RDFSemanticItems getAllSemanticObjects( const std::string& classRestriction = "" );
     PD_RDFSemanticItems getSemanticObjects( const std::set< std::string >& xmlids );
-    PD_RDFContacts  getContacts( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
-    PD_RDFEvents    getEvents( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
-    PD_RDFLocations getLocations( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
+    PD_RDFContacts  getContacts(PD_RDFModelHandle alternateModel = PD_RDFModelHandle(nullptr));
+    PD_RDFEvents    getEvents(PD_RDFModelHandle alternateModel = PD_RDFModelHandle(nullptr));
+    PD_RDFLocations getLocations(PD_RDFModelHandle alternateModel = PD_RDFModelHandle(nullptr));
     void selectXMLIDs(const std::set<std::string>& xmlids, FV_View* pView = nullptr) const;
 
 

@@ -113,8 +113,8 @@ extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 AP_Win32App::AP_Win32App(HINSTANCE hInstance, const char * szAppName)
 	: AP_App(hInstance, szAppName)
 {
-	m_pStringSet = NULL;
-	m_pClipboard = NULL;
+	m_pStringSet = nullptr;
+	m_pClipboard = nullptr;
 }
 
 AP_Win32App::~AP_Win32App(void)
@@ -141,7 +141,7 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 		return false;
 	}
 
-	if (CreateDirectoryW(str.c_str(),NULL))
+	if (CreateDirectoryW(str.c_str(),nullptr))
 		return true;
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
@@ -276,7 +276,7 @@ bool AP_Win32App::initialize(void)
 	    UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
 	}
 
-	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
+	for (i = 0; fp_FieldFmts[i].m_Tag != nullptr; i++)
 	{
 	    (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
 	    UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
@@ -303,10 +303,10 @@ bool AP_Win32App::initialize(void)
 	// Ensure that common control DLL is loaded
 	HINSTANCE hinstCC = LoadLibraryW(L"comctl32.dll");
 	UT_return_val_if_fail (hinstCC, false);
-	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
-	if( hinstCC != NULL )
+	InitCommonControlsEx_fn  pInitCommonControlsEx = nullptr;
+	if( hinstCC != nullptr )
 		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx");
-	if( pInitCommonControlsEx != NULL )
+	if( pInitCommonControlsEx != nullptr )
 	{
 		INITCOMMONCONTROLSEX icex;
 		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -321,7 +321,7 @@ bool AP_Win32App::initialize(void)
 
 		UT_Win32LocaleString err;
 		err.fromUTF8 (m_pStringSet->getValue(AP_STRING_ID_WINDOWS_COMCTL_WARNING));		
-		MessageBoxW(NULL, err.c_str(), NULL, MB_OK);
+		MessageBoxW(nullptr, err.c_str(), nullptr, MB_OK);
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -387,7 +387,7 @@ bool AP_Win32App::initialize(void)
 }
 
 
-// if app is NULL then we use 'this'
+// if app is nullptr then we use 'this'
 XAP_Frame * AP_Win32App::newFrame(void)
 {
 	AP_Win32Frame * pWin32Frame = new AP_Win32Frame();
@@ -405,7 +405,7 @@ bool AP_Win32App::shutdown(void)
 		m_prefs->savePrefsFile();
 
 	delete m_prefs;
-	m_prefs = NULL;
+	m_prefs = nullptr;
 
 	return true;
 }
@@ -475,7 +475,7 @@ void AP_Win32App::_indicateFmtToClipboard(const char * pszFmt) const
 	UT_return_if_fail(m_pClipboard && pszFmt);
 	UINT iFmt = m_pClipboard->convertFormatString(pszFmt);
 
-	SetClipboardDataW(iFmt, NULL);
+	SetClipboardDataW(iFmt, nullptr);
 }
 
 bool AP_Win32App::_cacheClipboardDoc(PD_DocumentRange *pDocRange)
@@ -494,7 +494,7 @@ bool AP_Win32App::_cacheClipboardDoc(PD_DocumentRange *pDocRange)
 		if(status != UT_OK)
 			return false;
 			
-		buf.append(&b,1);			// NULL terminate the string
+		buf.append(&b,1);			// nullptr terminate the string
 		DELETEP(pExpRtf);
 	}
 	else
@@ -517,7 +517,7 @@ bool AP_Win32App::_cacheClipboardDoc(PD_DocumentRange *pDocRange)
 
 	if(pImp)
 	{
-		pImp->pasteFromBuffer(&DocRange,buf.getPointer(0),buf.getLength(),NULL);
+		pImp->pasteFromBuffer(&DocRange,buf.getPointer(0),buf.getLength(),nullptr);
 		delete pImp;
 	}
 	else
@@ -560,8 +560,8 @@ bool AP_Win32App::copyAllFmtsToClipboardOnDemand()
 {
 	UT_return_val_if_fail(m_pClipboard, false);
 
-	// I will use NULL here, since we are about to shut down anyway ...
-	if(!m_pClipboard->openClipboard(NULL))			// try to lock the clipboard
+	// I will use nullptr here, since we are about to shut down anyway ...
+	if(!m_pClipboard->openClipboard(nullptr))			// try to lock the clipboard
 		return false;
 
 	// need to clear clipboard in order to become its owners
@@ -618,7 +618,7 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
 				return false;
 			
 			UT_Byte b = 0;
-			buf.append(&b,1);			// NULL terminate the string
+			buf.append(&b,1);			// nullptr terminate the string
 			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,
 								  (UT_Byte *)buf.getPointer(0),buf.getLength());
 			DELETEP(pExpText);
@@ -643,7 +643,7 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
 				return false;
 			
 			UT_Byte b[2] = {0,0};
-			buf.append(b,2);			// NULL terminate the string
+			buf.append(b,2);			// nullptr terminate the string
 			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_UCS2,
 								  (UT_Byte *)buf.getPointer(0),buf.getLength());
 			DELETEP(pExpUnicodeText);
@@ -666,7 +666,7 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
 				return false;
 
 			UT_Byte b = 0;
-			buf.append(&b,1);			// NULL terminate the string
+			buf.append(&b,1);			// nullptr terminate the string
 			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
 			DELETEP(pExpRtf);
 			UT_DEBUGMSG(("CopyFmtToClipboard: copying %d bytes in RTF format.\n",
@@ -756,7 +756,7 @@ PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 
 	// Retrieve the bitmap's color format, width, and height. 
     	if (!GetObjectW(hBmp, sizeof(BITMAP), (LPSTR)&bmp)) 
-		return NULL;
+		return nullptr;
 	
 	if (bmp.bmBitsPixel==16) bmp.bmBitsPixel=24;	// 16 bit BMPs are not supported by all programs
 					
@@ -909,27 +909,27 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 											const char * szType, bool bWide)
 {
 	HANDLE	hData;
-	bool 	bSuccess = false;	
-  
+	bool 	bSuccess = false;
+
 	if (!(hData = m_pClipboard->getHandleInFormat(szFormat)))
-		return bSuccess;		
- 		
+		return bSuccess;
+
  	// It's a bitmap
  	if (g_ascii_strcasecmp(szFormat, AP_CLIPBOARD_BMP)==0)
-	{			
+	{
  		HBITMAP					hBitmap;
  		PBITMAPINFO 			bi;
  		HWND		 			hWnd;
  		HDC 					hdc;
- 		IE_ImpGraphic*			pIEG = NULL;
- 		FG_ConstGraphicPtr pFG;
- 		UT_Error 				errorCode;		
- 		UT_ByteBuf 				byteBuf;				
- 		IEGraphicFileType		iegft = IEGFT_BMP;	
- 		XAP_Frame* 				pFrame;						
- 		AP_FrameData* 			pFrameData;
- 		FL_DocLayout*			pDocLy;
- 		FV_View* 				pView;
+		IE_ImpGraphic*			pIEG = nullptr;
+		FG_ConstGraphicPtr pFG;
+		UT_Error 				errorCode;
+		UT_ByteBuf 				byteBuf;
+		IEGraphicFileType		iegft = IEGFT_BMP;
+		XAP_Frame* 				pFrame;
+		AP_FrameData* 			pFrameData;
+		FL_DocLayout*			pDocLy;
+		FV_View* 				pView;
 		UT_ByteBufPtr			bBufBMP(new UT_ByteBuf);
 
  		hBitmap = (HBITMAP)hData;
@@ -977,12 +977,11 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 			: strlen(reinterpret_cast<const char *>(pData));
 		UT_uint32 iLen = UT_MIN(iSize,iStrLen);
 
-		
-		IE_Imp * pImp = 0;
-		IE_Imp::constructImporter(pDocRange->m_pDoc, IE_Imp::fileTypeForSuffix(szType), &pImp, 0);
+		IE_Imp * pImp = nullptr;
+		IE_Imp::constructImporter(pDocRange->m_pDoc, IE_Imp::fileTypeForSuffix(szType), &pImp, nullptr);
 		if (pImp)
 		{
-			const char * szEncoding = 0;
+			const char * szEncoding = nullptr;
 			if (bWide)
 			{
 				szEncoding = XAP_EncodingManager::get_instance()->getUCS2LEName();
@@ -1051,7 +1050,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 {
 #if !GLIB_CHECK_VERSION(2,32,0)
 	if (!g_thread_supported ())
-		g_thread_init (NULL);
+		g_thread_init (nullptr);
 #endif
 	
 	bool bShowApp = true;
@@ -1078,7 +1077,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	AP_Win32App * pMyWin32App;
 
 	// OLE Stuff
-	if (SUCCEEDED(OleInitialize(NULL)))
+	if (SUCCEEDED(OleInitialize(nullptr)))
             bInitialized = TRUE;                    
   
 	
@@ -1155,19 +1154,19 @@ try
 		}	
 
 		// do dispatch loop
-		while(UT_GetMessage(&msg, NULL, 0, 0))
+		while(UT_GetMessage(&msg, nullptr, 0, 0))
 	    {
    	      	// TranslateMessage is not called because AbiWord
 	      	// has its own way of decoding keyboard accelerators
 	      	if (pMyWin32App->handleModelessDialogMessage(&msg)) 
 				continue;
-				
-			TranslateMessage(&msg);	
+
+			TranslateMessage(&msg);
 			UT_DispatchMessage(&msg);
-	    	
+
 			// Check for idle condition
 			while( !UT_Win32Idle::_isEmpty() &&
-                   !PeekMessageW(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
+                   !PeekMessageW(&msg, nullptr, 0, 0, PM_NOREMOVE) )
 			{
 				// Fire idle functions when no pending messages
 		    	UT_Win32Idle::_fireall();
@@ -1277,7 +1276,7 @@ UT_Error AP_Win32App::fileOpen(XAP_Frame * pFrame, const char * pNewFile)
 bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 {
 	int iCounter;
-	HWND hWnd = NULL;
+	HWND hWnd = nullptr;
 
 	// Try to knock off the easy case quickly
 	if( m_IdTable[ 0 ].id == -1 )
@@ -1384,8 +1383,8 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 	//
 	// Start a plugin rather than the main abiword application.
 	//
-	    const char * szName = NULL;
-		XAP_Module * pModule = NULL;
+	    const char * szName = nullptr;
+		XAP_Module * pModule = nullptr;
 		bool bFound = false;	
 		if(Args->m_sPluginArgs[0])
 		{
@@ -1488,8 +1487,8 @@ bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 	UT_Win32LocaleString wsFilename;
 	wsFilename.fromUTF8(szPathname);
 
-	in = CreateFileW(wsFilename.c_str(),0,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,
-		OPEN_EXISTING,0,NULL);
+	in = CreateFileW(wsFilename.c_str(),0,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,
+		OPEN_EXISTING,0,nullptr);
 	g_free (szPathname);
 	
 	if (in!=INVALID_HANDLE_VALUE)
@@ -1542,10 +1541,10 @@ UT_UTF8String	AP_Win32App::s_fromWinLocaleToUTF8(const char* szIn)
 GR_Graphics * AP_Win32App::newDefaultScreenGraphics() const
 {
 	XAP_Frame * pFrame = findValidFrame();
-	UT_return_val_if_fail( pFrame, NULL );
+	UT_return_val_if_fail( pFrame, nullptr );
 	
 	AP_Win32FrameImpl * pFI = (AP_Win32FrameImpl *) pFrame->getFrameImpl();
-	UT_return_val_if_fail( pFI, NULL );
+	UT_return_val_if_fail( pFI, nullptr );
 
 	return pFI->createDocWndGraphics();
 }

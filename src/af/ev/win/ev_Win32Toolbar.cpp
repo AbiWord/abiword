@@ -130,10 +130,10 @@ EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Frame * pFrame,
 				szToolbarLabelSetName),
 	m_pWin32App(pWin32App),
 	m_pWin32Frame(pFrame),
-	m_pViewListener(NULL),
+	m_pViewListener(nullptr),
 	m_lid(0),				// view listener id
-	m_hwnd(0),
-	m_pFontCtrl(NULL)
+	m_hwnd(nullptr),
+	m_pFontCtrl(nullptr)
 {
 }
 
@@ -322,11 +322,11 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			{
 				HFONT hUIFont = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 				hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
-				ExtTextOutW(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, str.c_str(), str.size(), 0);
-				SelectObject (dis->hDC, hfontSave);				
+				ExtTextOutW(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, nullptr, str.c_str(), str.size(), nullptr);
+				SelectObject (dis->hDC, hfontSave);
 			}
 			else
-			{	
+			{
 				memset (&logfont, 0, sizeof (logfont));
 
 				/* Create current font */
@@ -363,15 +363,15 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 
 				/*Fontname in regular font*/
 				hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
-                ExtTextOutW(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, str.c_str(), str.size(), 0);
-				
+                ExtTextOutW(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, nullptr, str.c_str(), str.size(), nullptr);
+
 				/*Font example after the name*/
 				const wchar_t* szSample = L"AbCdEfGhIj";
                 GetTextExtentPoint32W(dis->hDC, str.c_str(), str.size(), &size);
 				SelectObject (dis->hDC, hFont);
-				ExtTextOutW(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, wcslen(szSample), 0);
-				SelectObject (dis->hDC, hfontSave);									
-				DeleteObject(hFont); 
+				ExtTextOutW(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, nullptr, szSample, wcslen(szSample), nullptr);
+				SelectObject (dis->hDC, hfontSave);
+				DeleteObject(hFont);
 			}
 
 			return TRUE;
@@ -541,14 +541,14 @@ bool EV_Win32Toolbar::synthesize(void)
 	UT_ASSERT(pFactory);
 
 	HWND hwndParent = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
-	if(hwndParent == NULL)
+	if(hwndParent == nullptr)
 		return false;
 
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
 	m_hwnd = UT_CreateWindowEx(0,                              
 							   TOOLBARCLASSNAMEW, // window class name
-							   NULL,			// window caption
+							   nullptr,			// window caption
 							   WS_CHILD | WS_VISIBLE 
 							   | WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
 							   | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
@@ -562,9 +562,9 @@ bool EV_Win32Toolbar::synthesize(void)
 							   0,						// initial x size
 							   0,						// initial y size
 							   hwndParent,				// parent window handle
-							   NULL,					// window menu handle
+							   nullptr,					// window menu handle
 							   m_pWin32App->getInstance(),		// program instance handle
-							   NULL);  // creation parameters
+							   nullptr);  // creation parameters
 							   					
 
 	UT_ASSERT(m_hwnd);
@@ -696,7 +696,7 @@ bool EV_Win32Toolbar::synthesize(void)
 							m_hwnd,							// Parent window.
 							(HMENU) u,						// ID.
 							m_pWin32App->getInstance(),		// Current instance.
-							NULL );							// No class data.
+							nullptr );							// No class data.
 
 						UT_ASSERT(hwndCombo);
 						
@@ -704,7 +704,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						 * Hack to create a combobox that is readonly, but which is capable of displaying text in 
 						 * the edit control which differs from that in the drop-down list like GTK combos.
 						 */
-						HWND hwndEdit = FindWindowExW(hwndCombo, nullptr, NULL, NULL);
+						HWND hwndEdit = FindWindowExW(hwndCombo, nullptr, nullptr, nullptr);
 						if (!hwndEdit)
 							UT_DEBUGMSG(("Toolbar: Failed to get handle of combos edit controls. Not setting read-only.\n"));
 						else
@@ -960,7 +960,7 @@ void EV_Win32Toolbar::_releaseListener(void)
 	
 bool EV_Win32Toolbar::bindListenerToView(AV_View * pView)
 {
-	if(m_hwnd == NULL)
+	if(m_hwnd == nullptr)
 		return false;
 
 	_releaseListener();
@@ -981,7 +981,7 @@ bool EV_Win32Toolbar::bindListenerToView(AV_View * pView)
 
 bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
-	if(m_hwnd == NULL)
+	if(m_hwnd == nullptr)
 		return false;
 
 	// make the toolbar reflect the current state of the document
@@ -1207,7 +1207,7 @@ bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 	{
 		lpttt->lpszText[0] = '\0';
 	}
-	lpttt->hinst=NULL;
+	lpttt->hinst = nullptr;
 
 	return true;
 }
@@ -1321,7 +1321,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 //
 	UT_uint32 count = m_pToolbarLayout->getLayoutItemCount();
 	UT_uint32 i =0;
-	EV_Toolbar_LayoutItem * pLayoutItem = NULL;
+	EV_Toolbar_LayoutItem * pLayoutItem = nullptr;
 	XAP_Toolbar_Id id;
 	for(i=0; i < count; i++)
 	{
@@ -1399,7 +1399,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 // Don't need this anymore and we don't like memory leaks in abi
 //
 	SendMessageW(hwndCombo, WM_SETREDRAW, TRUE, 0);
-	InvalidateRect (hwndCombo, NULL, true);
+	InvalidateRect (hwndCombo, nullptr, true);
 	delete pStyleC;
 //
 // I think we've finished!
@@ -1465,7 +1465,7 @@ void	EV_Win32Toolbar::onDropArrow(UINT cmd)
 			if (pAction->getItemType() == EV_TBIT_ColorFore)
 				fimpl->m_sColorFore = strColor;
 
-			toolbarEvent(id, NULL, 0);
+			toolbarEvent(id, nullptr, 0);
 		}
 
 		pDialogFactory->releaseDialog(pDialog);

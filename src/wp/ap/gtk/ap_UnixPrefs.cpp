@@ -71,7 +71,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// TODO (see .../src/wp/ap/xp/ap_*_Languages.h)
 
         // make a copy of the current locale so we can set it back
-	char *old_locale = g_strdup(setlocale(LC_ALL, NULL));
+	char *old_locale = g_strdup(setlocale(LC_ALL, nullptr));
 
 	// this will set our current locale information
 	// according to the user's env variables
@@ -88,7 +88,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	const char * szNewLang = "en-US"; // default to US English
 #if defined (LC_MESSAGES) && defined (UNDEF) // raphael
 // #if defined (LC_MESSAGES)
-	char * lc_ctype = g_strdup(setlocale(LC_MESSAGES, NULL));
+	char * lc_ctype = g_strdup(setlocale(LC_MESSAGES, nullptr));
 #else
 	char * lc_ctype = getenv("LC_ALL");
 	if (!lc_ctype || !*lc_ctype) {
@@ -110,7 +110,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// en-US, es-ES, pt-PT
 
 	// we'll try this quick conversion
-	if (lc_ctype != NULL && strlen(lc_ctype) >= 5)
+	if (lc_ctype != nullptr && strlen(lc_ctype) >= 5)
 	{
 		char * uscore = strchr(lc_ctype, '_');
 		if (uscore)
@@ -155,7 +155,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 
 	// change back to the previous locale setting
 	// although, we might want to leave it in the user's preferred locale?
-	if (old_locale != NULL) {
+	if (old_locale != nullptr) {
 	   setlocale(LC_ALL, old_locale);
 	   g_free(old_locale);
 	}

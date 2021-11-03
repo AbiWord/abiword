@@ -204,7 +204,7 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 		BOOL  bRslt;	
 		
 		lpofn->lStructSize = sizeof(OPENFILENAME_WIN50);		// Size of the new structure
-		lpofn->pvReserved = NULL;
+		lpofn->pvReserved = nullptr;
 		lpofn->dwReserved = 0;
 		lpofn->FlagsEx = 0;		
 		
@@ -269,9 +269,9 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = filter.c_str();
 	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
+	ofn.lpstrFileTitle = nullptr;
 	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
+	ofn.lpstrInitialDir = nullptr;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR | OFN_HIDEREADONLY;
 	ofn.lpstrDefExt = _getDefaultExtension(0);
 	ofn.lCustData = (DWORD)(size_t)this;
@@ -321,7 +321,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		// parts -- directory and file -- for the common dlg.
 
 		UT_Win32LocaleString uri;
-		const char * szURI = g_filename_from_uri(m_initialPathname.c_str(), NULL, NULL);
+		const char * szURI = g_filename_from_uri(m_initialPathname.c_str(), nullptr, nullptr);
 		if(!szURI)
 			szURI = g_strdup(m_initialPathname.c_str());
 
@@ -618,9 +618,9 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 		{
 		case CDN_FOLDERCHANGE:
 			UT_DEBUGMSG(("Folder Changed File Name Cleared\n"));
-			SetDlgItemTextW( GetParent(hDlg), edt1,	NULL );
-			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT, NULL );
-			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH, NULL );
+			SetDlgItemTextW( GetParent(hDlg), edt1,	nullptr );
+			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT, nullptr );
+			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH, nullptr );
 			return true;
 		case CDN_SELCHANGE:
 			UT_return_val_if_fail(pThis,false);
@@ -744,7 +744,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	scaled_width  = (int) (scale_factor * iImageWidth);
 	scaled_height = (int) (scale_factor * iImageHeight);
 
-	GR_Win32Image* pImage = new GR_Win32Image(NULL);
+	GR_Win32Image* pImage = new GR_Win32Image(nullptr);
 	pImage->convertFromBuffer(pfg->getBuffer(), pfg->getMimeType(), scaled_width, scaled_height);
 
 	PAINTSTRUCT ps;

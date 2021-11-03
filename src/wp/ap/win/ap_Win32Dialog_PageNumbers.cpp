@@ -57,9 +57,9 @@ XAP_Dialog* AP_Win32Dialog_PageNumbers::static_constructor(XAP_DialogFactory* pF
 
 AP_Win32Dialog_PageNumbers::AP_Win32Dialog_PageNumbers(XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id)
 :	AP_Dialog_PageNumbers(pDlgFactory,id),
-	m_hThisDlg(0),
+	m_hThisDlg(nullptr),
 	m_helper(this),
-	m_pPreviewWidget(0)
+	m_pPreviewWidget(nullptr)
 {
 }
 

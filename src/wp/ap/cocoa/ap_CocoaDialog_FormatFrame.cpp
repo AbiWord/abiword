@@ -54,7 +54,7 @@ XAP_Dialog * AP_CocoaDialog_FormatFrame::static_constructor(XAP_DialogFactory * 
 
 AP_CocoaDialog_FormatFrame::AP_CocoaDialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
 	AP_Dialog_FormatFrame(pDlgFactory,dlgid),
-	m_pPreviewWidget(NULL),
+	m_pPreviewWidget(nullptr),
 	m_dlg(nil)
 {
 	// 
@@ -310,7 +310,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 - (void)windowDidLoad

@@ -54,7 +54,7 @@ private:
   GsfInfile *mDoc;
 };
 
-IE_Imp_Hancom::IE_Imp_Hancom(PD_Document* pDoc) : IE_Imp(pDoc), mDoc(NULL) {
+IE_Imp_Hancom::IE_Imp_Hancom(PD_Document* pDoc) : IE_Imp(pDoc), mDoc(nullptr) {
 }
 
 IE_Imp_Hancom::~IE_Imp_Hancom() {
@@ -64,7 +64,7 @@ IE_Imp_Hancom::~IE_Imp_Hancom() {
 }
 
 UT_Error IE_Imp_Hancom::_loadFile(GsfInput * input) {
-  mDoc = GSF_INFILE(gsf_infile_msole_new (input, NULL));
+  mDoc = GSF_INFILE(gsf_infile_msole_new (input, nullptr));
 
   if (!mDoc)
     return UT_IE_BOGUSDOCUMENT;
@@ -88,7 +88,7 @@ UT_Error IE_Imp_Hancom::_loadFile(GsfInput * input) {
 
   UT_uint32 length;
   UT_UCS4Char* text = reinterpret_cast<UT_UCS4Char*>(UT_convert((const char *)buf, len, "UCS-2LE", 
-								UCS_INTERNAL, NULL, &length));
+								UCS_INTERNAL, nullptr, &length));
   delete[] buf;
   if (!text)
     return UT_IE_NOMEMORY;
@@ -139,7 +139,7 @@ class IE_Imp_Hancom_Sniffer : public IE_ImpSniffer {
 
 		virtual const IE_MimeConfidence * getMimeConfidence() override
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		virtual UT_Confidence_t recognizeContents(const char* szBuf, UT_uint32 iNumBytes) override {

@@ -205,7 +205,7 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(const UT_ConstByteBufPtr & pBBwm
 
 	bbuf_read_info  read_info;
 
-	char *stream = NULL;
+	char *stream = nullptr;
 	unsigned long stream_len = 0;
 
 	pBB.reset();
@@ -248,7 +248,7 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(const UT_ConstByteBufPtr & pBBwm
  */
 	ddata = WMF_SVG_GetData (API);
 
-	ddata->out = wmf_stream_create(API, NULL);
+	ddata->out = wmf_stream_create(API, nullptr);
 
 	ddata->Description = (char *)Default_Description;
 

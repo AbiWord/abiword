@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 2002 AbiSource, Inc.
- * Copyright (C) 2004 Hubert Figuière
+ * Copyright (C) 2004 Hubert FiguiÃ¨re
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -173,7 +173,7 @@ void XAP_CocoaDialog_HTMLOptions::event_Cancel ()
 
 -(void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 -(void)dealloc

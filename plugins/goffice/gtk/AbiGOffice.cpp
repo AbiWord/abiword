@@ -67,7 +67,7 @@ static char *
 abi_get_password (G_GNUC_UNUSED GOCmdContext *cc,
 		  G_GNUC_UNUSED char const* filename)
 {
-	return NULL;
+	return nullptr;
 }
 
 static void
@@ -98,8 +98,8 @@ abi_cmd_context_init (GOCmdContextClass *iface, gpointer)
 }
 
 GSF_CLASS_FULL (AbiCmdContext, abi_cmd_context,
-		NULL, NULL, NULL, NULL,
-		NULL, G_TYPE_OBJECT, 0,
+		nullptr, nullptr, nullptr, nullptr,
+		nullptr, G_TYPE_OBJECT, 0,
 		GSF_INTERFACE (abi_cmd_context_init, GO_TYPE_CMD_CONTEXT))
 
 //
@@ -168,12 +168,12 @@ static void AbiGOffice_addToMenus()
      // Put it after Insert Picture in the Main menu
      // FIXME put it before!
      bObjectExists = false;
-     newObjectID= pFact->addNewMenuBefore("Main",NULL,AP_MENU_ID_INSERT_DIRECTIONMARKER,EV_MLF_BeginSubMenu);
+     newObjectID= pFact->addNewMenuBefore("Main",nullptr,AP_MENU_ID_INSERT_DIRECTIONMARKER,EV_MLF_BeginSubMenu);
    }
 
    UT_DEBUGMSG(("newObjectID %d \n",newObjectID));
 
-    pFact->addNewLabel(NULL,newObjectID,Object_MenuLabelObject, Object_MenuTooltipObject);
+    pFact->addNewLabel(nullptr,newObjectID,Object_MenuLabelObject, Object_MenuTooltipObject);
 
     // Create the Action that will be called.
     EV_Menu_Action* myObjectAction = new EV_Menu_Action(
@@ -182,9 +182,9 @@ static void AbiGOffice_addToMenus()
 	0,                      // no, we don't raise a dialog.
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
-	NULL,                   //  no callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   //  no callback function to call.
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
         );
 
     // Now what we need to do is add this particular action to the ActionSet
@@ -194,10 +194,10 @@ static void AbiGOffice_addToMenus()
 
     pActionSet->addAction(myObjectAction);
 
-    InsertGOChartID= pFact->addNewMenuAfter("Main",NULL,newObjectID,EV_MLF_Normal);
+    InsertGOChartID= pFact->addNewMenuAfter("Main",nullptr,newObjectID,EV_MLF_Normal);
    UT_DEBUGMSG(("GOChart ID %d \n",InsertGOChartID));
 
-    pFact->addNewLabel(NULL, InsertGOChartID,AbiGOChart_MenuLabelInsert, AbiGOChart_MenuTooltipInsert);
+    pFact->addNewLabel(nullptr, InsertGOChartID,AbiGOChart_MenuLabelInsert, AbiGOChart_MenuTooltipInsert);
 	// Create the Action that will be called.
 	EV_Menu_Action* myChartAction = new EV_Menu_Action(
 	InsertGOChartID,        // id that the layout said we could use
@@ -206,8 +206,8 @@ static void AbiGOffice_addToMenus()
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
 	"AbiGOChart_Create",  // name of callback function to call.
-	NULL,                   // don't know/care what this is for
-	NULL                    // don't know/care what this is for
+	nullptr,                   // don't know/care what this is for
+	nullptr                    // don't know/care what this is for
 		);
 
 	// Now what we need to do is add this particular action to the ActionSet
@@ -234,10 +234,10 @@ static void AbiGOffice_addToMenus()
 		);
 		pEMC->addEditMethod(myEditMethodFile);	
 	
-		InsertGOComponentFromFileID= pFact->addNewMenuAfter("Main",NULL,InsertGOChartID,EV_MLF_Normal);
+		InsertGOComponentFromFileID= pFact->addNewMenuAfter("Main",nullptr,InsertGOChartID,EV_MLF_Normal);
 	   UT_DEBUGMSG(("GOComponentFromFile ID %d \n",InsertGOComponentFromFileID));
 	
-		pFact->addNewLabel(NULL, InsertGOComponentFromFileID,AbiGOComponent_MenuLabelInsertFromFile, AbiGOComponent_MenuTooltipInsertFromFile);
+		pFact->addNewLabel(nullptr, InsertGOComponentFromFileID,AbiGOComponent_MenuLabelInsertFromFile, AbiGOComponent_MenuTooltipInsertFromFile);
 	
 	
 		// Create the Action that will be called.
@@ -248,8 +248,8 @@ static void AbiGOffice_addToMenus()
 		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
 		"AbiGOComponent_FileInsert",  // name of callback function to call.
-		NULL,                   // don't know/care what this is for
-		NULL                    // don't know/care what this is for
+		nullptr,                   // don't know/care what this is for
+		nullptr                    // don't know/care what this is for
 			);
 	
 		// Now what we need to do is add this particular action to the ActionSet
@@ -260,10 +260,10 @@ static void AbiGOffice_addToMenus()
 		pActionSet->addAction(myFileAction);
 	
 	
-		CreateGOComponentID= pFact->addNewMenuAfter("Main",NULL,InsertGOComponentFromFileID,EV_MLF_Normal);
+		CreateGOComponentID= pFact->addNewMenuAfter("Main",nullptr,InsertGOComponentFromFileID,EV_MLF_Normal);
 	   UT_DEBUGMSG(("CreateGOComponent ID %d \n",CreateGOComponentID));
 	
-		pFact->addNewLabel(NULL, CreateGOComponentID,AbiGOComponent_MenuLabelCreate, AbiGOComponent_MenuTooltipCreate);
+		pFact->addNewLabel(nullptr, CreateGOComponentID,AbiGOComponent_MenuLabelCreate, AbiGOComponent_MenuTooltipCreate);
 	
 	
 		// Create the Action that will be called.
@@ -274,8 +274,8 @@ static void AbiGOffice_addToMenus()
 		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
 		"AbiGOComponent_Create",  // name of callback function to call.
-		NULL,                   // don't know/care what this is for
-		NULL                    // don't know/care what this is for
+		nullptr,                   // don't know/care what this is for
+		nullptr                    // don't know/care what this is for
 			);
 	
 		// Now what we need to do is add this particular action to the ActionSet
@@ -287,9 +287,9 @@ static void AbiGOffice_addToMenus()
 	
 		if(!bObjectExists)
 		{
-			XAP_Menu_Id endObjectID= pFact->addNewMenuAfter("Main",NULL,CreateGOComponentID,EV_MLF_EndSubMenu);
+			XAP_Menu_Id endObjectID= pFact->addNewMenuAfter("Main",nullptr,CreateGOComponentID,EV_MLF_EndSubMenu);
 			UT_DEBUGMSG(("End Object ID %d \n",endObjectID));
-			pFact->addNewLabel(NULL,endObjectID,NULL,NULL);
+			pFact->addNewLabel(nullptr,endObjectID,nullptr,nullptr);
 			// Create the Action that will be called.
 			EV_Menu_Action* myEndObjectAction = new EV_Menu_Action(
 										   endObjectID,          // id that the layout said we could use
@@ -297,9 +297,9 @@ static void AbiGOffice_addToMenus()
 				0,                      // no, we raise a dialog.
 				0,                      // no, we don't have a checkbox.
 				0,                      // no radio buttons for me, thank you
-				NULL,                   // name of callback function to call.
-				NULL,                   // don't know/care what this is for
-				NULL                    // don't know/care what this is for
+				nullptr,                   // name of callback function to call.
+				nullptr,                   // don't know/care what this is for
+				nullptr                    // don't know/care what this is for
 				);
 			
 			
@@ -308,9 +308,9 @@ static void AbiGOffice_addToMenus()
 	}
 	else if(!bObjectExists)
 	{
-		XAP_Menu_Id endObjectID= pFact->addNewMenuAfter("Main",NULL,InsertGOChartID,EV_MLF_EndSubMenu);
+		XAP_Menu_Id endObjectID= pFact->addNewMenuAfter("Main",nullptr,InsertGOChartID,EV_MLF_EndSubMenu);
 		UT_DEBUGMSG(("End Object ID %d \n",endObjectID));
-		pFact->addNewLabel(NULL,endObjectID,NULL,NULL);
+		pFact->addNewLabel(nullptr,endObjectID,nullptr,nullptr);
 		// Create the Action that will be called.
 		EV_Menu_Action* myEndObjectAction = new EV_Menu_Action(
 									   endObjectID,          // id that the layout said we could use
@@ -318,9 +318,9 @@ static void AbiGOffice_addToMenus()
 			0,                      // no, we raise a dialog.
 			0,                      // no, we don't have a checkbox.
 			0,                      // no radio buttons for me, thank you
-			NULL,                   // name of callback function to call.
-			NULL,                   // don't know/care what this is for
-			NULL                    // don't know/care what this is for
+			nullptr,                   // name of callback function to call.
+			nullptr,                   // don't know/care what this is for
+			nullptr                    // don't know/care what this is for
 			);
 		
 		  pActionSet->addAction(myEndObjectAction);
@@ -351,7 +351,7 @@ AbiGOffice_removeFromMenus ()
 	EV_EditMethod * pEM = ev_EditMethod_lookup ( "AbiGOChart_Create" ) ;
 	pEMC->removeEditMethod ( pEM ) ;
 	DELETEP( pEM ) ;
-	pFact->removeMenuItem("Main",NULL,InsertGOChartID);
+	pFact->removeMenuItem("Main",nullptr,InsertGOChartID);
 	if (g_slist_length (mime_types) > 0) {
 		pEM = ev_EditMethod_lookup ( "AbiGOComponent_FileInsert" ) ;
 		pEMC->removeEditMethod ( pEM ) ;
@@ -359,10 +359,10 @@ AbiGOffice_removeFromMenus ()
 		pEM = ev_EditMethod_lookup ( "AbiGOComponent_Create" ) ;
 		pEMC->removeEditMethod ( pEM ) ;
 		DELETEP( pEM ) ;
-		pFact->removeMenuItem("Main",NULL,InsertGOComponentFromFileID);
-		pFact->removeMenuItem("Main",NULL,CreateGOComponentID);
+		pFact->removeMenuItem("Main",nullptr,InsertGOComponentFromFileID);
+		pFact->removeMenuItem("Main",nullptr,CreateGOComponentID);
 	}
-	pFact->removeMenuItem("Main",NULL,newObjectID);
+	pFact->removeMenuItem("Main",nullptr,newObjectID);
 	
 	int frameCount = pApp->getFrameCount();
 	for(int i = 0;i < frameCount;++i)
@@ -373,8 +373,8 @@ AbiGOffice_removeFromMenus ()
 	}
 }
 
-static GR_GOChartManager  *pGOChartManager = NULL;
-static GR_GOComponentManager  *pGOComponentManager = NULL;
+static GR_GOChartManager  *pGOChartManager = nullptr;
+static GR_GOComponentManager  *pGOComponentManager = nullptr;
 
 static IE_Imp_Object_Sniffer  * m_impSniffer = nullptr;
 static IE_Imp_Component_Sniffer  * m_impCSniffer = nullptr;
@@ -434,15 +434,15 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
     // Add to AbiWord's plugin listeners
     XAP_App * pApp = XAP_App::getApp();	
-    pGOChartManager = new GR_GOChartManager(NULL);
+    pGOChartManager = new GR_GOChartManager(nullptr);
 	pGOChartManager->buildContextualMenu ();
     pApp->registerEmbeddable(pGOChartManager);
  	/* Initialize libgoffice */
 	libgoffice_init ();
-	cc = GO_CMD_CONTEXT (g_object_new (ABI_CMD_CONTEXT_TYPE, NULL));
+	cc = GO_CMD_CONTEXT (g_object_new (ABI_CMD_CONTEXT_TYPE, nullptr));
 	go_component_set_default_command_context (cc);
 	/* Initialize plugins manager */
-	go_plugins_init (cc, NULL, NULL, NULL, TRUE, GO_TYPE_PLUGIN_LOADER_MODULE);
+	go_plugins_init (cc, nullptr, nullptr, nullptr, TRUE, GO_TYPE_PLUGIN_LOADER_MODULE);
 	/* Ensure some types are created */
  	GO_TYPE_DATA_SCALAR_STR;
 	GO_TYPE_DATA_VECTOR_STR;
@@ -453,7 +453,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	mime_types = go_components_get_mime_types ();
 	if (mime_types && mime_types->data)
 	{
-		pGOComponentManager = new GR_GOComponentManager(NULL);
+		pGOComponentManager = new GR_GOComponentManager(nullptr);
  	    pApp->registerEmbeddable(pGOComponentManager);
 	}
 	g_slist_foreach (mime_types, (GFunc) register_mime_cb, pApp);
@@ -499,7 +499,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 		DELETEP(pGOComponentManager);
 	}
     AbiGOffice_removeFromMenus();
-	go_component_set_default_command_context (NULL);
+	go_component_set_default_command_context (nullptr);
 	g_object_unref (cc);
 	go_plugins_shutdown();
 	libgoffice_shutdown();

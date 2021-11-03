@@ -285,7 +285,7 @@ void UT_UTF8Stringbuf::append (const char * sz, size_t n /* == 0 => null-termina
 
 void UT_UTF8Stringbuf::append (const UT_UTF8Stringbuf & rhs)
 {
-	if (grow (rhs.byteLength () + 1) && rhs.data() != NULL)
+	if (grow (rhs.byteLength () + 1) && rhs.data() != nullptr)
 	{
 		memcpy (m_pEnd, rhs.data (), rhs.byteLength ());
 		m_strlen += rhs.utf8Length ();

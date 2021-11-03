@@ -116,13 +116,13 @@ extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 */
 AP_CocoaApp::AP_CocoaApp(const char * szAppName)
     : AP_App(szAppName),
-	  m_pStringSet(0),
-	  m_pClipboard(0),
+	  m_pStringSet(nullptr),
+	  m_pClipboard(nullptr),
 	  m_bHasSelection(false),
 	  m_bSelectionInFlux(false),
-	  m_pViewSelection(0),
-	  m_cacheSelectionView(0),
-	  m_pFrameSelection(0)
+	  m_pViewSelection(nullptr),
+	  m_cacheSelectionView(nullptr),
+	  m_pFrameSelection(nullptr)
 {
 }
 
@@ -274,7 +274,7 @@ bool AP_CocoaApp::initialize(void)
 	    
 		// see if we should load an alternative set from the disk
 	    
-//		const char * szDirectory = NULL;
+//		const char * szDirectory = nullptr;
 		std::string sstringSet;
 
 		if (getPrefsValue(AP_PREF_KEY_StringSet, sstringSet)
@@ -321,7 +321,7 @@ bool AP_CocoaApp::initialize(void)
 		UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
     }
 
-    for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
+    for (i = 0; fp_FieldFmts[i].m_Tag != nullptr; i++)
     {
 		(&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
 		UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
@@ -544,7 +544,7 @@ static const char * aszFormatsAccepted[] = { XAP_CocoaClipboard::XAP_CLIPBOARD_R
 											 XAP_CocoaClipboard::XAP_CLIPBOARD_STRING,
 											 XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT,
 											 XAP_CocoaClipboard::XAP_CLIPBOARD_IMAGE,
-											 0 /* must be last */ };
+											 nullptr /* must be last */ };
 
 /*!
   paste from the system clipboard using the best-for-us format
@@ -554,8 +554,8 @@ static const char * aszFormatsAccepted[] = { XAP_CocoaClipboard::XAP_CLIPBOARD_R
 void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseClipboard*/,
 									bool bHonorFormatting)
 {
-    const char * szFormatFound = NULL;
-    unsigned char * pData = NULL;
+    const char * szFormatFound = nullptr;
+    unsigned char * pData = nullptr;
     UT_uint32 iLen = 0;
 
     bool bFoundOne = false;
@@ -565,9 +565,9 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
 	}
 	else {
 		const char * formats[] = {
-							XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT, 
+							XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT,
 							XAP_CocoaClipboard::XAP_CLIPBOARD_STRING,
-							NULL 
+							nullptr
 							};
 		bFoundOne = m_pClipboard->getClipboardData(formats,(void**)&pData,&iLen,&szFormatFound);
 	}
@@ -598,7 +598,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
 
     }
 	else if (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_IMAGE) == 0) {
-		  IE_ImpGraphic * pIEG = NULL;
+		  IE_ImpGraphic * pIEG = nullptr;
 		  FG_ConstGraphicPtr pFG;
 		  IEGraphicFileType iegft = IEGFT_Unknown;
 		  UT_Error error = UT_OK;
@@ -625,7 +625,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
 			  return;
 		  }
 		  
-		  bytes = NULL;
+		  bytes = nullptr;
 		  FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 		  
 		  UT_UTF8String newName = UT_UTF8String_sprintf ( "paste_image_%d", UT_newNumber() ) ;
@@ -758,8 +758,8 @@ bool AP_CocoaApp::forgetFrame(XAP_Frame * pFrame)
     if (m_pFrameSelection && (pFrame==m_pFrameSelection))
     {
 		m_pClipboard->clearClipboard();
-		m_pFrameSelection = NULL;
-		m_pViewSelection = NULL;
+		m_pFrameSelection = nullptr;
+		m_pViewSelection = nullptr;
     }
 	
     return XAP_App::forgetFrame(pFrame);
@@ -828,7 +828,7 @@ void AP_CocoaApp::cacheCurrentSelection(AV_View * pView)
 			m_bHasSelection = false;
 			m_pClipboard->clearClipboard();
 		}
-		m_cacheSelectionView = NULL;
+		m_cacheSelectionView = nullptr;
     }
 
     return;
@@ -851,9 +851,9 @@ bool AP_CocoaApp::getCurrentSelection(const char** formatList,
 {
     int j;
 	
-    *ppData = NULL;				// assume failure
+    *ppData = nullptr;				// assume failure
     *pLen = 0;
-    *pszFormatFound = NULL;
+    *pszFormatFound = nullptr;
 	
     if (!m_pViewSelection || !m_pFrameSelection || !m_bHasSelection)
 		return false;		// can't do it, give up.
@@ -926,8 +926,9 @@ int AP_CocoaApp::main(const char * szAppName, int argc, char ** argv)
     // This is a static function.	
 
 #if !GLIB_CHECK_VERSION(2,32,0)
-    if (!g_thread_supported ())
-        g_thread_init (NULL);	
+    if (!g_thread_supported ()) {
+        g_thread_init(nullptr);
+    }
 #endif
     
     UT_DEBUGMSG(("Build ID:\t%s\n", XAP_App::s_szBuild_ID));
@@ -982,11 +983,11 @@ int AP_CocoaApp::main(const char * szAppName, int argc, char ** argv)
 		sa.sa_flags = 0;
 #endif
 		
-		sigaction(SIGSEGV, &sa, NULL);
-		sigaction(SIGBUS, &sa, NULL);
-		sigaction(SIGILL, &sa, NULL);
-		sigaction(SIGQUIT, &sa, NULL);
-		sigaction(SIGFPE, &sa, NULL);
+		sigaction(SIGSEGV, &sa, nullptr);
+		sigaction(SIGBUS, &sa, nullptr);
+		sigaction(SIGILL, &sa, nullptr);
+		sigaction(SIGQUIT, &sa, nullptr);
+		sigaction(SIGFPE, &sa, nullptr);
 		// TODO: handle SIGABRT
 		
 		// this function takes care of all the command line args.

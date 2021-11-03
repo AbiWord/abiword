@@ -56,8 +56,8 @@ bool pt_VarSet::_finishConstruction(void)
 		
 	// create a default A/P as entry zero in each AP table.
 
-	if (!m_tableAttrProp[0].createAP(NULL)
-		|| !m_tableAttrProp[1].createAP(NULL))
+	if (!m_tableAttrProp[0].createAP(nullptr)
+		|| !m_tableAttrProp[1].createAP(nullptr))
 		return false;
 
 	m_bInitialized = true;
@@ -243,8 +243,8 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		bool bFound = papOld->getAttribute
 			(PT_STYLE_ATTRIBUTE_NAME, szStyle);
 
-		PP_AttrProp * pNew1 = NULL;
-		PD_Style * pStyle = NULL;
+		PP_AttrProp * pNew1 = nullptr;
+		PD_Style * pStyle = nullptr;
 
         if(bFound && szStyle && (strcmp(szStyle, "None") != 0))
         {

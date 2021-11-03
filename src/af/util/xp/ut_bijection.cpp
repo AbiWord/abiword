@@ -10,7 +10,7 @@
 UT_Bijection::UT_Bijection()
 {
     m_n = 0;
-    m_first = m_second = NULL;
+    m_first = m_second = nullptr;
 }
 
 void UT_Bijection::clear()
@@ -26,7 +26,7 @@ void UT_Bijection::clear()
 
     g_free(m_first);
     g_free(m_second);
-    m_first = m_second = NULL;
+    m_first = m_second = nullptr;
     m_n = 0;
 }
 
@@ -37,26 +37,26 @@ UT_Bijection::~UT_Bijection()
 
 const char *UT_Bijection::lookupByTarget(const char *s)	 const
 {
-	if (s == NULL) {
-		return NULL;
+	if (s == nullptr) {
+		return nullptr;
 	}
     for(int i=0; i<m_n; ++i) {
 	if (!strcmp(s,m_second[i]))
 		return m_first[i];
     };
-    return NULL;
+    return nullptr;
 }
 
 const char *UT_Bijection::lookupBySource(const char *s) const
 {
-	if (s == NULL) {
-		return NULL;
+	if (s == nullptr) {
+		return nullptr;
 	}
     for(int i=0; i<m_n; ++i) {
 	if (!strcmp(s,m_first[i]))
 		return m_second[i];
     };
-    return NULL;
+    return nullptr;
 }
 
 void  UT_Bijection::add(const char *f, const char *s)
@@ -82,10 +82,10 @@ size_t UT_Bijection::size() const
 
 const char* UT_Bijection::nth1(size_t idx) const
 {
-    return ( idx>(size()-1) ) ? NULL : m_first[idx];
+    return ( idx>(size()-1) ) ? nullptr : m_first[idx];
 }
 
 const char* UT_Bijection::nth2(size_t idx) const
 {
-    return ( idx>(size()-1) ) ? NULL : m_second[idx];
+    return ( idx>(size()-1) ) ? nullptr : m_second[idx];
 }

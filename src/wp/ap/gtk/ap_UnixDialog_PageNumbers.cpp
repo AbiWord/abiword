@@ -78,7 +78,7 @@ AP_UnixDialog_PageNumbers::AP_UnixDialog_PageNumbers(XAP_DialogFactory * pDlgFac
 {
 	m_recentControl = m_control;
 	m_recentAlign   = m_align;
-	m_unixGraphics  = NULL;
+	m_unixGraphics  = nullptr;
 }
 
 AP_UnixDialog_PageNumbers::~AP_UnixDialog_PageNumbers(void)

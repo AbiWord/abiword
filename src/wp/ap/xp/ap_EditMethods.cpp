@@ -1407,10 +1407,10 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 // forward declaration
 static bool _openURL(const char* url);
 
-static UT_Timer * s_pToUpdateCursor = NULL;
-static UT_Worker * s_pFrequentRepeat = NULL;
-static XAP_Frame * s_pLoadingFrame = NULL;
-static AD_Document * s_pLoadingDoc = NULL;
+static UT_Timer * s_pToUpdateCursor = nullptr;
+static UT_Worker * s_pFrequentRepeat = nullptr;
+static XAP_Frame * s_pLoadingFrame = nullptr;
+static AD_Document * s_pLoadingDoc = nullptr;
 static bool s_LockOutGUI = false;
 
 class ABI_EXPORT _Freq
@@ -1442,13 +1442,13 @@ static bool s_EditMethods_check_frame(void)
 	{
 		return true;
 	}
-	if(s_pFrequentRepeat != NULL)
+	if(s_pFrequentRepeat != nullptr)
 	{
 		xxx_UT_DEBUGMSG(("Dropping frequent event!!!! \n"));
 		return true;
 	}
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	AV_View * pView = NULL;
+	AV_View * pView = nullptr;
 	if(pFrame)
 	{
 		pView = pFrame->getCurrentView();
@@ -1457,7 +1457,7 @@ static bool s_EditMethods_check_frame(void)
 	{
 		result = true;
 	}
-	else if(pFrame && (s_pLoadingDoc != NULL) && (pFrame->getCurrentDoc() == s_pLoadingDoc))
+	else if(pFrame && (s_pLoadingDoc != nullptr) && (pFrame->getCurrentDoc() == s_pLoadingDoc))
 	{
 	        result = true;
 	}
@@ -1509,7 +1509,7 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 	
 	bRunning = true;
 //
-// Once run then delete, stop and set to NULL
+// Once run then delete, stop and set to nullptr
 //
 	
 	_Freq * pFreq = static_cast<_Freq *>(pWorker->getInstanceData());
@@ -1517,10 +1517,10 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 	s_pFrequentRepeat->stop();
 	UT_Worker * pTmp =  s_pFrequentRepeat;
 	//
-	// Set s_pFrequentRepeat to NULL before we execute the method
+	// Set s_pFrequentRepeat to nullptr before we execute the method
 	// so that the call itself doesn't generate a new event to process
 	//
-	s_pFrequentRepeat = NULL;
+	s_pFrequentRepeat = nullptr;
 
 	pFreq->m_pExe(pFreq->m_pView,pFreq->m_pData);
 	DELETEP(pFreq->m_pData);
@@ -1677,12 +1677,12 @@ Defun0(fileNew)
 	if (pApp->getFrameCount() == 0)
 		pNewFrame = pApp->newFrame();
 	else
-	{		
-		//fileSave(NULL, NULL);		
+	{
+		//fileSave(nullptr, nullptr);
 		pNewFrame = pApp->getFrame(0);
 		if (pNewFrame->isDirty())
 		{
-			if(!fileSave(pAV_View, NULL))
+			if(!fileSave(pAV_View, nullptr))
 			{
 				// we cannot just close the dirty file when the user clicked cancel -- if
 				// she really want to loose unsaved changes, let her close it manually
@@ -1694,8 +1694,8 @@ Defun0(fileNew)
 	XAP_Frame * pNewFrame = pApp->newFrame();
 #endif
 
-	// the IEFileType here doesn't really matter, since the name is NULL
-	UT_Error error = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+	// the IEFileType here doesn't really matter, since the name is nullptr
+	UT_Error error = pNewFrame->loadDocument((const char *)nullptr, IEFT_Unknown);
 
 	if (pNewFrame)
 	{
@@ -1731,7 +1731,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 	XAP_Frame * pFrame = s_pLoadingFrame;
 	UT_uint32 iPageCount = 0;
 	
-	if(pFrame == NULL)
+	if(pFrame == nullptr)
 	{
 		s_bFirstDrawDone = false;
 		return;
@@ -1814,15 +1814,15 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 // Can't have multiple loading document yet. Need Vectors of loading frames
 // and auto-updaters. Do this later.
 //
-		if(s_pLoadingFrame != NULL)
+		if(s_pLoadingFrame != nullptr)
 		{
 			return;
 		}
 		s_pLoadingFrame = pFrame;
 		s_pLoadingDoc = pFrame->getCurrentDoc();
-		if(s_pToUpdateCursor == NULL)
+		if(s_pToUpdateCursor == nullptr)
 		{
-			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL);
+			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,nullptr);
 		}
 		s_bFirstDrawDone = false;
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
@@ -1834,12 +1834,12 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 	}
 	else
 	{
-		if(s_pToUpdateCursor != NULL)
+		if(s_pToUpdateCursor != nullptr)
 		{
 			s_pToUpdateCursor->stop();
 			DELETEP(s_pToUpdateCursor);
-			s_pToUpdateCursor = NULL;
-			if(s_pLoadingFrame != NULL)
+			s_pToUpdateCursor = nullptr;
+			if(s_pLoadingFrame != nullptr)
 			{
 				s_pLoadingFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 				FV_View * pView = static_cast<FV_View *>(s_pLoadingFrame->getCurrentView());
@@ -1849,9 +1849,9 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 					pView->focusChange(AV_FOCUS_HERE);
 				}
 			}
-			s_pLoadingFrame = NULL;
+			s_pLoadingFrame = nullptr;
 		}
-		s_pLoadingDoc = NULL;
+		s_pLoadingDoc = nullptr;
 	}
 }
 
@@ -1964,7 +1964,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 				 (void*)pFrame, bSaveAs, ((pSuggestedName) ? pSuggestedName : "")));
 
 	UT_return_val_if_fail (ppPathname, false);
-	*ppPathname = NULL;
+	*ppPathname = nullptr;
 
 	if (pFrame) {
 		pFrame->raise();
@@ -2087,7 +2087,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	static IEFileType dflFileType = IEFT_Bogus;
 
 	// if a file format was given to us, then use that
-	if (ieft != NULL && *ieft != IEFT_Bogus)
+	if (ieft != nullptr && *ieft != IEFT_Bogus)
 	  {
 		// have a pre-existing file format, try to default to that
 		UT_DEBUGMSG(("DOM: using given filetype %d\n", *ieft));
@@ -2192,7 +2192,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 				 (void*)pFrame));
 
 	UT_return_val_if_fail (ppPathname, false);
-	*ppPathname = NULL;
+	*ppPathname = nullptr;
 
 	pFrame->raise();
 
@@ -2238,7 +2238,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 		k++;
 
 	pDialog->setFileTypeList(szDescList, szSuffixList, static_cast<const UT_sint32 *>(nTypeList));
-	if (iegft != NULL)
+	if (iegft != nullptr)
 	  pDialog->setDefaultFileType(*iegft);
 	pDialog->runModal(pFrame);
 
@@ -2344,7 +2344,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, UT_ERROR);
 
-	XAP_Frame * pNewFrame = NULL;
+	XAP_Frame * pNewFrame = nullptr;
 	// not needed bool bRes = false;
 	UT_Error errorCode = UT_IE_IMPORTERROR;
 
@@ -2376,7 +2376,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			// cancel the FileOpen.
 			errorCode = UT_OK;		// don't remove from recent list
 		}
-		s_StartStopLoadingCursor( false,NULL);
+		s_StartStopLoadingCursor( false,nullptr);
 		return errorCode;
 	}
 
@@ -2391,7 +2391,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			 if(pFrame->isDirty())
 			 {
 				 AV_View * pAV_View = pFrame->getCurrentView();
-				 EV_EditMethodCallData * pCallData = NULL;
+				 EV_EditMethodCallData * pCallData = nullptr;
 				 EX(saveImmediate);
 			 }
 
@@ -2407,7 +2407,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			 {
 				 s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 			 }
-			 s_StartStopLoadingCursor( false,NULL);
+			 s_StartStopLoadingCursor( false,nullptr);
 			 return errorCode;
 		 } 
 	}
@@ -2418,7 +2418,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	// current frame if it's the only top-level view on an empty,
 	// untitled document.
 
-	if ((pFrame == NULL) || pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
+	if ((pFrame == nullptr) || pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
 	{
 		// open new document in a new frame.  if we fail,
 		// put up an error dialog on current frame (our
@@ -2428,13 +2428,13 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		pNewFrame = pApp->newFrame();
 		if (!pNewFrame)
 		{
-			s_StartStopLoadingCursor( false,NULL);
+			s_StartStopLoadingCursor( false,nullptr);
 			return false;
 		}
 
 // Open a complete but blank frame, then load the document into it
 
-		errorCode = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+		errorCode = pNewFrame->loadDocument((const char *)nullptr, IEFT_Unknown);
 		if (UT_IS_IE_SUCCESS(errorCode))
 		{
 			pNewFrame->show();
@@ -2475,8 +2475,8 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			// TODO long term, we may want to modified pApp->newFrame()
 			// TODO to take an 'bool bShowWindow' argument....
 
-			// the IEFileType here doesn't really matter since the file name is NULL
-			errorCode = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+			// the IEFileType here doesn't really matter since the file name is nullptr
+			errorCode = pNewFrame->loadDocument((const char *)nullptr, IEFT_Unknown);
 			if (UT_IS_IE_SUCCESS(errorCode)) {
 				pNewFrame->updateZoom();
 				pNewFrame->show();
@@ -2484,7 +2484,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
 #endif
-		s_StartStopLoadingCursor( false,NULL);
+		s_StartStopLoadingCursor( false,nullptr);
 		return errorCode;
 	}
 
@@ -2503,7 +2503,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	{
 		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
-	s_StartStopLoadingCursor( false,NULL);
+	s_StartStopLoadingCursor( false,nullptr);
 	return errorCode;
 }
 
@@ -2517,9 +2517,9 @@ Defun1(importStyles)
 	UT_return_val_if_fail(pFrame,false);
 
 	UT_Error error = UT_IE_IMPORTERROR;
-	char * pFile = NULL;
+	char * pFile = nullptr;
 	IEFileType ieft = IEFT_Unknown;
-	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_OPEN, NULL,&pFile,&ieft);
+	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_OPEN, nullptr,&pFile,&ieft);
 
 	if (!bOK || !pFile)
 	  return false;
@@ -2537,15 +2537,15 @@ Defun1(importStyles)
 Defun1(fileOpen)
 {
 	CHECK_FRAME;
-	XAP_Frame * pFrame = NULL;
+	XAP_Frame * pFrame = nullptr;
 	IEFileType ieft = IEFT_Unknown;
 	if (pAV_View) {
 		pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 		UT_return_val_if_fail (pFrame, false);
 		ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
 	}
-	char * pNewFile = NULL;
-	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_OPEN, NULL,&pNewFile,&ieft);
+	char * pNewFile = nullptr;
+	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_OPEN, nullptr,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 	  return false;
@@ -2564,7 +2564,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, UT_ERROR);
-	XAP_Frame * pNewFrame = NULL;
+	XAP_Frame * pNewFrame = nullptr;
 	// not needed bool bRes = false;
 	UT_Error errorCode = UT_IE_IMPORTERROR;
 
@@ -2574,7 +2574,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	// current frame if it's the only top-level view on an empty,
 	// untitled document.
 
-	if ((pFrame == NULL) || pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
+	if ((pFrame == nullptr) || pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
 	{
 		// open new document in a new frame.  if we fail,
 		// put up an error dialog on current frame (our
@@ -2585,7 +2585,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		pNewFrame = pApp->newFrame();
 		if (!pNewFrame)
 		{
-			s_StartStopLoadingCursor( false,NULL);
+			s_StartStopLoadingCursor( false,nullptr);
 			return false;
 		}
 
@@ -2600,12 +2600,12 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		else
 		{
 			// see problem documented in ::fileOpen()
-			errorCode = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+			errorCode = pNewFrame->loadDocument((const char *)nullptr, IEFT_Unknown);
 			if (!errorCode)
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
-		s_StartStopLoadingCursor( false,NULL);
+		s_StartStopLoadingCursor( false,nullptr);
 		return errorCode;
 	}
 
@@ -2623,7 +2623,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	{
 		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
-	s_StartStopLoadingCursor( false,NULL);
+	s_StartStopLoadingCursor( false,nullptr);
 	return errorCode;
 }
 
@@ -2634,9 +2634,9 @@ Defun1(openTemplate)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
-	char * pNewFile = NULL;
+	char * pNewFile = nullptr;
 	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
-	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_IMPORT, NULL,&pNewFile,&ieft);
+	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_IMPORT, nullptr,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 	  return false;
@@ -2776,7 +2776,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 
 	//ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastSavedAsType();
 
-	char * pNewFile = NULL;
+	char * pNewFile = nullptr;
 	XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_SAVEAS;
 
 	if ( !overwriteName )
@@ -2831,9 +2831,9 @@ Defun1(fileImport)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
-	char * pNewFile = NULL;
+	char * pNewFile = nullptr;
 	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
-	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_IMPORT, NULL,&pNewFile,&ieft);
+	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_IMPORT, nullptr,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 	  return false;
@@ -2861,7 +2861,7 @@ Defun1(fileSaveTemplate)
   UT_return_val_if_fail (pFrame, false);
 
   IEFileType ieft = IE_Exp::fileTypeForSuffix ( ".awt" ) ;
-  char * pNewFile = NULL;
+  char * pNewFile = nullptr;
   XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_SAVEAS;
 
   UT_String suggestedName (XAP_App::getApp()->getUserPrivateDirectory());
@@ -2893,7 +2893,7 @@ Defun1(fileSaveAsWeb)
 	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
   IEFileType ieft = IE_Exp::fileTypeForSuffix (".xhtml");
-  char * pNewFile = NULL;
+  char * pNewFile = nullptr;
   bool bOK = s_AskForPathname(pFrame,true, XAP_DIALOG_ID_FILE_SAVEAS, pFrame->getFilename(),&pNewFile,&ieft);
 
   if (!bOK || !pNewFile)
@@ -3039,7 +3039,7 @@ Defun1(fileSaveEmbed)
 		const std::string & resultPathname = pDialog->getPathname();
 		if (!resultPathname.empty()) {
 			UT_ConstByteBufPtr Buf;
-			pView->getDocument()->getDataItemDataByName(pRun->getDataID(), Buf, NULL, NULL);
+			pView->getDocument()->getDataItemDataByName(pRun->getDataID(), Buf, nullptr, nullptr);
 			if (Buf)
 				Buf->writeToURI(resultPathname.c_str());
 		}
@@ -3125,7 +3125,7 @@ Defun1(newWindow)
 
 static bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 {
-	XAP_Frame * pFrame = NULL;
+	XAP_Frame * pFrame = nullptr;
 	if (pAV_View) {
 		pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 		UT_return_val_if_fail(pFrame, false);
@@ -3280,7 +3280,7 @@ static bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	// run the dialog
 	pDialog->runModal(pFrame);
 
-	XAP_Frame * pSelFrame = NULL;
+	XAP_Frame * pSelFrame = nullptr;
 	bool bOK = (pDialog->getAnswer() == XAP_Dialog_WindowMore::a_OK);
 
 	if (bOK)
@@ -3393,7 +3393,7 @@ Defun1(rotateCase)
 Defun1(dlgAbout)
 {
 	CHECK_FRAME;
-	XAP_Frame * pFrame = NULL;
+	XAP_Frame * pFrame = nullptr;
 	
 	if (pAV_View) {
 		pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
@@ -3499,7 +3499,7 @@ Defun1(dlgMetaData)
 Defun1(fileNewUsingTemplate)
 {
 	CHECK_FRAME;
-	XAP_Frame * pFrame = NULL;
+	XAP_Frame * pFrame = nullptr;
 	if (pAV_View) {
 		FV_View * pView = static_cast<FV_View *>(pAV_View);
 	
@@ -3555,7 +3555,7 @@ Defun1(fileNewUsingTemplate)
 			if (pNewFrame)
 				pFrame = pNewFrame;
 
-			bOK = pFrame->loadDocument((const char *)NULL, IEFT_Unknown) == UT_OK;
+			bOK = pFrame->loadDocument((const char *)nullptr, IEFT_Unknown) == UT_OK;
 
 			if (pNewFrame)
 			{
@@ -3773,7 +3773,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		else
 		{
 			// keep the app open with an empty document (in this frame)
-			pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+			pFrame->loadDocument((const char *)nullptr, IEFT_Unknown);
 			pFrame->updateZoom();
 			pFrame->show();
 			return true;
@@ -3823,7 +3823,7 @@ Defun(querySaveAndExit)
 {
 	CHECK_FRAME;
 		
-	XAP_Frame * pFrame = NULL;
+	XAP_Frame * pFrame = nullptr;
 	bool bRet = true;
 
 	if (pAV_View) {
@@ -3977,7 +3977,7 @@ Defun1(fileInsertGraphic)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	char* pNewFile = NULL;
+	char* pNewFile = nullptr;
 
 
 	IEGraphicFileType iegft = IEGFT_Unknown;
@@ -4024,7 +4024,7 @@ Defun1(fileInsertPositionedGraphic)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	char* pNewFile = NULL;
+	char* pNewFile = nullptr;
 
 
 	IEGraphicFileType iegft = IEGFT_Unknown;
@@ -4071,7 +4071,7 @@ Defun1(fileInsertPageBackgroundGraphic)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	char* pNewFile = NULL;
+	char* pNewFile = nullptr;
 
 
 	IEGraphicFileType iegft = IEGFT_Unknown;
@@ -4131,7 +4131,7 @@ Defun(selectObject)
 		bool bEOL = false;
 		bool bDir = false;
 		
-		fp_Run * pRun = NULL;
+		fp_Run * pRun = nullptr;
 		
 		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
 		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
@@ -4194,7 +4194,7 @@ Defun1(warpInsPtLeft)
 	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	_Freq * pFreq = new _Freq(pView,NULL,sActualMoveLeft);
+	_Freq * pFreq = new _Freq(pView,nullptr,sActualMoveLeft);
 	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
@@ -4236,7 +4236,7 @@ Defun1(warpInsPtRight)
 	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	_Freq * pFreq = new _Freq(pView,NULL,sActualMoveRight);
+	_Freq * pFreq = new _Freq(pView,nullptr,sActualMoveRight);
 	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
@@ -4468,7 +4468,7 @@ Defun1(cursorDefault)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4486,7 +4486,7 @@ Defun1(cursorIBeam)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4505,7 +4505,7 @@ Defun1(cursorTOC)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4523,7 +4523,7 @@ Defun1(cursorRightArrow)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4542,7 +4542,7 @@ Defun1(cursorVline)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4561,7 +4561,7 @@ Defun1(cursorTopCell)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4580,7 +4580,7 @@ Defun1(cursorHline)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4598,7 +4598,7 @@ Defun1(cursorLeftArrow)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4616,7 +4616,7 @@ Defun1(cursorImage)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4634,7 +4634,7 @@ Defun1(cursorImageSize)
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
+	pFrame->setStatusMessage(nullptr);
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -4665,8 +4665,8 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 	    pos = pView->getPoint()-1;
 	}
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
-	fp_Run * pRun = NULL;
-	fp_MathRun * pMathRun = NULL;
+	fp_Run * pRun = nullptr;
+	fp_MathRun * pMathRun = nullptr;
 	UT_sint32 x1,y1,x2,y2,height;
 	bool bEOL = false;
 	bool bDir = false;
@@ -4675,7 +4675,7 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 	{
 		pRun = pRun->getNextRun();
 	}
-	if(pRun == NULL)
+	if(pRun == nullptr)
 	{
 		return false;
 	}
@@ -4685,10 +4685,10 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 	}
 	pMathRun = static_cast<fp_MathRun *>(pRun);
 	const PP_AttrProp * pSpanAP = pMathRun->getSpanAP();
-	const gchar * pszLatexID = NULL, *pszDisplayMode = NULL;
+	const gchar * pszLatexID = nullptr, *pszDisplayMode = nullptr;
 	pSpanAP->getAttribute("latexid",pszLatexID);
 	pSpanAP->getProperty("display",pszDisplayMode);
-	if(pszLatexID == NULL || *pszLatexID == 0)
+	if(pszLatexID == nullptr || *pszLatexID == 0)
 	{
 		return false;
 	}
@@ -4697,7 +4697,7 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 	PD_Document * pDoc= pView->getDocument();
 	bool bFoundLatexID = pDoc->getDataItemDataByName(pszLatexID, 
 													 pByteBuf,
-													 NULL, NULL);
+													 nullptr, nullptr);
 
 	if(!bFoundLatexID)
 	{
@@ -4885,7 +4885,7 @@ Defun(contextImage)
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	fp_Run *pRun = NULL;
+	fp_Run *pRun = nullptr;
 
 	if ( pView->isSelectionEmpty () )
 	  {
@@ -4949,7 +4949,7 @@ Defun(contextEmbedLayout)
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	fp_Run *pRun = NULL;
+	fp_Run *pRun = nullptr;
 
 	if ( pView->isSelectionEmpty () )
 	  {
@@ -5501,7 +5501,7 @@ Defun1(editEmbed)
 		bool bEOL = false;
 		bool bDir = false;
 		
-		fp_Run * pRun = NULL;
+		fp_Run * pRun = nullptr;
 		
 		pRun = pBlock->findPointCoords(posL,bEOL,x1,y1,x2,y2,iHeight,bDir);
 		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
@@ -5659,7 +5659,7 @@ Defun1(delLeft)
 	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	_Freq * pFreq = new _Freq(pView,NULL,sActualDelLeft);
+	_Freq * pFreq = new _Freq(pView,nullptr,sActualDelLeft);
 	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
@@ -5697,7 +5697,7 @@ Defun1(delRight)
 	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	_Freq * pFreq = new _Freq(pView,NULL,sActualDelRight);
+	_Freq * pFreq = new _Freq(pView,nullptr,sActualDelRight);
 	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
@@ -5819,7 +5819,7 @@ static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
 
 		if (pLR)
 		{
-			const gchar * props_out[] = {"lang", NULL, NULL};
+			const gchar * props_out[] = {"lang", nullptr, nullptr};
 			props_out[1] = pLR->m_szLangCode;
 			pView->setCharFormat(props_out);
 		}
@@ -5892,7 +5892,7 @@ Defun(insertClosingParenthesis)
 
 	pPrefs->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, bLang);
 
-	const UT_LangRecord * pLR = NULL;
+	const UT_LangRecord * pLR = nullptr;
 	
 	if(bLang)
 	{
@@ -5946,7 +5946,7 @@ Defun(insertOpeningParenthesis)
 
 	pPrefs->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, bLang);
 
-	const UT_LangRecord * pLR = NULL;
+	const UT_LangRecord * pLR = nullptr;
 
 	if(bLang)
 	{
@@ -6143,20 +6143,20 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 	{
 		const char *buf;
 		fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pView->getHyperLinkRun(pView->getPoint()));
-		if(pHRun == NULL)
+		if(pHRun == nullptr)
 		{
 			pDialogFactory->releaseDialog(pDialog);
 			return false;
 		}
 		bEdit = true;
 		buf = pHRun->getTarget();
-		if (buf != NULL)
+		if (buf != nullptr)
 			sTarget = buf;
 		buf = pHRun->getTitle();
-		if (buf != NULL)
+		if (buf != nullptr)
 			sTitle = buf;
 		fl_BlockLayout * pBL = pHRun->getBlock();
-		fp_Run * pRun = NULL;
+		fp_Run * pRun = nullptr;
 		if(pHRun->isStartOfHyperlink())
 		{
 			pos1 = pBL->getPosition(true) + pHRun->getBlockOffset()+1;
@@ -7351,7 +7351,7 @@ Defun1(paste)
 	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	_Freq * pFreq = new _Freq(pView,NULL,sActualPaste);
+	_Freq * pFreq = new _Freq(pView,nullptr,sActualPaste);
 	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
@@ -7588,7 +7588,7 @@ UT_return_val_if_fail(pDialog, false);
 	{
 		UT_UCSChar * buffer;
 		pView->getSelectionText(buffer);
-		if(buffer != NULL)
+		if(buffer != nullptr)
 		{
 			pDialog->setFindString(buffer);
 			FREEP(buffer);
@@ -7673,7 +7673,7 @@ static bool s_doLangDlg(FV_View * pView)
 	const PP_AttrProp *  pAP = pDoc->getAttrProp();
 	UT_return_val_if_fail( pAP, false );
 
-	const gchar * pLang = NULL;
+	const gchar * pLang = nullptr;
 	bool bRet = pAP->getProperty("lang", pLang);
 
 	if(bRet)
@@ -7698,7 +7698,7 @@ static bool s_doLangDlg(FV_View * pView)
 		//UT_DEBUGMSG(("pressed OK\n"));
 		UT_uint32 k = 0;
 		PP_PropertyVector props_out;
-		const gchar * s = NULL;
+		const gchar * s = nullptr;
 
 		bool bChange = pDialog->getChangedLangProperty(&s);
 		if (s)
@@ -7834,7 +7834,7 @@ UT_return_val_if_fail(pDialog, false);
 	{
 	    // set the drawable string to the selection text
 		// the pointer return by getSelectionText() must be freed
-		UT_UCS4Char* text = NULL;
+		UT_UCS4Char* text = nullptr;
 		pView->getSelectionText(text);
 		if(text)
 		{
@@ -8039,7 +8039,7 @@ bool s_doTabDlg(FV_View * pView)
 	if(pDialog)
 	{
 		// setup the callback function, no closure
-		pDialog->setSaveCallback(s_TabSaveCallBack, NULL);
+		pDialog->setSaveCallback(s_TabSaveCallBack, nullptr);
 
 		// run the dialog
 		pDialog->runModal(pFrame);
@@ -8349,7 +8349,7 @@ Defun1(cairoPrint)
 	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 	pView->clearCursorWait();
-	s_pLoadingFrame = NULL;
+	s_pLoadingFrame = nullptr;
 	pView->setPoint(pView->getPoint());
 	pView->updateScreen(false);
 	pDialogFactory->releaseDialog(pDialog);
@@ -8379,7 +8379,7 @@ Defun1(cairoPrintPreview)
 	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 	pView->clearCursorWait();
-	s_pLoadingFrame = NULL;
+	s_pLoadingFrame = nullptr;
 	pView->setPoint(pView->getPoint());
 	pView->updateScreen(false);
 	pDialogFactory->releaseDialog(pDialog);
@@ -8408,11 +8408,11 @@ Defun1(cairoPrintDirectly)
 	//
 	// DOM you can use this for your command line printing
 	//
-	pDialog->PrintDirectly(pFrame,/*filename*/ NULL, /*printer name */NULL);
+	pDialog->PrintDirectly(pFrame,/*filename*/ nullptr, /*printer name */nullptr);
 	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 	pView->clearCursorWait();
-	s_pLoadingFrame = NULL;
+	s_pLoadingFrame = nullptr;
 	pView->updateScreen(false);
 	pDialogFactory->releaseDialog(pDialog);
 	return true;
@@ -8680,7 +8680,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		if(pFrame)
 		  pFrame->setStatusMessage (""); // reset/0 out status bar
 	}
-	s_pLoadingDoc = NULL;
+	s_pLoadingDoc = nullptr;
 
 	return true;
 }
@@ -8770,8 +8770,8 @@ UT_return_val_if_fail(pDialog, false);
 		font list, we can remove the 4 lines below. - MARCM
 		*/
 		//
-		FL_DocLayout * pDocLayout = NULL;
-		FV_View * pPrintView = NULL;
+		FL_DocLayout * pDocLayout = nullptr;
+		FV_View * pPrintView = nullptr;
 		bool canQuickPrint = pGraphics->canQuickPrint();
 		if(!canQuickPrint)
 		{
@@ -8826,7 +8826,7 @@ UT_return_val_if_fail(pDialog, false);
 			if(bHideFmtMarks)
 				pPrintView->setShowPara(true);
 
-			pDocLayout->setQuickPrint(NULL);
+			pDocLayout->setQuickPrint(nullptr);
 		}
 		pDialog->releasePrinterGraphicsContext(pGraphics);
 
@@ -8834,7 +8834,7 @@ UT_return_val_if_fail(pDialog, false);
 // Turn off wait cursor
 //
 		pView->clearCursorWait();
-		s_pLoadingFrame = NULL;
+		s_pLoadingFrame = nullptr;
 		pView->updateScreen(false);
 	}
 
@@ -8897,8 +8897,8 @@ static bool s_doPrintPreview(FV_View * pView)
 	get it's font list filled. When we find a better way to fill the UnixPSGraphics
 	font list, we can remove the 4 lines below. - MARCM
 	*/
-	FL_DocLayout * pDocLayout = NULL;
-	FV_View * pPrintView = NULL;
+	FL_DocLayout * pDocLayout = nullptr;
+	FV_View * pPrintView = nullptr;
 	bool bHideFmtMarks = false;
 	bool bDidQuickPrint = false;
 	if(!pGraphics->canQuickPrint() || (pView->getViewMode() != VIEW_PRINT))
@@ -8946,7 +8946,7 @@ static bool s_doPrintPreview(FV_View * pView)
 		if(bHideFmtMarks)
 			pPrintView->setShowPara(true);
 
-		pDocLayout->setQuickPrint(NULL);
+		pDocLayout->setQuickPrint(nullptr);
 	}
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 
@@ -9596,7 +9596,7 @@ class ABI_EXPORT FV_View_Insert_symbol_listener : public XAP_Insert_symbol_liste
 			}
 		virtual bool insertSymbol(UT_UCSChar Char, const char *p_font_name) override
 		{
-			UT_return_val_if_fail (p_view != NULL, false);
+			UT_return_val_if_fail (p_view != nullptr, false);
 
 			p_view->insertSymbol(Char, p_font_name);
 
@@ -9793,7 +9793,7 @@ _viewTBx(AV_View* pAV_View, int num)
 	pScheme->setValueBool(s_TBPrefsKeys[num], pFrameData->m_bShowBar[num]);
 
 	//	FV_View * pView = static_cast<FV_View *>(pAV_View);
-	//	pView->draw(NULL);
+	//	pView->draw(nullptr);
 	return true;
 }
 
@@ -10376,9 +10376,9 @@ UT_return_val_if_fail(pDialog, false);
 
 	if (pDialog->getAnswer() == AP_Dialog_Insert_DateTime::a_OK)
 	{
-		time_t	tim = time(NULL);
+		time_t	tim = time(nullptr);
 		struct tm *pTime = localtime(&tim);
-		UT_UCSChar *CurrentDateTime = NULL;
+		UT_UCSChar *CurrentDateTime = nullptr;
 		char szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
 
 		strftime(szCurrentDateTime,CURRENT_DATE_TIME_SIZE,pDialog->GetDateTimeFormat(),pTime);
@@ -10554,14 +10554,14 @@ Defun1(insFile)
 	XAP_App * pApp = XAP_App::getApp();
 	
 	IEFileType fType = IEFT_Unknown;
-	char *pathName = NULL;
+	char *pathName = nullptr;
 	
 	// we'll share the same graphics context, which won't matter because
 	// we only use it to get font metrics and stuff and not actually draw
 	GR_Graphics *pGraphics = pView->getGraphics();
 	
 	if (s_AskForPathname (pFrame, false, XAP_DIALOG_ID_INSERT_FILE,
-			      NULL, &pathName, &fType))
+			      nullptr, &pathName, &fType))
 	{
 	    UT_DEBUGMSG(("DOM: insertFile %s\n", pathName));
 	    
@@ -10647,7 +10647,7 @@ void insertAnnotation(FV_View * pView, bool bDescr)
 	
 	if (bDescr)
 	{
-		UT_UCS4Char* text = NULL;
+		UT_UCS4Char* text = nullptr;
 		pView->getSelectionText(text);
 		UT_UCS4String sUCS4(static_cast<const UT_UCS4Char *>(text));
 		pDialog->setDescription(sUCS4.utf8_str());
@@ -10669,7 +10669,7 @@ void insertAnnotation(FV_View * pView, bool bDescr)
 		
 		UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
 		
-		fl_AnnotationLayout * pAL = NULL;
+		fl_AnnotationLayout * pAL = nullptr;
 
 		pView->insertAnnotation(iAnnotation,  
 								sText,  
@@ -11083,8 +11083,8 @@ Defun1(setPosImage)
 	PT_DocPosition pos = pView->getDocPositionFromLastXY();
 
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
-	fp_Run *  pRun = NULL;
-	fp_Line * pLine = NULL;
+	fp_Run *  pRun = nullptr;
+	fp_Line * pLine = nullptr;
 	UT_sint32 x1,x2,y1,y2,iHeight;
 	bool bEOL = false;
 	bool bDir = false;
@@ -11106,7 +11106,7 @@ Defun1(setPosImage)
 		}
 	}
 	pLine = pRun->getLine();
-	if(pLine == NULL)
+	if(pLine == nullptr)
 	{
 	        return false;
 	}
@@ -11115,9 +11115,9 @@ Defun1(setPosImage)
 	std::string sWidth;
 	std::string sHeight;
 	double d = static_cast<double>(pRun->getWidth())/static_cast<double>(UT_LAYOUT_RESOLUTION);
-	sWidth =  UT_formatDimensionedValue(d,"in", NULL);
+	sWidth =  UT_formatDimensionedValue(d,"in", nullptr);
 	d = static_cast<double>(pRun->getHeight())/static_cast<double>(UT_LAYOUT_RESOLUTION);
-	sHeight =  UT_formatDimensionedValue(d,"in", NULL);
+	sHeight =  UT_formatDimensionedValue(d,"in", nullptr);
 //
 // Get the dataID of the image.
 
@@ -11169,12 +11169,12 @@ Defun1(setPosImage)
 	UT_sint32 yLine = pLine->getY() + pLine->getColumn()->getY();
 	ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 	sProp = "frame-page-ypos";
-	sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+	sVal = UT_formatDimensionedValue(ypos,"in", nullptr);
 	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	UT_sint32 ix = pRun->getX() + pLine->getColumn()->getX() + pLine->getX();
 	xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 	sProp = "frame-page-xpos";
-	sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+	sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sVal = UT_std_string_sprintf("%d", pLine->getPage()->getPageNumber());
 	sProp = "frame-pref-page";
@@ -11188,8 +11188,8 @@ Defun1(setPosImage)
 	//
 	// Now the alt and title
 	//
-	const char * szTitle = NULL;
-	const char * szDescription = NULL;
+	const char * szTitle = nullptr;
+	const char * szDescription = nullptr;
 	bool bFound = pImageAP->getAttribute("title",szTitle);
 	if(!bFound)
 	{
@@ -11238,12 +11238,12 @@ Defun1(dlgFmtPosImage)
 		= static_cast<XAP_Dialog_Image *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_IMAGE));
 	UT_return_val_if_fail(pDialog, false);
 	fl_FrameLayout * pPosObj = pView->getFrameLayout();
-	if(pPosObj == NULL)
+	if(pPosObj == nullptr)
 	{
 		// try to select frame
 		pView->activateFrame();
 		pPosObj = pView->getFrameLayout();
-		if (pPosObj == NULL)
+		if (pPosObj == nullptr)
 		{
 			return true;
 		}
@@ -11253,7 +11253,7 @@ Defun1(dlgFmtPosImage)
 	  return true;
 	}
 
-	const PP_AttrProp* pAP = NULL;
+	const PP_AttrProp* pAP = nullptr;
 	pPosObj->getAP(pAP);
 	const gchar* szTitle = nullptr;
 	const gchar* szDescription = nullptr;
@@ -11290,8 +11290,8 @@ Defun1(dlgFmtPosImage)
 	{
 	  pDialog->setDescription (szDescription);
 	}
-	const gchar * pszWidth = NULL;
-	const gchar * pszHeight = NULL;
+	const gchar * pszWidth = nullptr;
+	const gchar * pszHeight = nullptr;
 	if(!pAP || !pAP->getProperty("frame-width",pszWidth))
 	{
 	  pszWidth = "1.0in";
@@ -11420,8 +11420,8 @@ Defun1(dlgFmtPosImage)
 
 	  fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(pPosObj->getFirstContainer());
 	  fv_FrameStrings FrameStrings;
-	  fl_BlockLayout * pCloseBL = NULL;
-	  fp_Page * pPage = NULL;
+	  fl_BlockLayout * pCloseBL = nullptr;
+	  fp_Page * pPage = nullptr;
 
 	  if (pFrameC && (newFormatMode != iPos))
 	  {
@@ -11509,9 +11509,9 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 	pDialog->setMaxWidth (max_width);
 	pDialog->setMaxHeight (max_height); // units are 1/72 of an inch
 	UT_DEBUGMSG(("formatting  image: %d\n", pCallData->m_xPos));
-	const fp_Run * pRun = NULL;
-	const char * dataID = NULL;
-	fl_BlockLayout * pBlock = NULL;
+	const fp_Run * pRun = nullptr;
+	const char * dataID = nullptr;
+	fl_BlockLayout * pBlock = nullptr;
 	PT_DocPosition pos = 0;
 
 	if (bCtxtMenu)
@@ -11716,7 +11716,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 				  UT_ASSERT(bValid);
 				  ypos = static_cast<double>(yBlockOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 				  sProp = "ypos";
-				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+				  sVal = UT_formatDimensionedValue(ypos,"in", nullptr);
 				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  }
 			  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
@@ -11729,7 +11729,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 				  UT_sint32 yLine = pLine->getY();
 				  ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 				  sProp = "frame-col-ypos";
-				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+				  sVal = UT_formatDimensionedValue(ypos,"in", nullptr);
 				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  }
 			  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
@@ -11747,7 +11747,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 				  UT_sint32 yLine = pLine->getY() + pCol->getY();
 				  ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 				  sProp = "frame-page-ypos";
-				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+				  sVal = UT_formatDimensionedValue(ypos,"in", nullptr);
 				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  }
 //
@@ -11766,7 +11766,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  ix = pCol->getWidth() - pBlock->getRightMargin() - iWidth;
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
@@ -11775,7 +11775,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  ix = pCol->getWidth() -iWidth;
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-col-xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
@@ -11784,7 +11784,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  ix = pPage->getWidth() - iWidth;
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-page-xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 			  }
@@ -11798,21 +11798,21 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-col-xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-page-xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 
@@ -11827,21 +11827,21 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-col-xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-page-xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 			  }
@@ -11856,7 +11856,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  ix += pLine->getX();
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
@@ -11864,7 +11864,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  ix += pLine->getX();
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-col-xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
@@ -11873,7 +11873,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  ix += pLine->getX() + pCol->getX();
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-page-xpos";
-					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  sVal = UT_formatDimensionedValue(xpos,"in", nullptr);
 					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 			  }
@@ -11947,7 +11947,7 @@ Defun(dlgFmtImage)
 	{
 	  fl_FrameLayout * pFL = pView->getFrameLayout();
 
-	  if(pFL == NULL)
+	  if(pFL == nullptr)
 	  {
 	    return false;
 	  }
@@ -12484,7 +12484,7 @@ void s_getPageMargins(FV_View * pView,
 {
 	UT_return_if_fail(pView);
 	// get current char properties from pView
-	const gchar * prop = NULL;
+	const gchar * prop = nullptr;
 	std::string sz;
 
 	PP_PropertyVector props_in;
@@ -12999,7 +12999,7 @@ Defun1(Test_Ftr)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	pView->insertPageNum(NULL, FL_HDRFTR_FOOTER);
+	pView->insertPageNum(nullptr, FL_HDRFTR_FOOTER);
 	return true;
 }
 #endif
@@ -13615,11 +13615,11 @@ Defun1(scriptPlay)
 
 	// we have no expectations of executing a remote program
 	char * scriptName = UT_go_filename_from_uri(pNewFile.c_str());
-	UT_return_val_if_fail (scriptName != NULL, false);
+	UT_return_val_if_fail (scriptName != nullptr, false);
 
 #ifdef _WIN32
 	// we need to add quotes to the script name _after_ the UT_go_filename_from_uri() call above;
-	// if not, it will return NULL and the script won't play.
+	// if not, it will return nullptr and the script won't play.
 
 	UT_UTF8String script = "\"";
 	script += scriptName;
@@ -13662,11 +13662,11 @@ Defun(executeScript)
 
 	// we have no expectations of executing a remote program
 	char * scriptName = UT_go_filename_from_uri (pCallData->getScriptName().c_str());
-	UT_return_val_if_fail (scriptName != NULL, false);
+	UT_return_val_if_fail (scriptName != nullptr, false);
 
 #ifdef _WIN32
 	// we need to add quotes to the script name _after_ the UT_go_filename_from_uri() call above;
-	// if not, it will return NULL and the script won't execute.
+	// if not, it will return nullptr and the script won't execute.
 
 	UT_UTF8String script = "\"";
 	script += scriptName;
@@ -13871,40 +13871,40 @@ UT_return_val_if_fail(pDialog, false);//
 	{
 		bOldBools[i] = false;
 	}
-	if(NULL != pDSL->getHeader())
+	if(nullptr != pDSL->getHeader())
 	{
 		bOldHdr = true;
 	}
-	if(NULL != pDSL->getHeaderEven())
+	if(nullptr != pDSL->getHeaderEven())
 	{
 		bOldHdrEven = true;
 		bOldBools[AP_Dialog_HdrFtr::HdrEven] = true;
 	}
-	if(NULL != pDSL->getHeaderFirst())
+	if(nullptr != pDSL->getHeaderFirst())
 	{
 		bOldHdrFirst = true;
 		bOldBools[AP_Dialog_HdrFtr::HdrFirst] = true;
 	}
-	if(NULL != pDSL->getHeaderLast())
+	if(nullptr != pDSL->getHeaderLast())
 	{
 		bOldHdrLast = true;
 		bOldBools[AP_Dialog_HdrFtr::HdrLast] = true;
 	}
-	if(NULL != pDSL->getFooter())
+	if(nullptr != pDSL->getFooter())
 	{
 		bOldFtr = true;
 	}
-	if(NULL != pDSL->getFooterEven())
+	if(nullptr != pDSL->getFooterEven())
 	{
 		bOldFtrEven = true;
 		bOldBools[AP_Dialog_HdrFtr::FtrEven] = true;
 	}
-	if(NULL != pDSL->getFooterFirst())
+	if(nullptr != pDSL->getFooterFirst())
 	{
 		bOldFtrFirst = true;
 		bOldBools[AP_Dialog_HdrFtr::FtrFirst] = true;
 	}
-	if(NULL != pDSL->getFooterLast())
+	if(nullptr != pDSL->getFooterLast())
 	{
 		bOldFtrLast = true;
 		bOldBools[AP_Dialog_HdrFtr::FtrLast] = true;
@@ -14066,7 +14066,7 @@ Defun(hyperlinkJump)
 	UT_return_val_if_fail(pView,false);
 	
 	fp_Run * pRun = pView->getHyperLinkRun(pView->getPoint());
-	fp_HyperlinkRun * pHRun = NULL;
+	fp_HyperlinkRun * pHRun = nullptr;
 	if(pRun)
 		pHRun = pRun->getHyperlink();
 	
@@ -15323,11 +15323,11 @@ Defun1(history)
     \param iId: the dialogue iId determining which of the
                 ListDocuments variants to raise
 
-    \return: returns pointer to the document user selected or NULL
+    \return: returns pointer to the document user selected or nullptr
 */
 static PD_Document * s_doListDocuments(XAP_Frame * pFrame, bool bExcludeCurrent, UT_uint32 iId)
 {
-	UT_return_val_if_fail(pFrame, NULL);
+	UT_return_val_if_fail(pFrame, nullptr);
 
 	pFrame->raise();
 
@@ -15337,7 +15337,7 @@ static PD_Document * s_doListDocuments(XAP_Frame * pFrame, bool bExcludeCurrent,
 	XAP_Dialog_ListDocuments * pDialog
 		= static_cast<XAP_Dialog_ListDocuments *>(pDialogFactory->requestDialog(iId));
 	
-	UT_return_val_if_fail(pDialog, NULL);
+	UT_return_val_if_fail(pDialog, nullptr);
 
 	// the dialgue excludes current document by default, if we are to
 	// include it, we need to tell it ...
@@ -15347,7 +15347,7 @@ static PD_Document * s_doListDocuments(XAP_Frame * pFrame, bool bExcludeCurrent,
 	pDialog->runModal(pFrame);
 	bool bOK = (pDialog->getAnswer() == XAP_Dialog_ListDocuments::a_OK);
 
-	PD_Document *pD = NULL;
+	PD_Document *pD = nullptr;
 	
 	if (bOK)
 	{
@@ -15410,7 +15410,7 @@ Defun(beginVDrag)
 	UT_return_val_if_fail(pView, false);
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
 
-	if(pTopRuler == NULL)
+	if(pTopRuler == nullptr)
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 		UT_return_val_if_fail( pFrame, true );
@@ -15421,7 +15421,7 @@ Defun(beginVDrag)
 		pView->setTopRuler(pTopRuler);
 		pTopRuler->setViewHidden(pView);
 	}
-	if(pTopRuler->getView() == NULL)
+	if(pTopRuler->getView() == nullptr)
 	{
 		return true;
 	}
@@ -15444,7 +15444,7 @@ Defun(beginHDrag)
 	UT_return_val_if_fail(pView, false);
 	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
 
-	if(pLeftRuler == NULL)
+	if(pLeftRuler == nullptr)
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 
@@ -15503,11 +15503,11 @@ Defun(dragVline)
 
 	UT_return_val_if_fail(pView, false);
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
-	if(pTopRuler == NULL)
+	if(pTopRuler == nullptr)
 	{
 		return true;
 	}
-	if(pTopRuler->getView() == NULL)
+	if(pTopRuler->getView() == nullptr)
 	{
 		pTopRuler->setViewHidden(pView);
 	}
@@ -15530,7 +15530,7 @@ Defun(dragHline)
 	{
 		return true;
 	}
-	if(pLeftRuler->getView() == NULL)
+	if(pLeftRuler->getView() == nullptr)
 	{
 		pLeftRuler->setViewHidden(pView);
 	}
@@ -15552,7 +15552,7 @@ Defun(endDragVline)
 	{
 		return true;
 	}
-	if(pTopRuler->getView() == NULL)
+	if(pTopRuler->getView() == nullptr)
 	{
 		pTopRuler->setView(pView);
 	}
@@ -15617,7 +15617,7 @@ Defun(btn1InlineImage)
 		  bool bEOL = false;
 		  bool bDir = false;
 		
-		  fp_Run * pRun = NULL;
+		  fp_Run * pRun = nullptr;
 		
 		  pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
 		  while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))

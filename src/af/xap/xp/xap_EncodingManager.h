@@ -44,7 +44,7 @@ typedef gchar gchar;
 
 struct ABI_EXPORT XAP_LangInfo
 {
-	/*no memeber can have NULL value. If string is empty, then value is
+	/*no memeber can have nullptr value. If string is empty, then value is
 	 not defined. All fields are strings to simplify searches.
 	*/
 	enum fieldidx { longname_idx, /*this field is not empty*/
@@ -72,7 +72,7 @@ class ABI_EXPORT XAP_EncodingManager
 {
 public:
     /*
-	These shouldn't return NULL. Don't g_free or write to returned strings.
+	These shouldn't return nullptr. Don't free or write to returned strings.
 	The strings should be uppercased (extra font tarballs assume this).
     */
     virtual const char* getNativeEncodingName() const;
@@ -81,7 +81,7 @@ public:
     virtual const char* getNativeNonUnicodeEncodingName() const;
 
     /*
-	These can return NULL. Don't g_free or write to returned strings.
+	These can return nullptr. Don't free or write to returned strings.
 	The strings should be uppercased (extra font tarballs assume this).
     */
     virtual const char* getNativeUnicodeEncodingName() const;
@@ -97,13 +97,13 @@ public:
 	inline virtual bool isUnicodeLocale() const {return m_bIsUnicodeLocale;}
 
     /*
-	This shouldn't return NULL. Don't g_free or write to returned string.
+	This shouldn't return nullptr. Don't free or write to returned string.
 	Returns ISO two-letter name like "en"
     */
     virtual const char* getLanguageISOName() const;
 
     /*
-	This can return NULL. Don't g_free or write to returned string.
+	This can return nullptr. Don't free or write to returned string.
 	Returns ISO two-letter territory name like "UK".
     */
 
@@ -113,7 +113,7 @@ public:
     /*
 	for exporting to Tex - in order to provide proper argument for
 	{inputenc}, e.g. \usepackage[koi8-r]{inputenc}
-	If NULL is returned, then package 'inputenc' is not used at all.
+	If nullptr is returned, then package 'inputenc' is not used at all.
     */
     virtual const char* getNativeTexEncodingName() const;
 #else
@@ -231,7 +231,7 @@ public:
 	  native charset. This is mostly shorthand function.
 	  it returns ptr to translated string - it will be either
 	  'in' or will be in static storage that shouldn't be freed.
-	  Allowed values for 'charset' include "" and NULL in which case
+	  Allowed values for 'charset' include "" and nullptr in which case
 	  'in' be returned. Don't ask to translate strings longer than 2K.
           This code is mostly used for translating localized menuitems to
 	  the proper charset.
@@ -250,10 +250,10 @@ public:
                                           const gchar *name,
                                           XML_Encoding *info);
 
-	/*it's terminated with the record with NULL in language name. */
+	/*it's terminated with the record with nullptr in language name. */
 	static const XAP_LangInfo		langinfo[];
 
-	/*it's terminated with a record with all NULLs. */
+	/*it's terminated with a record with all nullptrs. */
 	static const XAP_SmartQuoteStyle		smartQuoteStyles[];
 
 	/*
@@ -278,7 +278,7 @@ public:
     static bool swap_stou;
 
 	/* these are utility functions. Since all fields are strings,
-	we can use the same routine. Returns NULL if nothing was found. */
+	we can use the same routine. Returns nullptr if nothing was found. */
 	static const XAP_LangInfo* findLangInfo(const char* key,
 		XAP_LangInfo::fieldidx column);
 
@@ -302,8 +302,8 @@ private:
 };
 
 /*
-    This one returns NULL-terminated vector of strings in static buffers (i.e.
-	don't try to g_free anything). On next call, filled data will be lost.
+    This one returns NLL-terminated vector of strings in static buffers (i.e.
+    don't try to free anything). On next call, filled data will be lost.
     returns the following strings surrounded by prefix and suffix:
     if (!skip_fallback)
 	"";

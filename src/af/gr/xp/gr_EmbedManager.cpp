@@ -51,9 +51,9 @@ GR_EmbedView::GR_EmbedView(AD_Document * pDoc, UT_uint32 api )
     m_iAPI(api),
     m_bHasSVGSnapshot(false),
     m_bHasPNGSnapshot(false),
-    m_SVGBuf(NULL),
-    m_PNGBuf(NULL),
-    m_pPreview(NULL),
+    m_SVGBuf(nullptr),
+    m_PNGBuf(nullptr),
+    m_pPreview(nullptr),
     m_iZoom(0)
 {
 }
@@ -69,10 +69,10 @@ bool GR_EmbedView::getSnapShots(void)
   UT_UTF8String sName = "snapshot-png-";
   sName += m_sDataID;
   bool bFound = false;
-  PD_DataItemHandle pHandle = NULL;
+  PD_DataItemHandle pHandle = nullptr;
   UT_ConstByteBufPtr pPNG;
   UT_ConstByteBufPtr pSVG;
-  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(), pPNG, NULL, &pHandle);
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(), pPNG, nullptr, &pHandle);
   if(!bFound)
   {
     m_bHasPNGSnapshot = false;
@@ -86,7 +86,7 @@ bool GR_EmbedView::getSnapShots(void)
   }
   sName = "snapshot-svg-";
   sName += m_sDataID;
-  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(), pSVG, NULL, &pHandle);
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(), pSVG, nullptr, &pHandle);
   if(!bFound)
   {
     m_bHasSVGSnapshot = false;
@@ -469,7 +469,7 @@ void GR_EmbedManager::releaseEmbedView(UT_sint32 uid)
     }
   GR_EmbedView * pEView = m_vecSnapshots.getNthItem(uid);
   DELETEP(pEView);
-  m_vecSnapshots.setNthItem(uid,NULL,NULL);
+  m_vecSnapshots.setNthItem(uid,nullptr,nullptr);
 }
 
 /*!

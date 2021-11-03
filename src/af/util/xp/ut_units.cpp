@@ -70,7 +70,7 @@ const char * UT_dimensionName(UT_Dimension dim)
 
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
-  char * p = NULL ;
+  char * p = nullptr ;
 
   {
 	  UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -472,14 +472,14 @@ bool UT_hasDimensionComponent(const char * sz)
 	if (!sz)
 		return false;
 
-	char *p = NULL;
+	char *p = nullptr;
 
 	{
 		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		strtod(sz, &p);
 	}
 
-	// if we landed on non-NULL, unit component
+	// if we landed on non-nullptr, unit component
 	if(p && *p)
 		return true;
 	else

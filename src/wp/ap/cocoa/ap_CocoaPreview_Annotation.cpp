@@ -28,7 +28,7 @@
 
 AP_CocoaPreview_Annotation::AP_CocoaPreview_Annotation(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id dlgid) 
   : AP_Preview_Annotation(pDlgFactory,dlgid),
-  m_gc(NULL),
+  m_gc(nullptr),
   m_pPreviewWindow(nil),
   m_pDrawingArea(nil)
 {
@@ -98,7 +98,7 @@ void  AP_CocoaPreview_Annotation::_constructWindow(void)
 	m_pPreviewWindow = [[NSWindow alloc] initWithContentRect:rect styleMask:NSWindowStyleMaskBorderless
 	                    backing:NSBackingStoreBuffered defer:NO];
 	
-	m_pDrawingArea = [[XAP_CocoaNSView alloc] initWith:NULL andFrame:[m_pPreviewWindow contentRectForFrameRect:rect] andName:@"Annotation preview"];
+	m_pDrawingArea = [[XAP_CocoaNSView alloc] initWith:nullptr andFrame:[m_pPreviewWindow contentRectForFrameRect:rect] andName:@"Annotation preview"];
 	
 	[m_pPreviewWindow setContentView:m_pDrawingArea];
 }

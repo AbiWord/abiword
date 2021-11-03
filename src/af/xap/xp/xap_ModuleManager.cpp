@@ -284,7 +284,7 @@ void XAP_ModuleManager::unloadModule (XAP_Module * pModule)
  */
 void XAP_ModuleManager::unloadModule (UT_sint32 ndx)
 {
-	UT_return_if_fail(m_modules != NULL);
+	UT_return_if_fail(m_modules != nullptr);
 
 	XAP_Module * pModule = m_modules->getNthItem (ndx);
 
@@ -326,7 +326,7 @@ const UT_GenericVector<XAP_Module*> * XAP_ModuleManager::enumModules () const
  */
 void XAP_ModuleManager::unloadAllPlugins ()
 {
-	UT_return_if_fail(m_modules != NULL);
+	UT_return_if_fail(m_modules != nullptr);
 
 	/* make sure all the plugins are unloaded (reverse order loaded)
 	 * 

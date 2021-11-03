@@ -46,14 +46,14 @@ class ODi_Abi_Data;
 class ODi_Style_Style_Family {
 public:
 
-    ODi_Style_Style_Family() : m_pDefaultStyle(NULL) {}
+    ODi_Style_Style_Family() : m_pDefaultStyle(nullptr) {}
     virtual ~ODi_Style_Style_Family();
 
     ODi_Style_Style* addStyle(const gchar** ppAtts,
                              ODi_ElementStack& rElementStack,
 			     ODi_Abi_Data & rAbiData,
-                             std::string* pReplacementName = NULL,
-                             std::string* pReplacementDisplayName = NULL);
+                             std::string* pReplacementName = nullptr,
+                             std::string* pReplacementDisplayName = nullptr);
 
     ODi_Style_Style* addDefaultStyle(ODi_ElementStack& rElementStack,
 				     ODi_Abi_Data & rAbiData) {

@@ -97,7 +97,7 @@ void FV_UnixVisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 	     GtkTargetList *target_list = gtk_target_list_new(targets, G_N_ELEMENTS(targets));
 	     GdkDragContext *context = gtk_drag_begin_with_coordinates(
                pWindow, target_list,
-               (GdkDragAction)(GDK_ACTION_COPY ), 1, NULL, x, y);
+               (GdkDragAction)(GDK_ACTION_COPY ), 1, nullptr, x, y);
 
 	     gdk_drag_status(context, GDK_ACTION_COPY, 0);
 	     gtk_target_list_unref(target_list);

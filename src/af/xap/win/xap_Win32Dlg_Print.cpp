@@ -38,7 +38,7 @@ static UINT_PTR CALLBACK s_PrintHookProc(
   LPARAM lParam   // message parameter
   )                                                                             
 {
-	XAP_Win32Dialog_Print * pThis = NULL;
+	XAP_Win32Dialog_Print * pThis = nullptr;
 	
 	if(uiMsg == WM_INITDIALOG)
 	{
@@ -148,7 +148,7 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 	UT_ASSERT(m_answer == a_OK);
 
 	if (!m_pPersistPrintDlg || !m_pPersistPrintDlg->hDC)
-		return NULL; /* Prevents from passing NULL to GR_Win32Graphics*/
+		return nullptr; /* Prevents from passing nullptr to GR_Win32Graphics*/
 
 	memset(&m_DocInfo,0,sizeof(m_DocInfo));
 	m_DocInfo.cbSize = sizeof(DOCINFOW);
@@ -159,7 +159,7 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 		m_fileName.fromUTF8 (m_szPrintToFilePathname);
 		m_DocInfo.lpszOutput = m_fileName.c_str();
 	} else {
-		m_DocInfo.lpszOutput = NULL;	
+		m_DocInfo.lpszOutput = nullptr;	
 	}	
 
 	GR_Win32AllocInfo ai(m_pPersistPrintDlg->hDC,&m_DocInfo, m_pPersistPrintDlg->hDevMode);
@@ -180,7 +180,7 @@ void XAP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphic
 	DeleteDC(m_pPersistPrintDlg->hDC);
 #endif
 	if(m_pPersistPrintDlg)
-		m_pPersistPrintDlg->hDC = 0;
+		m_pPersistPrintDlg->hDC = nullptr;
 
 	memset(&m_DocInfo, 0, sizeof(m_DocInfo));
 }
@@ -242,12 +242,12 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 			
 			DEVMODEW * pDevMode = (DEVMODEW *)GlobalLock(m_pPersistPrintDlg->hDevMode);
 			DEVNAMES * pDevNames = (DEVNAMES *)GlobalLock(m_pPersistPrintDlg->hDevNames);
-			UT_return_if_fail(pDevNames); //GlobalLock can return NULL
+			UT_return_if_fail(pDevNames); //GlobalLock can return nullptr
 
 			wchar_t * p = (wchar_t *)pDevNames;
 			m_pPersistPrintDlg->hDC = CreateDCW(p + pDevNames->wDriverOffset,
 											   p + pDevNames->wDeviceOffset,
-											   NULL,
+											   nullptr,
 											   pDevMode);
 			
 			GlobalUnlock(m_pPersistPrintDlg->hDevMode);
@@ -292,7 +292,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 {
 	UT_return_if_fail(m_pPersistPrintDlg);
-	UT_return_if_fail(m_pPersistPrintDlg->hDevMode!=NULL);
+	UT_return_if_fail(m_pPersistPrintDlg->hDevMode!=nullptr);
 
 	m_bDoPrintRange		= ((m_pPersistPrintDlg->Flags & PD_PAGENUMS) != 0);
 	m_bDoPrintSelection = ((m_pPersistPrintDlg->Flags & PD_SELECTION) != 0);
@@ -303,7 +303,7 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 	// Most Win32 printer drivers support multicopies and collating, 
 	//however we want Abi to do both by himself, like in the rest of platforms		
 	DEVMODEW *pDevMode=(DEVMODEW *)GlobalLock(m_pPersistPrintDlg->hDevMode);
-	UT_return_if_fail(pDevMode); //GlobalLock can return NULL
+	UT_return_if_fail(pDevMode); //GlobalLock can return nullptr
 	m_nCopies = pDevMode->dmCopies;
 	m_bCollate	= ((pDevMode->dmCollate  & DMCOLLATE_TRUE) != 0);		
 	pDevMode->dmCopies = 1;

@@ -52,7 +52,7 @@ XAP_Dialog * XAP_Win32Dialog_FontChooser::static_constructor(XAP_DialogFactory *
 XAP_Win32Dialog_FontChooser::XAP_Win32Dialog_FontChooser(XAP_DialogFactory * pDlgFactory,
 													 XAP_Dialog_Id id)
 	: XAP_Dialog_FontChooser(pDlgFactory,id),
-	  m_pPreviewWidget(NULL),
+	  m_pPreviewWidget(nullptr),
 	  m_bWin32Overline(false),
 	  m_iColorIndx(0),
 	  m_iColorCount(0)
@@ -247,7 +247,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
             m_bChangedOverline)
 			setFontDecoration( (lf.lfUnderline == TRUE),
                                 m_bWin32Overline,
-                                (lf.lfStrikeOut == TRUE), NULL, NULL);
+                                (lf.lfStrikeOut == TRUE), false, false);
 
 		m_bChangedHidden = (m_bWin32Hidden != m_bHidden);
 		m_bChangedSuperScript = (m_bWin32SuperScript != m_bSuperScript);
@@ -274,7 +274,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// the caller can get the answer from getAnswer().
 
-	m_pWin32Frame = NULL;
+	m_pWin32Frame = nullptr;
 }
 
 UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)

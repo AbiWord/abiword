@@ -17,8 +17,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef PT_TYPES_H
-#define PT_TYPES_H
+#pragma once
 
 #include "ut_types.h"
 
@@ -44,7 +43,7 @@ public:
 	//! Dummy constructor.
 	//! Resulting range is invalid until it is initialized with set
 	PD_DocumentRange(void)
-		: m_pDoc(NULL), m_pos1(0), m_pos2(0)
+		: m_pDoc(nullptr), m_pos1(0), m_pos2(0)
 		{
 		}
 
@@ -177,5 +176,3 @@ typedef UT_uint32 PL_ListenerId;
 #define ABIATTR_PARA_START_DELETED_REVISION (static_cast<const gchar *>("abi-para-start-deleted-revision"))
 #define ABIATTR_PARA_END_DELETED_REVISION   (static_cast<const gchar *>("abi-para-end-deleted-revision"))
 #define ABIATTR_PARA_DELETED_REVISION   (static_cast<const gchar *>("abi-para-deleted-revision"))
-
-#endif /* PT_TYPES_H */

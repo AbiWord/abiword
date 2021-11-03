@@ -38,14 +38,14 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 					   UT_uint32 iOffsetFirst,PT_AttrPropIndex indexAP,pf_Frag_Object* oh)	: 
 	fp_Run(pBL,  iOffsetFirst,1, FPRUN_MATH ),
 	m_iPointHeight(0),
-	m_pSpanAP(NULL),
+	m_pSpanAP(nullptr),
 	m_iGraphicTick(0),
-	m_pszDataID(NULL),
+	m_pszDataID(nullptr),
 	m_sMathML(""),
-	m_pMathManager(NULL),
+	m_pMathManager(nullptr),
         m_iMathUID(-1),
         m_iIndexAP(indexAP),
-        m_pDocLayout(NULL),
+        m_pDocLayout(nullptr),
 	m_bNeedsSnapshot(true),
 	m_OH(oh)
 {
@@ -74,22 +74,22 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
 	pSpanAP->getAttribute("dataid", m_pszDataID);
-	const gchar * pszFontSize = NULL;
+	const gchar * pszFontSize = nullptr;
 	pSpanAP->getProperty("font-size", pszFontSize);
 	xxx_UT_DEBUGMSG(("Font-size %s \n",pszFontSize));
-	const char *pszDisplayMode = NULL;
+	const char *pszDisplayMode = nullptr;
 	pSpanAP->getProperty("display",pszDisplayMode);
 
 // Load this into MathView
 
 	// LUCA: chunk of code moved up here from the bottom of the method
 	// 'cause we need to retrieve the font-size
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	if(pG == NULL && pLayout->isQuickPrint())
+	if(pG == nullptr && pLayout->isQuickPrint())
 	{
 	     pG = getGraphics();
 	     if((m_iMathUID >= 0) && getMathManager() )
@@ -125,7 +125,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  xxx_UT_DEBUGMSG(("!!!!Font is set here... %x \n",pFont));
 		_setFont(pFont);
 	}
-	if(pG == NULL)
+	if(pG == nullptr)
 	  pG = getGraphics();
 	m_iPointHeight = pG->getFontAscent(pFont) + pG->getFontDescent(pFont);
 	const char* pszSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,
@@ -171,7 +171,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_DEBUGMSG(("MathRun _lookupProps Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 
 	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
-	fp_Page * p = NULL;
+	fp_Page * p = nullptr;
 	if(pDSL->getFirstContainer())
 	{
 		p = pDSL->getFirstContainer()->getPage();
@@ -222,9 +222,9 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 void fp_MathRun::_lookupLocalProperties()
 {
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	getBlockAP(pBlockAP);
 
@@ -480,8 +480,8 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 UT_sint32  fp_MathRun::_getLayoutPropFromObject(const char * szProp)
 {
   PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
-  const PP_AttrProp * pAP = NULL;
-  const char * szPropVal = NULL;
+  const PP_AttrProp * pAP = nullptr;
+  const char * szPropVal = nullptr;
   getBlock()->getDocument()->getAttrProp(api, &pAP);
   if(pAP)
     {
@@ -505,8 +505,8 @@ bool fp_MathRun::_updatePropValuesIfNeeded(void)
       return false;
     }
   PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
-  const PP_AttrProp * pAP = NULL;
-  const char * szPropVal = NULL;
+  const PP_AttrProp * pAP = nullptr;
+  const char * szPropVal = nullptr;
   getBlock()->getDocument()->getAttrProp(api, &pAP);
   UT_return_val_if_fail(pAP,false);
   bool bFound = pAP->getProperty("height", szPropVal);

@@ -81,7 +81,7 @@ static UT_sint32 convertTwipsToEMU(UT_sint32 twip)
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {
 	m_apiThisSection = 0;
-	m_sdh = NULL;
+	m_sdh = nullptr;
 	return;
 }
 
@@ -109,7 +109,7 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  /*nextApi*/)
 //
 // output the character properties for this break.
 //
-		const PP_AttrProp * pSpanAP = NULL;
+		const PP_AttrProp * pSpanAP = nullptr;
 		m_pDocument->getSpanAttrProp(m_sdh,0,true,&pSpanAP);
 		xxx_UT_DEBUGMSG(("SEVIOR: Close Block -open span \n"));
 		_openSpan(m_apiThisBlock,pSpanAP);
@@ -122,7 +122,7 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  /*nextApi*/)
 	_closeSpan();
 
 	m_apiThisBlock = 0;
-	m_sdh = NULL;
+	m_sdh = nullptr;
 	return;
 }
 
@@ -249,7 +249,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // OK get TOC properties
 //
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSectionAP = nullptr;
 	m_pDocument->getAttrProp(apiTOC,&pSectionAP);
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("field");
@@ -270,7 +270,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
-	const gchar *pszTOCPID = NULL;
+	const gchar *pszTOCPID = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-id",pszTOCPID))
 	{
 	}
@@ -285,14 +285,14 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 #endif
 
 
-	const gchar *pszINDENT = NULL;
+	const gchar *pszINDENT = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent1",pszINDENT))
 	{
 	}
 	else
 	{
 	}
-	pszINDENT = NULL;
+	pszINDENT = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent2",pszINDENT))
 	{
 	}
@@ -300,7 +300,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	{
 	}
 
-	pszINDENT = NULL;
+	pszINDENT = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent3",pszINDENT))
 	{
 	}
@@ -308,7 +308,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	{
 	}
 
-	pszINDENT = NULL;
+	pszINDENT = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent4",pszINDENT))
 	{
 	}
@@ -316,63 +316,63 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	{
 	}
 
-	const gchar *pszTOCSRC = NULL;
+	const gchar *pszTOCSRC = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style1",pszTOCSRC))
 	{
 	}
 	else
 	{
 	}
-	pszTOCSRC = NULL;
+	pszTOCSRC = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style2",pszTOCSRC))
 	{
 	}
 	else
 	{
 	}
-	pszTOCSRC = NULL;
+	pszTOCSRC = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style3",pszTOCSRC))
 	{
 	}
 	else
 	{
 	}
-	pszTOCSRC = NULL;
+	pszTOCSRC = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style4",pszTOCSRC))
 	{
 	}
 	else
 	{
 	}
-	const gchar * pszTOCDEST = NULL;
+	const gchar * pszTOCDEST = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style1",pszTOCDEST))
 	{
 	}
 	else
 	{
 	}
-	pszTOCDEST = NULL;
+	pszTOCDEST = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style2",pszTOCDEST))
 	{
 	}
 	else
 	{
 	}
-	pszTOCDEST = NULL;
+	pszTOCDEST = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style3",pszTOCDEST))
 	{
 	}
 	else
 	{
 	}
-	pszTOCDEST = NULL;
+	pszTOCDEST = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style4",pszTOCDEST))
 	{
 	}
 	else
 	{
 	}
-	const gchar * pszTOCHEADING = NULL;
+	const gchar * pszTOCHEADING = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading",pszTOCHEADING))
 	{
 	}
@@ -380,7 +380,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	{
 	}
 
-	const gchar * pszTOCHEADINGStyle = NULL;
+	const gchar * pszTOCHEADINGStyle = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading-style",pszTOCHEADINGStyle))
 	{
 	}
@@ -389,7 +389,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 
 
-	const gchar * pszTOCHASHEADING = NULL;
+	const gchar * pszTOCHASHEADING = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-heading",pszTOCHASHEADING))
 	{
 	}
@@ -405,7 +405,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label
 //
-	const gchar * pszTOCLABEL = NULL;
+	const gchar * pszTOCLABEL = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label1",pszTOCLABEL))
 	{
 	}
@@ -418,7 +418,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		{
 		}
 	}
-	pszTOCLABEL = NULL;
+	pszTOCLABEL = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label2",pszTOCLABEL))
 	{
 	}
@@ -431,7 +431,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		{
 		}
 	}
-	pszTOCLABEL = NULL;
+	pszTOCLABEL = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label3",pszTOCLABEL))
 	{
 	}
@@ -444,7 +444,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		{
 		}
 	}
-	pszTOCLABEL = NULL;
+	pszTOCLABEL = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label4",pszTOCLABEL))
 	{
 	}
@@ -460,7 +460,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label Inherits
 //
-	const gchar * pszTOCLABELINHERITS = NULL;
+	const gchar * pszTOCLABELINHERITS = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits1",pszTOCLABELINHERITS))
 	{
 	}
@@ -473,7 +473,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		{
 		}
 	}
-	pszTOCLABELINHERITS = NULL;
+	pszTOCLABELINHERITS = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits2",pszTOCLABELINHERITS))
 	{
 	}
@@ -486,7 +486,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		{
 		}
 	}
-	pszTOCLABELINHERITS = NULL;
+	pszTOCLABELINHERITS = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits3",pszTOCLABELINHERITS))
 	{
 	}
@@ -499,7 +499,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		{
 		}
 	}
-	pszTOCLABELINHERITS = NULL;
+	pszTOCLABELINHERITS = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits4",pszTOCLABELINHERITS))
 	{
 	}
@@ -515,28 +515,28 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label Type
 //
-	const gchar * pszTOCLABELTYPE = NULL;
+	const gchar * pszTOCLABELTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type1",pszTOCLABELTYPE))
 	{
 	}
 	else
 	{
 	}
-	pszTOCLABELTYPE = NULL;
+	pszTOCLABELTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type2",pszTOCLABELTYPE))
 	{
 	}
 	else
 	{
 	}
-	pszTOCLABELTYPE = NULL;
+	pszTOCLABELTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type3",pszTOCLABELTYPE))
 	{
 	}
 	else
 	{
 	}
-	pszTOCLABELTYPE = NULL;
+	pszTOCLABELTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type4",pszTOCLABELTYPE))
 	{
 	}
@@ -546,28 +546,28 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label Before Text
 //
-	const gchar * pszTOCSTRBEFORE = NULL;
+	const gchar * pszTOCSTRBEFORE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before1",pszTOCSTRBEFORE))
 	{
 	}
 	else
 	{
 	}
-	pszTOCSTRBEFORE = NULL;
+	pszTOCSTRBEFORE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before2",pszTOCSTRBEFORE))
 	{
 	}
 	else
 	{
 	}
-	pszTOCSTRBEFORE = NULL;
+	pszTOCSTRBEFORE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before3",pszTOCSTRBEFORE))
 	{
 	}
 	else
 	{
 	}
-	pszTOCSTRBEFORE = NULL;
+	pszTOCSTRBEFORE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before4",pszTOCSTRBEFORE))
 	{
 	}
@@ -577,28 +577,28 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label After Text
 //
-	const gchar * pszTOCSTRAFTER = NULL;
+	const gchar * pszTOCSTRAFTER = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after1",pszTOCSTRAFTER))
 	{
 	}
 	else
 	{
 	}
-	pszTOCSTRAFTER = NULL;
+	pszTOCSTRAFTER = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after2",pszTOCSTRAFTER))
 	{
 	}
 	else
 	{
 	}
-	pszTOCSTRAFTER = NULL;
+	pszTOCSTRAFTER = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after2",pszTOCSTRAFTER))
 	{
 	}
 	else
 	{
 	}
-	pszTOCSTRAFTER = NULL;
+	pszTOCSTRAFTER = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after4",pszTOCSTRAFTER))
 	{
 	}
@@ -608,28 +608,28 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label Initial Value
 //
-	const gchar * pszTOCLABELSTART = NULL;
+	const gchar * pszTOCLABELSTART = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start1",pszTOCLABELSTART))
 	{
 	}
 	else
 	{
 	}
-	pszTOCLABELSTART = NULL;
+	pszTOCLABELSTART = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start2",pszTOCLABELSTART))
 	{
 	}
 	else
 	{
 	}
-	pszTOCLABELSTART = NULL;
+	pszTOCLABELSTART = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start3",pszTOCLABELSTART))
 	{
 	}
 	else
 	{
 	}
-	pszTOCLABELSTART = NULL;
+	pszTOCLABELSTART = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start4",pszTOCLABELSTART))
 	{
 	}
@@ -639,28 +639,28 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Page Number Type
 //
-	const gchar * pszTOCPAGETYPE = NULL;
+	const gchar * pszTOCPAGETYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type1",pszTOCPAGETYPE))
 	{
 	}
 	else
 	{
 	}
-	pszTOCPAGETYPE = NULL;
+	pszTOCPAGETYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type2",pszTOCPAGETYPE))
 	{
 	}
 	else
 	{
 	}
-	pszTOCPAGETYPE = NULL;
+	pszTOCPAGETYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type3",pszTOCPAGETYPE))
 	{
 	}
 	else
 	{
 	}
-	pszTOCPAGETYPE = NULL;
+	pszTOCPAGETYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type4",pszTOCPAGETYPE))
 	{
 	}
@@ -670,7 +670,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC TAB leader
 //
-	const gchar * pszTOCTABTYPE = NULL;
+	const gchar * pszTOCTABTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader1",pszTOCTABTYPE))
 	{
 	}
@@ -692,7 +692,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		{
 		}
 	}
-	pszTOCTABTYPE = NULL;
+	pszTOCTABTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader2",pszTOCTABTYPE))
 	{
 	}
@@ -714,7 +714,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		{
 		}
 	}
-	pszTOCTABTYPE = NULL;
+	pszTOCTABTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader3",pszTOCTABTYPE))
 	{
 	}
@@ -736,7 +736,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		{
 		}
 	}
-	pszTOCTABTYPE = NULL;
+	pszTOCTABTYPE = nullptr;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader4",pszTOCTABTYPE))
 	{
 	}
@@ -759,7 +759,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 		}
 	}
 
-	pszTOCTABTYPE = NULL;
+	pszTOCTABTYPE = nullptr;
 	if(pSectionAP && pSectionAP->getProperty("toc-range-bookmark",pszTOCTABTYPE))
 	{
 	}
@@ -783,29 +783,29 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 //
 // OK get frame properties
 //
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSectionAP = nullptr;
 	m_pDocument->getAttrProp(apiFrame,&pSectionAP);
 	m_apiThisFrame = apiFrame;
 	m_bInFrame = true;
 
-	const gchar *pszFrameType = NULL;
-	const gchar *pszWrapMode = NULL;
-	const gchar *pszPositionTo = NULL;
-	const gchar *pszXpos = NULL;
-	const gchar *pszYpos = NULL;
-	const gchar *pszColXpos = NULL;
-	const gchar *pszColYpos = NULL;
-	const gchar *pszPageXpos = NULL;
-	const gchar *pszPageYpos = NULL;
-	const gchar *pszWidth = NULL;
-	const gchar *pszHeight = NULL;
-	const gchar *pszXpad = NULL;
-	const gchar *pszYpad = NULL;
+	const gchar *pszFrameType = nullptr;
+	const gchar *pszWrapMode = nullptr;
+	const gchar *pszPositionTo = nullptr;
+	const gchar *pszXpos = nullptr;
+	const gchar *pszYpos = nullptr;
+	const gchar *pszColXpos = nullptr;
+	const gchar *pszColYpos = nullptr;
+	const gchar *pszPageXpos = nullptr;
+	const gchar *pszPageYpos = nullptr;
+	const gchar *pszWidth = nullptr;
+	const gchar *pszHeight = nullptr;
+	const gchar *pszXpad = nullptr;
+	const gchar *pszYpad = nullptr;
 
-	const gchar * pszColor = NULL;
-	const gchar * pszBorderColor = NULL;
-	const gchar * pszBorderStyle = NULL;
-	const gchar * pszBorderWidth = NULL;
+	const gchar * pszColor = nullptr;
+	const gchar * pszBorderColor = nullptr;
+	const gchar * pszBorderStyle = nullptr;
+	const gchar * pszBorderWidth = nullptr;
 	
 	FL_FrameType iFrameType = FL_FRAME_TEXTBOX_TYPE;
 	FL_FrameFormatMode iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
@@ -1038,9 +1038,9 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, botLine);
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	if(pSectionAP)
 	{
@@ -1051,9 +1051,9 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, leftLine);
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	if(pSectionAP)
 	{
@@ -1064,9 +1064,9 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, rightLine);
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	if(pSectionAP)
 	{
@@ -1081,9 +1081,9 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	 */
 	background.reset ();
 
-	const gchar * pszBgStyle = NULL;
-	const gchar * pszBgColor = NULL;
-	const gchar * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = nullptr;
+	const gchar * pszBgColor = nullptr;
+	const gchar * pszBackgroundColor = nullptr;
 
 	if(pSectionAP)
 	{
@@ -1096,8 +1096,8 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 
 	UT_uint32 kk = 0;
 	std::string sFrameProps, esc;
-	const gchar * szName = NULL;
-	const gchar * szValue = NULL;
+	const gchar * szName = nullptr;
+	const gchar * szValue = nullptr;
 	while (pSectionAP->getNthProperty (kk++, szName, szValue))
 	{
 		if (kk != 1)
@@ -1214,15 +1214,15 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 //
 // Image name
 //
-		const gchar * pszDataID = NULL;
+		const gchar * pszDataID = nullptr;
 		if(pSectionAP)
 			pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, pszDataID);
-		if(pszDataID != NULL)
+		if(pszDataID != nullptr)
 		{
 			std::string mimetype;
 			UT_ConstByteBufPtr pbb;
 			bool bFoundDataItem = m_pDocument->getDataItemDataByName(pszDataID, pbb,
-                                                                     &mimetype, NULL);
+                                                                     &mimetype, nullptr);
 			if (!bFoundDataItem)
 			{
 				UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
@@ -1266,7 +1266,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 				{
 					m_pie->_rtf_keyword("svgblip");
 					UT_sint32 layoutwidth,layoutheight;
-					UT_SVG_getDimensions(pbb,NULL,iImageWidth,iImageHeight,layoutwidth,layoutheight);
+					UT_SVG_getDimensions(pbb,nullptr,iImageWidth,iImageHeight,layoutwidth,layoutheight);
 				}
 				// compute scale factors...
 
@@ -1387,16 +1387,16 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
 
 	m_pie->_rtf_open_brace();
 
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
-    
-    const PP_AttrProp * pDeepestAP = NULL; // the one that is the most local
-    
-    bool bHaveSpanProps = 0;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
+
+	const PP_AttrProp * pDeepestAP = nullptr; // the one that is the most local
+
+	bool bHaveSpanProps = 0;
 	bool bHaveSectionProps = m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
-    bool bHaveBlockProps = m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
-	if(pInSpanAP == NULL)
+	bool bHaveBlockProps = m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
+	if(pInSpanAP == nullptr)
 	{
         bHaveSpanProps = m_pDocument->getAttrProp(apiSpan,&pSpanAP);
 	}
@@ -1417,13 +1417,13 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
 	{
         pDeepestAP = pSectionAP;
     }
-    
-    if (NULL != pDeepestAP) 
+
+	if (nullptr != pDeepestAP)
 	{
 		const gchar * styleSzValue = nullptr;
 		bool have_style  = pDeepestAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, 
 													 styleSzValue);
-        if (!have_style) 
+        if (!have_style)
 		{
             if (bHaveBlockProps && (nullptr != pBlockAP))
 			{
@@ -1431,21 +1431,21 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
 													 styleSzValue);
             }
         }
-        if (!have_style) 
+        if (!have_style)
 		{
             if (bHaveSectionProps && (nullptr != pSectionAP))
 			{
                 have_style = pSectionAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, 													   styleSzValue);
             }
         }
-        
+
         if (have_style) 
 		{
             int styleID = m_pie->_getStyleNumber(styleSzValue);
             const char* styleType = "s";
             
             //get the style from the styleName
-            PD_Style* pStyle = NULL;
+            PD_Style* pStyle = nullptr;
 			m_pDocument->getStyle(styleSzValue,&pStyle);
             UT_ASSERT_HARMLESS(pStyle);
             if (pStyle && pStyle->isCharStyle()) 
@@ -1766,7 +1766,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_apiThisFrame = 0;
 	m_bInFrame = false;
 	m_bJustOpennedFrame = false;
-	m_sdh = NULL;
+	m_sdh = nullptr;
 	m_bToClipboard = bToClipboard;
 	m_bStartedList = false;
 	m_bBlankLine = true;
@@ -1794,15 +1794,15 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	_rtf_info ();
 	_rtf_docfmt();						// deal with <docfmt>
 	m_apiSavedBlock = 0;
-	m_sdhSavedBlock = NULL;
+	m_sdhSavedBlock = nullptr;
 	m_bOpennedFootnote = false;
 	m_iFirstTop = 0;
 	m_bHyperLinkOpen = false;
 	m_bRDFAnchorOpen = false;
 	m_bAnnotationOpen = false;
 	m_iAnnotationNumber = 0;
-	m_pAnnContent = NULL;
-	m_pSavedBuf = NULL;
+	m_pAnnContent = nullptr;
+	m_pSavedBuf = nullptr;
 	m_bOpenBlockForSpan = bHasMultiBlock;
 	m_bTextBox = false;
 	// <section>+ will be handled by the populate code.
@@ -1866,10 +1866,10 @@ bool s_RTF_ListenerWriteDoc::populate(fl_ContainerLayout* /*sfh*/,
 				m_bOpenBlockForSpan = false;
 
 				pf_Frag * pf1 = m_pDocument->getFragFromPosition(pcr->getPosition());
-				if (pf1 != NULL)
+				if (pf1 != nullptr)
 				{
 					// scan backwards for the block props of this span.
-					while (pf1 != NULL)
+					while (pf1 != nullptr)
 					{
 						if (pf1->getType() == pf_Frag::PFT_Strux)
 						{
@@ -1926,7 +1926,7 @@ bool s_RTF_ListenerWriteDoc::populate(fl_ContainerLayout* /*sfh*/,
 			{
 				UT_DEBUGMSG(("PTO_Hyperlink pcro:%p\n", (void*)pcro));
 				_closeSpan ();
-				const PP_AttrProp * pAP = NULL;
+				const PP_AttrProp * pAP = nullptr;
 				m_pDocument->getAttrProp(api,&pAP);
 				const gchar * pName;
 				const gchar * pValue;
@@ -1957,7 +1957,7 @@ bool s_RTF_ListenerWriteDoc::populate(fl_ContainerLayout* /*sfh*/,
 			case PTO_Annotation:
 			{
 				_closeSpan ();
-				const PP_AttrProp * pAP = NULL;
+				const PP_AttrProp * pAP = nullptr;
 				m_pDocument->getAttrProp(api,&pAP);
 				const gchar * pName;
 				const gchar * pValue;
@@ -2042,8 +2042,8 @@ bool s_RTF_ListenerWriteDoc::populate(fl_ContainerLayout* /*sfh*/,
  */
 void s_RTF_ListenerWriteDoc::_writeFieldPreamble(const PP_AttrProp * pSpanAP)
 {
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
 	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
@@ -2065,7 +2065,7 @@ void s_RTF_ListenerWriteDoc::_writeFieldPreamble(const PP_AttrProp * pSpanAP)
 void s_RTF_ListenerWriteDoc::_writeFieldTrailer(void)
 {
 	const UT_UCSChar * szFieldValue = _getFieldValue();
-	if(szFieldValue == NULL)
+	if(szFieldValue == nullptr)
 	{
 		m_pie->_rtf_close_brace();
 		return;
@@ -2085,7 +2085,7 @@ void s_RTF_ListenerWriteDoc::_writeFieldTrailer(void)
 
 /*!
  * This method returns the field value at the current document location.
- * If there is not a field at the current document location return NULL.
+ * If there is not a field at the current document location return nullptr.
  */
 const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 {
@@ -2093,16 +2093,16 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 // Grab the first format handle in the PieceTable and turn it into a layout class.
 // Check that is it a block.
 //
-	if(m_sdh == NULL)
+	if(m_sdh == nullptr)
 	{
 		m_pDocument->getStruxOfTypeFromPosition(m_posDoc,PTX_Block,&m_sdh);
 	}
 	fl_ContainerLayout* sfh = m_pDocument->getNthFmtHandle(m_sdh,0);
 	const fl_Layout * pL = reinterpret_cast<const fl_Layout *>(sfh);
-	UT_return_val_if_fail(pL,NULL);
+	UT_return_val_if_fail(pL,nullptr);
 	if(pL && pL->getType() != PTX_Block)
 	{
-	  UT_return_val_if_fail(0, NULL);
+	  UT_return_val_if_fail(0, nullptr);
 	}
 	const fl_BlockLayout* pBL = static_cast<const fl_BlockLayout *>(pL);
 	bool bDirection;
@@ -2115,9 +2115,9 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 	{
 		pRun = pRun->getNextRun();
 	}
-	if((pRun== NULL) || pRun->getType() != FPRUN_FIELD )
+	if((pRun== nullptr) || pRun->getType() != FPRUN_FIELD )
 	{
-	  UT_return_val_if_fail(0, NULL);
+	  UT_return_val_if_fail(0, nullptr);
 	}
 //
 // Now get the value of this field
@@ -2132,11 +2132,11 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 xxx_UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  szSuffix = %s api = %x \n",szPrefix,szSuffix,api));
 	 if(strcmp(szPrefix,"field") == 0)
 	 {
-		 const PP_AttrProp * pSpanAP = NULL;
-		 const gchar * pszType = NULL;
+		 const PP_AttrProp * pSpanAP = nullptr;
+		 const gchar * pszType = nullptr;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("type", pszType);
-		 if(pszType == NULL)
+		 if(pszType == nullptr)
 		 {
 			 return;
 		 }
@@ -2488,14 +2488,14 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 }
 	 else if(strcmp(szPrefix,"math") == 0)
 	 {
-		 const PP_AttrProp * pSpanAP = NULL;
-		 const gchar * pszDataId = NULL;
-		 const gchar * pszLatexId = NULL;
+		 const PP_AttrProp * pSpanAP = nullptr;
+		 const gchar * pszDataId = nullptr;
+		 const gchar * pszLatexId = nullptr;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("dataid", pszDataId);
 		 pSpanAP->getAttribute("latexid", pszLatexId);
 		 UT_UTF8String sProps;
-		 if(pszDataId == NULL)
+		 if(pszDataId == nullptr)
 		 {
 			 return;
 		 }
@@ -2505,13 +2505,13 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 UT_ConstByteBufPtr pbb;
 		 bool bFoundDataItem = false;
 		 UT_uint32 lenData = 0;
-		 const UT_Byte * pData = NULL;
+		 const UT_Byte * pData = nullptr;
 		 UT_uint32 k = 0;
 		 UT_String buf;
 		 if(pszDataId)
 		 {
 			bFoundDataItem = m_pDocument->getDataItemDataByName(pszDataId,
-                                                                pbb, NULL, NULL);
+                                                                pbb, nullptr, nullptr);
 			if (!bFoundDataItem)
 			{
 
@@ -2543,8 +2543,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 if(pszLatexId)
 		 {
              bFoundDataItem = m_pDocument->getDataItemDataByName(pszLatexId,
-                                                                 pbb, NULL,
-                                                                 NULL);
+                                                                 pbb, nullptr,
+                                                                 nullptr);
 			if (!bFoundDataItem)
 			{
 
@@ -2574,12 +2574,12 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 //
 		 std::string sMime, sSnapshot = std::string("snapshot-svg-") + pszDataId;
          bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
-                                                             pbb, &sMime, NULL);
+                                                             pbb, &sMime, nullptr);
 		 if (!bFoundDataItem)
 		 {
 			 sSnapshot = std::string("snapshot-png-") + pszDataId;
 			 bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
-																 pbb, &sMime, NULL);
+																 pbb, &sMime, nullptr);
 		 }
 		 if (bFoundDataItem)
 			_writeEmbedData (sSnapshot, pbb, sMime);
@@ -2593,14 +2593,14 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 std::string sPropName;
 		 std::string sPropVal;
 		 UT_sint32 i = 0;
-		 const gchar * szProp = NULL;
-		 const gchar * szVal = NULL;
+		 const gchar * szProp = nullptr;
+		 const gchar * szVal = nullptr;
 		 for(i = 0; i < 50; i++)
 		 {
-		       szProp = NULL;
-		       szVal = NULL;
+		       szProp = nullptr;
+		       szVal = nullptr;
 		       pSpanAP->getNthProperty(i,szProp,szVal);
-		       if((szProp != NULL) && (szVal != NULL))
+		       if((szProp != nullptr) && (szVal != nullptr))
 		       {
 				   sPropName = szProp;
 				   sPropVal = szVal;
@@ -2625,12 +2625,12 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 }
 	 else if(strcmp(szPrefix,"embed") == 0)
 	 {
-		 const PP_AttrProp * pSpanAP = NULL;
-		 const gchar * pszDataId = NULL, * pszOrigDataId = NULL;
+		 const PP_AttrProp * pSpanAP = nullptr;
+		 const gchar * pszDataId = nullptr, * pszOrigDataId = nullptr;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("dataid", pszDataId);
 		 UT_UTF8String sProps;
-		 if(pszDataId == NULL)
+		 if(pszDataId == nullptr)
 		 {
 			 return;
 		 }
@@ -2644,7 +2644,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 std::string mime_type;
 		 bFoundDataItem = m_pDocument->getDataItemDataByName(pszDataId,
                                                             pbb, &mime_type,
-                                                            NULL);
+                                                            nullptr);
 		if (!bFoundDataItem)
 		{
 			UT_DEBUGMSG(("RTF_Export: cannot get dataitem for embedded object\n"));
@@ -2656,7 +2656,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		{
 			std::string s;
 			UT_UUIDPtr uuid = m_pDocument->getNewUUID();
-			UT_return_if_fail(uuid != NULL);
+			UT_return_if_fail(uuid != nullptr);
 			sUID = "obj-";
 			s = uuid->toString().unwrap_or("");
 			sUID += s;
@@ -2669,12 +2669,12 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 //
 		 std::string sMime, sSnapshot = std::string("snapshot-svg-") + pszOrigDataId;
          bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
-                                                             pbb, &sMime, NULL);
+                                                             pbb, &sMime, nullptr);
 		 if (!bFoundDataItem)
 		 {
 			 sSnapshot = std::string("snapshot-png-") + pszOrigDataId;
 			 bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
-																 pbb, &sMime, NULL);
+																 pbb, &sMime, nullptr);
 			 sSnapshot = std::string("snapshot-png-") + pszDataId;
 		 }
 		 else
@@ -2690,14 +2690,14 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 std::string sPropName;
 		 std::string sPropVal;
 		 UT_sint32 i = 0;
-		 const gchar * szProp = NULL;
-		 const gchar * szVal = NULL;
+		 const gchar * szProp = nullptr;
+		 const gchar * szVal = nullptr;
 		 for(i = 0; i < 50; i++)
 		 {
-		   szProp = NULL;
-		   szVal = NULL;
+		   szProp = nullptr;
+		   szVal = nullptr;
 		   pSpanAP->getNthProperty(i, szProp, szVal);
-		   if((szProp != NULL) && (szVal != NULL))
+		   if((szProp != nullptr) && (szVal != nullptr))
 		   {
 		     sPropName = szProp;
 		     sPropVal = szVal;
@@ -3253,16 +3253,16 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, std::string
  */
 void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, std::string & sCellProps)
 {
-	const PP_AttrProp* pSectionAP = NULL;
+	const PP_AttrProp* pSectionAP = nullptr;
 	m_pDocument->getAttrProp(api, &pSectionAP);
-	const gchar* pszHomogeneous = NULL;
+	const gchar* pszHomogeneous = nullptr;
 	pSectionAP->getProperty("homogeneous", pszHomogeneous);
 	std::string sPropVal;
 	std::string sProp;
-	const gchar* pszLeftOffset = NULL;
-	const gchar* pszTopOffset = NULL;
-	const gchar* pszRightOffset = NULL;
-	const gchar* pszBottomOffset = NULL;
+	const gchar* pszLeftOffset = nullptr;
+	const gchar* pszTopOffset = nullptr;
+	const gchar* pszRightOffset = nullptr;
+	const gchar* pszBottomOffset = nullptr;
 	pSectionAP->getProperty("cell-margin-left", pszLeftOffset);
 	pSectionAP->getProperty("cell-margin-top", pszTopOffset);
 	pSectionAP->getProperty("cell-margin-right", pszRightOffset);
@@ -3295,10 +3295,10 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, std::string & 
 		sPropVal= pszBottomOffset;
 		UT_std_string_setProperty(sCellProps, sProp, sPropVal);
 	}
-	const gchar* pszLeftAttach = NULL;
-	const gchar* pszRightAttach = NULL;
-	const gchar* pszTopAttach = NULL;
-	const gchar* pszBottomAttach = NULL;
+	const gchar* pszLeftAttach = nullptr;
+	const gchar* pszRightAttach = nullptr;
+	const gchar* pszTopAttach = nullptr;
+	const gchar* pszBottomAttach = nullptr;
 	pSectionAP->getProperty("left-attach", pszLeftAttach);
 	pSectionAP->getProperty("right-attach", pszRightAttach);
 	pSectionAP->getProperty("top-attach", pszTopAttach);
@@ -3331,7 +3331,7 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, std::string & 
 
 	/* cell-border properties:
 	 */
-	const gchar * pszColor = NULL;
+	const gchar * pszColor = nullptr;
 	pSectionAP->getProperty ("color", pszColor);
 	if (pszColor)
 	{
@@ -3339,9 +3339,9 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, std::string & 
 		sPropVal= pszColor;
 		UT_std_string_setProperty(sCellProps, sProp, sPropVal);
 	}
-	const gchar * pszBorderColor = NULL;
-	const gchar * pszBorderStyle = NULL;
-	const gchar * pszBorderWidth = NULL;
+	const gchar * pszBorderColor = nullptr;
+	const gchar * pszBorderStyle = nullptr;
+	const gchar * pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("bot-color",       pszBorderColor);
 	if (pszBorderColor && *pszBorderColor)
@@ -3365,9 +3365,9 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, std::string & 
 		sPropVal= pszBorderWidth;
 		UT_std_string_setProperty(sCellProps, sProp, sPropVal);
 	}
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("left-color",      pszBorderColor);
 	pSectionAP->getProperty ("left-style",      pszBorderStyle);
@@ -3392,9 +3392,9 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, std::string & 
 		UT_std_string_setProperty(sCellProps, sProp, sPropVal);
 	}
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("right-color",     pszBorderColor);
 	pSectionAP->getProperty ("right-style",     pszBorderStyle);
@@ -3419,9 +3419,9 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, std::string & 
 		UT_std_string_setProperty(sCellProps, sProp, sPropVal);
 	}
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("top-color",       pszBorderColor);
 	pSectionAP->getProperty ("top-style",       pszBorderStyle);
@@ -3447,9 +3447,9 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, std::string & 
 
 	/* cell fill
 	 */
-	const gchar * pszBgStyle = NULL;
-	const gchar * pszBgColor = NULL;
-	const gchar * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = nullptr;
+	const gchar * pszBgColor = nullptr;
+	const gchar * pszBackgroundColor = nullptr;
 
 	pSectionAP->getProperty ("bg-style",         pszBgStyle);
 	if (pszBgStyle && *pszBgStyle)
@@ -3643,7 +3643,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 UT_sint32  s_RTF_ListenerWriteDoc::getRightOfCell(UT_sint32 row,UT_sint32 col)
 {
 	pf_Frag_Strux* sdhCell = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,row,col);
-	if(sdhCell == NULL)
+	if(sdhCell == nullptr)
 	{
 		return -1;
 	}
@@ -3697,8 +3697,8 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 //
 // Lookup column positions.
 //
-	const char * szColumnProps = NULL;
-	const char * szColumnLeftPos = NULL;
+	const char * szColumnProps = nullptr;
+	const char * szColumnLeftPos = nullptr;
 	szColumnProps = m_Table.getTableProp("table-column-props");
 	szColumnLeftPos = m_Table.getTableProp("table-column-leftpos");
 	double cellLeftPos = 0;
@@ -3915,9 +3915,9 @@ double s_RTF_ListenerWriteDoc::_getColumnWidthInches(void)
 {
 	double pageWidth = m_pDocument->m_docPageSize.Width(DIM_IN);
 
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
 	const gchar * szColumns = PP_evalProperty("columns",
 												 pSpanAP,pBlockAP,pSectionAP,
@@ -3973,9 +3973,9 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Table_props(PT_AttrPropIndex api)
  */
 void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string & sTableProps)
 {
-	const PP_AttrProp* pSectionAP = NULL;
+	const PP_AttrProp* pSectionAP = nullptr;
 	m_pDocument->getAttrProp(api, &pSectionAP);
-	const gchar* pszHomogeneous = NULL;
+	const gchar* pszHomogeneous = nullptr;
 	pSectionAP->getProperty("homogeneous", pszHomogeneous);
 	std::string sPropVal;
 	std::string sProp;
@@ -3988,10 +3988,10 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 			UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 		}
 	}
-	const gchar* pszLeftOffset = NULL;
-	const gchar* pszTopOffset = NULL;
-	const gchar* pszRightOffset = NULL;
-	const gchar* pszBottomOffset = NULL;
+	const gchar* pszLeftOffset = nullptr;
+	const gchar* pszTopOffset = nullptr;
+	const gchar* pszRightOffset = nullptr;
+	const gchar* pszBottomOffset = nullptr;
 	pSectionAP->getProperty("table-margin-left", pszLeftOffset);
 	pSectionAP->getProperty("table-margin-top", pszTopOffset);
 	pSectionAP->getProperty("table-margin-right", pszRightOffset);
@@ -4025,7 +4025,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 		UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 	}
 
-	const gchar * pszLineThick = NULL;
+	const gchar * pszLineThick = nullptr;
 	pSectionAP->getProperty("table-line-thickness", pszLineThick);
 	if(pszLineThick && *pszLineThick)
 	{
@@ -4034,8 +4034,8 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 		UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 	}
 
-	const gchar * pszTableColSpacing = NULL;
-	const gchar * pszTableRowSpacing = NULL;
+	const gchar * pszTableColSpacing = nullptr;
+	const gchar * pszTableRowSpacing = nullptr;
 	pSectionAP->getProperty("table-col-spacing", pszTableColSpacing);
 	pSectionAP->getProperty("table-row-spacing", pszTableRowSpacing);
 	if(pszTableColSpacing && *pszTableColSpacing)
@@ -4050,8 +4050,8 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 		sPropVal= pszTableRowSpacing;
 		UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 	}
-	const gchar * pszLeftColPos = NULL;
-	const gchar * pszColumnProps = NULL;
+	const gchar * pszLeftColPos = nullptr;
+	const gchar * pszColumnProps = nullptr;
 	pSectionAP->getProperty("table-column-leftpos", pszLeftColPos);
 	pSectionAP->getProperty("table-column-props", pszColumnProps);
 	if(pszLeftColPos && *pszLeftColPos)
@@ -4069,8 +4069,8 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 //
 // global row height type
 //
-	const gchar * pszRowHeightType = NULL;
-	const gchar * pszRowHeight = NULL;
+	const gchar * pszRowHeightType = nullptr;
+	const gchar * pszRowHeight = nullptr;
 	pSectionAP->getProperty("table-row-height-type", pszRowHeightType);
 	if(pszRowHeightType && *pszRowHeightType)
 	{
@@ -4088,7 +4088,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 //
 // Positioned row controls
 //
-	const gchar * pszRowHeights = NULL;
+	const gchar * pszRowHeights = nullptr;
 	pSectionAP->getProperty("table-row-heights", pszRowHeights);
 	if(pszRowHeights && *pszRowHeights)
 	{
@@ -4099,7 +4099,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 
 	/* table-border properties:
 	 */
-	const gchar * pszColor = NULL;
+	const gchar * pszColor = nullptr;
 	pSectionAP->getProperty ("color", pszColor);
 	if (pszColor)
 	{
@@ -4107,9 +4107,9 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 		sPropVal= pszColor;
 		UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 	}
-	const gchar * pszBorderColor = NULL;
-	const gchar * pszBorderStyle = NULL;
-	const gchar * pszBorderWidth = NULL;
+	const gchar * pszBorderColor = nullptr;
+	const gchar * pszBorderStyle = nullptr;
+	const gchar * pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("bot-color",       pszBorderColor);
 	if (pszBorderColor && *pszBorderColor)
@@ -4133,9 +4133,9 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 		sPropVal= pszBorderStyle;
 		UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 	}
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("left-color",      pszBorderColor);
 	pSectionAP->getProperty ("left-style",      pszBorderStyle);
@@ -4160,9 +4160,9 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 		UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 	}
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("right-color",     pszBorderColor);
 	pSectionAP->getProperty ("right-style",     pszBorderStyle);
@@ -4187,9 +4187,9 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 		UT_std_string_setProperty(sTableProps, sProp, sPropVal);
 	}
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("top-color",       pszBorderColor);
 	pSectionAP->getProperty ("top-style",       pszBorderStyle);
@@ -4215,9 +4215,9 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 
 	/* table fill
 	 */
-	const gchar * pszBgStyle = NULL;
-	const gchar * pszBgColor = NULL;
-	const gchar * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = nullptr;
+	const gchar * pszBgColor = nullptr;
+	const gchar * pszBackgroundColor = nullptr;
 
 	pSectionAP->getProperty ("bg-style",         pszBgStyle);
 	if (pszBgStyle && *pszBgStyle)
@@ -4251,7 +4251,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, std::string &
 
 void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api,bool bIsCell)
 {
-	pf_Frag_Strux* sdhTable = NULL;
+	pf_Frag_Strux* sdhTable = nullptr;
 	if(bIsCell)
 	{
 		PT_DocPosition posCell = m_pDocument->getStruxPosition(m_sdh);
@@ -4381,68 +4381,68 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 // OK first we have so see if there is a header/footer associated with this section
 //
 			PT_AttrPropIndex indexAP = pcr->getIndexAP();
-			const PP_AttrProp* pAP = NULL;
+			const PP_AttrProp* pAP = nullptr;
 			m_pDocument->getAttrProp(indexAP, &pAP);
-			const gchar* pszHeaderID = NULL;
+			const gchar* pszHeaderID = nullptr;
 			bool bHeader = false;
-			const gchar* pszFooterID = NULL;
+			const gchar* pszFooterID = nullptr;
 			bool bFooter = false;
-			const gchar* pszHeaderEvenID = NULL;
+			const gchar* pszHeaderEvenID = nullptr;
 			bool bHeaderEven = false;
-			const gchar* pszFooterEvenID = NULL;
+			const gchar* pszFooterEvenID = nullptr;
 			bool bFooterEven = false;
-			const gchar* pszHeaderFirstID = NULL;
+			const gchar* pszHeaderFirstID = nullptr;
 			bool bHeaderFirst = false;
-			const gchar* pszFooterFirstID = NULL;
+			const gchar* pszFooterFirstID = nullptr;
 			bool bFooterFirst = false;
 #if 0
-			const gchar* pszHeaderLastID = NULL;
-			const gchar* pszFooterLastID = NULL;
+			const gchar* pszHeaderLastID = nullptr;
+			const gchar* pszFooterLastID = nullptr;
 #endif
 			
 // header,headerl (odd) ,headerr(even) ,headerf(first) ,footer,footerl,footerr,footerf
 
 			pAP->getAttribute("header", pszHeaderID);
-			if(pszHeaderID != NULL)
+			if(pszHeaderID != nullptr)
 			{
 				bHeader = true;
 			}
 			pAP->getAttribute("footer", pszFooterID);
-			if(pszFooterID != NULL)
+			if(pszFooterID != nullptr)
 			{
 				bFooter = true;
 			}
 			pAP->getAttribute("header-even", pszHeaderEvenID);
-			if(pszHeaderEvenID != NULL)
+			if(pszHeaderEvenID != nullptr)
 			{
 				bHeaderEven = true;
 			}
 
 			pAP->getAttribute("footer-even", pszFooterEvenID);
-			if(pszFooterEvenID != NULL)
+			if(pszFooterEvenID != nullptr)
 			{
 				bFooterEven = true;
 			}
 			pAP->getAttribute("header-first", pszHeaderFirstID);
-			if(pszHeaderFirstID != NULL)
+			if(pszHeaderFirstID != nullptr)
 			{
 				bHeaderFirst = true;
 			}
 
 			pAP->getAttribute("footer-first", pszFooterFirstID);
-			if(pszFooterFirstID != NULL)
+			if(pszFooterFirstID != nullptr)
 			{
 				bFooterFirst = true;
 			}
 #if 0
 			pAP->getAttribute("header-last", pszHeaderLastID);
-			if(pszHeaderLastID != NULL)
+			if(pszHeaderLastID != nullptr)
 			{
 				bHeaderLast = true;
 			}
 
 			pAP->getAttribute("footer-last", pszFooterLastID);
-			if(pszFooterLastID != NULL)
+			if(pszFooterLastID != nullptr)
 			{
 				bFooterLast = true;
 			}
@@ -4554,7 +4554,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 			m_apiSavedBlock = m_apiThisBlock;
 			m_sdhSavedBlock = m_sdh;
 			m_sdh = sdh;
-			const PP_AttrProp * pAnnotationAP = NULL;
+			const PP_AttrProp * pAnnotationAP = nullptr;
 			m_pDocument->getAttrProp(pcr->getIndexAP(),&pAnnotationAP);
 			const char* pszAuthor;
 			const char* pszTitle;
@@ -4611,7 +4611,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 			// see comments under case PTX_SectionFootnote:
 			m_bInBlock = false;
 			_setTabEaten(false);
-			m_sdh = NULL;
+			m_sdh = nullptr;
 			_openFrame(pcr->getIndexAP());
 			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned Frame \n"));
 			return true;
@@ -4642,7 +4642,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 
 			_closeSpan();
 			_setTabEaten(false);
-			m_sdh = NULL;
+			m_sdh = nullptr;
 			return true;
 		}
 	case PTX_SectionEndnote:
@@ -4799,9 +4799,9 @@ void s_RTF_ListenerWriteDoc::_rtf_info(void)
 	                       PD_META_KEY_KEYWORDS,
 	                       PD_META_KEY_DESCRIPTION,
 	                       PD_META_KEY_TYPE,
-	                       NULL};
+	                       nullptr};
 	const char * rtfkeys[] = {"title", "author", "manager", "company", "subject", "keywords", 
-	                         "doccomm", "category", NULL};
+	                         "doccomm", "category", nullptr};
 
 	if (!m_pie->isCopying ()) {
 		std::string propVal ;
@@ -4828,9 +4828,9 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 {
 	// emit everything necessary for <docfmt>* portion of the document
 
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	// <docfmt>
 
@@ -4901,9 +4901,9 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 {
 	m_apiThisSection = api;
 
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
 
@@ -4954,9 +4954,9 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	const gchar * szRestartAt = PP_evalProperty("section-restart-value",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-	const gchar * szHeaderExists = NULL;
+	const gchar * szHeaderExists = nullptr;
 	pSectionAP->getAttribute("header", szHeaderExists);
-	const gchar * szFooterExists = NULL;
+	const gchar * szFooterExists = nullptr;
 	pSectionAP->getAttribute("footer", szFooterExists);
 	const gchar * szDomDir = PP_evalProperty("dom-dir",
 												 pSpanAP,pBlockAP,pSectionAP,
@@ -5068,9 +5068,9 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 {
 	m_apiThisBlock = api;
 
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
 	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
@@ -5115,16 +5115,16 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
 {
 	PT_AttrPropIndex api = pcro->getIndexAP();
-	const PP_AttrProp * pBookmarkAP = NULL;
+	const PP_AttrProp * pBookmarkAP = nullptr;
 	m_pDocument->getAttrProp(api,&pBookmarkAP);
 
-	const gchar * szType = NULL;
+	const gchar * szType = nullptr;
 	bool bFound = pBookmarkAP->getAttribute("type", szType);
 	if (!bFound) {
 		UT_DEBUGMSG (("RTF_Export: cannot get type for bookmark\n"));
 		return;
 	}
-	const gchar * szName = NULL;
+	const gchar * szName = nullptr;
 	bFound = pBookmarkAP->getAttribute("name", szName);
 	if (!bFound) {
 		UT_DEBUGMSG (("RTF_Export: cannot get name for bookmark\n"));
@@ -5150,7 +5150,7 @@ void s_RTF_ListenerWriteDoc::_writeRDFAnchor(const PX_ChangeRecord_Object * pcro
 	UT_DEBUGMSG(("_writeRDFAnchor() pcro:%p\n", (void*)pcro));
 	
 	PT_AttrPropIndex api = pcro->getIndexAP();
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	m_pDocument->getAttrProp(api,&pAP);
 	RDFAnchor a(pAP);
 	
@@ -5198,10 +5198,10 @@ void s_RTF_ListenerWriteDoc::_writeRDFAnchor(const PX_ChangeRecord_Object * pcro
 void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro)
 {
 	PT_AttrPropIndex api = pcro->getIndexAP();
-	const PP_AttrProp * pHyperlinkAP = NULL;
+	const PP_AttrProp * pHyperlinkAP = nullptr;
 	m_pDocument->getAttrProp(api,&pHyperlinkAP);
 
-	const gchar * szHyper = NULL;
+	const gchar * szHyper = nullptr;
 	bool bFound = pHyperlinkAP->getAttribute("xlink:href", szHyper);
 	if (!bFound)
 	{
@@ -5228,11 +5228,11 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 void s_RTF_ListenerWriteDoc::_writeAnnotation(const PX_ChangeRecord_Object * pcro)
 {
 	PT_AttrPropIndex api = pcro->getIndexAP();
-	const PP_AttrProp * pAnnotationAP = NULL;
+	const PP_AttrProp * pAnnotationAP = nullptr;
 	m_pDocument->getAttrProp(api,&pAnnotationAP);
 	UT_return_if_fail(pAnnotationAP);
 
-	const gchar * szAnn = NULL;
+	const gchar * szAnn = nullptr;
 	bool bFound = pAnnotationAP->getAttribute("annotation", szAnn);
 	if (!bFound)
 	{
@@ -5250,12 +5250,12 @@ void s_RTF_ListenerWriteDoc::_writeAnnotation(const PX_ChangeRecord_Object * pcr
 void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcro)
 {
 	PT_AttrPropIndex api = pcro->getIndexAP();
-	const PP_AttrProp * pImageAP = NULL;
+	const PP_AttrProp * pImageAP = nullptr;
 	m_pDocument->getAttrProp(api,&pImageAP);
 
 	// fetch the "name" of the image and use it to fetch the actual image data.
 
-	const gchar * szDataID = NULL;
+	const gchar * szDataID = nullptr;
 	bool bFoundDataID = pImageAP->getAttribute("dataid",szDataID);
 	if (!bFoundDataID)
 	{
@@ -5266,7 +5266,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	std::string mimetype;
 	bool bFoundDataItem = m_pDocument->getDataItemDataByName(szDataID,
                                                              pbb, &mimetype,
-															 NULL);
+															 nullptr);
 	if (!bFoundDataItem)
 	{
 		UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
@@ -5276,12 +5276,12 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	// see if the image has a width/height attribute that should
 	// override the actual pixel size of the image.
 
-	const gchar * szWidthProp = NULL;
-	const gchar * szHeightProp = NULL;
-	const gchar * szCroplProp = NULL;
-	const gchar * szCroprProp = NULL;
-	const gchar * szCroptProp = NULL;
-	const gchar * szCropbProp = NULL;
+	const gchar * szWidthProp = nullptr;
+	const gchar * szHeightProp = nullptr;
+	const gchar * szCroplProp = nullptr;
+	const gchar * szCroprProp = nullptr;
+	const gchar * szCroptProp = nullptr;
+	const gchar * szCropbProp = nullptr;
 	bool bFoundWidthProperty = pImageAP->getProperty("width",szWidthProp);
 	bool bFoundHeightProperty = pImageAP->getProperty("height",szHeightProp);
 	bool bFoundCropl = pImageAP->getProperty ("cropl",szCroplProp);
@@ -5330,7 +5330,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			{
 				m_pie->_rtf_keyword("svgblip");
 				UT_sint32 layoutwidth,layoutheight;
-				UT_SVG_getDimensions(pbb,NULL,iImageWidth,iImageHeight,layoutwidth,layoutheight);
+				UT_SVG_getDimensions(pbb,nullptr,iImageWidth,iImageHeight,layoutwidth,layoutheight);
 			}
 
 			// compute scale factors...

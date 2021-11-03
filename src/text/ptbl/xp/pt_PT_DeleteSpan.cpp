@@ -660,10 +660,10 @@ bool pt_PieceTable::changeTrackingAddParaAttribute( pf_Frag_Strux* pfs,
     else
     {
         const gchar name[] = "revision";
-        const gchar * pRevision = NULL;
+        const gchar * pRevision = nullptr;
                     
         if(!pAP2->getAttribute(name, pRevision))
-            pRevision = NULL;
+            pRevision = nullptr;
         PP_RevisionAttr Revisions(pRevision);
         if( pRevision && strstr(pRevision, attr ))
         {
@@ -678,7 +678,7 @@ bool pt_PieceTable::changeTrackingAddParaAttribute( pf_Frag_Strux* pfs,
             const gchar * ppRevAttrib[3];
             ppRevAttrib[0] = name;
             ppRevAttrib[1] = Revisions.getXMLstring();
-            ppRevAttrib[2] = NULL;
+            ppRevAttrib[2] = nullptr;
 
             UT_DEBUGMSG(("ODTCT: changeTrackingAddParaAttribute() adding attr:%s v:%s for block at:%d\n",
                          attr, v.c_str(), pfs->getPos() ));
@@ -687,7 +687,7 @@ bool pt_PieceTable::changeTrackingAddParaAttribute( pf_Frag_Strux* pfs,
             PTStruxType eStruxType = pfs->getStruxType();
 
             if(! _realChangeStruxFmt(PTC_AddFmt, pfs->getPos() + iLen, pfs->getPos() + iLen,
-                                     ppRevAttrib, NULL,
+                                     ppRevAttrib, nullptr,
                                      eStruxType, true))
             {
                 return false;
@@ -809,7 +809,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		iRealDeleteCount = 0;
 
 		const gchar name[] = "revision";
-		const gchar * pRevision = NULL;
+		const gchar * pRevision = nullptr;
 
 
 #ifdef BUILD_ODT_GCT
@@ -1001,7 +1001,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			}
 			
 			if(!pAP2->getAttribute(name, pRevision))
-				pRevision = NULL;
+				pRevision = nullptr;
 
             // UT_DEBUGMSG(("ODTCT: deleteSpan(revisions) while.3 dpos1:%d dpos2:%d pRevision:%p\n", dpos1, dpos2, pRevision ));
             // if( pRevision )
@@ -1048,7 +1048,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					if(bHasEndStrux || bHdrFtr)
 					{
 						PT_DocPosition posEnd = dposEnd;
-						for(pf_Frag * pf = pf1->getNext(); pf != NULL; pf = pf->getNext())
+						for(pf_Frag * pf = pf1->getNext(); pf != nullptr; pf = pf->getNext())
 						{
 							posEnd += pf->getLength();
 							
@@ -1115,7 +1115,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 						bHdrFtr = false; // only do this once
 						pf_Frag_Strux_SectionHdrFtr * pfHdr = static_cast<pf_Frag_Strux_SectionHdrFtr *>(pf1);
 
-						const PP_AttrProp * pAP = NULL;
+						const PP_AttrProp * pAP = nullptr;
 
 						if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
 							return false;
@@ -1241,7 +1241,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 						bHdrFtr = false; // only do this once
 						pf_Frag_Strux_SectionHdrFtr * pfHdr = static_cast<pf_Frag_Strux_SectionHdrFtr *>(pf1);
 
-						const PP_AttrProp * pAP = NULL;
+						const PP_AttrProp * pAP = nullptr;
 
 						if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
 							return false;
@@ -1286,7 +1286,7 @@ bool pt_PieceTable::_fixHdrFtrReferences(const gchar * pszHdrType, const gchar *
 	UT_return_val_if_fail( pszHdrType && pszHdrId, false );
 	
 	bool bRet = true;
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 
 	// look for any doc sections that referrence this header type and id
 	const pf_Frag * pFrag = m_fragments.getFirst();
@@ -1299,7 +1299,7 @@ bool pt_PieceTable::_fixHdrFtrReferences(const gchar * pszHdrType, const gchar *
 				continue;
 
 			// check for normal attribute
-			const gchar * pszMyHdrId2 = NULL;
+			const gchar * pszMyHdrId2 = nullptr;
 			if(pAP->getAttribute(pszHdrType, pszMyHdrId2) && pszMyHdrId2)
 			{
 				if(0 == strcmp(pszMyHdrId2, pszHdrId))
@@ -1324,7 +1324,7 @@ bool pt_PieceTable::_fixHdrFtrReferences(const gchar * pszHdrType, const gchar *
 					const PP_Revision * pRev2 = Revisions.getNthRevision(i);
 					UT_return_val_if_fail( pRev2, false );
 
-					const gchar * pszMyHdrId = NULL;
+					const gchar * pszMyHdrId = nullptr;
 					if(pRev2->getAttribute(pszHdrType, pszMyHdrId) && pszMyHdrId)
 					{
 						if(0 != strcmp(pszHdrId, pszMyHdrId))
@@ -1598,7 +1598,7 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 	bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_return_val_if_fail (bFound, false);
 
-	pf_Frag_Strux * pfsContainer = NULL;
+	pf_Frag_Strux * pfsContainer = nullptr;
 	bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_return_val_if_fail (bFoundStrux,false);
 
@@ -1990,7 +1990,7 @@ bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
 		{
 			pf_Frag * pfNewTemp;
 			PT_BlockOffset fragOffsetNewTemp;
-			pf_Frag_Strux * pfsContainerTemp = NULL;
+			pf_Frag_Strux * pfsContainerTemp = nullptr;
 			bool bFoundStrux = _getStruxFromPosition(dposTemp,&pfsContainerTemp);
 			if(isEndFootnote(pfsContainerTemp))
 			{
@@ -2066,18 +2066,18 @@ pt_PieceTable::_deleteComplexSpanHAR( pf_Frag_Object *pO,
     bool bResult = false;
     UT_DebugOnly<bool> bResult2;
     PT_DocPosition posComrade;
-    pf_Frag_Strux * pfsContainer2 = NULL;
+    pf_Frag_Strux * pfsContainer2 = nullptr;
     pf_Frag * pF;
     std::string startAttr = startAttrCSTR;
     std::string startAttrInitialCap = startAttr;
     if( !startAttrInitialCap.empty() )
         startAttrInitialCap[0] = toupper( startAttrInitialCap[0] );
 
-    const PP_AttrProp * pAP = NULL;
+    const PP_AttrProp * pAP = nullptr;
     pO->getPieceTable()->getAttrProp(pO->getIndexAP(),&pAP);
     UT_return_val_if_fail (pAP, false);
-    const gchar* pszHref = NULL;
-    const gchar* pszHname  = NULL;
+    const gchar* pszHref = nullptr;
+    const gchar* pszHname  = nullptr;
     UT_uint32 k = 0;
     bool bStart = false;
     while((pAP)->getNthAttribute(k++,pszHname, pszHref))
@@ -2212,7 +2212,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 									   PT_DocPosition & origPos2,
 									   UT_Stack * stDelayStruxDelete)
 {
-	pf_Frag * pfNewEnd = NULL;
+	pf_Frag * pfNewEnd = nullptr;
 	UT_uint32 fragOffsetNewEnd = 0;
 	bool bPrevWasCell = false;
 	bool bPrevWasEndTable = false;
@@ -2228,7 +2228,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 	bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_return_val_if_fail (bFound, false);
 	UT_DEBUGMSG(("deleteComplex span dpos1 %d dpos2 %d pf_First %p pf_First pos %d \n", dpos1, dpos2, (void*)pf_First, pf_First->getPos()));
-	pf_Frag_Strux * pfsFirstBlock = NULL;
+	pf_Frag_Strux * pfsFirstBlock = nullptr;
 	if ((pf_First !=pf_End) && (pf_First->getType() == pf_Frag::PFT_Strux))
 	{
 	    pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf_First);
@@ -2244,7 +2244,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 		}
 	}
 
-	pf_Frag_Strux * pfsContainer = NULL;
+	pf_Frag_Strux * pfsContainer = nullptr;
 	bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_return_val_if_fail (bFoundStrux, false);
 	if(isEndFootnote(pfsContainer))
@@ -2611,7 +2611,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 				{
 					bool bFoundStrux3;
 					PT_DocPosition posComrade;
-					pf_Frag_Strux * pfsContainer2 = NULL;
+					pf_Frag_Strux * pfsContainer2 = nullptr;
 
 					po_Bookmark * pB = pO->getBookmark();
 					UT_return_val_if_fail (pB, false);
@@ -2716,15 +2716,15 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
                 // {
 				//      bool bFoundStrux2;
 				//      PT_DocPosition posComrade;
-				//      pf_Frag_Strux * pfsContainer2 = NULL;
+				//      pf_Frag_Strux * pfsContainer2 = nullptr;
 
 				//      pf_Frag * pF;
 
-				//      const PP_AttrProp * pAP = NULL;
+				//      const PP_AttrProp * pAP = nullptr;
 				//      pO->getPieceTable()->getAttrProp(pO->getIndexAP(),&pAP);
 				//      UT_return_val_if_fail (pAP, false);
-				//      const gchar* pszHref = NULL;
-				//      const gchar* pszHname  = NULL;
+				//      const gchar* pszHref = nullptr;
+				//      const gchar* pszHname  = nullptr;
 				//      UT_uint32 k = 0;
 				//      bool bStart = false;
 				//      while((pAP)->getNthAttribute(k++,pszHname, pszHref))
@@ -2862,15 +2862,15 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
                 //     UT_ASSERT(pO->getObjectType() == PTO_Annotation);
 				//     bool bFoundStrux2;
 				//     PT_DocPosition posComrade;
-				//     pf_Frag_Strux * pfsContainer2 = NULL;
+				//     pf_Frag_Strux * pfsContainer2 = nullptr;
 
 				//     pf_Frag * pF;
 
-				//     const PP_AttrProp * pAP = NULL;
+				//     const PP_AttrProp * pAP = nullptr;
 				//     pO->getPieceTable()->getAttrProp(pO->getIndexAP(),&pAP);
 				//     UT_return_val_if_fail (pAP, false);
-				//     const gchar* pszHref = NULL;
-				//     const gchar* pszHname  = NULL;
+				//     const gchar* pszHref = nullptr;
+				//     const gchar* pszHname  = nullptr;
 				//     UT_uint32 k = 0;
 				//     bool bStart = false;
 				//     while((pAP)->getNthAttribute(k++,pszHname, pszHref))
@@ -3050,7 +3050,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 											 PT_DocPosition dpos2)
 {
-	pf_Frag * pfNewEnd = NULL;
+	pf_Frag * pfNewEnd = nullptr;
 	UT_uint32 fragOffsetNewEnd = 0;
 
 	pf_Frag * pf_First;
@@ -3061,7 +3061,7 @@ bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 	bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_return_val_if_fail (bFound, false);
 
-	pf_Frag_Strux * pfsContainer = NULL;
+	pf_Frag_Strux * pfsContainer = nullptr;
 	bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_return_val_if_fail (bFoundStrux, false);
 
@@ -3365,7 +3365,7 @@ void pt_PieceTable::_tweakFieldSpan(PT_DocPosition & dpos1,
 	bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_return_if_fail (bFound);
 
-	pf_Frag_Strux * pfsContainer = NULL;
+	pf_Frag_Strux * pfsContainer = nullptr;
 	bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_return_if_fail (bFoundStrux);
 
@@ -3374,7 +3374,7 @@ void pt_PieceTable::_tweakFieldSpan(PT_DocPosition & dpos1,
         (static_cast<pf_Frag_Text *>(pf_First)->getField()))
     {
         pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf_First);
-        pf_Frag_Text * pft2 = NULL;
+        pf_Frag_Text * pft2 = nullptr;
         // we can't delete part of a field so widen deletion to
         // include object at start
         while (pft->getPrev()->getType() == pf_Frag::PFT_Text)

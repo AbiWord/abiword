@@ -34,7 +34,7 @@
  */
 ODe_DocumentData::ODe_DocumentData(PD_Document* pAbiDoc) :
     m_styles(pAbiDoc),
-    m_pOfficeTextTemp(NULL),
+    m_pOfficeTextTemp(nullptr),
     m_pAbiDoc(pAbiDoc)
 {
 }
@@ -54,7 +54,7 @@ ODe_DocumentData::~ODe_DocumentData() {
     }    
     DELETEP(pMasterPageVector);
     
-    if (m_pOfficeTextTemp != NULL) {
+    if (m_pOfficeTextTemp != nullptr) {
         ODe_gsf_output_close(m_pOfficeTextTemp);
     }
 }
@@ -93,7 +93,7 @@ bool ODe_DocumentData::doPreListeningWork() {
     
     
     m_pOfficeTextTemp = gsf_output_memory_new();
-    if (m_pOfficeTextTemp == NULL) {
+    if (m_pOfficeTextTemp == nullptr) {
         return false;
     }
     
@@ -336,7 +336,7 @@ bool ODe_DocumentData::writeContentXML(GsfOutfile* pOdt) {
 			 gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pOfficeTextTemp)));
     
     ODe_gsf_output_close (m_pOfficeTextTemp);
-    m_pOfficeTextTemp = NULL;
+    m_pOfficeTextTemp = nullptr;
     
     ODe_writeUTF8String(pContentStream,
         "  </office:text>\n"

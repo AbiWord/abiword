@@ -53,7 +53,7 @@ UT_UCS4Char    GR_Graphics::s_cDefaultGlyph   = '?';
 
 GR_Font::GR_Font():
 	m_eType(GR_FONT_UNSET),
-	m_pCharWidths(NULL)
+	m_pCharWidths(nullptr)
 {
 	s_iAllocCount++;
 	m_iAllocNo = s_iAllocCount;
@@ -91,7 +91,7 @@ UT_sint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 	
 	UT_sint32	iWidth = GR_CW_UNKNOWN;
 
-	if (m_pCharWidths == NULL) {
+	if (m_pCharWidths == nullptr) {
 		m_pCharWidths = GR_CharWidthsCache::getCharWidthCache()->getWidthsForFont(this);
 	}
 	iWidth = m_pCharWidths->getWidth(c);
@@ -126,7 +126,7 @@ GR_CharWidths* GR_Font::newFontWidths(void) const
 #ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	return new GR_CharWidths();
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -258,7 +258,7 @@ GR_Graphics::GR_Graphics()
 	  m_paintCount(0),
 	  m_bDoubleBufferingActive(false),
 	  m_bDrawingSuspended(false),
-	  m_pCaret(NULL),
+	  m_pCaret(nullptr),
 	  m_bIsPortrait(true),
 	  m_bSpawnedRedraw(false),
 	  m_bExposePending(false),
@@ -280,7 +280,7 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 							   const char* pszFontSize,
 							   const char* pszLang)
 {
-	GR_Font * pFont = NULL;
+	GR_Font * pFont = nullptr;
 
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?)
@@ -385,7 +385,7 @@ void GR_Graphics::_destroyFonts ()
 GR_Caret * GR_Graphics::getNthCaret(UT_sint32 i) const
 {
 	if (i>= m_vecCarets.getItemCount())
-		return NULL;
+		return nullptr;
 	return m_vecCarets.getNthItem(i);
 }
 
@@ -399,7 +399,7 @@ GR_Caret * GR_Graphics::getCaret(const std::string& sID) const
 			return m_vecCarets.getNthItem(i);
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 AllCarets * GR_Graphics::allCarets(void)
@@ -713,7 +713,7 @@ void GR_Graphics::drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
 GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ConstByteBufPtr & pBB, const std::string& mimetype,
 									  UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
-   GR_VectorImage * vectorImage = NULL;
+   GR_VectorImage * vectorImage = nullptr;
 
    if (iType == GR_Image::GRT_Unknown) {
       if (GR_Image::getBufferType(pBB) == GR_Image::GRT_Vector)
@@ -1174,7 +1174,7 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 
 	// make sure that we invalidate the static buffers if we own them
 	if(pRI->s_pOwner == pRI)
-		pRI->s_pOwner = NULL;
+		pRI->s_pOwner = nullptr;
 	
 	return true;
 }
@@ -1252,7 +1252,7 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	
 	// make sure that we invalidate the static buffers if we own them
 	if(RI.s_pOwner == &RI)
-		RI.s_pOwner = NULL;
+		RI.s_pOwner = nullptr;
 	
 }
 
@@ -1391,7 +1391,7 @@ UT_sint32 GR_Graphics::resetJustification(GR_RenderInfo & ri, bool /* bPermanent
 	{
 		UT_sint32 iSpaceWidthBefore = RI.m_iSpaceWidthBeforeJustification;
 
-		if(RI.m_pWidths == NULL)
+		if(RI.m_pWidths == nullptr)
 		{
 			return 0;
 		}
@@ -1413,7 +1413,7 @@ UT_sint32 GR_Graphics::resetJustification(GR_RenderInfo & ri, bool /* bPermanent
 		RI.m_iJustificationAmount = 0;
 
 		if(RI.s_pOwner == &RI)
-			RI.s_pOwner = NULL;
+			RI.s_pOwner = nullptr;
 
 	}
 
@@ -1520,7 +1520,7 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 		}
 
 		if(RI.s_pOwner == &RI)
-			RI.s_pOwner = NULL;
+			RI.s_pOwner = nullptr;
 	}
 }
 
@@ -1690,12 +1690,12 @@ GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo &
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 
 	if(indx < 0)
-		return NULL;
+		return nullptr;
 
 	GR_Allocator alloc = m_vAllocators.getNthItem(indx);
 				
 	if(!alloc)
-		return NULL;
+		return nullptr;
 
 	return alloc(param);
 }
@@ -1711,12 +1711,12 @@ const char *  GR_GraphicsFactory::getClassDescription(UT_uint32 iClassId) const
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 
 	if(indx < 0)
-		return NULL;
+		return nullptr;
 					
 	GR_Descriptor descr = m_vDescriptors.getNthItem(indx);
 				
 	if(!descr)
-		return NULL;
+		return nullptr;
 
 	return descr();
 }
@@ -1753,10 +1753,10 @@ GR_Graphics* GR_Graphics::newNullGraphics()
 	GR_CairoNullGraphicsAllocInfo ai;
 	return XAP_App::getApp()->newGraphics(GRID_CAIRO_NULL, (GR_AllocInfo&)ai);
 #elif defined(TOOLKIT_WIN)
-	GR_Win32AllocInfo ai (GR_Win32Graphics::createbestmetafilehdc(), GR_Win32Graphics::getDocInfo(), NULL);
+	GR_Win32AllocInfo ai (GR_Win32Graphics::createbestmetafilehdc(), GR_Win32Graphics::getDocInfo(), nullptr);
 	return XAP_App::getApp()->newGraphics(GRID_WIN32, (GR_AllocInfo&)ai);
 #elif defined(TOOLKIT_COCOA)
 #endif
 
-	return NULL;
+	return nullptr;
 }

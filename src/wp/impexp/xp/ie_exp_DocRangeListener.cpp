@@ -55,9 +55,9 @@ IE_Exp_DocRangeListener::IE_Exp_DocRangeListener(PD_DocumentRange * pDocRange, P
   //
   // Start by exporting the data items to the document
   //
-     PD_DataItemHandle pHandle = NULL;
+     PD_DataItemHandle pHandle = nullptr;
      std::string mimeType;
-     const char * szName= NULL;
+     const char * szName= nullptr;
      UT_ConstByteBufPtr pBuf;
      UT_sint32 k = 0;
      while (m_pSourceDoc->enumDataItems(k, &pHandle, &szName, pBuf, &mimeType))
@@ -76,7 +76,7 @@ IE_Exp_DocRangeListener::IE_Exp_DocRangeListener(PD_DocumentRange * pDocRange, P
           PD_Style * pStyle = VecStyles.getNthItem(i);
           PT_AttrPropIndex iAP = pStyle->getIndexAP();
           PP_PropertyVector atts;
-          const PP_AttrProp* pAP = NULL;
+          const PP_AttrProp* pAP = nullptr;
           if (m_pSourceDoc->getAttrProp(iAP, &pAP) && pAP)
           {
 		atts = pAP->getAttributes();
@@ -142,7 +142,7 @@ bool  IE_Exp_DocRangeListener::populate(fl_ContainerLayout* /* sfh */,
 	     m_bFirstBlock = true;
 	}
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
-	const PP_AttrProp* pAP = NULL;
+	const PP_AttrProp* pAP = nullptr;
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate in PasteListener indexAP %d \n",indexAP));
 	PP_PropertyVector atts;
 	PP_PropertyVector props;
@@ -210,7 +210,7 @@ bool  IE_Exp_DocRangeListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
-	const PP_AttrProp* pAP = NULL;
+	const PP_AttrProp* pAP = nullptr;
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate Strux in PasteListener \n"));
 	PP_PropertyVector atts;
 	PP_PropertyVector props;

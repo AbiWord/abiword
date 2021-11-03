@@ -34,8 +34,8 @@
 
 fb_LineBreaker::fb_LineBreaker()
 :
-	m_pFirstRunToKeep(NULL),
-	m_pLastRunToKeep(NULL),
+	m_pFirstRunToKeep(nullptr),
+	m_pLastRunToKeep(nullptr),
 	m_iMaxLineWidth(0),
 	m_iWorkingLineWidth(0)
 {
@@ -105,7 +105,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 			fp_Run *pOriginalLastOnLine = pLine->getLastRun();
 
 			m_pFirstRunToKeep = pLine->getFirstRun();
-			m_pLastRunToKeep = NULL;
+			m_pLastRunToKeep = nullptr;
 			
 			m_iMaxLineWidth = pLine->getAvailableWidth();
 
@@ -114,13 +114,13 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 //			bool bFoundBreakAfter = false;
 //			bool bFoundSplit = false;
 
-//			fp_TextRun* pRunToSplit = NULL;
-//			fp_TextRun* pOtherHalfOfSplitRun = NULL;
+//			fp_TextRun* pRunToSplit = nullptr;
+//			fp_TextRun* pOtherHalfOfSplitRun = nullptr;
 
-			fp_Run* pOffendingRun = NULL;
+			fp_Run* pOffendingRun = nullptr;
 
 			fp_Run* pCurrentRun = m_pFirstRunToKeep;
-			fp_Run* pPreviousRun = NULL;
+			fp_Run* pPreviousRun = nullptr;
 
 			while (true)
 			{
@@ -396,7 +396,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 	}
 	fp_Run *pOffendingRun = pCurrentRun;
 	fp_RunSplitInfo splitInfo;
-	fp_TextRun *pRunToSplit = NULL;
+	fp_TextRun *pRunToSplit = nullptr;
 
 	bool bFoundBreakAfter = false;
 	xxx_UT_DEBUGMSG(("Offending run is... \n"));
@@ -572,7 +572,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 {
 
 	/*
-	  If m_pLastRunToKeep is NULL here, that means that
+	  If m_pLastRunToKeep is nullptr here, that means that
 	  all remaining runs in this block will fit on this
 	  line.
 	*/
@@ -600,9 +600,9 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		}
 	}
 
-	fp_Line* pNextLine = NULL;
+	fp_Line* pNextLine = nullptr;
 	xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... \n"));
-	if ( m_pLastRunToKeep != NULL
+	if ( m_pLastRunToKeep != nullptr
 		&& (pLine->getLastRun() != m_pLastRunToKeep)
 		)
 	{
@@ -610,8 +610,8 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		pNextLine = static_cast<fp_Line *>(pLine->getNext());
 		if (!pNextLine)
 		{
-			fp_Line* pNewLine = NULL;
-			if(pPage == NULL)
+			fp_Line* pNewLine = nullptr;
+			if(pPage == nullptr)
 			{
 				pNewLine  = static_cast<fp_Line *>(pBlock->getNewContainer());
 			}
@@ -651,7 +651,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 // More repair code I think...
 // run is not on the Line! It's totally lost...
 //
-				pRunToBump->setLine(NULL);
+				pRunToBump->setLine(nullptr);
 			}
 			
 			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);

@@ -83,7 +83,7 @@ bool AP_Win32Toolbar_StyleCombo::populate(void)
 	// HYP:  only call this method from shared code? 
 	const PD_Style * pStyle;
 
-	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	UT_GenericVector<PD_Style*> * pStyles = nullptr;
 	pDoc->enumStyles(pStyles);
 	UT_return_val_if_fail( pStyles, false );
 	UT_uint32 iStyleCount = getDoc()->getStyleCount();
@@ -119,7 +119,7 @@ bool AP_Win32Toolbar_StyleCombo::repopulate(void)
 	m_pDocument = static_cast<PD_Document *>(pAD_Doc);
 	const PD_Style * pStyle;
 
-	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	UT_GenericVector<PD_Style*> * pStyles = nullptr;
 	m_pDocument->enumStyles(pStyles);
 	UT_return_val_if_fail( pStyles, false );
 	UT_uint32 iStyleCount = m_pDocument->getStyleCount();

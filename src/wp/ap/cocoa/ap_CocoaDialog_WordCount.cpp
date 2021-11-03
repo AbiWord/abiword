@@ -153,7 +153,7 @@ void AP_CocoaDialog_WordCount::destroy(void)
 {
 	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_WordCount"])
 	{
-        _xap = NULL;
+        _xap = nullptr;
 	}
 	return self;
 }
@@ -188,7 +188,7 @@ void AP_CocoaDialog_WordCount::destroy(void)
 	case AP_Dialog_WordCount::DIALOG_WID:
 		return new XAP_CocoaWidget([self window]);
 	case AP_Dialog_WordCount::CLOSE_BTN_WID:
-		return new XAP_CocoaWidget(NULL);
+		return new XAP_CocoaWidget(nullptr);
 	case AP_Dialog_WordCount::TITLE_LBL_WID:
 		return new XAP_CocoaWidget(_titleLabel);
 	case AP_Dialog_WordCount::PAGES_LBL_WID:
@@ -220,7 +220,7 @@ void AP_CocoaDialog_WordCount::destroy(void)
 	case AP_Dialog_WordCount::WORDSNF_VAL_WID:
 		return new XAP_CocoaWidget(_wordNoFNCount);
 	}
-	return NULL;
+	return nullptr;
 }
 
 

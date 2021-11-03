@@ -174,7 +174,7 @@ BOOL AP_Win32Dialog_ListRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /
 					item.iSubItem = 0;
 					item.iItem = ListView_GetSelectionMark(h);
 					item.mask = LVIF_PARAM;
-					item.pszText = 0;
+					item.pszText = nullptr;
 					item.cchTextMax = 0;
 
 					ListView_GetItem(h,&item);

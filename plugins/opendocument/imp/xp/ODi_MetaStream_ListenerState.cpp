@@ -155,11 +155,11 @@ void ODi_MetaStream_ListenerState::endElement (const gchar* pName,
 
         } else if (!strcmp (pName, "meta:user-defined")) {
 
-            const gchar* pMetaName = NULL;
+            const gchar* pMetaName = nullptr;
             
             pMetaName = m_rElementStack.getStartTag(0)->getAttributeValue("meta:name");
             
-            UT_ASSERT(pMetaName != NULL);
+            UT_ASSERT(pMetaName != nullptr);
 
             m_pDocument->setMetaDataProp(pMetaName, m_charData);
 

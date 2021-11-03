@@ -39,7 +39,7 @@ class AiksaurusGTK_menudata
         AiksaurusGTK_picbutton* d_picbutton_ptr;
         GList* d_glist_ptr;
 
-        AiksaurusGTK_menudata() : d_picbutton_ptr(NULL), d_glist_ptr(NULL)
+        AiksaurusGTK_menudata() : d_picbutton_ptr(nullptr), d_glist_ptr(nullptr)
         {
 
         }
@@ -61,9 +61,9 @@ AiksaurusGTK_picbutton::AiksaurusGTK_picbutton(GtkWidget *window, const char* st
     // Initialize with no menu stuff at all.
 	d_hasmenu = false;
 	d_menushowing = false;
-    d_menu_data_ptr = NULL;
-    d_menu_options_ptr = NULL;
-    d_menu_ptr = NULL;
+    d_menu_data_ptr = nullptr;
+    d_menu_options_ptr = nullptr;
+    d_menu_ptr = nullptr;
     d_numVisible = 0;
 
 	d_enabled = true;
@@ -111,7 +111,7 @@ AiksaurusGTK_picbutton::~AiksaurusGTK_picbutton()
         gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(d_menu_ptr)), d_menu_ptr);
     }
 
-    if (d_menu_data_ptr != NULL)
+    if (d_menu_data_ptr != nullptr)
         delete[] d_menu_data_ptr;
 }
 
@@ -392,7 +392,7 @@ AiksaurusGTK_picbutton::addMenu
 void
 AiksaurusGTK_picbutton::menuCreate()
 {
-    if (d_menu_ptr != NULL) {
+    if (d_menu_ptr != nullptr) {
         gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(d_menu_ptr)), d_menu_ptr);
     }
 
@@ -407,10 +407,10 @@ AiksaurusGTK_picbutton::menuCreate()
 		this
 	);
 
-    if (d_menu_data_ptr != NULL)
+    if (d_menu_data_ptr != nullptr)
         delete[] d_menu_data_ptr;
 
-    d_menu_data_ptr = NULL;
+    d_menu_data_ptr = nullptr;
 }
 
 
@@ -430,7 +430,7 @@ AiksaurusGTK_picbutton::updateMenuOptions()
     int i = 0;
     d_menu_data_ptr = new AiksaurusGTK_menudata[ d_menu_options_ptr->size() ];
 
-    while(itor != NULL)
+    while(itor != nullptr)
     {
         if (d_numVisible > 0)
         {

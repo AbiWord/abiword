@@ -47,7 +47,7 @@ public:
 		if(s_pInstance)
 		{
 			delete s_pInstance;
-			s_pInstance = NULL;
+			s_pInstance = nullptr;
 		}
 	}
 

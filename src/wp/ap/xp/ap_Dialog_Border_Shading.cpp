@@ -59,19 +59,19 @@
 AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogbordershading"),
 	  m_answer(a_OK),
-	  m_pBorderShadingPreview(NULL),
+	  m_pBorderShadingPreview(nullptr),
 	  m_borderColor(0,0,0),
 	  m_lineStyle(LS_NORMAL),
-	  m_bgFillStyle(NULL),
+	  m_bgFillStyle(nullptr),
 	  m_bSettingsChanged(false),
 	  m_iOldPos(0),
-	  m_pAutoUpdaterMC(NULL),
+	  m_pAutoUpdaterMC(nullptr),
 	  m_bDestroy_says_stopupdating(false),
 	  m_bAutoUpdate_happening_now(false)
 // 	  m_sImagePath(""),
 // 	  m_iGraphicType(0),
-// 	  m_pImage(NULL),
-// 	  m_pGraphic(NULL)
+// 	  m_pImage(nullptr),
+// 	  m_pGraphic(nullptr)
 {
 	const char * sBordersThickness[BORDER_SHADING_NUMTHICKNESS] ={"0.25pt","0.5pt",
 													   "0.75pt","1.0pt",
@@ -120,7 +120,7 @@ void AP_Dialog_Border_Shading::setActiveFrame(XAP_Frame * /*pFrame*/)
 void AP_Dialog_Border_Shading::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	gchar * tmp = NULL;
+	gchar * tmp = nullptr;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_BorderShading_Title));
 	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),sizeof(m_WindowName));
 	FREEP(tmp);
@@ -137,14 +137,14 @@ void AP_Dialog_Border_Shading::startUpdater(void)
 
 void AP_Dialog_Border_Shading::stopUpdater(void)
 {
-	if(m_pAutoUpdaterMC == NULL)
+	if(m_pAutoUpdaterMC == nullptr)
 	{
 		return;
 	}
 	m_bDestroy_says_stopupdating = true;
 	m_pAutoUpdaterMC->stop();
 	DELETEP(m_pAutoUpdaterMC);
-	m_pAutoUpdaterMC = NULL;
+	m_pAutoUpdaterMC = nullptr;
 }
 /*!
  Auto-updater of the dialog.

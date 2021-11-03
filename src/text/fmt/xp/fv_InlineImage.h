@@ -62,7 +62,7 @@ public:
 	void                  mouseCopy(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
 	bool                  drawImage(void);
-	void                  getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_AttrProp ** pAP = NULL );
+	void                  getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_AttrProp ** pAP = nullptr );
 	PP_AttrProp *         getImageAPFromXY(UT_sint32 x, UT_sint32 y);
 	PT_DocPosition        getPosFromXY(UT_sint32 x, UT_sint32 y) const;
 	void                  drawCursor(PT_DocPosition newPos);

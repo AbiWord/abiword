@@ -167,10 +167,10 @@ AP_UnixDialog_Spell::AP_UnixDialog_Spell (XAP_DialogFactory * pDlgFactory,
 										  XAP_Dialog_Id 	  id)
 	: AP_Dialog_Spell (pDlgFactory, id)
 {
-	m_wDialog = NULL;
-	m_txWrong = NULL;
-	m_eChange = NULL;
-	m_lvSuggestions = NULL;
+	m_wDialog = nullptr;
+	m_txWrong = nullptr;
+	m_eChange = nullptr;
+	m_lvSuggestions = nullptr;
 }
 
 /*!
@@ -318,12 +318,12 @@ AP_UnixDialog_Spell::_constructWindow (void)
 	g_object_unref (G_OBJECT (store));
 
 	// Column Suggestion
-	GtkCellRenderer *renderer = NULL;
+	GtkCellRenderer *renderer = nullptr;
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_lvSuggestions),
 												-1, "Name", renderer,
 												"text", COLUMN_SUGGESTION,
-												NULL);
+												nullptr);
 	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_lvSuggestions), 0);
 	gtk_tree_view_column_set_sort_column_id (column, COLUMN_SUGGESTION);
 
@@ -362,9 +362,9 @@ AP_UnixDialog_Spell::_updateWindow (void)
 	// insert misspelled word (in highlight color)
 	p = m_pWordIterator->getCurrentWord(iLength);
 	gchar * word = (gchar*) _convertToMB(p, iLength);
-	GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, NULL, "foreground-rgba", &m_highlight, NULL);
+	GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, nullptr, "foreground-rgba", &m_highlight, nullptr);
 	gtk_text_buffer_get_end_iter(buffer, &iter2);
-	gtk_text_buffer_insert_with_tags(buffer, &iter2, word, -1, txt_tag, NULL);
+	gtk_text_buffer_insert_with_tags(buffer, &iter2, word, -1, txt_tag, nullptr);
 	// word is freed at the end of the method...
 	
 	// insert end of sentence
@@ -391,7 +391,7 @@ AP_UnixDialog_Spell::_updateWindow (void)
 	
 	// Detach model for faster updates
 	g_object_ref (G_OBJECT (model));	
-	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvSuggestions), NULL);
+	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvSuggestions), nullptr);
 	gtk_list_store_clear (GTK_LIST_STORE (model));	
      
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions));
@@ -407,28 +407,28 @@ AP_UnixDialog_Spell::_updateWindow (void)
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions,s);
 
 		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-		gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
+		gtk_list_store_set (GTK_LIST_STORE (model), &iter,
 				    COLUMN_SUGGESTION, s.c_str(),
 							COLUMN_NUMBER, -1,
 							-1);
 
 		g_signal_handler_block(G_OBJECT(m_eChange), m_replaceHandlerID);
 		XAP_gtk_entry_set_text(GTK_ENTRY(m_eChange), word);
-		g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);      
-	} 
+		g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);
+	}
 	else
 	{
 
 		GtkTreeIter iter;
 		gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
 
-		gchar * suggest = NULL;   
+		gchar * suggest = nullptr;
 		for (UT_sint32 i = 0; i < m_Suggestions->getItemCount(); i++)
 		{
 			suggest = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(i));
 			gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-			gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
-								COLUMN_SUGGESTION, suggest,  
+			gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+								COLUMN_SUGGESTION, suggest,
 								COLUMN_NUMBER, i,
 								-1);
 			FREEP(suggest);
@@ -469,7 +469,7 @@ void
 AP_UnixDialog_Spell::onChangeClicked ()
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::onChangeClicked()\n"));
-	UT_UCSChar * replace = NULL;
+	UT_UCSChar * replace = nullptr;
 	replace = _convertFromMB((char*)XAP_gtk_entry_get_text(GTK_ENTRY(m_eChange)));
 	if (!replace || !UT_UCS4_strlen(replace))
 	{
@@ -488,7 +488,7 @@ void
 AP_UnixDialog_Spell::onChangeAllClicked ()
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::onChangeAllClicked()\n"));
-	UT_UCSChar * replace = NULL;
+	UT_UCSChar * replace = nullptr;
 	replace = _convertFromMB((char*)XAP_gtk_entry_get_text(GTK_ENTRY(m_eChange)));
 	if (!replace || !UT_UCS4_strlen(replace))
 	{
@@ -543,7 +543,7 @@ AP_UnixDialog_Spell::onSuggestionSelected ()
 		return;
    
 	GtkTreeIter iter;
-	gchar * newreplacement = NULL;
+	gchar * newreplacement = nullptr;
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvSuggestions));
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions));
 	gtk_tree_selection_get_selected (selection, &model, &iter);
@@ -574,7 +574,7 @@ AP_UnixDialog_Spell::onSuggestionChanged ()
 		gtk_tree_path_free (first);
 		do
 		{
-			gchar *label = NULL;
+			gchar *label = nullptr;
 			gtk_tree_model_get (model, &iter, COLUMN_SUGGESTION, &label, -1);
 			if (g_ascii_strncasecmp (modtext, label, strlen (modtext)) == 0)
 			{

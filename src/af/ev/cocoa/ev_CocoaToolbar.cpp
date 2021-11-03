@@ -138,8 +138,8 @@
 
 				// ?? [NSColorPanel setPickerMask:(NSColorPanelRGBModeMask|NSColorPanelWheelModeMask|NSColorPanelGrayModeMask)];
 
-				[colorPanel setAction:0];
-				[colorPanel setTarget:0];
+				[colorPanel setAction:nil];
+				[colorPanel setTarget:nil];
 
 				if (tlbrID == AP_TOOLBAR_ID_COLOR_FORE)
 				{
@@ -160,7 +160,7 @@
 
 		default:
 			{
-				const UT_UCSChar * pData = NULL;
+				const UT_UCSChar * pData = nullptr;
 				UT_uint32 dataLength = 0;
 		
 				_xap->toolbarEvent(tlbrID, pData, dataLength);
@@ -252,7 +252,7 @@ EV_CocoaToolbar::EV_CocoaToolbar(AP_CocoaFrame * pCocoaFrame,
 				 szToolbarLabelSetName),
 	  m_pCocoaFrame(pCocoaFrame)
 {
-	m_pViewListener = 0;
+	m_pViewListener = nullptr;
 	m_wToolbar = nil;
 	m_lid = 0;							// view listener id
 	m_target = [[EV_CocoaToolbarTarget alloc] init];
@@ -354,7 +354,7 @@ bool EV_CocoaToolbar::toolbarEvent(XAP_Toolbar_Id tlbrid,
 	// make sure we ignore presses on "down" group buttons
 	if (pAction->getItemType() == EV_TBIT_GroupButton)
 	{
-		const char * szState = 0;
+		const char * szState = nullptr;
 		EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 
 		if (EV_TIS_ShouldBeToggled(tis))
@@ -580,8 +580,8 @@ bool EV_CocoaToolbar::synthesize(void)
 				btnFrame.size.height = (bIsCombo ? 26.0f : 25.0f);
 				btnFrame.origin.y = rintf((BTN_HEIGHT - 26.0f) / 2.0f /* - (bIsCombo ? 0.0f : 1.0f) */);
 
-				NSComboBox * comboBox = 0;
-				NSPopUpButton * popupButton = 0;
+				NSComboBox * comboBox = nil;
+				NSPopUpButton * popupButton = nil;
 
 				if (bIsCombo)
 				{
@@ -740,7 +740,7 @@ void EV_CocoaToolbar::_releaseListener(void)
 	if (!m_pViewListener)
 		return;
 	DELETEP(m_pViewListener);
-	m_pViewListener = 0;
+	m_pViewListener = nullptr;
 	m_lid = 0;
 }
 	
@@ -786,7 +786,7 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		{
 		case EV_TLF_Normal:
 			{
-				const char * szState = 0;
+				const char * szState = nullptr;
 				EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 
 				switch (pAction->getItemType())
@@ -868,7 +868,7 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 							if (PD_Document * pDoc = static_cast<PD_Document *>(m_pCocoaFrame->getCurrentDoc()))
 							{
 
-								UT_GenericVector<PD_Style*>* pStyles = NULL;
+								UT_GenericVector<PD_Style*>* pStyles = nullptr;
 								pDoc->enumStyles(pStyles);
 								UT_uint32 nStyles = pStyles->getItemCount();
 								for (UT_uint32 k = 0; k < nStyles; k++) {
@@ -938,7 +938,7 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 							value = [[NSString alloc] initWithUTF8String:szState];
 						}
 						else {
-							UT_DEBUGMSG(("value is NULL\n"));
+							UT_DEBUGMSG(("value is nullptr\n"));
 						}
 					}
 					if (value) {

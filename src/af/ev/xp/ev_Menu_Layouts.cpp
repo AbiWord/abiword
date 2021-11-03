@@ -92,11 +92,11 @@ bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV
 {
     UT_ASSERT(indexLayoutItem < m_layoutTable.size());
     m_iMaxId = private_max(m_iMaxId, id);
-    EV_Menu_LayoutItem* pOld = NULL;
+    EV_Menu_LayoutItem* pOld = nullptr;
     pOld = m_layoutTable[indexLayoutItem];
     m_layoutTable[indexLayoutItem] = new EV_Menu_LayoutItem(id, flags);
     DELETEP(pOld);
-    return (m_layoutTable[indexLayoutItem] != NULL);
+    return (m_layoutTable[indexLayoutItem] != nullptr);
 }
 
 UT_uint32 EV_Menu_Layout::getLayoutIndex(XAP_Menu_Id id) const

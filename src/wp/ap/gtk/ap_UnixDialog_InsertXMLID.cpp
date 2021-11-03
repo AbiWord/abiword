@@ -94,8 +94,8 @@ XAP_Dialog * AP_UnixDialog_InsertXMLID::static_constructor( XAP_DialogFactory * 
 AP_UnixDialog_InsertXMLID::AP_UnixDialog_InsertXMLID( XAP_DialogFactory * pDlgFactory,
                                                       XAP_Dialog_Id id )
 	: AP_Dialog_InsertXMLID(pDlgFactory,id)
-	, m_window(NULL)
-	, m_btInsert(NULL)
+	, m_window(nullptr)
+	, m_btInsert(nullptr)
 {
 }
 

@@ -50,7 +50,7 @@ void XAP_Dialog_ListDocuments::_init()
 {
 	m_vDocs.clear();
 	UT_return_if_fail(m_pApp);
-	AD_Document * pExclude = NULL;
+	AD_Document * pExclude = nullptr;
 
 	if(!m_bIncludeActiveDoc)
 	{
@@ -75,7 +75,7 @@ AD_Document * XAP_Dialog_ListDocuments::getDocument(void) const
 		return (AD_Document *)m_vDocs.getNthItem(m_ndxSelDoc);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void XAP_Dialog_ListDocuments::_setSelDocumentIndx(UT_sint32 i)
@@ -87,12 +87,12 @@ void XAP_Dialog_ListDocuments::_setSelDocumentIndx(UT_sint32 i)
 const char * XAP_Dialog_ListDocuments::_getNthDocumentName(UT_sint32 n) const
 {
 	if(n >= m_vDocs.getItemCount())
-		return NULL;
+		return nullptr;
 
 	const AD_Document * pDoc = (const AD_Document *)m_vDocs.getNthItem(n);
 
 	if(!pDoc)
-		return NULL;
+		return nullptr;
 
 	return pDoc->getFilename().c_str();
 }
@@ -109,7 +109,7 @@ void XAP_Dialog_ListDocuments::setIncludeActiveDoc(bool b)
 const char * XAP_Dialog_ListDocuments::_getTitle() const
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_return_val_if_fail(pSS, NULL);
+	UT_return_val_if_fail(pSS, nullptr);
 
 	return 	pSS->getValue(XAP_STRING_ID_DLG_LISTDOCS_Title);
 }
@@ -117,7 +117,7 @@ const char * XAP_Dialog_ListDocuments::_getTitle() const
 const char * XAP_Dialog_ListDocuments::_getHeading() const
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_return_val_if_fail(pSS, NULL);
+	UT_return_val_if_fail(pSS, nullptr);
 
 	return 	pSS->getValue(XAP_STRING_ID_DLG_LISTDOCS_Heading1);
 }
@@ -126,7 +126,7 @@ const char * XAP_Dialog_ListDocuments::_getOKButtonText() const
 {
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_return_val_if_fail(pSS, NULL);
+	UT_return_val_if_fail(pSS, nullptr);
 	
 	switch(getDialogId())
 	{
@@ -140,10 +140,10 @@ const char * XAP_Dialog_ListDocuments::_getOKButtonText() const
 			return 	pSS->getValue(XAP_STRING_ID_DLG_Merge);
 
 		default:
-			UT_return_val_if_fail(UT_NOT_REACHED, NULL);
+			UT_return_val_if_fail(UT_NOT_REACHED, nullptr);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 

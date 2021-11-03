@@ -203,7 +203,7 @@ void AP_CocoaDialog_Spell::_storeWindowData(void)
 
 void AP_CocoaDialog_Spell::event_Change()
 {
-	UT_UCSChar * replace = NULL;
+	UT_UCSChar * replace = nullptr;
 	UT_DEBUGMSG(("m_iSelectedRow is %i\n", m_iSelectedRow));
 	if (m_iSelectedRow != -1) {
 		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
@@ -221,7 +221,7 @@ void AP_CocoaDialog_Spell::event_Change()
 
 void AP_CocoaDialog_Spell::event_ChangeAll()
 {
-	UT_UCSChar * replace = NULL;
+	UT_UCSChar * replace = nullptr;
 	if (m_iSelectedRow != -1) {
 		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
 		addChangeAll(replace);
@@ -297,7 +297,7 @@ void AP_CocoaDialog_Spell::event_ReplacementChanged()
 
 -(void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 -(void)dealloc

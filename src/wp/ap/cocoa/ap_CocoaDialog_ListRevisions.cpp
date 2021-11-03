@@ -74,13 +74,13 @@ static const NSString * COMMENT_COL_ID = @"comment";
 
 - (void)addLine:(const char*)col1 withCol2:(const char*)col2 withCol3:(const char*)col3
 {
-	if (col1 == NULL) {
+	if (col1 == nullptr) {
 		col1 = "";
 	}
-	if (col2 == NULL) {
+	if (col2 == nullptr) {
 		col2 = "";		
 	}
-	if (col3 == NULL) {
+	if (col3 == nullptr) {
 		col3 = "";
 	}
 	NSArray * line = [NSArray arrayWithObjects:[NSString stringWithUTF8String:col1],
@@ -220,7 +220,7 @@ void AP_CocoaDialog_ListRevisions::runModal(XAP_Frame * /*pFrame*/)
 
 -(void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 -(void)dealloc

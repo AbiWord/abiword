@@ -107,19 +107,19 @@ XAP_Dialog * AP_UnixDialog_SplitCells::static_constructor(XAP_DialogFactory * pF
 AP_UnixDialog_SplitCells::AP_UnixDialog_SplitCells(XAP_DialogFactory * pDlgFactory,
 										             XAP_Dialog_Id id)
 	: AP_Dialog_SplitCells(pDlgFactory,id),
-	  m_wContents(NULL),
-	  m_wSplitLeft(NULL),
-	  m_wSplitHoriMid(NULL),
-	  m_wSplitRight(NULL),
-	  m_wSplitAbove(NULL),
-	  m_wSplitVertMid(NULL),
-	  m_wSplitBelow(NULL),
-	  m_lwSplitLeft(NULL),
-	  m_lwSplitHoriMid(NULL),
-	  m_lwSplitRight(NULL),
-	  m_lwSplitAbove(NULL),
-	  m_lwSplitVertMid(NULL),
-	  m_lwSplitBelow(NULL)
+	  m_wContents(nullptr),
+	  m_wSplitLeft(nullptr),
+	  m_wSplitHoriMid(nullptr),
+	  m_wSplitRight(nullptr),
+	  m_wSplitAbove(nullptr),
+	  m_wSplitVertMid(nullptr),
+	  m_wSplitBelow(nullptr),
+	  m_lwSplitLeft(nullptr),
+	  m_lwSplitHoriMid(nullptr),
+	  m_lwSplitRight(nullptr),
+	  m_lwSplitAbove(nullptr),
+	  m_lwSplitVertMid(nullptr),
+	  m_lwSplitBelow(nullptr)
 {
 }
 
@@ -183,7 +183,7 @@ void AP_UnixDialog_SplitCells::destroy(void)
 {
 	finalize();
 	gtk_widget_destroy(m_windowMain); // TOPLEVEL
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 }
 void AP_UnixDialog_SplitCells::activate(void)
 {
@@ -253,7 +253,7 @@ GtkWidget * AP_UnixDialog_SplitCells::_constructWindowContents(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_SplitCells_Frame,s);
-	frame1 = gtk_frame_new (NULL);
+	frame1 = gtk_frame_new (nullptr);
 	gtk_widget_show (frame1);
 	gtk_container_add (GTK_CONTAINER (wContents), frame1);
 	XAP_gtk_widget_set_margin(frame1, 3);
@@ -265,41 +265,41 @@ GtkWidget * AP_UnixDialog_SplitCells::_constructWindowContents(void)
 	g_object_set (G_OBJECT (grid1),
 	              "row-spacing", 6,
 	              "column-spacing", 12,
-	              NULL);
+	              nullptr);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_SplitCells_Left,s);
 	wlSplitLeft = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
-                                      "xalign", 0.0, "yalign", 0.5, NULL);
+                                      "xalign", 0.0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlSplitLeft);
 	gtk_grid_attach (GTK_GRID (grid1), wlSplitLeft, 0, 0, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_SplitCells_HoriMid,s);
 	wlSplitHoriMid = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
-                                         "xalign", 0.0, "yalign", 0.5, NULL);
+                                         "xalign", 0.0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlSplitHoriMid);
 	gtk_grid_attach (GTK_GRID (grid1), wlSplitHoriMid, 0, 1, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_SplitCells_Right,s);
 	wlSplitRight = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
-                                      "xalign", 0.0, "yalign", 0.5, NULL);
+                                      "xalign", 0.0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlSplitRight);
 	gtk_grid_attach (GTK_GRID (grid1), wlSplitRight, 0, 2, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_SplitCells_Above,s);
 	wlSplitAbove = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
-                                       "xalign", 0.0, "yalign", 0.5, NULL);
+                                       "xalign", 0.0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlSplitAbove);
 	gtk_grid_attach (GTK_GRID (grid1), wlSplitAbove, 0, 3, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_SplitCells_VertMid,s);
 	wlSplitVertMid = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
-                                        "xalign", 0.0, "yalign", 0.5, NULL);
+                                        "xalign", 0.0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlSplitVertMid);
 	gtk_grid_attach (GTK_GRID (grid1), wlSplitVertMid, 0, 4, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_SplitCells_Below,s);
 	wlSplitBelow = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
-                                       "xalign", 0.0, "yalign", 0.5, NULL);
+                                       "xalign", 0.0, "yalign", 0.5, nullptr);
 	gtk_widget_show (wlSplitBelow);
 	gtk_grid_attach (GTK_GRID (grid1), wlSplitBelow, 0, 5, 1, 1);
 

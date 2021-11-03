@@ -76,7 +76,7 @@ XAP_Dictionary::~XAP_Dictionary()
 const char * XAP_Dictionary::getShortName(void) const
 {
 	// TODO: get just the filename (no path), for use in UI
-	return NULL;
+	return nullptr;
 }
 
 /*****************************************************************/
@@ -349,7 +349,7 @@ void XAP_Dictionary::suggestWord(UT_GenericVector<UT_UCSChar *> * pVecSuggestion
   UT_uint32 i=0;
   UT_uint32 count = pVec->getItemCount();
   //
-  // Turn our word into a NULL teminated string
+  // Turn our word into a NUL teminated string
   //
   UT_UCSChar * pszWord = static_cast<UT_UCSChar*>(UT_calloc(len+1, sizeof(UT_UCSChar)));
   for(i=0; i< len; i++)
@@ -364,7 +364,7 @@ void XAP_Dictionary::suggestWord(UT_GenericVector<UT_UCSChar *> * pVecSuggestion
   for(i=0; i< count; i++)
   {
     UT_UCSChar * pszDict = pVec->getNthItem(i);
-    UT_UCSChar * pszReturn = NULL;
+    UT_UCSChar * pszReturn = nullptr;
     float lenDict = static_cast<float>(UT_UCS4_strlen(pszDict));
     UT_uint32 wordInDict = countCommonChars(pszDict,pszWord);
     UT_uint32 dictInWord = countCommonChars(pszWord,pszDict);
@@ -424,7 +424,7 @@ bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 	}
 	key[i] = 0;
 	char * key2 = g_strdup(key);
-	bool contains = m_hashWords.contains (key2, NULL);
+	bool contains = m_hashWords.contains (key2, nullptr);
 	FREEP(key);
 	FREEP(key2);
 	return contains;

@@ -42,22 +42,22 @@
 #include "pd_Document.h"
 
 const char * AP_Dialog_Goto::s_pJumpTargets[] = {
-	NULL,
-	NULL,
-	NULL,
+	nullptr,
+	nullptr,
+	nullptr,
 //	"Picture",  TODO
-	NULL,
-	NULL,
-	NULL
+	nullptr,
+	nullptr,
+	nullptr
 };
 
 
 AP_Dialog_Goto::AP_Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory, id, "interface/dialoggoto")
 {
-  	m_pView = NULL;
+	m_pView = nullptr;
 	m_answer = a_CLOSE;
-	if (s_pJumpTargets[0] == NULL)
+	if (s_pJumpTargets[0] == nullptr)
 	    _setupJumpTargets();
 }
 
@@ -93,7 +93,7 @@ AP_Dialog_Goto::tAnswer AP_Dialog_Goto::getAnswer(void) const
 void AP_Dialog_Goto::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	gchar * tmp = NULL;
+	gchar * tmp = nullptr;
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Title, s);

@@ -81,7 +81,7 @@ extern "C" { // for MRC compiler (Mac)
 int IE_Imp_XML::_mapNameToToken (const char * name,
 								 struct xmlToIdMapping * idlist, int len)
 {
-	xmlToIdMapping * id = NULL;
+	xmlToIdMapping * id = nullptr;
 
 	token_map_t::iterator i = m_tokens.find(name);
 
@@ -114,7 +114,7 @@ UT_Error IE_Imp_XML::_loadFile(GsfInput * input)
 
 	// hack!!!
 	size_t num_bytes = gsf_input_size(input);
-	char * bytes = (char *)gsf_input_read(input, num_bytes, NULL);
+	char * bytes = (char *)gsf_input_read(input, num_bytes, nullptr);
 
 	UT_Error err = parser->parse (bytes, num_bytes);
 	
@@ -199,7 +199,7 @@ IE_Imp_XML::~IE_Imp_XML()
 }
 
 IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
-	: IE_Imp(pDocument), m_pReader(NULL), m_pParser(NULL), m_error(UT_OK),
+	: IE_Imp(pDocument), m_pReader(nullptr), m_pParser(nullptr), m_error(UT_OK),
           m_parseState(_PS_Init),
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),

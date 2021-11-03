@@ -174,7 +174,7 @@ fl_Squiggles::_find(UT_sint32 iOffset) const
  \param chg Offset change. If >0 it's a new absolute position,
             if <0 it's relative to the current offset.
  \param pNewBlock New block the squiggles should be moved to,
-                  or NULL to keep them in the current block.
+                  or nullptr to keep them in the current block.
 
  Move existing squiggles to reflect insert/delete at iOffset.
  All subsequent squiggles should be switched to (non-null) pBlock.
@@ -184,7 +184,7 @@ fl_Squiggles::_find(UT_sint32 iOffset) const
 */
 void
 fl_Squiggles::_move(UT_sint32 iOffset, UT_sint32 chg,
-					fl_BlockLayout* pNewBlock /* =NULL */)
+					fl_BlockLayout* pNewBlock /* =nullptr */)
 {
 	xxx_UT_DEBUGMSG(("fl_Squiggles::_move(%d, %d, %p)\n",
 					 iOffset, chg, pNewBlock));
@@ -426,7 +426,7 @@ void fl_Squiggles::markForRedraw(const fl_PartOfBlockPtr& pPOB)
 /*!
  Get squiggle at offset
  \param iOffset Offset
- \return pointer to POB (maybe NULL if there is no squiggle at the offset)
+ \return pointer to POB (maybe nullptr if there is no squiggle at the offset)
 */
 fl_PartOfBlockPtr
 fl_Squiggles::get(UT_sint32 iOffset) const
@@ -526,7 +526,7 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 // What kind of trouble? Please refer a Bug # or symptom when
 // disabling code like this... Also see Bug 4453    jskov 2003.01.05
 
-		m_pOwner->getDocLayout()->setPendingWordForSpell(NULL,NULL);
+		m_pOwner->getDocLayout()->setPendingWordForSpell(nullptr,nullptr);
 #endif 
 		}
 	}
@@ -591,7 +591,7 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 
 // What kind of trouble? Please refer a Bug # or symptom when
 // disabling code like this... Also see Bug 4453    jskov 2003.01.05
-		m_pOwner->getDocLayout()->setPendingWordForSpell(NULL,NULL);
+		m_pOwner->getDocLayout()->setPendingWordForSpell(nullptr,nullptr);
 #endif
 		}
 	}
@@ -634,7 +634,7 @@ fl_Squiggles::textRevised(UT_sint32 iOffset, UT_sint32 iLength)
 		{
 			//fl_PartOfBlock* pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
 
-			m_pOwner->getDocLayout()->setPendingWordForSpell(NULL,NULL);
+			m_pOwner->getDocLayout()->setPendingWordForSpell(nullptr,nullptr);
 		}
 	}
 
@@ -693,7 +693,7 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 		fl_PartOfBlockPtr pPOB(new fl_PartOfBlock(pPending->getOffset(),
                                                           pPending->getPTLength()));
 		// Clear pending word
-		m_pOwner->getDocLayout()->setPendingWordForSpell(NULL, NULL);
+		m_pOwner->getDocLayout()->setPendingWordForSpell(nullptr, nullptr);
 		if (pBL == m_pOwner)
 		{
 			if(pPOB->getOffset() >= iOffset)
@@ -751,7 +751,7 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 			// pending word.
 			fl_PartOfBlockPtr pPOB(new fl_PartOfBlock(pPending->getOffset(),
 								  pPending->getPTLength()));
-			m_pOwner->getDocLayout()->setPendingWordForSpell(NULL, NULL);
+			m_pOwner->getDocLayout()->setPendingWordForSpell(nullptr, nullptr);
 			m_pOwner->checkWord(pPOB);
 		}
 	  }

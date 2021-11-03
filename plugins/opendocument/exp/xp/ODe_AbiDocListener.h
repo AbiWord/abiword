@@ -162,7 +162,7 @@ private:
 
     class StackCell {
     public:
-        StackCell() {m_pListenerImpl=NULL; m_deleteWhenPop=false;}
+        StackCell() {m_pListenerImpl=nullptr; m_deleteWhenPop=false;}
         StackCell(ODe_AbiDocListenerImpl* pListenerImpl, bool deleteWhenPop) {
             m_deleteWhenPop = deleteWhenPop;
             m_pListenerImpl = pListenerImpl;
@@ -170,7 +170,7 @@ private:
         // Work around the "return 0" issue of the UT_GenericVector::getNhItem()
         StackCell(UT_uint32 /*i*/)
 			{
-				m_pListenerImpl=NULL;
+				m_pListenerImpl=nullptr;
 				m_deleteWhenPop=false;
 			}
         StackCell(const StackCell&) = default;

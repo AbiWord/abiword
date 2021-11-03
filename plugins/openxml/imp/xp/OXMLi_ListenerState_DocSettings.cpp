@@ -44,20 +44,20 @@ void OXMLi_ListenerState_DocSettings::startElement (OXMLi_StartElementRequest * 
 		const gchar * bidi = attrMatches(NS_W_KEY, "bidi", rqst->ppAtts);
 
 		OXML_Document * doc = OXML_Document::getInstance();
-		UT_return_if_fail( this->_error_if_fail(doc != NULL) );
+		UT_return_if_fail( this->_error_if_fail(doc != nullptr) );
 		OXML_SharedFontManager fmgr = doc->getFontManager();
-		UT_return_if_fail( this->_error_if_fail(fmgr.get() != NULL) );
+		UT_return_if_fail( this->_error_if_fail(fmgr.get() != nullptr) );
 
-		if (val != NULL) {
+		if (val != nullptr) {
 			std::string val_str = _convert_ST_LANG(val);
 			fmgr->mapRangeToScript(ASCII_RANGE, val_str);
 			fmgr->mapRangeToScript(HANSI_RANGE, val_str);
 		}
-		if (eastAsia != NULL) {
+		if (eastAsia != nullptr) {
 			std::string eastAsia_str = _convert_ST_LANG(eastAsia);
 			fmgr->mapRangeToScript(EASTASIAN_RANGE, eastAsia_str);
 		}
-		if (bidi != NULL) {
+		if (bidi != nullptr) {
 			std::string bidi_str = _convert_ST_LANG(bidi);
 			fmgr->mapRangeToScript(COMPLEX_RANGE, bidi_str);
 		}
@@ -86,11 +86,11 @@ std::string OXMLi_ListenerState_DocSettings::_convert_ST_LANG(std::string code_i
 	//The return value is of the following format:
 	//	An ISO 15924 alpha-4 letter code
 
-	OXML_LangScriptAsso * asso = NULL;
+	OXML_LangScriptAsso * asso = nullptr;
 	OXML_LangToScriptConverter conv;
 	std::string substr = code_in.substr(0,2);
 	asso = conv.in_word_set(substr.data(), substr.length());
-	if (asso != NULL) {
+	if (asso != nullptr) {
 		return asso->script;
 	} else {
 		return code_in;

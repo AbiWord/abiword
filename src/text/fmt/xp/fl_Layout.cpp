@@ -34,9 +34,9 @@
 fl_Layout::fl_Layout(PTStruxType type, pf_Frag_Strux* sdh) :
 	m_type(type),
 	m_apIndex(0),
-	m_pDoc(NULL), // set by child
+	m_pDoc(nullptr), // set by child
 	m_sdh(sdh),
-	m_endSdh(NULL)
+	m_endSdh(nullptr)
 {
 	xxx_UT_DEBUGMSG(("Layout Strux type = %d \n",type));
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
@@ -92,7 +92,7 @@ bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP,
 }
 
 /*!
-    if pRevisions is not needed, set the pointer to NULL(this speeds up things)
+    if pRevisions is not needed, set the pointer to nullptr(this speeds up things)
 */
 bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP,
                                 UT_Option<std::unique_ptr<PP_RevisionAttr>>& pRevisions,

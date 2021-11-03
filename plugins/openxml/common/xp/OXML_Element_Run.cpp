@@ -83,7 +83,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 {
 	//TODO: Add all the property serializations here
 	UT_Error err = UT_OK;
-	const gchar* szValue = NULL;
+	const gchar* szValue = nullptr;
 
 	err = exporter->startRunProperties(TARGET);
 	if(err != UT_OK)
@@ -200,7 +200,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 UT_Error OXML_Element_Run::addToPT(PD_Document * pDocument)
 {
-	UT_return_val_if_fail(pDocument != NULL, UT_ERROR);
+	UT_return_val_if_fail(pDocument != nullptr, UT_ERROR);
 
 	UT_Error ret = UT_OK;
 

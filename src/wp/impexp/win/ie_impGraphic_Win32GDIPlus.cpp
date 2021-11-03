@@ -73,7 +73,7 @@ GUID gdip_jpeg_guid = { 0xb96b3cae, 0x0728, 0x11d3, { 0x9d, 0x7b, 0x00, 0x00, 0x
 
 /* Globals */
 static ULONG_PTR gdiplusToken = 0;
-static HINSTANCE gdipluslib = NULL;
+static HINSTANCE gdipluslib = nullptr;
 
 
 /* Callbacks */
@@ -100,7 +100,7 @@ GdiplusStartup (ULONG_PTR *token,  const GdiplusStartupInput *input,
     GdiplusStartupOutput *output)
 {
 
-	GDIPLUSSTARTUP	proc = NULL;
+	GDIPLUSSTARTUP	proc = nullptr;
 
 	if (gdipluslib)			  
 		proc = (GDIPLUSSTARTUP) GetProcAddress(gdipluslib, "GdiplusStartup");	
@@ -114,7 +114,7 @@ GdiplusStartup (ULONG_PTR *token,  const GdiplusStartupInput *input,
 void 
 GdiplusShutdown (ULONG_PTR token)
 {
-	GDIPLUSSHUTDOWN	proc = NULL;
+	GDIPLUSSHUTDOWN	proc = nullptr;
 
 	if (gdipluslib)			  
 		proc = (GDIPLUSSHUTDOWN) GetProcAddress(gdipluslib, "GdiplusShutdown");	
@@ -129,7 +129,7 @@ Status
 GdipLoadImageFromStream (IStream* stream, GpImage **image)
 {
 
-	GDIPLOADIMAGEFROMSTREAM	proc = NULL;
+	GDIPLOADIMAGEFROMSTREAM	proc = nullptr;
 
 	if (gdipluslib)			  
 		proc = (GDIPLOADIMAGEFROMSTREAM) GetProcAddress(gdipluslib, "GdipLoadImageFromStream");	
@@ -144,7 +144,7 @@ Status
 GdipSaveImageToStream (GpImage *image, IStream* stream,
                       CLSID* clsidEncoder, EncoderParameters* encoderParams)
 {
-	GDIPSAVEIMAGETOSTREAM	proc = NULL;
+	GDIPSAVEIMAGETOSTREAM	proc = nullptr;
 
 	if (gdipluslib)			  
 		proc = (GDIPSAVEIMAGETOSTREAM) GetProcAddress(gdipluslib, "GdipSaveImageToStream");	
@@ -158,7 +158,7 @@ GdipSaveImageToStream (GpImage *image, IStream* stream,
 Status
 GdipGetImageRawFormat (GpImage *image, GUID *format)
 {
-	GDIPGETIMAGERRAWFFORMAT	proc = NULL;
+	GDIPGETIMAGERRAWFFORMAT	proc = nullptr;
 
 	if (gdipluslib)			  
 		proc = (GDIPGETIMAGERRAWFFORMAT) GetProcAddress(gdipluslib, "GdipGetImageRawFormat");	
@@ -173,7 +173,7 @@ GdipGetImageRawFormat (GpImage *image, GUID *format)
 Status 
 GdipDisposeImage (GpImage *image)
 {
-	GDIPDISPOSEIMAGE	proc = NULL;
+	GDIPDISPOSEIMAGE	proc = nullptr;
 
 	if (gdipluslib)			  
 		proc = (GDIPDISPOSEIMAGE) GetProcAddress(gdipluslib, "GdipDisposeImage");	
@@ -207,7 +207,7 @@ initGDIPlus ()
 	input.DebugEventCallback = 0;
 	input.SuppressBackgroundThread = input.SuppressExternalCodecs = FALSE;
 
-	GdiplusStartup (&gdiplusToken, &input, NULL);
+	GdiplusStartup (&gdiplusToken, &input, nullptr);
 }
 
 
@@ -237,12 +237,12 @@ shutDownGDIPlus()
 UT_Error 
 GDIconvertGraphic(const UT_ConstByteBufPtr& pBB, const UT_ByteBufPtr& pBBOut, std::string& mimetype)
 {
-	IStream *stream, *streamOut = NULL;	
+	IStream *stream, *streamOut = nullptr;	
 	HGLOBAL hG;		
-	GpImage *image = NULL;
+	GpImage *image = nullptr;
 	Status status;
 	HRESULT hr;
-	HGLOBAL phglobal = NULL;
+	HGLOBAL phglobal = nullptr;
 	LARGE_INTEGER ulnSize;
 	LARGE_INTEGER lnOffset;
 	ULONG ulBytesRead;
@@ -266,7 +266,7 @@ GDIconvertGraphic(const UT_ConstByteBufPtr& pBB, const UT_ByteBufPtr& pBBOut, st
 	}
 
 	 // Create the OUT stream and let GDI+ allocated it
-    hr = CreateStreamOnHGlobal (NULL, TRUE, &streamOut);
+    hr = CreateStreamOnHGlobal (nullptr, TRUE, &streamOut);
 	
 	status =  GdipLoadImageFromStream (stream, &image);
 	if (status != 0)
@@ -280,7 +280,7 @@ GDIconvertGraphic(const UT_ConstByteBufPtr& pBB, const UT_ByteBufPtr& pBBOut, st
 	if (format != gdip_jpeg_guid)
 	{
 		// convert the image data to PNG if the input data is not JPEG
-		status = GdipSaveImageToStream (image, streamOut, &gdip_png_encoder_guid, NULL);
+		status = GdipSaveImageToStream (image, streamOut, &gdip_png_encoder_guid, nullptr);
 		if (status != 0)
 			return UT_ERROR;
 		mimetype = "image/png";
@@ -288,7 +288,7 @@ GDIconvertGraphic(const UT_ConstByteBufPtr& pBB, const UT_ByteBufPtr& pBBOut, st
 	else
 	{
 		// we can handle native JPEG data, no need to convert
-		status = GdipSaveImageToStream (image, streamOut, &gdip_jpeg_encoder_guid, NULL);
+		status = GdipSaveImageToStream (image, streamOut, &gdip_jpeg_encoder_guid, nullptr);
 		if (status != 0)
 			return UT_ERROR;
 		mimetype = "image/jpeg";
@@ -302,7 +302,7 @@ GDIconvertGraphic(const UT_ConstByteBufPtr& pBB, const UT_ByteBufPtr& pBBOut, st
 	if(streamOut->Seek (lnOffset, STREAM_SEEK_END, (union _ULARGE_INTEGER *) &ulnSize) != S_OK)
 		return UT_ERROR;    
 	
-	if(streamOut->Seek (lnOffset, STREAM_SEEK_SET, NULL) != S_OK)
+	if(streamOut->Seek (lnOffset, STREAM_SEEK_SET, nullptr) != S_OK)
 		return UT_ERROR;
 
 	DWORD sz = (DWORD)ulnSize.QuadPart;

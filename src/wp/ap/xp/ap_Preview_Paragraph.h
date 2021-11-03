@@ -92,7 +92,7 @@ class ABI_EXPORT AP_Preview_Paragraph : public XAP_Preview
  public:
 
 	AP_Preview_Paragraph(GR_Graphics * gc, const UT_UCSChar * text,
-			     AP_Dialog_Paragraph * parent, const char * fontname = NULL);
+			     AP_Dialog_Paragraph * parent, const char * fontname = nullptr);
 
 	AP_Preview_Paragraph(GR_Graphics * gc, const UT_UCSChar * text,
 			     XAP_Dialog * parent);
@@ -116,7 +116,7 @@ class ABI_EXPORT AP_Preview_Paragraph : public XAP_Preview
 				   AP_Dialog_Paragraph::tSpacingState spacing,
 				   UT_BidiCharType dir = UT_BIDI_LTR);
 
-	virtual void drawImmediate(const UT_Rect *clip = NULL) override;
+	virtual void drawImmediate(const UT_Rect *clip = nullptr) override;
 
  protected:
 
@@ -129,7 +129,7 @@ class ABI_EXPORT AP_Preview_Paragraph : public XAP_Preview
 	UT_uint32 m_x;
 	UT_uint32 m_y;
 
-	virtual bool _loadDrawFont(const char *name = NULL);
+	virtual bool _loadDrawFont(const char *name = nullptr);
 	virtual void 	_drawPageBackground(void);
 	virtual void	_drawPageBorder(void);
 	virtual void 	_appendBlock(AP_Preview_Paragraph_Block * block);

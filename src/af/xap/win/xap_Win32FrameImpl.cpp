@@ -118,13 +118,13 @@ LRESULT CALLBACK s_rebarWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM
 
 XAP_Win32FrameImpl::XAP_Win32FrameImpl(XAP_Frame *pFrame) :
 	XAP_FrameImpl(pFrame),
-	m_hwndFrame(NULL),
-	m_hwndRebar(NULL),
-	m_hwndContainer(NULL),
-	m_hwndStatusBar(NULL),
+	m_hwndFrame(nullptr),
+	m_hwndRebar(nullptr),
+	m_hwndContainer(nullptr),
+	m_hwndStatusBar(nullptr),
 	m_dialogFactory(XAP_App::getApp(), pFrame), /* note: pFrame->getApp() not initialized properly yet! */		
-	m_pWin32Menu(NULL),
-	m_pWin32Popup(NULL),
+	m_pWin32Menu(nullptr),
+	m_pWin32Popup(nullptr),
 	m_iBarHeight(0),
 	m_iStatusBarHeight(0),
 	m_iRealSizeHeight(0),
@@ -273,7 +273,7 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	m_hwndFrame = UT_CreateWindowEx(0L, str.c_str(), title.c_str(),
 									WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
 									iPosX, iPosY, iWidth, iHeight,
-									NULL, NULL, pWin32App->getInstance(), NULL);
+									nullptr, nullptr, pWin32App->getInstance(), nullptr);
 	UT_ASSERT(m_hwndFrame);
 
 
@@ -308,12 +308,12 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	}
 
 	// create a rebar container for all the toolbars
-	m_hwndRebar = UT_CreateWindowEx(0L, REBARCLASSNAMEW, NULL,
+	m_hwndRebar = UT_CreateWindowEx(0L, REBARCLASSNAMEW, nullptr,
 									WS_VISIBLE | WS_BORDER | WS_CHILD | WS_CLIPCHILDREN |
 									WS_CLIPSIBLINGS | CCS_NODIVIDER | CCS_NOPARENTALIGN |
 									RBS_VARHEIGHT | RBS_BANDBORDERS,
 									0, 0, 0, 0,
-									m_hwndFrame, NULL, pWin32App->getInstance(), NULL);
+									m_hwndFrame, nullptr, pWin32App->getInstance(), nullptr);
 	UT_ASSERT(m_hwndRebar);
 	
 	/* override the window procedure*/
@@ -335,7 +335,7 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	// force rebar to resize itself
 	// TODO for some reason, we give REBAR the height of the FRAME
 	// TODO and let it decide how much it actually needs....
-	if( m_hwndRebar != NULL )
+	if( m_hwndRebar != nullptr )
 	{
 		MoveWindow(m_hwndRebar, 0, 0, iWidth, iHeight, TRUE);
 
@@ -399,7 +399,7 @@ bool XAP_Win32FrameImpl::_close(void)
 
 	// NOTE: this should only be called from the closeWindow edit method
 	DestroyWindow(m_hwndFrame);
-	m_hwndFrame = NULL;
+	m_hwndFrame = nullptr;
 
 	return true;
 }
@@ -466,7 +466,7 @@ bool XAP_Win32FrameImpl::_runModalContextMenu(AV_View * pView, const char * szMe
 {
 	bool bResult = false;
 
-	UT_return_val_if_fail((m_pWin32Popup==NULL), false);
+	UT_return_val_if_fail((m_pWin32Popup==nullptr), false);
 
 	x = pView->getGraphics()->tdu(x);
 	y = pView->getGraphics()->tdu(y);
@@ -483,7 +483,7 @@ bool XAP_Win32FrameImpl::_runModalContextMenu(AV_View * pView, const char * szMe
 
 		TrackPopupMenu(m_pWin32Popup->getMenuHandle(),
 					    TPM_TOPALIGN | TPM_RIGHTBUTTON,
-					   x,y,0,m_hwndFrame,NULL);
+					   x,y,0,m_hwndFrame,nullptr);
 
 		// the popup steals our capture, so we need to reset our counter.
 		EV_Win32Mouse *pWin32Mouse = static_cast<EV_Win32Mouse *>(m_pMouse);
@@ -558,7 +558,7 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 
 		if((height > 0) && (width > 0))
 		{
-			if(!SetWindowPos(hwndFrame, 0, 0, 0, width, height, 0))
+			if(!SetWindowPos(hwndFrame, nullptr, 0, 0, width, height, 0))
 			{
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			}
@@ -570,7 +570,7 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 	}
 	else
 	{
-		if(!SetWindowPos(hwndFrame, 0, m_iWindowXBeforeFS, m_iWindowYBeforeFS, m_iWindowWidthBeforeFS, m_iWindowHeightBeforeFS, 0))
+		if(!SetWindowPos(hwndFrame, nullptr, m_iWindowXBeforeFS, m_iWindowYBeforeFS, m_iWindowWidthBeforeFS, m_iWindowHeightBeforeFS, 0))
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
@@ -587,7 +587,7 @@ void XAP_Win32FrameImpl::_nullUpdate (void) const
 	MSG msg;
 	for( int i = 0 ; i < 10 ; i++ )
 	{
-		if( PeekMessageW( &msg, (HWND) NULL, 0, 0, PM_REMOVE) )
+		if( PeekMessageW( &msg, (HWND) nullptr, 0, 0, PM_REMOVE) )
 		{
 			DispatchMessageW(&msg); 
 		} 
@@ -632,8 +632,8 @@ UT_RGBColor XAP_Win32FrameImpl::getColorSelForeground () const
 bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 {
 	ATOM a = UT_RegisterClassEx(CS_DBLCLKS, XAP_Win32FrameImpl::_FrameWndProc, app->getInstance(),
-								app->getIcon(), LoadCursor(NULL,IDC_ARROW), (HBRUSH)(COLOR_BTNFACE+1), app->getSmallIcon(),
-								NULL, /*app->getApplicationName()*/ L"Abiword");
+								app->getIcon(), LoadCursor(nullptr,IDC_ARROW), (HBRUSH)(COLOR_BTNFACE+1), app->getSmallIcon(),
+								nullptr, /*app->getApplicationName()*/ L"Abiword");
 	
 	UT_return_val_if_fail(a, false);
 
@@ -693,7 +693,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 	XAP_Win32FrameImpl * fimpl = static_cast<XAP_Win32FrameImpl *>(f->getFrameImpl());
 	UT_return_val_if_fail(fimpl, UT_DefWindowProc(hwnd,iMsg,wParam,lParam));
 
-	AV_View * pView = NULL;
+	AV_View * pView = nullptr;
 
 	pView = f->getCurrentView();
 
@@ -894,14 +894,14 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 						if( pNMcd->dwDrawStage == CDDS_POSTPAINT )
 						{
 							RECT  rc;
-							HBRUSH	hBr = NULL;
+							HBRUSH	hBr = nullptr;
 
 							rc.top    = pNMcd->rc.top;
 							rc.bottom = pNMcd->rc.bottom;
 							hBr = GetSysColorBrush( COLOR_3DFACE );
 
-							HWND  hWndChild = FindWindowExW( pNMcd->hdr.hwndFrom, NULL, NULL, NULL );
-							while( hWndChild != NULL )
+							HWND  hWndChild = FindWindowExW( pNMcd->hdr.hwndFrom, nullptr, nullptr, nullptr );
+							while( hWndChild != nullptr )
 							{
 								RECT   rcChild;
 								POINT  pt;
@@ -915,7 +915,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 								ScreenToClient( pNMcd->hdr.hwndFrom, &pt );
 								rc.right = pt.x;
 								FillRect( pNMcd->hdc, &rc, hBr );
-								hWndChild = FindWindowExW( pNMcd->hdr.hwndFrom, hWndChild, NULL, NULL );
+								hWndChild = FindWindowExW( pNMcd->hdr.hwndFrom, hWndChild, nullptr, nullptr );
 							}
 
 							/* Don't delete hBr since it was obtained using GetSysColorBrush, so System owned */
@@ -947,7 +947,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 			
 			fimpl->_startViewAutoUpdater();
 
-			if (nWidth != (int) fimpl->m_iSizeWidth && fimpl->m_hwndRebar != NULL)
+			if (nWidth != (int) fimpl->m_iSizeWidth && fimpl->m_hwndRebar != nullptr)
 			{
 				MoveWindow(fimpl->m_hwndRebar, 0, 0, nWidth, fimpl->m_iBarHeight, TRUE); 
 			}
@@ -987,7 +987,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 		if (pEM)
 		{
-			pEM->Fn(pView,NULL);
+			pEM->Fn(pView,nullptr);
 			return 0;
 		}
 
@@ -1051,21 +1051,21 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		{
 			HDROP hDrop = (HDROP) wParam; 
 			// How many files were dropped?
-			int count = DragQueryFileW(hDrop, 0xFFFFFFFF, NULL, 0);
+			int count = DragQueryFileW(hDrop, 0xFFFFFFFF, nullptr, 0);
 			WCHAR szFileName[PATH_MAX];
 			UT_Win32LocaleString str;
 			int i,pathlength;
 			for (i=0; i<count; i++)
 			{
-				pathlength = DragQueryFileW(hDrop, i, NULL, 0);
+				pathlength = DragQueryFileW(hDrop, i, nullptr, 0);
 				if (pathlength < PATH_MAX)
 				{
 					DragQueryFileW(hDrop, i, szFileName, PATH_MAX);
 					XAP_App * pApp = XAP_App::getApp();
 					UT_return_val_if_fail(pApp, 0);
 					FV_View* pCurrentView = (FV_View *) f->getCurrentView();
-					XAP_Frame * pNewFrame = 0;
-					IEGraphicFileType iegft = IEGFT_Unknown;					
+					XAP_Frame * pNewFrame = nullptr;
+					IEGraphicFileType iegft = IEGFT_Unknown;
 					IE_ImpGraphic *pIEG;
 					FG_ConstGraphicPtr pFG;
 					UT_Error errorCode = UT_ERROR;
@@ -1099,7 +1099,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 							(f->getViewNumber() > 0))
 						{
 							pNewFrame = pApp->newFrame();
-							if (pNewFrame == NULL)
+							if (pNewFrame == nullptr)
 							{
 							  errorCode = UT_ERROR;
 							  f->setStatusMessage("Could not open another window");

@@ -51,7 +51,7 @@ XAP_Dialog * AP_CocoaDialog_PageNumbers::static_constructor(XAP_DialogFactory * 
 AP_CocoaDialog_PageNumbers::AP_CocoaDialog_PageNumbers(XAP_DialogFactory * pDlgFactory,
                                                  XAP_Dialog_Id dlgid)
     : AP_Dialog_PageNumbers(pDlgFactory,dlgid),
-		m_pG(NULL),
+		m_pG(nullptr),
 		m_dlg(nil)
 {
   m_recentControl = m_control;
@@ -144,7 +144,7 @@ void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * /*pFrame*/)
 
 -(void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 -(void)dealloc

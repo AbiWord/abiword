@@ -72,7 +72,7 @@ void AP_CocoaPrefs::overlayEnvironmentPrefs(void)
 	// TODO (see .../src/wp/ap/xp/ap_*_Languages.h)
 
         // make a copy of the current locale so we can set it back
-	char *old_locale = g_strdup(setlocale(LC_ALL, NULL));
+	char *old_locale = g_strdup(setlocale(LC_ALL, nullptr));
 
 	// this will set our current locale information
 	// according to the user's env variables
@@ -92,9 +92,9 @@ void AP_CocoaPrefs::overlayEnvironmentPrefs(void)
 	
 	const char * szNewLang = "en-US"; // default to US English
 #if defined (LC_MESSAGES)
-	char * lc_ctype = g_strdup(setlocale(LC_MESSAGES, NULL));
+	char * lc_ctype = g_strdup(setlocale(LC_MESSAGES, nullptr));
 #else
-	char * lc_ctype = g_strdup(setlocale(LC_CTYPE, NULL));
+	char * lc_ctype = g_strdup(setlocale(LC_CTYPE, nullptr));
 #endif
 	// locale categories seem to always look like this:
 	// two letter for language (lowcase) _ two letter country code (upcase)
@@ -103,7 +103,7 @@ void AP_CocoaPrefs::overlayEnvironmentPrefs(void)
 	// en-US, es-ES, pt-PT
 
 	// we'll try this quick conversion
-	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) 
+	if (lc_ctype != nullptr && strlen(lc_ctype) >= 5)
 	{
 		lc_ctype[2] = '-';
 		char* dot = strrchr(lc_ctype,'.');
@@ -123,11 +123,11 @@ void AP_CocoaPrefs::overlayEnvironmentPrefs(void)
 				  (gchar*)szNewLang);
 
 	// g_free the language id, if it was allocated
-	if (lc_ctype != NULL) g_free(lc_ctype);
+	if (lc_ctype != nullptr) g_free(lc_ctype);
 
 	// change back to the previous locale setting
 	// although, we might want to leave it in the user's preferred locale?
-	if (old_locale != NULL) {
+	if (old_locale != nullptr) {
 	   setlocale(LC_ALL, old_locale);
 	   g_free(old_locale);
 	}

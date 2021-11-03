@@ -61,7 +61,7 @@ AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 
 AP_CocoaLeftRuler::~AP_CocoaLeftRuler(void)
 {
-	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (NULL, NULL);
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (nullptr, nullptr);
 	DELETEP(m_pG);
 	if (m_delegate) {
 		[[NSNotificationCenter defaultCenter] removeObserver:m_delegate];
@@ -232,7 +232,7 @@ void AP_CocoaLeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 	NSRect bounds = [[notif object] bounds];
 	_xap->setWidth(lrintf(bounds.size.width));
 	_xap->setHeight(lrintf(bounds.size.height));
-	// _xap->draw(NULL);
+	// _xap->draw(nullptr);
 }
 
 - (void)mouseDown:(NSEvent *)theEvent from:(id)sender

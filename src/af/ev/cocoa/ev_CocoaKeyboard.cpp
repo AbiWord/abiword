@@ -86,7 +86,7 @@ bool ev_CocoaKeyboard::_dispatchKey(AV_View * pView, UT_uint32 charData, EV_Edit
 				break;
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
-				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
+				invokeKeyboardMethod(pView, pEM, nullptr, 0); // no char data to offer
 				retval = true;
 				break;
 			case EV_EEMR_INCOMPLETE:

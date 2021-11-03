@@ -223,8 +223,8 @@ protected:
 			, m_pData(d)
 			{}
 		tPrefsListenersPair()
-			: m_pFunc(NULL)
-			, m_pData(NULL)
+			: m_pFunc(nullptr)
+			, m_pData(nullptr)
 			{}
 	};
 

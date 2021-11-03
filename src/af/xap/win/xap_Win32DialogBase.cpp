@@ -57,10 +57,10 @@ void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 {
 	UT_ASSERT(m_tag == magic_tag);
-   	UT_return_val_if_fail(pFrame, NULL);
+	UT_return_val_if_fail(pFrame, nullptr);
 
 	XAP_App* pApp = XAP_App::getApp();
-	UT_return_val_if_fail(pApp, NULL);
+	UT_return_val_if_fail(pApp, nullptr);
 
 	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(pApp);
 
@@ -75,7 +75,7 @@ HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 							hFrameWnd,
 							(DLGPROC)&XAP_Win32DialogBase::s_dlgProc,
 							(LPARAM)this);
-	UT_return_val_if_fail(hWnd, NULL);
+	UT_return_val_if_fail(hWnd, nullptr);
 
     m_hDlg = hWnd;
 	showWindow(SW_SHOW);
@@ -87,7 +87,7 @@ HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 
 BOOL CALLBACK XAP_Win32DialogBase::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Win32DialogBase* pThis = NULL;
+	XAP_Win32DialogBase* pThis = nullptr;
 
 	if (msg == WM_INITDIALOG)
 	{
@@ -99,7 +99,7 @@ BOOL CALLBACK XAP_Win32DialogBase::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam,
 
     pThis = (XAP_Win32DialogBase *) GetWindowLongW(hWnd,DWLP_USER);
 	
-	if (pThis == NULL)
+	if (pThis == nullptr)
 		return FALSE;
 	UT_ASSERT(pThis->m_tag == magic_tag);
 
@@ -192,7 +192,7 @@ void XAP_Win32DialogBase::notifyCloseFrame(XAP_Frame *pFrame)
 	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, 0);
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
@@ -347,7 +347,7 @@ void XAP_Win32DialogBase::setControlInt(UT_sint32 controlId, int value)
 int XAP_Win32DialogBase::getControlInt(UT_sint32 controlId) const
 {
 	UT_return_val_if_fail(IsWindow(m_hDlg), 0);
-	return GetDlgItemInt(m_hDlg, controlId, NULL, FALSE);
+	return GetDlgItemInt(m_hDlg, controlId, nullptr, FALSE);
 }
 
 void XAP_Win32DialogBase::selectControlText(UT_sint32 controlId, UT_sint32 start, UT_sint32 end)

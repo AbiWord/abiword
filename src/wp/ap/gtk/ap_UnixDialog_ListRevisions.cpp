@@ -75,8 +75,8 @@ XAP_Dialog * AP_UnixDialog_ListRevisions::static_constructor(XAP_DialogFactory *
 AP_UnixDialog_ListRevisions::AP_UnixDialog_ListRevisions(XAP_DialogFactory * pDlgFactory,
 							 XAP_Dialog_Id id)
   : AP_Dialog_ListRevisions(pDlgFactory,id)
-  , m_mainWindow(NULL)
-  , m_treeModel(NULL)
+  , m_mainWindow(nullptr)
+  , m_treeModel(nullptr)
 {
 }
 
@@ -170,11 +170,11 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
                                         "label", s.c_str(),
                                         "use-markup", TRUE,
                                         "xalign", 0.0, "yalign", 0.5,
-                                        NULL);
+                                        nullptr);
   gtk_widget_show (lbExistingRevisions);
   gtk_box_pack_start (GTK_BOX (vbContent), lbExistingRevisions, FALSE, FALSE, 0);
 
-  swExistingRevisions = gtk_scrolled_window_new (NULL, NULL);
+  swExistingRevisions = gtk_scrolled_window_new (nullptr, nullptr);
   gtk_widget_show (swExistingRevisions);
   gtk_container_add (GTK_CONTAINER (vbContent), swExistingRevisions);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swExistingRevisions), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -193,13 +193,13 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
 
   // comment column
   col = gtk_tree_view_column_new_with_attributes(getColumn3Label(),
-												 renderer, "text", COL_COMMENT, NULL);
+												 renderer, "text", COL_COMMENT, nullptr);
   gtk_tree_view_column_set_sort_column_id(col, COL_COMMENT);
   gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
 
   // revision date column
   col = gtk_tree_view_column_new_with_attributes(getColumn2Label(),
-												 renderer, "text", COL_DATE_STRING, NULL);
+												 renderer, "text", COL_DATE_STRING, nullptr);
   // we sort on the numerical tt column instead of the human readable text
   gtk_tree_view_column_set_sort_column_id(col, COL_DATE_AS_TIMET);
   // later we sort on date desc.
@@ -210,7 +210,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   
   // revision # column
   col = gtk_tree_view_column_new_with_attributes(getColumn1Label(),
-												 renderer, "text", COL_REVID, NULL);
+												 renderer, "text", COL_REVID, nullptr);
   gtk_tree_view_column_set_fixed_width(col, 80);
   gtk_tree_view_column_set_sort_column_id(col, COL_REVID);
   gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
@@ -236,7 +236,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
     gtk_list_store_append(m_treeModel, &iter);
 
     gchar * txt = getNthItemText(i, true);
-    gchar * itemtime = g_locale_to_utf8(getNthItemTime(i), -1, NULL, NULL, NULL);
+    gchar * itemtime = g_locale_to_utf8(getNthItemTime(i), -1, nullptr, nullptr, nullptr);
     gtk_list_store_set(m_treeModel, &iter,
                        COL_REVID,         getNthItemId(i),
                        COL_DATE_STRING,   itemtime?itemtime:"",

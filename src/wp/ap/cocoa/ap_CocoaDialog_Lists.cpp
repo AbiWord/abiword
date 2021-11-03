@@ -55,8 +55,8 @@ AP_CocoaDialog_Lists::AP_CocoaDialog_Lists(XAP_DialogFactory * pDlgFactory,
 	: AP_Dialog_Lists(pDlgFactory,dlgid)
 {
 	Current_Dialog = this;
-	m_pPreviewWidget = NULL;
-	m_pAutoUpdateLists = NULL;
+	m_pPreviewWidget = nullptr;
+	m_pAutoUpdateLists = nullptr;
 	m_bDontUpdate = false;
 }
 
@@ -69,7 +69,7 @@ XAP_Dialog * AP_CocoaDialog_Lists::static_constructor(XAP_DialogFactory * pFacto
 
 AP_CocoaDialog_Lists::~AP_CocoaDialog_Lists(void)
 {
-	if(m_pPreviewWidget != NULL)
+	if(m_pPreviewWidget != nullptr)
 		DELETEP (m_pPreviewWidget);
 }
 

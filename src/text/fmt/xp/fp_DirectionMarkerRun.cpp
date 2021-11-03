@@ -77,11 +77,11 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 {
 	//UT_DEBUGMSG(("fp_DirectionMarkerRun::lookupProperties\n"));
 	_inheritProperties();
-	if(pG == NULL)
+	if(pG == nullptr)
 	{
 		pG = getGraphics();
 	}
-	const gchar* pRevision = NULL;
+	const gchar* pRevision = nullptr;
 
 	if(pBlockAP && pBlockAP->getAttribute("revision", pRevision))
 	{
@@ -105,7 +105,7 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 
 	UT_UCS4Char cM = m_iMarker == UCS_LRM ? (UT_UCS4Char)'>' : (UT_UCS4Char)'<';
-	m_iDrawWidth  = pG->measureString(&cM, 0, 1, NULL);
+	m_iDrawWidth  = pG->measureString(&cM, 0, 1, nullptr);
 	xxx_UT_DEBUGMSG(("fp_DirectionMarkerRun::lookupProperties: width %d\n", getWidth()));
 }
 
@@ -247,9 +247,9 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		const PP_AttrProp * pSpanAP = NULL;
-		const PP_AttrProp * pBlockAP = NULL;
-		const PP_AttrProp * pSectionAP = NULL;
+		const PP_AttrProp * pSpanAP = nullptr;
+		const PP_AttrProp * pBlockAP = nullptr;
+		const PP_AttrProp * pSectionAP = nullptr;
 		getSpanAP(pSpanAP);
 		getBlockAP(pBlockAP);
 		// look for fonts in this DocLayout's font cache
@@ -264,7 +264,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	// showPara being turned on, then we obtain the new width, and then
 	// tell the line to redo its layout and redraw instead of drawing ourselves
 	UT_UCS4Char cM = m_iMarker == UCS_LRM ? (UT_UCS4Char)'>' : (UT_UCS4Char)'<';
-	m_iDrawWidth  = getGraphics()->measureString(&cM, 0, 1, NULL);
+	m_iDrawWidth  = getGraphics()->measureString(&cM, 0, 1, nullptr);
 
 	_setHeight(getGraphics()->getFontHeight());
 	m_iXoffText = pDA->xoff;

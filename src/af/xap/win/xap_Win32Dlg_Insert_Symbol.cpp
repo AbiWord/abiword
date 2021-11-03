@@ -53,9 +53,9 @@ XAP_Win32Dialog_Insert_Symbol::XAP_Win32Dialog_Insert_Symbol(XAP_DialogFactory *
 										 XAP_Dialog_Id id)
 	: XAP_Dialog_Insert_Symbol(pDlgFactory,id)
 {
-	m_pSymbolPreviewWidget = NULL;
-	m_pSamplePreviewWidget = NULL;
-	m_DrawSymbolSample     = NULL;
+	m_pSymbolPreviewWidget = nullptr;
+	m_pSamplePreviewWidget = nullptr;
+	m_DrawSymbolSample     = nullptr;
 	
 }
 
@@ -84,7 +84,7 @@ void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	setDialog(this);
 	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_INSERT_SYMBOL) );
 
-	UT_ASSERT((hWndDialog != NULL));
+	UT_ASSERT((hWndDialog != nullptr));
 	ShowWindow(hWndDialog, SW_SHOW);
 
 	m_pApp->rememberModelessId(m_id, this);
@@ -124,7 +124,7 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
         setDialogTitle(m_WindowName);
 
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)frameHWND);
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
@@ -135,7 +135,7 @@ void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, 0);
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
@@ -189,10 +189,10 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	// Fill the list box with symbol fonts.
 
-	HDC hDCScreen = CreateDCW(L"DISPLAY", NULL, NULL, NULL);
+	HDC hDCScreen = CreateDCW(L"DISPLAY", nullptr, nullptr, nullptr);
 
 #if 1
-	EnumFontFamiliesW(hDCScreen, (const wchar_t *)NULL, (FONTENUMPROCW)fontEnumProcedure, (LPARAM)this);
+	EnumFontFamiliesW(hDCScreen, (const wchar_t *)nullptr, (FONTENUMPROCW)fontEnumProcedure, (LPARAM)this);
 #else
 	LOGFONTW LogFont;
 //	LogFont.lfCharSet = SYMBOL_CHARSET; - all fonts enum is more inline with XP nature

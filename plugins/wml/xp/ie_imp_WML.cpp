@@ -67,11 +67,11 @@ const IE_SuffixConfidence * IE_Imp_WML_Sniffer::getSuffixConfidence ()
 	return IE_Imp_WML_Sniffer__SuffixConfidence;
 }
 
-const IE_MimeConfidence * IE_Imp_WML_Sniffer::getMimeConfidence () 
+const IE_MimeConfidence * IE_Imp_WML_Sniffer::getMimeConfidence()
 {
 	// mimetypes once getMimeConfidence is implemented (need to check correctness)
 	// "text/vnd.wap.wml"
-	return NULL; 
+	return nullptr;
 }
 
 UT_Confidence_t IE_Imp_WML_Sniffer::recognizeContents(const char * szBuf, 
@@ -79,7 +79,7 @@ UT_Confidence_t IE_Imp_WML_Sniffer::recognizeContents(const char * szBuf,
 {
 	// TODO: scan the first few lines
 
-	if(strstr(szBuf, "!DOCTYPE wml PUBLIC") == NULL)
+	if(strstr(szBuf, "!DOCTYPE wml PUBLIC") == nullptr)
 		return UT_CONFIDENCE_ZILCH;
 
 	return UT_CONFIDENCE_PERFECT;
@@ -244,7 +244,7 @@ void IE_Imp_WML::openTable(const gchar **atts)
 	else
 		X_CheckDocument(false); // columns is a required attribute, bail out
 
-	X_CheckError(m_TableHelperStack->tableStart(getDoc(),NULL));
+	X_CheckError(m_TableHelperStack->tableStart(getDoc(),nullptr));
 }
 
 void IE_Imp_WML::closeTable(void)
@@ -254,7 +254,7 @@ void IE_Imp_WML::closeTable(void)
 
 void IE_Imp_WML::openRow(const gchar ** /*atts*/)
 {
-	X_CheckError(m_TableHelperStack->trStart(NULL));
+	X_CheckError(m_TableHelperStack->trStart(nullptr));
 }
 
 void IE_Imp_WML::closeRow(void)
@@ -263,7 +263,7 @@ void IE_Imp_WML::closeRow(void)
 
 	while(m_iColumns > m_iOpenedColumns)
 	{
-		const gchar ** empty = NULL;
+		const gchar ** empty = nullptr;
 		openCell(empty);
 		closeCell();
 	}
@@ -274,7 +274,7 @@ void IE_Imp_WML::openCell(const gchar ** /*atts*/)
 	// Note: there's no rowspan or colspan in WML 1.1
 
 	m_iOpenedColumns++;
-	X_CheckError(m_TableHelperStack->tdStart(1,1,NULL));
+	X_CheckError(m_TableHelperStack->tdStart(1,1,nullptr));
 }
 
 void IE_Imp_WML::closeCell(void)
@@ -328,7 +328,7 @@ void IE_Imp_WML::startElement(const gchar *name,
 		X_VerifyParseState(_PS_MetaData);
 		m_parseState = _PS_Meta;
 
-		const gchar *metaname = NULL, *content = NULL;
+		const gchar *metaname = nullptr, *content = nullptr;
 
 		metaname = static_cast<const gchar*>(_getXMLPropValue("name", atts));
 		content = static_cast<const gchar*>(_getXMLPropValue("content", atts));
@@ -389,7 +389,7 @@ void IE_Imp_WML::startElement(const gchar *name,
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		bool left = false;
 
 		PP_PropertyVector attr = {
@@ -433,7 +433,7 @@ void IE_Imp_WML::startElement(const gchar *name,
 			m_bOpenedBlock = true;
 		}
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("src"), atts);
 
 		if(p_val)
@@ -544,7 +544,7 @@ void IE_Imp_WML::startElement(const gchar *name,
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Cell));
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue("id", atts);
 
 		if(p_val)
@@ -564,7 +564,7 @@ void IE_Imp_WML::startElement(const gchar *name,
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Cell));
 
-		const gchar *p_val = NULL;
+		const gchar *p_val = nullptr;
 		p_val = _getXMLPropValue("href", atts);
 
 		if(p_val)
@@ -783,13 +783,13 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 	UT_UTF8String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iImages++));
 
 	UT_UTF8String alt;
-	const gchar *p_val = NULL;
+	const gchar *p_val = nullptr;
 
 	p_val = _getXMLPropValue(static_cast<const gchar *>("alt"), atts);
 	if (p_val)
 		alt += p_val;
 
-	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, pfg->getMimeType(), NULL));
+	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, pfg->getMimeType(), nullptr));
 
 	UT_UTF8String props;
 

@@ -101,7 +101,7 @@ void AP_CocoaDialog_MailMerge::destroy(void)
 
 		modeless_cleanup();
 	}
-	m_dlg = 0;
+	m_dlg = nil;
 }
 
 void AP_CocoaDialog_MailMerge::eventInsert(NSString * field_name)
@@ -125,7 +125,7 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 - (id)initFromNib
 {
 	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_MailMerge"]) {
-		_xap = NULL;
+		_xap = nullptr;
 
 		m_AvailableFields = [[NSMutableArray alloc] initWithCapacity:32];
 		if (!m_AvailableFields)
@@ -142,7 +142,7 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 	if (m_AvailableFields)
 		{
 			[m_AvailableFields release];
-			m_AvailableFields = 0;
+			m_AvailableFields = nil;
 		}
 	[super dealloc];
 }
@@ -154,7 +154,7 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 
 - (void)discardXAP
 {
-	_xap = 0;
+	_xap = nullptr;
 }
 
 - (void)windowDidLoad

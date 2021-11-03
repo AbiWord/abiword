@@ -46,13 +46,13 @@ static wchar_t s_TopRulerWndClassName[256];
 AP_Win32TopRuler::AP_Win32TopRuler(XAP_Frame * pFrame)
 	: AP_TopRuler(pFrame)
 {
-	m_pG = NULL;
-	m_hwndTopRuler = NULL;
+	m_pG = nullptr;
+	m_hwndTopRuler = nullptr;
 }
 
 AP_Win32TopRuler::~AP_Win32TopRuler(void)
 {
-	reinterpret_cast<FV_View *>(getView())->setTopRuler(NULL);
+	reinterpret_cast<FV_View *>(getView())->setTopRuler(nullptr);
 	DELETEP(m_pG);
 
 	if (m_hwndTopRuler)
@@ -91,8 +91,8 @@ bool AP_Win32TopRuler::registerClass(XAP_Win32App * app)
 	swprintf(s_TopRulerWndClassName, L"%sTopRuler",str.c_str());
 
 	a = UT_RegisterClassEx(CS_OWNDC, AP_Win32TopRuler::_TopRulerWndProc, app->getInstance(),
-						   NULL, LoadCursor(NULL, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,
-						   NULL, s_TopRulerWndClassName);
+						   nullptr, LoadCursor(nullptr, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), nullptr,
+						   nullptr, s_TopRulerWndClassName);
 	UT_ASSERT_HARMLESS(a);
 
 	return true;
@@ -108,26 +108,26 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 	
 
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(XAP_App::getApp());
-	m_hwndTopRuler = UT_CreateWindowEx(0, s_TopRulerWndClassName, NULL,
+	m_hwndTopRuler = UT_CreateWindowEx(0, s_TopRulerWndClassName, nullptr,
 									WS_CHILD | WS_VISIBLE,
 									left, top, width, s_iFixedHeight,
-									hwndContainer, NULL, app->getInstance(), NULL);
-	UT_return_val_if_fail (m_hwndTopRuler,0);
+									hwndContainer, nullptr, app->getInstance(), nullptr);
+	UT_return_val_if_fail (m_hwndTopRuler, nullptr);
 	SWL(m_hwndTopRuler, this);
 
-	
+
 	DELETEP(m_pG);
 	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler);
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	m_pG = pG;
-	UT_return_val_if_fail (m_pG, 0);
+	UT_return_val_if_fail (m_pG, nullptr);
 	pG->init3dColors();
 
 	RECT rSize;
 	GetClientRect(m_hwndTopRuler,&rSize);
 	setHeight(rSize.bottom);
 	setWidth(rSize.right);
-	
+
 	return m_hwndTopRuler;
 }
 

@@ -64,7 +64,7 @@ public:
 
     void reset() {
         m_action = ACTION_NONE;
-        m_pListenerImpl = NULL;
+        m_pListenerImpl = nullptr;
     }
 
 private:

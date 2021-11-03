@@ -19,8 +19,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef IE_IMP_H
-#define IE_IMP_H
+#pragma once
 
 #include "ut_types.h"
 #include "ie_types.h"
@@ -138,18 +137,18 @@ public:
 									  const char * szFilename,
 									  IEFileType ieft,
 									  IE_Imp ** ppie,
-									  IEFileType * pieft = NULL);
+									  IEFileType * pieft = nullptr);
 
 	static UT_Error	constructImporter(PD_Document * pDocument,
 									  GsfInput * input,
 									  IEFileType ieft,
 									  IE_Imp ** ppie,
-									  IEFileType * pieft = NULL);
+									  IEFileType * pieft = nullptr);
 
 	static UT_Error	constructImporter(PD_Document * pDocument,
 									  IEFileType ieft,
 									  IE_Imp ** ppie,
-									  IEFileType * pieft = NULL);
+									  IEFileType * pieft = nullptr);
 
 	static bool	    enumerateDlgLabels(UT_uint32 ndx,
 					       const char ** pszDesc,
@@ -171,8 +170,8 @@ public:
 	UT_Error importFile(const char * szFilename);
 	UT_Error importFile(GsfInput * input);
 
-	static UT_Error loadFile(PD_Document * doc, const char * szFilename, IEFileType ieft = IEFT_Unknown, const char * props = NULL, IEFileType * savedAsType = NULL);
-	static UT_Error loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft = IEFT_Unknown, const char * props = NULL, IEFileType * savedAsType = NULL);
+	static UT_Error loadFile(PD_Document * doc, const char * szFilename, IEFileType ieft = IEFT_Unknown, const char * props = nullptr, IEFileType * savedAsType = nullptr);
+	static UT_Error loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft = IEFT_Unknown, const char * props = nullptr, IEFileType * savedAsType = nullptr);
 
 	// default impl
 	virtual  bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
@@ -267,6 +266,3 @@ public:
 			}
 	}
 };
-
-
-#endif /* IE_IMP_H */

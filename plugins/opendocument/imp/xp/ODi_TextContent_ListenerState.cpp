@@ -84,9 +84,9 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
                   m_bPendingSection(false),
                   m_currentODSection(ODI_SECTION_NONE),
                   m_elementParsingLevel(0),
-                  m_pCurrentTOCParser(NULL),
+                  m_pCurrentTOCParser(nullptr),
                   m_bOnContentStream(false),
-                  m_pCurrentListStyle(NULL),
+                  m_pCurrentListStyle(nullptr),
                   m_listLevel(0),
                   m_alreadyDefinedAbiParagraphForList(false),
                   m_pendingNoteAnchorInsertion(false),
@@ -151,7 +151,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 
 
         const gchar* pStyleName = UT_getAttribute ("text:style-name", ppAtts);
-        UT_ASSERT(pStyleName != NULL);
+        UT_ASSERT(pStyleName != nullptr);
         
         const ODi_Style_Style* pStyle = m_pStyles->getSectionStyle(pStyleName,
                                                         m_bOnContentStream);
@@ -194,12 +194,12 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
     } else if (!strcmp(pName, "text:h" )) {
 
-        const gchar* pStyleName = NULL;
-        const gchar* pOutlineLevel = NULL;
-        const ODi_Style_Style* pStyle = NULL;
+        const gchar* pStyleName = nullptr;
+        const gchar* pOutlineLevel = nullptr;
+        const ODi_Style_Style* pStyle = nullptr;
         
         pOutlineLevel = UT_getAttribute("text:outline-level", ppAtts);
-        if (pOutlineLevel == NULL) {
+        if (pOutlineLevel == nullptr) {
             // Headings without a level attribute are assumed to
             // be at level 1.
             pOutlineLevel = "1";
@@ -225,7 +225,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
         if (pStyle && (pStyle->isAutomatic())) {
 
-            if (pStyle->getParent() != NULL) {
+            if (pStyle->getParent() != nullptr) {
 
                 m_headingStyles[pOutlineLevel] = 
 					pStyle->getParent()->getDisplayName().c_str();
@@ -246,7 +246,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         m_alreadyDefinedAbiParagraphForList = false;
         _startParagraphElement(pName, ppAtts, rAction);
         m_bHeadingList = false;
-        m_pCurrentListStyle = NULL;
+        m_pCurrentListStyle = nullptr;
     } else if (!strcmp(pName, "text:s")) {
         // A number of consecutive white-space characters.
         
@@ -302,7 +302,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         _flush ();
         _insureInBlock(PP_NOPROPS);
 
-        UT_ASSERT(m_pCurrentTOCParser == NULL);
+        UT_ASSERT(m_pCurrentTOCParser == nullptr);
 
         m_pCurrentTOCParser = new ODi_TableOfContent_ListenerState(
             m_pAbiDocument, m_pStyles, m_rElementStack);
@@ -518,7 +518,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             _insertAnnotation();
         }
         m_listLevel++;
-        if (m_pCurrentListStyle == NULL) {
+        if (m_pCurrentListStyle == nullptr) {
 			const gchar* pVal;
 
 			pVal = UT_getAttribute("text:style-name", ppAtts);
@@ -526,7 +526,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 
 			if (pVal && *pVal)
 				m_pCurrentListStyle = m_pStyles->getList(pVal);
-			UT_ASSERT(m_pCurrentListStyle != NULL);
+			UT_ASSERT(m_pCurrentListStyle != nullptr);
         }
         
     } else if (!strcmp(pName, "text:list-item")) {
@@ -539,7 +539,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             !strcmp(m_rElementStack.getStartTag(0)->getName(), "office:text")) 
 	{
             
-            const gchar* pVal = NULL;
+            const gchar* pVal = nullptr;
             
             pVal = UT_getAttribute("text:anchor-type", ppAtts);
             UT_ASSERT(pVal);
@@ -564,7 +564,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
  	  // Store this in the PD_Document until after the rest of the
 	  // is layed out.
 	  // First acquired the info we need
-	  const gchar* pVal = NULL;
+	  const gchar* pVal = nullptr;
 	  bool bCont = true;
 	  m_iPageNum = 0;
 	  m_dXpos = 0.0;
@@ -615,14 +615,14 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  //
 	  // Get wrapping style
 	  //
-	  const gchar* pStyleName = NULL;
+	  const gchar* pStyleName = nullptr;
 	  pStyleName = UT_getAttribute("draw:style-name", ppAtts);
 	  if(pStyleName)
 	  {
 	      const ODi_Style_Style* pGraphicStyle = m_pStyles->getGraphicStyle(pStyleName, m_bOnContentStream);
 	      if(pGraphicStyle)
 	      {
-		  const std::string* pWrap=NULL;
+		  const std::string* pWrap=nullptr;
 		  pWrap = pGraphicStyle->getWrap(false);
 		  if(pWrap)
 		  {
@@ -786,13 +786,13 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         // Make sure the ppAtts2 size is correct.
         UT_uint32 id;
         const ODi_NotesConfiguration* pNotesConfig;
-        const ODi_Style_Style* pStyle = NULL;
-        const std::string* pCitationStyleName = NULL;
+        const ODi_Style_Style* pStyle = nullptr;
+        const std::string* pCitationStyleName = nullptr;
         bool isFootnote = false;
         const gchar* pNoteClass;
         
         pNoteClass = m_rElementStack.getStartTag(0)->getAttributeValue("text:note-class");
-        UT_ASSERT_HARMLESS(pNoteClass != NULL);
+        UT_ASSERT_HARMLESS(pNoteClass != nullptr);
         
         if (pNoteClass && !strcmp(pNoteClass, "footnote")) {
             isFootnote = true;
@@ -831,7 +831,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             ppAtts2.push_back("endnote-id");
         }
         ppAtts2.push_back(m_currentNoteId);
-        if (pCitationStyleName && (!pCitationStyleName->empty()) && (pStyle != NULL)) {
+        if (pCitationStyleName && (!pCitationStyleName->empty()) && (pStyle != nullptr)) {
             ppAtts2.push_back("style");
             ppAtts2.push_back(pStyle->getDisplayName());
         }
@@ -1069,7 +1069,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
     } else if (!strcmp(pName, "text:list")) {
         m_listLevel--;
         if (m_listLevel == 0) {
-            m_pCurrentListStyle = NULL;
+            m_pCurrentListStyle = nullptr;
         }
         
     } else if (!strcmp(pName, "draw:text-box")) {
@@ -1097,7 +1097,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         const gchar* pNoteClass;
         
         pNoteClass = m_rElementStack.getStartTag(1)->getAttributeValue("text:note-class");
-        UT_ASSERT_HARMLESS(pNoteClass != NULL);
+        UT_ASSERT_HARMLESS(pNoteClass != nullptr);
         
         if (pNoteClass && !strcmp(pNoteClass, "footnote")) {
             ok = m_pAbiDocument->appendStrux(PTX_EndFootnote, PP_NOPROPS);
@@ -1135,7 +1135,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         }
 
 #if 0
-        const gchar* pPropsArray[5] = { NULL, NULL, NULL, NULL, NULL };
+        const gchar* pPropsArray[5] = { nullptr, nullptr, nullptr, nullptr, nullptr };
 	std::string id = UT_std_string_sprintf("%d", m_iAnnotation);
         UT_DEBUGMSG(("closing tag for id:%s\n", id.c_str() ));
         pPropsArray[0] = "annotation-id";
@@ -1459,12 +1459,12 @@ void ODi_TextContent_ListenerState::_insureInSection(
 
     pStartTag = m_rElementStack.getClosestElement("text:section");
     
-    if (pStartTag!=NULL) {
+    if (pStartTag!=nullptr) {
         const gchar* pStyleName;
         const ODi_Style_Style* pStyle;
         
         pStyleName = pStartTag->getAttributeValue("text:style-name");
-        UT_ASSERT(pStyleName != NULL);
+        UT_ASSERT(pStyleName != nullptr);
         
         pStyle = m_pStyles->getSectionStyle(pStyleName, m_bOnContentStream);
         if (pStyle) {
@@ -1493,7 +1493,7 @@ void ODi_TextContent_ListenerState::_insureInSection(
         const gchar** propsArray = UT_splitPropsToArray(propsCopy);
         const gchar* pColumns = UT_getAttribute("columns", propsArray);
         
-        if (pColumns != NULL){
+        if (pColumns != nullptr) {
             m_columnsCount = atoi(pColumns);
             m_columnIndex = 1;
         } else{
@@ -1521,9 +1521,9 @@ void ODi_TextContent_ListenerState::_openAbiSection(
     bool hasLeftPageMargin = false;
     bool hasRightPageMargin = false;
 
-    const ODi_Style_MasterPage* pMasterPageStyle = NULL;
+    const ODi_Style_MasterPage* pMasterPageStyle = nullptr;
 
-    if (pMasterPageName != NULL && !pMasterPageName->empty()) {
+    if (pMasterPageName != nullptr && !pMasterPageName->empty()) {
         
         pMasterPageStyle = m_pStyles->getMasterPageStyle(pMasterPageName->c_str());
         
@@ -1640,7 +1640,7 @@ void ODi_TextContent_ListenerState::_openAbiSection(
     PP_PropertyVector atts = {
         "props", allProps
     };
-    if (pMasterPageStyle != NULL) {
+    if (pMasterPageStyle != nullptr) {
         // The standard master page may have headers/footers as well.
 
         if (!pMasterPageStyle->getAWEvenHeaderSectionID().empty()) {
@@ -1672,7 +1672,7 @@ void ODi_TextContent_ListenerState::_openAbiSection(
 // Bug 12716 - this cause an stack overflow
 // Reverting it seems to no cause bug 10627 to fail anymore
 //    if(m_inAbiSection && !m_bOpenedBlock) {
-//        _insureInBlock(NULL); //see Bug 10627 - hang on empty <section>
+//        _insureInBlock(nullptr); //see Bug 10627 - hang on empty <section>
 //    }
 
     m_pAbiDocument->appendStrux(PTX_Section, atts);
@@ -1752,7 +1752,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         // We can't define new sections from inside a table cell
         if (!m_rElementStack.hasElement("table:table-cell")) {
 
-            if (pStyle!=NULL && !pStyle->getMasterPageName()->empty()) {
+            if (pStyle != nullptr && !pStyle->getMasterPageName()->empty()) {
                 bool isFirstAbiSection = !m_openedFirstAbiSection;
                 
                 _insureInSection(pStyle->getMasterPageName());
@@ -1774,7 +1774,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 UT_UCSChar ucs;
                 if ((m_columnIndex <= m_columnsCount)){
                     
-                    if((pStyle == NULL) || (pStyle->getBreakBefore().empty()))
+                    if((pStyle == nullptr) || (pStyle->getBreakBefore().empty()))
                     {
                         if ((m_columnIndex > 1)){
                             ucs = UCS_VTAB;
@@ -1787,7 +1787,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 }
                 
                 // Should we insert a break before this paragraph?
-                if (pStyle != NULL && !pStyle->getBreakBefore().empty()) {
+                if (pStyle != nullptr && !pStyle->getBreakBefore().empty()) {
                     if (pStyle->getBreakBefore() == "page") {
                         ucs = UCS_FF;
                         // Append an empty paragraph with this one char
@@ -1810,7 +1810,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         
 	UT_DebugOnly<bool> ok;
         if (bIsListParagraph && !m_alreadyDefinedAbiParagraphForList) {
-            ODi_ListLevelStyle* pListLevelStyle = NULL;
+            ODi_ListLevelStyle* pListLevelStyle = nullptr;
             
             m_alreadyDefinedAbiParagraphForList = true;
             if (m_pCurrentListStyle) {
@@ -1840,7 +1840,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 xxx_UT_DEBUGMSG(("Level |%s| Listid |%s| Parentid |%s| \n",ppAtts[i-5],ppAtts[i-3],ppAtts[i-1]));
             }
 
-            if (pStyle!=NULL) {
+            if (pStyle != nullptr) {
                 if (pStyle->isAutomatic()) {
                     // Automatic styles are not defined on the document, so, we
                     // just paste its properties.
@@ -1892,7 +1892,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                m_bContentWritten = true;
 
             PP_PropertyVector ppAtts;
-            if (pStyle!=NULL) {
+            if (pStyle != nullptr) {
                 if (pStyle->isAutomatic()) {
                     // Automatic styles are not defined on the document, so, we
                     // just paste its properties.
@@ -1912,7 +1912,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         } else {
 
             PP_PropertyVector ppAtts;
-            if (pStyle != NULL) {
+            if (pStyle != nullptr) {
                 if (pStyle->isAutomatic()) {
                     // Automatic styles are not defined on the document, so, we
                     // just paste its properties.
@@ -1920,7 +1920,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                     ppAtts.push_back("props");
                     ppAtts.push_back(props);
 
-                    if (pStyle->getParent() != NULL) {
+                    if (pStyle->getParent() != nullptr) {
                         ppAtts.push_back("style");
                         ppAtts.push_back(pStyle->getParent()->getDisplayName());
                     }
@@ -1953,11 +1953,11 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             const ODi_StartTag* pStartTag;
 
             pStartTag = m_rElementStack.getClosestElement("text:note", 1);
-            UT_return_if_fail (pStartTag != NULL);
+            UT_return_if_fail (pStartTag != nullptr);
 
             pNoteClass = pStartTag->getAttributeValue("text:note-class");
 
-            UT_return_if_fail(pNoteClass != NULL);
+            UT_return_if_fail(pNoteClass != nullptr);
 
             PP_PropertyVector ppAtts = { "type", "", "", "" };
             if (!strcmp(pNoteClass, "footnote")) {
@@ -2018,7 +2018,7 @@ void ODi_TextContent_ListenerState::_endParagraphElement (
         pStyle = m_pStyles->getDefaultParagraphStyle();
     }
     
-    if (pStyle != NULL) {
+    if (pStyle != nullptr) {
         m_pendingParagraphBreak = pStyle->getBreakAfter();
     }
     

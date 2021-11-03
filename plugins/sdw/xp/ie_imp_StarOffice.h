@@ -47,7 +47,7 @@ struct ClsId {
  * is zero-terminated, length must include the byte for termination.
  * str must be delete[]'d, not free'd!
  * aLength, if non-null, contains the length of the string in bytes. */
-void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength = NULL);
+void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength = nullptr);
 
 /*! Reads a bytestring from a stream and converts it to UCS-4. Optionally,
  * it can also decrypt it.
@@ -55,11 +55,11 @@ void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength = NULL);
  * @param str The string where the bytestring should be stored
  * @param converter Iconv handle for charset conversion
  * @param cryptor (Optional) The cryptor used for decrypting the string */
-void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, SDWCryptor* cryptor = NULL);
+void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, SDWCryptor* cryptor = nullptr);
 
 class DocHdr {
 	public:
-		DocHdr() : sBlockName(NULL), converter(reinterpret_cast<UT_iconv_t>(-1)) {}
+		DocHdr() : sBlockName(nullptr), converter(reinterpret_cast<UT_iconv_t>(-1)) {}
 		~DocHdr() { if (sBlockName) free(sBlockName); if (UT_iconv_isValid(converter)) UT_iconv_close(converter); }
 		/*! Reads the document header
 		 * \param stream The OLE Stream to load from - should be the one
@@ -94,7 +94,7 @@ class DocHdr {
 
 // A text attribute record
 struct TextAttr {
-	TextAttr() : data(NULL), isOff(false), isPara(false) {}
+	TextAttr() : data(nullptr), isOff(false), isPara(false) {}
 	~TextAttr() { if (data) delete[] data; }
 	bool startSet, endSet; // true if the start/end attribute is valid
 	UT_uint16 which;
@@ -102,7 +102,7 @@ struct TextAttr {
 	UT_uint16 start;
 	UT_uint16 end;
 
-	UT_uint8* data; // possible additional data. NULL if no data existant.
+	UT_uint8* data; // possible additional data. nullptr if no data existant.
 	gsf_off_t dataLen;
 
 	std::string attrName;
@@ -197,14 +197,14 @@ class IE_Imp_StarOffice : public IE_Imp
 		 * \param aStream the stream to read from
 		 * \param aSize Reference to the size of the record
 		 * \param aEOR End of Record - file position where the record is finished*/
-		void readRecSize(GsfInput* stream, UT_uint32& aSize, gsf_off_t* aEOR = NULL);
+		void readRecSize(GsfInput* stream, UT_uint32& aSize, gsf_off_t* aEOR = nullptr);
 		/*! Reads a string from the file where the first sint32 contains the length. If it
 		 * is zero-terminated, length must include the byte for termination. The string will
 		 * be converted to the charset given in mDocHdr. If the document is encrypted, the
 		 * string will be decrypted before character set conversion.
 		 * \param stream The stream to read from
 		 * \param str Reference to pointer to UT_UCS4Char, where the string is stored.
-		 * Must be free'd. Is NULL if the function fails. */
+		 * Must be free'd. Is nullptr if the function fails. */
 		void readByteString(GsfInput* stream, UT_UCS4Char*& str) {
 			::readByteString(stream, str, mDocHdr.converter, mDocHdr.cryptor);
 		}
@@ -220,7 +220,7 @@ class IE_Imp_StarOffice : public IE_Imp
  * \param flags Flags (also contain the length in the 4 least significant bytes)
  * \param newPos (optional) Pointer to a variable where the position after the
  * flags record is stored. */
-void readFlagRec(GsfInput* stream, UT_uint8& flags, gsf_off_t* newPos = NULL);
+void readFlagRec(GsfInput* stream, UT_uint8& flags, gsf_off_t* newPos = nullptr);
 
 /*! Reads one character from the given GsfInput.
  * \param aStream The OLE Stream

@@ -289,7 +289,7 @@ void AP_Dialog_Tab::_event_Set(void)
 */
 void AP_Dialog_Tab::_event_Update(void)
 {
-	fl_TabStop *pTabInfo1 = NULL;
+	fl_TabStop *pTabInfo1 = nullptr;
 
 	// check the validity of the input
 	UT_String buffer;
@@ -567,7 +567,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 char *AP_Dialog_Tab::_getTabDimensionString(UT_sint32 tabIndex)
 {
 
-	UT_return_val_if_fail (tabIndex < m_tabInfo.getItemCount(), NULL);
+	UT_return_val_if_fail (tabIndex < m_tabInfo.getItemCount(), nullptr);
 
 	fl_TabStop *pTabInfo = m_tabInfo.getNthItem(tabIndex);
 
@@ -579,7 +579,7 @@ char *AP_Dialog_Tab::_getTabDimensionString(UT_sint32 tabIndex)
 	}
 
 	UT_uint32 iLen = pEnd - pStart;
-	UT_return_val_if_fail (iLen<20, NULL);
+	UT_return_val_if_fail (iLen<20, nullptr);
 
 	strncpy(buf, pStart, iLen);
 	buf[iLen]=0;

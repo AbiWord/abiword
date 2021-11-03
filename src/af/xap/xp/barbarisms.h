@@ -1,5 +1,5 @@
 /* AbiSuite
- * Copyright (C) Jordi Mas i Hern‡ndez
+ * Copyright (C) Jordi Mas i Hern√†ndez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,9 +17,7 @@
  * 02110-1301 USA.
  */
 
-
-#ifndef BARBARISMS_H
-#define BARBARISMS_H
+#pragma once
 
 #include <vector>
 
@@ -58,5 +56,3 @@ private:
 
 	std::string m_sLang;
 };
-
-#endif // BARBARISMS_H

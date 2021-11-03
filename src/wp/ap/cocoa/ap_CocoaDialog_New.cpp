@@ -76,7 +76,7 @@ void AP_CocoaDialog_New::runModal(XAP_Frame * pFrame)
 	[m_dlg close];
 	[m_dlg release];
 	m_dlg = nil;
-	m_pFrame = NULL;
+	m_pFrame = nullptr;
 }
 
 /*************************************************************************/

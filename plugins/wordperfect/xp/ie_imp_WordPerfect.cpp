@@ -96,7 +96,7 @@ private:
 AbiWordperfectInputStream::AbiWordperfectInputStream(GsfInput *input) :
 	librevenge::RVNGInputStream(),
 	m_input(input),
-	m_ole(NULL),
+	m_ole(nullptr),
 	m_substreams()
 {
 	g_object_ref(G_OBJECT(input));
@@ -112,9 +112,9 @@ AbiWordperfectInputStream::~AbiWordperfectInputStream()
 
 const unsigned char * AbiWordperfectInputStream::read(unsigned long numBytes, unsigned long &numBytesRead)
 {
-	const unsigned char *buf = gsf_input_read(m_input, numBytes, NULL);
+	const unsigned char *buf = gsf_input_read(m_input, numBytes, nullptr);
 
-	if (buf == NULL)
+	if (buf == nullptr)
 		numBytesRead = 0;
 	else
 		numBytesRead = numBytes;
@@ -144,11 +144,11 @@ int AbiWordperfectInputStream::seek(long offset, librevenge::RVNG_SEEK_TYPE seek
 bool AbiWordperfectInputStream::isStructured()
 {
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, NULL)); 
+		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, nullptr));
 
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, nullptr));
+
 	if (m_ole)
 		return true;
 
@@ -158,11 +158,11 @@ bool AbiWordperfectInputStream::isStructured()
 unsigned AbiWordperfectInputStream::subStreamCount()
 {
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, nullptr));
+
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, nullptr));
+
 	if (m_ole)
 		{
 			int numChildren = gsf_infile_num_children(m_ole);
@@ -177,11 +177,11 @@ unsigned AbiWordperfectInputStream::subStreamCount()
 const char * AbiWordperfectInputStream::subStreamName(unsigned id)
 {
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, nullptr));
+
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, nullptr));
+
 	if (m_ole)
 		{
 			if ((int)id >= gsf_infile_num_children(m_ole))
@@ -203,11 +203,11 @@ const char * AbiWordperfectInputStream::subStreamName(unsigned id)
 bool AbiWordperfectInputStream::existsSubStream(const char * name)
 {
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, nullptr));
+
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, nullptr));
+
 	if (m_ole)
 		{
 			GsfInput *document = gsf_infile_child_by_name(m_ole, name);
@@ -223,14 +223,14 @@ bool AbiWordperfectInputStream::existsSubStream(const char * name)
 
 librevenge::RVNGInputStream * AbiWordperfectInputStream::getSubStreamByName(const char * name)
 {
-	librevenge::RVNGInputStream *documentStream = NULL;
+	librevenge::RVNGInputStream *documentStream = nullptr;
 	
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, nullptr));
+
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, nullptr));
+
 	if (m_ole)
 		{
 			GsfInput *document = gsf_infile_child_by_name(m_ole, name);
@@ -246,14 +246,14 @@ librevenge::RVNGInputStream * AbiWordperfectInputStream::getSubStreamByName(cons
 
 librevenge::RVNGInputStream * AbiWordperfectInputStream::getSubStreamById(unsigned id)
 {
-	librevenge::RVNGInputStream *documentStream = NULL;
-	
+	librevenge::RVNGInputStream *documentStream = nullptr;
+
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, nullptr));
+
 	if (!m_ole)
-		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, NULL)); 
-	
+		m_ole = GSF_INFILE(gsf_infile_zip_new (m_input, nullptr));
+
 	if (m_ole)
 		{
 			GsfInput *document = gsf_infile_child_by_index(m_ole, (int)id);
@@ -387,7 +387,7 @@ IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
 	m_nextFreeId(0),
 	m_leftMarginOffset(0.0f),
 	m_rightMarginOffset(0.0f),
-	m_pCurrentListDefinition(NULL),
+	m_pCurrentListDefinition(nullptr),
 	m_bParagraphChanged(false),
 	m_bParagraphInSection(false),
 	m_bInSection(false),
@@ -407,7 +407,7 @@ IE_Imp_WordPerfect::~IE_Imp_WordPerfect()
 UT_Error IE_Imp_WordPerfect::_loadFile(GsfInput * input)
 {
 	AbiWordperfectInputStream gsfInput(input);
-	libwpd::WPDResult error = libwpd::WPDocument::parse(&gsfInput, static_cast<librevenge::RVNGTextInterface *>(this), NULL);
+	libwpd::WPDResult error = libwpd::WPDocument::parse(&gsfInput, static_cast<librevenge::RVNGTextInterface *>(this), nullptr);
 
 	if (error != libwpd::WPD_OK)
 	{
@@ -495,12 +495,12 @@ void IE_Imp_WordPerfect::openHeader(const librevenge::RVNGPropertyList & /*propL
 			UT_ASSERT(SHOULD_NOT_HAPPEN);
 			break;
 	}
- 
+
 	const gchar* propsArray[3];
 	propsArray[0] = "props";
 	propsArray[1] = propBuffer.c_str();
-	propsArray[2] = NULL;	
-	
+	propsArray[2] = nullptr;
+
     X_CheckDocumentError(appendStrux(PTX_Section, propsArray));
 	m_bInSection = true;
 	m_bSectionChanged = false;*/
@@ -705,7 +705,7 @@ void IE_Imp_WordPerfect::openSpan(const librevenge::RVNGPropertyList &propList)
 	
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer.c_str();
-	propsArray[2] = NULL;
+	propsArray[2] = nullptr;
 	X_CheckDocumentError(appendFmt(propsArray));
 }
 
@@ -936,7 +936,7 @@ void IE_Imp_WordPerfect::openListElement(const librevenge::RVNGPropertyList &pro
 	if (m_pCurrentListDefinition->getListType(m_iCurrentListLevel) == BULLETED_LIST)
 		UT_String_sprintf(tempBuffer, "field-font:Symbol; ");
 	else
-		UT_String_sprintf(tempBuffer, "field-font:NULL; ");
+		UT_String_sprintf(tempBuffer, "field-font:nullptr; ");
 	
 	m_pCurrentListDefinition->incrementLevelNumber(m_iCurrentListLevel);
 	
@@ -954,7 +954,7 @@ void IE_Imp_WordPerfect::openListElement(const librevenge::RVNGPropertyList &pro
 
 	listAttribs[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
 	listAttribs[attribsCount++] = propBuffer.c_str();
-	listAttribs[attribsCount++] = NULL;
+	listAttribs[attribsCount++] = nullptr;
 
 	X_CheckDocumentError(appendStrux(PTX_Block, PP_std_copyProps(listAttribs)));
 	m_bRequireBlock = false;
@@ -1175,7 +1175,7 @@ void IE_Imp_WordPerfect::closeTable()
 	m_bInCell = false;
 	
 	// we need to open a new paragraph after a table, since libwpd does NOT do it
-	// FIXME: NEED TO PASS THE CURRENT PROPERTIES INSTEAD OF NULL
+	// FIXME: NEED TO PASS THE CURRENT PROPERTIES INSTEAD OF nullptr
 	// NOTE: THIS SUCKS.........
 	X_CheckDocumentError(appendStrux(PTX_Block, PP_NOPROPS));
 	m_bRequireBlock = false;
@@ -1210,7 +1210,7 @@ UT_Error IE_Imp_WordPerfect::_appendSection(int numColumns, const float marginLe
 // NB: AbiWord-2.0 doesn't properly support nested lists with different nested styles: only "1" style
 // really looks proper. We hack around this be only using the style given at level "1"
 // NB: AbiWord-2.0 doesn't properly support setting list delimeters at levels greater than 1,
-// we hack around this by using only "plain" (e.g.: NULL) list delimeters on levels greater than 1.
+// we hack around this by using only "plain" (e.g.: nullptr) list delimeters on levels greater than 1.
 UT_Error IE_Imp_WordPerfect::_updateDocumentOrderedListDefinition(ABI_ListDefinition *pListDefinition, int iLevel, 
 																  const char /*listType*/, const UT_UTF8String &sTextBeforeNumber, 
 																  const UT_UTF8String &sTextAfterNumber, int iStartingNumber)
@@ -1225,7 +1225,7 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentOrderedListDefinition(ABI_ListDefini
 	fl_AutoNumPtr pAuto = getDoc()->getListByID(pListDefinition->getListID(iLevel));
 	// not in document yet, we should create a list for it
 	if (!pAuto) {
-		UT_DEBUGMSG(("AbiWordPerfect: pAuto is NULL: creating a list\n"));
+		UT_DEBUGMSG(("AbiWordPerfect: pAuto is nullptr: creating a list\n"));
 		if (iLevel > 1) {
 			pAuto = std::make_shared<fl_AutoNum>(pListDefinition->getListID(iLevel),
 												 pListDefinition->getListID((iLevel-1)),
@@ -1264,7 +1264,7 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentUnorderedListDefinition(ABI_ListDefi
 	fl_AutoNumPtr pAuto = getDoc()->getListByID(pListDefinition->getListID(iLevel));
 	// not in document yet, we should create a list for it
 	if (!pAuto)	{
-		UT_DEBUGMSG(("AbiWordPerfect: pAuto is NULL: creating a list\n"));
+		UT_DEBUGMSG(("AbiWordPerfect: pAuto is nullptr: creating a list\n"));
 		if (iLevel > 1) {
 			pAuto = std::make_shared<fl_AutoNum>(pListDefinition->getListID(iLevel),
 												 pListDefinition->getListID((iLevel-1)),
@@ -1305,7 +1305,7 @@ protected:
     virtual UT_Error _loadFile(GsfInput * input) override
 	{
 		AbiWordperfectInputStream gsfInput(input);
-		libwps::WPSResult error = libwps::WPSDocument::parse(&gsfInput, static_cast<librevenge::RVNGTextInterface *>(this), NULL, NULL);
+		libwps::WPSResult error = libwps::WPSDocument::parse(&gsfInput, static_cast<librevenge::RVNGTextInterface *>(this), nullptr, nullptr);
 
 		if (error != libwps::WPS_OK)
 			{

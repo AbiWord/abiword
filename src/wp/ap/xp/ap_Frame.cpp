@@ -171,7 +171,7 @@ void AP_Frame::killFrameData()
 {
 	AP_FrameData* pData = static_cast<AP_FrameData*>(m_pData);
 	DELETEP(pData);
-	m_pData = NULL;
+	m_pData = nullptr;
 }
 
 UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
@@ -258,7 +258,7 @@ ReplaceDocument:
 
 UT_Error AP_Frame::_loadDocument(GsfInput * input, IEFileType ieft)
 {
-	UT_return_val_if_fail (input != NULL, UT_ERROR);
+	UT_return_val_if_fail (input != nullptr, UT_ERROR);
 
 	// are we replacing another document?
 	if (m_pDoc)
@@ -364,7 +364,7 @@ XAP_Frame * AP_Frame::buildFrame(XAP_Frame * pF)
 		XAP_App::getApp()->forgetFrame(pClone);
 		delete pClone;
 	}
-	return NULL;
+	return nullptr;
 }
 
 UT_Error AP_Frame::loadDocument(AD_Document* pDoc) {
@@ -563,12 +563,12 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
 {
 	UT_GenericVector<XAP_Frame*> vecClones;
-	XAP_Frame *pF = NULL;
+	XAP_Frame *pF = nullptr;
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, 0);
 	XAP_Frame * pLastFrame = pApp->getLastFocussedFrame();
 	UT_uint32 iZoom = 100;
-	if(pLastFrame == NULL)
+	if(pLastFrame == nullptr)
 	{
 		std::string sZoom;
 		pApp->getPrefsValue(XAP_PREF_KEY_ZoomType, sZoom);
@@ -649,13 +649,13 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 
 // 	static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(true);
 
-	GR_Graphics * pG = NULL;
-	FL_DocLayout * pDocLayout = NULL;
-	AV_View * pView = NULL;
-	AV_ScrollObj * pScrollObj = NULL;
-	ap_ViewListener * pViewListener = NULL;
-	AD_Document * pOldDoc = NULL;
-	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
+	GR_Graphics * pG = nullptr;
+	FL_DocLayout * pDocLayout = nullptr;
+	AV_View * pView = nullptr;
+	AV_ScrollObj * pScrollObj = nullptr;
+	ap_ViewListener * pViewListener = nullptr;
+	AD_Document * pOldDoc = nullptr;
+	ap_Scrollbar_ViewListener * pScrollbarViewListener = nullptr;
 	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
 
@@ -763,9 +763,9 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	// view of the same doc as the old view, or if this frame is being cloned from an existing frame
 	
 	// these are the view and doc from which this frame is being cloned
-	FV_View * pRootView = NULL; // this should really be const, but
+	FV_View * pRootView = nullptr; // this should really be const, but
 								// getDocumentRangeOfCurrentSelection() is not
-	const AD_Document * pRootDoc = NULL;
+	const AD_Document * pRootDoc = nullptr;
 	
 	if (m_pView && !m_pView->isSelectionEmpty ())
 	{
@@ -791,9 +791,9 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 		else
 			hadView = false;
 
-		// we want to set m_pData->m_pRootView to NULL, since it has fullfilled its function and we
+		// we want to set m_pData->m_pRootView to nullptr, since it has fullfilled its function and we
 		// do not want any dead pointers hanging around
-		static_cast<AP_FrameData*>(m_pData)->m_pRootView = NULL;
+		static_cast<AP_FrameData*>(m_pData)->m_pRootView = nullptr;
 	}
 	else
 		hadView = false;
@@ -833,7 +833,7 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	AV_View * pReplacedView = m_pView;
 	m_pView = pView;
 
-	XAP_App::getApp()->setViewSelection(NULL);
+	XAP_App::getApp()->setViewSelection(nullptr);
 
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
@@ -916,7 +916,7 @@ void AP_Frame::unregisterListener(UT_sint32 iListenerId)
 {
 	UT_return_if_fail(iListenerId >= 0);
 	UT_return_if_fail(iListenerId >= static_cast<UT_sint32>(m_listeners.size()));	
-	m_listeners[iListenerId] = NULL;
+	m_listeners[iListenerId] = nullptr;
 }
 
 void AP_Frame::_signal(AP_FrameSignal sig)

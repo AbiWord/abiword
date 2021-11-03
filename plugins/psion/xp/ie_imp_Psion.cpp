@@ -53,7 +53,7 @@ static const gchar *global_listid = "1000";
  * 
  * The input is a psiconv UCS2 string; the output an Abiword UTF8 string.
  * Special characters are filtered away.
- * \return NULL if input is NULL or something went horribly wrong, the
+ * \return nullptr if input is nullptr or something went horribly wrong, the
  * UTF8 string otherwise.
  */
 static gchar *prepare_style_name(const psiconv_string_t input)
@@ -64,7 +64,7 @@ static gchar *prepare_style_name(const psiconv_string_t input)
 	UT_uint32 read,written;
 	
 	if (!(input_copy = psiconv_unicode_strdup(input)))
-		return NULL;
+		return nullptr;
 	for (i = 0; i < psiconv_unicode_strlen(input_copy);i++) 
 		if ((input[i] < 0x20) || (input[i] == ';') || (input[i] == ':')) 
 			input[i] = '?';
@@ -127,7 +127,7 @@ UT_Confidence_t IE_Imp_Psion_Sniffer::checkContents(const char * szBuf,
 	if (!config)
 		goto ERROR1;
 	config->error_handler = &psion_error_handler;
-	psiconv_config_read(NULL,&config);
+	psiconv_config_read(nullptr,&config);
 	// It is likely detection will fail, so keep it silent.
 	config->verbosity = PSICONV_VERB_FATAL;
 
@@ -141,7 +141,7 @@ UT_Confidence_t IE_Imp_Psion_Sniffer::checkContents(const char * szBuf,
 		}
 
 	// Check whether this is a Psion file.
-	filetype_detected = psiconv_file_type(config,pl,NULL,NULL);
+	filetype_detected = psiconv_file_type(config,pl,nullptr,nullptr);
 	psiconv_buffer_free(pl);
 	psiconv_config_free(config);
 	if (filetype == filetype_detected)
@@ -298,7 +298,7 @@ UT_Error IE_Imp_Psion::_loadFile(GsfInput * fp)
 	if (!config)
 		goto ERROR3;
 	config->error_handler = psion_error_handler;
-	psiconv_config_read(NULL,&config);
+	psiconv_config_read(nullptr,&config);
 
 	// Try to parse the file contents into psiconv internal data structures
 	res = psiconv_parse(config,buf,&psionfile);
@@ -400,7 +400,7 @@ UT_Error IE_Imp_Psion::applyStyles(const psiconv_word_styles_section style_sec)
 UT_Error IE_Imp_Psion::applyPageAttributes(const psiconv_page_layout_section layout,
                                            bool &with_header, bool &with_footer)
 {
-	UT_return_val_if_fail(layout != NULL, true /* perhaps should be false, but we want loading to proceed */);
+	UT_return_val_if_fail(layout != nullptr, true /* perhaps should be false, but we want loading to proceed */);
 
 	UT_UTF8String props,buffer;
 
@@ -490,7 +490,7 @@ UT_Error IE_Imp_Psion::processHeaderFooter(const psiconv_page_layout_section lay
 		if (!appendStrux(PTX_SectionHdrFtr,propsArray)) {
 			return UT_IE_IMPORTERROR;
 		}
-		if ((res = readParagraphs(layout->header->text->paragraphs,NULL))) {
+		if ((res = readParagraphs(layout->header->text->paragraphs,nullptr))) {
 			return res;
 		}
 	}
@@ -504,7 +504,7 @@ UT_Error IE_Imp_Psion::processHeaderFooter(const psiconv_page_layout_section lay
 		if (!appendStrux(PTX_SectionHdrFtr,propsArray)) {
 			return UT_IE_IMPORTERROR;
 		}
-		if ((res = readParagraphs(layout->footer->text->paragraphs,NULL))) {
+		if ((res = readParagraphs(layout->footer->text->paragraphs,nullptr))) {
 			return res;
 		}
 	}
@@ -519,7 +519,7 @@ UT_Error IE_Imp_Psion::processHeaderFooter(const psiconv_page_layout_section lay
 UT_Error IE_Imp_Psion::getParagraphAttributes(const psiconv_paragraph_layout layout,
                                           UT_UTF8String &props)
 {
-	UT_return_val_if_fail(layout != NULL, true /* perhaps should be false, but we want loading to proceed */);
+	UT_return_val_if_fail(layout != nullptr, true /* perhaps should be false, but we want loading to proceed */);
 
 	UT_UTF8String buffer;
 	psiconv_length_t indent_left,indent_first;
@@ -623,7 +623,7 @@ UT_Error IE_Imp_Psion::getParagraphAttributes(const psiconv_paragraph_layout lay
 		for (i = 0; i < (int) psiconv_list_length(layout->tabs->extras); i++) {
 			if (!(tab = (psiconv_tab) psiconv_list_get(layout->tabs->extras,
 			                                           i))) {
-				UT_ASSERT(tab != NULL);
+				UT_ASSERT(tab != nullptr);
 				return(UT_IE_IMPORTERROR);
 			}
 			UT_UTF8String_sprintf(buffer, "%s%6.3fcm/%c",
@@ -657,7 +657,7 @@ UT_Error IE_Imp_Psion::getParagraphAttributes(const psiconv_paragraph_layout lay
 UT_Error IE_Imp_Psion::applyParagraphAttributes(const psiconv_paragraph_layout layout,
                       const gchar *stylename)
 {
-	UT_return_val_if_fail(layout != NULL, true /* perhaps should be false, but we want loading to proceed */);
+	UT_return_val_if_fail(layout != nullptr, true /* perhaps should be false, but we want loading to proceed */);
 
 	UT_UTF8String props;
 	UT_Error res;
@@ -743,7 +743,7 @@ UT_Error IE_Imp_Psion::applyParagraphAttributes(const psiconv_paragraph_layout l
 UT_Error IE_Imp_Psion::getCharacterAttributes(const psiconv_character_layout layout,
                                              UT_UTF8String &props)
 {
-	UT_return_val_if_fail(layout != NULL, true /* perhaps should be false, but we want loading to proceed */);
+	UT_return_val_if_fail(layout != nullptr, true /* perhaps should be false, but we want loading to proceed */);
 
 	UT_UTF8String buffer;
 	int fontsize;
@@ -835,7 +835,7 @@ UT_Error IE_Imp_Psion::getCharacterAttributes(const psiconv_character_layout lay
  */
 UT_Error IE_Imp_Psion::applyCharacterAttributes(const psiconv_character_layout layout)
 {
-	UT_return_val_if_fail(layout != NULL, true /* perhaps should be false, but we want loading to proceed */);
+	UT_return_val_if_fail(layout != nullptr, true /* perhaps should be false, but we want loading to proceed */);
 	UT_Error res;
 
 	class UT_UTF8String props;
@@ -926,7 +926,7 @@ UT_Error IE_Imp_Psion::insertImage(const psiconv_in_line_layout in_line)
 	
 	// Prepare the PNG structure for writing
 	png_structp png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, 
-	                                               NULL, NULL, NULL);
+	                                               nullptr, nullptr, nullptr);
     if (!png_ptr)
        return UT_IE_IMPORTERROR;
 
@@ -934,7 +934,7 @@ UT_Error IE_Imp_Psion::insertImage(const psiconv_in_line_layout in_line)
     png_infop info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr)
     {
-       png_destroy_write_struct(&png_ptr,NULL);
+       png_destroy_write_struct(&png_ptr,nullptr);
        return UT_IE_IMPORTERROR;
     }	
 
@@ -1006,7 +1006,7 @@ UT_Error IE_Imp_Psion::insertImage(const psiconv_in_line_layout in_line)
 	if (!(getDoc()->appendObject(PTO_Image,propsArray)))
 		return UT_IE_IMPORTERROR;
 	if (!(getDoc()->createDataItem(iname.utf8_str(), false, image_buffer,
-								   "image/png",NULL)))
+								   "image/png",nullptr)))
 		return UT_IE_IMPORTERROR;
 	return UT_OK;
 }
@@ -1052,7 +1052,7 @@ UT_Error IE_Imp_Psion::readParagraphs(const psiconv_text_and_layout psiontext,
 		UT_DEBUGMSG(("PSION: Importing paragraph %d\n",i));
 		if (!(paragraph = (psiconv_paragraph) psiconv_list_get(psiontext,i))) {
 			// Something is really wrong...
-			UT_ASSERT(paragraph != NULL);
+			UT_ASSERT(paragraph != nullptr);
 			return UT_IE_IMPORTERROR;
 		}
 	
@@ -1079,7 +1079,7 @@ UT_Error IE_Imp_Psion::readParagraphs(const psiconv_text_and_layout psiontext,
 			UT_DEBUGMSG(("Psion: paragraph %d inline %d\n",i,inline_nr));
 			if (!(in_line = (psiconv_in_line_layout) psiconv_list_get(paragraph->in_lines,inline_nr))) {
 				// Something is really wrong...
-				UT_ASSERT(in_line != NULL);
+				UT_ASSERT(in_line != nullptr);
 				return UT_IE_IMPORTERROR;
 			}
 			// This may be an object, which needs special handling.
@@ -1194,7 +1194,7 @@ UT_Error IE_Imp_Psion_TextEd::parseFile(const psiconv_file psionfile)
 	if ((res = applyPageAttributes(file->page_sec,header,footer)))
 		return res;
 	// Handle all paragraphs with text and layout
-	if ((res = readParagraphs(file->texted_sec->paragraphs, NULL)))
+	if ((res = readParagraphs(file->texted_sec->paragraphs, nullptr)))
 		return res;
 	
 	// Handle the headers and footers

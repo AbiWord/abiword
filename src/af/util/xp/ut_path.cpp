@@ -37,7 +37,7 @@ UT_UTF8String UT_go_basename(const char* uri)
 
 std::string UT_createTmpFile(const std::string& prefix, const std::string& extension)
 {
-	const gchar *filename = g_build_filename (g_get_tmp_dir (), prefix.c_str(), NULL);
+	const gchar *filename = g_build_filename (g_get_tmp_dir (), prefix.c_str(), nullptr);
 	UT_return_val_if_fail(filename, "");
 
 	std::string sName = filename;

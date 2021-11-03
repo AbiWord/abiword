@@ -69,7 +69,7 @@ void AP_Win32Dialog_Latex::runModeless(XAP_Frame * pFrame)
 	setDialog(this);
 	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_LATEX) );
 
-	UT_return_if_fail((hWndDialog != NULL));
+	UT_return_if_fail((hWndDialog != nullptr));
 	ShowWindow(hWndDialog, SW_SHOW);
 
 	m_pApp->rememberModelessId(m_id, this);		
@@ -104,7 +104,7 @@ void AP_Win32Dialog_Latex::notifyActiveFrame(XAP_Frame *pFrame)
 		setDialogTitle(m_sWindowName.utf8_str());
 
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)frameHWND);
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
@@ -115,7 +115,7 @@ void AP_Win32Dialog_Latex::notifyCloseFrame(XAP_Frame *pFrame)
 	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, 0);
-		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+		SetWindowPos(m_hDlg, nullptr, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }

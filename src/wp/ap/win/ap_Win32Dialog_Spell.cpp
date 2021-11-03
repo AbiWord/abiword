@@ -72,7 +72,7 @@ void AP_Win32Dialog_Spell::runModal(XAP_Frame * pFrame)
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
-	LPCWSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = nullptr;
 
 	UT_return_if_fail (m_id == AP_DIALOG_ID_SPELL);
 
@@ -305,12 +305,12 @@ void AP_Win32Dialog_Spell::_suggestChange(void)
 // returns a pointer which needs to be FREEP'd by the caller
 static UT_UCSChar * s_getUCSText(HWND hwnd)
 {
-	char * pBuf = NULL;
-	UT_UCSChar * pUCS = NULL;
+	char * pBuf = nullptr;
+	UT_UCSChar * pUCS = nullptr;
 
 	DWORD len = GetWindowTextLength(hwnd);
 	if (!len)
-		return NULL;
+		return nullptr;
 
 	pBuf = new char [len + 1];
 	if (!pBuf)
@@ -328,12 +328,12 @@ FreeMemory:
 	DELETEP(pBuf);
 	FREEP(pUCS);
 
-	return NULL;
+	return nullptr;
 }
 
 void AP_Win32Dialog_Spell::_change(void)
 {
-	UT_UCSChar * replace = NULL;
+	UT_UCSChar * replace = nullptr;
 
 	if (m_iSelectedRow != -1)
 	{
@@ -357,7 +357,7 @@ void AP_Win32Dialog_Spell::_change(void)
 
 void AP_Win32Dialog_Spell::_changeAll(void)
 {
-	UT_UCSChar * replace = NULL;
+	UT_UCSChar * replace = nullptr;
 	if (m_iSelectedRow != -1)
 	{
 		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);

@@ -49,8 +49,8 @@
 ODi_Style_Style::ODi_Style_Style(ODi_ElementStack& rElementStack,
 				  ODi_Abi_Data & rAbiData) :
                        ODi_ListenerState("StyleStyle", rElementStack),
-                       m_pParentStyle(NULL),
-                       m_pNextStyle(NULL),
+                       m_pParentStyle(nullptr),
+                       m_pNextStyle(nullptr),
                        m_haveTopBorder(HAVE_BORDER_UNSPECIFIED),
                        m_haveBottomBorder(HAVE_BORDER_UNSPECIFIED),
                        m_haveLeftBorder(HAVE_BORDER_UNSPECIFIED),
@@ -257,7 +257,7 @@ void ODi_Style_Style::_parse_style_paragraphProperties(const gchar** ppProps) {
     
     pVal = UT_getAttribute ("fo:line-height", ppProps);
     if (pVal) {
-        if (strstr(pVal, "%") != NULL) {
+        if (strstr(pVal, "%") != nullptr) {
             int spacing;
 	    UT_LocaleTransactor lt(LC_NUMERIC, "C");            
 
@@ -451,7 +451,7 @@ void ODi_Style_Style::_parse_style_paragraphProperties(const gchar** ppProps) {
  */
 void ODi_Style_Style::_parse_style_tabStopProperties(const gchar** ppProps) {
     
-    const gchar* pVal = NULL;
+    const gchar* pVal = nullptr;
     std::string type;
     std::string position;
     std::string leaderStyle;
@@ -569,8 +569,8 @@ void ODi_Style_Style::_parse_style_tabStopProperties(const gchar** ppProps) {
  */
 void ODi_Style_Style::_parse_style_textProperties(const gchar** ppProps) {
     
-    const gchar* pVal = NULL;
-    const gchar* pVal2 = NULL;
+    const gchar* pVal = nullptr;
+    const gchar* pVal2 = nullptr;
     
     pVal = UT_getAttribute("fo:color", ppProps);
     if (pVal) {
@@ -971,7 +971,7 @@ void ODi_Style_Style::defineAbiStyle(PD_Document* pDocument) {
      *           a[4] = "props"
      *           a[5] = "text-indent:0in; margin-top:0pt; margin-left:0pt; ..."
      *           ...
-     *           a[n] = 0 (NULL character)
+     *           a[n] = 0 (nullptr character)
      */
     bool ok;
 
@@ -1312,10 +1312,10 @@ void ODi_Style_Style::_stripColorLength(std::string& rColor,
 /**
  * This function shouldn't exist. The code should use
  * UT_isValidDimensionString instead. The problem with the UT function is
- * that it doesn't check the dimension specifier and only accepts NULL
+ * that it doesn't check the dimension specifier and only accepts nullptr
  * terminated strings.
  * 
- * @param length 0 for NULL terminated strings.
+ * @param length 0 for nullptr terminated strings.
  */
 bool ODi_Style_Style::_isValidDimensionString(const gchar* pString,
                                              UT_uint32 length) const {

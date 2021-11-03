@@ -120,7 +120,7 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
     
     for (UT_uint32 k = 0;
          (pDoc->enumDataItems(k,
-                              NULL,
+                              nullptr,
                               &szName,
                               pByteBuf,
                               &mimeType)); k++) {

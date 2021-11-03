@@ -363,10 +363,10 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
 //
 // OK adjust for deletetions that cross footnote/endnote boundaries.
 //
-	fl_FootnoteLayout * pFHigh = NULL;
-	fl_FootnoteLayout * pFLow = NULL;
-	fl_EndnoteLayout * pEHigh = NULL;
-	fl_EndnoteLayout * pELow = NULL;
+	fl_FootnoteLayout * pFHigh = nullptr;
+	fl_FootnoteLayout * pFLow = nullptr;
+	fl_EndnoteLayout * pEHigh = nullptr;
+	fl_EndnoteLayout * pELow = nullptr;
 	if(isInFootnote(iHigh))
 	{
 		pFHigh = getClosestFootnote(iHigh);
@@ -512,7 +512,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
 	// Handle case of no valid block because of hidden text
 	//
 	pBL = getCurrentBlock();
-	if(pBL && (pBL->getNextBlockInDocument() == NULL) && (pBL->getPrevBlockInDocument() == NULL))
+	if(pBL && (pBL->getNextBlockInDocument() == nullptr) && (pBL->getPrevBlockInDocument() == nullptr))
 	{
 		 if(pBL->isHidden() == FP_HIDDEN_TEXT)
 		 {
@@ -796,7 +796,7 @@ bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 co
 //
 	UT_uint32 iRealDeleteCount;
 
-	m_pDoc->deleteSpan( posCell, posEndCell, NULL,iRealDeleteCount,true);
+	m_pDoc->deleteSpan( posCell, posEndCell, nullptr,iRealDeleteCount,true);
 
 	// if in revisions mode, we might need to move the insertion point if it was within
 	// the cell that we are deleting (since the cell stays physically in the document) but
@@ -917,8 +917,8 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	}
 
 	// TODO: could cache these to save a lookup if point doesn't change
-	fl_BlockLayout* pBlock = NULL;
-	fp_Run* pRun = NULL;
+	fl_BlockLayout* pBlock = nullptr;
+	fp_Run* pRun = nullptr;
 	_findPositionCoords(iPoint, m_bPointEOL, xPoint,
 						yPoint, xPoint2, yPoint2,
 						iPointHeight, bDirection,
@@ -1325,16 +1325,16 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
   header region if we get a null block.
   \param pos Document position
   \return Block at specified posistion, or the first block to the
-		  rigth of that position. May return NULL.
+		  rigth of that position. May return nullptr.
   \see m_pLayout->findBlockAtPosition
 */
 fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 {
-	fl_BlockLayout * pBL=NULL;
-	if(m_bEditHdrFtr && (m_pEditShadow != NULL) && (m_FrameEdit.getFrameEditMode() == FV_FrameEdit_NOT_ACTIVE))
+	fl_BlockLayout * pBL=nullptr;
+	if(m_bEditHdrFtr && (m_pEditShadow != nullptr) && (m_FrameEdit.getFrameEditMode() == FV_FrameEdit_NOT_ACTIVE))
 	{
 		pBL = static_cast<fl_BlockLayout *>(m_pEditShadow->findBlockAtPosition(pos));
-		if(pBL != NULL)
+		if(pBL != nullptr)
 		{		
 			UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 			return pBL;
@@ -1352,7 +1352,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	}
 #endif
 	if(!pBL)
-		return NULL;
+		return nullptr;
 	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 
 //
@@ -1393,7 +1393,7 @@ void FV_View::_insertSectionBreak(void)
 		bLooked = true;
 		pBL = pBL->getPrevBlockInDocument();
 	}
-	if(pBL == NULL)
+	if(pBL == nullptr)
 	{
 		pBL= getCurrentBlock();
 		while(pBL && pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
@@ -1401,7 +1401,7 @@ void FV_View::_insertSectionBreak(void)
 			pBL = pBL->getNextBlockInDocument();
 		}
 	}
-	if(bLooked && (pBL != NULL))
+	if(bLooked && (pBL != nullptr))
 	{
 		setPoint(pBL->getPosition());
 	}
@@ -1437,8 +1437,8 @@ void FV_View::_insertSectionBreak(void)
 		"text-align", "left"
 	};
 	HdrFtrType hfType;
-	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
-	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
+	fl_HdrFtrSectionLayout * pHdrFtrSrc = nullptr;
+	fl_HdrFtrSectionLayout * pHdrFtrDest = nullptr;
 	for(i=0; i< vecPrevHdrFtr.getItemCount(); i++)
 	{
 		  pHdrFtrSrc = vecPrevHdrFtr.getNthItem(i);
@@ -1542,9 +1542,9 @@ void FV_View::_getPageXandYOffset(const fp_Page* pThePage, UT_sint32& xoff, UT_s
  */
 fp_Line * FV_View::_getNextLineInDoc(fp_Container * pCon) const
 {
-	fp_ContainerObject * pNext = NULL;
-	fl_ContainerLayout * pCL = NULL;
-	fl_BlockLayout * pNextB = NULL;
+	fp_ContainerObject * pNext = nullptr;
+	fl_ContainerLayout * pCL = nullptr;
+	fl_BlockLayout * pNextB = nullptr;
 	if(pCon->getContainerType() == FP_CONTAINER_CELL)
 	{
 		pCon = static_cast<fp_CellContainer *>(pCon)->getFirstContainer();
@@ -1573,7 +1573,7 @@ fp_Line * FV_View::_getNextLineInDoc(fp_Container * pCon) const
 	else
 	{
 		pNext = pCon->getNext();
-		if(pNext == NULL)
+		if(pNext == nullptr)
 		{
 			pNextB = static_cast<fp_Line *>(pCon)->getBlock();
 			pNextB = pNextB->getNextBlockInDocument();
@@ -1593,7 +1593,7 @@ fp_Line * FV_View::_getNextLineInDoc(fp_Container * pCon) const
 		//
 		// end of document
 		//
-		return NULL;
+		return nullptr;
 	}
 	fp_Line * pNextLine = static_cast<fp_Line *>(pNext);
 	return pNextLine;
@@ -1629,7 +1629,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fl_BlockLayout* pOldBlock;
 	fp_Run* pOldRun;
 	_findPositionCoords(iOldPoint, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pOldBlock, &pOldRun);
-	if(pOldRun == NULL)
+	if(pOldRun == nullptr)
 	{
 		PT_DocPosition posEOD;
 		getEditableBounds(true,posEOD);
@@ -1644,7 +1644,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_VerticalContainer* pOldContainer = static_cast<fp_VerticalContainer *>(pOldLine->getContainer());
-	fp_Column * pOldLeader = NULL;
+	fp_Column * pOldLeader = nullptr;
 	fp_Page* pOldPage = pOldLine->getPage();
 	bool bDocSection = pOldSL->getType() == FL_SECTION_DOC;
 	bool bEndNoteSection =	pOldSL->getType() == FL_SECTION_ENDNOTE;
@@ -1673,8 +1673,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	bool bNOOP = false;
 	bool bEOL = false, bBOL = false;
-	fp_Line * pNextLine = NULL; 
-	fp_Page* pPage = NULL;
+	fp_Line * pNextLine = nullptr;
+	fp_Page* pPage = nullptr;
 	xxx_UT_DEBUGMSG(("fv_View::_moveInsPtNextPrevLine: old line 0x%x\n", pOldLine));
 
 	if (bNext)
@@ -2002,7 +2002,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	PT_DocPosition iNewPoint = 0;
 	bBOL = false;
 	bEOL = false;
-	fl_HdrFtrShadow * pShadow=NULL;
+	fl_HdrFtrShadow * pShadow=nullptr;
 //
 // If we're not in a Header/Footer we can't get off the page with the click
 // version of mapXYToPosition
@@ -2288,7 +2288,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown, bool bClearSelection)
 
 	xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Set to iYnext %d page %x \n",iYnext,pPage));
 
-	if (pPage == NULL) pPage = pLine->getPage ();
+	if (pPage == nullptr) pPage = pLine->getPage ();
 	if (iYnext < 0) iYnext = 0;
 	// convert the iYnext back into a point position, namely iNewPoint.
 	pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL,isTOC);
@@ -2341,7 +2341,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown, bool bClearSelection)
 
 	fp_Line * pNewLine = static_cast<fp_Line *>(pRun->getLine());
 
-	if(pNewLine == NULL ||
+	if(pNewLine == nullptr ||
 	   ((pNewLine->getContainer() == pLine->getContainer()) && 
 	   (bMovingDown ? (pNewLine->getY() < pLine->getY())
 		: (pNewLine->getY() > pLine->getY()))))
@@ -2452,7 +2452,7 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 }
 
 static bool bScrollRunning = false;
-static UT_Worker * s_pScroll = NULL;
+static UT_Worker * s_pScroll = nullptr;
 
 void FV_View::_actuallyScroll(UT_Worker * pWorker)
 {
@@ -2530,7 +2530,7 @@ void FV_View::_actuallyScroll(UT_Worker * pWorker)
 	}
 	s_pScroll->stop();
 	delete s_pScroll;
-	s_pScroll = NULL;
+	s_pScroll = nullptr;
 	bScrollRunning = false;
 }
 
@@ -2640,11 +2640,11 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 	{
 		// we're below the last page
 		pPage = m_pLayout->getLastPage();
-		if(pPage == NULL)
+		if(pPage == nullptr)
 	    {
 			pPage = m_pLayout->getFirstPage();
 		}
-		if(pPage == NULL)
+		if(pPage == nullptr)
 		{
 			return pPage;
 		}
@@ -2666,7 +2666,7 @@ FV_View::_computeFindPrefix(const UT_UCSChar* pFind)
 	UT_uint32 m = UT_UCS4_strlen(pFind);
 	UT_uint32 k = 0, q = 1;
 	UT_uint32 *pPrefix = (UT_uint32*) UT_calloc(m + 1, sizeof(UT_uint32));
-	UT_return_val_if_fail(pPrefix, NULL);
+	UT_return_val_if_fail(pPrefix, nullptr);
 
 	pPrefix[0] = 0; // Must be this regardless of the string
 
@@ -2737,7 +2737,7 @@ FV_View::_findNext(UT_uint32* pPrefix,
 
 	fl_BlockLayout* block = _findGetCurrentBlock();
 	PT_DocPosition offset = _findGetCurrentOffset();
-	UT_UCSChar* buffer = NULL;
+	UT_UCSChar* buffer = nullptr;
 	UT_uint32 m = UT_UCS4_strlen(m_sFind);
 
 	// Clone the search string, converting it to lowercase is search
@@ -2840,7 +2840,7 @@ FV_View::_findPrev(UT_uint32* /*pPrefix*/,
 
 	fl_BlockLayout* block = _findGetCurrentBlock();
 	PT_DocPosition offset = _findGetCurrentOffset();
-	UT_UCSChar* buffer = NULL;
+	UT_UCSChar* buffer = nullptr;
 	UT_uint32 m = UT_UCS4_strlen(m_sFind);
 
 	// Clone the search string, converting it to lowercase is search
@@ -2976,7 +2976,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 
 	UT_ASSERT(pOffset);
 
-	fl_BlockLayout* newBlock = NULL;
+	fl_BlockLayout* newBlock = nullptr;
 	PT_DocPosition newOffset = 0;
 
 	UT_uint32 bufferLength = 0;
@@ -2989,7 +2989,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 		&& _BlockOffsetToPos(*pBlock, *pOffset) >= m_startPosition)
 	{
 		// We're done
-		return NULL;
+		return nullptr;
 	}
 
 	if (!(*pBlock)->getBlockBuf(&pBuffer))
@@ -3014,7 +3014,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 			if(pFL->isEndFootnoteIn())
 			{
 				pf_Frag_Strux* sdhStart = pCL->getStruxDocHandle();
-				pf_Frag_Strux* sdhEnd = NULL;
+				pf_Frag_Strux* sdhEnd = nullptr;
 				if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
 				{
 					getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
@@ -3027,7 +3027,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 				if(sdhEnd)
 				{
 					PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
-					fl_ContainerLayout*  psfh = NULL;
+					fl_ContainerLayout*  psfh = nullptr;
 					getDocument()->getStruxOfTypeFromPosition((*pBlock)->getDocLayout()->getLID(),posStart,PTX_Block, &psfh);
 					newBlock = static_cast<fl_BlockLayout *>(psfh);
 
@@ -3101,7 +3101,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 	{
 		// this happens if the document shrinks in the process of replacement
 		// we get the same block, but it is shorter than the stored m_startPosition
-		return NULL;
+		return nullptr;
 	}
 			
 	// Are we going to run into the start position in this buffer?	If
@@ -3118,7 +3118,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 	}
 
 	// clone a buffer (this could get really slow on large buffers!)
-	UT_UCSChar* bufferSegment = NULL;
+	UT_UCSChar* bufferSegment = nullptr;
 
 	// remember, the caller gets to g_free this memory
 	bufferSegment = static_cast<UT_UCSChar*>(UT_calloc(bufferLength + 1, sizeof(UT_UCSChar)));
@@ -3140,9 +3140,9 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 								 UT_sint32& endIndex)
 {
 	endIndex = 0;
-	UT_return_val_if_fail(m_pLayout && pBlock && *pBlock && pOffset,NULL);
+	UT_return_val_if_fail(m_pLayout && pBlock && *pBlock && pOffset,nullptr);
 
-	fl_BlockLayout* newBlock = NULL;
+	fl_BlockLayout* newBlock = nullptr;
 	PT_DocPosition newOffset = 0;
 	
 	UT_uint32 blockStart = 0;
@@ -3157,7 +3157,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	if (m_wrappedEnd && (blockOffsetToPos <= m_startPosition))
 	{
 		// We're done
-		return NULL;
+		return nullptr;
 	}
 
 	if (!(*pBlock)->getBlockBuf(&pBuffer))
@@ -3165,7 +3165,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 		UT_DEBUGMSG(("Block %p has no associated buffer.\n", (void*)*pBlock));
 		// I gather we better return ???
 		UT_ASSERT_HARMLESS(0);
-		return NULL;
+		return nullptr;
 	}
 
 	// Have we already searched all the text in this buffer?
@@ -3179,7 +3179,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 		if (!newBlock)
 		{
 			if(m_wrappedEnd)
-				return NULL;
+				return nullptr;
 			
 			// Then wrap (fetch the first block in the doc)
 			PT_DocPosition endOfDoc;
@@ -3189,7 +3189,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 
 			m_wrappedEnd = true;
 			UT_DEBUGMSG(("Reached start of doc via getPrevBlockinDocument \n"));
-			UT_return_val_if_fail(newBlock, NULL);
+			UT_return_val_if_fail(newBlock, nullptr);
 		}
 
 		// Re-assign the buffer contents for our new block
@@ -3200,7 +3200,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 		{
 			UT_DEBUGMSG(("Block %p (a ->prev block) has no buffer.\n", (void*)newBlock));
 			UT_ASSERT_HARMLESS(0);
-			return NULL;
+			return nullptr;
 		}
 		newOffset = pBuffer.getLength();
 		if(pBuffer.getLength() == 0)
@@ -3229,7 +3229,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 		{
 			// We're done
 			UT_DEBUGMSG(("(2) PrevSearch completed\n"));
-			return NULL;
+			return nullptr;
 		}
 		else
 		{
@@ -3241,17 +3241,17 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	{
 		// we are done, as there is nothing to search .
 		UT_DEBUGMSG(("PrevSearch completed \n"));
-		return NULL;
+		return nullptr;
 	}
 		
 	bufferLength = pBuffer.getLength() - blockStart;
 
 	// clone a buffer (this could get really slow on large buffers!)
-	UT_UCSChar* bufferSegment = NULL;
+	UT_UCSChar* bufferSegment = nullptr;
 
 	// remember, the caller gets to g_free this memory
 	bufferSegment = (UT_UCSChar*)UT_calloc(bufferLength + 1, sizeof(UT_UCSChar));
-	UT_return_val_if_fail(bufferSegment, NULL);
+	UT_return_val_if_fail(bufferSegment, nullptr);
 
 	memmove(bufferSegment, pBuffer.getPointer(blockStart),
 			(bufferLength) * sizeof(UT_UCSChar));
@@ -3285,7 +3285,7 @@ bool FV_View::_insertField(const char* szName,
 	attributes.push_back(szName);
 
 
-	fd_Field * pField = NULL;
+	fd_Field * pField = nullptr;
 	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		m_pDoc->beginUserAtomicGlob();
@@ -3297,7 +3297,7 @@ bool FV_View::_insertField(const char* szName,
 			_makePointLegal();
 		}
 		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
-		if(pField != NULL)
+		if(pField != nullptr)
 		{
 			pField->update();
 		}
@@ -3315,7 +3315,7 @@ bool FV_View::_insertField(const char* szName,
 			_makePointLegal();
 		}
 		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
-		if(pField != NULL)
+		if(pField != nullptr)
 		{
 			pField->update();
 		}
@@ -3613,13 +3613,13 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	if(getSelectionAnchor() < getPoint())
 	{
 		PT_DocPosition posLow = getSelectionAnchor();
-		fp_CellContainer * pLowCell = NULL;
-		fp_CellContainer * pHighCell = NULL;
+		fp_CellContainer * pLowCell = nullptr;
+		fp_CellContainer * pHighCell = nullptr;
 		if(isInTable(posLow) )
 		{
 			pLowCell = getCellAtPos(posLow+1);
 			pHighCell =  getCellAtPos(getPoint());
-			if((pLowCell != NULL) && (pLowCell != pHighCell))
+			if((pLowCell != nullptr) && (pLowCell != pHighCell))
 			{
 				fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pLowCell->getSectionLayout());
 				PT_DocPosition posCell = pCell->getPosition(true);
@@ -3677,15 +3677,15 @@ class ABI_EXPORT CellLine
 {
 private:
 	CellLine(void):
-		m_pCell(NULL),
-		m_pBrokenTable(NULL),
-		m_pLine(NULL)
+		m_pCell(nullptr),
+		m_pBrokenTable(nullptr),
+		m_pLine(nullptr)
 		{}
 	virtual ~CellLine(void)
 		{
-			m_pCell = NULL;
-			m_pBrokenTable = NULL;
-			m_pLine = NULL;
+			m_pCell = nullptr;
+			m_pBrokenTable = nullptr;
+			m_pLine = nullptr;
 		}
 	fp_CellContainer * m_pCell;
 	fp_TableContainer * m_pBrokenTable;
@@ -3730,7 +3730,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 // This fixes a bug from insert file, when the view we copy from is selected
 // If don't bail out now we get all kinds of crazy dirty on the screen.
 //
-	if(m_pParentData == NULL)
+	if(m_pParentData == nullptr)
 	{
 		return true;
 	}
@@ -3758,7 +3758,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	bool bIsDirty = false;
 	fp_Run* pCurRun = pRun1;
 	//bool bShowHidden = getShowPara();
-	fp_CellContainer * pCell = NULL;
+	fp_CellContainer * pCell = nullptr;
 	fl_BlockLayout* pBlockEnd = pRun2->getBlock();
 	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();
 
@@ -3770,7 +3770,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 
 		fl_BlockLayout* pBlock2 = pCurRun->getBlock();
 		fp_Line * pLine = pCurRun->getLine();
-		if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
+		if(pLine == nullptr || (pLine->getContainer()->getPage()== nullptr))
 		{
 			UT_VECTOR_PURGEALL(CellLine *, vecTables);
 			return true;
@@ -3807,7 +3807,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 					xxx_UT_DEBUGMSG(("cellLine %x cell %x Table %x Line %x \n",pCellLine,pCellLine->m_pCell,pCellLine->m_pBrokenTable,pCellLine->m_pLine));
 					vecTables.addItem(pCellLine);
 					fp_Page * pPage = pTab->getPage();
-					if((pPage != NULL) && (vecPages.findItem(pPage) <0))
+					if((pPage != nullptr) && (vecPages.findItem(pPage) <0))
 					{
 						vecPages.addItem(pPage);
 					}
@@ -3818,11 +3818,11 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 // See if the whole cell is selected. If so draw it.
 //
 			bCellSelected = pCellLayout->isCellSelected();
-			fp_Container * pNextCon = NULL;
+			fp_Container * pNextCon = nullptr;
 			if(bCellSelected)
 			{
 				pNextCon = pCell->drawSelectedCell(pCurRun->getLine());
-				if(pNextCon == NULL)
+				if(pNextCon == nullptr)
 				{
 					fl_BlockLayout * pBlock = pCurRun->getBlock();
 					pBlock = pBlock->getNextBlockInDocument();
@@ -3831,7 +3831,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 						pCurRun = pBlock->getFirstRun();
 						continue;
 					}
-					pCurRun = NULL;
+					pCurRun = nullptr;
 					continue;
 				}
 				if(pNextCon->getContainerType() == FP_CONTAINER_LINE)
@@ -3842,7 +3842,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				else
 				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-					pCurRun = NULL;
+					pCurRun = nullptr;
 					continue;
 				}
 			}
@@ -3853,10 +3853,10 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 					pCell->clearSelection();
 					pCell->clearScreen();
 					pCell->draw(pCurRun->getLine());
-					if(pCurRun->getLine() != NULL)
+					if(pCurRun->getLine() != nullptr)
 					{
 						fp_Page * pPage = pCurRun->getLine()->getPage();
-						if((pPage != NULL) && (vecPages.findItem(pPage) <0))
+						if((pPage != nullptr) && (vecPages.findItem(pPage) <0))
 						{
 							vecPages.addItem(pPage);
 						}
@@ -3867,7 +3867,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 
 		if(!pCurRun->isHidden())
 		{
-			if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
+			if(pLine == nullptr || (pLine->getContainer()->getPage()== nullptr))
 			{
 				UT_VECTOR_PURGEALL(CellLine *, vecTables);
 				return true;
@@ -3898,7 +3898,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				pCurRun->clearSelectionMode();
 			}
 			fp_Page * pPage = pLine->getPage();
-			if((pPage != NULL) && (vecPages.findItem(pPage) <0))
+			if((pPage != nullptr) && (vecPages.findItem(pPage) <0))
 			{
 				vecPages.addItem(pPage);
 			}
@@ -4002,10 +4002,10 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 		return false;
 	}
 
-	// HACK: In certain editing cases only one of these is NULL, which
+	// HACK: In certain editing cases only one of these is nullptr, which
 	//		 makes locating runs to clear more difficult.  For now, I'm
 	//		 playing it safe and trying to just handle these cases here.
-	//		 The real solution may be to just bail if *either* is NULL,
+	//		 The real solution may be to just bail if *either* is nullptr,
 	//		 but I'm not sure.
 	//
 	//		 If you're interested in investigating this alternative
@@ -4039,7 +4039,7 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 				pCell->clearSelection();
 				pCell->clearScreen();
 			
-				fl_BlockLayout * pBlock = NULL;
+				fl_BlockLayout * pBlock = nullptr;
 				fl_ContainerLayout * pLastCL = pCL->getFirstLayout();
 				while(pLastCL->getNext())
 				{
@@ -4056,7 +4056,7 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 					pCurRun = pBlock->getFirstRun();
 					continue;
 				}
-				pCurRun = NULL;
+				pCurRun = nullptr;
 				bDone = true;
 				continue;
 			}
@@ -4106,7 +4106,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	UT_sint32 iPointHeight;
 	if(ppRun)
 	{
-		*ppRun = NULL;
+		*ppRun = nullptr;
 	}
 	// Get the previous block in the document. _findBlockAtPosition
 	// will iterate forwards until it actually find a block if there
@@ -4151,7 +4151,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		pos++;
 	}
 	// probably an empty document, return instead of
-	// dereferencing NULL.	Dom 11.9.00
+	// dereferencing nullptr.	Dom 11.9.00
 	if(!pBlock)
 	{
 		// Do the assert. Want to know from debug builds when this happens.
@@ -4260,10 +4260,10 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 			xPoint2 += pRun->getWidth();
 		}
 	}
-	else if( (pRun == NULL) && (posEOD == getPoint()))
+	else if( (pRun == nullptr) && (posEOD == getPoint()))
 	{
 		pRun = pBlock->getFirstRun();
-		while(pRun && (pRun->getNextRun() != NULL))
+		while(pRun && (pRun->getNextRun() != nullptr))
 		{
 			pRun = pRun->getNextRun();
 		}
@@ -4329,7 +4329,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 void FV_View::_fixAllInsertionPointCoords() const
 {
-	fv_CaretProps * pCaretProps = NULL;
+	fv_CaretProps * pCaretProps = nullptr;
 	UT_sint32 iCount = m_vecCarets.getItemCount();
 	UT_sint32 i = 0;
 	for(i=0; i<iCount;i++)
@@ -4343,14 +4343,14 @@ void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP) const
 {
 	if ((pCP->m_iInsPoint > 0) && !isLayoutFilling())
 	{
-		fl_BlockLayout * pBlock = NULL;
-		fp_Run * pRun = NULL;
+		fl_BlockLayout * pBlock = nullptr;
+		fp_Run * pRun = nullptr;
 		_findPositionCoords(pCP->m_iInsPoint, pCP->m_bPointEOL, pCP->m_xPoint, 
 							pCP->m_yPoint, pCP->m_xPoint2, pCP->m_yPoint2, 
 							pCP->m_iPointHeight, pCP->m_bPointDirection, 
 							&pBlock, &pRun);
 		const fp_Page * pPage = getCurrentPage();
-		const UT_RGBColor * pClr = NULL;
+		const UT_RGBColor * pClr = nullptr;
 		if (pPage)
 			pClr = pPage->getFillType().getColor();
 		UT_sint32 yoff = 0;
@@ -4382,27 +4382,27 @@ void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP) const
 
 void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 {
-	if (m_pG->allCarets()->getBaseCaret() == NULL)
+	if (m_pG->allCarets()->getBaseCaret() == nullptr)
 		return;
 	if(!bIgnoreAll)
 		_fixAllInsertionPointCoords();
 	
-	fp_Page * pPage = NULL;
-	fl_BlockLayout * pBlock = NULL;
-	fp_Run * pRun = NULL;
+	fp_Page * pPage = nullptr;
+	fl_BlockLayout * pBlock = nullptr;
+	fp_Run * pRun = nullptr;
 	if(m_bInsertAtTablePending)
 	{
 		//
 		// Position the caret just before the table
 		//
 		fl_TableLayout * pTL = getTableAtPos(m_iPosAtTable+3);
-		if(pTL == NULL)
+		if(pTL == nullptr)
 		{
 			m_bInsertAtTablePending = false;
 			return;
 		}
 		pBlock = pTL->getNextBlockInDocument();
-		if(pBlock == NULL)
+		if(pBlock == nullptr)
 		{
 			m_bInsertAtTablePending = false;
 			return;
@@ -4415,15 +4415,15 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pTab->getFirstContainer());
 		UT_sint32 iLeft,iRight,iTop,iBot,col_y =0;
 		bool bDoClear= true;
-		fp_Column * pCol = NULL;
-		fp_ShadowContainer * pShadow = NULL;
+		fp_Column * pCol = nullptr;
+		fp_ShadowContainer * pShadow = nullptr;
 		pCell->getScreenPositions(pBroke,getGraphics(),iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bDoClear);
 		m_xPoint = iLeft - getGraphics()->tlu(2);
 		m_xPoint2 = iLeft - getGraphics()->tlu(2);
 		m_yPoint = iTop;
 		m_yPoint2 = iTop;
 		pPage = getCurrentPage();
-		const UT_RGBColor * pClr = NULL;
+		const UT_RGBColor * pClr = nullptr;
 		if (pPage)
 			pClr = pPage->getFillType().getColor();
 		m_pG->allCarets()->getBaseCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
@@ -4434,7 +4434,7 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 	{
 		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, &pBlock, &pRun);
 		pPage = getCurrentPage();
-		const UT_RGBColor * pClr = NULL;
+		const UT_RGBColor * pClr = nullptr;
 		if (pPage)
 			pClr = pPage->getFillType().getColor();
 		UT_sint32 yoff = 0;
@@ -4487,7 +4487,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 "\t\twith [yScrollOffset %d][windowHeight %d][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,getWindowHeight(),bDirtyRunsOnly));
-	if(m_pViewDoubleBufferingObject != NULL && m_pViewDoubleBufferingObject->getCallDrawOnlyAtTheEnd())
+	if(m_pViewDoubleBufferingObject != nullptr && m_pViewDoubleBufferingObject->getCallDrawOnlyAtTheEnd())
 	{
 		// record this call's arguments and return
 		if(bClip)
@@ -4496,7 +4496,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			m_pG->setClipRect(&r);
 		}
 		m_pViewDoubleBufferingObject->recordViewDrawCall(x, y, width, height, bDirtyRunsOnly, bClip);
-		m_pG->setClipRect(NULL);
+		m_pG->setClipRect(nullptr);
 		return;
 	}
 
@@ -4557,7 +4557,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	
 	UT_sint32 iPageWidth = 0, iPageHeight = 0;
 	UT_sint32 iFirstVisiblePageNumber = -1;
-	fl_DocSectionLayout *pDSL = NULL;
+	fl_DocSectionLayout *pDSL = nullptr;
 
 	// we should have at least the first page
 	if(getLayout() -> getFirstPage())
@@ -4614,7 +4614,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 
 	// start from the first visible page
-	fp_Page *pPage = NULL;
+	fp_Page *pPage = nullptr;
 	if(iFirstVisiblePageNumber >= 0)
 		pPage = getLayout() -> getNthPage(iFirstVisiblePageNumber);
 
@@ -4768,7 +4768,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 	if (bClip)
 	{
-		m_pG->setClipRect(NULL);
+		m_pG->setClipRect(nullptr);
 	}
 	//
 	// Look if we have to blink the caret
@@ -4803,11 +4803,11 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 // boundary. Move the point past the footnote so we always have Footnote field
 // followed by footnotestrux in the piecetable
 //
-		fl_FootnoteLayout * pFL = NULL;
+		fl_FootnoteLayout * pFL = nullptr;
 		if(m_pDoc->isFootnoteAtPos(pt))
 		{
 			pFL = getClosestFootnote(pt);
-			if(pFL == NULL)
+			if(pFL == nullptr)
 			{
 				fl_EndnoteLayout * pEL = getClosestEndnote(pt);
 				if(pEL)
@@ -4931,8 +4931,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	bool bInsertAtTable = false;
 	PT_DocPosition posTable = 0;
 	PT_DocPosition posOld = m_iInsPoint;
-	fp_Run* pRun = NULL;
-	fl_BlockLayout* pBlock = NULL;
+	fp_Run* pRun = nullptr;
+	fl_BlockLayout* pBlock = nullptr;
 	UT_sint32 x=0;
 	UT_sint32 y=0;
 	UT_sint32 x2=0;
@@ -4979,7 +4979,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 //
 // If we come to a table boundary we have doc positions with no blocks.
-// _findPositionCoords signals this by returning pRun == NULL
+// _findPositionCoords signals this by returning pRun == nullptr
 //
 		// I have added the bDirection == bDirectionOld condition
 		// because without it the code did not work on direction
@@ -4991,7 +4991,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		// but need to be treated as a valid document position. See bug 6987. Tomas, July 27, 2004
 
 		bool bExtra = false;
-		while(m_iInsPoint <= posEOD && (pRun == NULL /*|| ((x == xold) && (y == yold) &&
+		while(m_iInsPoint <= posEOD && (pRun == nullptr /*|| ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old) &&
 														 (bDirection == bDirectionOld))*/))
 		{
@@ -5008,7 +5008,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 
 		
 #if 0
-		while(pRun != NULL &&  pRun->isField() && m_iInsPoint <= posEOD)
+		while(pRun != nullptr &&  pRun->isField() && m_iInsPoint <= posEOD)
 		{
 			_setPoint(m_iInsPoint+1);
 			if(m_iInsPoint <= posEOD)
@@ -5082,7 +5082,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 
 //
 // If we come to a table boundary we have doc positions with no blocks.
-// _findPositionCoords signals this by returning pRun == NULL
+// _findPositionCoords signals this by returning pRun == nullptr
 //
 		// I have added the bDirection == bDirectionOld condition
 		// because without it the code did not work on direction
@@ -5094,7 +5094,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		// but need to be treated as a valid document position. See bug 6987. Tomas, July 27, 2004
 
 		bool bExtra = false;
-		while( m_iInsPoint >= posBOD && (pRun == NULL /*|| ((x == xold) && (y == yold) &&
+		while( m_iInsPoint >= posBOD && (pRun == nullptr /*|| ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old) &&
 														 (bDirection == bDirectionOld))*/))
 		{
@@ -5112,7 +5112,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 #if 0
 // Needed for piecetable fields - we don't have these in 1.0
 
-		while(pRun != NULL && pRun->isField() && m_iInsPoint >= posBOD)
+		while(pRun != nullptr && pRun->isField() && m_iInsPoint >= posBOD)
 		{
 			_setPoint(m_iInsPoint-1);
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
@@ -5328,14 +5328,14 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	if(!isHdrFtrEdit())
 	{
 		fl_DocSectionLayout * pDSL = m_pLayout->getFirstSection();
-		if(pDSL == NULL)
+		if(pDSL == nullptr)
 		{
 			legalBOD =2;
 		}
 		else
 		{
 			fl_BlockLayout * pBL = pDSL->getFirstBlock();
-			if(pBL != NULL)
+			if(pBL != nullptr)
 			{
 					legalBOD = pBL->getPosition(false);
 			}
@@ -5498,7 +5498,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 
 		UT_uint32 iRealDeleteCount;
 
-		m_pDoc->deleteSpan(pos1,pos1 + 1,NULL,iRealDeleteCount);
+		m_pDoc->deleteSpan(pos1,pos1 + 1,nullptr,iRealDeleteCount);
 		// TODO -- add proper revision handling using iRealDeleteCount
 
 		// Signal PieceTable Changes have finished
@@ -5524,24 +5524,24 @@ fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
 	fl_BlockLayout *pBlock = _findBlockAtPosition(posStart);
 	PT_DocPosition curPos = posStart - pBlock->getPosition(false);
 	if(curPos <2)
-		return NULL;
+		return nullptr;
 	fp_Run * pRun = pBlock->getFirstRun();
 
 	//find the run at pos
 	while(pRun && pRun->getBlockOffset() <= curPos)
 		pRun = pRun->getNextRun();
 
-	UT_return_val_if_fail(pRun,NULL);
+	UT_return_val_if_fail(pRun,nullptr);
 
 	// now we have the run immediately after the run in question, so
 	// we step back
 	pRun = pRun->getPrevRun();
-	UT_return_val_if_fail(pRun,NULL);
+	UT_return_val_if_fail(pRun,nullptr);
 
-	if (pRun->getHyperlink() != NULL)
+	if (pRun->getHyperlink() != nullptr)
 		return pRun->getHyperlink();
 
-	// Now, getHyperlink() looks NULL, so let's step forward till posEnd.
+	// Now, getHyperlink() looks nullptr, so let's step forward till posEnd.
 
 	PT_DocPosition curPosEnd = posEnd - pBlock->getPosition(false);
 
@@ -5549,12 +5549,12 @@ fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
 	while(pRun && pRun->getBlockOffset() <= curPosEnd)
 	{
 		pRun = pRun->getNextRun();
-		if (pRun && pRun->getPrevRun() && pRun->getPrevRun()->getHyperlink() != NULL)
+		if (pRun && pRun->getPrevRun() && pRun->getPrevRun()->getHyperlink() != nullptr)
 			return pRun->getPrevRun()->getHyperlink();
 	}
 
 	// OK, we're really safe now.
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -5566,7 +5566,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 {
 	fp_HyperlinkRun * pH1 = _getHyperlinkInRange(pos1, pos1);
 	UT_return_val_if_fail(pH1,false);
-	fp_AnnotationRun  * pAR = NULL;
+	fp_AnnotationRun  * pAR = nullptr;
 	UT_uint32 iRunLen = 1;
 	if(pH1->getHyperlinkType() ==  HYPERLINK_ANNOTATION)
 	{
@@ -5591,7 +5591,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 
 	UT_uint32 iRealDeleteCount;
 	m_pDoc->beginUserAtomicGlob();
-	m_pDoc->deleteSpan(pos1,pos1 + iRunLen,NULL, iRealDeleteCount);
+	m_pDoc->deleteSpan(pos1,pos1 + iRunLen,nullptr, iRealDeleteCount);
 
 	// TODO -- add proper revision handling using iRealDeleteCount
 
@@ -5645,7 +5645,7 @@ UT_Error FV_View::_deleteXMLID( const std::string& xmlid, bool bSignal, PT_DocPo
 
 	UT_uint32 iRealDeleteCount;
 	m_pDoc->beginUserAtomicGlob();
-	m_pDoc->deleteSpan(pos1,pos1 + iRunLen,NULL, iRealDeleteCount);
+	m_pDoc->deleteSpan(pos1,pos1 + iRunLen,nullptr, iRealDeleteCount);
 	if( extPosStart > pos1 )
 		extPosStart -= 2;
 	if( extPosEnd > pos1 )
@@ -5744,7 +5744,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 										const fl_PartOfBlockPtr& pPOB, UT_sint32 ndx)
 {
 	// mega caching - are these assumptions valid?
-	UT_UCSChar * szSuggest = NULL;
+	UT_UCSChar * szSuggest = nullptr;
 
 	// TODO these should really be static members, so we can properly
 	// clean up
@@ -5807,7 +5807,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		}
 
 		// get spellchecker engine for language code
-		SpellChecker * checker = NULL;
+		SpellChecker * checker = nullptr;
 
 		if (!lang.empty())
 		{
@@ -6005,12 +6005,12 @@ void FV_View::_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtr
 // This code assumes there is an End of Block run at the end of the Block.
 // Thanks to Jesper, there always is!
 //
-	while(pLast->getNext() != NULL)
+	while(pLast->getNext() != nullptr)
 	{
 		pLast = static_cast<fl_BlockLayout *>(pLast->getNext());
 	}
 	fp_Run * pRun = pLast->getFirstRun();
-	while( pRun->getNextRun() != NULL)
+	while( pRun->getNextRun() != nullptr)
 	{
 		pRun = pRun->getNextRun();
 	}
@@ -6037,7 +6037,7 @@ void FV_View::_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtr
  */
 void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 {
-	if(pHdrFtr == NULL)
+	if(pHdrFtr == nullptr)
 	{
 		return;
 	}
@@ -6045,7 +6045,7 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 //
 // Need this to remove the HdrFtr attributes in the section strux.
 //
-	const gchar * pszHdrFtrType = NULL;
+	const gchar * pszHdrFtrType = nullptr;
 	UT_ASSERT(pHdrFtr->getContainerType() == FL_CONTAINER_HDRFTR);
 	pf_Frag_Strux* sdhHdrFtr = pHdrFtr->getStruxDocHandle();
 	m_pDoc->getAttributeFromSDH(sdhHdrFtr,isShowRevisions(),getRevisionLevel(),PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
@@ -6061,10 +6061,10 @@ void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
 //
 // If there is no header/footer, insert it and start to edit it.
 //
-	fl_HdrFtrShadow * pShadow = NULL;
-	fp_ShadowContainer * pHFCon = NULL;
+	fl_HdrFtrShadow * pShadow = nullptr;
+	fp_ShadowContainer * pHFCon = nullptr;
 	pHFCon = pPage->getHdrFtrP(hfType);
-	if(pHFCon == NULL)
+	if(pHFCon == nullptr)
 	{
 		insertHeaderFooter(hfType);
 		return;
@@ -6189,7 +6189,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	bool bSetLang = false;
 	m_pApp->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, bSetLang);
 
-	const UT_LangRecord * pLR = NULL;
+	const UT_LangRecord * pLR = nullptr;
 
 	if(bSetLang)
 		pLR = m_pApp->getKbdLanguage();
@@ -6322,7 +6322,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 			if(!bResult)
 			{
-				const PP_AttrProp *pBlockAP = NULL;
+				const PP_AttrProp *pBlockAP = nullptr;
 				pBL->getAP(pBlockAP);
 				bResult = m_pDoc->insertSpan(getPoint(), text, count,
 											 const_cast<PP_AttrProp *>(pBlockAP));
@@ -6372,7 +6372,7 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 	// Also use this code to deal with attempts to delete across hdrftr 
 	// boundaries
 	
-	fl_BlockLayout * pBlock = NULL;
+	fl_BlockLayout * pBlock = nullptr;
 	pBlock = _findBlockAtPosition(iDocPos);
 
 	UT_return_if_fail( pBlock );

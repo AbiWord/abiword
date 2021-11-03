@@ -21,7 +21,7 @@
 #include "ut_string.h"
 
 XAP_UnixModule::XAP_UnixModule () 
-	:  m_bLoaded(false), m_szname (NULL), m_module (NULL)
+	:  m_bLoaded(false), m_szname (nullptr), m_module (nullptr)
 {
 }
 

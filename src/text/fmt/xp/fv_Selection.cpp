@@ -44,8 +44,8 @@ FV_Selection::FV_Selection (FV_View * pView)
 	  m_iSelectAnchor(0),
 	  m_iSelectLeftAnchor(0),
 	  m_iSelectRightAnchor(0),
-	  m_pTableOfSelectedColumn(NULL),
-	  m_pSelectedTOC(NULL),
+	  m_pTableOfSelectedColumn(nullptr),
+	  m_pSelectedTOC(nullptr),
 	  m_bSelectAll(false)
 {
 	UT_ASSERT (pView);
@@ -55,8 +55,8 @@ FV_Selection::FV_Selection (FV_View * pView)
 
 FV_Selection::~FV_Selection()
 {
-	m_pTableOfSelectedColumn = NULL;
-	m_pSelectedTOC = NULL;
+	m_pTableOfSelectedColumn = nullptr;
+	m_pSelectedTOC = nullptr;
 	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecSelRanges);
 	UT_VECTOR_PURGEALL(UT_ByteBuf  *,m_vecSelRTFBuffers);
 	UT_VECTOR_PURGEALL(FV_SelectionCellProps *,m_vecSelCellProps);
@@ -65,7 +65,7 @@ FV_Selection::~FV_Selection()
 void  FV_Selection::checkSelectAll(void)
 {
 	 fl_SectionLayout * pSL = m_pView->m_pLayout->getLastSection();
-	 if(pSL == NULL)
+	 if(pSL == nullptr)
 	   return;
 	 if(m_pView->m_pDoc->isPieceTableChanging())
 	 {
@@ -107,12 +107,12 @@ void FV_Selection::setMode(FV_SelectionMode iSelMode)
 		{
 			m_pSelectedTOC->setSelected(false);
 		}
-		m_pSelectedTOC = NULL;
+		m_pSelectedTOC = nullptr;
 	}
 	m_iSelectionMode = iSelMode;
 	if(m_iSelectionMode != FV_SelectionMode_NONE)
 	{
-		m_pTableOfSelectedColumn = NULL;
+		m_pTableOfSelectedColumn = nullptr;
 		UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecSelRanges);
 		UT_VECTOR_PURGEALL(UT_ByteBuf  *,m_vecSelRTFBuffers);
 		UT_VECTOR_PURGEALL(FV_SelectionCellProps *,m_vecSelCellProps);
@@ -252,7 +252,7 @@ void FV_Selection::setSelectionAnchor(PT_DocPosition pos)
 {
 	 m_iSelectAnchor = pos;
 	 fl_SectionLayout * pSL = m_pView->m_pLayout->getLastSection();
-	 if(pSL == NULL)
+	 if(pSL == nullptr)
 	   return;
 	 PT_DocPosition posLow = m_iSelectAnchor;
 	 PT_DocPosition posHigh = m_pView->getPoint();
@@ -388,7 +388,7 @@ void FV_Selection::addCellToSelection(fl_CellLayout * pCell)
 {
 	UT_ASSERT((m_iSelectionMode == 	FV_SelectionMode_TableColumn) 
 			  || ( m_iSelectionMode == 	FV_SelectionMode_TableRow));
-	pf_Frag_Strux* sdhEnd = NULL;
+	pf_Frag_Strux* sdhEnd = nullptr;
 	pf_Frag_Strux* sdhStart = pCell->getStruxDocHandle();
 	PT_DocPosition posLow = getDoc()->getStruxPosition(sdhStart) +1; // First block
 
@@ -434,7 +434,7 @@ PD_DocumentRange * FV_Selection::getNthSelection(UT_sint32 i) const
 {
 	if(i >= getNumSelections())
 	{
-		return NULL;
+		return nullptr;
 	}
 	PD_DocumentRange * pDocRange = m_vecSelRanges.getNthItem(i);
 	return pDocRange;

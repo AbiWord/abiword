@@ -31,12 +31,12 @@
 
 AP_FrameData::AP_FrameData()
 {
-	m_pDocLayout = NULL;
-	m_pRootView = NULL;
-	m_pG = NULL;
-	m_pTopRuler = NULL;
-	m_pLeftRuler = NULL;
-	m_pStatusBar = NULL;
+	m_pDocLayout = nullptr;
+	m_pRootView = nullptr;
+	m_pG = nullptr;
+	m_pTopRuler = nullptr;
+	m_pLeftRuler = nullptr;
+	m_pStatusBar = nullptr;
 
 	m_pViewMode = VIEW_PRINT;
 

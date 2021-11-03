@@ -34,8 +34,8 @@
 IE_Exp_HTML_HeaderFooterListener::IE_Exp_HTML_HeaderFooterListener(
     PD_Document * pDocument, IE_Exp_HTML_DocumentWriter* pDocumentWriter,
     IE_Exp_HTML_Listener *pListener) :
-m_pHdrDocRange(NULL),
-m_pFtrDocRange(NULL),
+m_pHdrDocRange(nullptr),
+m_pFtrDocRange(nullptr),
 m_pDocument(pDocument),
 m_pDocumentWriter(pDocumentWriter),
 m_pListener(pListener),
@@ -96,7 +96,7 @@ bool IE_Exp_HTML_HeaderFooterListener::populateStrux(pf_Frag_Strux* sdh,
 
         PT_DocPosition m_iHdrFtrStartPos = m_pDocument->getStruxPosition(sdh) + 1;
         PT_DocPosition m_iHdrFtrStopPos = 0;
-        pf_Frag_Strux* nextSDH = NULL;
+        pf_Frag_Strux* nextSDH = nullptr;
         bool bHaveNextSection = m_pDocument->getNextStruxOfType(sdh, PTX_Section, &nextSDH);
         if (bHaveNextSection)
         {
@@ -537,7 +537,7 @@ bool IE_Exp_HTML_HeaderFooterListener::signal(UT_uint32 /* iSignal */)
 //    }
 //
 //    UT_UTF8String var;
-//    const gchar * value = NULL;
+//    const gchar * value = nullptr;
 //
 //    if (eq)
 //    {

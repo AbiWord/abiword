@@ -97,12 +97,12 @@ void AP_Win32Dialog_FormatTOC::destroy(void)
 	//Property sheet will be autodestroyed by the cancel action		
 	if (m_pGeneral) {
 		delete m_pGeneral;
-		m_pGeneral = NULL;
+		m_pGeneral = nullptr;
 	}
 		
 	if (m_pLayout) {
 		delete m_pLayout;
-		m_pLayout = NULL;
+		m_pLayout = nullptr;
 	}
 
 	//delete m_pSheet;

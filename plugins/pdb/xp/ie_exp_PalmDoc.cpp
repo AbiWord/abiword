@@ -84,7 +84,7 @@ UT_Error IE_Exp_PalmDoc::_writeDocument(void)
     m_index = 0x406f8000;
     m_recOffset = 0x00001000;
 
-    if (fp1 != NULL)
+    if (fp1 != nullptr)
     {
 		const char * szFilename = getFileName ();
         /********** create and write m_header **********************************/

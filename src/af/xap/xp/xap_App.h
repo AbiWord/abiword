@@ -249,9 +249,9 @@ public:
 	EV_EditEventMapper *				getEditEventMapper() const;
 	bool						addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
 	bool						removeListener(AV_ListenerId listenerId);
-	virtual bool					notifyListeners(AV_View * pView, const AV_ChangeMask hint,void * pPrivateData = NULL);
+	virtual bool					notifyListeners(AV_View * pView, const AV_ChangeMask hint,void * pPrivateData = nullptr);
 
-	bool					registerEmbeddable(GR_EmbedManager * pEmbed, const char *uid = NULL);
+	bool					registerEmbeddable(GR_EmbedManager * pEmbed, const char *uid = nullptr);
 	bool						unRegisterEmbeddable(const char *uid);
 	GR_EmbedManager* getEmbeddableManager(GR_Graphics* pG, const char* szObjectType) const;
 	XAP_Module* getPlugin(const char* szPluginName) const;

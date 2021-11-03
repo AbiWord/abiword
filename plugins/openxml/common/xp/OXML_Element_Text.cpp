@@ -28,9 +28,9 @@
 #include "ut_string.h"
 #include "pd_Document.h"
 
-OXML_Element_Text::OXML_Element_Text() : 
-	OXML_Element("", T_TAG, SPAN), 
-	m_pString(NULL), 
+OXML_Element_Text::OXML_Element_Text() :
+	OXML_Element("", T_TAG, SPAN),
+	m_pString(nullptr),
 	m_range(UNKNOWN_RANGE)
 {
 }
@@ -42,7 +42,7 @@ OXML_Element_Text::~OXML_Element_Text()
 
 OXML_Element_Text::OXML_Element_Text(const gchar * text, int length) :
 	OXML_Element("", T_TAG, SPAN),
-	m_pString(NULL)
+	m_pString(nullptr)
 {
 	setText(text, length);
 }
@@ -54,19 +54,19 @@ void OXML_Element_Text::setText(const gchar * text, int /*length*/)
 		std::string str(text);
 		m_pString = new UT_UCS4String(str);
 	} catch(...) {
-		m_pString = NULL;
+		m_pString = nullptr;
 	}
 }
 
 const UT_UCS4Char * OXML_Element_Text::getText_UCS4String()
 {
-	UT_return_val_if_fail(m_pString != NULL, NULL);
+	UT_return_val_if_fail(m_pString != nullptr, nullptr);
 	return m_pString->ucs4_str();
 }
 
 const char * OXML_Element_Text::getText()
 {
-	UT_return_val_if_fail(m_pString != NULL, NULL);
+	UT_return_val_if_fail(m_pString != nullptr, nullptr);
 	if(getType() == LIST)
 	{
 		const char* pStr = m_pString->utf8_str();
@@ -80,7 +80,7 @@ UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
 	bool bList = false;
-	const gchar* szValue = NULL;
+	const gchar* szValue = nullptr;
 	err = getAttribute("style", szValue);
 	if(err == UT_OK && szValue)
 	{
@@ -119,7 +119,7 @@ UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 
 UT_Error OXML_Element_Text::addToPT(PD_Document * pDocument)
 {
-	UT_return_val_if_fail(pDocument != NULL && m_pString != NULL, UT_ERROR);
+	UT_return_val_if_fail(pDocument != nullptr && m_pString != nullptr, UT_ERROR);
 
 	//a text tag does not have children, so no need to call addChildrenToPT()
 	return pDocument->appendSpan(m_pString->ucs4_str(), m_pString->length()) ? UT_OK : UT_ERROR; 

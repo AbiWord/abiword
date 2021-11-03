@@ -311,7 +311,7 @@ void IE_Imp_OPML::startElement(const gchar *name, const gchar **atts)
 			m_parseState = _PS_List;
 			m_iOutlineDepth++;
 
-			const gchar *text = NULL, *url = NULL;
+			const gchar *text = nullptr, *url = nullptr;
 
 			text = static_cast<const gchar*>(_getXMLPropValue("text", atts));
 			url = static_cast<const gchar*>(_getXMLPropValue("htmlUrl", atts));

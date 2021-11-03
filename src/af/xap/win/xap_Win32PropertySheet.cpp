@@ -45,8 +45,8 @@
 XAP_Win32PropertyPage::XAP_Win32PropertyPage()
 {
 	m_pfnDlgProc = s_pageWndProc;	
-	m_pParent = NULL;
-	m_hdle = NULL;
+	m_pParent = nullptr;
+	m_hdle = nullptr;
 }
 
 XAP_Win32PropertyPage::~XAP_Win32PropertyPage()
@@ -123,13 +123,13 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	m_page.dwSize = sizeof(PROPSHEETPAGEW);
 	m_page.dwFlags = PSP_DEFAULT;
 	m_page.hInstance = pWin32App->getInstance();
-	m_page.hIcon  = NULL;
-	m_page.pszIcon  = NULL;	
+	m_page.hIcon  = nullptr;
+	m_page.pszIcon  = nullptr;	
 	m_page.pszTemplate = lpTemplate;
 	m_page.pfnDlgProc = m_pfnDlgProc;
 	m_page.lParam = (LPARAM) this;
-	m_page.pfnCallback = NULL;
-	m_page.pcRefParent  = NULL;
+	m_page.pfnCallback = nullptr;
+	m_page.pcRefParent  = nullptr;
 	
 	if (nID)
 	{
@@ -138,7 +138,7 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 		m_page.pszTitle = m_title.c_str();
 	}	
 	else
-		m_page.pszTitle = NULL;
+		m_page.pszTitle = nullptr;
     
 	m_hdle = CreatePropertySheetPageW(&m_page);	
 	
@@ -156,10 +156,10 @@ XAP_Win32PropertySheet::XAP_Win32PropertySheet()
 	setOkButton(false);
 	setApplyButton(true);
 	setCancelButton(true);
-	m_lpfnDefSheet = NULL;
+	m_lpfnDefSheet = nullptr;
 	m_pfnDlgProc = s_sheetWndProc;	
-	m_pCallback = NULL;
-	m_pages = NULL;
+	m_pCallback = nullptr;
+	m_pages = nullptr;
 	m_modeless = false;
 }
 
@@ -300,8 +300,8 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 	m_psh.dwFlags = PSH_PROPSHEETPAGE;
 	m_psh.hwndParent = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 	m_psh.hInstance = pWin32App->getInstance();    
-	m_psh.hIcon  = NULL;
-	m_psh.pszIcon  = NULL;	
+	m_psh.hIcon  = nullptr;
+	m_psh.pszIcon  = nullptr;	
     m_psh.nPages = m_vecPages.getItemCount();
     m_psh.nStartPage = 0;
     m_psh.ppsp = (LPCPROPSHEETPAGEW) m_pages;
@@ -319,7 +319,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 		m_psh.pszCaption  = title.c_str();
 	}
 	else
-		m_psh.pszCaption  = NULL;
+		m_psh.pszCaption  = nullptr;
 
 	/*
 		
@@ -335,7 +335,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 		
 	_onInitDialog(m_hWnd);		
 
-	while (GetMessageW(&msg, NULL, 0, 0))
+	while (GetMessageW(&msg, nullptr, 0, 0))
 	{				
 		if(m_hWnd && PropSheet_IsDialogMessage(m_hWnd, &msg))
 			continue;				
@@ -362,8 +362,8 @@ int XAP_Win32PropertySheet::runModeless (XAP_Win32App* pWin32App, XAP_Frame * pF
 	m_psh.dwFlags = PSH_PROPSHEETPAGE;
 	m_psh.hwndParent = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 	m_psh.hInstance = pWin32App->getInstance();    
-	m_psh.hIcon  = NULL;
-	m_psh.pszIcon  = NULL;	
+	m_psh.hIcon  = nullptr;
+	m_psh.pszIcon  = nullptr;	
     m_psh.nPages = m_vecPages.getItemCount();
     m_psh.nStartPage = 0;
     m_psh.ppsp = (LPCPROPSHEETPAGEW) m_pages;
@@ -381,7 +381,7 @@ int XAP_Win32PropertySheet::runModeless (XAP_Win32App* pWin32App, XAP_Frame * pF
 		m_psh.pszCaption  = title.c_str();
 	}  	
 	else
-		m_psh.pszCaption  = NULL;
+		m_psh.pszCaption  = nullptr;
 
 	
 	m_psh.dwFlags |= PSH_MODELESS;	
@@ -431,6 +431,6 @@ void XAP_Win32PropertySheet::cleanup(void)
 {	
 	if (m_pages) {
 		delete m_pages;
-		m_pages = NULL;
+		m_pages = nullptr;
 	}	
 }

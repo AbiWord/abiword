@@ -65,7 +65,7 @@ void AP_Win32Dialog_Field::runModal(XAP_Frame * pFrame)
 void AP_Win32Dialog_Field::SetTypesList(void)
 {
 	UT_Win32LocaleString str;
-	for (int i = 0;fp_FieldTypes[i].m_Desc != NULL;i++) 
+	for (int i = 0; fp_FieldTypes[i].m_Desc != nullptr; i++)
 	{
 		str.fromUTF8(fp_FieldTypes[i].m_Desc);
 		SendMessageW(m_hwndTypes, LB_ADDSTRING, (WPARAM)0, (LPARAM)str.c_str());
@@ -80,7 +80,7 @@ void AP_Win32Dialog_Field::SetFieldsList(void)
 
 	SendMessageW(m_hwndFormats, LB_RESETCONTENT, 0, 0);
 	int i;
-	for (i = 0;fp_FieldFmts[i].m_Tag != NULL;i++) 
+	for (i = 0; fp_FieldFmts[i].m_Tag != nullptr; i++)
 	{
 		if( fp_FieldFmts[i].m_Type == FType )
 			break;
@@ -88,13 +88,13 @@ void AP_Win32Dialog_Field::SetFieldsList(void)
 
 	UT_Win32LocaleString str;
 
-	for (;fp_FieldFmts[i].m_Tag != NULL && fp_FieldFmts[i].m_Type == FType;i++) 
+	for (;fp_FieldFmts[i].m_Tag != nullptr && fp_FieldFmts[i].m_Type == FType; i++)
 	{
 		if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_ref))
-		{ 
+		{
 			str.fromUTF8(fp_FieldFmts[i].m_Desc);
 			UT_sint32 index = SendMessageW(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			if (index != LB_ERR && index != LB_ERRSPACE)

@@ -65,7 +65,7 @@ bool AV_View::addListener(AV_Listener * pListener,
 	for (k=0; k<kLimit; k++)
 		if (m_vecListeners.getNthItem(k) == nullptr)
 		{
-			static_cast<void>(m_vecListeners.setNthItem(k,pListener,NULL));
+			static_cast<void>(m_vecListeners.setNthItem(k,pListener,nullptr));
 			goto ClaimThisK;
 		}
 
@@ -91,7 +91,7 @@ bool AV_View::removeListener(AV_ListenerId listenerId)
 	if (listenerId == (AV_ListenerId) -1)
 		return false;
 		
-	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
+	return (m_vecListeners.setNthItem(listenerId,nullptr,nullptr) == 0);
 }
 
 bool AV_View::notifyListeners(const AV_ChangeMask hint, void * pPrivateData)

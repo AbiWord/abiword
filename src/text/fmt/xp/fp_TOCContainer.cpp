@@ -47,10 +47,10 @@
  */
 fp_TOCContainer::fp_TOCContainer(fl_SectionLayout* pSectionLayout) 
 	: fp_VerticalContainer(FP_CONTAINER_TOC, pSectionLayout),
-	  m_pFirstBrokenTOC(NULL),
-	  m_pLastBrokenTOC(NULL),
+	  m_pFirstBrokenTOC(nullptr),
+	  m_pLastBrokenTOC(nullptr),
 	  m_bIsBroken(false),
-	  m_pMasterTOC(NULL),
+	  m_pMasterTOC(nullptr),
 	  m_iYBreakHere(0),
 	  m_iYBottom(0),
 	  m_iBrokenTop(0),
@@ -61,8 +61,8 @@ fp_TOCContainer::fp_TOCContainer(fl_SectionLayout* pSectionLayout)
 
 fp_TOCContainer::fp_TOCContainer(fl_SectionLayout* pSectionLayout, fp_TOCContainer * pMaster) 
 	: fp_VerticalContainer(FP_CONTAINER_TOC, pSectionLayout),
-	  m_pFirstBrokenTOC(NULL),
-	  m_pLastBrokenTOC(NULL),
+	  m_pFirstBrokenTOC(nullptr),
+	  m_pLastBrokenTOC(nullptr),
 	  m_bIsBroken(true),
 	  m_pMasterTOC(pMaster),
 	  m_iYBreakHere(0),
@@ -89,10 +89,10 @@ fp_TOCContainer::~fp_TOCContainer()
 //
 // For debugging...
 //
-	setContainer(NULL);
-	setPrev(NULL);
-	setNext(NULL);
-	m_pMasterTOC = NULL;
+	setContainer(nullptr);
+	setPrev(nullptr);
+	setNext(nullptr);
+	m_pMasterTOC = nullptr;
 
 }
 
@@ -125,7 +125,7 @@ UT_sint32 fp_TOCContainer::getValue(void)
 
 void fp_TOCContainer::clearScreen(void)
 {
-	if(getPage() == NULL)
+	if(getPage() == nullptr)
 	{
 		return;
 	}
@@ -150,7 +150,7 @@ void fp_TOCContainer::clearScreen(void)
 		xxx_UT_DEBUGMSG(("x %d y %d width %d height %d \n",x,y,iWidth,iHeight));
 		return;
 	}
-	fp_Container * pCon = NULL;
+	fp_Container * pCon = nullptr;
 	UT_sint32 i = 0;
 	for(i=0; i< countCons(); i++)
 	{
@@ -162,11 +162,11 @@ void fp_TOCContainer::clearScreen(void)
 
 void fp_TOCContainer::forceClearScreen(void)
 {
-	if(getPage() == NULL)
+	if(getPage() == nullptr)
 	{
 		return;
 	}
-	fp_Container * pCon = NULL;
+	fp_Container * pCon = nullptr;
 	UT_sint32 i = 0;
 	for(i=0; i< countCons(); i++)
 	{
@@ -201,7 +201,7 @@ void fp_TOCContainer::draw(GR_Graphics * /*pG*/)
  */
 void fp_TOCContainer::draw(dg_DrawArgs* pDA)
 {
-	if(getPage() == NULL)
+	if(getPage() == nullptr)
 	{
 		return;
 	}
@@ -260,7 +260,7 @@ fp_Container * fp_TOCContainer::getNextContainerInSection() const
 	{
 		return pNext->getFirstContainer();
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -272,7 +272,7 @@ fp_Column * fp_TOCContainer::getBrokenColumn(void)
 	}
 	fp_TOCContainer * pBroke = this;
 	bool bStop = false;
-	fp_Column * pCol = NULL;
+	fp_Column * pCol = nullptr;
 	while(pBroke && pBroke->isThisBroken() && !bStop)
 	{
 		fp_Container * pCon = pBroke->getContainer();
@@ -317,7 +317,7 @@ fp_Container * fp_TOCContainer::getPrevContainerInSection() const
 	{
 		return pPrev->getLastContainer();
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool fp_TOCContainer::isVBreakable(void)
@@ -338,7 +338,7 @@ bool fp_TOCContainer::isInBrokenTOC(const fp_Container * pCon)
  	{
  		return true;
  	}
- 	if(pCon->getMyBrokenContainer() != NULL)
+	if(pCon->getMyBrokenContainer() != nullptr)
  	{
  		return false;
  	}
@@ -429,13 +429,13 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 //
 // Do the case of creating the first broken TOC from the master TOC.
 // 
-	fp_TOCContainer * pBroke = NULL;
-	if(!isThisBroken() && getLastBrokenTOC() == NULL)
+	fp_TOCContainer * pBroke = nullptr;
+	if(!isThisBroken() && getLastBrokenTOC() == nullptr)
 	{
-		if(getFirstBrokenTOC() != NULL)
+		if(getFirstBrokenTOC() != nullptr)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return NULL;
+			return nullptr;
 		}
 		pBroke = new fp_TOCContainer(getSectionLayout(),this);
 		UT_DEBUGMSG(("SEVIOR:!!!!!!! First broken TOC %p \n", (void*)pBroke));
@@ -452,7 +452,7 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 //
 // Now do the case of breaking a Master TOC.
 //
-	if(getMasterTOC() == NULL)
+	if(getMasterTOC() == nullptr)
 	{
 		return getLastBrokenTOC()->VBreakAt(vpos);
 	}
@@ -460,7 +460,7 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 	if (vpos >= iTotalHeight)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return NULL;
+		return nullptr;
 	}
 
 	pBroke = new fp_TOCContainer(getSectionLayout(),getMasterTOC());
@@ -480,18 +480,18 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 	UT_sint32 i = -1;
 //
 // The structure of TOC linked list is as follows.
-// NULL <= Master <==> Next <==> Next => NULL
+// nullptr <= Master <==> Next <==> Next => nullptr
 //          first 
-// ie terminated by NULL's in the getNext getPrev list. The second
+// ie terminated by nullptr's in the getNext getPrev list. The second
 // broken TOC points and is pointed to by the Master TOC
 // 
 	pBroke->setPrev(this);
-	fp_Container * pUpCon = NULL;
+	fp_Container * pUpCon = nullptr;
 	if(getMasterTOC()->getFirstBrokenTOC() == this)
 	{
 		pUpCon = getMasterTOC()->getContainer();
 		pBroke->setPrev(getMasterTOC());
-		pBroke->setNext(NULL);
+		pBroke->setNext(nullptr);
 		getMasterTOC()->setNext(pBroke);
 		setNext(pBroke);
 		if (pUpCon)
@@ -501,7 +501,7 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 	}
 	else
 	{
-		pBroke->setNext(NULL);
+		pBroke->setNext(nullptr);
 		setNext(pBroke);
 		if(getYBreak() == 0 )
 		{
@@ -567,7 +567,7 @@ void fp_TOCContainer::setY(UT_sint32 i)
 //
 // Create an initial broken TOC if none exists
 //
-	if(!bIsFirstBroken && (getFirstBrokenTOC() == NULL))
+	if(!bIsFirstBroken && (getFirstBrokenTOC() == nullptr))
 	{
 		VBreakAt(0);
 	}
@@ -661,7 +661,7 @@ UT_sint32 fp_TOCContainer::getHeight(void) const
 // All other Y offsets from the broken tables are calculated relative to
 // it.
 //
-		if(getFirstBrokenTOC() != NULL)
+		if(getFirstBrokenTOC() != nullptr)
 		{
 			return getFirstBrokenTOC()->getHeight();
 		}
@@ -698,7 +698,7 @@ void fp_TOCContainer::adjustBrokenTOCs(void)
 		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
-	if(getFirstBrokenTOC() == NULL)
+	if(getFirstBrokenTOC() == nullptr)
 	{
 		return;
 	}
@@ -777,10 +777,10 @@ void fp_TOCContainer::adjustBrokenTOCs(void)
 //
 			pPrev->setYBottom(iTOCHeight);
 			UT_ASSERT(pPrev->getHeight());
-			pPrev->setNext( NULL);
+			pPrev->setNext( nullptr);
 			if(pPrev == getFirstBrokenTOC())
 			{
-				setNext(NULL);
+				setNext(nullptr);
 				getFirstBrokenTOC()->setYBreakHere(0);
 				UT_ASSERT(getFirstBrokenTOC()->getHeight());
 			}
@@ -837,12 +837,12 @@ void fp_TOCContainer::deleteBrokenTOCs(bool bClearFirst)
 		//
 		clearBrokenContainers();
 	}
-	if(getFirstBrokenTOC() == NULL)
+	if(getFirstBrokenTOC() == nullptr)
 	{
 		return;
 	}
-	fp_TOCContainer * pBroke = NULL;
-	fp_TOCContainer * pNext = NULL;
+	fp_TOCContainer * pBroke = nullptr;
+	fp_TOCContainer * pNext = nullptr;
 	pBroke = getFirstBrokenTOC();
 	bool bFirst = true;
 	while(pBroke )
@@ -860,7 +860,7 @@ void fp_TOCContainer::deleteBrokenTOCs(bool bClearFirst)
 			    if(i >=0)
 			    {
 			        fp_Container * pCon = pBroke->getContainer();
-				pBroke->setContainer(NULL);
+				pBroke->setContainer(nullptr);
 				pCon->deleteNthCon(i);
 			    }
 			}
@@ -870,17 +870,17 @@ void fp_TOCContainer::deleteBrokenTOCs(bool bClearFirst)
 		delete pBroke;
 		if(pBroke == getLastBrokenTOC())
 		{
-			pBroke = NULL;
+			pBroke = nullptr;
 		}
 		else
 		{
 			pBroke = pNext;
 		}
 	}
-	setFirstBrokenTOC(NULL);
-	setLastBrokenTOC(NULL);
-	setNext(NULL);
-	setPrev(NULL);
+	setFirstBrokenTOC(nullptr);
+	setLastBrokenTOC(nullptr);
+	setNext(nullptr);
+	setPrev(nullptr);
 //	if(bClearFirst)
 	{
 		fl_TOCLayout * pTL = static_cast<fl_TOCLayout *>(getSectionLayout());
@@ -913,7 +913,7 @@ void fp_TOCContainer::deleteBrokenAfter(bool bClearFirst)
 	}
 
 	fp_TOCContainer * pBroke = static_cast<fp_TOCContainer *>(getNext());
-	fp_TOCContainer * pNext = NULL;
+	fp_TOCContainer * pNext = nullptr;
 	while(pBroke)
 	{
 		pNext = static_cast<fp_TOCContainer *> (pBroke->getNext());
@@ -923,17 +923,17 @@ void fp_TOCContainer::deleteBrokenAfter(bool bClearFirst)
 			if (i >= 0)
 			{
 				pBroke->getContainer()->deleteNthCon(i);
-				pBroke->setContainer(NULL);
+				pBroke->setContainer(nullptr);
 			}
 		}
 		delete pBroke;
 		pBroke = pNext;
 	}
 
-	setNext(NULL);
+	setNext(nullptr);
 	if (!getPrev())
 	{
-		getMasterTOC()->setNext(NULL);
+		getMasterTOC()->setNext(nullptr);
 	}
 	getMasterTOC()->setLastBrokenTOC(this);
 	setYBottom(getTotalTOCHeight());
@@ -968,7 +968,7 @@ void fp_TOCContainer::setContainer(fp_Container * pContainer)
 	{
 		return;
 	}
-	if (getContainer() && (pContainer != NULL))
+	if (getContainer() && (pContainer != nullptr))
 	{
 		clearScreen();
 	}
@@ -978,9 +978,9 @@ void fp_TOCContainer::setContainer(fp_Container * pContainer)
 	{
 		pBroke->setContainer(pContainer);
 	}
-	if(pContainer == NULL)
+	if(pContainer == nullptr)
 	{
-		xxx_UT_DEBUGMSG(("Set master TOC %x container to NULL \n",this));
+		xxx_UT_DEBUGMSG(("Set master TOC %x container to nullptr \n",this));
 		return;
 	}
 	setWidth(pContainer->getWidth());
@@ -992,7 +992,7 @@ void fp_TOCContainer::layout(void)
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
 	UT_uint32 iCountContainers = countCons();
-	fp_Container *pContainer, *pPrevContainer = NULL;
+	fp_Container *pContainer, *pPrevContainer = nullptr;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));

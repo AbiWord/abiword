@@ -58,7 +58,7 @@
 
 IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Exp(pDocument),
-	  m_pListener(NULL),
+	  m_pListener(nullptr),
 	  m_bIsEncoded(false),
 	  m_bExplicitlySetEncoding(false),
 	  m_bIs16Bit(false),
@@ -83,7 +83,7 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 
 IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, const char * encoding)
   : IE_Exp(pDocument),
-    m_pListener(NULL),
+    m_pListener(nullptr),
     m_bIsEncoded(false),
     m_bExplicitlySetEncoding(false),
     m_bIs16Bit(false),
@@ -93,7 +93,7 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, const char * encoding)
 {
   m_error = UT_OK;
   
-  m_bIsEncoded = ((encoding != NULL) && (strlen(encoding) > 0));
+  m_bIsEncoded = ((encoding != nullptr) && (strlen(encoding) > 0));
   
   if ( m_bIsEncoded )
     {
@@ -210,7 +210,7 @@ PL_Listener * IE_Exp_Text::_constructListener(void)
 		}
 	}
 
-	return new Text_Listener(getDoc(),this,(getDocRange()!=NULL), m_szEncoding.c_str(),
+	return new Text_Listener(getDoc(),this,(getDocRange()!=nullptr), m_szEncoding.c_str(),
 							 m_bIs16Bit,m_bUnicode,m_bUseBOM,m_bBigEndian);
 }
 
@@ -497,10 +497,10 @@ void Text_Listener::_closeBlock(void)
 
 void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	
-	UT_UCS4Char * pMarker = NULL;
+	UT_UCS4Char * pMarker = nullptr;
 		
 	if (bHaveProp && pAP)
 	{
@@ -508,7 +508,7 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 		UT_UCS4Char cLRO = UCS_LRO;
 		UT_UCS4Char cPDF = UCS_PDF;
 
-		const gchar *szValue = NULL;
+		const gchar *szValue = nullptr;
 		if(pAP->getProperty("dir-override", szValue))
 		{
 			if(m_eDirOverride == DO_UNSET)
@@ -640,12 +640,12 @@ Text_Listener::Text_Listener(PD_Document * pDocument,
 	  m_eDocDir(DO_UNSET)
 {
 	PT_AttrPropIndex api = m_pDocument->getAttrPropIndex();
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
 	if (bHaveProp && pAP)
 	{
-		const gchar *szValue = NULL;
+		const gchar *szValue = nullptr;
 		if(pAP->getProperty("dom-dir", szValue))
 		{
 			if(!g_ascii_strcasecmp("rtl",szValue))
@@ -737,7 +737,7 @@ bool Text_Listener::populate(fl_ContainerLayout* /*sfh*/,
 				UT_return_val_if_fail(field, false);
 
 				m_pie->populateFields ();
-				if(field->getValue() != NULL) {
+				if(field->getValue() != nullptr) {
 					UT_UCS4String ws(field->getValue());
 					_outputData(ws.ucs4_str(),ws.length());
 				}
@@ -793,12 +793,12 @@ bool Text_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 		{
 			_closeBlock();
 			PT_AttrPropIndex api = pcr->getIndexAP();
-			const PP_AttrProp * pAP = NULL;
+			const PP_AttrProp * pAP = nullptr;
 			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
 			if (bHaveProp && pAP)
 			{
-				const gchar *szValue = NULL;
+				const gchar *szValue = nullptr;
 				if(pAP->getProperty("dom-dir", szValue))
 				{
 					if(!g_ascii_strcasecmp("rtl",szValue))
@@ -824,10 +824,10 @@ bool Text_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 			_closeBlock();
 			m_bInBlock = true;
 
-			const gchar * szValue = NULL;
+			const gchar * szValue = nullptr;
 
 			PT_AttrPropIndex api = pcr->getIndexAP();
-			const PP_AttrProp * pAP = NULL;
+			const PP_AttrProp * pAP = nullptr;
 			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
 			m_bBreakExtra = false;
@@ -859,7 +859,7 @@ bool Text_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 			{
 				if (bHaveProp && pAP)
 				{
-					szValue = NULL;
+					szValue = nullptr;
 					if(pAP->getProperty("dom-dir", szValue))
 					{
 						if(!g_ascii_strcasecmp("rtl",szValue))

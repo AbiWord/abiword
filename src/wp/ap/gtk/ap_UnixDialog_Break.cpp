@@ -55,8 +55,8 @@ AP_UnixDialog_Break::AP_UnixDialog_Break(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_Break(pDlgFactory,id)
 {
-	m_windowMain = NULL;
-	m_radioGroup = NULL;
+	m_windowMain = nullptr;
+	m_radioGroup = nullptr;
 }
 
 AP_UnixDialog_Break::~AP_UnixDialog_Break(void)
@@ -169,7 +169,7 @@ GtkWidget * AP_UnixDialog_Break::_findRadioByID(AP_Dialog_Break::breakType b)
 			return static_cast<GtkWidget *>(item->data);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 AP_Dialog_Break::breakType AP_UnixDialog_Break::_getActiveRadioItem(void)

@@ -55,7 +55,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar * prop
 			while(n && *n == ' ')
 				++n;
 			
-			p = strtok(NULL, ";");
+			p = strtok(nullptr, ";");
 
 			// if we have no p, that means the property is being removed ...
 			const char * v = p ? p : empty;
@@ -65,7 +65,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar * prop
 			if(n)
 			{
 				setProperty(n,v);
-				p = strtok(NULL,":");
+				p = strtok(nullptr,":");
 			}
 			else
 			{
@@ -73,7 +73,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar * prop
 				UT_DEBUGMSG(("PP_Revision::PP_Revision: malformed props string [%s]\n", props));
 				// if we have not reached the end, we will keep trying ...
 				if(p)
-					p = strtok(NULL,":");
+					p = strtok(nullptr,":");
 			}
 		}
 
@@ -96,7 +96,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar * prop
 		while(p)
 		{
 			char * n = p;
-			p = strtok(NULL, ";");
+			p = strtok(nullptr, ";");
 
 			const char * v = p ? p : empty;
 			if(! strcmp(v, "-/-"))
@@ -105,7 +105,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar * prop
 			if(n)
 			{
 				setAttribute(n,v);
-				p = strtok(NULL,":");
+				p = strtok(nullptr,":");
 			}
 			else
 			{
@@ -113,7 +113,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar * prop
 				UT_DEBUGMSG(("PP_Revision::PP_Revision: malformed props string [%s]\n", props));
 				// if we have not reached the end, we will keep trying ...
 				if(p)
-					p = strtok(NULL,":");
+					p = strtok(nullptr,":");
 			}
 		}
 
@@ -149,7 +149,7 @@ bool PP_Revision::setAttributes(const PP_PropertyVector & attributes)
 
 bool PP_Revision::_handleNestedRevAttr()
 {
-	const gchar * pNestedRev = NULL;
+	const gchar * pNestedRev = nullptr;
 	getAttribute("revision", pNestedRev);
 	
 	if(pNestedRev)
@@ -157,7 +157,7 @@ bool PP_Revision::_handleNestedRevAttr()
 		PP_RevisionAttr NestedAttr(pNestedRev);
 
 		// now remove "revision"
-		setAttribute("revision", NULL);
+		setAttribute("revision", nullptr);
 		prune();
 
 		// overlay the attrs and props from the revision attribute
@@ -376,7 +376,7 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 /*! create class instance from an XML attribute string
  */
 PP_RevisionAttr::PP_RevisionAttr(const gchar * r):
-	m_pLastRevision(NULL)
+	m_pLastRevision(nullptr)
 {
 	_init(r);
 }
@@ -421,7 +421,7 @@ void PP_RevisionAttr::_clear()
 
 	m_vRev.clear();
 	m_bDirty = true;
-	m_pLastRevision = NULL;
+	m_pLastRevision = nullptr;
 }
 
 
@@ -439,7 +439,7 @@ void PP_RevisionAttr::_init(const gchar *r)
 	// first duplicate the string so we can play with it ...
 	char * s = (char*) g_strdup(r);
 	char * end_s = s + strlen(s); // we need to remember where this
-								  // string ends because we cannot use strtok(NULL,...)
+								  // string ends because we cannot use strtok(nullptr,...)
 
 	UT_sint32 iId;
 	PP_RevisionType eType;
@@ -488,8 +488,8 @@ void PP_RevisionAttr::_init(const gchar *r)
 				UT_DEBUGMSG(("PP_RevisionAttr::_init: invalid ! token [%s]\n",t));
 				goto skip_this_token;
 			}
-			pProps = NULL;
-			pAttrs = NULL;
+			pProps = nullptr;
+			pAttrs = nullptr;
 		}
 		else
 		{
@@ -519,11 +519,11 @@ void PP_RevisionAttr::_init(const gchar *r)
 				else
 				{
 					UT_DEBUGMSG(( "PP_RevisionAttr::_init: invalid token - [%s]\n", t ));
-					pAttrs = NULL;
+					pAttrs = nullptr;
 				}
 			}
 			else
-				pAttrs = NULL;
+				pAttrs = nullptr;
 
 			if(eType == PP_REVISION_ADDITION)
 				eType = PP_REVISION_ADDITION_AND_FMT;
@@ -542,13 +542,13 @@ void PP_RevisionAttr::_init(const gchar *r)
 		if(next_s < end_s)
 			t = strtok(next_s,",");
 		else
-			t = NULL;
+			t = nullptr;
 	}
 
 	FREEP(s);
 	m_bDirty = true;
 	m_iSuperfluous = 0;
-	m_pLastRevision = NULL;
+	m_pLastRevision = nullptr;
 }
 
 /*!
@@ -664,7 +664,7 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 	// finally, remove the revision attribute if present
 	const gchar * v;
 	if(r0->getAttribute("revision", v))
-		r0->setAttribute("revision", NULL);
+		r0->setAttribute("revision", nullptr);
 
 	UT_ASSERT_HARMLESS( m_vRev.getItemCount() == 1 );
 }
@@ -678,9 +678,9 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
     \param UT_uint32 id : the id of this revision
     \param PP_Revision ** ppR: location where to store pointer to one
                                of the special revisions in case return
-                               value is NULL
+                               value is nullptr
                               
-    \return : pointer to PP_Revision, or NULL if the revision
+    \return : pointer to PP_Revision, or nullptr if the revision
     attribute should be ignored for the present level
 */
 
@@ -693,15 +693,15 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 																	   const PP_Revision ** ppR) const
 {
 	if(ppR)
-		*ppR = NULL;
+		*ppR = nullptr;
 	
 	if(id == 0)
 		return getLastRevision();
 
-	const PP_Revision *r = NULL; // this will be the revision we are looking for
+	const PP_Revision *r = nullptr; // this will be the revision we are looking for
 	UT_uint32 r_id = 0;
 
-	const PP_Revision *m = NULL; // this will be the lowest revision present
+	const PP_Revision *m = nullptr; // this will be the lowest revision present
 	UT_uint32 m_id = 0xFFFF;
 
 	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
@@ -727,20 +727,20 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 	}
 
 	// now that we have the biggest revision with ID lesser or equal
-	// id, we have to deal with the special case when this is NULL
+	// id, we have to deal with the special case when this is nullptr
 	// i.e., this fragment only figures in revisions > id; the problem
-	// with NULL is that it is visible if the smallest revision ID is
+	// with nullptr is that it is visible if the smallest revision ID is
 	// negative, and hidden in the opposite case -- we use the special
 	// static variables s_del and s_add to indicate what should
 	// be done
 
-	if(r == NULL && ppR)
+	if(r == nullptr && ppR)
 	{
 		if(!m)
 		{
 			//UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			// this happens when there was no revision attribute
-			return NULL;
+			return nullptr;
 		}
 
 		if(m->getType() == PP_REVISION_DELETION)
@@ -749,7 +749,7 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 				||(m->getType() == PP_REVISION_ADDITION_AND_FMT))
 			*ppR = &s_add;
 		else // the initial revision was fmt change, so ignore it
-			*ppR = NULL;
+			*ppR = nullptr;
 	}
 
 	return r;
@@ -758,9 +758,9 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 const PP_Revision * PP_RevisionAttr::getLowestGreaterOrEqualRevision(UT_uint32 id) const
 {
 	if(id == 0)
-		return NULL;
+		return nullptr;
 
-	const PP_Revision *r = NULL; // this will be the revision we are looking for
+	const PP_Revision *r = nullptr; // this will be the revision we are looking for
 	UT_uint32 r_id = PD_MAX_REVISION;
 
 	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
@@ -792,7 +792,7 @@ const PP_Revision * PP_RevisionAttr::getLastRevision() const
 	if(m_pLastRevision)
 		return m_pLastRevision;
 
-	//const PP_Revision * r = NULL;
+	//const PP_Revision * r = nullptr;
 	UT_uint32 r_id = 0;
 
 	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
@@ -808,7 +808,7 @@ const PP_Revision * PP_RevisionAttr::getLastRevision() const
 	}
 
 	// UT_ASSERT_HARMLESS( m_pLastRevision );
-	// it is legal for this to be NULL -- it happens when the revision was pruned for
+	// it is legal for this to be nullptr -- it happens when the revision was pruned for
 	// cumulative effect and the last revision was a deletion.
 	return m_pLastRevision;
 }
@@ -849,7 +849,7 @@ const PP_Revision * PP_RevisionAttr::getRevisionWithId(UT_uint32 iId, UT_uint32 
 			minId = t_id;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -999,7 +999,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 			}
 
 			m_bDirty = true;
-			m_pLastRevision = NULL;
+			m_pLastRevision = nullptr;
 			return;
 		}
 		else //(eType == r_type)
@@ -1013,7 +1013,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 			r->setAttributes(pAttrs);
 			
 			m_bDirty = true;
-			m_pLastRevision = NULL;
+			m_pLastRevision = nullptr;
 			return;
 		}
 	}
@@ -1023,7 +1023,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 	
 	m_vRev.addItem((void*)pRevision);
 	m_bDirty = true;
-	m_pLastRevision = NULL;
+	m_pLastRevision = nullptr;
 }
 
 
@@ -1262,7 +1262,7 @@ void PP_RevisionAttr::removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eT
 			delete r;
 			m_vRev.deleteNthItem(i);
 			m_bDirty = true;
-			m_pLastRevision = NULL;
+			m_pLastRevision = nullptr;
 			return;
 		}
 	}
@@ -1282,7 +1282,7 @@ void PP_RevisionAttr::removeRevisionIdTypeless(UT_uint32 iId)
 			delete r;
 			m_vRev.deleteNthItem(i);
 			m_bDirty = true;
-			m_pLastRevision = NULL;
+			m_pLastRevision = nullptr;
 			return;
 		}
 	}
@@ -1301,7 +1301,7 @@ void PP_RevisionAttr::removeRevision(const PP_Revision * pRev)
 			delete r;
 			m_vRev.deleteNthItem(i);
 			m_bDirty = true;
-			m_pLastRevision = NULL;
+			m_pLastRevision = nullptr;
 			return;
 		}
 	}
@@ -1326,7 +1326,7 @@ void PP_RevisionAttr::removeAllLesserOrEqualIds(UT_uint32 iId)
 	}
 
 	m_bDirty = true;
-	m_pLastRevision = NULL;
+	m_pLastRevision = nullptr;
 }
 
 /*! removes all IDs from the attribute whose value is higher or
@@ -1347,7 +1347,7 @@ void PP_RevisionAttr::removeAllHigherOrEqualIds(UT_uint32 iId)
 	}
 
 	m_bDirty = true;
-	m_pLastRevision = NULL;
+	m_pLastRevision = nullptr;
 }
 
 

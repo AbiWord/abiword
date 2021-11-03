@@ -106,9 +106,9 @@ private:
     void _pushInlineFmt(const PP_PropertyVector & ppAtts);
     void _popInlineFmt(void);
     void _insureInBlock(const PP_PropertyVector & atts);
-    void _insureInSection(const std::string* pMasterPageName = NULL);
+    void _insureInSection(const std::string* pMasterPageName = nullptr);
     void _openAbiSection(const std::string& rProps,
-                         const std::string* pMasterPageName = NULL);
+                         const std::string* pMasterPageName = nullptr);
     void _defineAbiTOCHeadingStyles();
     void _flushPendingParagraphBreak();
     void _insertAnnotation(void);

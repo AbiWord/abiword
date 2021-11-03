@@ -49,7 +49,7 @@ ABI_PLUGIN_DECLARE("Paint")
  * Preference / User modifiable settings
  * All settings are stored in a '_plugin_' scheme with corresponding plugin name
  */
-XAP_Prefs * prefs = NULL;
+XAP_Prefs * prefs = nullptr;
 
 /*
  * Abiword Plugin Interface 
@@ -61,14 +61,14 @@ ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 	prefs = XAP_App::getApp()->getPrefs();
-	UT_ASSERT(prefs != NULL);	// This is only fatal if the plugin uses preferences
+	UT_ASSERT(prefs != nullptr);	// This is only fatal if the plugin uses preferences
 
 	// get info from actual plugin
 	XAP_ModuleInfo * pluginInfo = getModuleInfo();	
-	UT_return_val_if_fail(pluginInfo != NULL, 0);
+	UT_return_val_if_fail(pluginInfo != nullptr, 0);
 
 	// copy values over to AbiWord provided structure
-	UT_return_val_if_fail(mi != NULL, 0);	// somethings messed up
+	UT_return_val_if_fail(mi != nullptr, 0);	// somethings messed up
 	mi->name = pluginInfo->name;
 	mi->desc = pluginInfo->desc;
 	mi->version = pluginInfo->version;
@@ -87,14 +87,14 @@ ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	// clear module info
-	UT_ASSERT(mi != NULL);	// mi should never be NULL here
-	if (mi != NULL)
+	UT_ASSERT(mi != nullptr);	// mi should never be nullptr here
+	if (mi != nullptr)
 	{
-		mi->name = NULL;
-		mi->desc = NULL;
-		mi->version = NULL;
-		mi->author = NULL;
-		mi->usage = NULL;
+		mi->name = nullptr;
+		mi->desc = nullptr;
+		mi->version = nullptr;
+		mi->author = nullptr;
+		mi->usage = nullptr;
 	}
 
 	// let the plugin do any uninitialization
@@ -120,7 +120,7 @@ int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_ui
  *   num_menuitems is how many entries are in the array (usually sizeof(amo)/sizeof(amo[0]))
  *   prevMM is the [English] Main menu item we place our 1st menu item after
  *   prevCM is the [English] Context menu item we place our 1st context menu item after
- *     prevMM and prevCM should not be NULL unless there is no entry added to the respective menu
+ *     prevMM and prevCM should not be nullptr unless there is no entry added to the respective menu
  */
 UT_Error addToMenus(AbiMenuOptions amo[], UT_uint32 num_menuitems, XAP_Menu_Id prevMM, XAP_Menu_Id prevCM)
 {
@@ -160,21 +160,21 @@ UT_Error addToMenus(AbiMenuOptions amo[], UT_uint32 num_menuitems, XAP_Menu_Id p
       // to amo[i].methodName is received.
       pEMC->addEditMethod(myEditMethod);
 
-	// 
+	//
 	// Generate an unique id for this menu item
 	// (We could also pass 0 or leave off newID and have addNewMenuAfter return one)
 	//
 	amo[i].id = pFact->getNewID();
 
 	// TODO does it matter if this is before an addNewMenuAfter() call or not?
-     	pFact->addNewLabel(NULL, amo[i].id, amo[i].label, amo[i].description);
+	pFact->addNewLabel(nullptr, amo[i].id, amo[i].label, amo[i].description);
 
       //
       // Put it in the main menu
       //
 	if (amo[i].inMainMenu)
 	{
-		pFact->addNewMenuAfter("Main", NULL, prevMM, amo[i].flags, amo[i].id);
+		pFact->addNewMenuAfter("Main", nullptr, prevMM, amo[i].flags, amo[i].id);
 		prevMM = amo[i].id;
 	}
 
@@ -183,7 +183,7 @@ UT_Error addToMenus(AbiMenuOptions amo[], UT_uint32 num_menuitems, XAP_Menu_Id p
       //
 	if (amo[i].inContextMenu)
 	{
-		pFact->addNewMenuAfter("ContextImageT", NULL, prevCM, amo[i].flags, amo[i].id);
+		pFact->addNewMenuAfter("ContextImageT", nullptr, prevCM, amo[i].flags, amo[i].id);
 		prevCM = amo[i].id;
 	}
 
@@ -195,7 +195,7 @@ UT_Error addToMenus(AbiMenuOptions amo[], UT_uint32 num_menuitems, XAP_Menu_Id p
 						    amo[i].checkBox,      // do we have a checkbox.
 						    0,                    // no radio buttons for me, thank you
 						    amo[i].methodName,    // name of callback function to call.
-						    amo[i].pfnGetState,   // something about menu state, usually NULL
+						    amo[i].pfnGetState,   // something about menu state, usually nullptr
 						    amo[i].pfnGetDynLabel // dynamic menu label
 						    );
 
@@ -238,8 +238,8 @@ UT_Error removeFromMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems)
     DELETEP( pEM ) ;
 
     // remove the contextual & main menu items
-    if (amo[i].inMainMenu) pFact->removeMenuItem("Main",NULL, amo[i].id);
-    if (amo[i].inContextMenu) pFact->removeMenuItem("ContextImageT", NULL, amo[i].id);
+    if (amo[i].inMainMenu) pFact->removeMenuItem("Main",nullptr, amo[i].id);
+    if (amo[i].inContextMenu) pFact->removeMenuItem("ContextImageT", nullptr, amo[i].id);
   }
 
   // rebuild the menus
@@ -299,7 +299,7 @@ bool isImageSelected (void)
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
 
-    return (pView->getSelectedImage(NULL) != 0);
+    return (pView->getSelectedImage(nullptr) != 0);
 }
 
 
@@ -309,8 +309,8 @@ bool isImageSelected (void)
 UT_uint32 _lockGUI_counter = 0;	// NOTE: for multithreaded support this may need to be protected
 
 // actual methods to perform the required functionality
-const EV_EditMethod * lockGUI = NULL;
-const EV_EditMethod * unlockGUI = NULL;
+const EV_EditMethod * lockGUI = nullptr;
+const EV_EditMethod * unlockGUI = nullptr;
 
 
 void plugin_imp_lockGUI(EV_EditMethodCallData *d)
@@ -329,8 +329,8 @@ void plugin_imp_lockGUI(EV_EditMethodCallData *d)
       unlockGUI = pEMC->findEditMethodByName("unlockGUI");
     }
 
-    UT_ASSERT(lockGUI != NULL);
-    UT_ASSERT(unlockGUI != NULL);
+    UT_ASSERT(lockGUI != nullptr);
+    UT_ASSERT(unlockGUI != nullptr);
 
     // actually lock the GUI
     ev_EditMethod_invoke(lockGUI,d);
@@ -344,8 +344,8 @@ void plugin_imp_unlockGUI(EV_EditMethodCallData *d)
     // ignore calls without a prior lock call
     if (!_lockGUI_counter) return;
 
-    UT_ASSERT(lockGUI != NULL);
-    UT_ASSERT(unlockGUI != NULL);
+    UT_ASSERT(lockGUI != nullptr);
+    UT_ASSERT(unlockGUI != nullptr);
 
     // actually unlock the GUI
     ev_EditMethod_invoke(unlockGUI,d);
@@ -356,8 +356,8 @@ void plugin_imp_unlockGUI(EV_EditMethodCallData *d)
     // if we reach zero, then cleanup
     if (!_lockGUI_counter)
     {
-      lockGUI = NULL;
-      unlockGUI = NULL;
+      lockGUI = nullptr;
+      unlockGUI = nullptr;
     }
 }
 

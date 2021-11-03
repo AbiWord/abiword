@@ -51,7 +51,7 @@ static const ssList_t ssListContact[] =
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE, RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_PHONE},   
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE, RDF_SEMANTIC_STYLESHEET_CONTACT_NICK_PHONE},   
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE, RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE},   
-    {0, NULL}
+    {0, nullptr}
 };
 
 static const ssList_t ssListEvent[] =
@@ -61,22 +61,22 @@ static const ssList_t ssListEvent[] =
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION},
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES},
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_TIMES},
-    {0, NULL}
+    {0, nullptr}
 };
 
 static const ssList_t ssListLocation[] =
 {
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME, RDF_SEMANTIC_STYLESHEET_LOCATION_NAME},
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG, RDF_SEMANTIC_STYLESHEET_LOCATION_NAME_LATLONG},
-    {0, NULL}
+    {0, nullptr}
 };
 
 static combo_box_t combo_box_data[] =
 {
-    {"Contact", RDF_SEMANTIC_STYLESHEET_CONTACT_NAME, ssListContact, NULL, 0},
-    {"Event", RDF_SEMANTIC_STYLESHEET_EVENT_NAME, ssListEvent, NULL, 0},
-    {"Location", RDF_SEMANTIC_STYLESHEET_LOCATION_NAME, ssListLocation, NULL, 0},
-    {NULL, NULL, NULL, NULL, 0}
+    {"Contact", RDF_SEMANTIC_STYLESHEET_CONTACT_NAME, ssListContact, nullptr, 0},
+    {"Event", RDF_SEMANTIC_STYLESHEET_EVENT_NAME, ssListEvent, nullptr, 0},
+    {"Location", RDF_SEMANTIC_STYLESHEET_LOCATION_NAME, ssListLocation, nullptr, 0},
+    {nullptr, nullptr, nullptr, nullptr, 0}
 };
 
 static const char *getStylesheetName( const ssList_t *ssList, const gchar *translation )
@@ -85,7 +85,7 @@ static const char *getStylesheetName( const ssList_t *ssList, const gchar *trans
     std::string text;
     int i;
 
-    if (!translation) return NULL;
+    if (!translation) return nullptr;
 
     for (i = 0; ssList[i].stylesheet; i++)
     {
@@ -419,7 +419,7 @@ public:
 
         // set max. text width for explanation
         GtkRequisition requisition;
-        gtk_widget_get_preferred_size(gtk_widget_get_parent(lbExplanation), &requisition, NULL);
+        gtk_widget_get_preferred_size(gtk_widget_get_parent(lbExplanation), &requisition, nullptr);
         gtk_widget_set_size_request(lbExplanation, requisition.width, -1);
 
         // window title and icon
@@ -470,13 +470,13 @@ public:
 
         GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
 
-        GtkTreeViewColumn *column = NULL;
-        GtkCellRenderer *renderer = NULL;
+        GtkTreeViewColumn *column = nullptr;
+        GtkCellRenderer *renderer = nullptr;
         renderer = gtk_cell_renderer_text_new ();
         gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tv),
                                                      -1, "Name", renderer,
                                                      "text", COLUMN_REFDLG_NAME,
-                                                     NULL);
+                                                     nullptr);
         column = gtk_tree_view_get_column (GTK_TREE_VIEW (tv), COLUMN_REFDLG_NAME );
         gtk_tree_view_column_set_sort_column_id (column, COLUMN_REFDLG_NAME );
 

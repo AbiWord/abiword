@@ -227,7 +227,7 @@ setstate__ (char * arg_state)
   ostate = &unsafe_state.state[-1];
 
   if (setstate_r__ (arg_state, &unsafe_state) < 0)
-    ostate = NULL;
+    ostate = nullptr;
 
   return static_cast<char *>(ostate);
 }
@@ -395,7 +395,7 @@ srandom_r__ (unsigned int seed, struct UT_random_data *buf)
   UT_sint32 *dst;
   int kc;
 
-  if (buf == NULL)
+  if (buf == nullptr)
     goto fail;
   type = buf->rand_type;
   if (static_cast<unsigned int>(type) >= MAX_TYPES)
@@ -463,7 +463,7 @@ initstate_r__ (unsigned int seed, char *arg_state, size_t n,
   int separation;
   UT_sint32 *state;
 
-  if (buf == NULL)
+  if (buf == nullptr)
     goto fail;
 
   if (n >= BREAK_3)
@@ -526,7 +526,7 @@ setstate_r__ (char *arg_state, struct UT_random_data *buf)
   int degree;
   int separation;
 
-  if (arg_state == NULL || buf == NULL)
+  if (arg_state == nullptr || buf == nullptr)
     goto fail;
 
   old_type = buf->rand_type;
@@ -579,7 +579,7 @@ random_r__ (struct UT_random_data *buf, UT_sint32 *result)
 {
   UT_sint32 *state;
 
-  if (buf == NULL || result == NULL)
+  if (buf == nullptr || result == nullptr)
     goto fail;
 
   state = buf->state;

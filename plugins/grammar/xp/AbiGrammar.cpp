@@ -66,9 +66,9 @@ class AbiGrammar : public AV_ListenerExtra
 {
 public:
 AbiGrammar():
-	m_pView(NULL),
-	m_pDoc(NULL),
-	m_pBlock(NULL)
+	m_pView(nullptr),
+	m_pDoc(nullptr),
+	m_pBlock(nullptr)
 		{
 		}
 
@@ -120,7 +120,7 @@ private:
 
 
 static AV_ListenerId listenerID = 0; 
-static AbiGrammar * pAbiGrammar = NULL;
+static AbiGrammar * pAbiGrammar = nullptr;
 
 ABI_PLUGIN_DECLARE(AbiGrammar)
 

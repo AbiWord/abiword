@@ -106,7 +106,7 @@ UT_Error OXML_Image::addToPT(PD_Document * pDocument)
 {
 	if (!pDocument->createDataItem(m_id.c_str(), false, m_graphic ? m_graphic->getBuffer() : m_data, 
                                    m_graphic ? m_graphic->getMimeType().c_str() : m_mimeType, 
-                                   NULL))
+                                   nullptr))
 	{            
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return UT_ERROR;

@@ -242,7 +242,7 @@ bool XAP_Frame::initialize(const char * /*szKeyBindingsKey*/, const char * /*szK
 		char * szTemp;
 		szTemp = g_strdup(toolbarLayouts.c_str());
 		UT_ASSERT(szTemp);
-		for (char * p=strtok(szTemp," "); (p); p=strtok(NULL," "))
+		for (char * p=strtok(szTemp," "); (p); p=strtok(nullptr," "))
 		{
 			char * szTempName;
 			szTempName = g_strdup(p);
@@ -420,7 +420,7 @@ void XAP_Frame::_createAutoSaveTimer()
 
 void XAP_Frame::_removeAutoSaveFile()
 {
-	const char *filename = NULL;
+	const char *filename = nullptr;
 	gboolean bURI = UT_go_path_is_uri(m_stAutoSaveNamePrevious.c_str());
 
 	if(bURI)
@@ -557,13 +557,17 @@ AD_Document * XAP_Frame::getCurrentDoc(void) const
 
 const char * XAP_Frame::getFilename(void) const
 {
-	if (m_pDoc == NULL) return NULL;
+	if (m_pDoc == nullptr) {
+		return nullptr;
+	}
 	return m_pDoc->getFilename().c_str();
 }
 
 bool XAP_Frame::isDirty(void) const
 {
-	if (m_pDoc == NULL) return false;
+	if (m_pDoc == nullptr) {
+		return false;
+	}
 	return m_pDoc->isDirty();
 }
 
@@ -644,7 +648,7 @@ UT_uint32 XAP_Frame::getZoomPercentage(void)
 EV_Toolbar *  XAP_Frame::getToolbar(UT_sint32 ibar)
 {
 	if(ibar >= m_pFrameImpl->m_vecToolbars.getItemCount())
-		return NULL;
+		return nullptr;
 	return m_pFrameImpl->m_vecToolbars.getNthItem(ibar);
 }
 
@@ -653,7 +657,7 @@ bool XAP_Frame::repopulateCombos(void)
   //
 // Update the styles combo box.
 //
-	EV_Toolbar * pTbar = NULL;
+	EV_Toolbar * pTbar = nullptr;
 	UT_uint32 ibar = 0;
 	do
 	{
@@ -774,7 +778,7 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 
 	XAP_Dialog_MessageBox * pDialog
 		= static_cast<XAP_Dialog_MessageBox *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_return_val_if_fail(pDialog, NULL);
+	UT_return_val_if_fail(pDialog, nullptr);
 
 	if (id > 0) {
 		char * szNewMessage = static_cast<char *>(g_try_malloc(sizeof(char) * 256));
@@ -862,7 +866,7 @@ std::string XAP_Frame::makeBackupName(const char* szExt)
   
   backupName = oldName + ext;
 
-  const char* uri = NULL;
+  const char* uri = nullptr;
   gboolean bURI = UT_go_path_is_uri(backupName.c_str());
 
   if(!bURI)
@@ -891,7 +895,7 @@ UT_Error XAP_Frame::backup(const char* szExt, UT_sint32 iEFT)
 
 	if (!m_pDoc)
 	{
-		UT_DEBUGMSG(("File NOT saved! doc is NULL.\n"));
+		UT_DEBUGMSG(("File NOT saved! doc is nullptr.\n"));
 		return UT_OK;
 	}
 

@@ -56,7 +56,7 @@ public:
 
     ODi_StreamListener(PD_Document* pAbiDocument, GsfInfile* pGsfInfile,
                       ODi_Office_Styles* pStyles, ODi_Abi_Data& rAbiData,
-                      ODi_ElementStack* pElementStack = NULL);
+                      ODi_ElementStack* pElementStack = nullptr);
 
     virtual ~ODi_StreamListener();
 
@@ -120,13 +120,13 @@ private:
 
     class StackCell {
     public:
-        StackCell() {m_pState=NULL; m_deleteWhenPop=false;}
+        StackCell() {m_pState=nullptr; m_deleteWhenPop=false;}
         StackCell(ODi_ListenerState* pState, bool deleteWhenPop) {
             m_deleteWhenPop = deleteWhenPop;
             m_pState = pState;
         }
         // Work around the "return 0" issue of the UT_GenericVector::getNhItem()
-        StackCell(UT_uint32 /*i*/) {m_pState=NULL; m_deleteWhenPop=false;}
+        StackCell(UT_uint32 /*i*/) {m_pState=nullptr; m_deleteWhenPop=false;}
         StackCell(const StackCell&) = default;
 
         StackCell& operator=(const StackCell& sc) {

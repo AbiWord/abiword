@@ -56,8 +56,8 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
                 sURL[i]='\\';
 
 		// Convert from longpath to 8.3 shortpath, in case of spaces in the path
-		char* longpath = NULL;
-		char* shortpath = NULL;
+		char* longpath = nullptr;
+		char* shortpath = nullptr;
 		longpath = new char[PATH_MAX];
 		shortpath = new char[PATH_MAX];
 		strcpy(longpath, sURL.c_str());
@@ -79,16 +79,16 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 	HKEY hKey;
 	unsigned long lType;
 	DWORD dwSize;
-	LPWSTR szValue = NULL;
+	LPWSTR szValue = nullptr;
 	UT_Win32LocaleString str,str2;
 	UT_UTF8String utf8;
 
 	if (RegOpenKeyExW(HKEY_CLASSES_ROOT, L"http\\shell\\open\\command", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
 	{
-		if(RegQueryValueExW(hKey, NULL, NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS)
+		if(RegQueryValueExW(hKey, nullptr, nullptr, &lType, nullptr, &dwSize) == ERROR_SUCCESS)
 		{
 			szValue = new WCHAR[dwSize + 1];
-			RegQueryValueExW(hKey, NULL, NULL, &lType, (LPBYTE) szValue, &dwSize);
+			RegQueryValueExW(hKey, nullptr, nullptr, &lType, (LPBYTE) szValue, &dwSize);
 			str.fromLocale(szValue);
 			utf8=str.utf8_str();
 			sBrowser = utf8.utf8_str();
@@ -120,7 +120,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 	// Check for a %1 passed in from the registry.  If we find it,
 	// substitute our URL for %1.  Otherwise, just append sURL to params.
 	const char *pdest = strstr(sParams.c_str(), "%1");
-	if (pdest != NULL)
+	if (pdest != nullptr)
 	{
 		int i = pdest - sParams.c_str() + 1;
 		sParams = sParams.substr(0, i-1) + sURL + sParams.substr(i+1, sParams.length()-i+1);
@@ -139,7 +139,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 	str2.fromUTF8(sParams.c_str());
 
 	intptr_t res = (intptr_t) ShellExecuteW(pFImp->getTopLevelWindow() /*(HWND)*/,
-								 L"open", str.c_str(), str2.c_str(), NULL, SW_SHOW );
+								 L"open", str.c_str(), str2.c_str(), nullptr, SW_SHOW );
 
 	// TODO: localized error messages
 	// added more specific error messages as documented in http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/system_error_codes.asp

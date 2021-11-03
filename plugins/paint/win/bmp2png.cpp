@@ -30,15 +30,15 @@ int read_bmp_to_mem(const char *bmpfn,unsigned char **bmppp, DWORD *fsizep)
 	unsigned char *fbuf;
 	DWORD bytesread;
 
-	hfile=CreateFile(bmpfn,GENERIC_READ,FILE_SHARE_READ,NULL,
-		OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+	hfile=CreateFile(bmpfn,GENERIC_READ,FILE_SHARE_READ,nullptr,
+		OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
 	if(hfile==INVALID_HANDLE_VALUE) return 1;
 
-	fsize=GetFileSize(hfile,NULL);
+	fsize=GetFileSize(hfile,nullptr);
 	if(fsize>0) {
 		fbuf=(unsigned char*)GlobalAlloc(GPTR,fsize);
 		if(fbuf) {
-			if(ReadFile(hfile,(void*)fbuf,fsize,&bytesread,NULL)) {
+			if(ReadFile(hfile,(void*)fbuf,fsize,&bytesread,nullptr)) {
 				if(bytesread==fsize) { 
 					(*bmppp)  = fbuf;
 					(*fsizep) = fsize;
@@ -92,7 +92,7 @@ int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 		return 1;
 	}
 
-	// It's usually okay to leave lpbits set to NULL.
+	// It's usually okay to leave lpbits set to nullptr.
 	d2p.lpbits = &bmpp[lpbmfh->bfOffBits];
 
 	// This can be left at 0 if you know your DIB is valid.

@@ -83,7 +83,7 @@ void ODi_ContentStream_ListenerState::startElement (const gchar* pName,
         m_pStyles->addedAllStyles(m_pAbiDocument,  m_rFontFaceDecls);
 
     } else if (!strcmp(pName, "style:style")) {
-        ODi_ListenerState* pStyle = NULL;
+        ODi_ListenerState* pStyle = nullptr;
         
         pStyle = m_pStyles->addStyle(ppAtts, 
 				     m_rElementStack,

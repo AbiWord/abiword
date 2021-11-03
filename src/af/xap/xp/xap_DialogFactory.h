@@ -70,7 +70,7 @@ public:
 		bool			m_tabbed;
 	};
 
-	XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable, XAP_Frame * pFrame = NULL);
+	XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable, XAP_Frame * pFrame = nullptr);
 	virtual ~XAP_DialogFactory(void);
 
 	inline XAP_App *	getApp(void) const	{ return m_pApp; };

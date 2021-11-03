@@ -108,7 +108,7 @@ void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 AP_Win32Dialog_PageSetup_Sheet::AP_Win32Dialog_PageSetup_Sheet() :
 XAP_Win32PropertySheet()
 {
-	m_pParent = NULL;
+	m_pParent = nullptr;
 	setCallBack((PFNPROPSHEETCALLBACK)s_sheetInit);
 }
 
@@ -886,7 +886,7 @@ void AP_Win32Dialog_PageSetup::updatePreview()
 	rectMargin.top    = rectPage.top   + (int)(marginTop/scale);
 	rectMargin.bottom = rectPage.bottom - (int)(marginBottom/scale);
 
-	HDC hDC = CreateCompatibleDC(NULL);
+	HDC hDC = CreateCompatibleDC(nullptr);
 
 	SelectObject( hDC, m_bmpPreview );
 	FillRect( hDC, &rectBorder, brushBackground );
@@ -895,12 +895,12 @@ void AP_Win32Dialog_PageSetup::updatePreview()
 	FrameRect( hDC, &rectMargin, brushBlack );
 
 	SendMessage( hwndPreview, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_bmpPreview );
-	InvalidateRgn( hwndPreview, NULL, FALSE );
+	InvalidateRgn( hwndPreview, nullptr, FALSE );
 
 	if( hwndMargin )
 	{
 		SendMessage( hwndMargin,  STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_bmpPreview );
-		InvalidateRgn( hwndMargin,  NULL, FALSE );
+		InvalidateRgn( hwndMargin,  nullptr, FALSE );
 	}
 	
 	DeleteDC( hDC );

@@ -45,9 +45,9 @@ ODe_Table_Listener::ODe_Table_Listener(ODe_Styles& rStyles,
                                        UT_uint8 spacesOffset)
                                        :
                                        ODe_AbiDocListenerImpl(spacesOffset),
-                                       m_pColumns(NULL),
+                                       m_pColumns(nullptr),
                                        m_numColumns(0),
-                                       m_pRows(NULL),
+                                       m_pRows(nullptr),
                                        m_numRows(0),
                                        m_pTextOutput(pTextOutput),
                                        m_rStyles(rStyles),
@@ -90,7 +90,7 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
         
         pStyle = m_rAutomatiStyles.addTableStyle(m_tableStyleName);
         pStyle->fetchAttributesFromAbiTable(pAP);
-        pStyle = NULL; // We're done with it.
+        pStyle = nullptr; // We're done with it.
                        // OBS: There's no need to delete it as it will be done
                        //      later by ODe_AutomaticStyles destructor.
     }
@@ -110,7 +110,7 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
     m_numColumns = 0;
     UT_uint32 curColProp = 0;
     ok = pAP->getProperty("table-column-props", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         pVar = pValue;
         while (*pVar != 0) {
             if (*pVar == '/') {
@@ -140,8 +140,7 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
 
     UT_sint32 cnt = 0;
     ok = pAP->getProperty("table-rel-column-props", pValue);
-    if (ok && pValue != NULL) 
-    {
+    if (ok && pValue != nullptr) {
         pVar = pValue;
         while (*pVar != 0) 
 	{
@@ -178,7 +177,7 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
     m_numRows = 0;
     UT_uint32 curRowProp = 0;
     ok = pAP->getProperty("table-row-heights", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         pVar = pValue;
         while (*pVar != 0) {
             if (*pVar == '/') {
@@ -309,7 +308,7 @@ void ODe_Table_Listener::openCell(const PP_AttrProp* pAP,
     // Prepare to read its contents
     
     pCell->m_pTextContent = gsf_output_memory_new ();
-    UT_ASSERT(pCell->m_pTextContent != NULL);
+    UT_ASSERT(pCell->m_pTextContent != nullptr);
     
     pTextListener = new ODe_Text_Listener(
         m_rStyles,
@@ -361,7 +360,7 @@ void ODe_Table_Listener::_buildTable() {
         m_pRows[i].m_columnCount = m_numColumns;
         
         for (j=0; j<m_numColumns; j++) {
-            m_pRows[i].m_ppCells[j] = NULL;
+            m_pRows[i].m_ppCells[j] = nullptr;
         }
     }
     
@@ -382,32 +381,32 @@ void ODe_Table_Listener::_buildTable() {
  * 
  */
 void ODe_Table_Cell::loadAbiProps(const PP_AttrProp* pAP) {
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     bool ok = false;
     
     ok = pAP->getProperty("left-attach", pValue);
-    if (!ok || pValue == NULL) {
+    if (!ok || pValue == nullptr) {
         UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing left-attach property\n"));
         return;
     }
     m_leftAttach = atoi(pValue);
     
     ok = pAP->getProperty("right-attach", pValue);
-    if (!ok || pValue == NULL) {
+    if (!ok || pValue == nullptr) {
         UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing right-attach property\n"));
         return;
     }
     m_rightAttach = atoi(pValue);
 
     ok = pAP->getProperty("top-attach", pValue);
-    if (!ok || pValue == NULL) {
+    if (!ok || pValue == nullptr) {
         UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing top-attach property\n"));
         return;
     }
     m_topAttach = atoi(pValue);
 
     ok = pAP->getProperty("bot-attach", pValue);
-    if (!ok || pValue == NULL) {
+    if (!ok || pValue == nullptr) {
         UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing bot-attach property\n"));
         return;
     }
@@ -509,7 +508,7 @@ void ODe_Table_Row::write(GsfOutput* pTableOutput, const UT_UTF8String& rSpacesO
     cellsOffset += " ";
     
     for (i=0; i<m_columnCount; i++) {
-        if (m_ppCells[i] != NULL) {
+        if (m_ppCells[i] != nullptr) {
             m_ppCells[i]->write(pTableOutput, cellsOffset);
         } else {
             // It's a covered cell.
@@ -529,7 +528,7 @@ void ODe_Table_Row::write(GsfOutput* pTableOutput, const UT_UTF8String& rSpacesO
  * 
  */
 ODe_Table_Row::ODe_Table_Row() 
-	: m_ppCells(NULL),
+	: m_ppCells(nullptr),
 	m_columnCount(0)
 {
 }

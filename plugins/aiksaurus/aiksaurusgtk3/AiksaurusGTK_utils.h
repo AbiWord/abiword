@@ -35,7 +35,7 @@ bool AiksaurusGTK_strEquals(const char* lhs, const char* rhs);
 // --------------------
 //   Creates a copy of the string str.  This copy must be
 //   delete[]'d by the caller, so use this function carefully.
-//   Returns NULL on memory alloc error.
+//   Returns nullptr on memory alloc error.
 //
 char* AiksaurusGTK_strCopy(const char* str);
 
@@ -46,7 +46,7 @@ char* AiksaurusGTK_strCopy(const char* str);
 //   Creates a string by merging two strings.  The new string
 //   must be delete[]'d by the caller, so use this function
 //   carefully.
-//   Returns NULL on memory alloc error.
+//   Returns nullptr on memory alloc error.
 //
 char* AiksaurusGTK_strConcat(const char* a, const char* b);
 

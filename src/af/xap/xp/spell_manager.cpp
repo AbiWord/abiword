@@ -254,7 +254,7 @@ SpellManager::requestDictionary (const char * szLang)
 		checker->setDictionaryFound(false);
 		m_missingHashs += szLang;
 		delete checker;
-		checker = NULL;
+		checker = nullptr;
     }
 
 	return checker;

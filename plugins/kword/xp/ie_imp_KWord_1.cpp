@@ -88,7 +88,7 @@ UT_Confidence_t IE_Imp_KWord_1_Sniffer::recognizeContents(const char *szBuf, UT_
     return UT_CONFIDENCE_ZILCH;
 
   // now look for the KWord beginning tag <DOC
-  if(strstr(szBuf, "<DOC") == NULL)
+  if(strstr(szBuf, "<DOC") == nullptr)
     return UT_CONFIDENCE_ZILCH;
 
   return UT_CONFIDENCE_PERFECT;
@@ -384,18 +384,18 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
     case TT_COLOR:
       {
 
-        const gchar *p = NULL;
+        const gchar *p = nullptr;
 	int red, green, blue;
 	red = green = blue = 0;
 	p = _getXMLPropValue("red", atts);
-	if (p != NULL) {
+	if (p != nullptr) {
 	  red = atoi(p);
 	  if (red < 0)
 	    red = 0;
 	  else if (red > 255)
 	    red = 255;
 	}
-	if (p != NULL) {
+	if (p != nullptr) {
 	  p = _getXMLPropValue("green", atts);
 	  green = atoi(p);
 	  if (green < 0)
@@ -403,7 +403,7 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
 	  else if (green > 255)
 	    green = 255;
 	}
-	if (p != NULL) {
+	if (p != nullptr) {
 	  p = _getXMLPropValue("blue", atts);
 	  blue = atoi(p);
 	  if (blue < 0)
@@ -497,7 +497,7 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
       {
         xxx_UT_DEBUGMSG(("ABIDEBUG: begin PAPER\n"));
 	
-	const gchar * pProp = NULL;
+	const gchar * pProp = nullptr;
 
 	pProp = _getXMLPropValue("format", atts);
 	if(pProp)
@@ -548,7 +548,7 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
 
 	// margins
 
-	const gchar * pProp = NULL;
+	const gchar * pProp = nullptr;
 
 	pProp = _getXMLPropValue("right", atts);
 	if(pProp)
@@ -602,7 +602,7 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
       {
 		xxx_UT_DEBUGMSG(("ABIDEBUG: begin PARAGRPAH\n"));
 
-		const gchar *pProp = NULL;
+		const gchar *pProp = nullptr;
 
 		pProp = _getXMLPropValue("value", atts);
 		if (pProp)

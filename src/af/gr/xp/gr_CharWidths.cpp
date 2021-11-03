@@ -53,7 +53,7 @@ void GR_CharWidths::setWidth(UT_UCSChar cIndex, UT_sint32 width)
 		return;
 	}
 
-	Array256 * pA = NULL;
+	Array256 * pA = nullptr;
 	if (m_vecHiByte.getItemCount() > hi)
 		pA = m_vecHiByte.getNthItem(hi);
 	if (!pA)
@@ -64,7 +64,7 @@ void GR_CharWidths::setWidth(UT_UCSChar cIndex, UT_sint32 width)
 		memset(pA,GR_UNKNOWN_BYTE,sizeof(Array256));
 	}
 
-	m_vecHiByte.setNthItem(hi,pA,NULL);
+	m_vecHiByte.setNthItem(hi,pA,nullptr);
 	pA->aCW[lo] = width;
 	return;
 }

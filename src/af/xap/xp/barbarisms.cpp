@@ -1,5 +1,5 @@
 /* AbiSuite
- * Copyright (C) Jordi Mas i Hern‡ndez
+ * Copyright (C) Jordi Mas i Hern√†ndez
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@
 
 BarbarismChecker::BarbarismChecker()
 {
-	m_pCurVector = NULL;
+	m_pCurVector = nullptr;
 }
 
 BarbarismChecker::~BarbarismChecker()
@@ -94,7 +94,7 @@ bool BarbarismChecker::checkWord(const UT_UCSChar * word32, size_t length)
 
 	// TODO: capitalization issues
 
-	bool bResult = (m_map.pick(stUTF8.utf8_str()) != NULL);
+	bool bResult = (m_map.pick(stUTF8.utf8_str()) != nullptr);
 
 	return bResult;
 }
@@ -237,13 +237,13 @@ void BarbarismChecker::startElement(const gchar *name, const gchar **atts)
 	{
 		
 		const char * word = UT_getAttribute ("word", atts);
-		if (word != NULL)
+		if (word != nullptr)
 		{
 			m_pCurVector = new UT_GenericVector<UT_UCS4Char *>();
 			m_map.insert (word, m_pCurVector);
 		}
 		else
-			m_pCurVector = NULL;
+			m_pCurVector = nullptr;
 			
 	}
 	else if (strcmp(name, "suggestion")==0)
@@ -251,7 +251,7 @@ void BarbarismChecker::startElement(const gchar *name, const gchar **atts)
 		if (m_pCurVector)
 		{
 			const char* pUTF8 = UT_getAttribute ("word", atts);
-			if (pUTF8 == NULL)
+			if (pUTF8 == nullptr)
 				return;
 
 			size_t			length = strlen (pUTF8);

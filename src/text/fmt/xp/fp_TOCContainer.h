@@ -64,7 +64,7 @@ public:
 	virtual UT_sint32   wantVBreakAt(UT_sint32) override;
 	virtual UT_sint32   wantHBreakAt(UT_sint32) override {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32) override;
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return NULL;}
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return nullptr;}
 
 	fl_DocSectionLayout * getDocSectionLayout(void);
 	void                  setSelected(bool bIsSelected);

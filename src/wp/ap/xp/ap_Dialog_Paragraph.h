@@ -144,7 +144,7 @@ private:
 		inline bool getData (const gchar *& data) const
 		{
 			data = m_szData;
-			return (data != NULL);
+			return (data != nullptr);
 		}
 
 		inline bool setData (UT_sint32 data)

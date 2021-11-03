@@ -48,7 +48,7 @@
  */
 fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout) 
 	: fp_VerticalContainer(FP_CONTAINER_FRAME, pSectionLayout),
-	  m_pPage(NULL),
+	  m_pPage(nullptr),
 	  m_iXpad(0),
 	  m_iYpad(0),
 	  m_bNeverDrawn(true),
@@ -74,12 +74,12 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
 fp_FrameContainer::~fp_FrameContainer()
 {
   UT_DEBUGMSG(("Delete FrameContainer %p \n", (void*)this));
-	m_pPage = NULL;
+	m_pPage = nullptr;
 }
 
 void fp_FrameContainer::setPage(fp_Page * pPage)
 {
-	if(pPage && (m_pPage != NULL) && m_pPage != pPage)
+	if(pPage && (m_pPage != nullptr) && m_pPage != pPage)
 	{
 		clearScreen();
 		m_pPage->removeFrameContainer(this);
@@ -105,7 +105,7 @@ void fp_FrameContainer::setPage(fp_Page * pPage)
 	}
 	else
 	{
-		getFillType().setParent(NULL);
+		getFillType().setParent(nullptr);
 	}
 }
 
@@ -142,7 +142,7 @@ bool fp_FrameContainer::overlapsRect(const UT_Rect & rec)
 
 	 UT_sint32 y = rec.top - pMyFrameRec.top;
 	 UT_sint32 h = rec.height;
-	 if(pFL->getBackgroundImage() == NULL)
+	 if(pFL->getBackgroundImage() == nullptr)
 	 {
 	      return true;
 	 }
@@ -244,7 +244,7 @@ UT_sint32 fp_FrameContainer::getLeftPad(UT_sint32 y, UT_sint32 height)
   {
     return pad;
   }
-  if(pFL->getBackgroundImage() == NULL)
+  if(pFL->getBackgroundImage() == nullptr)
   {
     return pad;
   }
@@ -277,7 +277,7 @@ UT_sint32 fp_FrameContainer::getRightPad(UT_sint32 y, UT_sint32 height)
   {
     return pad;
   }
-  if(pFL->getBackgroundImage() == NULL)
+  if(pFL->getBackgroundImage() == nullptr)
   {
     return pad;
   }
@@ -289,11 +289,11 @@ UT_sint32 fp_FrameContainer::getRightPad(UT_sint32 y, UT_sint32 height)
 void fp_FrameContainer::clearScreen(void)
 {
 	fp_Page * pPage = getPage();
-	if(pPage == NULL)
+	if(pPage == nullptr)
 	{
 		return;
 	}
-	if(getView() == NULL)
+	if(getView() == nullptr)
 	{
 		return;
 	}
@@ -313,7 +313,7 @@ void fp_FrameContainer::clearScreen(void)
 	xoff += getFullX() - leftThick;
 	yoff += getFullY() - topThick;
 	getFillType().getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth()+leftThick+rightThick,getFullHeight()+topThick+botThick+getGraphics()->tlu(1) +1);
-	fp_Container * pCon = NULL;
+	fp_Container * pCon = nullptr;
 	UT_sint32 i = 0;
 	for(i=0; i< countCons(); i++)
 	{
@@ -394,15 +394,15 @@ fl_DocSectionLayout * fp_FrameContainer::getDocSectionLayout(void)
 void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> & vecBlocks)
 {
   fp_Page * pPage = getPage();
-  if(pPage == NULL)
+  if(pPage == nullptr)
   {
     return;
   }
   UT_sint32 iColLeader = 0;
-  fp_Column * pCol = NULL;
-  fl_BlockLayout * pCurBlock = NULL;
-  fp_Line * pCurLine = NULL;
-  fp_Container * pCurCon = NULL;
+  fp_Column * pCol = nullptr;
+  fl_BlockLayout * pCurBlock = nullptr;
+  fp_Line * pCurLine = nullptr;
+  fp_Container * pCurCon = nullptr;
   if(pPage->countColumnLeaders() == 0)
   {
       UT_sint32 iPage = getPreferedPageNo();
@@ -446,7 +446,7 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
   {
       pCol = pPage->getNthColumnLeader(0);
       fp_Container * pCon = pCol->getFirstContainer();
-      fl_BlockLayout * pB = NULL;
+      fl_BlockLayout * pB = nullptr;
       if(pCon && pCon->getContainerType() == FP_CONTAINER_LINE)
       {
           pB = static_cast<fp_Line *>(pCon)->getBlock();
@@ -456,7 +456,7 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
           fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCon->getSectionLayout());
           pB = pCL->getNextBlockInDocument();
       }
-      if(pB != NULL)
+      if(pB != nullptr)
           vecBlocks.addItem(pB);
   }
 
@@ -548,12 +548,12 @@ void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
  */
 void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
 {
-        if(getView() == NULL)
+	if(getView() == nullptr)
 	{
 	     getSectionLayout()->format();
 	     getSectionLayout()->setNeedsReformat(getSectionLayout());
 	}
-        if(getView() == NULL)
+	if(getView() == nullptr)
 	{
 	     return;
 	}
@@ -599,11 +599,11 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	UT_return_if_fail( pView);
 	
 	xxx_UT_DEBUGMSG(("FrameContainer %x called, page %x \n",this,getPage()));
-	if(getPage() == NULL)
+	if(getPage() == nullptr)
 	{
 	     getSectionLayout()->format();
 	     getSectionLayout()->setNeedsReformat(getSectionLayout());
-	     if(getPage() == NULL)
+	     if(getPage() == nullptr)
 	     {
 			 return;
 	     }
@@ -684,7 +684,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	bool bRemoveRectAfter = false;
 	bool bSetOrigClip = false;
 	bool bSkip = false;
-	if((pPrevRect == NULL) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if((pPrevRect == nullptr) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		pDA->pG->setClipRect(&pRect);
 		UT_DEBUGMSG(("Clip bottom is %d \n", pRect.top + pRect.height));
@@ -727,7 +727,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	m_bOverWrote = false;
 	if(bRemoveRectAfter)
 	{
-		pDA->pG->setClipRect(NULL);
+		pDA->pG->setClipRect(nullptr);
 	}
 	if(bSetOrigClip)
 	{
@@ -752,7 +752,7 @@ void fp_FrameContainer::setBackground (const PP_PropertyMap::Background & style)
  */
 fp_Container * fp_FrameContainer::getNextContainerInSection() const
 {
-	return NULL;
+	return nullptr;
 }
 
 /*!
@@ -760,7 +760,7 @@ fp_Container * fp_FrameContainer::getNextContainerInSection() const
  */
 fp_Container * fp_FrameContainer::getPrevContainerInSection() const
 {
-	return NULL;
+	return nullptr;
 }
 
 void fp_FrameContainer::layout(void)
@@ -769,7 +769,7 @@ void fp_FrameContainer::layout(void)
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
 	UT_uint32 iCountContainers = countCons();
-	fp_Container *pContainer, *pPrevContainer = NULL;
+	fp_Container *pContainer, *pPrevContainer = nullptr;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));
@@ -797,7 +797,7 @@ void fp_FrameContainer::layout(void)
 		{
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
 			iContainerHeight = pTab->getHeight();
-			if(!pTab->isThisBroken() && (pTab->getFirstBrokenTable() == NULL))
+			if(!pTab->isThisBroken() && (pTab->getFirstBrokenTable() == nullptr))
 			{
 				/*fp_Container * pBroke = static_cast<fp_Container *> */(pTab->VBreakAt(0));
 			}

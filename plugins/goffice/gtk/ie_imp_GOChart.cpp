@@ -89,7 +89,7 @@ UT_Confidence_t IE_Imp_Object_Sniffer::recognizeContents(const char * szBuf,
 	
 	xxx_UT_DEBUGMSG(("magic1 = %s \n",magic1));
 	xxx_UT_DEBUGMSG(("magic2 = %s \n",magic2));
-	if((strstr(szBuf,magic1) != NULL) && (strstr(szBuf,magic2) != NULL))
+	if((strstr(szBuf,magic1) != nullptr) && (strstr(szBuf,magic2) != nullptr))
 	   return UT_CONFIDENCE_PERFECT;
 	return UT_CONFIDENCE_ZILCH;
  
@@ -130,7 +130,7 @@ UT_Error IE_Imp_Object::_loadFile(GsfInput * fp)
 	UT_Error error;
 
 
-	pStream->init(NULL);
+	pStream->init(nullptr);
 	X_CleanupIfError(error,_parseStream(pStream));
 	error = UT_OK;
 
@@ -203,7 +203,7 @@ bool IE_Imp_Object::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 	ImportStreamClipboard stream(pData, lenData);
 	setClipboard (pDocRange->m_pos1);
-	stream.init(NULL);
+	stream.init(nullptr);
 	_parseStream(&stream);
 	return true;
 }

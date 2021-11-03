@@ -312,10 +312,10 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 	{
 		char szBuf[4097] = "";  // 4096 ought to be enough
 		UT_uint32 iNumbytes = 0;
-		GsfInput *f = NULL;
+		GsfInput *f = nullptr;
 		
 		// we must open in binary mode for UCS-2 compatibility
-		if ( ( f = UT_go_file_open( szFilename, NULL ) ) != NULL )
+		if ( ( f = UT_go_file_open( szFilename, nullptr ) ) != nullptr )
 		{
 		  gsf_off_t stream_size = gsf_input_size(f);
 		  if (stream_size == -1)
@@ -357,7 +357,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 		}
 		if (best_sniffer)
 		{
-			if (pieft != NULL) {
+			if (pieft != nullptr) {
 				*pieft = ieft;
 			}
 			return best_sniffer->constructMerger (pie);
@@ -367,7 +367,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 	UT_ASSERT_HARMLESS(ieft != IEMT_Unknown);
 	
 	// tell the caller the type of importer they got
-	if (pieft != NULL) 
+	if (pieft != nullptr)
 		*pieft = ieft;
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
@@ -599,7 +599,7 @@ public:
 		  bool cont = true;
 		  bool in_quotes = false;
 		  
-		  GsfInput * fp = UT_go_file_open(szFilename, NULL);
+		  GsfInput * fp = UT_go_file_open(szFilename, nullptr);
 		  if (!fp)
 		    return UT_ERROR;
 		  
@@ -609,7 +609,7 @@ public:
 		  // line 1 == Headings/titles
 		  // line 2..n == Data
 		  
-		  while (cont && (NULL != gsf_input_read (fp, 1, &ch))){
+		  while (cont && (nullptr != gsf_input_read (fp, 1, &ch))){
 		    if (ch == '\r' && !in_quotes) // swallow carriage return unless in quoted block
 		      continue;
 		    else if (ch == '\n' && !in_quotes) { // newline. fire changeset
@@ -629,7 +629,7 @@ public:
 		      item.truncate (0);
 		    }
 		    else if (ch == '"' && in_quotes) {
-		      if (NULL != gsf_input_read (fp, 1, &ch)) {
+		      if (nullptr != gsf_input_read (fp, 1, &ch)) {
 			if (ch == '"') // 2 double quotes == escaped quote
 			  item.append (&ch, 1);
 			else { // assume that it's the end of the quoted sequence and ch is the delimiter char or a newline

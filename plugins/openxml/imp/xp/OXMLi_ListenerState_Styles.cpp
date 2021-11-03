@@ -28,7 +28,7 @@
 
 OXMLi_ListenerState_Styles::OXMLi_ListenerState_Styles()
 	: OXMLi_ListenerState(),
-	m_pCurrentStyle(NULL),
+	m_pCurrentStyle(nullptr),
 	m_szValZero(false)
 {
 
@@ -40,7 +40,7 @@ OXMLi_ListenerState_Styles::~OXMLi_ListenerState_Styles()
 
 void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 {
-	UT_return_if_fail( _error_if_fail(rqst != NULL) );
+	UT_return_if_fail( _error_if_fail(rqst != nullptr) );
 
 	if (nameMatches(rqst->pName, NS_W_KEY, "docDefaults")) {
 		m_pCurrentStyle = new OXML_Style("Normal", "Normal");
@@ -63,23 +63,23 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "trPr")) {
 		//Push a dummy element onto the stack to collect the formatting for the current style.
-		OXML_SharedElement dummy(new OXML_Element_Row("", NULL));
+		OXML_SharedElement dummy(new OXML_Element_Row("", nullptr));
 		rqst->stck->push(dummy);
 		//don't handle the request so that table listener state can adjust its internal state
 
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "tcPr")) {
 		//Push a dummy element onto the stack to collect the formatting for the current style.
-		OXML_SharedElement dummy(new OXML_Element_Cell("", NULL, 0, 0, 0, 0));
+		OXML_SharedElement dummy(new OXML_Element_Cell("", nullptr, 0, 0, 0, 0));
 		rqst->stck->push(dummy);
 		//don't handle the request so that table listener state can adjust its internal state
 
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "style")) {
 		const gchar * id = attrMatches(NS_W_KEY, "styleId", rqst->ppAtts);
 		const gchar * type = attrMatches(NS_W_KEY, "type", rqst->ppAtts);
-		UT_return_if_fail( _error_if_fail( id != NULL ));
+		UT_return_if_fail( _error_if_fail( id != nullptr ));
 		if (!strcmp(id, "Normal")) id = "_Normal"; //Cannot interfere with document defaults
 		m_pCurrentStyle = new OXML_Style(id, "");
-		if(m_pCurrentStyle == NULL)
+		if(m_pCurrentStyle == nullptr)
 		{
 			UT_DEBUGMSG(("SERHAT: Cannot create an OXML_Style object with the given id!\n"));
 			return;
@@ -102,7 +102,7 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 				nameMatches(rqst->pName, NS_W_KEY, "basedOn") ||
 				nameMatches(rqst->pName, NS_W_KEY, "next")) {
 		const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
-		UT_return_if_fail( _error_if_fail( m_pCurrentStyle != NULL && val != NULL ));
+		UT_return_if_fail( _error_if_fail( m_pCurrentStyle != nullptr && val != nullptr ));
 		if (!strcmp(val, "Normal")) val = "_Normal"; //Cannot interfere with document defaults
 
 		if (nameMatches(rqst->pName, NS_W_KEY, "name")) {
@@ -117,7 +117,7 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "sz")) {
 		const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
-		UT_return_if_fail( this->_error_if_fail(val != NULL) );
+		UT_return_if_fail( this->_error_if_fail(val != nullptr) );
 		if(!strcmp(val, "0"))
 		{
 			m_szValZero = true;
@@ -128,16 +128,16 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 
 void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 {
-	UT_return_if_fail( _error_if_fail(rqst != NULL) );
+	UT_return_if_fail( _error_if_fail(rqst != nullptr) );
 
 	if (nameMatches(rqst->pName, NS_W_KEY, "docDefaults") || nameMatches(rqst->pName, NS_W_KEY, "style")) {
-		UT_return_if_fail(_error_if_fail(m_pCurrentStyle != NULL));
+		UT_return_if_fail(_error_if_fail(m_pCurrentStyle != nullptr));
 
 		OXML_Document * doc = OXML_Document::getInstance();
-		UT_return_if_fail( _error_if_fail(doc != NULL) );
+		UT_return_if_fail( _error_if_fail(doc != nullptr) );
 		OXML_SharedStyle styl(m_pCurrentStyle);
 		doc->addStyle(styl);
-		m_pCurrentStyle = NULL;
+		m_pCurrentStyle = nullptr;
 
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "rPr") ||

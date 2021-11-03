@@ -235,8 +235,8 @@ bool AP_Convert::convertTo(const char * szSourceFilename,
 	UT_Error error = UT_OK;
 
 	UT_return_val_if_fail(targetFormat != IEFT_Unknown, false);
-	UT_return_val_if_fail(szSourceFilename != NULL, false);
-	UT_return_val_if_fail(szTargetFilename != NULL, false);
+	UT_return_val_if_fail(szSourceFilename != nullptr, false);
+	UT_return_val_if_fail(szTargetFilename != nullptr, false);
 
 	PD_Document * pNewDoc = new PD_Document();
 	UT_return_val_if_fail(pNewDoc, false);
@@ -360,7 +360,7 @@ bool AP_Convert::convertTo(const char * szFilename,
       char * fileDup = g_strdup ( szFilename );
       
       char *tmp = strrchr(fileDup, '.');
-      if (tmp != NULL)
+      if (tmp != nullptr)
 	*tmp = '\0';
       
       file = fileDup;
@@ -440,7 +440,7 @@ bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 		    page_descriptions = g_strsplit(props_map["pages"].c_str(), ",", -1);
 
 		    int i = 0;
-		    while (page_descriptions[i] != NULL)
+		    while (page_descriptions[i] != nullptr)
 		      {
 			char *description = page_descriptions[i];
 			i++;

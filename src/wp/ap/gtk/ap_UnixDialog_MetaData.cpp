@@ -92,7 +92,7 @@ void AP_UnixDialog_MetaData::eventOK ()
 	setAnswer ( AP_Dialog_MetaData::a_OK ) ;
 	
 	// TODO: gather data
-	const char * txt = NULL ;
+	const char * txt = nullptr ;
 	
 	GRAB_ENTRY_TEXT(Title);
 	GRAB_ENTRY_TEXT(Subject);

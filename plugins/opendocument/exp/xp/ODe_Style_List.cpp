@@ -87,14 +87,14 @@ void ODe_Style_List::setLevelStyle(UT_uint8 level, const PP_AttrProp& rBlockAP) 
     
     UT_UTF8String levelString;
     ODe_ListLevelStyle* pLevelStyle;
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     bool ok;
     
     UT_UTF8String_sprintf(levelString, "%u", level);
     
     pLevelStyle = m_levelStyles.pick(levelString.utf8_str());
     
-    if (pLevelStyle != NULL) {
+    if (pLevelStyle != nullptr) {
         // This level style aws already set. There's nothing to be done.
         return;
     }

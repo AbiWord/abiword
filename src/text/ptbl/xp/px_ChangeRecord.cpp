@@ -59,7 +59,7 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_persistant(true),
 	m_iXID(iXID),
 	m_iCRNumber(0),
-	m_pDoc(NULL),
+	m_pDoc(nullptr),
 	m_iAdjust(0)
 {
 	// bulletproofing
@@ -75,7 +75,7 @@ PX_ChangeRecord::~PX_ChangeRecord()
 
 bool PX_ChangeRecord::setCRNumber(void)
 {
-  if(m_pDoc == NULL)
+  if(m_pDoc == nullptr)
   {
       UT_ASSERT(0);
       return false;
@@ -100,7 +100,7 @@ const char * PX_ChangeRecord::getDocUUID() const
 	static char s[37];
 
 	if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyDocUUID))
-		return NULL;
+		return nullptr;
 	
 	return s;
 }

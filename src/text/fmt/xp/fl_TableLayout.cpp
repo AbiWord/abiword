@@ -105,7 +105,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
 	  m_iNumNestedTables(0),
 	  m_bIsEndTableIn(false),
 	  m_iHeightChanged(0),
-      m_pNewHeightCell(NULL),
+	  m_pNewHeightCell(nullptr),
 	  m_bDoingDestructor(false),
 	  m_iTableWidth(0),
 	  m_dTableRelWidth(0.0)
@@ -126,8 +126,8 @@ fl_TableLayout::~fl_TableLayout()
 	fp_TableContainer * pTC = static_cast<fp_TableContainer *>(getFirstContainer());
 	DELETEP(pTC);
 
-	setFirstContainer(NULL);
-	setLastContainer(NULL);
+	setFirstContainer(nullptr);
+	setLastContainer(nullptr);
 	UT_VECTOR_PURGEALL(fl_ColProps *, m_vecColProps);
 	UT_VECTOR_PURGEALL(fl_RowProps *, m_vecRowProps);
 }
@@ -164,7 +164,7 @@ void fl_TableLayout::createTableContainer(void)
 	fl_ContainerLayout * pCL = myContainingLayout();
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_sint32 iWidth = 0;
-	if(pCon != NULL)
+	if(pCon != nullptr)
 	{
 		iWidth = pCon->getWidth();
 	}
@@ -227,14 +227,14 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 */
 fp_Container* fl_TableLayout::getNewContainer(const fp_Container* /*pPrevTab*/)
 {
-	UT_ASSERT(getFirstContainer() == NULL);
+	UT_ASSERT(getFirstContainer() == nullptr);
 	createTableContainer();
 	fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(getFirstContainer());
 //
 // Master Tables do not get linked into the container linked list.
 //
-	pNewTab->setPrev(NULL);
-	pNewTab->setNext(NULL);
+	pNewTab->setPrev(nullptr);
+	pNewTab->setNext(nullptr);
 //
 // Now find the right place to put our new Table container within the arrangement
 // of it's own container.
@@ -251,16 +251,16 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 {
 	fl_ContainerLayout * pUPCL = myContainingLayout();
 	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(getPrev());
-	fp_Container * pPrevCon = NULL;
-	fp_Container * pUpCon = NULL;
-	fp_Line * pPrevLine = NULL;
-	if(pPrevL != NULL )
+	fp_Container * pPrevCon = nullptr;
+	fp_Container * pUpCon = nullptr;
+	fp_Line * pPrevLine = nullptr;
+	if(pPrevL != nullptr )
 	{
 		while(pPrevL && (pPrevL != pUPCL) && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE)
           || (pPrevL->getContainerType() == FL_CONTAINER_ENDNOTE)||
 		  (pPrevL->getContainerType() == FL_CONTAINER_FRAME) ||
 		  (pPrevL->isHidden() == FP_HIDDEN_FOLDED) ||
-          (pPrevL->getLastContainer() == NULL)))
+          (pPrevL->getLastContainer() == nullptr)))
 		{
 			pPrevL = pPrevL->getPrev();
 		}
@@ -275,7 +275,7 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 				fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
 				fp_TableContainer * pFirst = pTC->getFirstBrokenTable();
 				fp_TableContainer * pLast = pTC->getLastBrokenTable();
-				if((pLast != NULL) && pLast != pFirst)
+				if((pLast != nullptr) && pLast != pFirst)
 				{
 					pPrevCon = static_cast<fp_Container *>(pLast);
 					pUpCon = pLast->getContainer();
@@ -289,22 +289,22 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 			else if(pPrevL->getContainerType() == FL_CONTAINER_DOCSECTION)
 			{
 				pUpCon= static_cast<fl_DocSectionLayout *>(pPrevL)->getFirstContainer();
-				pPrevCon = NULL;
+				pPrevCon = nullptr;
 			}
 			else if(pPrevL->getContainerType() == FL_CONTAINER_SHADOW)
 			{
 				pUpCon= static_cast<fl_HdrFtrShadow *>(pPrevL)->getFirstContainer();
-				pPrevCon = NULL;
+				pPrevCon = nullptr;
 			}
 			else if(pPrevL->getContainerType() == FL_CONTAINER_HDRFTR)
 			{
 				pUpCon= static_cast<fl_HdrFtrSectionLayout *>(pPrevL)->getFirstContainer();
-				pPrevCon = NULL;
+				pPrevCon = nullptr;
 			}
 			else if(pPrevL->getContainerType() == FL_CONTAINER_FRAME)
 			{
 				pUpCon= static_cast<fl_FrameLayout *>(pPrevL)->getFirstContainer();
-				pPrevCon = NULL;
+				pPrevCon = nullptr;
 			}
 			else
 			{
@@ -315,7 +315,7 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 				}
 				else
 				{
-					pPrevL = NULL;
+					pPrevL = nullptr;
 				}
 				if(pPrevCon && pPrevCon->getContainerType() == FP_CONTAINER_LINE)
 				{
@@ -328,7 +328,7 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 							pUpCon = static_cast<fp_Container *>(pUpCon->getNext());
 						}
 					}
-					if(pUpCon == NULL)
+					if(pUpCon == nullptr)
 					{
 							pUpCon = pPrevLine->getContainer();
 					}
@@ -339,33 +339,33 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 		{
 			pUpCon = pUPCL->getLastContainer();
 		}
-		if(pUpCon == NULL)
+		if(pUpCon == nullptr)
 		{
-			pUpCon = pUPCL->getNewContainer(NULL);
+			pUpCon = pUPCL->getNewContainer(nullptr);
 		}
 		UT_ASSERT(pUpCon);
 	}
 	else if((pUPCL->getContainerType() == FL_CONTAINER_HDRFTR) || (pUPCL->getContainerType() == FL_CONTAINER_SHADOW) || (pUPCL->getContainerType() == FL_CONTAINER_FRAME))
 	{
 		pUpCon = pUPCL->getFirstContainer();
-		if(pUpCon == NULL)
+		if(pUpCon == nullptr)
 		{
-			pUpCon = pUPCL->getNewContainer(NULL);
+			pUpCon = pUPCL->getNewContainer(nullptr);
 		}
 		UT_ASSERT(pUpCon);
 		pPrevL = pUPCL;
-		pPrevCon = NULL;
+		pPrevCon = nullptr;
 	} 
 	else
 	{
 		pUpCon = pUPCL->getLastContainer();
-		if(pUpCon == NULL)
+		if(pUpCon == nullptr)
 		{
-			pUpCon = pUPCL->getNewContainer(NULL);
+			pUpCon = pUPCL->getNewContainer(nullptr);
 		}
 		UT_ASSERT(pUpCon);
 	}
-	if(pPrevL == NULL)
+	if(pPrevL == nullptr)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x added into %x \n",pNewTab,pUpCon));
 		pUpCon->addCon(pNewTab);
@@ -374,7 +374,7 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	else
 	{
 		UT_sint32 i =0;
-		if(pPrevCon == NULL)
+		if(pPrevCon == nullptr)
 		{
 			pUpCon->insertConAt(pNewTab,0);
 			pNewTab->setContainer(pUpCon);
@@ -414,7 +414,7 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
  */
 bool fl_TableLayout::doSimpleChange(void)
 {
-	if(m_pNewHeightCell == NULL)
+	if(m_pNewHeightCell == nullptr)
 	{
 		return false;
 	}
@@ -428,7 +428,7 @@ bool fl_TableLayout::doSimpleChange(void)
 		return false;
 	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getFirstContainer());
-	if(pTab == NULL)
+	if(pTab == nullptr)
 	{
 		return false;
 	}
@@ -508,7 +508,7 @@ bool fl_TableLayout::needsReformat(void) const
 		return true;
 	}
 	fl_CellLayout * pCell = static_cast<fl_CellLayout *>(getFirstLayout());
-	if(pCell == NULL)
+	if(pCell == nullptr)
 	{
 		return true;
 	}
@@ -542,7 +542,7 @@ void fl_TableLayout::format(void)
 	m_bRecursiveFormat = true;
 	bool bRebuild = false;
 	
-	fl_ContainerLayout*	pCell = NULL;
+	fl_ContainerLayout*	pCell = nullptr;
 	pCell = getFirstLayout();
 	//
 	// Get the old height of the table
@@ -556,24 +556,24 @@ void fl_TableLayout::format(void)
 // OK on with the formatting
 //
 	xxx_UT_DEBUGMSG(("!!!!!!!!!!!!TableLayout format Table !!!!!!!!!\n"));
-	if(getFirstContainer() == NULL)
+	if(getFirstContainer() == nullptr)
 	{
 		m_iHeightChanged = 0;
-		m_pNewHeightCell = NULL;
-		getNewContainer(NULL);
+		m_pNewHeightCell = nullptr;
+		getNewContainer(nullptr);
 		bRebuild = true;
 	}
 	else if( getFirstContainer()->countCons() == 0)
 	{
 		m_iHeightChanged = 10;
-		m_pNewHeightCell = NULL;
+		m_pNewHeightCell = nullptr;
 		bRebuild = true;
 		m_bIsDirty = true;
 	}
 	else if(pCell && !static_cast<fl_CellLayout *>(pCell)->isLayedOut())
 	{
 		m_iHeightChanged = 10;
-		m_pNewHeightCell = NULL;
+		m_pNewHeightCell = nullptr;
 		m_bIsDirty = true;
 	}
 	if(isDirty())
@@ -595,7 +595,7 @@ void fl_TableLayout::format(void)
 			m_bIsDirty = false;
 		}
 		m_iHeightChanged = 0;
-		m_pNewHeightCell = NULL;
+		m_pNewHeightCell = nullptr;
 	}
 	if((!bSim && isDirty()) || bRebuild)
 	{
@@ -658,7 +658,7 @@ void fl_TableLayout::format(void)
 	{
 		iNewHeight = getFirstContainer()->getHeight();
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getFirstContainer());
-		if(pTab->getFirstBrokenTable() != NULL)
+		if(pTab->getFirstBrokenTable() != nullptr)
 		{
 			isBroken = true;
 		}
@@ -673,7 +673,7 @@ void fl_TableLayout::format(void)
 // All this code is to find the right page to do a sectionBreak from.
 //
 		fl_ContainerLayout * pPrevCL = getPrev();
-		fp_Page * pPrevP = NULL;
+		fp_Page * pPrevP = nullptr;
 		if(pPrevCL)
 		{
 			fp_Container * pPrevCon = pPrevCL->getFirstContainer();
@@ -719,7 +719,7 @@ void fl_TableLayout::format(void)
 	if(!getDocument()->isDontImmediateLayout())
 	{
 		m_iHeightChanged = 0;
-		m_pNewHeightCell = NULL;
+		m_pNewHeightCell = nullptr;
 		m_bIsDirty = false;
 		m_bNeedsReformat = false;
 		m_vecFormatLayout.clear();
@@ -858,12 +858,12 @@ fl_SectionLayout * fl_TableLayout::getSectionLayout(void) const
 		}
 		pDSL = pDSL->myContainingLayout();
 	}
-	return NULL;
+	return nullptr;
 }
 void fl_TableLayout::updateTable(void)
 {
 
-	const PP_AttrProp* pAP = NULL;
+	const PP_AttrProp* pAP = nullptr;
 	// This is a real NO-NO: must *always* call getAP()
 	// bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
 	getAP(pAP);
@@ -915,7 +915,7 @@ bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* /*pLBlock*/,
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
-	fl_ContainerLayout * pNewCL = NULL;
+	fl_ContainerLayout * pNewCL = nullptr;
 	fl_ContainerLayout * pMyCL = myContainingLayout();
 	pNewCL = pMyCL->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_BLOCK);
 	fl_BlockLayout * pBlock = static_cast<fl_BlockLayout *>(pNewCL);
@@ -969,9 +969,9 @@ bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * p
 //
 	m_pDoc->getBounds(true,pos1);
 
-	fl_SectionLayout* pSL = NULL;
+	fl_SectionLayout* pSL = nullptr;
 	fl_ContainerLayout * pMyCL = static_cast<fl_ContainerLayout *>(myContainingLayout());
-	if(pMyCL == NULL)
+	if(pMyCL == nullptr)
 	{
 		pMyCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	}
@@ -1014,7 +1014,7 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 																	  PL_ListenerId lid,
 																	  fl_ContainerLayout* sfhNew))
 {
-	fl_ContainerLayout * pNewCL = NULL;
+	fl_ContainerLayout * pNewCL = nullptr;
 	pNewCL = insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
 
 	
@@ -1151,7 +1151,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	  hard-coding its own defaults.  Bad idea.
 	*/
 
-	const char* pszHomogeneous = NULL;
+	const char* pszHomogeneous = nullptr;
 	pSectionAP->getProperty("homogeneous", (const gchar *&)pszHomogeneous);
 	if (pszHomogeneous && pszHomogeneous[0])
 	{
@@ -1164,8 +1164,8 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_bIsHomogeneous = false;
 	}
-	const char* pszTableWidth = NULL;
-	const char* pszRelTableWidth = NULL;
+	const char* pszTableWidth = nullptr;
+	const char* pszRelTableWidth = nullptr;
 	pSectionAP->getProperty("table-width", (const gchar *&)pszTableWidth);
 	pSectionAP->getProperty("table-rel-width", (const gchar *&)pszRelTableWidth);
 	if(pszTableWidth && pszTableWidth[0])
@@ -1190,7 +1190,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	// This property defines the maximum extra margin that may be left at
 	// the bottom of the page when breaking a table along cell boundaries.
 	// The margin is defined as a fraction of the maximum column height.
-	const char* pszMaxExtraMargin = NULL;
+	const char* pszMaxExtraMargin = nullptr;
 	pSectionAP->getProperty("table-max-extra-margin", (const gchar *&)pszMaxExtraMargin);
 	if(pszMaxExtraMargin && pszMaxExtraMargin[0])
 	{
@@ -1203,10 +1203,10 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 
 
-	const char* pszLeftOffset = NULL;
-	const char* pszTopOffset = NULL;
-	const char* pszRightOffset = NULL;
-	const char* pszBottomOffset = NULL;
+	const char* pszLeftOffset = nullptr;
+	const char* pszTopOffset = nullptr;
+	const char* pszRightOffset = nullptr;
+	const char* pszBottomOffset = nullptr;
 	pSectionAP->getProperty("table-margin-left", (const gchar *&)pszLeftOffset);
 	pSectionAP->getProperty("table-margin-top", (const gchar *&)pszTopOffset);
 	pSectionAP->getProperty("table-margin-right", (const gchar *&)pszRightOffset);
@@ -1300,7 +1300,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_iBottomOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
-	const char * pszLineThick = NULL;
+	const char * pszLineThick = nullptr;
 	pSectionAP->getProperty("table-line-thickness", (const gchar *&)pszLineThick);
 	if(pszLineThick && *pszLineThick)
 	{
@@ -1315,8 +1315,8 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		}
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: TableLayout::_lookup lineThickness %d \n",m_iLineThickness));
-	const char * pszTableColSpacing = NULL;
-	const char * pszTableRowSpacing = NULL;
+	const char * pszTableColSpacing = nullptr;
+	const char * pszTableRowSpacing = nullptr;
 	pSectionAP->getProperty("table-col-spacing", (const gchar *&)pszTableColSpacing);
 	pSectionAP->getProperty("table-row-spacing", (const gchar *&)pszTableRowSpacing);
 	if(pszTableColSpacing && *pszTableColSpacing)
@@ -1353,9 +1353,9 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // Positioned columns controls
 //
-	const char * pszLeftColPos = NULL;
-	const char * pszColumnProps = NULL;
-	const char * pszRelColumnProps = NULL;
+	const char * pszLeftColPos = nullptr;
+	const char * pszColumnProps = nullptr;
+	const char * pszRelColumnProps = nullptr;
 	pSectionAP->getProperty("table-column-leftpos", (const gchar *&)pszLeftColPos);
 	pSectionAP->getProperty("table-column-props", (const gchar *&)pszColumnProps);
 	pSectionAP->getProperty("table-rel-column-props", (const gchar *&)pszRelColumnProps);
@@ -1470,7 +1470,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		UT_sint32 i =0;
 		UT_sint32 j =0;
 		double tot = 0.0;
-		fl_ColProps * pColP = NULL;
+		fl_ColProps * pColP = nullptr;
 		while(i < sizes)
 		{
 			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
@@ -1507,8 +1507,8 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // global row height type
 //
-	const char * pszRowHeightType = NULL;
-	const char * pszRowHeight = NULL;
+	const char * pszRowHeightType = nullptr;
+	const char * pszRowHeight = nullptr;
 	pSectionAP->getProperty("table-row-height-type",(const gchar *&) pszRowHeightType);
 	if(pszRowHeightType && *pszRowHeightType)
 	{
@@ -1549,7 +1549,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // Positioned row controls
 //
-	const char * pszRowHeights = NULL;
+	const char * pszRowHeights = nullptr;
 	pSectionAP->getProperty("table-row-heights", (const gchar *&)pszRowHeights);
 	if(pszRowHeights && *pszRowHeights)
 	{
@@ -1573,7 +1573,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		UT_sint32 i =0;
 		UT_sint32 j =0;
 		UT_sint32 iProp = 0;
-		fl_RowProps * pRowP = NULL;
+		fl_RowProps * pRowP = nullptr;
 		while(i < sizes)
 		{
 			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
@@ -1619,16 +1619,16 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	/* table-border properties:
 	 */
-	const gchar * pszColor = NULL;
+	const gchar * pszColor = nullptr;
 	pSectionAP->getProperty ("color", pszColor);
 	if (pszColor)
 		UT_parseColor (pszColor, m_colorDefault);
 	else
 		m_colorDefault = UT_RGBColor(0,0,0);
 
-	const gchar * pszBorderColor = NULL;
-	const gchar * pszBorderStyle = NULL;
-	const gchar * pszBorderWidth = NULL;
+	const gchar * pszBorderColor = nullptr;
+	const gchar * pszBorderStyle = nullptr;
+	const gchar * pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("bot-color",       pszBorderColor);
 	pSectionAP->getProperty ("bot-style",       pszBorderStyle);
@@ -1637,9 +1637,9 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineBottom);
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("left-color",      pszBorderColor);
 	pSectionAP->getProperty ("left-style",      pszBorderStyle);
@@ -1647,9 +1647,9 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineLeft);
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("right-color",     pszBorderColor);
 	pSectionAP->getProperty ("right-style",     pszBorderStyle);
@@ -1657,9 +1657,9 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineRight);
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("top-color",       pszBorderColor);
 	pSectionAP->getProperty ("top-style",       pszBorderStyle);
@@ -1671,9 +1671,9 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	 */
 	m_background.reset ();
 
-	const gchar * pszBgStyle = NULL;
-	const gchar * pszBgColor = NULL;
-	const gchar * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = nullptr;
+	const gchar * pszBgColor = nullptr;
+	const gchar * pszBackgroundColor = nullptr;
 
 	pSectionAP->getProperty ("bg-style",         pszBgStyle);
 	pSectionAP->getProperty ("bgcolor",          pszBgColor);
@@ -1683,7 +1683,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	// table-wait-index is set by FV_View functions to a value different than zero to prevent 
 	// table initialization before the changes are completed.
-	const char * pszWaitIndex = NULL;
+	const char * pszWaitIndex = nullptr;
 	pSectionAP->getProperty("table-wait-index", (const gchar *&)pszWaitIndex);
 	if(pszWaitIndex && *pszWaitIndex)
 	{
@@ -1700,10 +1700,10 @@ void fl_TableLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
 	UT_return_if_fail( pSectionAP );
 #if 0 // I think these are relative to the position of the table, so we do not need to
 	  // bother with them
-	const char* pszLeftOffset = NULL;
-	const char* pszTopOffset = NULL;
-	const char* pszRightOffset = NULL;
-	const char* pszBottomOffset = NULL;
+	const char* pszLeftOffset = nullptr;
+	const char* pszTopOffset = nullptr;
+	const char* pszRightOffset = nullptr;
+	const char* pszBottomOffset = nullptr;
 	pSectionAP->getProperty("table-margin-left", (const gchar *&)pszLeftOffset);
 	pSectionAP->getProperty("table-margin-top", (const gchar *&)pszTopOffset);
 	pSectionAP->getProperty("table-margin-right", (const gchar *&)pszRightOffset);
@@ -1758,7 +1758,7 @@ void fl_TableLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
 //
 // Positioned columns controls
 //
-	const char * pszLeftColPos = NULL;
+	const char * pszLeftColPos = nullptr;
 	pSectionAP->getProperty("table-column-leftpos", (const gchar *&)pszLeftColPos);
 	UT_sint32 iLeftColPos = m_iLeftColPos;
 	if(pszLeftColPos && *pszLeftColPos)
@@ -1837,7 +1837,7 @@ void fl_TableLayout::collapse(void)
 		pCL = pCL->getNext();
 	}
 	m_iHeightChanged = 0;
-	m_pNewHeightCell = NULL;
+	m_pNewHeightCell = nullptr;
 	if(pTab)
 	{
 //
@@ -1847,8 +1847,8 @@ void fl_TableLayout::collapse(void)
 		pUpCon->removeContainer(pTab);
 		delete pTab;
 	}
-	setFirstContainer(NULL);
-	setLastContainer(NULL);
+	setFirstContainer(nullptr);
+	setLastContainer(nullptr);
 	setNeedsReformat(this);
 	m_bInitialLayoutCompleted = false;
 }
@@ -1904,13 +1904,13 @@ UT_uint32 fl_TableLayout::getLength(void)
 	PT_DocPosition posEnd = 0;
 	PT_DocPosition posStart = 0;
 	UT_uint32 len = 0;
-	if(sdhTab && (sdhEnd == NULL)) // handle case of endStrux not in yet
+	if(sdhTab && (sdhEnd == nullptr)) // handle case of endStrux not in yet
 	{
 		posStart = m_pDoc->getStruxPosition(sdhTab);
 		m_pDoc->getBounds(true,posEnd);
 		len = posEnd - posStart + 1;
 	}
-	else if(sdhTab == NULL)
+	else if(sdhTab == nullptr)
 	{
 		return 0;
 	}
@@ -1936,14 +1936,14 @@ void fl_TableLayout::attachCell(fl_ContainerLayout * pCell)
 		xxx_UT_DEBUGMSG(("SEVIOR: Looking for %x found %x \n",pCell,pCur));
 		pCur = pCur->getPrev();
 	}
-	if(pCur == NULL)
+	if(pCur == nullptr)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getLastContainer());
 	//	UT_ASSERT(pTab);
-	if(pCell->getLastContainer() == NULL)
+	if(pCell->getLastContainer() == nullptr)
 	{
 		setDirty();
 		return;
@@ -2007,14 +2007,14 @@ fl_CellLayout::~fl_CellLayout()
 		fp_CellContainer * pNext = static_cast<fp_CellContainer *>(pTC->getNext());
 		if(pTC == static_cast<fp_CellContainer *>(getLastContainer()))
 		{
-			pNext = NULL;
+			pNext = nullptr;
 		}
 		delete pTC;
 		pTC = pNext;
 	}
 	DELETEP(m_pImageImage);
-	setFirstContainer(NULL);
-	setLastContainer(NULL);
+	setFirstContainer(nullptr);
+	setLastContainer(nullptr);
 }
 
 /*!
@@ -2034,11 +2034,11 @@ void fl_CellLayout::createCellContainer(void)
 	setFirstContainer(pCellContainer);
 	setLastContainer(pCellContainer);
 	fl_ContainerLayout * pCL = myContainingLayout();
-	while(pCL!= NULL && ((pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_HDRFTR)))
+	while(pCL!= nullptr && ((pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_HDRFTR)))
 	{
 		pCL = pCL->myContainingLayout();
 	}
-	fl_DocSectionLayout * pDSL = NULL;
+	fl_DocSectionLayout * pDSL = nullptr;
 	if(pCL->getContainerType() == FL_CONTAINER_HDRFTR)
 	{
 		pDSL = static_cast<fl_HdrFtrSectionLayout *>(pCL)->getDocSectionLayout();
@@ -2047,17 +2047,17 @@ void fl_CellLayout::createCellContainer(void)
 	{
 		pDSL = static_cast<fl_DocSectionLayout *>(pCL);
 	}
-	UT_ASSERT(pDSL != NULL);
+	UT_ASSERT(pDSL != nullptr);
 	UT_sint32 iWidth = pDSL->getWidth();
 	pCellContainer->setWidth(iWidth);
 	// Now do cell image
 
-	const PP_AttrProp* pSectionAP = NULL;
+	const PP_AttrProp* pSectionAP = nullptr;
 	// This is a real NO-NO: must *always* call getAP()
 	// m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
 	getAP(pSectionAP);
 
-	const gchar * pszDataID = NULL;
+	const gchar * pszDataID = nullptr;
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
 	m_pGraphicImage.reset();
 	DELETEP(m_pImageImage);
@@ -2093,7 +2093,7 @@ void fl_CellLayout::decNumNestedTables(void)
  */
 void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 {
-	if(pCell == NULL)
+	if(pCell == nullptr)
 	{
 		return;
 	}
@@ -2115,9 +2115,9 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setVertAlign(m_iVertAlign);
 	if(m_pGraphicImage)
 	{
-		if(m_pImageImage == NULL)
+		if(m_pImageImage == nullptr)
 		{
-			const PP_AttrProp * pAP = NULL;
+			const PP_AttrProp * pAP = nullptr;
 			getAP(pAP);
 			GR_Graphics * pG = getDocLayout()->getGraphics();
 			UT_sint32 iWidth = pG->tlu(100);
@@ -2170,7 +2170,7 @@ bool fl_CellLayout::isCellSelected(void)
 void fl_CellLayout::checkAndAdjustCellSize(void)
 {
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getFirstContainer());
-	if(pCell == NULL)
+	if(pCell == nullptr)
 	{
 		return;
 	}
@@ -2198,7 +2198,7 @@ bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 																	  PL_ListenerId lid,
 																	  fl_ContainerLayout* sfhNew))
 {
-	fl_ContainerLayout * pNewCL = NULL;
+	fl_ContainerLayout * pNewCL = nullptr;
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(myContainingLayout());
 	pNewCL = pTL->insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
 	
@@ -2276,7 +2276,7 @@ fl_SectionLayout * fl_CellLayout::getSectionLayout(void) const
 		}
 		pDSL = pDSL->myContainingLayout();
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*!
@@ -2292,8 +2292,8 @@ fp_Container* fl_CellLayout::getNewContainer(const fp_Container* pPrev)
 // One cell container per cell layout
 //
 	UT_UNUSED(pPrev);
-	UT_ASSERT(pPrev == NULL);
-	UT_ASSERT((getFirstContainer() == NULL) && (getLastContainer()==NULL));
+	UT_ASSERT(pPrev == nullptr);
+	UT_ASSERT((getFirstContainer() == nullptr) && (getLastContainer()==nullptr));
 	createCellContainer();
 	setCellContainerProperties(static_cast<fp_CellContainer *>(getLastContainer()));
 	return static_cast<fp_Container *>(getLastContainer());
@@ -2312,14 +2312,14 @@ void fl_CellLayout::format(void)
 		return;
 	}
 
-	if(getFirstContainer() == NULL)
+	if(getFirstContainer() == nullptr)
 	{
-		getNewContainer(NULL);
+		getNewContainer(nullptr);
 	}
 	m_bDoingFormat = true;
 	UT_sint32 iOldHeight = getFirstContainer()->getHeight();
 	fl_ContainerLayout * pPrevCL = myContainingLayout()->getPrev();
-	fp_Page * pPrevP = NULL;
+	fp_Page * pPrevP = nullptr;
 	m_vecFormatLayout.clear(); // Later we'll use this.
 	if(pPrevCL)
 	{
@@ -2340,7 +2340,7 @@ void fl_CellLayout::format(void)
 		}
 		pBL->format();
 		UT_sint32 count = 0;
-		while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
+		while(pBL->getLastContainer() == nullptr || pBL->getFirstContainer()==nullptr)
 		{
 			UT_DEBUGMSG(("Error formatting a block try again \n"));
 			count = count + 1;
@@ -2398,7 +2398,7 @@ bool fl_CellLayout::needsReformat(void) const
 bool fl_CellLayout::isLayedOut(void) const
 {
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getFirstContainer());
-	if(pCell == NULL)
+	if(pCell == nullptr)
 	{
 		return false;
 	}
@@ -2491,7 +2491,7 @@ bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * 
 void fl_CellLayout::_updateCell(void)
 {
 
-	const PP_AttrProp* pAP = NULL;
+	const PP_AttrProp* pAP = nullptr;
 	// This is a real NO-NO: must *always* call getAP()
 	// bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
 	getAP(pAP);
@@ -2564,10 +2564,10 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	  hard-coding its own defaults.  Bad idea.
 	*/
 
-	const char* pszLeftOffset = NULL;
-	const char* pszTopOffset = NULL;
-	const char* pszRightOffset = NULL;
-	const char* pszBottomOffset = NULL;
+	const char* pszLeftOffset = nullptr;
+	const char* pszTopOffset = nullptr;
+	const char* pszRightOffset = nullptr;
+	const char* pszBottomOffset = nullptr;
 	pSectionAP->getProperty("cell-margin-left", (const gchar *&)pszLeftOffset);
 	pSectionAP->getProperty("cell-margin-top", (const gchar *&)pszTopOffset);
 	pSectionAP->getProperty("cell-margin-right", (const gchar *&)pszRightOffset);
@@ -2663,10 +2663,10 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_iBottomOffset = idefaultOffsetLogicalUnits;
 		m_dBottomOffsetUserUnits = idefaultOffsetDimensionless;
 	}
-	const char* pszLeftAttach = NULL;
-	const char* pszRightAttach = NULL;
-	const char* pszTopAttach = NULL;
-	const char* pszBottomAttach = NULL;
+	const char* pszLeftAttach = nullptr;
+	const char* pszRightAttach = nullptr;
+	const char* pszTopAttach = nullptr;
+	const char* pszBottomAttach = nullptr;
 	pSectionAP->getProperty("left-attach", (const gchar *&)pszLeftAttach);
 	pSectionAP->getProperty("right-attach", (const gchar *&)pszRightAttach);
 	pSectionAP->getProperty("top-attach", (const gchar *&)pszTopAttach);
@@ -2707,12 +2707,12 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	/* cell-border properties:
 	 */
-	const gchar * pszColor = NULL;
+	const gchar * pszColor = nullptr;
 	pSectionAP->getProperty ("color", pszColor);
 	
-	const gchar * pszBorderColor = NULL;
-	const gchar * pszBorderStyle = NULL;
-	const gchar * pszBorderWidth = NULL;
+	const gchar * pszBorderColor = nullptr;
+	const gchar * pszBorderStyle = nullptr;
+	const gchar * pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("bot-color",       pszBorderColor);
 	pSectionAP->getProperty ("bot-style",       pszBorderStyle);
@@ -2722,9 +2722,9 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties_cell (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineBottom,pTL->getBottomStyle());
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("left-color",      pszBorderColor);
 	pSectionAP->getProperty ("left-style",      pszBorderStyle);
@@ -2733,9 +2733,9 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties_cell (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineLeft,pTL->getLeftStyle());
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("right-color",     pszBorderColor);
 	pSectionAP->getProperty ("right-style",     pszBorderStyle);
@@ -2743,9 +2743,9 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties_cell (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineRight,pTL->getRightStyle());
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("top-color",       pszBorderColor);
 	pSectionAP->getProperty ("top-style",       pszBorderStyle);
@@ -2753,7 +2753,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties_cell (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineTop,pTL->getTopStyle());
 
-	const char* pszVertAlign = NULL;
+	const char* pszVertAlign = nullptr;
 	pSectionAP->getProperty("vert-align", (const gchar *&)pszVertAlign);
 	if(pszVertAlign && pszVertAlign[0])
 	{
@@ -2769,9 +2769,9 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	 */
 	m_background.reset ();
 
-	const gchar * pszBgStyle = NULL;
-	const gchar * pszBgColor = NULL;
-	const gchar * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = nullptr;
+	const gchar * pszBgColor = nullptr;
+	const gchar * pszBackgroundColor = nullptr;
 
 	pSectionAP->getProperty ("bg-style",         pszBgStyle);
 	pSectionAP->getProperty ("bgcolor",          pszBgColor);
@@ -2850,7 +2850,7 @@ void fl_CellLayout::_localCollapse(void)
 
 	// get rid of all the layout information for every containerLayout
 	fl_ContainerLayout*	pCL = getFirstLayout();
-	while (pCL != NULL)
+	while (pCL != nullptr)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: Local collapse of CellLayout %x Contained Layout %x \n",this,pCL));
 		pCL->collapse();
@@ -2870,13 +2870,13 @@ UT_uint32 fl_CellLayout::getLength(void)
 	PT_DocPosition posEnd = 0;
 	PT_DocPosition posStart = 0;
 	UT_uint32 len = 0;
-	if(sdhCell && (sdhEnd == NULL)) // handle case of endStrux not in yet
+	if(sdhCell && (sdhEnd == nullptr)) // handle case of endStrux not in yet
 	{
 		posStart = m_pDoc->getStruxPosition(sdhCell);
 		m_pDoc->getBounds(true,posEnd);
 		len = posEnd - posStart + 1;
 	}
-	else if(sdhCell == NULL)
+	else if(sdhCell == nullptr)
 	{
 		return 0;
 	}
@@ -2920,8 +2920,8 @@ void fl_CellLayout::collapse(void)
 		}
 		delete pCell;
 	}
-	setFirstContainer(NULL);
-	setLastContainer(NULL);
+	setFirstContainer(nullptr);
+	setLastContainer(nullptr);
 	setNeedsReformat(this);
 }
 

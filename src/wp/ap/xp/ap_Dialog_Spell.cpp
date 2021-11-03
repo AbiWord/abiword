@@ -45,7 +45,7 @@ AP_Dialog_Spell::_getDict (void)
 {
 	if (m_pView)
 	  return m_pView->getDictForSelection ();
-	return NULL;
+	return nullptr;
 }
 
 bool
@@ -69,21 +69,21 @@ AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 
    m_iWordOffset = 0;
    m_iWordLength = -1;
-   m_pWord = NULL;
+   m_pWord = nullptr;
    m_bSkipWord = false;
   
-   m_pView = NULL;
-   m_pStartSection = NULL;
-   m_pStartBlock = NULL;
+   m_pView = nullptr;
+   m_pStartSection = nullptr;
+   m_pStartBlock = nullptr;
    m_iStartIndex = -1;
-   m_pEndSection = NULL;
-   m_pEndBlock = NULL;
+   m_pEndSection = nullptr;
+   m_pEndBlock = nullptr;
    m_iEndLength = 0;
-   m_pCurrSection = NULL;
-   m_pCurrBlock = NULL;
-   m_pChangeAll = NULL;
-   m_pIgnoreAll = NULL;
-   m_pPreserver = NULL;
+   m_pCurrSection = nullptr;
+   m_pCurrBlock = nullptr;
+   m_pChangeAll = nullptr;
+   m_pIgnoreAll = nullptr;
+   m_pPreserver = nullptr;
 
    m_bCancelled = false;
 }
@@ -312,13 +312,13 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 	   // no, so move on to the next block
 	   m_pCurrBlock = m_pCurrBlock->getNextBlockInDocument();
-	   
-	   if (m_pCurrBlock == NULL) 
+
+	   if (m_pCurrBlock == nullptr)
 	   {
 		   // end of document.
 		   return false;
 	   }
-	 
+
 	   // update the iterator with our new block
 	   m_pWordIterator = new fl_BlockSpellIterator(m_pCurrBlock, 0);
 	   UT_return_val_if_fail (m_pWordIterator, false);
@@ -360,7 +360,7 @@ bool AP_Dialog_Spell::inChangeAll(void)
 	const UT_UCSChar * ent = m_pChangeAll->pick(bufferNormal);
 	FREEP(bufferNormal);
 
-	if (ent == NULL) 
+	if (ent == nullptr)
 		return false;
 	else {
 		makeWordVisible();

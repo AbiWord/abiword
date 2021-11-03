@@ -405,7 +405,7 @@ IE_Exp_MsWord_97::IE_Exp_MsWord_97(PD_Document *pDocument)
 	: IE_Exp(pDocument)
 {
 	m_error = 0;
-	m_pListener = NULL;
+	m_pListener = nullptr;
 }
 
 IE_Exp_MsWord_97::~IE_Exp_MsWord_97()
@@ -511,7 +511,7 @@ bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
 	m_pExporter = wvExporter_create(szFileName);
 	if(!m_pExporter)
 	  {
-	    UT_DEBUGMSG(("MSWord Exporter: NULL exporter object\n"));
+	    UT_DEBUGMSG(("MSWord Exporter: nullptr exporter object\n"));
 	    return false;
 	  }
 

@@ -32,16 +32,16 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
                                PT_AttrPropIndex indexAP)
     : pf_Frag(pPT, pf_Frag::PFT_Object, pf_FRAG_OBJECT_LENGTH)
 {
-	m_pObjectSubclass = NULL;
+    m_pObjectSubclass = nullptr;
     m_objectType = objectType;
     m_indexAP = indexAP;
-    const PP_AttrProp * pAP = NULL;
-	xxx_UT_DEBUGMSG(("Frag Object created indexAP %x \n",m_indexAP));
+    const PP_AttrProp * pAP = nullptr;
+    xxx_UT_DEBUGMSG(("Frag Object created indexAP %x \n",m_indexAP));
     m_pPieceTable->getAttrProp(m_indexAP,&pAP);
     UT_return_if_fail (pAP);
-    const gchar* pszType = NULL;
-    const gchar* pszName = NULL;
-	const gchar* pszParam = NULL;
+    const gchar* pszType = nullptr;
+    const gchar* pszName = nullptr;
+    const gchar* pszParam = nullptr;
 
     pAP->getAttribute(static_cast<const gchar *>("type"), pszType);
     pAP->getAttribute(static_cast<const gchar *>("name"), pszName);
@@ -51,7 +51,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 
     if (objectType==PTO_Field) 
     {
-		if(pszType == NULL)
+		if(pszType == nullptr)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			pszType = "test";
@@ -425,7 +425,7 @@ pf_Frag_Object::~pf_Frag_Object()
     		default:
 	    		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
     	}
-	    m_pObjectSubclass = NULL;
+	    m_pObjectSubclass = nullptr;
 	}
 	delete m_pField;
 	m_pField = nullptr;

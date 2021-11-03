@@ -46,8 +46,8 @@ bool XAP_InputModes::createInputMode(const char * szName,
 	UT_ASSERT(szName && *szName);
 	UT_ASSERT(pBindingMap);
 	
-	char * szDup = NULL;
-	EV_EditEventMapper * pEEM = NULL;
+	char * szDup = nullptr;
+	EV_EditEventMapper * pEEM = nullptr;
 
 	szDup = g_strdup(szName);
 	UT_ASSERT(szDup);
@@ -100,6 +100,6 @@ EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
 		if (g_ascii_strcasecmp(szName, m_vecNames.getNthItem(k)) == 0)
 			return m_vecEventMaps.getNthItem(k);
 
-	return NULL;
+	return nullptr;
 }
 

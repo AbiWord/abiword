@@ -125,7 +125,7 @@ void free_wri_struct (wri_struct *w)
 		if (w[i].data)
 		{
 			free(w[i].data);
-			w[i].data = NULL;
+			w[i].data = nullptr;
 		}
 	}
 }

@@ -48,7 +48,7 @@ TFTEST_MAIN("string utilities")
     'P', 'e', 'e', 'k', 'a', 'b', 'o', 'o', 0
   };
 
-  TFPASS(UT_std_string_unicode(NULL, 8).empty());
+  TFPASS(UT_std_string_unicode(nullptr, 8).empty());
   TFPASS(UT_std_string_unicode(uni, 0).empty());
   std::string unistring = UT_std_string_unicode(uni, 8);
   TFPASS(unistring == "Peekaboo");

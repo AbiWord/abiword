@@ -125,7 +125,7 @@ bool UT_SVG_getDimensions(const UT_ConstByteBufPtr & pBB, GR_Graphics* pG,
 bool UT_SVG_recognizeContent(const char* szBuf,UT_uint32 iNumbytes)
 {
   UT_UNUSED(iNumbytes);
-  return (strstr(szBuf, "<svg") != NULL || strstr(szBuf, "<!DOCTYPE svg") != NULL);
+  return (strstr(szBuf, "<svg") != nullptr || strstr(szBuf, "<!DOCTYPE svg") != nullptr);
 }
 
 static bool _recognizeContent(const char* buffer,UT_uint32 buflen,UT_svg* data)
@@ -716,7 +716,7 @@ static bool BNF_number (const char ** pptr, float * number) // number
  * @param the "transform" attribute
  *
  * @return Returns \b false if there is parse error; otherwise \b true, even if \b transformAttribute is
- *         \b NULL (equivalent to no transform).
+ *         \b nullptr (equivalent to no transform).
  */
 bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * transformAttribute)
 {

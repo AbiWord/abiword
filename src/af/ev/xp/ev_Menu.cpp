@@ -130,7 +130,7 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 	UT_DEBUGMSG(("Gonna add a menu item.\n"));
 	// and now we create the menu item
 	index = m_pMenuLayout->addLayoutItem(last_pos, EV_MLF_Normal);
-//	pMenuActionSet->addAction(new EV_Menu_Action(index, false, false, false, "scriptPlay", NULL, NULL));
+//	pMenuActionSet->addAction(new EV_Menu_Action(index, false, false, false, "scriptPlay", nullptr, nullptr));
 	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, names.back().c_str(),
 												names.back().c_str()));
 
@@ -198,13 +198,13 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 const char ** EV_Menu::getLabelName(XAP_App * pApp, 
 									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel) const
 {
-	static const char * data[2] = {NULL, NULL};
+	static const char * data[2] = {nullptr, nullptr};
 
-	UT_return_val_if_fail( pAction && pLabel, NULL );
+	UT_return_val_if_fail( pAction && pLabel, nullptr );
 	
 	// hit the static pointers back to null each time around
-	data[0] = NULL;
-	data[1] = NULL;
+	data[0] = nullptr;
+	data[1] = nullptr;
 	
 	const char * szLabelName;
 	
@@ -224,7 +224,7 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 		if (szMethodName)
 		{
 			const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-			UT_return_val_if_fail(pEMC, NULL);
+			UT_return_val_if_fail(pEMC, nullptr);
 
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			if(!pEM)
@@ -234,10 +234,10 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 			
 			// make sure it's bound to something
 
-			UT_return_val_if_fail(pEM, NULL);
+			UT_return_val_if_fail(pEM, nullptr);
 
 			const EV_EditEventMapper * pEEM = getApp()->getEditEventMapper();
-			UT_return_val_if_fail(pEEM, NULL);
+			UT_return_val_if_fail(pEEM, nullptr);
 
 			const char * string = pEEM->getShortcutFor(pEM);
 			if (string && *string)

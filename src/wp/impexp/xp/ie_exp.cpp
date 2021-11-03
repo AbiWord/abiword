@@ -213,13 +213,13 @@ void IE_Exp::setProps (const char * props)
 
 GsfOutput* IE_Exp::_openFile(const char *szFilename)
 {
-	return UT_go_file_create(szFilename, NULL);
+	return UT_go_file_create(szFilename, nullptr);
 }
 
 GsfOutput* IE_Exp::openFile(const char * szFilename)
 {
-	UT_return_val_if_fail(!m_fp, NULL);
-	UT_return_val_if_fail(szFilename, NULL);
+	UT_return_val_if_fail(!m_fp, nullptr);
+	UT_return_val_if_fail(szFilename, nullptr);
 
 	m_szFileName = szFilename;
 
@@ -260,7 +260,7 @@ bool IE_Exp::_closeFile(void)
 
 		if (!res) {
 			// then remove the unwritten file
-			(void)UT_go_file_remove (m_szFileName.c_str(), NULL);
+			(void)UT_go_file_remove (m_szFileName.c_str(), nullptr);
 		}
 
 		return (res == TRUE);
@@ -277,7 +277,7 @@ void IE_Exp::_abortFile(void)
         _closeFile();
 
         // then remove the unwanted file
-        (void)UT_go_file_remove (m_szFileName.c_str(), NULL);
+        (void)UT_go_file_remove (m_szFileName.c_str(), nullptr);
     }
 }
 
@@ -609,7 +609,7 @@ const char * IE_Exp::suffixesForFileType(IEFileType ieft)
 
 	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
 
-	UT_return_val_if_fail(pSniffer != NULL, nullptr);
+	UT_return_val_if_fail(pSniffer != nullptr, nullptr);
 
 	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
 	{
@@ -634,7 +634,7 @@ UT_UTF8String IE_Exp::preferredSuffixForFileType(IEFileType ieft)
 {
 	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
 
-	UT_return_val_if_fail (pSniffer != NULL, "");
+	UT_return_val_if_fail (pSniffer != nullptr, "");
 
 	return pSniffer->getPreferredSuffix();
 }
@@ -673,7 +673,7 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 								   IE_Exp ** ppie,
 								   IEFileType * pieft)
 {
-	UT_return_val_if_fail(output != NULL, UT_ERROR);
+	UT_return_val_if_fail(output != nullptr, UT_ERROR);
 
 	return constructExporter(pDocument, gsf_output_name(output), ieft, ppie, pieft);
 }
@@ -713,9 +713,9 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 	UT_return_val_if_fail (ieft != IEFT_Bogus, UT_ERROR);
 
    	// let the caller know what kind of exporter they're getting
-   	if (pieft != NULL) 
+	if (pieft != nullptr)
 		*pieft = ieft;
-   
+
 	// use the exporter for the specified file type
 	UT_uint32 nrElements = getExporterCount ();
 	for (UT_uint32 k=0; k < nrElements; k++)
@@ -732,7 +732,7 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 	// assume it is our format and try to write it.
 	// if that fails, just give up.
 	*ppie = new IE_Exp_AbiWord_1(pDocument);
-	if (pieft != NULL) 
+	if (pieft != nullptr)
 		*pieft = IE_Exp::fileTypeForSuffix(".abw");
  	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
 }
@@ -763,11 +763,11 @@ UT_Error IE_Exp::writeBufferToFile(const UT_ConstByteBufPtr & pByteBuf,
                                    const std::string & imagedir,
                                    const std::string & filename)
 {
-    UT_go_directory_create(imagedir.c_str(), NULL);
+    UT_go_directory_create(imagedir.c_str(), nullptr);
 
     std::string path = imagedir + "/" + filename;
 
-    GError * error = NULL;
+    GError * error = nullptr;
 	GsfOutput * out = UT_go_file_create (path.c_str (), &error);
 	if (out)
 	{

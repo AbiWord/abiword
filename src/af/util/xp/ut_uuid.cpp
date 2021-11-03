@@ -130,10 +130,10 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
     }
 
 	// parse it
-    uuid.time_low = strtoul(in, NULL, 16);
-    uuid.time_mid = (UT_uint16)strtoul(in+9, NULL, 16);
-    uuid.time_high_and_version = (UT_uint16)strtoul(in+14, NULL, 16);
-    uuid.clock_seq = (UT_uint16)strtoul(in+19, NULL, 16);
+    uuid.time_low = strtoul(in, nullptr, 16);
+    uuid.time_mid = (UT_uint16)strtoul(in+9, nullptr, 16);
+    uuid.time_high_and_version = (UT_uint16)strtoul(in+14, nullptr, 16);
+    uuid.clock_seq = (UT_uint16)strtoul(in+19, nullptr, 16);
 
 	cp = in+24;
     buf[2] = 0;
@@ -141,7 +141,7 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
 	{
         buf[0] = *cp++;
         buf[1] = *cp++;
-        uuid.node[i] = (unsigned char)strtoul(buf, NULL, 16);
+        uuid.node[i] = (unsigned char)strtoul(buf, nullptr, 16);
     }
 
 	return true;

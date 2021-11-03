@@ -257,7 +257,7 @@ void AP_CocoaDialog_Replace::_updateLists()
 
 -(void)discardXAP
 {
-	_xap = NULL;
+	_xap = nullptr;
 }
 
 -(void)dealloc

@@ -142,7 +142,7 @@ GDict_dlg_create (const char * search)
   
   // create the toplevel dialog
   gdict_dlg = gnome_dialog_new ("AbiWord Dictionary", 
-				GNOME_STOCK_BUTTON_CLOSE, NULL);
+				GNOME_STOCK_BUTTON_CLOSE, nullptr);
   gtk_window_set_modal (GTK_WINDOW(gdict_dlg), false);
   gtk_widget_set_usize (gdict_dlg, 450, 300);
 
@@ -162,11 +162,11 @@ GDict_dlg_create (const char * search)
   button = gtk_button_new_with_label ("Look Up");
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
   
-  gdict_entry = gnome_entry_new(NULL);
+  gdict_entry = gnome_entry_new(nullptr);
   gtk_entry = gnome_entry_gtk_entry(GNOME_ENTRY(gdict_entry));
   gtk_box_pack_start (GTK_BOX (hbox), gdict_entry, TRUE, TRUE, 0);
 
-  scrolled = gtk_scrolled_window_new (NULL, NULL);
+  scrolled = gtk_scrolled_window_new (nullptr, nullptr);
   XAP_gtk_widget_set_margin(scrolled, GNOME_PAD_SMALL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled),
 				  GTK_POLICY_AUTOMATIC,
@@ -199,8 +199,8 @@ GDict_dlg_create (const char * search)
 
   g_signal_connect_after(G_OBJECT(gdict_dlg),
 			   "destroy",
-			   NULL,
-			   NULL);
+			   nullptr,
+			   nullptr);
 
   gtk_widget_show_all (gdict_dlg);
 }
@@ -249,7 +249,7 @@ GDict_invoke(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
   pView->extSelTo(FV_DOCPOS_EOW_SELECT);   
   
   // We need to get the utf-8 version of the current word.
-  UT_UCS4Char *ucs4ST = NULL;
+  UT_UCS4Char *ucs4ST = nullptr;
   pView->getSelectionText(*&ucs4ST);
   if (ucs4ST) {
     UT_UTF8String search(ucs4ST);
@@ -279,8 +279,8 @@ GDict_removeFromMenus()
   int frameCount = pApp->getFrameCount();
   XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 
-  pFact->removeMenuItem("Main",NULL,GDict_MenuLabel);
-  pFact->removeMenuItem("contextText",NULL,GDict_MenuLabel);
+  pFact->removeMenuItem("Main",nullptr,GDict_MenuLabel);
+  pFact->removeMenuItem("contextText",nullptr,GDict_MenuLabel);
   for(int i = 0;i < frameCount;++i)
     {
       // Get the current frame that we're iterating through.
@@ -331,13 +331,13 @@ GDict_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL,"Bullets and &Numbering",EV_MLF_Normal);
-  pFact->addNewLabel(NULL,newID,GDict_MenuLabel, GDict_MenuTooltip);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",nullptr,"Bullets and &Numbering",EV_MLF_Normal);
+  pFact->addNewLabel(nullptr,newID,GDict_MenuLabel, GDict_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL,"&Word Count",EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",nullptr,"&Word Count",EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -347,8 +347,8 @@ GDict_addToMenus()
 						0,                      // no, we don't have a checkbox.
 						0,
 						"GDict_invoke",  // name of callback function to call.
-						NULL,                   // don't know/care what this is for
-						NULL                    // don't know/care what this is for
+						nullptr,                   // don't know/care what this is for
+						nullptr                    // don't know/care what this is for
 						);
   
   // Now what we need to do is add this particular action to the ActionSet

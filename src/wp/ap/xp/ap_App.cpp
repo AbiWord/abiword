@@ -74,7 +74,7 @@ XAP_Frame* AP_App::openFile(const char* uri, const char* file)
 
 		// Because of the incremental loader, we should not crash anymore;
 		// I've got other things to do now though.
-		pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+		pFrame->loadDocument((const char *)nullptr, IEFT_Unknown);
 		pFrame->raise();
 
 		errorMsgBadFile (pFrame, file ? file : uri, error);
@@ -91,18 +91,18 @@ XAP_Frame* AP_App::openFile(const char* uri, const char* file)
 bool AP_App::openCmdLineFiles(const AP_Args * args)
 {
 	int kWindowsOpened = 0;
-	const char *file = NULL;
+	const char *file = nullptr;
 
-	if (AP_Args::m_sFiles == NULL) {
+	if (AP_Args::m_sFiles == nullptr) {
 		// no files to open, this is ok
 		XAP_Frame * pFrame = newFrame();
-		pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+		pFrame->loadDocument((const char *)nullptr, IEFT_Unknown);
 		return true;
 	}
 
 	int i = 0;
-	while ((file = AP_Args::m_sFiles[i++]) != NULL) {
-		char * uri = NULL;
+	while ((file = AP_Args::m_sFiles[i++]) != nullptr) {
+		char * uri = nullptr;
 
 		uri = UT_go_shell_arg_to_uri (file);
 		XAP_Frame* pFrame = openFile(uri);
@@ -121,7 +121,7 @@ bool AP_App::openCmdLineFiles(const AP_Args * args)
 		// no documents specified or openable, open an untitled one
 		
 		XAP_Frame * pFrame = newFrame();
-		pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+		pFrame->loadDocument((const char *)nullptr, IEFT_Unknown);
 		if (args->m_sMerge) {
 			PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
 			pDoc->setMailMergeLink(args->m_sMerge);
@@ -138,9 +138,9 @@ bool AP_App::openCmdLinePlugins(const AP_Args * Args, bool &bSuccess)
 //
 // Start a plugin rather than the main abiword application.
 //
-	    const char * szName = NULL;
-		XAP_Module * pModule = NULL;
-		const char * szRequest = NULL;
+	    const char * szName = nullptr;
+		XAP_Module * pModule = nullptr;
+		const char * szRequest = nullptr;
 		bool bFound = false;	
 		if(Args->m_sPluginArgs[0])
 		{
@@ -215,7 +215,7 @@ void AP_App::saveRecoveryFiles()
 			continue;
 		}
 		try {
-			if (NULL == curFrame->getFilename()) {
+			if (nullptr == curFrame->getFilename()) {
 				curFrame->backup(".abw.saved",abiType);
 			}
 			else {

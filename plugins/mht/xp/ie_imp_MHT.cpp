@@ -88,10 +88,10 @@ static const char * s_strnstr (const char * haystack, UT_uint32 iNumbytes, const
 	UT_uint32 needle_length = static_cast<UT_uint32>(strlen (needle));
 	UT_uint32 i = 0;
 
-	if (needle_length > iNumbytes) return NULL;
+	if (needle_length > iNumbytes) return nullptr;
 
 	const char * ptr = haystack;
-	const char * match = NULL;
+	const char * match = nullptr;
 
 	while (i < (iNumbytes - needle_length))
 		{

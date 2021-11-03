@@ -270,7 +270,7 @@ void AP_UnixDialog_Replace::destroy(void)
 	_storeWindowData();
 	modeless_cleanup();
 	abiDestroyWidget(m_windowMain);
-	m_windowMain = NULL;
+	m_windowMain = nullptr;
 }
 
 /*****************************************************************/
@@ -279,7 +279,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	char * unixstr = NULL;
+	char * unixstr = nullptr;
 
 	// load the dialog from the UI file
 	GtkBuilder* builder = newDialogBuilderFromResource("ap_UnixDialog_Replace.ui");

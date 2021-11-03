@@ -52,14 +52,14 @@ static const struct
 
 static UT_Error temp_name (UT_String& out_filename)
 {
-	char *temporary_file = NULL;
-	GError *err = NULL;
+	char *temporary_file = nullptr;
+	GError *err = nullptr;
 	gint tmp_fp = g_file_open_tmp ("XXXXXX", &temporary_file, &err);
 	
 	if (err) 
 		{
 			g_warning ("%s", err->message);
-			g_error_free (err); err = NULL;
+			g_error_free (err); err = nullptr;
 			return UT_ERROR;
 		}
 
@@ -92,19 +92,19 @@ public:
 		pdftoabw_argv[argc++] = pdf_conversion_programs[which].conversion_program;
 		pdftoabw_argv[argc++] = pdf_on_disk.c_str ();
 		pdftoabw_argv[argc++] = output_on_disk.c_str ();
-		pdftoabw_argv[argc++] = NULL;
+		pdftoabw_argv[argc++] = nullptr;
 		
 		// run conversion
-		if (g_spawn_sync (NULL,
+		if (g_spawn_sync (nullptr,
 						  (gchar **)pdftoabw_argv,
-						  NULL,
+						  nullptr,
 						  (GSpawnFlags)(G_SPAWN_SEARCH_PATH | G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL),
-						  NULL,
-						  NULL,
-						  NULL,
-						  NULL,
-						  NULL,
-						  NULL))
+						  nullptr,
+						  nullptr,
+						  nullptr,
+						  nullptr,
+						  nullptr,
+						  nullptr))
 			{
 				char * uri = UT_go_filename_to_uri (output_on_disk.c_str ());
 				if (uri)
@@ -131,7 +131,7 @@ public:
 	rval = temp_name (abw_on_disk);
 	if (rval != UT_OK) return rval;
 
-	GsfOutput * output = gsf_output_stdio_new (pdf_on_disk.c_str (), NULL);
+	GsfOutput * output = gsf_output_stdio_new (pdf_on_disk.c_str (), nullptr);
 	if (output)
 		{
 			// copy input to disk

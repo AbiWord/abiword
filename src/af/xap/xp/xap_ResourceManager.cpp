@@ -209,8 +209,8 @@ UT_Error XAP_ResourceManager::write_xml (void * context, Writer & writer)
 
 	const char * atts[8];
 
-	atts[4] = NULL;
-	atts[5] = NULL;
+	atts[4] = nullptr;
+	atts[5] = nullptr;
 
 	for (UT_uint32 i = 0; i < m_resource_count; i++)
 		if (m_resource[i]->bInternal)
@@ -232,8 +232,8 @@ UT_Error XAP_ResourceManager::write_xml (void * context, Writer & writer)
 						atts[n++] = psz_description;
 						atts[n++] = ri->Description.utf8_str ();
 					}
-				atts[n++] = NULL;
-				atts[n++] = NULL;
+				atts[n++] = nullptr;
+				atts[n++] = nullptr;
 
 				err = writer.write_xml (context, "resource", atts);
 				if (err != UT_OK) break;

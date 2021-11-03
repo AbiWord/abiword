@@ -96,7 +96,7 @@ XAP_Toolbar_Factory_vec::XAP_Toolbar_Factory_vec(const char * szName)
 {
 	m_name = szName;
 	m_label = 0;
-	m_prefKey = NULL;
+	m_prefKey = nullptr;
 	m_Vec_lt.clear();
 }
 
@@ -118,7 +118,7 @@ XAP_Toolbar_Factory_vec::XAP_Toolbar_Factory_vec(XAP_Toolbar_Factory_tt * orig)
 
 XAP_Toolbar_Factory_vec::XAP_Toolbar_Factory_vec(EV_Toolbar_Layout * orig)
 	: m_label(0),
-		m_prefKey(NULL)
+		m_prefKey(nullptr)
 {
 	m_name = orig->getName();
 	UT_uint32 i = 0;
@@ -318,7 +318,7 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::CreateToolbarLayout(const char * szName
 	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
 	UT_uint32 i = 0;
 	bool bFound = false;
-	EV_Toolbar_Layout * pLayout = NULL;
+	EV_Toolbar_Layout * pLayout = nullptr;
 
 	for (i=0; !bFound && (i < count); i++)
 	{
@@ -329,7 +329,7 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::CreateToolbarLayout(const char * szName
 			bFound = true;
 			pLayout = new EV_Toolbar_Layout(pVec->getToolbarName(),pVec->getNrEntries());
 			
-			UT_return_val_if_fail (pLayout, NULL);
+			UT_return_val_if_fail (pLayout, nullptr);
 			UT_uint32 k = 0;
 			for (k=0; k < pVec->getNrEntries(); k++)
 			{
@@ -348,7 +348,7 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::CreateToolbarLayout(const char * szName
 	else {
 		fprintf (stderr, "%s:%d: Layout `%s' not found\n", __FILE__, __LINE__, szName);
 	}
-	return NULL;
+	return nullptr;
 }
 
 EV_Toolbar_Layout * XAP_Toolbar_Factory::DuplicateToolbarLayout(const char * szName)
@@ -367,7 +367,7 @@ void XAP_Toolbar_Factory::restoreToolbarLayout(EV_Toolbar_Layout *pTB)
 	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
 	UT_uint32 i = 0;
 	bool bFound = false;
-	XAP_Toolbar_Factory_vec * pVec = NULL;
+	XAP_Toolbar_Factory_vec * pVec = nullptr;
 	for (i=0; !bFound && (i < count); i++)
 	{
 		pVec = m_vecTT.getNthItem(i);
@@ -381,7 +381,7 @@ void XAP_Toolbar_Factory::restoreToolbarLayout(EV_Toolbar_Layout *pTB)
 	UT_ASSERT_HARMLESS(bFound);
 	DELETEP(pVec);
 	pVec = new XAP_Toolbar_Factory_vec(pTB);
-	m_vecTT.setNthItem(i, pVec, NULL);
+	m_vecTT.setNthItem(i, pVec, nullptr);
 }
 
 
@@ -395,7 +395,7 @@ bool  XAP_Toolbar_Factory::addIconBefore(const char * szName,
 	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
 	UT_uint32 i = 0;
 	bool bFound = false;
-	XAP_Toolbar_Factory_vec * pVec = NULL;
+	XAP_Toolbar_Factory_vec * pVec = nullptr;
 	for (i=0; !bFound && (i < count); i++)
 	{
 		pVec = m_vecTT.getNthItem(i);
@@ -427,7 +427,7 @@ bool  XAP_Toolbar_Factory::addIconAtEnd(const char * szName,
 	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
 	UT_uint32 i = 0;
 	bool bFound = false;
-	XAP_Toolbar_Factory_vec * pVec = NULL;
+	XAP_Toolbar_Factory_vec * pVec = nullptr;
 	for (i=0; !bFound && (i < count); i++)
 	{
 		pVec = m_vecTT.getNthItem(i);
@@ -458,7 +458,7 @@ bool  XAP_Toolbar_Factory::addIconAfter(const char * szName,
 	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
 	UT_uint32 i = 0;
 	bool bFound = false;
-	XAP_Toolbar_Factory_vec * pVec = NULL;
+	XAP_Toolbar_Factory_vec * pVec = nullptr;
 	for (i=0; !bFound && (i < count); i++)
 	{
 		pVec = m_vecTT.getNthItem(i);
@@ -488,7 +488,7 @@ bool  XAP_Toolbar_Factory::removeIcon(const char * szName,
 	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
 	UT_uint32 i = 0;
 	bool bFound = false;
-	XAP_Toolbar_Factory_vec * pVec = NULL;
+	XAP_Toolbar_Factory_vec * pVec = nullptr;
 	for (i=0; !bFound && (i < count); i++)
 	{
 		pVec = m_vecTT.getNthItem(i);
@@ -520,7 +520,7 @@ bool  XAP_Toolbar_Factory::saveToolbarsInCurrentScheme(void)
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	XAP_PrefsScheme *pScheme = pPrefs->getCurrentScheme(true);
 	char buf[100];
-	XAP_Toolbar_Factory_vec * pVec = NULL;
+	XAP_Toolbar_Factory_vec * pVec = nullptr;
 	UT_uint32 numTB = m_vecTT.getItemCount();  // NO toolabrs
 	UT_uint32 iTB,iLay;
 	for(iTB=0; iTB< numTB;iTB++)
@@ -588,7 +588,7 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	XAP_PrefsScheme *pScheme = pPrefs->getCurrentScheme(true);
 	char buf[100];
-	XAP_Toolbar_Factory_vec * pVec = NULL;
+	XAP_Toolbar_Factory_vec * pVec = nullptr;
 //
 // Get number of toolbars hardwired into abiword.
 //
@@ -630,7 +630,7 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 // Here we should check whether the ID exists or not
 // 
 				EV_Toolbar_Action * pAction = m_pApp->getToolbarActionSet()->getAction(curId);
-				if (pAction == NULL) {
+				if (pAction == nullptr) {
 					UT_DEBUGMSG (("Found an unknown toolbar item in prefs. Ignoring.\n"));
 					continue;
 				}

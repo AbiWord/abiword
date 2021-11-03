@@ -75,9 +75,9 @@ void s_RTF_ListenerGetProps::_openSpan(PT_AttrPropIndex apiSpan)
 		_closeSpan();
 	}
 
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
 	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
@@ -301,9 +301,9 @@ bool s_RTF_ListenerGetProps::populateStrux(pf_Frag_Strux* /*sdh*/,
 
 			// Find colours of the Paragraph borders and shading
 
-			const PP_AttrProp * pBlockAP = NULL;
+			const PP_AttrProp * pBlockAP = nullptr;
 			m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
-			const gchar * szColor = PP_evalProperty("bot-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			const gchar * szColor = PP_evalProperty("bot-color",pBlockAP,nullptr,nullptr,m_pDocument,true);
 			UT_sint32 ndxColor = 0;
 			if (szColor)
 			{
@@ -311,7 +311,7 @@ bool s_RTF_ListenerGetProps::populateStrux(pf_Frag_Strux* /*sdh*/,
 			    if (ndxColor == -1)
 			      m_pie->_addColor(static_cast<const char*>(szColor));
 			}
-			szColor = PP_evalProperty("left-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			szColor = PP_evalProperty("left-color",pBlockAP,nullptr,nullptr,m_pDocument,true);
 			if (szColor)
 			{
 			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
@@ -319,7 +319,7 @@ bool s_RTF_ListenerGetProps::populateStrux(pf_Frag_Strux* /*sdh*/,
 			      m_pie->_addColor(static_cast<const char*>(szColor));
 			}
 
-			szColor = PP_evalProperty("right-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			szColor = PP_evalProperty("right-color",pBlockAP,nullptr,nullptr,m_pDocument,true);
 			if (szColor)
 			{
 			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
@@ -327,7 +327,7 @@ bool s_RTF_ListenerGetProps::populateStrux(pf_Frag_Strux* /*sdh*/,
 			      m_pie->_addColor(static_cast<const char*>(szColor));
 			}
 
-			szColor = PP_evalProperty("top-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			szColor = PP_evalProperty("top-color",pBlockAP,nullptr,nullptr,m_pDocument,true);
 			if (szColor)
 			{
 			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
@@ -335,7 +335,7 @@ bool s_RTF_ListenerGetProps::populateStrux(pf_Frag_Strux* /*sdh*/,
 			      m_pie->_addColor(static_cast<const char*>(szColor));
 			}
 
-			szColor =  PP_evalProperty("shading-foreground-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			szColor =  PP_evalProperty("shading-foreground-color",pBlockAP,nullptr,nullptr,m_pDocument,true);
 			if (szColor)
 			{
 			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
@@ -343,7 +343,7 @@ bool s_RTF_ListenerGetProps::populateStrux(pf_Frag_Strux* /*sdh*/,
 			      m_pie->_addColor(static_cast<const char*>(szColor));
 			}
 
-			szColor =  PP_evalProperty("shading-background-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			szColor =  PP_evalProperty("shading-background-color",pBlockAP,nullptr,nullptr,m_pDocument,true);
 			if (szColor)
 			{
 			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
@@ -388,14 +388,14 @@ bool s_RTF_ListenerGetProps::signal(UT_uint32 /* iSignal */)
 void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 {
 
-	const PP_AttrProp * pTableAP = NULL;
+	const PP_AttrProp * pTableAP = nullptr;
 	m_pDocument->getAttrProp(api,&pTableAP);
-	const gchar * szColor = NULL;
+	const gchar * szColor = nullptr;
 	UT_sint32 ndxColor;
 
 // Background
 
-	szColor = PP_evalProperty("background-color",pTableAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("background-color",pTableAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && g_ascii_strcasecmp (szColor, "transparent") != 0)
 	{
@@ -406,7 +406,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 // bgcolor
 
-	szColor = PP_evalProperty("bgcolor",pTableAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("bgcolor",pTableAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && g_ascii_strcasecmp (szColor, "transparent") != 0)
 	{
@@ -417,7 +417,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 // Left
 
-	szColor = PP_evalProperty("left-color",pTableAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("left-color",pTableAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
@@ -428,7 +428,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 // Right
 
-	szColor = PP_evalProperty("right-color",pTableAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("right-color",pTableAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
@@ -439,7 +439,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 // Bottom
 
-	szColor = PP_evalProperty("bot-color",pTableAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("bot-color",pTableAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
@@ -450,7 +450,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 // top
 
-	szColor = PP_evalProperty("top-color",pTableAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("top-color",pTableAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
@@ -465,14 +465,14 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 {
 
-	const PP_AttrProp * pCellAP = NULL;
+	const PP_AttrProp * pCellAP = nullptr;
 	m_pDocument->getAttrProp(api,&pCellAP);
-	const gchar * szColor = NULL;
+	const gchar * szColor = nullptr;
 	UT_sint32 ndxColor;
 
 // top
 
-	szColor = PP_evalProperty("top-color",pCellAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("top-color",pCellAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
@@ -483,7 +483,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 // left
 
-	szColor = PP_evalProperty("left-color",pCellAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("left-color",pCellAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
@@ -494,7 +494,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 // right
 
-	szColor = PP_evalProperty("right-color",pCellAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("right-color",pCellAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
@@ -505,7 +505,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 // Bottom
 
-	szColor = PP_evalProperty("bot-color",pCellAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("bot-color",pCellAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
@@ -516,7 +516,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 // Background
 
-	szColor = PP_evalProperty("background-color",pCellAP,NULL,NULL,m_pDocument,true);
+	szColor = PP_evalProperty("background-color",pCellAP,nullptr,nullptr,m_pDocument,true);
 
 	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
@@ -532,7 +532,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_color(const PP_AttrProp * pAP1,
 												   const PP_AttrProp * pAP2,
 												   const PP_AttrProp * pAP3)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 
 	for(UT_uint32 i = 0; i < 3; ++i)
 	{
@@ -547,7 +547,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_color(const PP_AttrProp * pAP1,
 			continue;
 
 		const gchar * pRev;
-		char *pDup  = NULL;
+		char *pDup  = nullptr;
 
 		if(pAP->getAttribute("revision", pRev))
 		{
@@ -608,7 +608,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_color(const PP_AttrProp * pAP1,
 						}
 						else
 						{
-							p = NULL;
+							p = nullptr;
 						}
 
 						m_pie->_findOrAddColor(s);
@@ -623,7 +623,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_color(const PP_AttrProp * pAP1,
 		if(pDup)
 		{
 			g_free(pDup);
-			pDup = NULL;
+			pDup = nullptr;
 		}
 	}
 }
@@ -632,7 +632,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_font(const PP_AttrProp * pAP1,
 												  const PP_AttrProp * pAP2,
 												  const PP_AttrProp * pAP3)
 {
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 
 	for(UT_uint32 i = 0; i < 3; ++i)
 	{
@@ -647,7 +647,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_font(const PP_AttrProp * pAP1,
 			continue;
 
 		const gchar * pRev;
-		char *pDup  = NULL;
+		char *pDup  = nullptr;
 
 		if(pAP->getAttribute("revision", pRev))
 		{
@@ -708,7 +708,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_font(const PP_AttrProp * pAP1,
 						}
 						else
 						{
-							p = NULL;
+							p = nullptr;
 						}
 
 						{
@@ -732,7 +732,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_font(const PP_AttrProp * pAP1,
 		if(pDup)
 		{
 			g_free(pDup);
-			pDup = NULL;
+			pDup = nullptr;
 		}
 	}
 }

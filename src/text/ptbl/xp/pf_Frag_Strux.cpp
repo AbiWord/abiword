@@ -62,7 +62,7 @@ fl_ContainerLayout* pf_Frag_Strux::getFmtHandle(PL_ListenerId lid) const
 
 bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, fl_ContainerLayout* sfh)
 {
-	return (m_vecFmtHandle.setNthItem(lid,sfh,NULL) == 0);
+	return (m_vecFmtHandle.setNthItem(lid,sfh,nullptr) == 0);
 }
 
 bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,

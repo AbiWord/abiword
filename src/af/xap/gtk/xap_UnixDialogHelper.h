@@ -35,7 +35,7 @@ class XAP_Dialog;
 
 // This macro sets up stack pointers to be used with the ConvertToUnixString
 // macro.
-#define SETUP_UNIX_STRING  	gchar * newstr = NULL;
+#define SETUP_UNIX_STRING  	gchar * newstr = nullptr;
 
 // This macro is for use in Unix dialogs where the strings are to
 // be stripped of ampersands (Windows accelerator characters).
@@ -58,7 +58,7 @@ class XAP_Dialog;
 
 /** load a GtkBuilder for a dialog using the standard path.
  * @param name the filename of the dialog (no path)
- * @return the GtkBuilder or NULL. The returned object my be freed as usual.
+ * @return the GtkBuilder or nullptr. The returned object my be freed as usual.
  */
 GtkBuilder * newDialogBuilder(const char * name);
 GtkBuilder* newDialogBuilderFromResource(const char* name);

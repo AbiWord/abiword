@@ -51,7 +51,7 @@ UT_Error OXML_ObjectWithAttrProp::setProperty(const std::string & szName, const 
 
 UT_Error OXML_ObjectWithAttrProp::getAttribute(const gchar * szName, const gchar *& szValue) const
 {
-    szValue = NULL;
+    szValue = nullptr;
 	UT_return_val_if_fail(szName && *szName, UT_ERROR);
 	if(!m_pAttributes)
 		return UT_ERROR;
@@ -66,7 +66,7 @@ UT_Error OXML_ObjectWithAttrProp::getAttribute(const gchar * szName, const gchar
 
 UT_Error OXML_ObjectWithAttrProp::getProperty(const gchar * szName, const gchar *& szValue) const
 {
-    szValue = NULL;
+    szValue = nullptr;
 	UT_return_val_if_fail(szName && *szName, UT_ERROR);
 	if(!m_pAttributes)
 		return UT_ERROR;
@@ -181,7 +181,7 @@ UT_Error OXML_ObjectWithAttrProp::inheritProperties(OXML_ObjectWithAttrProp* par
 		if(!parent->getNthProperty(i, szName, szValue))
 			break;
 
-		const gchar * prop = NULL;
+		const gchar * prop = nullptr;
 		if((getProperty(szName, prop) != UT_OK) || !prop)
 		{
 			ret = setProperty(szName, szValue);		

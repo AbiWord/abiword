@@ -133,7 +133,7 @@ bool IE_ImpGraphicBMP_Sniffer::getDlgLabels(const char ** pszDesc,
 UT_Error IE_ImpGraphicBMP_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_BMP();
-	if (*ppieg == NULL)
+	if (*ppieg == nullptr)
 	  return UT_IE_NOMEMORY;
 
 	return UT_OK;
@@ -212,7 +212,7 @@ UT_Error IE_ImpGraphic_BMP::importGraphic(const UT_ConstByteBufPtr & pBB,
    	/* Send Data back to AbiWord as PNG */
 	FG_GraphicRasterPtr pFGR(new FG_GraphicRaster);
 
-	if(pFGR == NULL)
+	if(pFGR == nullptr)
 		return UT_IE_NOMEMORY;
 
 	if(!pFGR->setRaster_PNG(m_pBB)) {
@@ -294,19 +294,17 @@ UT_Error IE_ImpGraphic_BMP::Read_BMP_Header(const UT_ConstByteBufPtr & pBB)
 UT_Error IE_ImpGraphic_BMP::Initialize_PNG()
 {
 	/* Set up png structures for writing */
-	m_pPNG = png_create_write_struct( PNG_LIBPNG_VER_STRING, 
-		                              static_cast<void*>(NULL),
-									  NULL, 
-									  NULL );
-	if( m_pPNG == NULL )
+	m_pPNG = png_create_write_struct(PNG_LIBPNG_VER_STRING,
+		                              nullptr, nullptr, nullptr);
+	if( m_pPNG == nullptr )
 	{
 		return UT_ERROR;
 	}
 
 	m_pPNGInfo = png_create_info_struct(m_pPNG);
-	if ( m_pPNGInfo == NULL )
+	if ( m_pPNGInfo == nullptr )
 	{
-		png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(NULL));
+		png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(nullptr));
 		return UT_ERROR;
 	}
 

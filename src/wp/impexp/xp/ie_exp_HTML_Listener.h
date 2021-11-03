@@ -212,7 +212,7 @@ private:
     void _closeSpan();
 
     void _openHeading(PT_AttrPropIndex api, size_t level,
-        const gchar *szStyleName = NULL);
+        const gchar *szStyleName = nullptr);
     void _closeHeading();
 
     void _openBlock(PT_AttrPropIndex api);

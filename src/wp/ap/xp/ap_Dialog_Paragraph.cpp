@@ -56,8 +56,8 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogparagraph")
 {
 	m_answer = a_OK;
-	m_paragraphPreview = NULL;
-	m_pFrame = NULL;
+	m_paragraphPreview = nullptr;
+	m_pFrame = nullptr;
 
 	// determine unit system to use in this dialog
 	std::string rulerUnits;
@@ -572,7 +572,7 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	fl_BlockLayout * bl = dl->findBlockAtPosition((PT_DocPosition) view->getPoint());
 	UT_return_if_fail (bl);
 
-	const char *pfont = NULL;
+	const char *pfont = nullptr;
 
 	fp_Run * run = bl->findRunAtOffset(view->getPoint()-bl->getPosition());
 	if (run) {
@@ -587,7 +587,7 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	UT_GrowBuf gb;
 	bool hadMem = bl->getBlockBuf(&gb);
 
-	UT_UCSChar * tmp = NULL;
+	UT_UCSChar * tmp = nullptr;
 	if (hadMem && gb.getLength() > 0)
 	{
 		gb.truncate(NUM_CHARS_FOR_SAMPLE);
@@ -753,12 +753,12 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const gchar * value,
 
 const gchar * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
 {
-	UT_return_val_if_fail (item <= m_vecProperties.getItemCount(), NULL);
+	UT_return_val_if_fail (item <= m_vecProperties.getItemCount(), nullptr);
 
 	sControlData * pItem = _getPropertyItem (item);
-	UT_return_val_if_fail (pItem, NULL);
+	UT_return_val_if_fail (pItem, nullptr);
 
-	const gchar * value = NULL;
+	const gchar * value = nullptr;
 	pItem->getData (value);
 	UT_ASSERT_HARMLESS(value);
 	return value;

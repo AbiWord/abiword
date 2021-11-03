@@ -138,7 +138,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 - (void)windowDidLoad

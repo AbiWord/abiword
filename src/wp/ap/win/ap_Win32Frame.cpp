@@ -35,7 +35,7 @@
 AP_Win32Frame::AP_Win32Frame() :
 	AP_Frame(new AP_Win32FrameImpl(this))
 {
-	this->m_pData = NULL;
+	this->m_pData = nullptr;
 }
 
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f) :

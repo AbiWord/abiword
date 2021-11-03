@@ -72,7 +72,7 @@ getSelectedText( GtkTreeView* tv, int colnum )
 	std::string ret;
 
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
-	UT_return_val_if_fail (model != NULL, ret);
+	UT_return_val_if_fail (model != nullptr, ret);
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tv));
 	GtkTreeIter iter;
@@ -80,7 +80,7 @@ getSelectedText( GtkTreeView* tv, int colnum )
 	if (!haveSelected)
 		return ret;
 
-	gchar *label = NULL;
+	gchar *label = nullptr;
 	gtk_tree_model_get (model, &iter, colnum, &label, -1);
     ret = label;
     g_free(label);
@@ -91,7 +91,7 @@ UT_uint32
 getSelectedUInt( GtkTreeView* tv, int colnum )
 {
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
-	UT_return_val_if_fail (model != NULL, 0);
+	UT_return_val_if_fail (model != nullptr, 0);
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tv));
 	GtkTreeIter iter;
@@ -107,7 +107,7 @@ getSelectedUInt( GtkTreeView* tv, int colnum )
 void selectNext( GtkTreeView* tv )
 {
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
-	UT_return_if_fail (model != NULL);
+	UT_return_if_fail (model != nullptr);
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tv));
 	GtkTreeIter iter;
@@ -152,7 +152,7 @@ void selectPrev( GtkTreeView* tv )
 {
     UT_DEBUGMSG(("selectPrev() tv:%p\n", tv ));
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
-	UT_return_if_fail (model != NULL);
+	UT_return_if_fail (model != nullptr);
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tv));
 	GtkTreeIter iter;

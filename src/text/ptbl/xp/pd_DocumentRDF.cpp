@@ -2263,8 +2263,8 @@ PD_RDFEvent::exportToFile( const std::string& filename_const ) const
         icalcomponent_set_uid( c,         m_uid.c_str() );
         icalcomponent_set_location( c,    m_location.c_str() );
         icalcomponent_set_description( c, m_desc.c_str() );
-        icalcomponent_set_dtstart( c,     icaltime_from_timet_with_zone( m_dtstart, 0, NULL ) );
-        icalcomponent_set_dtend( c,       icaltime_from_timet_with_zone( m_dtend, 0, NULL ) );
+        icalcomponent_set_dtstart( c,     icaltime_from_timet_with_zone( m_dtstart, 0, nullptr ) );
+        icalcomponent_set_dtend( c,       icaltime_from_timet_with_zone( m_dtend, 0, nullptr ) );
 
         char* data = icalcomponent_as_ical_string( c );
         std::ofstream oss( filename.c_str() );
@@ -3510,7 +3510,7 @@ RDFAnchor::RDFAnchor( PD_Document* pDoc, PT_AttrPropIndex api )
     :
     m_isEnd( false )
 {
-    const PP_AttrProp * pAP = NULL;
+    const PP_AttrProp * pAP = nullptr;
     pDoc->getAttrProp( api, &pAP );
     setup( pAP );    
 }
@@ -3521,7 +3521,7 @@ RDFAnchor::RDFAnchor( PD_Document* doc, pf_Frag* pf )
     m_isEnd( false )
 {
     PT_AttrPropIndex api = pf->getIndexAP();
-    const PP_AttrProp * pAP = NULL;
+    const PP_AttrProp * pAP = nullptr;
     doc->getAttrProp( api, &pAP );
     setup( pAP );    
 }
@@ -3684,7 +3684,7 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
             if(pf->getType() == pf_Frag::PFT_Object)
             {
                 pf_Frag_Object* pOb = static_cast<pf_Frag_Object*>(pf);
-                const PP_AttrProp * pAP = NULL;
+                const PP_AttrProp * pAP = nullptr;
 
                 xxx_UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() po type:%d\n",
                              pOb->getObjectType() ));
@@ -3744,7 +3744,7 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
 std::set< std::string >&
 PD_DocumentRDF::addXMLIDsForObjects( std::set< std::string >& ret, std::list< pf_Frag_Object* > objectList )
 {
-    const PP_AttrProp * pAP = NULL;
+    const PP_AttrProp * pAP = nullptr;
 
     for( std::list< pf_Frag_Object* >::iterator iter = objectList.begin();
          iter != objectList.end(); ++iter )
@@ -3792,11 +3792,11 @@ PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string 
     {
         xxx_UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
         PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
-        const PP_AttrProp * AP = NULL;
+        const PP_AttrProp * AP = nullptr;
         doc->getAttrProp(api,&AP);
         if( AP )
         {
-            const char * v = NULL;
+            const char * v = nullptr;
             if(AP->getAttribute("xml:id", v))
             {
                 xxx_UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
@@ -3812,11 +3812,11 @@ PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string 
     {
         xxx_UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() cell pos:%d\n", pos ));
         PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
-        const PP_AttrProp * AP = NULL;
+        const PP_AttrProp * AP = nullptr;
         doc->getAttrProp(api,&AP);
         if( AP )
         {
-            const char * v = NULL;
+            const char * v = nullptr;
             if(AP->getAttribute("xml:id", v))
             {
                 xxx_UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
@@ -3949,7 +3949,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::set< std::string >& ret,
             if(pf->getType() == pf_Frag::PFT_Object)
             {
                 pf_Frag_Object* pOb = static_cast<pf_Frag_Object*>(pf);
-                const PP_AttrProp * pAP = NULL;
+                const PP_AttrProp * pAP = nullptr;
 
                 UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() po type:%d\n",
                              pOb->getObjectType() ));
@@ -4010,11 +4010,11 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::set< std::string >& ret,
     {
         UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
         PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
-        const PP_AttrProp * AP = NULL;
+        const PP_AttrProp * AP = nullptr;
         doc->getAttrProp(api,&AP);
         if( AP )
         {
-            const char * v = NULL;
+            const char * v = nullptr;
             if(AP->getAttribute("xml:id", v))
             {
                 UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
@@ -4030,11 +4030,11 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::set< std::string >& ret,
     {
         UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() cell pos:%d\n", pos ));
         PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
-        const PP_AttrProp * AP = NULL;
+        const PP_AttrProp * AP = nullptr;
         doc->getAttrProp(api,&AP);
         if( AP )
         {
-            const char * v = NULL;
+            const char * v = nullptr;
             if(AP->getAttribute("xml:id", v))
             {
                 UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
@@ -4106,11 +4106,11 @@ PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
     // {
     //     UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() pos:%d\n", pos ));
     //     PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
-    //     const PP_AttrProp * AP = NULL;
+    //     const PP_AttrProp * AP = nullptr;
     //     doc->getAttrProp(api,&AP);
     //     if( AP )
     //     {
-    //         const char * v = NULL;
+    //         const char * v = nullptr;
     //         if(AP->getAttribute("xml:id", v))
     //         {
     //             UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() xmlid:%s \n",v));
@@ -4434,11 +4434,11 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
             UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() current:%d end:%d have PTX_BLOCK \n",
                          curr, eod ));
 	        PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
-            const PP_AttrProp * AP = NULL;
+            const PP_AttrProp * AP = nullptr;
             doc->getAttrProp(api,&AP);
             if( AP )
             {
-                const char * v = NULL;
+                const char * v = nullptr;
                 if(AP->getAttribute("xml:id",v))
                 {
                     UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() xmlid:%s \n",v));
@@ -4461,7 +4461,7 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
         
                 if(pOb->getObjectType() == PTO_RDFAnchor)
                 {
-                    const PP_AttrProp * pAP = NULL;
+                    const PP_AttrProp * pAP = nullptr;
                     pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
 
                     const gchar * v = nullptr;

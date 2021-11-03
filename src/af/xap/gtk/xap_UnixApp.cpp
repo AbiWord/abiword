@@ -62,7 +62,7 @@
 #include "gr_UnixCairoGraphics.h"
 
 #include "gr_CairoNullGraphics.h"
-static CairoNull_Graphics * nullgraphics = NULL;
+static CairoNull_Graphics * nullgraphics = nullptr;
 
 /*****************************************************************/
 
@@ -70,7 +70,7 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName, const char* app_id)
 	: XAP_App(szAppName),
 	  m_dialogFactory(new AP_UnixDialogFactory(this)),
 	  m_controlFactory(new AP_UnixToolbar_ControlFactory()),
-	  m_szTmpFile(NULL),
+	  m_szTmpFile(nullptr),
 	  // XXX maybe we need better flags as we handle command line
 	  m_gtkApp(gtk_application_new(app_id, G_APPLICATION_FLAGS_NONE))
 {
@@ -121,7 +121,7 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName, const char* app_id)
 				(CairoNull_Graphics*) XAP_App::getApp()->newGraphics((UT_uint32)GRID_CAIRO_NULL, ai);
 
 			delete nullgraphics;
-			nullgraphics = NULL;
+			nullgraphics = nullptr;
 		}
 	}
 }
@@ -147,7 +147,7 @@ void XAP_UnixApp::removeTmpFile(void)
 			delete [] m_szTmpFile;
 		}
 	}
-	m_szTmpFile = NULL;
+	m_szTmpFile = nullptr;
 }
 
 bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
@@ -267,7 +267,7 @@ void XAP_UnixApp::_setAbiSuiteLibDir()
 {
 	// FIXME: this code sucks hard
 
-	char * buf = NULL;
+	char * buf = nullptr;
 	
 	// see if ABIWORD_DATADIR was set in the environment
 	const char * sz = getenv("ABIWORD_DATADIR");

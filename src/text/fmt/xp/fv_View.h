@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
-#ifndef FV_VIEW_H
-#define FV_VIEW_H
+
+#pragma once
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -312,7 +312,7 @@ public:
 	UT_Error		cmdInsertField(const char* szName, const PP_PropertyVector & extra_attrs = PP_NOPROPS, const PP_PropertyVector & extra_props = PP_NOPROPS);
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
-	UT_Error		cmdInsertHyperlink(const char* szName, const char* szTitle = NULL);
+	UT_Error		cmdInsertHyperlink(const char* szName, const char* szTitle = nullptr);
 	UT_Error		cmdInsertXMLID(const std::string& name);
 	UT_Error		cmdDeleteXMLID(const std::string& name);
 
@@ -384,7 +384,7 @@ public:
 	void            getTextInCurrentSection(UT_GrowBuf & buf) const;
 	void            getTextInDocument(UT_GrowBuf & buf) const;
 	bool            getLineBounds(PT_DocPosition pos, PT_DocPosition *start, PT_DocPosition *end);
-	UT_UCSChar getChar(PT_DocPosition pos, UT_sint32 *x = NULL, UT_sint32 *y = NULL, UT_uint32 *width = NULL, UT_uint32 *height = NULL);
+	UT_UCSChar getChar(PT_DocPosition pos, UT_sint32 *x = nullptr, UT_sint32 *y = nullptr, UT_uint32 *width = nullptr, UT_uint32 *height = nullptr);
 
 // ----------------------
 	FL_DocLayout*	getLayout() const;
@@ -440,7 +440,7 @@ public:
 	void	setDontChangeInsPoint(void);
 	void	allowChangeInsPoint(void);
 
-	bool    getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP = NULL, PT_DocPosition posStart = 0) const;
+	bool    getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP = nullptr, PT_DocPosition posStart = 0) const;
 
 	/* Experimental, for the moment; use with caution. - fjf, 24th Oct. '04
 	 */
@@ -565,9 +565,9 @@ public:
 	fl_FrameLayout * getFrameLayout(void) const;
 	void            setFrameFormat(const PP_PropertyVector & props);
 	void            setFrameFormat(const PP_PropertyVector & attribs, const PP_PropertyVector & props,
-								   fl_BlockLayout * pNewBL = NULL);
+								   fl_BlockLayout * pNewBL = nullptr);
 	void            setFrameFormat(const PP_PropertyVector & props, const FG_ConstGraphicPtr & pFG, const std::string & dataID,
-								   fl_BlockLayout * pNewBL = NULL);
+								   fl_BlockLayout * pNewBL = nullptr);
 	bool            getFrameStrings_view(UT_sint32 x, UT_sint32 y,fv_FrameStrings & FrameStrings,
 										 fl_BlockLayout ** pCloseBL,fp_Page ** ppPage);
 	void            convertInLineToPositioned(PT_DocPosition pos,
@@ -591,7 +591,7 @@ public:
 // Stuff for spellcheck context menu
 //
 	UT_UCSChar *	getContextSuggest(UT_uint32 ndx);
-	void			cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL = NULL, const fl_PartOfBlockPtr& ppPOB = fl_PartOfBlockPtr());
+	void			cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL = nullptr, const fl_PartOfBlockPtr& ppPOB = fl_PartOfBlockPtr());
 	void			cmdContextIgnoreAll(void);
 	void			cmdContextAdd(void);
 #endif
@@ -609,7 +609,7 @@ public:
 	void				markSavedPositionAsNeeded(void);
 	bool				needSavedPosition(void) const;
 	void				insertHeaderFooter(HdrFtrType hfType);
-	bool				insertHeaderFooter(const PP_PropertyVector & props, HdrFtrType hfType, fl_DocSectionLayout * pDSL=NULL);
+	bool				insertHeaderFooter(const PP_PropertyVector & props, HdrFtrType hfType, fl_DocSectionLayout * pDSL = nullptr);
 
 	void				cmdEditHeader(void);
 	void				cmdEditFooter(void);
@@ -960,7 +960,7 @@ protected:
 	void				_clearSelection(bool bRedraw = true);
 	void				_resetSelection(void);
 	void				_setSelectionAnchor(void);
-	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL,
+	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = nullptr,
 							 bool bNoUpdate = false,
 							 bool bCaretLeft = false);
 	bool				_insertFormatPair(const gchar * szName, const gchar * properties[]);
@@ -996,7 +996,7 @@ protected:
 	void				_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 	void 				_cmdEditHdrFtr(HdrFtrType hfType);
 
-	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition * pos1 = NULL, PT_DocPosition * pos2 = NULL);
+	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition * pos1 = nullptr, PT_DocPosition * pos2 = nullptr);
 	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);
 
 	UT_Error			_deleteXMLID( const std::string& xmlid, bool bSignal, PT_DocPosition& posStart, PT_DocPosition& posEnd );
@@ -1199,5 +1199,3 @@ private:
 
 	std::queue<UT_Option<UT_Rect>> m_drawQueue;
 };
-
-#endif /* FV_VIEW_H */

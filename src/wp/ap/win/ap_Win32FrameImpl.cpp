@@ -62,13 +62,13 @@ wchar_t AP_Win32FrameImpl::s_DocumentWndClassName[MAXDOCWNDCLSNMSIZE];
 
 AP_Win32FrameImpl::AP_Win32FrameImpl(AP_Frame *pFrame) :
 	XAP_Win32FrameImpl(static_cast<XAP_Frame *>(pFrame)),
-	m_hwndContainer(NULL),
-	m_hwndTopRuler(NULL),
-	m_hwndLeftRuler(NULL),
-	m_hwndDocument(NULL),
-	m_hWndHScroll(NULL),
-	m_hWndVScroll(NULL),
-	m_hWndGripperHack(NULL),
+	m_hwndContainer(nullptr),
+	m_hwndTopRuler(nullptr),
+	m_hwndLeftRuler(nullptr),
+	m_hwndDocument(nullptr),
+	m_hWndHScroll(nullptr),
+	m_hWndVScroll(nullptr),
+	m_hWndGripperHack(nullptr),
 	m_vScale(0),
 	m_bMouseWheelTrack(false),
 	m_startMouseWheelY(0),
@@ -104,7 +104,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 							UT_uint32 iLeft, UT_uint32 iTop,
 							UT_uint32 iWidth, UT_uint32 iHeight)
 {
-	UT_return_val_if_fail(pFrame, NULL);
+	UT_return_val_if_fail(pFrame, nullptr);
 
 	// create the window(s) that the user will consider to be the
 	// document window -- the thing between the bottom of the toolbars
@@ -114,11 +114,11 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	// the 'container' will in turn contain the document window, the
 	// rulers, and the variousscroll bars and other dead space.
 
-	m_hwndContainer = UT_CreateWindowEx(WS_EX_CLIENTEDGE, s_ContainerWndClassName, NULL,
+	m_hwndContainer = UT_CreateWindowEx(WS_EX_CLIENTEDGE, s_ContainerWndClassName, nullptr,
 									 WS_CHILD | WS_VISIBLE,
 									 iLeft, iTop, iWidth, iHeight,
-									 hwndParent, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
-	UT_return_val_if_fail (m_hwndContainer, 0);
+									 hwndParent, nullptr, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), nullptr);
+	UT_return_val_if_fail (m_hwndContainer, nullptr);
 	// WARNING!!! many places expect an XAP_Frame or descendant!!!
 	//SWL(m_hwndContainer, this);
 	SWL(m_hwndContainer, pFrame);
@@ -130,22 +130,22 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 	const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 
-	m_hWndHScroll = UT_CreateWindowEx(0, L"ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+	m_hWndHScroll = UT_CreateWindowEx(0, L"ScrollBar", nullptr, WS_CHILD | WS_VISIBLE | SBS_HORZ,
 									0, r.bottom - cyHScroll,
 									r.right - cxVScroll, cyHScroll,
 									m_hwndContainer,
-									0, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), 0);
-	UT_return_val_if_fail (m_hWndHScroll, 0);
+									nullptr, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), nullptr);
+	UT_return_val_if_fail (m_hWndHScroll, nullptr);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hWndHScroll, this);
 	SWL(m_hWndHScroll, pFrame);
 
-	m_hWndVScroll = UT_CreateWindowEx(0, L"ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_VERT,
+	m_hWndVScroll = UT_CreateWindowEx(0, L"ScrollBar", nullptr, WS_CHILD | WS_VISIBLE | SBS_VERT,
 									r.right - cxVScroll, 0,
 									cxVScroll, r.bottom - cyHScroll,
 									m_hwndContainer,
-									0, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), 0);
-	UT_return_val_if_fail (m_hWndVScroll, 0);
+									nullptr, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), nullptr);
+	UT_return_val_if_fail (m_hWndVScroll, nullptr);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hWndVScroll, this);
 	SWL(m_hWndVScroll, pFrame);
@@ -156,12 +156,12 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 #  define XX_StyleBits          (SBS_SIZEGRIP)
 #endif
 
-	m_hWndGripperHack = UT_CreateWindowEx(0,L"ScrollBar", 0,
+	m_hWndGripperHack = UT_CreateWindowEx(0, L"ScrollBar", nullptr,
 										WS_CHILD | WS_VISIBLE | XX_StyleBits,
 										r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
-										m_hwndContainer, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
+										m_hwndContainer, nullptr, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), nullptr);
 
-	UT_return_val_if_fail (m_hWndGripperHack,0);
+	UT_return_val_if_fail (m_hWndGripperHack, nullptr);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hWndGripperHack, this);
 	SWL(m_hWndGripperHack, pFrame);
@@ -175,29 +175,29 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	GR_Win32AllocInfo ai(GetDC(m_hwndContainer), m_hwndContainer);
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
-	UT_return_val_if_fail (pG, 0);	   
-	
+	UT_return_val_if_fail (pG, nullptr);
+
 	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pG = pG;
 
 	if (static_cast<AP_FrameData *>(pFrame->getFrameData())->m_bShowRuler)
-	{		
-		_createTopRuler(pFrame); 
+	{
+		_createTopRuler(pFrame);
 		if (static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pViewMode == VIEW_PRINT)
-	       _createLeftRuler(pFrame);		
-		
+	       _createLeftRuler(pFrame);
+
 		_getRulerSizes(static_cast<AP_FrameData *>(pFrame->getFrameData()), yTopRulerHeight, xLeftRulerWidth);
 	}
 
 	// create a child window for us.
-	m_hwndDocument = UT_CreateWindowEx(0, s_DocumentWndClassName, NULL,
+	m_hwndDocument = UT_CreateWindowEx(0, s_DocumentWndClassName, nullptr,
 									   WS_CHILD | WS_VISIBLE,
 									   xLeftRulerWidth, yTopRulerHeight,
 									   r.right - xLeftRulerWidth - cxVScroll,
 									   r.bottom - yTopRulerHeight - cyHScroll,
-									   m_hwndContainer, NULL,
-									   static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
-	
-	UT_return_val_if_fail (m_hwndDocument, 0);
+									   m_hwndContainer, nullptr,
+									   static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), nullptr);
+
+	UT_return_val_if_fail (m_hwndDocument, nullptr);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hwndDocument, this);
 	SWL(m_hwndDocument, pFrame);
@@ -209,9 +209,9 @@ HWND AP_Win32FrameImpl::_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParen
 										   UT_uint32 iLeft, UT_uint32 iTop,
 										   UT_uint32 iWidth)
 {
-	UT_return_val_if_fail(pFrame, NULL);
+	UT_return_val_if_fail(pFrame, nullptr);
 	AP_Win32StatusBar * pStatusBar = new AP_Win32StatusBar(pFrame);
-	UT_return_val_if_fail (pStatusBar, 0);
+	UT_return_val_if_fail (pStatusBar, nullptr);
 	_setHwndStatusBar(pStatusBar->createWindow(hwndParent,iLeft,iTop,iWidth));
 	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pStatusBar = pStatusBar;
 
@@ -337,7 +337,7 @@ void AP_Win32FrameImpl::_getDocumentArea(RECT &r)
 {
 	HWND hwnd = getHwndDocument();
 	GetClientRect(hwnd, &r);
-	InvalidateRect(hwnd, NULL, TRUE);
+	InvalidateRect(hwnd, nullptr, TRUE);
 }
 
 UT_sint32 AP_Win32FrameImpl::_getDocumentAreaWidth(void)
@@ -376,7 +376,7 @@ void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 #if 0   // Why? We still want to draw the corner, don't we? Also, the width value is messed when leaving normal mode.
 	if( m_hwndLeftRuler )
 	{
-		AP_Win32LeftRuler * pWin32LeftRuler = NULL;
+		AP_Win32LeftRuler * pWin32LeftRuler = nullptr;
 		pWin32LeftRuler =  static_cast<AP_Win32LeftRuler *>(static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pLeftRuler);
 		xLeftRulerWidth = pWin32LeftRuler->getWidth();
 	}
@@ -397,9 +397,9 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 
 	if( m_hwndTopRuler )
 	{
-		AP_FrameData * pFrameData = NULL;
+		AP_FrameData * pFrameData = nullptr;
 		pFrameData = static_cast<AP_FrameData *>( pFrame->getFrameData() );
-		AP_Win32TopRuler * pWin32TopRuler = NULL;
+		AP_Win32TopRuler * pWin32TopRuler = nullptr;
 		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>( pFrameData->m_pTopRuler );
 		yTopRulerHeight =  pWin32TopRuler->getGraphics()->tdu(pWin32TopRuler->getHeight());
 	}
@@ -414,10 +414,10 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 	// get the width from the left ruler and stuff it into the top ruler.
     if( m_hwndTopRuler )
 	{
-		AP_FrameData * pFrameData = NULL;
+		AP_FrameData * pFrameData = nullptr;
 		pFrameData = static_cast<AP_FrameData *>( pFrame->getFrameData() );
 		UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getGraphics()->tdu(pWin32LeftRuler->getWidth());
-		AP_Win32TopRuler * pWin32TopRuler = NULL;
+		AP_Win32TopRuler * pWin32TopRuler = nullptr;
 		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>( pFrameData->m_pTopRuler );
 		pWin32TopRuler->setOffsetLeftRuler( xLeftRulerWidth );
 	}
@@ -449,8 +449,8 @@ void AP_Win32FrameImpl::_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 
 		DELETEP(pFrameData->m_pTopRuler);
 		FV_View * pFV = static_cast<FV_View *>(pFrame->getCurrentView());
-		pFV->setTopRuler(NULL);
-		m_hwndTopRuler = NULL;
+		pFV->setTopRuler(nullptr);
+		m_hwndTopRuler = nullptr;
 	}
 
 	// repack the child windows
@@ -489,9 +489,9 @@ void AP_Win32FrameImpl::_toggleLeftRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 
 		DELETEP(pFrameData->m_pLeftRuler);
 		FV_View * pFV = static_cast<FV_View *>(pFrame->getCurrentView());
-		pFV->setLeftRuler(NULL);
+		pFV->setLeftRuler(nullptr);
 
-		m_hwndLeftRuler = NULL;
+		m_hwndLeftRuler = nullptr;
 	}
 
 	// repack the child windows
@@ -644,8 +644,8 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
  	
 
 	a = UT_RegisterClassEx(CS_DBLCLKS | CS_OWNDC, AP_Win32FrameImpl::_ContainerWndProc, app->getInstance(),
-						   NULL, LoadCursor(NULL, IDC_ARROW), NULL, NULL,
-						   NULL, s_ContainerWndClassName);
+						   nullptr, LoadCursor(nullptr, IDC_ARROW), nullptr, nullptr,
+						   nullptr, s_ContainerWndClassName);
 	
 	UT_return_val_if_fail(a, false);
 
@@ -653,8 +653,8 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	//_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%sDocument", app->getApplicationName());
   	wcscpy (s_DocumentWndClassName, L"Document");
 	a = UT_RegisterClassEx(CS_DBLCLKS | CS_OWNDC, AP_Win32FrameImpl::_DocumentWndProc, app->getInstance(),
-						   NULL, NULL, NULL, NULL,
-						   NULL, s_DocumentWndClassName);
+						   nullptr, nullptr, nullptr, nullptr,
+						   nullptr, s_DocumentWndClassName);
 
 	UT_return_val_if_fail(a, false);
 
@@ -711,7 +711,7 @@ void AP_Win32FrameImpl::_onSize(AP_FrameData* pData, int nWidth, int nHeight)
 	if (m_hwndTopRuler)
 	{
 		MoveWindow(m_hwndTopRuler, 0, 0, nWidth - cxVScroll, yTopRulerHeight, TRUE);
-		InvalidateRect(m_hwndTopRuler, NULL, TRUE);
+		InvalidateRect(m_hwndTopRuler, nullptr, TRUE);
 	}
 
 	if (m_hwndLeftRuler)

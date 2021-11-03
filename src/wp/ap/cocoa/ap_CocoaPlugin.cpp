@@ -486,7 +486,7 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 	ext = [NSString stringWithFormat:@".%@", ext];
 
 	IEFileType ieft = IE_Exp::fileTypeForSuffix([ext UTF8String]);
-	GsfOutput * out = UT_go_file_create([path UTF8String], NULL);
+	GsfOutput * out = UT_go_file_create([path UTF8String], nullptr);
 
 	if (out) {
 		UT_Error error = m_pDocument->saveAs(out, ieft, [expProps UTF8String]);

@@ -55,7 +55,7 @@ public:
 	virtual ~EV_Win32Toolbar(void);
 
 	bool toolbarEvent(XAP_Toolbar_Id id,
-						 UT_UCSChar * pData = 0,
+						 UT_UCSChar * pData = nullptr,
 						 UT_uint32 dataLength = 0);
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);

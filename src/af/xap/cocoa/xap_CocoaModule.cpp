@@ -42,7 +42,7 @@
 XAP_CocoaModule::XAP_CocoaModule () :
     m_szname("??"),
     m_module_path("??"),
-    m_module(0),
+    m_module(nullptr),
     m_bLoaded(false)
 {
     //
@@ -91,7 +91,7 @@ bool XAP_CocoaModule::unload (void)
         return false;
 
     m_bLoaded = false;
-    m_module = 0;
+    m_module = nullptr;
     return true;
 }
 
@@ -238,7 +238,7 @@ void XAP_CocoaModule::loadAllPlugins ()
 
     for (int i = 0; i < support_dir_count; i++)
     {
-        struct dirent **namelist = NULL;
+        struct dirent **namelist = nullptr;
         int n = scandir(support_dir[i].c_str(), &namelist, s_Abi_only, alphasort);
 
         if (n < 0)

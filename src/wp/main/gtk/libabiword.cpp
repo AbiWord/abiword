@@ -26,7 +26,7 @@
 #include "ap_UnixApp.h"
 #include "libabiword.h"
 
-static AP_UnixApp *_abiword_app = NULL;
+static AP_UnixApp *_abiword_app = nullptr;
 
 /**
  * libabiword_init:
@@ -56,7 +56,7 @@ void libabiword_init (int argc, char **argv)
 void libabiword_init_noargs ()
 {
 	if (!_abiword_app) {
-		static char *argv[] = {"libabiword", NULL};
+		static char *argv[] = {"libabiword", nullptr};
 		_abiword_app = new AP_UnixApp(PACKAGE);
 		XAP_Args XArgs(1, argv);
 		AP_Args Args = AP_Args(&XArgs, PACKAGE, _abiword_app);
@@ -72,6 +72,6 @@ void libabiword_shutdown ()
 	{
 		_abiword_app->shutdown();
 		delete _abiword_app;
-		_abiword_app = NULL;
+		_abiword_app = nullptr;
 	}
 }

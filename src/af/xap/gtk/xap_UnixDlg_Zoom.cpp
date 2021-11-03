@@ -53,18 +53,18 @@ XAP_UnixDialog_Zoom::XAP_UnixDialog_Zoom(XAP_DialogFactory * pDlgFactory,
 					 XAP_Dialog_Id id)
   : XAP_Dialog_Zoom(pDlgFactory,id)
 {
-  m_windowMain = NULL;
+  m_windowMain = nullptr;
     
-  m_radio200 = 		NULL;
-  m_radio100 = 		NULL;
-  m_radio75 = 		NULL;
-  m_radioPageWidth = 	NULL;
-  m_radioWholePage = 	NULL;
-  m_radioPercent = 	NULL;
+  m_radio200 = 		nullptr;
+  m_radio100 = 		nullptr;
+  m_radio75 = 		nullptr;
+  m_radioPageWidth = 	nullptr;
+  m_radioWholePage = 	nullptr;
+  m_radioPercent = 	nullptr;
   
-  m_spinPercent = NULL;
+  m_spinPercent = nullptr;
   
-  m_radioGroup = NULL;
+  m_radioGroup = nullptr;
 }
 
 XAP_UnixDialog_Zoom::~XAP_UnixDialog_Zoom(void)

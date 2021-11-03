@@ -177,7 +177,7 @@ UT_Error IE_Exp_KWord_1::_writeDocument(void)
 		return UT_ERROR;
 	delete m_pListener;
 
-	m_pListener = NULL;
+	m_pListener = nullptr;
 	
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }  
@@ -299,10 +299,10 @@ bool s_KWord_1_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 		_closeSection();
 		
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
-		const PP_AttrProp* pAP = NULL;
+		const PP_AttrProp* pAP = nullptr;
 		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
 		{
-			const gchar* pszSectionType = NULL;
+			const gchar* pszSectionType = nullptr;
 			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
@@ -481,13 +481,13 @@ void s_KWord_1_Listener::_writeMarginSize(PT_AttrPropIndex api, const char * nam
 {
 	UT_String buf;
 	const gchar * szValue;
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	UT_DebugOnly<bool> bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_ASSERT((bHaveProp));
 
 	UT_String_sprintf(buf, "page-margin-%s", name);
 	szValue = PP_evalProperty(buf.c_str(), 
-				  NULL, NULL, pAP, m_pDocument, true);
+				  nullptr, nullptr, pAP, m_pDocument, true);
 	UT_String_sprintf(buf," %s=\"%f",name, UT_convertToDimension(szValue, kword_1_unit));
 	m_pie->write(buf);
 	m_pie->write("\"");
@@ -500,7 +500,7 @@ void s_KWord_1_Listener::_handlePageSize(PT_AttrPropIndex api)
   // Code to write out the PageSize Definitions to disk
   // 
 
-	//const PP_AttrProp * pAP = NULL;
+	//const PP_AttrProp * pAP = nullptr;
 	//bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	UT_LocaleTransactor lt (LC_NUMERIC, "C");
@@ -572,7 +572,7 @@ void s_KWord_1_Listener::_handleDataItems(void)
 	std::string mimeType;
 	UT_ConstByteBufPtr pByteBuf;
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, pByteBuf,
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, nullptr, &szName, pByteBuf,
                                                     &mimeType)); k++)
 	{	  	  
         std::string fname;	  
@@ -590,7 +590,7 @@ void s_KWord_1_Listener::_handleDataItems(void)
         }
         fname = UT_std_string_sprintf("%s-%d.%s", m_pie->getFileName(), k, extension);
 	  
-        GsfOutput *fp = UT_go_file_create(fname.c_str(), NULL);
+        GsfOutput *fp = UT_go_file_create(fname.c_str(), nullptr);
 	  
         if(!fp)
             continue;
@@ -677,7 +677,7 @@ void s_KWord_1_Listener::_openBlock(PT_AttrPropIndex api)
 	}
 
 	const UT_Dimension kword_1_dimension = DIM_MM;
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	m_bInBlock = true;
@@ -947,7 +947,7 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 
 	m_bInSpan = true;
 
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	// keep track of whether we've written out anything

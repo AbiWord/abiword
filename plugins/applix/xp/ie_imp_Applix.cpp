@@ -488,7 +488,7 @@ IE_Imp_Applix::_applixGetLine (const UT_ByteBufPtr & pBuf, GsfInput *fp)
 {
 	UT_ASSERT (pBuf);
 	char temp [APPLIX_MAX_LINE_LENGTH];
-	char *res = NULL;
+	char *res = nullptr;
 	size_t contentLen;
 	char eol;
 	bool done = false;
@@ -499,7 +499,7 @@ IE_Imp_Applix::_applixGetLine (const UT_ByteBufPtr & pBuf, GsfInput *fp)
 	do 
 	{
 		res = fgets (temp, APPLIX_MAX_LINE_LENGTH, fp);
-		if (res == NULL) 
+		if (res == nullptr)
 		{
 			UT_DEBUGMSG (("Applix: fgets failed !\n"));
 			return false;

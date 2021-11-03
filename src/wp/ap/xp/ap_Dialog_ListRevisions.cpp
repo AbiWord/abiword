@@ -32,7 +32,7 @@
 AP_Dialog_ListRevisions::AP_Dialog_ListRevisions(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogselectrevision"), m_answer(a_CANCEL),
-    m_iId(0), m_pDoc(NULL), m_pSS(nullptr)
+    m_iId(0), m_pDoc(nullptr), m_pSS(nullptr)
 {
 	m_pSS = XAP_App::getApp()->getStringSet();
 }
@@ -48,31 +48,31 @@ void AP_Dialog_ListRevisions::setAnswer(AP_Dialog_ListRevisions::tAnswer a)
 
 const char * AP_Dialog_ListRevisions::getTitle() const
 {
-	UT_return_val_if_fail(m_pSS,NULL);
+	UT_return_val_if_fail(m_pSS,nullptr);
 	return m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_Title);
 }
 
 const char * AP_Dialog_ListRevisions::getLabel1() const
 {
-	UT_return_val_if_fail(m_pSS,NULL);
+	UT_return_val_if_fail(m_pSS,nullptr);
 	return m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_Label1);
 }
 
 const char * AP_Dialog_ListRevisions::getColumn1Label() const
 {
-	UT_return_val_if_fail(m_pSS,NULL);
+	UT_return_val_if_fail(m_pSS,nullptr);
 	return m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_Column1Label);
 }
 
 const char * AP_Dialog_ListRevisions::getColumn2Label() const
 {
-	UT_return_val_if_fail(m_pSS,NULL);
+	UT_return_val_if_fail(m_pSS,nullptr);
 	return m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_Column2Label);
 }
 
 const char * AP_Dialog_ListRevisions::getColumn3Label() const
 {
-	UT_return_val_if_fail(m_pSS,NULL);
+	UT_return_val_if_fail(m_pSS,nullptr);
 	return m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_Column3Label);
 }
 
@@ -143,7 +143,7 @@ char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n, bool utf8) const
 		// the zero entry represents the normal view without a
 		// selection, we get the comment from our stringset
 		
-		UT_return_val_if_fail(m_pSS,NULL);
+		UT_return_val_if_fail(m_pSS,nullptr);
 		char * pComment = g_strdup(m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_LevelZero));
 		return pComment;
 	}
@@ -153,7 +153,7 @@ char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n, bool utf8) const
 		const UT_UCS4Char * pC = m_pDoc->getRevisions()[n - 1].getDescription();
 	
 		if(!pC)
-			return NULL;
+			return nullptr;
 
 		// now we run this string through fribidi
 		if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
@@ -162,7 +162,7 @@ char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n, bool utf8) const
 			UT_uint32 iLen = UT_UCS4_strlen(pC);
 
 			pStr2  = (UT_UCS4Char *)UT_calloc( iLen + 1, sizeof(UT_UCS4Char));
-			UT_return_val_if_fail(pStr2,NULL);
+			UT_return_val_if_fail(pStr2,nullptr);
 			bFree = true;
 
 			UT_BidiCharType iDomDir = UT_bidiGetCharType(pC[0]);
@@ -177,13 +177,13 @@ char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n, bool utf8) const
 		{
 			UT_UTF8String comment(pC);
 			pComment = (char *)UT_calloc(comment.byteLength() + 1, sizeof(char));
-			UT_return_val_if_fail(pComment,NULL);
+			UT_return_val_if_fail(pComment,nullptr);
 			pComment = strcpy(pComment, comment.utf8_str());
 		}
 		else
 		{
 			pComment = (char *)UT_calloc(UT_UCS4_strlen(pC) + 1, sizeof(char));
-			UT_return_val_if_fail(pComment,NULL);
+			UT_return_val_if_fail(pComment,nullptr);
 			UT_UCS4_strcpy_to_char(pComment,pC);
 		}
 

@@ -76,9 +76,9 @@ XAP_Dialog * XAP_UnixDialog_History::static_constructor(XAP_DialogFactory * pFac
 XAP_UnixDialog_History::XAP_UnixDialog_History(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: XAP_Dialog_History(pDlgFactory,id),
-	  m_windowMain(NULL),
-	  m_wListWindow(NULL),
-	  m_wTreeView(NULL)
+	  m_windowMain(nullptr),
+	  m_wListWindow(nullptr),
+	  m_wTreeView(nullptr)
 {
 }
 
@@ -161,8 +161,8 @@ void XAP_UnixDialog_History::_fillHistoryTree(void)
     for (i = 0; i < getListItemCount(); i++)
 	{
 		// Add a new row to the model
-		gchar *itime = g_locale_to_utf8(getListValue(i,1), -1, NULL, NULL, NULL);
-		gtk_tree_store_append (model, &iter,NULL);
+		gchar *itime = g_locale_to_utf8(getListValue(i,1), -1, nullptr, nullptr, nullptr);
+		gtk_tree_store_append (model, &iter,nullptr);
 		gtk_tree_store_set (model, &iter, 0, getListValue(i,0), 
 							1,itime ,
 							2,getListValue(i,2) ,
@@ -182,15 +182,15 @@ void XAP_UnixDialog_History::_fillHistoryTree(void)
 //
 	GtkTreeViewColumn * column0 = gtk_tree_view_column_new_with_attributes (getListHeader(0), renderer,
                                                       "text", 0,
-                                                      NULL);
+                                                      nullptr);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (m_wTreeView), column0);
 	GtkTreeViewColumn * column1 = gtk_tree_view_column_new_with_attributes (getListHeader(1), renderer,
                                                       "text", 1,
-                                                      NULL);
+                                                      nullptr);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (m_wTreeView), column1);
 	GtkTreeViewColumn * column2 = gtk_tree_view_column_new_with_attributes (getListHeader(2), renderer,
                                                       "text", 2,
-                                                      NULL);
+                                                      nullptr);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (m_wTreeView), column2);
 	
  	

@@ -57,11 +57,11 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),
 	  m_borderColor(0,0,0),
 	  m_lineStyle(LS_NORMAL),
-	  m_bgFillStyle(NULL),
+	  m_bgFillStyle(nullptr),
 	  m_answer(a_OK),
-	  m_pFormatTablePreview(NULL),
+	  m_pFormatTablePreview(nullptr),
 	  m_bSettingsChanged(false),
-	  m_pAutoUpdaterMC(NULL),
+	  m_pAutoUpdaterMC(nullptr),
 	  m_borderToggled(false),
 	  m_ApplyTo(FORMAT_TABLE_SELECTION),
 	  m_bDestroy_says_stopupdating(false),
@@ -69,7 +69,7 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	  m_iOldPos(0),
 	  m_sImagePath(""),
 	  m_iGraphicType(0),
-	  m_pImage(NULL)
+	  m_pImage(nullptr)
 {
 	//
 	// These are hardwired into the GUI.
@@ -105,7 +105,7 @@ void AP_Dialog_FormatTable::setActiveFrame(XAP_Frame * /*pFrame*/)
 void AP_Dialog_FormatTable::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	gchar * tmp = NULL;
+	gchar * tmp = nullptr;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FormatTableTitle));
 	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),sizeof(m_WindowName));
 	FREEP(tmp);
@@ -122,14 +122,14 @@ void AP_Dialog_FormatTable::startUpdater(void)
 
 void AP_Dialog_FormatTable::stopUpdater(void)
 {
-	if(m_pAutoUpdaterMC == NULL)
+	if(m_pAutoUpdaterMC == nullptr)
 	{
 		return;
 	}
 	m_bDestroy_says_stopupdating = true;
 	m_pAutoUpdaterMC->stop();
 	DELETEP(m_pAutoUpdaterMC);
-	m_pAutoUpdaterMC = NULL;
+	m_pAutoUpdaterMC = nullptr;
 }
 /*!
  Autoupdater of the dialog.
@@ -360,7 +360,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		 * update the border colors
 		 */
 
-		gchar * color = NULL;
+		gchar * color = nullptr;
 
 		if (pView->getCellProperty(pos, "left-color", color)) {
 			PP_addOrSetAttribute("left-color", color, m_vecProps);
@@ -391,7 +391,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		 */
 
 		UT_RGBColor clr;
-		gchar * bgColor = NULL;
+		gchar * bgColor = nullptr;
 		if (pView->getCellProperty(pos, "background-color", bgColor)) {
 			PP_addOrSetAttribute("background-color", bgColor, m_vecProps);
 			clr.setColor(bgColor);

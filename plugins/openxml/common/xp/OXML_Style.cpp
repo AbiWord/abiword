@@ -53,9 +53,9 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
 	bool b_docDefaults = false;
-	const gchar* szValue = NULL;
-	const gchar* name = NULL;
-	const gchar* type = NULL;
+	const gchar* szValue = nullptr;
+	const gchar* name = nullptr;
+	const gchar* type = nullptr;
 	getAttribute("type", type);
 	getAttribute("name", name);
 	if(name)
@@ -315,13 +315,13 @@ UT_Error OXML_Style::addToPT(PD_Document * pDocument)
 
 	//First, we change the ID reference for BASEDON and FOLLOWEDBY to a name reference.
 	OXML_Document * doc = OXML_Document::getInstance();
-	UT_return_val_if_fail( doc != NULL, UT_ERROR );
+	UT_return_val_if_fail( doc != nullptr, UT_ERROR );
 
-	const gchar * buf = NULL;
+	const gchar * buf = nullptr;
 	getAttribute(PT_BASEDON_ATTRIBUTE_NAME, buf);
-	if (buf != NULL) {
+	if (buf != nullptr) {
 		OXML_SharedStyle other = doc->getStyleById(buf);
-		if (other.get() != NULL) {
+		if (other.get() != nullptr) {
 			setAttribute(PT_BASEDON_ATTRIBUTE_NAME, other->getName().c_str());
 		} else {
 			setAttribute(PT_BASEDON_ATTRIBUTE_NAME, "Normal");
@@ -332,7 +332,7 @@ UT_Error OXML_Style::addToPT(PD_Document * pDocument)
 	}
 
 	getAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, buf);
-	if (buf != NULL) {
+	if (buf != nullptr) {
 		OXML_SharedStyle other = doc->getStyleById(buf);
 		if (other)
 			setAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, other->getName().c_str());

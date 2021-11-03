@@ -405,7 +405,7 @@ public:
 			return 0;
 		map_type::iterator i = m_map.find(static_cast<UT_sint32>(key));
 		if (i == m_map.end()) {
-			return NULL;
+			return nullptr;
 		}
 		return (*i).second;
 	}

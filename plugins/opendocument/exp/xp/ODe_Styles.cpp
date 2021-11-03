@@ -67,7 +67,7 @@ ODe_Styles::~ODe_Styles() {
  */
 bool ODe_Styles::fetchRegularStyleStyles() {
     
-    const PD_Style* pStyle = NULL;
+    const PD_Style* pStyle = nullptr;
     UT_GenericVector<PD_Style*> vecStyles;
     m_pAbiDoc->getAllUsedStyles(&vecStyles);
     const PP_AttrProp* pAP;
@@ -90,9 +90,9 @@ bool ODe_Styles::fetchRegularStyleStyles() {
 
 
 
-    UT_GenericVector<PD_Style*>* pStyles = NULL;
+    UT_GenericVector<PD_Style*>* pStyles = nullptr;
     m_pAbiDoc->enumStyles(pStyles);
-    if (pStyles == NULL) {
+    if (pStyles == nullptr) {
         return false;
     }
     UT_uint32 iStyleCount = m_pAbiDoc->getStyleCount();
@@ -101,7 +101,7 @@ bool ODe_Styles::fetchRegularStyleStyles() {
     for (UT_uint32 k=0; k < iStyleCount && ok; k++)
     {
         pStyle = pStyles->getNthItem(k);
-        if (pStyle == NULL) {
+        if (pStyle == nullptr) {
             return false;
         }
         
@@ -137,12 +137,12 @@ void ODe_Styles::addStyle(const UT_UTF8String& sStyle)
 {
     UT_return_if_fail(sStyle != "");
 
-    PD_Style* pStyle = NULL;
+    PD_Style* pStyle = nullptr;
     m_pAbiDoc->getStyle(sStyle.utf8_str(), &pStyle);
     UT_return_if_fail(pStyle);
 
     PT_AttrPropIndex api = pStyle->getIndexAP();
-    const PP_AttrProp* pAP = NULL;    
+    const PP_AttrProp* pAP = nullptr;
     if (!m_pAbiDoc->getAttrProp(api, &pAP))
         return;
 

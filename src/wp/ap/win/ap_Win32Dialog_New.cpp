@@ -60,7 +60,7 @@ XAP_Dialog * AP_Win32Dialog_New::static_constructor(XAP_DialogFactory * pFactory
 
 AP_Win32Dialog_New::AP_Win32Dialog_New(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_New(pDlgFactory,id), m_hThisDlg(NULL), _win32Dialog(this), m_pFrame(NULL)
+	: AP_Dialog_New(pDlgFactory,id), m_hThisDlg(nullptr), _win32Dialog(this), m_pFrame(nullptr)
 {
 }
 

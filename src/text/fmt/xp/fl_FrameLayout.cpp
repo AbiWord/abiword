@@ -103,7 +103,7 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iPrefColumn(0),
 	  m_bExpandHeight(false),
 	  m_iMinHeight(0),
-	  m_pParentContainer(NULL)
+	  m_pParentContainer(nullptr)
 {
 }
 
@@ -118,14 +118,14 @@ fl_FrameLayout::~fl_FrameLayout()
 		fp_FrameContainer * pNext = static_cast<fp_FrameContainer *>(pFC->getNext());
 		if(pFC == static_cast<fp_FrameContainer *>(getLastContainer()))
 		{
-			pNext = NULL;
+			pNext = nullptr;
 		}
 		delete pFC;
 		pFC = pNext;
 	}
 
-	setFirstContainer(NULL);
-	setLastContainer(NULL);
+	setFirstContainer(nullptr);
+	setLastContainer(nullptr);
 //
 // Remove pointers to this if they exist
 //
@@ -146,7 +146,7 @@ fl_FrameLayout::~fl_FrameLayout()
 void 	fl_FrameLayout::setContainerProperties(void)
 {
 	fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(getLastContainer());
-	if(pFrame == NULL)
+	if(pFrame == nullptr)
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
@@ -180,9 +180,9 @@ void 	fl_FrameLayout::setContainerProperties(void)
 //
 	if(m_pGraphicImage)
 	{
-		if(m_pImageImage == NULL)
+		if(m_pImageImage == nullptr)
 		{
-			const PP_AttrProp * pAP = NULL;
+			const PP_AttrProp * pAP = nullptr;
 			getAP(pAP);
 			GR_Graphics * pG = getDocLayout()->getGraphics();
 			UT_sint32 iWidth = pG->tlu(100);
@@ -246,12 +246,12 @@ PT_DocPosition fl_FrameLayout::getDocPosition(void)
 UT_uint32 fl_FrameLayout::getLength(void)
 {
 	PT_DocPosition startPos = getDocPosition();
-	pf_Frag_Strux* sdhEnd = NULL;
+	pf_Frag_Strux* sdhEnd = nullptr;
 	pf_Frag_Strux* sdhStart = getStruxDocHandle();
 	UT_DebugOnly<bool> bres;
 	bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFrame,&sdhEnd);
 	UT_ASSERT(bres && sdhEnd);
-	if(sdhEnd == NULL)
+	if(sdhEnd == nullptr)
 	{
 	  return 1;
 	}
@@ -277,7 +277,7 @@ bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* /*pLBlock*/,
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
-	fl_ContainerLayout * pNewCL = NULL;
+	fl_ContainerLayout * pNewCL = nullptr;
 	fl_ContainerLayout * pMyCL = myContainingLayout();
 	pNewCL = pMyCL->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_BLOCK);
 	fl_BlockLayout * pBlock = static_cast<fl_BlockLayout *>(pNewCL);
@@ -368,7 +368,7 @@ fl_SectionLayout * fl_FrameLayout::getSectionLayout(void) const
 		}
 		pDSL = pDSL->myContainingLayout();
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -378,7 +378,7 @@ bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(getFirstContainer());
 	UT_GenericVector<fl_ContainerLayout *> AllLayouts;
 	AllLayouts.clear();
-	fp_Page * pPage = NULL;
+	fp_Page * pPage = nullptr;
 	UT_sint32 i = 0;
 	if(pFrameC)
 	{
@@ -509,7 +509,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 // Remove from the list of frames in the previous block
 //
 	fl_ContainerLayout * pCL = getParentContainer();
-	fl_BlockLayout * pBL = NULL;
+	fl_BlockLayout * pBL = nullptr;
 	if(pCL)
 	{
 		if(!pCL->removeFrame(this))
@@ -562,12 +562,12 @@ void fl_FrameLayout::_createFrameContainer(void)
 	pFrameContainer->setHeight(m_iHeight);
 	// Now do Frame image
 
-	const PP_AttrProp* pSectionAP = NULL;
+	const PP_AttrProp* pSectionAP = nullptr;
 	// This is a real NO-NO: must *always* call getAP()
 	// m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
 	getAP(pSectionAP);
 	
-	const gchar * pszDataID = NULL;
+	const gchar * pszDataID = nullptr;
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
 	DELETEP(m_pImageImage);
 	//
@@ -641,7 +641,7 @@ void fl_FrameLayout::format(void)
 		return;
 	}
 
-	if(getFirstContainer() == NULL)
+	if(getFirstContainer() == nullptr)
 	{
 		getNewContainer();
 	}
@@ -650,7 +650,7 @@ void fl_FrameLayout::format(void)
 	{
 		pBL2->format();
 		UT_sint32 count = 0;
-		while(pBL2->getLastContainer() == NULL || pBL2->getFirstContainer()==NULL)
+		while(pBL2->getLastContainer() == nullptr || pBL2->getFirstContainer()==nullptr)
 		{
 			UT_DEBUGMSG(("Error formatting a block try again \n"));
 			count = count + 1;
@@ -677,7 +677,7 @@ void fl_FrameLayout::format(void)
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
-		fl_BlockLayout * pBL = NULL;
+		fl_BlockLayout * pBL = nullptr;
 		pBL = static_cast<fl_BlockLayout *>(pCL);
 		UT_sint32 count = pBL->getNumFrames();
 		UT_sint32 i = 0;
@@ -697,7 +697,7 @@ void fl_FrameLayout::format(void)
 		}
 		if(!pBL->isCollapsed())
 		{
-			m_bIsOnPage = pBL->setFramesOnPage(NULL);
+			m_bIsOnPage = pBL->setFramesOnPage(nullptr);
 			if(!m_bIsOnPage)
 			{
 				setNeedsReformat(this);
@@ -744,33 +744,33 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	GR_Graphics * pG = getDocLayout()->getGraphics();
 	UT_return_if_fail( pView && pG );
 
-	const gchar *pszFrameType = NULL;
-	const gchar *pszPositionTo = NULL;
-	const gchar *pszWrapMode = NULL;
-	const gchar *pszXpos = NULL;
-	const gchar *pszYpos = NULL;
-	const gchar *pszColXpos = NULL;
-	const gchar *pszColYpos = NULL;
-	const gchar *pszPageXpos = NULL;
-	const gchar *pszPageYpos = NULL;
-	const gchar *pszWidth = NULL;
-	const gchar *pszHeight = NULL;
-	const gchar *pszXpad = NULL;
-	const gchar *pszYpad = NULL;
+	const gchar *pszFrameType = nullptr;
+	const gchar *pszPositionTo = nullptr;
+	const gchar *pszWrapMode = nullptr;
+	const gchar *pszXpos = nullptr;
+	const gchar *pszYpos = nullptr;
+	const gchar *pszColXpos = nullptr;
+	const gchar *pszColYpos = nullptr;
+	const gchar *pszPageXpos = nullptr;
+	const gchar *pszPageYpos = nullptr;
+	const gchar *pszWidth = nullptr;
+	const gchar *pszHeight = nullptr;
+	const gchar *pszXpad = nullptr;
+	const gchar *pszYpad = nullptr;
 
-	const gchar * pszColor = NULL;
-	const gchar * pszBorderColor = NULL;
-	const gchar * pszBorderStyle = NULL;
-	const gchar * pszBorderWidth = NULL;
+	const gchar * pszColor = nullptr;
+	const gchar * pszBorderColor = nullptr;
+	const gchar * pszBorderStyle = nullptr;
+	const gchar * pszBorderWidth = nullptr;
 
-	const gchar * pszBoundingSpace = NULL;
-	const gchar * pszTightWrapped = NULL;
-	const gchar * pszPrefPage = NULL;
-	const gchar * pszPrefColumn = NULL;
+	const gchar * pszBoundingSpace = nullptr;
+	const gchar * pszTightWrapped = nullptr;
+	const gchar * pszPrefPage = nullptr;
+	const gchar * pszPrefColumn = nullptr;
 
-	const gchar * pszExpandHeight = NULL;
-	const gchar * pszPercentWidth = NULL;
-	const gchar * pszMinHeight = NULL;
+	const gchar * pszExpandHeight = nullptr;
+	const gchar * pszPercentWidth = nullptr;
+	const gchar * pszMinHeight = nullptr;
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
@@ -1010,9 +1010,9 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineBottom);
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("left-color", pszBorderColor);
 	pSectionAP->getProperty ("left-style", pszBorderStyle);
@@ -1020,9 +1020,9 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineLeft);
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("right-color",pszBorderColor);
 	pSectionAP->getProperty ("right-style",pszBorderStyle);
@@ -1030,9 +1030,9 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineRight);
 
-	pszBorderColor = NULL;
-	pszBorderStyle = NULL;
-	pszBorderWidth = NULL;
+	pszBorderColor = nullptr;
+	pszBorderStyle = nullptr;
+	pszBorderWidth = nullptr;
 
 	pSectionAP->getProperty ("top-color",  pszBorderColor);
 	pSectionAP->getProperty ("top-style",  pszBorderStyle);
@@ -1044,9 +1044,9 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	 */
 	m_background.reset ();
 
-	const gchar * pszBgStyle = NULL;
-	const gchar * pszBgColor = NULL;
-	const gchar * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = nullptr;
+	const gchar * pszBgColor = nullptr;
+	const gchar * pszBackgroundColor = nullptr;
 
 	pSectionAP->getProperty ("bg-style",    pszBgStyle);
 	pSectionAP->getProperty ("bgcolor",     pszBgColor);
@@ -1130,7 +1130,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	//
 	// left/right aligned
 	//
-	const char * pszAlign = NULL;
+	const char * pszAlign = nullptr;
 	if(pSectionAP && pSectionAP->getProperty("frame-horiz-align",pszAlign))
 	{
 		if(pszAlign && (strcmp(pszAlign,"right") == 0) && (m_iXpos == 0))
@@ -1175,15 +1175,15 @@ void fl_FrameLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		const gchar *pszPositionTo = NULL;
-		const gchar *pszWrapMode = NULL;
-		const gchar *pszXpos = NULL;
-		const gchar *pszYpos = NULL;
-		const gchar *pszColXpos = NULL;
-		const gchar *pszColYpos = NULL;
-		const gchar *pszPageXpos = NULL;
-		const gchar *pszPageYpos = NULL;
-		const gchar * pszTightWrapped = NULL;
+		const gchar *pszPositionTo = nullptr;
+		const gchar *pszWrapMode = nullptr;
+		const gchar *pszXpos = nullptr;
+		const gchar *pszYpos = nullptr;
+		const gchar *pszColXpos = nullptr;
+		const gchar *pszColYpos = nullptr;
+		const gchar *pszPageXpos = nullptr;
+		const gchar *pszPageYpos = nullptr;
+		const gchar * pszTightWrapped = nullptr;
 
 
 		// Position-to
@@ -1391,7 +1391,7 @@ void fl_FrameLayout::collapse(void)
 		if(pFC->getPage())
 		{
 			pFC->getPage()->removeFrameContainer(pFC);
-			pFC->setPage(NULL);
+			pFC->setPage(nullptr);
 		}
 //
 // remove it from the linked list.
@@ -1407,8 +1407,8 @@ void fl_FrameLayout::collapse(void)
 		}
 		delete pFC;
 	}
-	setFirstContainer(NULL);
-	setLastContainer(NULL);
+	setFirstContainer(nullptr);
+	setLastContainer(nullptr);
 }
 
 // Frame Background

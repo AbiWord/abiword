@@ -138,7 +138,7 @@ public:
 	virtual bool        isHBreakable(void) override {return false;}
 	virtual UT_sint32   wantHBreakAt(UT_sint32) override {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32) override;
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return NULL;}
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return nullptr;}
 	virtual void        recalcMaxWidth(bool bDontClearIfNeeded = false) override
 	{ UT_UNUSED(bDontClearIfNeeded); }
 	virtual void        setAssignedScreenHeight(UT_sint32) override {}
@@ -160,10 +160,10 @@ public:
 	void                setLineMarkers(void);
 	void                deleteBrokenTables(bool bClearFirst=true);
 	void                deleteBrokenAfter(bool bClearFirst,UT_sint32 iOldBottom);
-	bool                containsFootnoteReference(const fp_TableContainer * pBroke = NULL) const;
-	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots, const fp_TableContainer * pBroke = NULL) const;
-	bool                containsAnnotations(const fp_TableContainer * pBroke = NULL) const;
-	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns, const fp_TableContainer * pBroke = NULL) const;
+	bool                containsFootnoteReference(const fp_TableContainer * pBroke = nullptr) const;
+	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots, const fp_TableContainer * pBroke = nullptr) const;
+	bool                containsAnnotations(const fp_TableContainer * pBroke = nullptr) const;
+	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns, const fp_TableContainer * pBroke = nullptr) const;
 	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff) const;
    UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
@@ -394,7 +394,7 @@ public:
 	UT_sint32           sumFootnoteHeight(void) const;
 	virtual fp_ContainerObject * VBreakAt(UT_sint32) override;
 	void                breakCellsAt(UT_sint32 vpos);
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return NULL;}
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) override {return nullptr;}
 	UT_sint32           getBrokenNumber(void) const;
 	void                setToAllocation(void);
 	void                tableAttach(fp_CellContainer * pCell);

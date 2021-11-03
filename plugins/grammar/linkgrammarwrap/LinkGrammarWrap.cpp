@@ -55,7 +55,7 @@ LinkGrammarWrap::LinkGrammarWrap(void)
 {
   m_Opts = parse_options_create();
 #ifdef _MSC_VER
-  gchar* dict_path = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "grammar", NULL); 
+  gchar* dict_path = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "grammar", nullptr);
   dictionary_set_data_dir(dict_path);
   g_free(dict_path);
 #endif
@@ -103,7 +103,7 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
   UT_UTF8String errStr = "";
   if(!res && (num_linkages == 0))
   {
-    // Now proces with NULL links. to find out what went wrong.
+    // Now proces with nullptr links. to find out what went wrong.
     parse_options_set_min_null_count(m_Opts, 1);
     parse_options_set_max_null_count(m_Opts, sentence_length(sent));
     parse_options_set_islands_ok(m_Opts, 1);
@@ -118,11 +118,11 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
     //
     // Get first linkage
     //
-    AbiGrammarError * pErr = NULL;
+    AbiGrammarError * pErr = nullptr;
     if(num_linkages > 0)
     {
       Linkage linkage = linkage_create(0, sent, m_Opts);
-      if(linkage != NULL)
+      if(linkage != nullptr)
       {
 	UT_sint32 i = 0;
 	UT_sint32 iLow= 0;
@@ -133,7 +133,7 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	for (i=1; i<sentence_length(sent) && (iLow < totlen); i++) 
 	{
 	  //
-	  // NULL link island.
+	  // nullptr link island.
 	  //
 	  //    UT_DEBUGMSG((" iLow %d szSent[iLow] %c\n",iLow,szSent[iLow]));
 	  while((szSent[iLow] == ' ') && (iLow < totlen))
@@ -154,7 +154,7 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	  bool bNew = false;
 
 	  //UT_DEBUGMSG(("|%s| NULL LINK\n",sent->word[i].string));
-	  if(pErr == NULL)
+	  if(pErr == nullptr)
 	  {
 	    pErr = new AbiGrammarError();
 	    bNew = true;
@@ -183,7 +183,7 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	    pErr->m_iWordNum = i;
 	    // UT_DEBUGMSG(("Add Error %x low %d High %d\n",pErr,pErr->m_iErrLow,pErr->m_iErrHigh));
 	    pT->m_vecGrammarErrors.addItem(pErr);
-		pErr = NULL;
+		pErr = nullptr;
 	  }
 	  else
 	  {
@@ -201,7 +201,7 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	  iLow += strlen(linkage_get_word(linkage, i));
 	}
 	//
-	// No NULL links but still an error , mark the whole sentence bad.
+	// No nullptr links but still an error , mark the whole sentence bad.
 	//
 	if(pT->m_vecGrammarErrors.getItemCount() == 0)
 	{
@@ -220,7 +220,7 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	  pT->m_vecGrammarErrors.addItem(pErr);
 	  pErr->m_sErrorDesc = linkage_get_violation_name(linkage);
 	  //UT_DEBUGMSG(("Complete Sentence had error %s\n",pErr->m_sErrorDesc.utf8_str()));
-	  pErr = NULL;
+	  pErr = nullptr;
 	}
 
 	//	  for(i=0; i< pT->m_vecGrammarErrors.getItemCount(); i++)
@@ -253,7 +253,7 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
       }
       //      UT_DEBUGMSG(("Final Add Error %x low %d High %d\n",pErr,pErr->m_iErrLow,pErr->m_iErrHigh));
       pT->m_vecGrammarErrors.addItem(pErr);
-	  pErr = NULL;
+	  pErr = nullptr;
     }
     if(pErr)
       delete pErr;

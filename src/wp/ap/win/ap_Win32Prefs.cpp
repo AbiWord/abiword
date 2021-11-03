@@ -102,7 +102,7 @@ const char * AP_Win32Prefs::_getPrefsPathname(void) const
 	char * szFile = "AbiWord.Profile";
 	
 	if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX*6)
-		return NULL;
+		return nullptr;
 
 	strcpy(buf,szDirectory);
 	int len = strlen(buf);

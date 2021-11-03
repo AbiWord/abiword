@@ -44,11 +44,11 @@ void ODe_ListLevelStyle::fetchAttributesFromAbiBlock(const PP_AttrProp& rAP) {
     UT_DebugOnly<bool> ok;
     
     ok = rAP.getAttribute("listid", pValue);
-    UT_ASSERT(ok && pValue != NULL);
+    UT_ASSERT(ok && pValue != nullptr);
     m_AbiListId = pValue;
     
     ok = rAP.getAttribute("level", pValue);
-    UT_ASSERT(ok && pValue != NULL);
+    UT_ASSERT(ok && pValue != nullptr);
     m_level = pValue;
     
     calculateListMargins(rAP, m_textIndent, m_spaceBefore, m_minLabelWidth, m_marginLeft);
@@ -71,12 +71,12 @@ void ODe_ListLevelStyle::calculateListMargins(const PP_AttrProp& rAP,
     // here regarding the size of that tab, we'll just hardcode it to 
     // 0.3in (0.762cm), which is abiword's default value.
     ok = rAP.getProperty("text-indent", pValue);
-    double abiTextIndent = (ok && pValue != NULL ? UT_convertToDimension(pValue, DIM_CM) : 0.0);
+    double abiTextIndent = (ok && pValue != nullptr ? UT_convertToDimension(pValue, DIM_CM) : 0.0);
     double dMinLabelWidth = (abiTextIndent <= 0 ? -abiTextIndent : 0.762);
     UT_UTF8String_sprintf(minLabelWidth, "%f%s", dMinLabelWidth, UT_dimensionName(DIM_CM));
     
     ok = rAP.getProperty("margin-left", pValue);
-    double abiMarginLeft = (ok && pValue != NULL ? UT_convertToDimension(pValue, DIM_CM) : 0.0);
+    double abiMarginLeft = (ok && pValue != nullptr ? UT_convertToDimension(pValue, DIM_CM) : 0.0);
 
     // AbiWord's margin-left = OpenDocument paragraph property fo:margin-left +
     //                         OpenDocument text:space-before +
@@ -153,7 +153,7 @@ void ODe_Bullet_ListLevelStyle::fetchAttributesFromAbiBlock(
     // We first load the common attributes.
     ODe_ListLevelStyle::fetchAttributesFromAbiBlock(rAP);
     
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     bool ok = false;
     UT_UCS4Char ucs4Char = 0;
 
@@ -238,7 +238,7 @@ void ODe_Numbered_ListLevelStyle::fetchAttributesFromAbiBlock(
     // We first load the common attributes.
     ODe_ListLevelStyle::fetchAttributesFromAbiBlock(rAP);
     
-    const gchar* pValue = NULL;
+    const gchar* pValue = nullptr;
     bool ok = false;
 
     ok = rAP.getProperty("list-style", pValue);
@@ -266,7 +266,7 @@ void ODe_Numbered_ListLevelStyle::fetchAttributesFromAbiBlock(
     }
 
     ok = rAP.getProperty("start-value", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != nullptr) {
         if (atoi(pValue) > 0) {
             m_startValue = pValue;
         } else {

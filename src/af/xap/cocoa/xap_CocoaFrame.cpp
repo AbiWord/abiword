@@ -59,7 +59,7 @@
 	}
     m_name = [name retain];
 	m_pFrame = frame;
-	m_pGR = NULL;
+	m_pGR = nullptr;
 	m_drawable = nullptr;
 	m_layer = nullptr;
 	m_layer_needs_resize = false;
@@ -224,7 +224,7 @@
 		return frame;
 	}
 	NSLog (@"-[_getOwnerFrame] could find owner frame");
-	return NULL;
+	return nullptr;
 }
 */
 

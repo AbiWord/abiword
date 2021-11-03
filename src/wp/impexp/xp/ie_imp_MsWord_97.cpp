@@ -96,7 +96,7 @@ static const gchar * s_translateStyleId(UT_uint32 id)
 {
 	if(id >= 4094)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// The style names that have been commented out are those that do
@@ -108,118 +108,118 @@ static const gchar * s_translateStyleId(UT_uint32 id)
 		case 2:  return "Heading 2";
 		case 3:  return "Heading 3";
 		case 4:  return "Heading 4";
-		case 5:  return NULL /*"Heading 5"*/;
-		case 6:  return NULL /*"Heading 6"*/;
-		case 7:  return NULL /*"Heading 7"*/;
-		case 8:  return NULL /*"Heading 8"*/;
-		case 9:  return NULL /*"Heading 9"*/;
-		case 10: return NULL /*"Index 1"*/;  /* Really a dup of 92? */
-		case 11: return NULL /*"Index 2"*/;
-		case 12: return NULL /*"Index 3"*/;
-		case 13: return NULL /*"Index 4"*/;
-		case 14: return NULL /*"Index 5"*/;
-		case 15: return NULL /*"Index 6"*/;
-		case 16: return NULL /*"Index 7"*/;
-		case 17: return NULL /*"Index 8"*/;
-		case 18: return NULL /*"Index 9"*/;
-		case 19: return NULL /*"Contents 1"*/; /* Handled by insertTOC? */
-		case 20: return NULL /*"Contents 2"*/; /* Handled by insertTOC? */
-		case 21: return NULL /*"Contents 3"*/; /* Handled by insertTOC? */
-		case 22: return NULL /*"Contents 4"*/; /* Handled by insertTOC? */
-		case 23: return NULL /*"TOC 5"*/; /* See Contents above for these five as well */
-		case 24: return NULL /*"TOC 6"*/;
-		case 25: return NULL /*"TOC 7"*/;
-		case 26: return NULL /*"TOC 8"*/;
-		case 27: return NULL /*"TOC 9"*/;
-		case 28: return NULL /*"Normal Indent"*/;
+		case 5:  return nullptr /*"Heading 5"*/;
+		case 6:  return nullptr /*"Heading 6"*/;
+		case 7:  return nullptr /*"Heading 7"*/;
+		case 8:  return nullptr /*"Heading 8"*/;
+		case 9:  return nullptr /*"Heading 9"*/;
+		case 10: return nullptr /*"Index 1"*/;  /* Really a dup of 92? */
+		case 11: return nullptr /*"Index 2"*/;
+		case 12: return nullptr /*"Index 3"*/;
+		case 13: return nullptr /*"Index 4"*/;
+		case 14: return nullptr /*"Index 5"*/;
+		case 15: return nullptr /*"Index 6"*/;
+		case 16: return nullptr /*"Index 7"*/;
+		case 17: return nullptr /*"Index 8"*/;
+		case 18: return nullptr /*"Index 9"*/;
+		case 19: return nullptr /*"Contents 1"*/; /* Handled by insertTOC? */
+		case 20: return nullptr /*"Contents 2"*/; /* Handled by insertTOC? */
+		case 21: return nullptr /*"Contents 3"*/; /* Handled by insertTOC? */
+		case 22: return nullptr /*"Contents 4"*/; /* Handled by insertTOC? */
+		case 23: return nullptr /*"TOC 5"*/; /* See Contents above for these five as well */
+		case 24: return nullptr /*"TOC 6"*/;
+		case 25: return nullptr /*"TOC 7"*/;
+		case 26: return nullptr /*"TOC 8"*/;
+		case 27: return nullptr /*"TOC 9"*/;
+		case 28: return nullptr /*"Normal Indent"*/;
 		case 29: return "Footnote Text";
-		case 30: return NULL /*"Comment Text"*/;
-		case 31: return NULL /*"Header"*/;			
-		case 32: return NULL /*"Footer"*/;
-		case 33: return NULL /*"Index Heading"*/;
-		case 34: return NULL /*"Caption"*/;
-		case 35: return NULL /*"Table of Figures"*/;
-		case 36: return NULL /*"Envelope Address"*/;
-		case 37: return NULL /*"Envelope Return"*/;
+		case 30: return nullptr /*"Comment Text"*/;
+		case 31: return nullptr /*"Header"*/;
+		case 32: return nullptr /*"Footer"*/;
+		case 33: return nullptr /*"Index Heading"*/;
+		case 34: return nullptr /*"Caption"*/;
+		case 35: return nullptr /*"Table of Figures"*/;
+		case 36: return nullptr /*"Envelope Address"*/;
+		case 37: return nullptr /*"Envelope Return"*/;
 		case 38: return "Footnote Reference";
-		case 39: return NULL /*"Comment Reference"*/;
-		case 40: return NULL /*"Line Number"*/;
-		case 41: return NULL /*"Page Number"*/;
+		case 39: return nullptr /*"Comment Reference"*/;
+		case 40: return nullptr /*"Line Number"*/;
+		case 41: return nullptr /*"Page Number"*/;
 		case 42: return "Endnote Reference";
 		case 43: return "Endnote Text";
-		case 44: return NULL /*"Index of Authorities"*/;
-		case 45: return NULL /*"Macro Text"*/;
-		case 46: return NULL /*"TOA Heading"*/;
-		case 47: return NULL /*"List"*/;   //WARNING: beginPara appears to handle arbitrary lists via _mapDocToAbiList*
+		case 44: return nullptr /*"Index of Authorities"*/;
+		case 45: return nullptr /*"Macro Text"*/;
+		case 46: return nullptr /*"TOA Heading"*/;
+		case 47: return nullptr /*"List"*/;   //WARNING: beginPara appears to handle arbitrary lists via _mapDocToAbiList*
 		case 48: return "Bulleted List";
 		case 49: return "Numbered List";
-		case 50: return NULL /*"List 2"*/;
-		case 51: return NULL /*"List 3"*/;
-		case 52: return NULL /*"List 4"*/;
-		case 53: return NULL /*"List 5"*/;
-		case 54: return NULL /*"List Bullet 2"*/;
-		case 55: return NULL /*"List Bullet 3"*/;
-		case 56: return NULL /*"List Bullet 4"*/;
-		case 57: return NULL /*"List Bullet 5"*/;
-		case 58: return NULL /*"List Number 2"*/;
-		case 59: return NULL /*"List Number 3"*/;
-		case 60: return NULL /*"List Number 4"*/;
-		case 61: return NULL /*"List Number 5"*/;
-		case 62: return NULL /*"Title"*/;
-		case 63: return NULL /*"Closing"*/;	
-		case 64: return NULL /*"Signature"*/;
-		case 65: return NULL /*"Default Paragraph Font"*/;
-		case 66: return NULL /*"Body Text"*/;
-		case 67: return NULL /*"Body Text Indent"*/;
-		case 68: return NULL /*"List Continue"*/;
-		case 69: return NULL /*"List Continue 2"*/;
-		case 70: return NULL /*"List Continue 3"*/;
-		case 71: return NULL /*"List Continue 4"*/;
-		case 72: return NULL /*"List Continue 5"*/;
-		case 73: return NULL /*"Message Header"*/;
-		case 74: return NULL /*"Subtitle"*/;
-		case 75: return NULL /*"Salutation"*/;
-		case 76: return NULL /*"Date"*/;
-		case 77: return NULL /*"Body Text First Indent"*/;
-		case 78: return NULL /*"Body Text First Indent 2"*/;
-		case 79: return NULL /*"Note Heading"*/;
-		case 80: return NULL /*"Body Text 2"*/;
-		case 81: return NULL /*"Body Text 3"*/;
-		case 82: return NULL /*"Body Text Indent 2"*/;
-		case 83: return NULL /*"Body Text Indent 3"*/;
+		case 50: return nullptr /*"List 2"*/;
+		case 51: return nullptr /*"List 3"*/;
+		case 52: return nullptr /*"List 4"*/;
+		case 53: return nullptr /*"List 5"*/;
+		case 54: return nullptr /*"List Bullet 2"*/;
+		case 55: return nullptr /*"List Bullet 3"*/;
+		case 56: return nullptr /*"List Bullet 4"*/;
+		case 57: return nullptr /*"List Bullet 5"*/;
+		case 58: return nullptr /*"List Number 2"*/;
+		case 59: return nullptr /*"List Number 3"*/;
+		case 60: return nullptr /*"List Number 4"*/;
+		case 61: return nullptr /*"List Number 5"*/;
+		case 62: return nullptr /*"Title"*/;
+		case 63: return nullptr /*"Closing"*/;	
+		case 64: return nullptr /*"Signature"*/;
+		case 65: return nullptr /*"Default Paragraph Font"*/;
+		case 66: return nullptr /*"Body Text"*/;
+		case 67: return nullptr /*"Body Text Indent"*/;
+		case 68: return nullptr /*"List Continue"*/;
+		case 69: return nullptr /*"List Continue 2"*/;
+		case 70: return nullptr /*"List Continue 3"*/;
+		case 71: return nullptr /*"List Continue 4"*/;
+		case 72: return nullptr /*"List Continue 5"*/;
+		case 73: return nullptr /*"Message Header"*/;
+		case 74: return nullptr /*"Subtitle"*/;
+		case 75: return nullptr /*"Salutation"*/;
+		case 76: return nullptr /*"Date"*/;
+		case 77: return nullptr /*"Body Text First Indent"*/;
+		case 78: return nullptr /*"Body Text First Indent 2"*/;
+		case 79: return nullptr /*"Note Heading"*/;
+		case 80: return nullptr /*"Body Text 2"*/;
+		case 81: return nullptr /*"Body Text 3"*/;
+		case 82: return nullptr /*"Body Text Indent 2"*/;
+		case 83: return nullptr /*"Body Text Indent 3"*/;
 		case 84: return "Block Text";
-		case 85: return NULL /*"Hyperlink"*/;
-		case 86: return NULL /*"FollowedHyperlink"*/;
-		case 87: return NULL /*"Strong"*/;
-		case 88: return NULL /*"Emphasis"*/;
-		case 89: return NULL /*"Document Map"*/;
+		case 85: return nullptr /*"Hyperlink"*/;
+		case 86: return nullptr /*"FollowedHyperlink"*/;
+		case 87: return nullptr /*"Strong"*/;
+		case 88: return nullptr /*"Emphasis"*/;
+		case 89: return nullptr /*"Document Map"*/;
 		case 90: return "Plain Text"; /* Really a dup of 109? */
-		case 91: return NULL /*"Email Signature"*/;
-	    case 92: return NULL /*"Index 1"*/;  /* Really a dup of 10? */
-	    case 93: return NULL /*"List Bullet"*/;
-		case 94: return NULL /*"Normal (Web)"*/;
-		case 95: return NULL /*"HTML Acronym"*/;
-		case 96: return NULL /*"HTML Address"*/;
-		case 97: return NULL /*"HTML Cite"*/;
-		case 98: return NULL /*"HTML Code"*/;
-		case 99: return NULL /*"HTML Definition"*/;
-		case 100: return NULL /*"HTML Keyboard"*/;
-		case 101: return NULL /*"HTML Preformatted"*/;
-		case 102: return NULL /*"HTML Sample"*/;
-		case 103: return NULL /*"HTML Typewriter"*/;
-		case 104: return NULL /*"HTML Variable"*/;
-		case 105: return NULL /*"Table Normal"*/;
-    	case 106: return NULL /*"Comment Subject"*/;
-		case 107: return NULL /*"No List"*/;
-    	case 108: return NULL /*"Index Heading"*/;
+		case 91: return nullptr /*"Email Signature"*/;
+	    case 92: return nullptr /*"Index 1"*/;  /* Really a dup of 10? */
+	    case 93: return nullptr /*"List Bullet"*/;
+		case 94: return nullptr /*"Normal (Web)"*/;
+		case 95: return nullptr /*"HTML Acronym"*/;
+		case 96: return nullptr /*"HTML Address"*/;
+		case 97: return nullptr /*"HTML Cite"*/;
+		case 98: return nullptr /*"HTML Code"*/;
+		case 99: return nullptr /*"HTML Definition"*/;
+		case 100: return nullptr /*"HTML Keyboard"*/;
+		case 101: return nullptr /*"HTML Preformatted"*/;
+		case 102: return nullptr /*"HTML Sample"*/;
+		case 103: return nullptr /*"HTML Typewriter"*/;
+		case 104: return nullptr /*"HTML Variable"*/;
+		case 105: return nullptr /*"Table Normal"*/;
+		case 106: return nullptr /*"Comment Subject"*/;
+		case 107: return nullptr /*"No List"*/;
+		case 108: return nullptr /*"Index Heading"*/;
 	    case 109: return "Plain Text";  /* Really a dup of 90? */
-	    case 110: return NULL /*"Hyperlink"*/;
-	    case 111: return NULL /*"FollowedHyperlink"*/;
+	    case 110: return nullptr /*"Hyperlink"*/;
+	    case 111: return nullptr /*"FollowedHyperlink"*/;
     	case 112: return "Numbered List"; /* Was EnumList, really a dup of 49? Closer than nothing anyway*/
-    	case 115: return NULL /*"Balloon Text"*/;
+		case 115: return nullptr /*"Balloon Text"*/;
 
-		case 153: return NULL /*"Table of Authorities"*/;
-		case 154: return NULL /*"Grille du tableau" in fr_FR*/;
+		case 153: return nullptr /*"Table of Authorities"*/;
+		case 154: return nullptr /*"Grille du tableau" in fr_FR*/;
 
 		default:
 			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
@@ -229,9 +229,9 @@ static const gchar * s_translateStyleId(UT_uint32 id)
 			// developers who will have such alien documents.  -MG
 		
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			return NULL;
+			return nullptr;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*!
@@ -242,10 +242,10 @@ static char * s_stripDangerousChars(const char *s)
 {
 	UT_uint32 j, k;
 	if(!s)
-		return NULL;
+		return nullptr;
 	
 	char * t = (char*) g_try_malloc(strlen(s)+1);
-	UT_return_val_if_fail(t,NULL);
+	UT_return_val_if_fail(t,nullptr);
 	
 	for(j = 0, k = 0; j < strlen(s); )
 	{
@@ -286,15 +286,15 @@ static char * s_convert_to_utf8 (const wvParseStruct *ps, const char *s)
 	// so we must ensure it is UTF-8. This is time consuming. :-(
 	// If it is UTF-8 we just g_strdup() it.
 	// See bug 13229.
-	if (s == NULL)
-		return NULL;
-	if(g_utf8_validate(s, -1, NULL)) {
+	if (s == nullptr)
+		return nullptr;
+	if(g_utf8_validate(s, -1, nullptr)) {
 		return g_strdup(s);
 	}
-	const char * encoding = NULL;
+	const char * encoding = nullptr;
 	char fallback = '?';
 	encoding = wvLIDToCodePageConverter(ps->fib.lid);
-	return g_convert_with_fallback(s, -1, "UTF-8", encoding, &fallback, NULL, NULL, NULL);
+	return g_convert_with_fallback(s, -1, "UTF-8", encoding, &fallback, nullptr, nullptr, nullptr);
 }
 
 //
@@ -450,22 +450,22 @@ s_mapPageIdToString (UT_uint16 id)
 		case 1:
 			return "Letter";
 		case 5:  return "Legal";
-		case 7:  return NULL; //"Executive";
+		case 7:  return nullptr; //"Executive";
 		case 9:  return "A4";
 		case 11: return "A5";
 		case 13: return "Folio";
-		case 14: return NULL; // in Word this is "B5" but the size
+		case 14: return nullptr; // in Word this is "B5" but the size
 							  // does not correspond to AW's B5
 		case 20: return "Envelope No10";
 		case 27: return "DL Envelope";
 		case 28: return "C5";
 		case 34: return "B5"; // in Word this is B5 Envelope ...
-		case 37: return NULL; //"Monarch Envelope";
+		case 37: return nullptr; //"Monarch Envelope";
 
 		case 0xffff:
 			// this is a value that wv uses to indicate that page size
-			// is customised, just return NULL
-			return NULL;
+			// is customised, just return nullptr
+			return nullptr;
 			
 		default:
 			UT_DEBUGMSG(("Unknow page size: please submit this document with a bug report\n"));
@@ -538,8 +538,8 @@ static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_UTF8Str
 	// the Word format string looks like this
 	//    prefix '\0' suffix
 	// and the '\0' represents the location of the list number/bullet
-	UT_uint16 * pPfx = NULL;
-	UT_uint16 * pSfx = NULL;
+	UT_uint16 * pPfx = nullptr;
+	UT_uint16 * pSfx = nullptr;
 
 	if(iLen && *pStr)
 		pPfx = pStr;
@@ -701,7 +701,7 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (GsfInput * input)
 {
 	GsfInfile * ole;
 
-	ole = gsf_infile_msole_new (input, NULL);
+	ole = gsf_infile_msole_new (input, nullptr);
 
 	// invokes the old recognizeContents below, in hopes of identifying
 	// pre-OLE files
@@ -843,7 +843,7 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 			if(m_pBookmarks[i].name && m_pBookmarks[i].start)
 			{
 			   delete[] m_pBookmarks[i].name;
-			   m_pBookmarks[i].name = NULL;
+			   m_pBookmarks[i].name = nullptr;
 			}
 		}
 		delete [] m_pBookmarks;
@@ -870,13 +870,13 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bLTRParaContext(true),
 	m_bBidiMode(false),
 	m_bInLink(false),
-	m_pBookmarks(NULL),
+	m_pBookmarks(nullptr),
 	m_iBookmarksCount(0),
-	m_pFootnotes(NULL),
+	m_pFootnotes(nullptr),
 	m_iFootnotesCount(0),
-	m_pEndnotes(NULL),
+	m_pEndnotes(nullptr),
 	m_iEndnotesCount(0),
-	m_pTextboxes(NULL),
+	m_pTextboxes(nullptr),
 	m_iTextboxCount(0),
     m_iMSWordListId(0),
     m_bEncounteredRevision(false),
@@ -895,8 +895,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iNextENote(0),
 	m_bInFNotes(false),
 	m_bInENotes(false),
-	m_pNotesEndSection(NULL),
-	m_pHeaders(NULL),
+	m_pNotesEndSection(nullptr),
+	m_pHeaders(nullptr),
 	m_iHeadersCount(0),
 	m_iHeadersStart(0xffffffff),
 	m_iHeadersEnd(0xffffffff),
@@ -923,7 +923,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bInTOC(false),
 	m_bTOCsupported(false),
 	m_bInTextboxes(false),
-	m_pTextboxEndSection(NULL),
+	m_pTextboxEndSection(nullptr),
 	m_iLeftCellPos(0),
 	m_iLastAppendedHeader(0xffffffff)
 {
@@ -994,48 +994,48 @@ static const struct {
   { GSF_META_NAME_DATE_CREATED, PD_META_KEY_DATE },
   { GSF_META_NAME_KEYWORDS, PD_META_KEY_KEYWORDS },
   { GSF_META_NAME_LANGUAGE, PD_META_KEY_LANGUAGE },
-  { GSF_META_NAME_REVISION_COUNT, NULL },
-  { GSF_META_NAME_EDITING_DURATION, NULL },
-  { GSF_META_NAME_TABLE_COUNT, NULL },
-  { GSF_META_NAME_IMAGE_COUNT, NULL },
-  { GSF_META_NAME_OBJECT_COUNT, NULL },
-  { GSF_META_NAME_PAGE_COUNT, NULL },
-  { GSF_META_NAME_PARAGRAPH_COUNT, NULL },
-  { GSF_META_NAME_WORD_COUNT, NULL },
-  { GSF_META_NAME_CHARACTER_COUNT, NULL },
-  { GSF_META_NAME_CELL_COUNT, NULL },
-  { GSF_META_NAME_SPREADSHEET_COUNT, NULL },
+  { GSF_META_NAME_REVISION_COUNT, nullptr },
+  { GSF_META_NAME_EDITING_DURATION, nullptr },
+  { GSF_META_NAME_TABLE_COUNT, nullptr },
+  { GSF_META_NAME_IMAGE_COUNT, nullptr },
+  { GSF_META_NAME_OBJECT_COUNT, nullptr },
+  { GSF_META_NAME_PAGE_COUNT, nullptr },
+  { GSF_META_NAME_PARAGRAPH_COUNT, nullptr },
+  { GSF_META_NAME_WORD_COUNT, nullptr },
+  { GSF_META_NAME_CHARACTER_COUNT, nullptr },
+  { GSF_META_NAME_CELL_COUNT, nullptr },
+  { GSF_META_NAME_SPREADSHEET_COUNT, nullptr },
   { GSF_META_NAME_CREATOR, PD_META_KEY_CREATOR },
-  { GSF_META_NAME_TEMPLATE, NULL },
-  { GSF_META_NAME_LAST_SAVED_BY, NULL },
-  { GSF_META_NAME_LAST_PRINTED, NULL },
-  { GSF_META_NAME_SECURITY, NULL },
-  { GSF_META_NAME_CATEGORY, NULL },
-  { GSF_META_NAME_PRESENTATION_FORMAT, NULL },
-  { GSF_META_NAME_THUMBNAIL, NULL },
+  { GSF_META_NAME_TEMPLATE, nullptr },
+  { GSF_META_NAME_LAST_SAVED_BY, nullptr },
+  { GSF_META_NAME_LAST_PRINTED, nullptr },
+  { GSF_META_NAME_SECURITY, nullptr },
+  { GSF_META_NAME_CATEGORY, nullptr },
+  { GSF_META_NAME_PRESENTATION_FORMAT, nullptr },
+  { GSF_META_NAME_THUMBNAIL, nullptr },
   { GSF_META_NAME_GENERATOR, PD_META_KEY_GENERATOR },
-  { GSF_META_NAME_LINE_COUNT, NULL },
-  { GSF_META_NAME_SLIDE_COUNT, NULL },
-  { GSF_META_NAME_NOTE_COUNT, NULL },
-  { GSF_META_NAME_HIDDEN_SLIDE_COUNT, NULL },
-  { GSF_META_NAME_MM_CLIP_COUNT, NULL },
-  { GSF_META_NAME_BYTE_COUNT, NULL },
-  { GSF_META_NAME_SCALE, NULL },
-  { GSF_META_NAME_HEADING_PAIRS, NULL },
-  { GSF_META_NAME_DOCUMENT_PARTS, NULL },
+  { GSF_META_NAME_LINE_COUNT, nullptr },
+  { GSF_META_NAME_SLIDE_COUNT, nullptr },
+  { GSF_META_NAME_NOTE_COUNT, nullptr },
+  { GSF_META_NAME_HIDDEN_SLIDE_COUNT, nullptr },
+  { GSF_META_NAME_MM_CLIP_COUNT, nullptr },
+  { GSF_META_NAME_BYTE_COUNT, nullptr },
+  { GSF_META_NAME_SCALE, nullptr },
+  { GSF_META_NAME_HEADING_PAIRS, nullptr },
+  { GSF_META_NAME_DOCUMENT_PARTS, nullptr },
   { GSF_META_NAME_MANAGER, PD_META_KEY_CONTRIBUTOR },
   { GSF_META_NAME_COMPANY, PD_META_KEY_PUBLISHER },
-  { GSF_META_NAME_LINKS_DIRTY, NULL },
-  { GSF_META_NAME_MSOLE_UNKNOWN_17, NULL },
-  { GSF_META_NAME_MSOLE_UNKNOWN_18, NULL },
-  { GSF_META_NAME_MSOLE_UNKNOWN_19, NULL },
-  { GSF_META_NAME_MSOLE_UNKNOWN_20, NULL },
-  { GSF_META_NAME_MSOLE_UNKNOWN_21, NULL },
-  { GSF_META_NAME_MSOLE_UNKNOWN_22, NULL },
-  { GSF_META_NAME_MSOLE_UNKNOWN_23, NULL },
-  { GSF_META_NAME_DICTIONARY, NULL },
-  { GSF_META_NAME_LOCALE_SYSTEM_DEFAULT, NULL },
-  { GSF_META_NAME_CASE_SENSITIVE, NULL }
+  { GSF_META_NAME_LINKS_DIRTY, nullptr },
+  { GSF_META_NAME_MSOLE_UNKNOWN_17, nullptr },
+  { GSF_META_NAME_MSOLE_UNKNOWN_18, nullptr },
+  { GSF_META_NAME_MSOLE_UNKNOWN_19, nullptr },
+  { GSF_META_NAME_MSOLE_UNKNOWN_20, nullptr },
+  { GSF_META_NAME_MSOLE_UNKNOWN_21, nullptr },
+  { GSF_META_NAME_MSOLE_UNKNOWN_22, nullptr },
+  { GSF_META_NAME_MSOLE_UNKNOWN_23, nullptr },
+  { GSF_META_NAME_DICTIONARY, nullptr },
+  { GSF_META_NAME_LOCALE_SYSTEM_DEFAULT, nullptr },
+  { GSF_META_NAME_CASE_SENSITIVE, nullptr }
 };
 static const gsize nr_metadata_names = G_N_ELEMENTS(metadata_names);
 
@@ -1057,8 +1057,8 @@ cb_print_property (char const *name, GsfDocProp const *prop, DocAndLid * doc)
 		  if(strcmp(metadata_names[i].metadata_key, name) == 0) {
 			  char const * abi_metadata_name = metadata_names[i].abi_metadata_name;
 			
-			  if(abi_metadata_name != NULL) {
-				  const char * encoding = NULL;
+			  if(abi_metadata_name != nullptr) {
+				  const char * encoding = nullptr;
 				  if (doc->lid >> 8 != 0x04) {
 					// header is not utf8 encoded
 				  	encoding = wvLIDToCodePageConverter(doc->lid);
@@ -1074,7 +1074,7 @@ cb_print_property (char const *name, GsfDocProp const *prop, DocAndLid * doc)
 						  
 						  if (encoding && *encoding)
 							  {
-								  tmp = g_convert_with_fallback(contents, -1, (gchar*)"UTF-8", encoding, (gchar*)"?", NULL, NULL, NULL);
+								  tmp = g_convert_with_fallback(contents, -1, (gchar*)"UTF-8", encoding, (gchar*)"?", nullptr, nullptr, nullptr);
 							  }
 						  else
 							  {
@@ -1114,15 +1114,15 @@ static void print_summary_stream (GsfInfile * msole,
 								  PD_Document * doc)
 {
   GsfInput * stream = gsf_infile_child_by_name (msole, stream_name);
-  if (stream != NULL) {
+  if (stream != nullptr) {
     GsfDocMetaData *meta_data = gsf_doc_meta_data_new ();
-    GError    *err = NULL;
+    GError    *err = nullptr;
 
     err = gsf_doc_meta_data_read_from_msole(meta_data, stream);
-    if (err != NULL) {
+    if (err != nullptr) {
       g_warning ("Error getting metadata for %s: %s", stream_name, err->message);
       g_error_free (err);
-      err = NULL;
+      err = nullptr;
     } else {
 		DocAndLid dil;
 
@@ -1148,7 +1148,7 @@ UT_Error IE_Imp_MsWord_97::_loadFile(GsfInput * fp)
   wvParseStruct ps;
 
   int ret = wvInitParser_gsf(&ps, fp);
-  const char * password = NULL;
+  const char * password = nullptr;
 
   if (ret & 0x8000)		/* Password protected? */
     {
@@ -1159,7 +1159,7 @@ UT_Error IE_Imp_MsWord_97::_loadFile(GsfInput * fp)
       if ((ret & 0x7fff) == WORD8)
 	{
 	  ret = 0;
-	  if (password == NULL)
+	  if (password == nullptr)
 	    {
 			//ErrorMessage(AP_STRING_ID_WORD_PassRequired);
 	      ErrCleanupAndExit(UT_IE_PROTECTED);
@@ -1177,7 +1177,7 @@ UT_Error IE_Imp_MsWord_97::_loadFile(GsfInput * fp)
       else if (((ret & 0x7fff) == WORD7) || ((ret & 0x7fff) == WORD6))
 	{
 	  ret = 0;
-	  if (password == NULL)
+	  if (password == nullptr)
 	    {
 			//ErrorMessage(AP_STRING_ID_WORD_PassRequired);
 	      ErrCleanupAndExit(UT_IE_PROTECTED);
@@ -1256,7 +1256,7 @@ void IE_Imp_MsWord_97::_flush ()
 	  UT_DEBUGMSG(("#TF: _flush: appending default block\n"));
 	  _appendStrux(PTX_Block, PP_NOPROPS);
 	  m_bInPara = true;
-	  emObject * pObject = NULL;
+	  emObject * pObject = nullptr;
 	  if(m_vecEmObjects.getItemCount() > 0)
 	  {
 		  UT_sint32 i =0;
@@ -1506,7 +1506,7 @@ gchar * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint32 p
 		  str = new gchar[sUTF8.byteLength()+1];
 		  strcpy(str, sUTF8.utf8_str());
 		} else
-		  str = NULL;
+		  str = nullptr;
 	}
 	else
 	{
@@ -1523,7 +1523,7 @@ gchar * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint32 p
 			str[i] = 0;
 		}
 		else
-			str = NULL;
+			str = nullptr;
 	}
 	
 	return str;
@@ -1696,7 +1696,7 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			}
 		}
-		else if( pf == NULL)
+		else if( pf == nullptr)
 		{
 			getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 		}
@@ -1715,7 +1715,7 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate(UT_uint32 iDocPosition)
 	//now search for position iDocPosition in our bookmark list;
 	bookmark * bm, * lastBm;
 	if (m_iBookmarksCount == 0) {
-		bm = static_cast<bookmark*>(NULL);
+		bm = static_cast<bookmark*>(nullptr);
 	}
 	else {
 		bm = static_cast<bookmark*>( bsearch(static_cast<const void *>(&iDocPosition),
@@ -1974,8 +1974,8 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		UT_DEBUGMSG(("Pre W97 Image format.\n"));
 		wvStream_goto(ps->data, achp->fcPic_fcObj_lTagObj);
 
-		if (1 == wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf,
-						   ps->data) && NULL != picf.rgb)
+		if (1 == wvGetPICF(wvQuerySupported(&ps->fib, nullptr), &picf,
+						   ps->data) && nullptr != picf.rgb)
 		{
 			fil = picf.rgb;
 
@@ -2005,7 +2005,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 #endif
 		break;
 	case 0x08: // Word 97, 2000, XP image
-		if (wvQuerySupported(&ps->fib, NULL) >= WORD8) // sanity check
+		if (wvQuerySupported(&ps->fib, nullptr) >= WORD8) // sanity check
 		{
 			if (ps->nooffspa > 0)
 			{
@@ -2042,7 +2042,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 				UT_uint32 textOff = 0;
 				UT_uint32 i;
 				escherstruct item;
-				FSPContainer *answer = NULL;
+				FSPContainer *answer = nullptr;
 
 				UT_DEBUGMSG(("IE_Imp_MsWord_97:: escher: ps->fib.fcDggInfo %d ps->fib.lcbDggInfo %d \n", ps->fib.fcDggInfo,ps->fib.lcbDggInfo));
 				wvGetEscher (&item, ps->fib.fcDggInfo, ps->fib.lcbDggInfo, ps->tablefd,
@@ -2055,10 +2055,10 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 						break;
 					}
 				}
-				if(answer != NULL)
+				if(answer != nullptr)
 				{
 					ClientTextbox cTextBox = answer->clienttextbox;
-					if(cTextBox.textid != NULL)
+					if(cTextBox.textid != nullptr)
 					{
 						isTextBox = true;
 						textOff = *cTextBox.textid;
@@ -2069,9 +2069,9 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 				}
 				if(isTextBox || bPositionObject)
 				{
-//				if(answer != NULL)
+//				if(answer != nullptr)
 //				{
-					const char * atts[] = {NULL,NULL,NULL,NULL,NULL,NULL};
+					const char * atts[] = {nullptr,nullptr,nullptr,nullptr,nullptr,nullptr};
 					if(bPositionObject && sImageName.size())
 					{
 					  atts[0] =  PT_STRUX_IMAGE_DATAID;
@@ -2186,7 +2186,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		else
 		{
 			UT_DEBUGMSG(("pre Word8 0x08 graphic -- unsupported at the moment"));
-			/*fdoa =*/ wvGetFDOAFromCP(ps->currentcp, NULL, ps->fdoapos,
+			/*fdoa =*/ wvGetFDOAFromCP(ps->currentcp, nullptr, ps->fdoapos,
 								   ps->nooffdoa);
 
 			// TODO: do something with the data in this fdoa someday...
@@ -2333,7 +2333,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
 
 		// check if the paper name is valid (i.e., there is a match
 		// between the name and the sizes; if not, we use only the sizes
-		bool bPaperNameValid = (paper_name != NULL);
+		bool bPaperNameValid = (paper_name != nullptr);
 		
 		if(bPaperNameValid)
 		{
@@ -2667,7 +2667,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
 
 // this function is called from _handleHeadersText() with meaningless
 // parameters; if you want to make use of any of the parameters here,
-// make sure it will work with NULLs, etc.
+// make sure it will work with nullptrs, etc.
 int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ ,
 								void * /* prop */, int /* dirty */ )
 {
@@ -3118,8 +3118,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 		{
 			propsArray.push_back("style");
 
-			char * t = NULL;
-			const gchar * pName = NULL;
+			char * t = nullptr;
+			const gchar * pName = nullptr;
 			if(pSTD)
 				pName = s_translateStyleId(pSTD[apap->istd].sti);
 
@@ -3356,7 +3356,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 /*tag*/,
 		if(achp->istd != istdNil && achp->istd < iCount)
 		{
 			propsArray[propsOffset++] = static_cast<const gchar *>("style");
-			char * t = NULL;
+			char * t = nullptr;
 			const gchar * pName = s_translateStyleId(pSTD[achp->istd].sti);
 		
 			if(pName)
@@ -3419,7 +3419,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	//
 	// The majority of this code has just been ripped out of wv/field.c
 	//
-	field * f = NULL;
+	field * f = nullptr;
 	UT_sint32 iRet = 1;
 	
 	if (eachchar == 0x13) // beginning of a field
@@ -3476,7 +3476,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 		}
 		catch(...)
 		{
-			f = NULL;
+			f = nullptr;
 		}
 
 		UT_return_val_if_fail(f,0);
@@ -3556,7 +3556,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 /*iDocPosition*
 {
 	Doc_Field_t tokenIndex = F_OTHER;
 	char *token;
-	field * f = NULL;
+	field * f = nullptr;
 	m_stackField.viewTop((void**)&f);
 	UT_return_val_if_fail(f, true);
 	
@@ -3597,7 +3597,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 /*iDocPosition*
 					"param"
 				};
 
-				token = strtok (NULL, "\"\" ");
+				token = strtok (nullptr, "\"\" ");
 
 				UT_return_val_if_fail(f->argument[f->fieldI - 1] == 0x15, false);
 				
@@ -3633,7 +3633,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 /*iDocPosition*
 
 			case F_HYPERLINK:
 				{
-					token = strtok (NULL, "\"\" ");
+					token = strtok (nullptr, "\"\" ");
 					UT_return_val_if_fail(f->argument[f->fieldI - 1] == 0x15, false);
 					
 					f->argument[f->fieldI - 1] = 0;
@@ -3668,7 +3668,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 /*iDocPosition*
 				// but it is better than nothing at all)
 				
 				{
-					token = strtok (NULL, "\"\" ");
+					token = strtok (nullptr, "\"\" ");
 					UT_return_val_if_fail(f->argument[f->fieldI - 1] == 0x15, false);
 					
 					f->argument[f->fieldI - 1] = 0;
@@ -3692,7 +3692,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 /*iDocPosition*
 				break;
 		}
 
-		token = strtok (NULL, "\t, ");
+		token = strtok (nullptr, "\t, ");
 	}
 	return false;
 }
@@ -3716,7 +3716,7 @@ bool IE_Imp_MsWord_97::_isTOCsupported(field *f)
 	char * command = wvWideStrToMB (f->command);
 	UT_DEBUGMSG(("IE_Imp_MsWord_97::_isTOCsupported: command %s\n", command));
 
-	char * params = NULL;
+	char * params = nullptr;
 
 	if(f->type == F_TOC)
 	{
@@ -3760,15 +3760,15 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 	bool bSupported = false;
 
 	UT_sint32 i = 0, i1 = 0, i2 = 0;
-	char * t = NULL, * t1 = NULL, * t2 = NULL;
+	char * t = nullptr, * t1 = nullptr, * t2 = nullptr;
 	UT_UTF8String sProps = "toc-has-heading:0;", sTemp, sLeader;
 
-	const gchar * attrs [3] = {"props", NULL, NULL};
+	const gchar * attrs [3] = {"props", nullptr, nullptr};
 
 	char * command = wvWideStrToMB (f->command);
 	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertTOC: command %s\n", command));
 
-	char * params = NULL;
+	char * params = nullptr;
 	
 	if(f->type == F_TOC)
 	{
@@ -4027,8 +4027,8 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		return true;
 	
 	Doc_Field_t tokenIndex = F_OTHER;
-	char *token = NULL;
-	field * f = NULL;
+	char *token = nullptr;
+	field * f = nullptr;
 	m_stackField.viewTop((void**)&f);
 	UT_return_val_if_fail(f,true);
 	bool bTypeSet = false;
@@ -4095,7 +4095,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 				break;
 
 			case F_PAGEREF:
-				token = strtok (NULL, "\"\" ");
+				token = strtok (nullptr, "\"\" ");
 				atts.push_back("page_ref");
 				atts.push_back("param");
 				if(token)
@@ -4106,14 +4106,14 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 
 			case F_HYPERLINK:
 				{
-					token = strtok (NULL, "\"\" ");
+					token = strtok (nullptr, "\"\" ");
 
 					if(token) {
 					  // hyperlink or hyperlink to bookmark
 					  std::string href;
 					  if ( !strcmp(token, "\\l") )
 					    {
-					      token = strtok (NULL, "\"\" ");
+					      token = strtok (nullptr, "\"\" ");
 					      href = "#";
 					      href += token;
 					    }
@@ -4154,7 +4154,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 				/* fall through */
 			default:
 				// unhandled field type
-				token = strtok(NULL, "\t, ");
+				token = strtok(nullptr, "\t, ");
 				continue;
 		}
 
@@ -4172,7 +4172,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 			UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1].c_str()));
 		}
 
-		token = strtok(NULL, "\t, ");
+		token = strtok(nullptr, "\t, ");
 	}
 
 	return true;
@@ -4355,7 +4355,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 		}
 	}
 	if (!getDoc()->createDataItem(propsName.c_str(), false,
-								  buf, pFG->getMimeType(), NULL))
+								  buf, pFG->getMimeType(), nullptr))
 	{
 		UT_DEBUGMSG (("Could not create data item\n"));
 		// the mimetype is sunk anyway
@@ -4460,7 +4460,7 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   UT_String_sprintf(sImageName, "%d", getDoc()->getUID(UT_UniqueId::Image));
 
   if (!getDoc()->createDataItem(sImageName.c_str(), false,
-                                buf, pFG->getMimeType(), NULL))
+                                buf, pFG->getMimeType(), nullptr))
 	{
 	  UT_DEBUGMSG (("Could not create data item\n"));
 	  return UT_ERROR;
@@ -4511,7 +4511,7 @@ void IE_Imp_MsWord_97::_table_open ()
   m_iCurrentRow = 0;
   m_iCurrentCell = 0;
 
-  //  _appendStrux(PTX_Block, NULL); // Don't need/want this after 27/3/2005
+  //  _appendStrux(PTX_Block, nullptr); // Don't need/want this after 27/3/2005
   _appendStrux(PTX_SectionTable, PP_NOPROPS);
   m_vecColumnWidths.clear();
   m_bRowOpen = false;
@@ -4869,7 +4869,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   const gchar* propsArray[3];
   propsArray[0] = static_cast<const gchar*>("props");
   propsArray[1] = "";
-  propsArray[2] = NULL;
+  propsArray[2] = nullptr;
 	  
   
 #if 0
@@ -5159,7 +5159,7 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 	// and the logic to know when somehow depends on the
 	// character sets or encoding types? it's in the docs.
 
-	UT_ASSERT_HARMLESS(fname != NULL);
+	UT_ASSERT_HARMLESS(fname != nullptr);
 	xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
 
 	s += "font-family:";
@@ -5346,11 +5346,11 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 	const STD * pSTD = ps->stsh.std;
 	const STD * pSTDBase = pSTD;
 	UT_String props;
-	char * s = NULL;
-	char * b = NULL;
-	char * f = NULL;
+	char * s = nullptr;
+	char * b = nullptr;
+	char * f = nullptr;
 
-	UT_return_if_fail(pSTD != NULL);
+	UT_return_if_fail(pSTD != nullptr);
 
 	for(UT_uint32 i = 0; i < iCount; i++, pSTD++)
 	{
@@ -5450,9 +5450,9 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 			attribs[iOffset++] = props.c_str();
 		}
 		
-		attribs[iOffset] = NULL;
+		attribs[iOffset] = nullptr;
 
-		PD_Style * pStyle = NULL;
+		PD_Style * pStyle = nullptr;
 		if(getDoc()->getStyle(pSTD->xstzName, &pStyle))
 		{
 			xxx_UT_DEBUGMSG(("Redefining style %s\n", pSTD->xstzName));
@@ -5482,7 +5482,7 @@ int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
 			if(m_pBookmarks[i].name && m_pBookmarks[i].start)
 			{
 				delete []m_pBookmarks[i].name;
-				m_pBookmarks[i].name = NULL;
+				m_pBookmarks[i].name = nullptr;
 			}
 		}
 		delete [] m_pBookmarks;
@@ -5521,7 +5521,7 @@ int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
 		}
 		catch(...)
 		{
-			m_pBookmarks = NULL;
+			m_pBookmarks = nullptr;
 		}
 
 		UT_return_val_if_fail(m_pBookmarks, 0);
@@ -5573,8 +5573,8 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 
 	m_iFootnotesCount = 0;
 	m_iEndnotesCount = 0;
-	UT_uint32 *pPLCF_ref = NULL;
-	UT_uint32 *pPLCF_txt = NULL;
+	UT_uint32 *pPLCF_ref = nullptr;
+	UT_uint32 *pPLCF_txt = nullptr;
 
 	bool bNoteError = false;
 
@@ -5588,7 +5588,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 		}
 		catch(...)
 		{
-			m_pFootnotes = NULL;
+			m_pFootnotes = nullptr;
 		}
 
 		UT_return_if_fail(m_pFootnotes);
@@ -5704,7 +5704,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 		}
 		catch(...)
 		{
-			m_pEndnotes = NULL;
+			m_pEndnotes = nullptr;
 		}
 
 		UT_return_if_fail(m_pEndnotes);
@@ -5823,8 +5823,8 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 
 void IE_Imp_MsWord_97::_handleTextBoxes(const wvParseStruct *ps)
 {
-	UT_uint32 *pPLCF_dgg = NULL;
-	UT_uint32 *pPLCF_txt = NULL;
+	UT_uint32 *pPLCF_dgg = nullptr;
+	UT_uint32 *pPLCF_txt = nullptr;
 
 	DELETEPV(m_pTextboxes);
 
@@ -6071,7 +6071,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			// refers to the CURRENT footnote
 			m_iNextFNote = 0;
 			_findNextFNoteSection();
-			_endSect(NULL,0,NULL,0);
+			_endSect(nullptr,0,nullptr,0);
 			m_bInSect = true;
 		}
 
@@ -6143,7 +6143,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			m_bInHeaders = false;
 			m_iNextENote = 0;
 			_findNextENoteSection();
-			_endSect(NULL,0,NULL,0);
+			_endSect(nullptr,0,nullptr,0);
 			m_bInSect = true;
 		}
 
@@ -6249,7 +6249,7 @@ bool IE_Imp_MsWord_97::_handleTextboxesText(UT_uint32 iDocPosition)
 
 			m_iNextTextbox = 0;
 			_findNextTextboxSection();
-			_endSect(NULL,0,NULL,0);
+			_endSect(nullptr,0,nullptr,0);
 			m_bInSect = true;
 		}
 
@@ -6274,9 +6274,9 @@ bool IE_Imp_MsWord_97::_handleTextboxesText(UT_uint32 iDocPosition)
 
 // 		if(iDocPosition == m_pTextboxes[m_iNextTextbox].txt_pos)
 // 		{
-// 			const gchar * attribsB[] = {"props", NULL,
-// 											"style", NULL,
-// 											NULL};
+// 			const gchar * attribsB[] = {"props", nullptr,
+// 											"style", nullptr,
+// 											nullptr};
 
 // 			attribsB[1] = m_paraProps.c_str();
 // 			attribsB[3] = m_paraStyle.c_str();
@@ -6302,7 +6302,7 @@ bool IE_Imp_MsWord_97::_findNextFNoteSection()
 	if(!m_iNextFNote)
 	{
 		// move to the start of the doc first
-		m_pNotesEndSection = NULL;
+		m_pNotesEndSection = nullptr;
 	}
 
 	if(m_pNotesEndSection)
@@ -6351,7 +6351,7 @@ bool IE_Imp_MsWord_97::_findNextTextboxSection()
 	if(m_iNextTextbox == 0)
 	{
 		// move to the start of the doc first
-		m_pTextboxEndSection = NULL;
+		m_pTextboxEndSection = nullptr;
 		m_vecTextboxPos.qsort(s_cmp_lids);
 		
 	}
@@ -6378,7 +6378,7 @@ bool IE_Imp_MsWord_97::_findNextENoteSection()
 	if(!m_iNextENote)
 	{
 		// move to the start of the doc first
-		m_pNotesEndSection = NULL;
+		m_pNotesEndSection = nullptr;
 	}
 	
 	if(m_pNotesEndSection)
@@ -6425,7 +6425,7 @@ bool IE_Imp_MsWord_97::_ensureInBlock()
 	if (bret) m_bInPara = true;
       }
     }
-    else if( pf == NULL)
+    else if( pf == nullptr)
     {
       bret = _appendStrux(PTX_Block, PP_NOPROPS);
       if (bret) m_bInPara = true;
@@ -6481,7 +6481,7 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const PP_PropertyVector & a
 				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			}
 		}
-		else if( pf == NULL)
+		else if( pf == nullptr)
 		{
 			getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 		}
@@ -6634,7 +6634,7 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 	DELETEPV(m_pHeaders);
 
 	m_iHeadersCount = 0;
-	UT_uint32 *pPLCF_txt = NULL;
+	UT_uint32 *pPLCF_txt = nullptr;
 
 	/*
 	   The header/footer PLCF in Word 97+ is organised as follows:
@@ -6683,7 +6683,7 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 		}
 		catch(...)
 		{
-			m_pHeaders = NULL;
+			m_pHeaders = nullptr;
 		}
 
 		UT_return_if_fail(m_pHeaders);
@@ -7036,7 +7036,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 			// we need to close of any open section
 			if(m_bInSect)
 			{
-				_endSect(NULL,0,NULL,0);
+				_endSect(nullptr,0,nullptr,0);
 			}
 
 			// some headers can be 0-length, skip them ... (0-length:  len <=2)

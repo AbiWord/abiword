@@ -135,7 +135,7 @@ XAP_CocoaToolbar_Icons::~XAP_CocoaToolbar_Icons(void)
 
 NSString * XAP_CocoaToolbar_Icons::getPNGNameForIcon(const char * szIconID)
 {
-	const char * szIconName = NULL;
+	const char * szIconName = nullptr;
 
 	if (XAP_Toolbar_Icons::_findIconNameForID(szIconID, &szIconName))
 	{

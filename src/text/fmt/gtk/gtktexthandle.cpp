@@ -75,7 +75,7 @@ _fv_text_handle_get_size (FvTextHandle *handle,
   gtk_widget_style_get (priv->parent,
                         "text-handle-width", &w,
                         "text-handle-height", &h,
-                        NULL);
+                        nullptr);
 
   if (width)
     *width = w;
@@ -144,7 +144,7 @@ _fv_text_handle_update_shape (FvTextHandle         *handle,
   region = gdk_cairo_region_create_from_surface (surface);
 
   if (gdk_screen_is_composited(gdk_window_get_screen(window)))
-    gdk_window_shape_combine_region (window, NULL, 0, 0);
+    gdk_window_shape_combine_region (window, nullptr, 0, 0);
   else
     gdk_window_shape_combine_region (window, region, 0, 0);
 
@@ -339,7 +339,7 @@ fv_text_handle_constructed (GObject *object)
   FvTextHandlePrivate *priv;
 
   priv = FV_TEXT_HANDLE (object)->priv;
-  g_assert (priv->parent != NULL);
+  g_assert (priv->parent != nullptr);
 
   priv->draw_signal_id =
     g_signal_connect (priv->parent, "draw",
@@ -450,7 +450,7 @@ _fv_text_handle_class_init (FvTextHandleClass *klass)
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (FvTextHandleClass, handle_dragged),
-		  NULL, NULL,
+		  nullptr, nullptr,
                   g_cclosure_marshal_generic,
 		  G_TYPE_NONE, 3,
                   G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
@@ -458,7 +458,7 @@ _fv_text_handle_class_init (FvTextHandleClass *klass)
     g_signal_new ("drag-finished",
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST, 0,
-		  NULL, NULL,
+		  nullptr, nullptr,
                   g_cclosure_marshal_VOID__INT,
                   G_TYPE_NONE, 1, G_TYPE_INT);
 
@@ -500,7 +500,7 @@ _fv_text_handle_new (GtkWidget *parent)
 {
 	return (FvTextHandle *)g_object_new (FV_TYPE_TEXT_HANDLE,
                        "parent", parent,
-                       NULL);
+                       nullptr);
 }
 
 void
@@ -532,9 +532,9 @@ _fv_text_handle_set_relative_to (FvTextHandle *handle,
     }
   else
     {
-      priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_START].window = NULL;
-      priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_END].window = NULL;
-      priv->relative_to = NULL;
+      priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_START].window = nullptr;
+      priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_END].window = nullptr;
+      priv->relative_to = nullptr;
       priv->realized = FALSE;
     }
 

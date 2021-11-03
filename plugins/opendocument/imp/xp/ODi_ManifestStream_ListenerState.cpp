@@ -38,7 +38,7 @@ ODi_ManifestStream_ListenerState::ODi_ManifestStream_ListenerState(
         : ODi_ListenerState("ManifestStream", rElementStack),
           m_sFullPath(""),
           m_iSize(-1),
-          m_pCryptoInfo(NULL),
+          m_pCryptoInfo(nullptr),
           m_cryptoInfo(cryptoInfo)
 {
 }

@@ -76,7 +76,7 @@ void UT_UnixIdle::start ()
 	if(m_id == -1)
 	{  
 #ifndef TOOLKIT_COCOA
-	        m_id = g_idle_add_full(G_PRIORITY_LOW,_Timer_Proc, this,NULL);
+	        m_id = g_idle_add_full(G_PRIORITY_LOW,_Timer_Proc, this,nullptr);
 #else
 		m_id = -1;
 #endif

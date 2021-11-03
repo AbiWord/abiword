@@ -40,14 +40,14 @@ fp_EmbedRun::fp_EmbedRun(fl_BlockLayout* pBL,
 					   UT_uint32 iOffsetFirst,PT_AttrPropIndex indexAP,pf_Frag_Object* oh)	: 
 	fp_Run(pBL,  iOffsetFirst,1, FPRUN_EMBED ),
 	m_iPointHeight(0),
-	m_pSpanAP(NULL),
+	m_pSpanAP(nullptr),
 	m_iGraphicTick(0),
-	m_pszDataID(NULL),
+	m_pszDataID(nullptr),
 	m_sEmbedML(""),
-	m_pEmbedManager(NULL),
+	m_pEmbedManager(nullptr),
 	m_iEmbedUID(-1),
 	m_iIndexAP(indexAP),
-	m_pDocLayout(NULL),
+	m_pDocLayout(nullptr),
 	m_bNeedsSnapshot(true),
 	m_OH(oh)
 {
@@ -70,13 +70,13 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pSectionAP*/,
 									GR_Graphics * pG)
 {
-	UT_return_if_fail(pSpanAP != NULL);
+	UT_return_if_fail(pSpanAP != nullptr);
 
 	UT_DEBUGMSG(("fp_EmbedRun _lookupProperties span %p \n", (void*)pSpanAP));
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
 	pSpanAP->getAttribute("dataid", m_pszDataID);
-	const gchar * pszEmbedType = NULL;
+	const gchar * pszEmbedType = nullptr;
 	pSpanAP->getProperty("embed-type", pszEmbedType);
 	UT_ASSERT(pszEmbedType);
 	UT_DEBUGMSG(("Embed Type %s \n",pszEmbedType));
@@ -86,10 +86,10 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	// LUCA: chunk of code moved up here from the bottom of the method
 	// 'cause we need to retrieve the font-size
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	if(pG == NULL && pLayout->isQuickPrint() )
+	if(pG == nullptr && pLayout->isQuickPrint() )
 	{
 	     pG = getGraphics();
 	     if((m_iEmbedUID >= 0) && getEmbedManager())
@@ -123,7 +123,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setFont(pFont);
 		bFontChanged = true;
 	}
-	if(pG == NULL)
+	if(pG == nullptr)
 	  pG = getGraphics();
 	m_iPointHeight = pG->getFontAscent(pFont) + pG->getFontDescent(pFont);
 	const char* pszSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,
@@ -153,14 +153,14 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	else
 	{
-	  const char * pszHeight = NULL;
+	  const char * pszHeight = nullptr;
 	  bool bFoundHeight = pSpanAP->getProperty("height", pszHeight) && !bFontChanged;
-	  const char * pszWidth = NULL;
+	  const char * pszWidth = nullptr;
 	  bool bFoundWidth = pSpanAP->getProperty("width", pszWidth) && !bFontChanged;
-	  const char * pszAscent = NULL;
+	  const char * pszAscent = nullptr;
 	  bool bFoundAscent = pSpanAP->getProperty("ascent", pszAscent);
 
-	  if(!bFoundWidth || pszWidth == NULL)
+	  if(!bFoundWidth || pszWidth == nullptr)
 	  {
 	      iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
 	  }
@@ -172,7 +172,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			  iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
 	      }
 	  }
-	  if(!bFoundHeight || pszHeight == NULL || !bFoundAscent || pszAscent == NULL)
+	  if(!bFoundHeight || pszHeight == nullptr || !bFoundAscent || pszAscent == nullptr)
 	  {
 	      iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
 		  iDescent = getEmbedManager()->getDescent(m_iEmbedUID);
@@ -188,9 +188,9 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		  else
 		  {
 			  UT_sint32 iHeight = UT_convertToLogicalUnits(pszHeight);
-			  const char * pszDescent = NULL;
+			  const char * pszDescent = nullptr;
 			  bool bFoundDescent = pSpanAP->getProperty("descent", pszDescent);
-			  if (bFoundDescent && pszDescent != NULL && iHeight >= 0)
+			  if (bFoundDescent && pszDescent != nullptr && iHeight >= 0)
 			  {
 				  iDescent = UT_convertToLogicalUnits(pszDescent);
 				  if (iHeight != iAscent + iDescent)
@@ -203,7 +203,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 
 	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
-	fp_Page * p = NULL;
+	fp_Page * p = nullptr;
 	if(pDSL->getFirstContainer())
 	{
 		p = pDSL->getFirstContainer()->getPage();
@@ -275,9 +275,9 @@ bool fp_EmbedRun::isSubscript(void) const
 
 void fp_EmbedRun::_lookupLocalProperties()
 {
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
+	const PP_AttrProp * pSpanAP = nullptr;
+	const PP_AttrProp * pBlockAP = nullptr;
+	const PP_AttrProp * pSectionAP = nullptr;
 
 	getBlockAP(pBlockAP);
 
@@ -497,8 +497,8 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 UT_sint32  fp_EmbedRun::_getLayoutPropFromObject(const char * szProp) const
 {
   PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
-  const PP_AttrProp * pAP = NULL;
-  const char * szPropVal = NULL;
+  const PP_AttrProp * pAP = nullptr;
+  const char * szPropVal = nullptr;
   getBlock()->getDocument()->getAttrProp(api, &pAP);
   if(pAP)
     {
@@ -522,8 +522,8 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
       return false;
     }
   PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
-  const PP_AttrProp * pAP = NULL;
-  const char * szPropVal = NULL;
+  const PP_AttrProp * pAP = nullptr;
+  const char * szPropVal = nullptr;
   getBlock()->getDocument()->getAttrProp(api, &pAP);
   UT_return_val_if_fail(pAP,false);
   bool bFound = pAP->getProperty("height", szPropVal);

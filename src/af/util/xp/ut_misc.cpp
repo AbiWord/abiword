@@ -144,7 +144,7 @@ std::string UT_pathSuffix(std::string path)
 	// local path. If so, then we can convert it into a proper URI
 	if (!isUri && !isFilename)
 	{
-		char* uri = g_filename_to_uri(path.c_str(), NULL, NULL);
+		char* uri = g_filename_to_uri(path.c_str(), nullptr, nullptr);
 		if (!uri)
 			return "";
 		path = uri;
@@ -259,7 +259,7 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 
 const gchar* UT_getAttribute(const gchar* name, const gchar** atts)
 {
-	UT_return_val_if_fail( atts, NULL );
+	UT_return_val_if_fail( atts, nullptr );
 
 	const gchar** p = atts;
 
@@ -273,7 +273,7 @@ const gchar* UT_getAttribute(const gchar* name, const gchar** atts)
 	if (*p)
 		return p[1];
 	else
-		return NULL;
+		return nullptr;
 }
 
 bool isTrue( const char* s )
@@ -445,7 +445,7 @@ void UT_VersionInfo::makeVersString()
 */
 const gchar ** UT_splitPropsToArray(gchar * pProps)
 {
-		UT_return_val_if_fail( pProps, NULL);
+		UT_return_val_if_fail( pProps, nullptr);
 	
 		UT_uint32 iLen = strlen(pProps);
 	
@@ -456,7 +456,7 @@ const gchar ** UT_splitPropsToArray(gchar * pProps)
 			--i;
 		}
 
-		char * semi = NULL;
+		char * semi = nullptr;
 		const char * p = pProps;
  		while((semi = (char *) strchr(p, ';')))
 		{
@@ -469,7 +469,7 @@ const gchar ** UT_splitPropsToArray(gchar * pProps)
 		UT_uint32 iPropCount = i;
 		UT_uint32 j = 0;
 		const gchar ** pPropsArray = new const gchar *[2 * iPropCount + 1];
-		UT_return_val_if_fail( pPropsArray, NULL );
+		UT_return_val_if_fail( pPropsArray, nullptr );
 	
 		const char * pStart = pProps;
 
@@ -480,7 +480,7 @@ const gchar ** UT_splitPropsToArray(gchar * pProps)
 			{
 				pPropsArray[j++] = pStart;
 				char * colon = (char *)  strchr(pStart, ':');
-				UT_return_val_if_fail( colon,NULL );
+				UT_return_val_if_fail( colon,nullptr );
 				*colon = 0;
 				pPropsArray[j++] = colon + 1;
 
@@ -493,9 +493,9 @@ const gchar ** UT_splitPropsToArray(gchar * pProps)
 			}
 		}
 	
-		UT_return_val_if_fail( j == 2 * iPropCount, NULL );
+		UT_return_val_if_fail( j == 2 * iPropCount, nullptr );
 
-		pPropsArray[j] = NULL;
+		pPropsArray[j] = nullptr;
 		return pPropsArray;
 }
 

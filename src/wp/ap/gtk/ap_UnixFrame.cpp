@@ -167,7 +167,7 @@ void AP_UnixFrame::setYScrollRange(void)
 AP_UnixFrame::AP_UnixFrame()
 : AP_Frame(new AP_UnixFrameImpl(this))
 {
-	m_pData = NULL;
+	m_pData = nullptr;
 	setFrameLocked(false);
 #ifdef LOGFILE
 	fprintf(getlogfile(),"New unix frame with app \n");
@@ -178,7 +178,7 @@ AP_UnixFrame::AP_UnixFrame()
 AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
 	: AP_Frame(static_cast<AP_Frame *>(f))
 {
-	m_pData = NULL;
+	m_pData = nullptr;
 #ifdef LOGFILE
 	fprintf(getlogfile(),"New unix frame with frame \n");
 #endif
@@ -202,7 +202,7 @@ XAP_Frame * AP_UnixFrame::cloneFrame()
 		XAP_App::getApp()->forgetFrame(pClone);
 		delete pClone;
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
@@ -369,7 +369,7 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 	UT_ASSERT(pFrameData);
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 		
-	AP_UnixTopRuler * pUnixTopRuler = NULL;
+	AP_UnixTopRuler * pUnixTopRuler = nullptr;
 
 	UT_DEBUGMSG(("AP_UnixFrame::toggleTopRuler %d, %p\n", 
 		     bRulerOn, pFrameData->m_pTopRuler));
@@ -418,8 +418,8 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 			pFrameImpl->m_topRuler = nullptr;
 		}
 		DELETEP(pFrameData->m_pTopRuler);
-		pFrameImpl->m_topRuler = NULL;
-		static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
+		pFrameImpl->m_topRuler = nullptr;
+		static_cast<FV_View *>(m_pView)->setTopRuler(nullptr);
 	}
 }
 
@@ -470,8 +470,8 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 			pFrameImpl->m_leftRuler = nullptr;
 		}
 	    DELETEP(pFrameData->m_pLeftRuler);
-	    pFrameImpl->m_leftRuler = NULL;
-		static_cast<FV_View *>(m_pView)->setLeftRuler(NULL);
+	    pFrameImpl->m_leftRuler = nullptr;
+		static_cast<FV_View *>(m_pView)->setLeftRuler(nullptr);
 	}
 
 }
@@ -538,7 +538,7 @@ void AP_UnixFrame::_setViewFocus(AV_View *pView)
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	bool bFocus=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(pFrameImpl->getTopLevelWindow()),
 						 "toplevelWindowFocus"));
-	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==pFrameImpl->getTopLevelWindow()) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(pFrameImpl->getTopLevelWindow())) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
+	pView->setFocus(bFocus && (gtk_grab_get_current()==nullptr || gtk_grab_get_current()==pFrameImpl->getTopLevelWindow()) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=nullptr && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(pFrameImpl->getTopLevelWindow())) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
 }
 
 void AP_UnixFrame::_bindToolbars(AV_View *pView)

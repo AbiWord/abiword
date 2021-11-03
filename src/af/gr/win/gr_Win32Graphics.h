@@ -98,7 +98,7 @@ protected:
 #ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 		return reinterpret_cast<GR_Win32CharWidths *>(GR_Font::_getCharWidths());
 #else
-		UT_return_val_if_fail(UT_NOT_IMPLEMENTED,NULL);
+		UT_return_val_if_fail(UT_NOT_IMPLEMENTED,nullptr);
 #endif
 	}
 
@@ -157,10 +157,10 @@ class ABI_EXPORT GR_Win32AllocInfo : public GR_AllocInfo
 {
   public:
 	GR_Win32AllocInfo():
-		m_hdc(nullptr), m_hwnd(nullptr), m_pDocInfo(NULL), m_hDevMode(NULL) {};
+		m_hdc(nullptr), m_hwnd(nullptr), m_pDocInfo(nullptr), m_hDevMode(nullptr) {};
 
 	GR_Win32AllocInfo(HDC hdc, HWND hwnd):
-		m_hdc(hdc), m_hwnd(hwnd), m_pDocInfo(NULL), m_hDevMode(NULL) {};
+		m_hdc(hdc), m_hwnd(hwnd), m_pDocInfo(nullptr), m_hDevMode(nullptr) {};
 
 	GR_Win32AllocInfo(HDC hdc, const DOCINFOW* pDoc, HGLOBAL devmode):
 		m_hdc(hdc), m_hwnd(nullptr), m_pDocInfo(pDoc), m_hDevMode(devmode) {};
@@ -200,7 +200,7 @@ public:
                                                   UT_sint32 xoff, UT_sint32 yoff,
                                                   int * pCharWidth) override;
 	virtual void			setFont(const GR_Font* pFont) override;
-	virtual void            clearFont(void) override { m_pFont = NULL;}
+	virtual void            clearFont(void) override { m_pFont = nullptr;}
 	virtual UT_uint32		getFontHeight() override;
 	virtual UT_sint32		measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = nullptr) override;
 	virtual void			setColor(const UT_RGBColor& clr) override;
@@ -289,7 +289,7 @@ public:
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_Win32Graphics(HDC, HWND);					/* for screen */
-	GR_Win32Graphics(HDC, const DOCINFOW *, HGLOBAL hDevMode = NULL);	/* for printing */
+	GR_Win32Graphics(HDC, const DOCINFOW *, HGLOBAL hDevMode = nullptr);	/* for printing */
 
 	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);
 

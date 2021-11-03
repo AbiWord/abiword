@@ -263,7 +263,7 @@ void s_HRText_Listener::_openTag(PT_AttrPropIndex api)
 		return;
 	}
 	
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_uint16 * piVal;
 	
@@ -341,7 +341,7 @@ void s_HRText_Listener::_openSpan(PT_AttrPropIndex api)
 		return;
 	}
 	
-	const PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = nullptr;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	if (bHaveProp && pAP)
@@ -388,7 +388,7 @@ void s_HRText_Listener::_openSpan(PT_AttrPropIndex api)
 					  m_pie->write(UNDERLINE_DELIM);
 				  }
 
-				  q = strtok(NULL, " ");
+				  q = strtok(nullptr, " ");
 		    }
 
 		    FREEP(p);
@@ -448,7 +448,7 @@ void s_HRText_Listener::_closeSpan(void)
 		  m_pie->write(BOLD_DELIM);
 		}
 
-		m_pAP_Span = NULL;
+		m_pAP_Span = nullptr;
 	}
 
 	m_bInSpan = false;
@@ -579,10 +579,10 @@ bool s_HRText_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 		_closeSection();
 
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
-		const PP_AttrProp* pAP = NULL;
+		const PP_AttrProp* pAP = nullptr;
 		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
 		{
-			const gchar* pszSectionType = NULL;
+			const gchar* pszSectionType = nullptr;
 			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
@@ -669,7 +669,7 @@ UT_Error IE_Exp_HRText::_writeDocument(void)
 		return UT_ERROR;
 
 	delete m_pListener;
-	m_pListener = NULL;
+	m_pListener = nullptr;
 	
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }

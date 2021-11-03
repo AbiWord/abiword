@@ -36,7 +36,7 @@ class SDWCryptor {
 		 * results might not be what you expect otherwise
 		 * @param aDate The date given in the file header
 		 * @param aTime Time from file header. */
-		SDWCryptor(UT_uint32 aDate = 0, UT_uint32 aTime = 0, const UT_uint8* aFilePass = NULL);
+		SDWCryptor(UT_uint32 aDate = 0, UT_uint32 aTime = 0, const UT_uint8* aFilePass = nullptr);
 		~SDWCryptor();
 		/** Sets date and time for verifying the password */
 		void SetDateTime(UT_uint32 aDate, UT_uint32 aTime) { mDate = aDate; mTime = aTime; }
@@ -44,9 +44,9 @@ class SDWCryptor {
 		 * is invalid, the current password will be modified.
 		 * @param aPassword The password to use
 		 * @param aFilePass The password given in the file header to
-		 * check if the given password is correct or NULL if no check should be
+		 * check if the given password is correct or nullptr if no check should be
 		 * performed.
-		 * @return true on success (also if aFilePass is NULL),
+		 * @return true on success (also if aFilePass is nullptr),
 		 *         false on failure (e.g. invalid password) */
 		bool SetPassword(const char* aPassword);
 

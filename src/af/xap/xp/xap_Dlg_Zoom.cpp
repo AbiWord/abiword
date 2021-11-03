@@ -42,7 +42,7 @@ XAP_Dialog_Zoom::XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	// should always be called before the dialog is shown
 	m_zoomPercent = 100;
 
-	m_zoomPreview = NULL;
+	m_zoomPreview = nullptr;
 	m_pFrame = nullptr;
 }
 

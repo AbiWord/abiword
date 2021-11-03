@@ -67,7 +67,7 @@ class ListHelper
 {
 public:
 	explicit ListHelper()
-		: m_pan(NULL),
+		: m_pan(nullptr),
 		  m_iInc(-1),
 		  m_iCount(0),
 		  m_iStart(0)

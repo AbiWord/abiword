@@ -127,7 +127,7 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * /*pView*/)
 	bool bEnabled = true;
 	bool bChecked = false;
 
-	const char * szLabel = 0;
+	const char * szLabel = nullptr;
 
 	m_menu->validateMenuItem(menuid, bEnabled, bChecked, szLabel);
 
@@ -328,11 +328,11 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * /*pView*/)
 EV_CocoaMenu::EV_CocoaMenu(const char * szMenuLayoutName, const char * szMenuLabelSetName, bool bContextMenu) 
 : EV_Menu(XAP_App::getApp(), XAP_App::getApp()->getEditMethodContainer(), 
 		  szMenuLayoutName, szMenuLabelSetName),
-	m_menuTarget(0),
-	m_fontTarget(0),
+	m_menuTarget(nil),
+	m_fontTarget(nil),
 	m_AppMenuCurrent(static_cast<XAP_CocoaAppMenu_Id>(0)),
-	m_menuStack(0),
-	m_buffer(0),
+	m_menuStack(nullptr),
+	m_buffer(nullptr),
 	m_maxlen(0),
 	m_bContextMenu(bContextMenu),
 	m_bAddSeparator(false)
@@ -461,7 +461,7 @@ void EV_CocoaMenu::buildAppMenu()
 		addToAppMenu(menuid, pAction, pLabel, flags);
 	}
 	MenuStack_clear(); // shouldn't be anything in it, but maybe
-	m_menuStack = 0;
+	m_menuStack = nullptr;
 }
 
 void EV_CocoaMenu::addToAppMenu(XAP_Menu_Id menuid, const EV_Menu_Action * pAction, 
@@ -655,7 +655,7 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 
 	XAP_Frame * frame = XAP_App::getApp()->getLastFocussedFrame();
 
-	AV_View * view = frame ? frame->getCurrentView() : 0;
+	AV_View * view = frame ? frame->getCurrentView() : nullptr;
 
 	return invokeMenuMethod(view, pEM, script_name);
 }
@@ -669,7 +669,7 @@ void EV_CocoaMenu::validateMenuItem(XAP_Menu_Id menuid, bool & bEnabled, bool & 
 
 	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
 
-	AV_View * pView = pFrame ? pFrame->getCurrentView() : 0;
+	AV_View * pView = pFrame ? pFrame->getCurrentView() : nullptr;
 
 	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
 	if (!pMenuActionSet)
@@ -716,7 +716,7 @@ void EV_CocoaMenu::validateMenuItem(XAP_Menu_Id menuid, bool & bEnabled, bool & 
 			{
 				if (!(pEM->getType() & EV_EMT_APP_METHOD))
 				{
-					bEnabled = (pView != NULL);
+					bEnabled = (pView != nullptr);
 				}
 			}
 			else
@@ -734,7 +734,7 @@ void EV_CocoaMenu::validateMenuItem(XAP_Menu_Id menuid, bool & bEnabled, bool & 
 		}
 		break;
 	case EV_MLF_BeginSubMenu:
-		bEnabled = (pView != 0);
+		bEnabled = (pView != nullptr);
 		if (menuid == AP_MENU_ID_FILE_RECENT)
 		{
 			if (!pAction->getMenuItemState(pView))
@@ -855,10 +855,10 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 	if (strstr (mnemonic, "Alt+")) {
 		modifiers |= NSEventModifierFlagOption;
 	}
-	if (strstr (mnemonic, "Ctrl+") != NULL) {
+	if (strstr (mnemonic, "Ctrl+") != nullptr) {
 		modifiers |= NSEventModifierFlagCommand;
 	}
-	if (strstr (mnemonic, "Shift+") != NULL) {
+	if (strstr (mnemonic, "Shift+") != nullptr) {
 		needsShift = true;
 	}
 	if ((modifiers & NSEventModifierFlagCommand) == 0) {

@@ -140,7 +140,7 @@ fl_DocSectionLayout * fp_ContainerObject::getDocSectionLayout(void)
     {
         return static_cast<fl_DocSectionLayout *>(pCL);
     }
-    return NULL;
+    return nullptr;
 }
 /*!
  * Return a pointer to the Graphics class for this object
@@ -161,12 +161,12 @@ GR_Graphics * fp_ContainerObject::getGraphics(void) const
  */
 fp_Container::fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLayout)
 	:       fp_ContainerObject(iType, pSectionLayout),
-			m_pContainer(NULL),
-			m_pNext(NULL),
-			m_pPrev(NULL),
-			m_pMyBrokenContainer(NULL), 
+			m_pContainer(nullptr),
+			m_pNext(nullptr),
+			m_pPrev(nullptr),
+			m_pMyBrokenContainer(nullptr),
 			m_cBrokenContainers(0),
-			m_FillType(NULL,this,FG_FILL_TRANSPARENT)
+			m_FillType(nullptr,this,FG_FILL_TRANSPARENT)
 {
 	m_vecContainers.clear();
 	m_FillType.setDocLayout(pSectionLayout->getDocLayout());
@@ -202,7 +202,7 @@ void fp_Container::setMyBrokenContainer(fp_Container * pMyBroken)
 	m_pMyBrokenContainer = pMyBroken;
     fp_Container * pc = this;
 
-	while (NULL != pc)
+	while (nullptr != pc)
 	{
 		pc->incBrokenCount();
 		pc = pc->getContainer();
@@ -281,12 +281,12 @@ void fp_Container::clearBrokenContainers(void)
 	{
 		fp_Container * pc = this;
 		
-		while (NULL != pc)
+		while (nullptr != pc)
 		{
 			pc->decBrokenCount();
 			pc = pc->getContainer();
 		}
-		m_pMyBrokenContainer = NULL;
+		m_pMyBrokenContainer = nullptr;
 	}
 	if (0 != getBrokenCount())
 	{
@@ -320,13 +320,13 @@ void fp_Container::setContainer(fp_Container * pCO)
 {
         UT_ASSERT(pCO != this);
 	m_pContainer = pCO;
-	if(pCO != NULL)
+	if(pCO != nullptr)
 	{
 		m_FillType.setParent(&pCO->getFillType());
 	}
 	else
 	{
-		m_FillType.setParent(NULL);
+		m_FillType.setParent(nullptr);
 	}
 }
 
@@ -358,9 +358,9 @@ fp_Container* fp_Container::getColumn(void) const
 fp_Page * fp_Container::getPage(void) const
 {
 	fp_Container * pCon = getColumn();
-	if(pCon == NULL)
+	if(pCon == nullptr)
 	{
-		return NULL;
+		return nullptr;
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
 	{
@@ -380,7 +380,7 @@ fp_Page * fp_Container::getPage(void) const
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_HDRFTR)
 	{
-		return NULL;
+		return nullptr;
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_FOOTNOTE)
 	{
@@ -391,7 +391,7 @@ fp_Page * fp_Container::getPage(void) const
 		return static_cast<fp_AnnotationContainer *>(pCon)->getPage();
 	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return NULL;
+	return nullptr;
 }
 
 void fp_Container::insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
@@ -400,7 +400,7 @@ void fp_Container::insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 	if(pCon->getContainerType() == FP_CONTAINER_LINE)
 	{
 		fp_Line * pLine = static_cast<fp_Line *>(pCon);
-		UT_ASSERT(pLine->getBlock() != NULL);
+		UT_ASSERT(pLine->getBlock() != nullptr);
 		if(countCons() > 0)
 		{
 			fp_ContainerObject * pNext = 	m_vecContainers.getNthItem(i);
@@ -425,7 +425,7 @@ void fp_Container::addCon(fp_ContainerObject * pCon)
 	if(pCon->getContainerType() == FP_CONTAINER_LINE)
 	{
 		fp_Line * pLine = static_cast<fp_Line *>(pCon);
-		UT_ASSERT(pLine->getBlock() != NULL);
+		UT_ASSERT(pLine->getBlock() != nullptr);
 		UT_sint32 i = countCons();
 		if(i>0)
 		{
@@ -445,8 +445,10 @@ void fp_Container::addCon(fp_ContainerObject * pCon)
 }
 
 fp_ContainerObject *  fp_Container:: getNthCon(UT_sint32 i) const
-{ 
-	if(countCons() == 0) return NULL;
+{
+	if(countCons() == 0) {
+		return nullptr;
+	}
 	return m_vecContainers.getNthItem(i);
 }
 
@@ -472,7 +474,7 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 	fp_Container * pColumnC = getColumn();
 	
 	UT_return_val_if_fail(pColumnC,false);
-	fl_DocSectionLayout * pDSL = NULL;
+	fl_DocSectionLayout * pDSL = nullptr;
 	if(pColumnC->getContainerType() != FP_CONTAINER_FOOTNOTE || pColumnC->getContainerType() != FP_CONTAINER_ANNOTATION)
 	{
 		if(pColumnC->getContainerType() == FP_CONTAINER_FRAME)
@@ -533,7 +535,7 @@ void  fp_Container::deleteNthCon(UT_sint32 i)
 	fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));
 	if(pCon->getContainer() == this)
 	{
-		pCon->setContainer(NULL);
+		pCon->setContainer(nullptr);
 	}
 	pCon->unref();
 	m_vecContainers.deleteNthItem(i);
@@ -578,7 +580,7 @@ const fg_FillType & fp_Container::getFillType(void) const
 fg_FillType::fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, FG_Fill_Type iType):
 	m_pParent(pParent),
 	m_pContainer(pContainer),
-	m_pDocLayout(NULL),
+	m_pDocLayout(nullptr),
 	m_FillType(iType),
 	m_iGraphicTick(0),
 	m_bTransparentForPrint(false),
@@ -588,7 +590,7 @@ fg_FillType::fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, 
 	m_bColorSet(false),
 	m_iWidth(0),
 	m_iHeight(0),
-	m_pDocImage(NULL),
+	m_pDocImage(nullptr),
 	m_bIgnoreLineLevel(false)
 {
 }
@@ -625,7 +627,7 @@ void fg_FillType::setColor(UT_RGBColor & color)
 }
 
 /*!
- * set this class to have a solid color fill unless this is a NULL string
+ * set this class to have a solid color fill unless this is a nullptr string
  * pointer. This is an on-screen color only. Don't print this.
  */
 void fg_FillType::setColor(const char * pszColor)
@@ -682,7 +684,7 @@ void fg_FillType::setTransColor(UT_RGBColor & color)
 }
 
 /*!
- * set this class to have a solid color fill unless this is a NULL string
+ * set this class to have a solid color fill unless this is a nullptr string
  * pointer 
  */
 void fg_FillType::setTransColor(const char * pszColor)
@@ -898,7 +900,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			m_bColorSet = getParent()->m_bColorSet;
 			m_TransColor = getParent()->m_TransColor;
 			m_bTransColorSet = getParent()->m_bTransColorSet;
-			if(m_pDocImage == NULL)
+			if(m_pDocImage == nullptr)
 			    m_pDocImage = getParent()->m_pDocImage;
 		}
 	}
@@ -930,7 +932,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_RUN))
 	{
 	        fp_Line * pLine = static_cast<fp_Run *>(m_pContainer)->getLine();
-		if(pLine == NULL)
+		if(pLine == nullptr)
 		  return;
 	        UT_sint32 left,right = 0;
 	        pLine->getAbsLeftRight(left,right);
@@ -950,7 +952,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		{
 			m_iGraphicTick = m_pDocLayout->getGraphicTick();
 			fp_Run * pRun = static_cast<fp_Run *>(m_pContainer);
-			pRun->_setFont(NULL);
+			pRun->_setFont(nullptr);
 			pRun->lookupProperties(pG);
 		}
 	}
@@ -1069,7 +1071,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 // Only fill the bits exposed by the clip rect
 //
 		const UT_Rect * pClip = pG->getClipRect();
-		if(pClip != NULL)
+		if(pClip != nullptr)
 		{
 			UT_sint32 leftDiff = 0;
 			UT_sint32 widthDiff = 0;

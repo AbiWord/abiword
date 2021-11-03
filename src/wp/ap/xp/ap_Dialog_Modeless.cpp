@@ -116,7 +116,7 @@ bool AP_Dialog_Modeless::setView(FV_View * /*view*/)
 	if (getActiveFrame())
 		m_pView = (FV_View *) getActiveFrame()->getCurrentView();
 	else
-		m_pView = NULL;
+		m_pView = nullptr;
 	return true;
 }
 
@@ -127,6 +127,6 @@ FV_View * AP_Dialog_Modeless::getView(void) const
 	if (pFrame)
 		return (FV_View *) pFrame->getCurrentView();
 	else
-		return NULL;
+		return nullptr;
 }
 

@@ -76,7 +76,7 @@ void AP_CocoaDialog_MarkRevisions::event_FocusToggled ()
 	bool second_active = false;
 	int toggled = [m_dlg toggled];
 	
-	if ((toggled == 2) || (getRadio1Label() == NULL)) {
+	if ((toggled == 2) || (getRadio1Label() == nullptr)) {
 		second_active = true;
 	}
 	[m_dlg setItems2Enabled:second_active];
@@ -115,7 +115,7 @@ void AP_CocoaDialog_MarkRevisions::runModal(XAP_Frame * /*pFrame*/)
 	   pointers returned by getLable1() and getComment1() using FREEP
 	   (but not the rest!)
 
-	   if getLabel1() returns NULL, hide the radio buttons and enable
+	   if getLabel1() returns nullptr, hide the radio buttons and enable
 	   the Edit box; otherwise the Edit box should be only enabled when
 	   Radio2 is selected.
 
@@ -152,7 +152,7 @@ void AP_CocoaDialog_MarkRevisions::runModal(XAP_Frame * /*pFrame*/)
 
 -(void)discardXAP
 {
-	_xap = NULL; 
+	_xap = nullptr;
 }
 
 -(void)dealloc

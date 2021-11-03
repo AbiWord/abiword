@@ -64,7 +64,7 @@ void pt_PieceTable::beginMultiStepGlob(void)
 	pcr->setCRNumber();
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
-	m_pDocument->notifyListeners(NULL,pcr);
+	m_pDocument->notifyListeners(nullptr,pcr);
 }
 
 void pt_PieceTable::endMultiStepGlob(void)
@@ -75,7 +75,7 @@ void pt_PieceTable::endMultiStepGlob(void)
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
-	m_pDocument->notifyListeners(NULL,pcr);
+	m_pDocument->notifyListeners(nullptr,pcr);
 }
 
 void pt_PieceTable::beginUserAtomicGlob(void)
@@ -103,7 +103,7 @@ void pt_PieceTable::beginUserAtomicGlob(void)
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
-	m_pDocument->notifyListeners(NULL,pcr);
+	m_pDocument->notifyListeners(nullptr,pcr);
 }
 
 void pt_PieceTable::endUserAtomicGlob(void)
@@ -122,5 +122,5 @@ void pt_PieceTable::endUserAtomicGlob(void)
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
-	m_pDocument->notifyListeners(NULL,pcr);
+	m_pDocument->notifyListeners(nullptr,pcr);
 }

@@ -40,7 +40,7 @@ public:
 			g_mutex_init(&mStaticMutex);
 #else
 			if (!g_thread_supported ())
-				g_thread_init (NULL);
+				g_thread_init (nullptr);
 			mMutex = g_mutex_new () ;
 			UT_ASSERT ( mMutex ) ;
 #endif

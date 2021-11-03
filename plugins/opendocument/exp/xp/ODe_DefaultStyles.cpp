@@ -38,7 +38,7 @@ UT_GenericVector<ODe_Style_Style*>* ODe_DefaultStyles::enumerate() const {
 ODe_Style_Style* ODe_DefaultStyles::getStyle(std::string family) {
     std::map<std::string, ODe_Style_Style*>::iterator pos = m_styles.find(family);
     if (pos == m_styles.end())
-        return NULL;
+        return nullptr;
 
     return (*pos).second;
 }

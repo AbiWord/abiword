@@ -96,7 +96,7 @@ void XAP_CocoaDialog_About::event_URL(void)
 
 -(void)discardXAP
 {
-	m_xap = NULL;
+	m_xap = nullptr;
 }
 
 - (void)setXAPOwner:(XAP_Dialog *)owner

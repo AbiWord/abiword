@@ -154,7 +154,7 @@ bool	IE_Imp_T602_Sniffer::getDlgLabels (const char ** pszDesc,
 /****************************************************************************/
 
 IE_Imp_T602::IE_Imp_T602(PD_Document * pDocument)
-  : IE_Imp (pDocument), m_importFile(NULL), m_charset(1), m_family("Courier"),
+  : IE_Imp (pDocument), m_importFile(nullptr), m_charset(1), m_family("Courier"),
     m_basefamily("Courier"), m_softcr(1), m_basesize( 10 ), 
     m_size(10), m_lmargin ( "1.0000in" ), m_rmargin ( "1.0000in" ), 
     m_bold(0), m_italic(0), m_underline(0),
@@ -303,7 +303,7 @@ UT_uint16 IE_Imp_T602::_conv(unsigned char c)
 bool IE_Imp_T602::_getbyte(unsigned char &c)
 {
 	UT_ASSERT(m_importFile);
-	return (gsf_input_read (m_importFile, 1, &c) != NULL);
+	return (gsf_input_read (m_importFile, 1, &c) != nullptr);
 }
 
 UT_Error IE_Imp_T602::_writeheader()
@@ -332,7 +332,7 @@ UT_Error IE_Imp_T602::_writeTP()
   UT_DEBUGMSG(("T602: text-prop:\"%s\"]\n",buff.c_str()));
   pps[0]="props";
   pps[1]=buff.c_str();
-  pps[2]=NULL;
+  pps[2]=nullptr;
   X_CheckDocError(appendFmt(pps))
   return UT_OK;
 }

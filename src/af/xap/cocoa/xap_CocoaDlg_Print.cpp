@@ -54,7 +54,7 @@ XAP_Dialog * XAP_CocoaDialog_Print::static_constructor(XAP_DialogFactory * pFact
 XAP_CocoaDialog_Print::XAP_CocoaDialog_Print(XAP_DialogFactory * pDlgFactory,
 										   XAP_Dialog_Id dlgid)
 	: XAP_Dialog_Print(pDlgFactory,dlgid),
-		m_pPrintGraphics(NULL)
+		m_pPrintGraphics(nullptr)
 {
 }
 
@@ -76,7 +76,7 @@ void XAP_CocoaDialog_Print::useEnd(void)
 
 GR_Graphics * XAP_CocoaDialog_Print::getPrinterGraphicsContext(void)
 {
-	if (m_pPrintGraphics == NULL) {
+	if (m_pPrintGraphics == nullptr) {
 		NSSize size = [[NSPrintInfo sharedPrintInfo] paperSize];	// TODO get the size from a real data
 		XAP_PrintingNSView* printingView = [[XAP_PrintingNSView  alloc] initWithFrame:NSMakeRect(0,0,size.width,size.height)];
 		GR_CocoaAllocInfo ai(printingView);
@@ -175,7 +175,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 	UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
 	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-	FV_View * pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
+	FV_View * pPrintView = new FV_View(XAP_App::getApp(), nullptr, pDocLayout);
 	pPrintView->getLayout()->fillLayouts();
 	pPrintView->getLayout()->formatAll();
 
@@ -196,7 +196,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 // Turn off wait cursor
 //
 	pView->clearCursorWait();
-//	s_pLoadingFrame = NULL;
+//	s_pLoadingFrame = nullptr;
 
 
 	XAP_Dialog_Print::tAnswer ans = pDialog->getAnswer();

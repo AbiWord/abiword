@@ -64,16 +64,16 @@ BOOL CALLBACK AiksaurusDlg::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 	}
 }
 
-AiksaurusDlg::AiksaurusDlg() : m_hDlg(NULL)
+AiksaurusDlg::AiksaurusDlg() : m_hDlg(nullptr)
 {
-	m_hSearch      = NULL;
-	m_hBack        = NULL;
-	m_hForward     = NULL;
-	m_hMeanings    = NULL;
-	m_hSynonyms    = NULL;
-	m_hCombo       = NULL;
-	m_hReplace     = NULL;
-	m_hSynText     = NULL;
+	m_hSearch      = nullptr;
+	m_hBack        = nullptr;
+	m_hForward     = nullptr;
+	m_hMeanings    = nullptr;
+	m_hSynonyms    = nullptr;
+	m_hCombo       = nullptr;
+	m_hReplace     = nullptr;
+	m_hSynText     = nullptr;
 
 	m_bSearchBtnChanged  = true;
 	m_bBackBtnChanged    = true;
@@ -92,7 +92,7 @@ void AiksaurusDlg::runModal(AiksaurusApp * pApp)
 
 	int result = DialogBoxParam( m_hInstance, 
                                  lpTemplate,
-								 NULL,
+								 nullptr,
 								 (DLGPROC)s_dlgProc, 
                                  (LPARAM)this );
 
@@ -473,13 +473,14 @@ void AiksaurusDlg::_copyToClipboard()
 {
 	char buf[MAX_WORD_LENGTH];
 	GetWindowText( m_hSynText, buf, MAX_WORD_LENGTH );
-	
-    if( !OpenClipboard(NULL) ) return; 
-    EmptyClipboard(); 
-	
+
+	if( !OpenClipboard(nullptr) )
+		return;
+	EmptyClipboard();
+
 	int nBufSize = strlen( buf );
 	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, nBufSize + 1 );
-	if( hMem == NULL )
+	if( hMem == nullptr )
 	{
 		CloseClipboard();
 		return;

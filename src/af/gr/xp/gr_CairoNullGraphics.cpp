@@ -50,7 +50,7 @@ GR_Image* CairoNull_Graphics::createNewImage(const char* /*pszName*/,
 					     UT_sint32 /*iDisplayHeight*/,
 					     GR_Image::GRType /*iType*/)
 {
-	return NULL;
+	return nullptr;
 }
 
 
@@ -77,7 +77,7 @@ void CairoNull_Graphics::getColor(UT_RGBColor& )
 
 GR_Font* CairoNull_Graphics::getGUIFont()
 {
-	return NULL;
+	return nullptr;
 }
 
 void CairoNull_Graphics::drawChars(const UT_UCSChar* /*pChars*/, int /*iCharOffset*/,

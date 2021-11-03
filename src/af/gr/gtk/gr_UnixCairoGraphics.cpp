@@ -48,7 +48,7 @@ GR_Image* GR_UnixCairoGraphicsBase::createNewImage (const char* pszName,
 													UT_sint32 iHeight,
 													GR_Image::GRType iType)
 {
-   	GR_Image* pImg = NULL;
+	GR_Image* pImg = nullptr;
 
 	if (iType == GR_Image::GRT_Raster) {
 		pImg = new GR_UnixImage(pszName);
@@ -82,10 +82,10 @@ GR_UnixCairoGraphics::GR_UnixCairoGraphics(GtkWidget * win)
 	  m_Signal(0),
  	  m_DestroySignal(0),
 	  m_Widget(win),
-	  m_styleBg(NULL),
-	  m_styleHighlight(NULL)
+	  m_styleBg(nullptr),
+	  m_styleHighlight(nullptr)
 {
-	m_cr = NULL;
+	m_cr = nullptr;
 	if (m_Widget) {
 		_initWidget();
 	}
@@ -117,10 +117,10 @@ GR_UnixCairoGraphics::~GR_UnixCairoGraphics()
 
 GR_Graphics *   GR_UnixCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
-	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
+	UT_return_val_if_fail(info.getType() == GRID_UNIX, nullptr);
 	xxx_UT_DEBUGMSG(("GR_CairoGraphics::graphicsAllocator\n"));
 
-//	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
+//	UT_return_val_if_fail(!info.isPrinterGraphics(), nullptr);
 	GR_UnixCairoAllocInfo &AI = (GR_UnixCairoAllocInfo&)info;
 
 	return new GR_UnixCairoGraphics(AI.m_win);
@@ -144,7 +144,7 @@ void GR_UnixCairoGraphics::widget_size_allocate(GtkWidget* /*widget*/, GtkAlloca
 void GR_UnixCairoGraphics::widget_destroy(GtkWidget* widget, GR_UnixCairoGraphics* me)
 {
 	UT_return_if_fail(me && me->m_Widget == widget);
-	me->m_Widget = NULL;
+	me->m_Widget = nullptr;
 	me->m_Signal = 0;
 	me->m_DestroySignal = 0;
 }
@@ -180,7 +180,7 @@ void GR_UnixCairoGraphics::init3dColors(GtkWidget* /*w*/)
 	if (m_styleHighlight) {
 		g_object_unref(m_styleHighlight);
 	}
-	m_styleHighlight = XAP_GtkStyle_get_style(NULL, "GtkTreeView.view"); // "textview.view"
+	m_styleHighlight = XAP_GtkStyle_get_style(nullptr, "GtkTreeView.view"); // "textview.view"
 	gtk_style_context_get_color (m_styleHighlight, GTK_STATE_FLAG_NORMAL, &rgba1);
 	m_3dColors[CLR3D_Highlight] = _convertGdkRGBA(rgba1);
 
@@ -204,7 +204,7 @@ void GR_UnixCairoGraphics::init3dColors(GtkWidget* /*w*/)
 	m_3dColors[CLR3D_BevelDown]  = _convertGdkRGBA(rgba_);
 
 
-	GtkStyleContext *text_style = XAP_GtkStyle_get_style(NULL, "GtkLabel.view"); // "label.view"
+	GtkStyleContext *text_style = XAP_GtkStyle_get_style(nullptr, "GtkLabel.view"); // "label.view"
 	gtk_style_context_get_color (text_style, GTK_STATE_FLAG_NORMAL, &rgba2);
 	m_3dColors[CLR3D_Foreground]	= _convertGdkRGBA(rgba2);
 	g_object_unref(text_style);
@@ -225,7 +225,7 @@ GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
 		gtk_style_context_set_path(tempCtxt, path);
 		gtk_widget_path_free(path);
 		PangoFontDescription* fontDesc;
-		gtk_style_context_get(tempCtxt, GTK_STATE_FLAG_NORMAL, "font", &fontDesc, NULL);
+		gtk_style_context_get(tempCtxt, GTK_STATE_FLAG_NORMAL, "font", &fontDesc, nullptr);
 		const char *guiFontName = pango_font_description_get_family(fontDesc);
 
 		if (!guiFontName)
@@ -454,12 +454,12 @@ GR_Image * GR_UnixCairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	UT_sint32 idy = _tduY(rec.top);
 	UT_sint32 idw = _tduR(rec.width);
 	UT_sint32 idh = _tduR(rec.height);
-	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0, NULL);
+	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0, nullptr);
 	cairo_surface_flush ( cairo_get_target(m_cr));
 	GdkPixbuf * pix = gdk_pixbuf_get_from_window(getWindow(),
 	                                             idx, idy,
 	                                             idw, idh);
-	UT_return_val_if_fail(pix, NULL);
+	UT_return_val_if_fail(pix, nullptr);
 
 	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
 	pImg->setData(pix);
@@ -472,7 +472,7 @@ void GR_UnixCairoGraphics::_beginPaint()
 	UT_ASSERT(m_Painting == false);
 	GR_CairoGraphics::_beginPaint();
 
-	if (m_cr == NULL)
+	if (m_cr == nullptr)
 	{
 		UT_ASSERT(m_pWin);
 		auto region = cairo_region_create();
@@ -494,7 +494,7 @@ void GR_UnixCairoGraphics::_endPaint()
 		gdk_window_end_draw_frame(m_pWin, m_context);
 	}
 	m_context = nullptr;
-	m_cr = NULL;
+	m_cr = nullptr;
 
 	m_Painting = false;
 	m_CairoCreated = false;
@@ -540,7 +540,7 @@ bool GR_UnixCairoGraphics::queryProperties(GR_Graphics::Properties gp) const
 	{
 		case DGP_SCREEN:
 		case DGP_OPAQUEOVERLAY:
-			return m_pWin != NULL;
+			return m_pWin != nullptr;
 		case DGP_PAPER:
 			return false;
 		default:
@@ -572,7 +572,7 @@ void GR_UnixCairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y,
 	case GR_Graphics::CLR3D_Background:
 	case GR_Graphics::CLR3D_Highlight:
 	{
-		if (m_cr == NULL) {
+		if (m_cr == nullptr) {
 			return;
 		}
 		_setProps();

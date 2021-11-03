@@ -157,12 +157,12 @@ void XAP_UnixDialog_PluginManager::_updatePluginList ()
 	const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 	
 	GtkTreeModel *tm = gtk_tree_view_get_model (GTK_TREE_VIEW (m_list));
-	GtkListStore *model = NULL;
-	if (tm != NULL) {
+	GtkListStore *model = nullptr;
+	if (tm != nullptr) {
 		model = GTK_LIST_STORE (tm);
 		// detach model for faster updates
 		g_object_ref (G_OBJECT (model));
-		gtk_tree_view_set_model (GTK_TREE_VIEW (m_list), NULL);
+		gtk_tree_view_set_model (GTK_TREE_VIEW (m_list), nullptr);
 		gtk_list_store_clear (model);
 	}
 	else {	
@@ -212,10 +212,10 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 	}
 	
 	// just a blank space, to represent an empty entry
-	const char * name = NULL;
-	const char * author = NULL;
-	const char * version = NULL;
-	const char * desc = NULL;
+	const char * name = nullptr;
+	const char * author = nullptr;
+	const char * version = nullptr;
+	const char * desc = nullptr;
 	
 	const char * na = m_pApp->getStringSet()->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NOT_AVAILABLE);
 
@@ -299,7 +299,7 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 													   renderer,
 													   "text", 
 													   0,
-													   NULL);
+													   nullptr);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_list), column);
 
 	g_signal_connect_after(G_OBJECT(gtk_tree_view_get_selection (GTK_TREE_VIEW (m_list))),

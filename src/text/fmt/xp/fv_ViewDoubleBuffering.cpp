@@ -132,7 +132,7 @@ void FV_ViewDoubleBuffering::callUnifiedDraw()
 		mostExtArgs.fullRect.left, mostExtArgs.fullRect.top,
 		mostExtArgs.fullRect.width, mostExtArgs.fullRect.height,
 		mostExtArgs.bDirtyRunsOnly, false);
-	m_pView->getGraphics()->setClipRect(NULL);
+	m_pView->getGraphics()->setClipRect(nullptr);
 
 	xxx_UT_DEBUGMSG(("ASFRENT: unified _draw call for a total of %d previous calls.\n",  mostExtArgs.callCount));
 }
@@ -160,7 +160,7 @@ void FV_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
 	const UT_Rect *clipRectFromGraphics,
 	bool bDirtyRunsOnly)
 {
-	if(clipRectFromGraphics == NULL) {
+	if(clipRectFromGraphics == nullptr) {
 		clipRectFromGraphics = thisCallRect;
 	}
 

@@ -59,9 +59,9 @@
 
 XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_AppPersistent(pDlgFactory,id, "interface/dialogopenlinux"),
-	  m_szDescriptions(NULL),
-	  m_szSuffixes(NULL),
-	  m_nTypeList(NULL),
+	  m_szDescriptions(nullptr),
+	  m_szSuffixes(nullptr),
+	  m_nTypeList(nullptr),
 	  m_nFileType(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO),
 	  m_nDefaultFileType(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO),
 	  m_bSuggestName(false),

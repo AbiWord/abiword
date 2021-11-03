@@ -57,7 +57,7 @@
 AP_StatusBarField::AP_StatusBarField(AP_StatusBar * pSB)
 {
     m_pSB = pSB;
-    m_pStatusBarFieldListener = NULL;
+    m_pStatusBarFieldListener = nullptr;
     m_fillMethod = MAX_POSSIBLE;
 }
 
@@ -316,7 +316,7 @@ AP_StatusBarField_ProgressBar::AP_StatusBarField_ProgressBar(AP_StatusBar * pSB)
 {
     m_ProgressStartPoint = 0;
     m_ProgressFlags = 0;
-    m_ProgressTimer = NULL;
+    m_ProgressTimer = nullptr;
     m_fillMethod = PROGRESS_BAR;
 }
 
@@ -390,10 +390,10 @@ bool AP_StatusBarField_ProgressBar::isDefinate(void)
 
 AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
     :       m_pFrame(pFrame),
-	    m_pView(NULL),
+	    m_pView(nullptr),
 	    m_bInitFields(false),
-	    m_pStatusMessageField(NULL),
-	    m_pStatusProgressField(NULL),
+	    m_pStatusMessageField(nullptr),
+	    m_pStatusProgressField(nullptr),
 	    m_sStatusMessage("")
 {
 
@@ -475,7 +475,7 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 	{
 		return true;
 	}
-    setStatusMessage(NULL);
+    setStatusMessage(nullptr);
 
     // Let each field on the status bar update itself accordingly.
     UT_ASSERT_HARMLESS(pView==m_pView);

@@ -45,7 +45,7 @@ bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiChar
 #ifndef NO_BIDI_SUPPORT
 	// if this assert fails, we have a serious problem ...
 	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
-	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir, (FriBidiChar*)pStrOut, NULL, NULL, NULL));
+	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir, (FriBidiChar*)pStrOut, nullptr, nullptr, nullptr));
 #else
 	if(!pStrIn || !*pStrIn)
 		return true;
@@ -64,7 +64,7 @@ bool UT_bidiMapLog2Vis(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharTyp
 	// if this assert fails, we have a serious problem ...
 	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
 	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir,
-								  NULL, (FriBidiStrIndex*)pL2V, (FriBidiStrIndex*)pV2L, (FriBidiLevel*)pEmbed));
+								  nullptr, (FriBidiStrIndex*)pL2V, (FriBidiStrIndex*)pV2L, (FriBidiLevel*)pEmbed));
 #else
 	UT_return_val_if_fail( pL2V && pV2L && pEmbed, false );
 	for(UT_uint32 i = 0; i < len; ++i)

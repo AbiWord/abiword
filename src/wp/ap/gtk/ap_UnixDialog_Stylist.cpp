@@ -139,10 +139,10 @@ XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFact
 AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
 	: AP_Dialog_Stylist(pDlgFactory,id), 
-	  m_wStyleList(NULL),
-	  m_wRenderer(NULL),
-	  m_wModel(NULL),
-	  m_wStyleListContainer(NULL)
+	  m_wStyleList(nullptr),
+	  m_wRenderer(nullptr),
+	  m_wModel(nullptr),
+	  m_wStyleListContainer(nullptr)
 {
 }
 
@@ -163,10 +163,10 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 	std::string sLocCurStyle;
 	std::string sCurStyle = getCurStyle();
 
-	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
+	if((getStyleTree() == nullptr) || (sCurStyle.size() == 0))
 		updateDialog();
 
-	if(m_wStyleList == NULL)
+	if(m_wStyleList == nullptr)
 		return;
 
 	if(isStyleTreeChanged())
@@ -177,8 +177,8 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_wStyleList));
 	itering = gtk_tree_model_get_iter_first(model, &parent);
 
-	GtkTreePath *gPathFull = NULL;
-	GtkTreePath *gPathRow = NULL;
+	GtkTreePath *gPathFull = nullptr;
+	GtkTreePath *gPathRow = nullptr;
 	while (itering)
 	{
 		if (gtk_tree_model_iter_children(model, &child, &parent))
@@ -210,8 +210,8 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 		gtk_tree_path_free(gPathRow);
 	}
 	if (gPathFull) {
-		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList), gPathFull, NULL, TRUE, 0.5, 0.5);
-		gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList), gPathFull, NULL, TRUE);
+		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList), gPathFull, nullptr, TRUE, 0.5, 0.5);
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList), gPathFull, nullptr, TRUE);
 		gtk_tree_path_free(gPathFull);
 	}
 	setStyleChanged(false);
@@ -221,9 +221,9 @@ void AP_UnixDialog_Stylist::destroy(void)
 {
 	finalize();
 	gtk_widget_destroy(m_windowMain); // TOPLEVEL
-	m_windowMain = NULL;
-	m_wRenderer = NULL;
-	m_wStyleList = NULL;
+	m_windowMain = nullptr;
+	m_wRenderer = nullptr;
+	m_wStyleList = nullptr;
 }
 
 void AP_UnixDialog_Stylist::activate(void)
@@ -366,7 +366,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	std::string sTmp, sLoc;
 	for (row = 0; row < pStyleTree->getNumRows(); row++)
 	{
-		gtk_tree_store_append (m_wModel, &iter, NULL);
+		gtk_tree_store_append (m_wModel, &iter, nullptr);
 		if (!pStyleTree->getNameOfRow(sTmp, row))
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -403,7 +403,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 
 	// create a new treeview
 	GtkTreeSortable *sort = GTK_TREE_SORTABLE(m_wModel);
-	gtk_tree_sortable_set_sort_func(sort, 0, s_compare, NULL, NULL);
+	gtk_tree_sortable_set_sort_func(sort, 0, s_compare, nullptr, nullptr);
 	gtk_tree_sortable_set_sort_column_id(sort, 0, GTK_SORT_ASCENDING);
 	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (sort));
 	g_object_unref (G_OBJECT (m_wModel));
@@ -412,7 +412,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wStyleList));
 	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);
 	gtk_tree_selection_set_select_function (sel, tree_select_filter,
-														 NULL, NULL);
+														 nullptr, nullptr);
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	m_wRenderer = gtk_cell_renderer_text_new ();
@@ -420,7 +420,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles,s);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wStyleList),
 												 -1, s.c_str(),
-												 m_wRenderer, "text", 0, NULL);
+												 m_wRenderer, "text", 0, nullptr);
 
 	gtk_tree_view_collapse_all (GTK_TREE_VIEW (m_wStyleList));
 	gtk_container_add (GTK_CONTAINER (m_wStyleListContainer), m_wStyleList);

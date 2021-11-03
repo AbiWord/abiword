@@ -34,9 +34,9 @@ XAP_Dialog_HTMLOptions::XAP_Dialog_HTMLOptions (XAP_DialogFactory * pDlgFactory,
 												XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id),
 	  m_bShouldSave(true),
-	  m_exp_opt(NULL),
-	  m_app(NULL),
-	  m_pLinkCSS(NULL)
+	  m_exp_opt(nullptr),
+	  m_app(nullptr),
+	  m_pLinkCSS(nullptr)
 {
 	//
 	m_pLinkCSS = new UT_UTF8String;
@@ -148,13 +148,19 @@ void XAP_Dialog_HTMLOptions::set_Split_Document(bool enable)
 void XAP_Dialog_HTMLOptions::saveDefaults ()
 {
 	UT_ASSERT(m_app);
-	if (m_app == NULL) return;
+	if (m_app == nullptr) {
+		return;
+	}
 
     XAP_Prefs * pPrefs = m_app->getPrefs ();
-	if (pPrefs == NULL) return;
+	if (pPrefs == nullptr) {
+		return;
+	}
 
 	XAP_PrefsScheme * pPScheme = pPrefs->getCurrentScheme ();
-	if (pPScheme == NULL) return;
+	if (pPScheme == nullptr) {
+		return;
+	}
 
 	UT_UTF8String pref;
 
@@ -236,7 +242,9 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 
 void XAP_Dialog_HTMLOptions::restoreDefaults ()
 {
-	if (m_exp_opt == NULL) return;
+	if (m_exp_opt == nullptr) {
+		return;
+	}
 	XAP_Dialog_HTMLOptions::getHTMLDefaults (m_exp_opt, m_app);
 }
 
@@ -244,7 +252,7 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults(XAP_Exp_HTMLOptions* exp_opt, XAP_A
 {
 	UT_ASSERT(exp_opt);
 
-	if (exp_opt == NULL) {
+	if (exp_opt == nullptr) {
 		return;
 	}
 
@@ -259,12 +267,12 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults(XAP_Exp_HTMLOptions* exp_opt, XAP_A
 	exp_opt->bEmbedImages = false;
 	exp_opt->bMathMLRenderPNG = false;
 	exp_opt->bSplitDocument = false;
-	if (app == NULL) {
+	if (app == nullptr) {
 		return;
 	}
 
 	const XAP_Prefs * pPrefs = app->getPrefs ();
-	if (pPrefs == NULL) {
+	if (pPrefs == nullptr) {
 		return;
 	}
 
@@ -272,13 +280,13 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults(XAP_Exp_HTMLOptions* exp_opt, XAP_A
 	bool haveValue = pPrefs->getPrefsValue(XAP_PREF_KEY_HTMLExportOptions, pref);
 
 	if (haveValue && !pref.empty())	{
-		exp_opt->bIs4 = (strstr(pref.c_str(), "HTML4") == NULL) ? false : true;
-		exp_opt->bIsAbiWebDoc = (strstr(pref.c_str(), "PHTML") == NULL) ? false : true;
-		exp_opt->bDeclareXML = (strstr(pref.c_str(), "?xml") == NULL) ? false : true;
-		exp_opt->bAllowAWML = (strstr(pref.c_str(), "xmlns:awml") == NULL) ? false : true;
-		exp_opt->bEmbedCSS = (strstr(pref.c_str(), "+CSS") == NULL) ? false : true;
-		exp_opt->bAbsUnits = (strstr(pref.c_str(), "+AbsUnits") == NULL) ? false : true;
-		exp_opt->bScaleUnits = (strstr(pref.c_str(), "+ScaleUnits") == NULL) ? false : true;
+		exp_opt->bIs4 = (strstr(pref.c_str(), "HTML4") == nullptr) ? false : true;
+		exp_opt->bIsAbiWebDoc = (strstr(pref.c_str(), "PHTML") == nullptr) ? false : true;
+		exp_opt->bDeclareXML = (strstr(pref.c_str(), "?xml") == nullptr) ? false : true;
+		exp_opt->bAllowAWML = (strstr(pref.c_str(), "xmlns:awml") == nullptr) ? false : true;
+		exp_opt->bEmbedCSS = (strstr(pref.c_str(), "+CSS") == nullptr) ? false : true;
+		exp_opt->bAbsUnits = (strstr(pref.c_str(), "+AbsUnits") == nullptr) ? false : true;
+		exp_opt->bScaleUnits = (strstr(pref.c_str(), "+ScaleUnits") == nullptr) ? false : true;
 
 		const char * p = strstr(pref.c_str(), "Compact:");
 		if (p) {
@@ -286,11 +294,11 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults(XAP_Exp_HTMLOptions* exp_opt, XAP_A
 			exp_opt->iCompact = atoi(p);
 		}
 
-		exp_opt->bLinkCSS = (strstr(pref.c_str(), "LinkCSS") == NULL) ? false : true;
-		exp_opt->bClassOnly = (strstr(pref.c_str(), "ClassOnly") == NULL) ? false : true;
-		exp_opt->bEmbedImages = (strstr(pref.c_str(), "data:base64") == NULL) ? false : true;
-		exp_opt->bMathMLRenderPNG = (strstr(pref.c_str(), "+MathMLPNG") == NULL) ? false : true;
-		exp_opt->bSplitDocument = (strstr(pref.c_str(), "+SplitDoc") == NULL) ? false : true;
+		exp_opt->bLinkCSS = (strstr(pref.c_str(), "LinkCSS") == nullptr) ? false : true;
+		exp_opt->bClassOnly = (strstr(pref.c_str(), "ClassOnly") == nullptr) ? false : true;
+		exp_opt->bEmbedImages = (strstr(pref.c_str(), "data:base64") == nullptr) ? false : true;
+		exp_opt->bMathMLRenderPNG = (strstr(pref.c_str(), "+MathMLPNG") == nullptr) ? false : true;
+		exp_opt->bSplitDocument = (strstr(pref.c_str(), "+SplitDoc") == nullptr) ? false : true;
 
 		if (exp_opt->bIs4) {
 			exp_opt->bIsAbiWebDoc = false;

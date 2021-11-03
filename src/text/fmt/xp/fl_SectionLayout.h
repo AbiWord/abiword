@@ -18,8 +18,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef SECTIONLAYOUT_H
-#define SECTIONLAYOUT_H
+#pragma once
 
 #ifdef FMT_TEST
 #include <stdio.h>
@@ -237,7 +236,7 @@ public:
 
 	virtual void        markAllRunsDirty(void) override;
 	virtual fl_SectionLayout *  getSectionLayout(void) const override
-		{ return NULL; }
+		{ return nullptr; }
 
 	virtual void		redrawUpdate(void) override;
 	virtual fp_Container*		getNewContainer(const fp_Container* pFirstContainer = nullptr) override;
@@ -571,5 +570,3 @@ private:
 	fl_TableLayout *            m_pCurrentTL;
 	fl_CellLayout *             m_pCurrentCell;
 };
-
-#endif /* SECTIONLAYOUT_H */

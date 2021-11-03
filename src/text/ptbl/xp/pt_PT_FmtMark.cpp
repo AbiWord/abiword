@@ -64,12 +64,12 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 			// one rather than inserting two consecutive marks.
 			
 			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
-			pf_Frag_Strux * pfsContainer = NULL;
+			pf_Frag_Strux * pfsContainer = nullptr;
 			bool bFoundStrux;
 			bFoundStrux = _getStruxOfTypeFromPosition(dpos,PTX_Block,&pfsContainer);
 			UT_return_val_if_fail (bFoundStrux, false);
 
-			return _fmtChangeFmtMarkWithNotify(ptc,pffm,dpos,attributes,properties,pfsContainer,NULL,NULL);
+			return _fmtChangeFmtMarkWithNotify(ptc,pffm,dpos,attributes,properties,pfsContainer,nullptr,nullptr);
 		}
 
 		if (pf->getPrev()->getType() == pf_Frag::PFT_Text)
@@ -91,7 +91,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return true;
 
-	pf_Frag_Strux * pfs = NULL;
+	pf_Frag_Strux * pfs = nullptr;
 	bool bFoundStrux = false;
 	//
 	// This code is to ensure that FmtMarks get inserted into
@@ -370,7 +370,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	// the old way is rather inefficient, inserting one property at a time ...
 	_insertFmtMarkFragWithNotify(ptc, dpos, pAttrProp->getAttributes(), pAttrProp->getProperties());
 #else
-	const gchar * properties[] =	{ NULL, NULL, 0};
+	const gchar * properties[] =	{ nullptr, nullptr, 0};
 
 	int Index = 0;
 	
@@ -378,7 +378,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	{
 		if(p_AttrProp->getNthProperty(Index, properties[0], properties[1]))
 		{
-			_insertFmtMarkFragWithNotify(ptc, dpos, NULL,
+			_insertFmtMarkFragWithNotify(ptc, dpos, nullptr,
 												properties);
 		}
 		else
@@ -390,7 +390,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	}
 	while(true);
 
-	const gchar * Attributes[] =	{ NULL, NULL, 0};
+	const gchar * Attributes[] =	{ nullptr, nullptr, 0};
 
 	Index = 0;
 	
@@ -399,7 +399,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 		if(p_AttrProp->getNthAttribute(Index, Attributes[0], Attributes[1]))
 		{
 			_insertFmtMarkFragWithNotify(ptc, dpos, Attributes,
-												NULL);
+												nullptr);
 		}
 		else
 		{

@@ -115,7 +115,7 @@ public:
  * Template for new APFilter classes. Check the name or value and return something
  * else if desired.
  */
-struct APFilterNULL
+struct APFilternullptr
 {
     std::string operator()( const gchar * szName, const std::string& value ) const
     {
@@ -135,7 +135,7 @@ struct APFilterNULL
  *
  * s_RTF_AttrPropAdapter is an abstract class for accessing properties.
  * The function getProperty takes a property name as argument
- * and returns the value, or NULL if that property isn't defined.
+ * and returns the value, or nullptr if that property isn't defined.
  */
 
 class ABI_EXPORT s_RTF_AttrPropAdapter

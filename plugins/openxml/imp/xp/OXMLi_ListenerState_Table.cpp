@@ -164,7 +164,7 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		if (w)
 		{
 			//append this width to table-column-props property
-			const gchar* tableColumnProps = NULL;
+			const gchar* tableColumnProps = nullptr;
 			UT_Error ret = table->getProperty("table-column-props", tableColumnProps);
 			if((ret != UT_OK) || !tableColumnProps)
 				tableColumnProps = "";
@@ -193,7 +193,7 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 		if (val)
 		{
-			const gchar* tableRowHeights = NULL;
+			const gchar* tableRowHeights = nullptr;
 			UT_Error ret = table->getProperty("table-row-heights", tableRowHeights);
 			if((ret != UT_OK) || !tableRowHeights)
 				tableRowHeights = "";

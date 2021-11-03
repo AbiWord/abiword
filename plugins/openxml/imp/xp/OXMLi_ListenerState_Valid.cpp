@@ -4703,7 +4703,7 @@ void OXMLi_ListenerState_Valid::endElement (OXMLi_EndElementRequest * rqst)
 
 void OXMLi_ListenerState_Valid::charData (OXMLi_CharDataRequest * rqst)
 {
-	rqst->valid = (rqst->buffer != NULL);
+	rqst->valid = (rqst->buffer != nullptr);
 }
 
 void OXMLi_ListenerState_Valid::populateKeywordTable()
