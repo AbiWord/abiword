@@ -241,7 +241,7 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 	UT_return_if_fail( m_pMenuLabelSet );
 	
 	UT_Language l;
-	if(l.getDirFromCode(m_pMenuLabelSet->getLanguage()) == UTLANG_RTL)
+	if(l.getDirFromCode(m_pMenuLabelSet->getLanguage().c_str()) == UTLANG_RTL)
 		m_iDIR = DT_RTLREADING;
 }
 
