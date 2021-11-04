@@ -19,9 +19,7 @@
  * 02110-1301 USA.
  */
 
-
-#ifndef _ODI_POSTPONE_LISTENERSTATE_H_
-#define _ODI_POSTPONE_LISTENERSTATE_H_
+#pragma once
 
 // Internal includes
 #include "ODi_ListenerState.h"
@@ -52,9 +50,9 @@ public:
 
     virtual void charData(const gchar* pBuffer, int length) override;
 
-    ODi_ListenerState* getParserState() {return m_pParserState;}
-    bool getDeleteParserStateWhenPop() const {return m_bDeleteParserStateWhenPop;}
-    const ODi_XMLRecorder* getXMLRecorder() const {return &m_xmlRecorder;}
+    ODi_ListenerState* getParserState()  const { return m_pParserState; }
+    bool getDeleteParserStateWhenPop() const { return m_bDeleteParserStateWhenPop; }
+    const ODi_XMLRecorder* getXMLRecorder() const { return &m_xmlRecorder; }
 
 private:
 
@@ -67,5 +65,3 @@ private:
     // end element tag of a given element.
     UT_uint32 m_elementStackCount;
 };
-
-#endif //_ODI_POSTPONE_LISTENERSTATE_H_
