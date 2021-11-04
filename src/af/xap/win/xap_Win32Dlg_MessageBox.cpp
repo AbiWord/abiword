@@ -88,7 +88,7 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	message.fromUTF8(m_szMessage);
+	message.fromUTF8(m_message.c_str());
 	int res = MessageBoxW(hwnd, message.c_str(), caption.c_str(), flags);
 
 	switch (res)

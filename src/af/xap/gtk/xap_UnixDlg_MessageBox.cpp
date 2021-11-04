@@ -1,24 +1,25 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ * Copyright (C) 2021 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
 /*
- * Port to Maemo Development Platform 
+ * Port to Maemo Development Platform
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
@@ -33,6 +34,7 @@ ABI_W_NO_CONST_QUAL
 ABI_W_POP
 #include <gdk/gdkkeysyms.h>
 #include <glib.h>
+
 #include "ut_assert.h"
 #include "ut_vector.h"
 #include "ut_debugmsg.h"
@@ -87,7 +89,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	// just put up an information box
         message = gtk_message_dialog_new(toplevel, dflFlags,
                                          GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
-                                         "%s", m_szMessage);
+                                         "%s", m_message.c_str());
 	break;
 
     case b_YN:
@@ -95,7 +97,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
         message = gtk_message_dialog_new(toplevel, dflFlags,
                                          GTK_MESSAGE_QUESTION,
                                          GTK_BUTTONS_YES_NO,
-                                         "%s", m_szMessage);
+                                         "%s", m_message.c_str());
 	if (m_defaultAnswer == XAP_Dialog_MessageBox::a_YES) {
 	    gtk_dialog_set_default_response(GTK_DIALOG(message), GTK_RESPONSE_YES);
 	} else {
@@ -109,7 +111,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	// this is only used for saving files.
         message = gtk_message_dialog_new(toplevel, dflFlags,
                                          GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE,
-                                         "%s", m_szMessage);
+                                         "%s", m_message.c_str());
 
         std::string no, cancel, save;
         const XAP_StringSet * pSS = pApp->getStringSet();
@@ -136,10 +138,10 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	UT_ASSERT_NOT_REACHED();
     }
 
-    if (m_szSecondaryMessage) {
+    if (!m_secondaryMessage.empty()) {
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(message),
                                                  "%s",
-                                                 m_szSecondaryMessage);
+                                                 m_secondaryMessage.c_str());
     }
     // set the title to '', as per GNOME HIG, Section 3, Alerts
     gtk_window_set_title (GTK_WINDOW(message), "");

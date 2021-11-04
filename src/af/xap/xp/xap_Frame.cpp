@@ -837,7 +837,7 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char * szMessage,
 							 XAP_Dialog_MessageBox::tAnswer default_answer)
 {
   XAP_Dialog_MessageBox * pDialog = createMessageBox(0, buttons, default_answer);
-  pDialog->setMessage(szMessage);
+  pDialog->setMessage("%s", szMessage);
   return showMessageBox(pDialog);
 }
 
