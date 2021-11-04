@@ -82,7 +82,7 @@ public:
 #endif
 
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting) override;
-	virtual bool					canPasteFromClipboard(void) override;
+	virtual bool canPasteFromClipboard(void) const override;
 	virtual void					cacheCurrentSelection(AV_View *) override {};
 
 	virtual void 					errorMsgBadFile(XAP_Frame * pFrame, const char * file, UT_Error error) override;

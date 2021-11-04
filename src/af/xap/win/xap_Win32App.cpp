@@ -67,7 +67,8 @@ extern "C" {const char * wvLIDToLangConverter(UT_uint16);}
 XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, const char * szAppName)
 :	XAP_App(szAppName),
 	m_hInstance(hInstance),
-	m_dialogFactory(this)
+	m_dialogFactory(new AP_Win32DialogFactory(this)),
+	m_controlFactory(new AP_Win32Toolbar_ControlFactory)
 {
 	UT_return_if_fail(hInstance);
 
@@ -151,6 +152,8 @@ XAP_Win32App::~XAP_Win32App(void)
 {
 	m_pSlurp->disconnectSlurper();
 	DELETEP(m_pSlurp);
+	delete m_dialogFactory;
+	delete m_controlFactory;
 }
 
 HINSTANCE XAP_Win32App::getInstance() const
@@ -183,14 +186,14 @@ void XAP_Win32App::reallyExit(void)
 	PostQuitMessage (0);
 }
 
-XAP_DialogFactory * XAP_Win32App::getDialogFactory(void)
+XAP_DialogFactory * XAP_Win32App::getDialogFactory(void) const
 {
-	return &m_dialogFactory;
+	return m_dialogFactory;
 }
 
-XAP_Toolbar_ControlFactory * XAP_Win32App::getControlFactory(void)
+XAP_Toolbar_ControlFactory * XAP_Win32App::getControlFactory(void) const
 {
-	return &m_controlFactory;
+	return m_controlFactory;
 }
 
 UT_uint32 XAP_Win32App::_getExeDir(LPWSTR pDirBuf, UT_uint32 iBufLen)
@@ -595,19 +598,19 @@ const char * XAP_Win32App::getUTF8String (const WCHAR * p_str)
 }
 
 
-void XAP_Win32App::getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags)
+void XAP_Win32App::getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags) const
 {
 	flags |= PREF_FLAG_GEOMETRY_MAXIMIZED;
-	
+
 	width = GetSystemMetrics(SM_CXFULLSCREEN);
-	height = GetSystemMetrics(SM_CYFULLSCREEN);	
+	height = GetSystemMetrics(SM_CYFULLSCREEN);
 }
 
 const char * XAP_Win32App::_getKbdLanguage()
 {
 	// make sure that m_hkl is in sync with the current value
 	m_hkl = GetKeyboardLayout(0);
-	
+
 	WORD langID = LANGIDFROMLCID(LOWORD(m_hkl));
 	const char * pszLang = wvLIDToLangConverter((unsigned short)langID);
 	UT_DEBUGMSG(("XAP_Win32App::_getKbdLanguage: %s\n",pszLang));

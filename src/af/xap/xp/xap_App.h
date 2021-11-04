@@ -1,8 +1,8 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * Copyright (C) 2004 Hubert Figuiere
+ * Copyright (C) 2004-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,17 +20,9 @@
  * 02110-1301 USA.
  */
 
+#pragma once
 
-#ifndef XAP_APP_H
-#define XAP_APP_H
-
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
 #include "ut_vector.h"
 #include "ut_Language.h"
 #include "ut_string_class.h"
@@ -152,10 +144,10 @@ public:
 	virtual void                rebuildMenus(void);
 
 	EV_EditMethodContainer *			getEditMethodContainer() const;
-	EV_EditBindingMap *				getBindingMap(const char * szName);
-	XAP_BindingSet *				getBindingSet(void)
-	{ return m_pBindingSet;}		/* the set of binding maps */
-	const EV_Menu_ActionSet *			getMenuActionSet() const;
+	EV_EditBindingMap* getBindingMap(const char * szName) const;
+	XAP_BindingSet* getBindingSet(void) const
+	{ return m_pBindingSet; }	/* the set of binding maps */
+	const EV_Menu_ActionSet *		getMenuActionSet() const;
 	const EV_Toolbar_ActionSet *			getToolbarActionSet() const;
 	const XAP_EncodingManager *			getEncodingManager() const;
 	EV_Menu_ActionSet *				getMenuActionSet();
@@ -171,19 +163,19 @@ public:
 
 	static XAP_App *				getApp();
 
-	virtual XAP_DialogFactory *			getDialogFactory() = 0;
-	virtual XAP_Toolbar_ControlFactory *		getControlFactory() = 0;
+	virtual XAP_DialogFactory* getDialogFactory() const = 0;
+	virtual XAP_Toolbar_ControlFactory*	getControlFactory() const = 0;
 
 	virtual const XAP_StringSet *			getStringSet() const = 0;
 	virtual void						migrate(const char *oldName, const char *newName, const char *path) const;
 	virtual const char *				getUserPrivateDirectory() const = 0;
 	virtual const char *				getAbiSuiteLibDir() const;
 	virtual const char *				getAbiSuiteAppDir() const = 0;
-	virtual bool					findAbiSuiteLibFile(std::string & path, const char * filename, const char * subdir = nullptr);
-	virtual bool					findAbiSuiteAppFile(std::string & path, const char * filename, const char * subdir = nullptr); // doesn't check user-dir
+	virtual bool findAbiSuiteLibFile(std::string& path, const char* filename, const char* subdir = nullptr) const;
+	virtual bool findAbiSuiteAppFile(std::string& path, const char* filename, const char* subdir = nullptr) const; // doesn't check user-dir
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
-	virtual bool					canPasteFromClipboard() = 0;
+	virtual bool canPasteFromClipboard() const = 0;
 	virtual void					cacheCurrentSelection(AV_View *) = 0;
 	virtual void				addClipboardFmt (const char * /*szFormat*/) {}
 	virtual void				deleteClipboardFmt (const char * /*szFormat*/) {}
@@ -196,22 +188,22 @@ public:
 	void						clearIdTable();
 	bool						setDebugBool(void) { m_bDebugBool = true; return m_bDebugBool; }
 	bool						clearDebugBool(void) { m_bDebugBool = false; return m_bDebugBool; }
-	bool						isDebug(void) { return m_bDebugBool; }
+	bool isDebug(void) const { return m_bDebugBool; }
 	void						rememberModelessId(UT_sint32 id, XAP_Dialog_Modeless * pDialog);
 	void						forgetModelessId(UT_sint32 id);
-	bool						isModelessRunning(UT_sint32 id);
-	XAP_Dialog_Modeless *				getModelessDialog(UT_sint32 id);
+	bool isModelessRunning(UT_sint32 id) const;
+	XAP_Dialog_Modeless* getModelessDialog(UT_sint32 id) const;
 	void						closeModelessDlgs();
 	void						notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame);
 	void						notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame);
 
-	virtual void					setViewSelection(AV_View * /*pView*/) {}; //subclasses override
-	virtual AV_View *				getViewSelection() { return static_cast<AV_View *>(NULL);} ; // subclasses override
+	virtual void setViewSelection(AV_View* /*pView*/) = 0;
+	virtual AV_View* getViewSelection() const = 0;
 
 	virtual	bool					setGeometry(UT_sint32 x, UT_sint32 y,
 									UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
-	virtual	bool					getGeometry(UT_sint32 *x, UT_sint32 *y,
-									UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = nullptr);
+	virtual	bool getGeometry(UT_sint32 *x, UT_sint32 *y,
+									UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = nullptr) const;
 	virtual void 					parseAndSetGeometry(const char *string);
 	XAP_Menu_Factory *				getMenuFactory(void) const { return m_pMenuFactory; }
 	XAP_Toolbar_Factory *				getToolbarFactory(void) const { return m_pToolbarFactory; }
@@ -228,9 +220,9 @@ public:
 
 	void						setBonoboRunning(void) { m_bBonoboRunning = true; }
 	bool						isBonoboRunning(void) const { return m_bBonoboRunning; }
-	virtual void					getDefaultGeometry(UT_uint32& /*width*/,
-													   UT_uint32& /*height*/,
-													   UT_uint32& /*flags*/) {}
+	virtual void getDefaultGeometry(UT_uint32& /*width*/,
+                                    UT_uint32& /*height*/,
+                                    UT_uint32& /*flags*/) const {}
 
 	const UT_LangRecord *				getKbdLanguage() const { return m_pKbdLang; }
 	void						setKbdLanguage(const char * pszLang);
@@ -261,8 +253,8 @@ public:
 
 	bool					registerEmbeddable(GR_EmbedManager * pEmbed, const char *uid = NULL);
 	bool						unRegisterEmbeddable(const char *uid);
-	GR_EmbedManager *				getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
-	XAP_Module *				getPlugin(const char * szPluginName);
+	GR_EmbedManager* getEmbeddableManager(GR_Graphics* pG, const char* szObjectType) const;
+	XAP_Module* getPlugin(const char* szPluginName) const;
 
 	static const char*			findNearestFont(const char* pszFontFamily,
 												const char* pszFontStyle,
@@ -290,7 +282,7 @@ public:
 
 protected:
 	void						_setAbiSuiteLibDir(const char * sz);
-	virtual const char *				_getKbdLanguage() {return NULL;}
+	virtual const char* _getKbdLanguage() { return nullptr; }
 	void						_setUUIDGenerator(UT_UUIDGenerator * pG) { m_pUUIDGenerator = pG; }
 
 	virtual bool                _saveState(XAP_StateData & sd);
@@ -336,8 +328,8 @@ private:
 
 	XAP_InputModes *				m_pInputModes;
 	std::map<std::string, GR_EmbedManager *> m_mapEmbedManagers;
-	XAP_App(const XAP_App&);			// should not even be called. Just to avoid a warning.
-	void operator=(const XAP_App&);
+	XAP_App(const XAP_App&) = delete;
+	void operator=(const XAP_App&) = delete;
 #ifdef DEBUG
 	void _fundamentalAsserts() const;
 #endif
@@ -345,5 +337,3 @@ private:
 	UT_GenericVector<AV_Listener *>			m_vecPluginListeners;
 	UT_ScriptLibrary *             m_pScriptLibrary;
 };
-
-#endif /* XAP_APP_H */

@@ -57,13 +57,13 @@ public:
 
 	virtual HINSTANCE						getInstance() const;
 
-	virtual XAP_DialogFactory *				getDialogFactory(void) override;
-	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void) override;
+	virtual XAP_DialogFactory* getDialogFactory(void) const override;
+	virtual XAP_Toolbar_ControlFactory* getControlFactory(void) const override;
 	virtual const XAP_StringSet *			getStringSet(void) const override = 0;
 	virtual const char *					getAbiSuiteAppDir(void) const override = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) override = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool, bool) override = 0;
-	virtual bool							canPasteFromClipboard(void) override = 0;
+	virtual bool canPasteFromClipboard(void) const override = 0;
 	virtual void							cacheCurrentSelection(AV_View *) override = 0;
 	virtual const char *					getUserPrivateDirectory(void) const override;
 
@@ -76,9 +76,9 @@ public:
 	virtual UT_sint32 				setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame);
     virtual XAP_App::BidiSupportType        theOSHasBidiSupport() const override {return m_eBidiOS;}
 
-	virtual void			getDefaultGeometry(UT_uint32& width,
-                                                           UT_uint32& height,
-                                                           UT_uint32& flags) override;
+	virtual void getDefaultGeometry(UT_uint32& width,
+                                        UT_uint32& height,
+                                        UT_uint32& flags) const override;
 
 	void                                    setHKL(HKL hkl) {m_hkl = hkl;}
 	HKL                                     getHKL()const {return m_hkl;}
@@ -88,11 +88,11 @@ protected:
 	UT_uint32								_getExeDir(LPWSTR pDirBuf, UT_uint32 iBufLen);
 	void									_setAbiSuiteLibDir(void);
 	void									_setBidiOS(void);
-	virtual const char *                    _getKbdLanguage() override;
+	virtual const char* _getKbdLanguage() override;
 
 	HINSTANCE								m_hInstance;
-	AP_Win32DialogFactory					m_dialogFactory;
-	AP_Win32Toolbar_ControlFactory			m_controlFactory;
+	AP_Win32DialogFactory* m_dialogFactory;
+	AP_Win32Toolbar_ControlFactory*	m_controlFactory;
 
 	XAP_Win32Slurp *						m_pSlurp;
 	static char m_buffer[MAX_CONVBUFFER*6];

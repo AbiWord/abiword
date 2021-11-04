@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2019 Hubert Figuière
+ * Copyright (C) 2019-2021 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,9 +24,7 @@
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
-
-#ifndef XAP_UNIXAPP_H
-#define XAP_UNIXAPP_H
+#pragma once
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -64,14 +62,14 @@ public:
 	virtual XAP_Frame * 					newFrame() override = 0;
 	virtual void							reallyExit() override;
 
-	virtual XAP_DialogFactory *				getDialogFactory() override;
-	virtual XAP_Toolbar_ControlFactory *	getControlFactory() override;
+	virtual XAP_DialogFactory* getDialogFactory() const override;
+	virtual XAP_Toolbar_ControlFactory* getControlFactory() const override;
 	virtual const XAP_StringSet *			getStringSet() const override = 0;
 	virtual const char *					getAbiSuiteAppDir() const override = 0;
 	virtual const std::string&					getAbiSuiteAppUIDir() const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) override = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) override = 0;
-	virtual bool							canPasteFromClipboard() override = 0;
+	virtual bool canPasteFromClipboard() const override = 0;
 	void									migrate(const char *oldName, const char *newName, const char *path) const override;
 	virtual const char *					getUserPrivateDirectory() const override;
 
@@ -113,8 +111,8 @@ public:
 protected:
 	void							_setAbiSuiteLibDir();
 
-	AP_UnixDialogFactory			m_dialogFactory;
-	AP_UnixToolbar_ControlFactory	m_controlFactory;
+	AP_UnixDialogFactory* m_dialogFactory;
+	AP_UnixToolbar_ControlFactory* m_controlFactory;
 
 	windowGeometry			m_geometry;
 	UT_uint32					m_eventTime; // e->time field of a recent X event
@@ -124,5 +122,3 @@ protected:
     char *                     m_szTmpFile;
     GtkApplication* m_gtkApp;
 };
-
-#endif /* XAP_UNIXAPP_H */

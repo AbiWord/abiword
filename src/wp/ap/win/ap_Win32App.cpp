@@ -1001,7 +1001,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 	return bSuccess;
 }
 
-bool AP_Win32App::canPasteFromClipboard(void)
+bool AP_Win32App::canPasteFromClipboard(void) const
 {
 	if (!getLastFocussedFrame()) 
 		return false;

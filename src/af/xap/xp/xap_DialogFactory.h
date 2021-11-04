@@ -78,7 +78,7 @@ public:
 	XAP_Dialog *		requestDialog(XAP_Dialog_Id id);
 	XAP_Dialog *		justMakeTheDialog(XAP_Dialog_Id id);
 	void				releaseDialog(XAP_Dialog * pDialog);
-	XAP_Dialog_Id		getNextId(void);
+	XAP_Dialog_Id getNextId(void) const;
 	XAP_Dialog_Id		registerDialog(XAP_Dialog *(*pStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id),XAP_Dialog_Type iDialogType);
 	void				unregisterDialog(XAP_Dialog_Id id);
 
@@ -99,7 +99,7 @@ protected:
 	UT_GenericVector<_dlg_table *>	m_vecDynamicTable;			/* a Vector of elements */
 
 private:
-	void addPages(XAP_NotebookDialog * pDialog, XAP_Dialog_Id id);
+	static void addPages(XAP_NotebookDialog* pDialog, XAP_Dialog_Id id);
 };
 
 #endif /* XAP_DIALOGFACTORY_H */

@@ -1,21 +1,21 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998, 1999 AbiSource, Inc.
- * Copyright (C) 2004 Hubert Figuiere
- * 
+ * Copyright (C) 2004-2021 Hubert Figuière
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -226,7 +226,7 @@ EV_Toolbar_ActionSet *XAP_App::getToolbarActionSet()
  * Returns a pointer to the requested plugin if it is loaded.
  * Return NULL otherwise.
  */
-XAP_Module * XAP_App::getPlugin(const char * szPluginName)
+XAP_Module* XAP_App::getPlugin(const char* szPluginName) const
 {
      XAP_Module * pModule = NULL;
      const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
@@ -286,19 +286,22 @@ bool XAP_App::unRegisterEmbeddable(const char *uid)
  * Return a copy of the requested embedable plugin or a default manager.
  * The calling routine must delete this.
  */
-GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * szObjectType)
+GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * szObjectType) const
 {
-     GR_EmbedManager * pCur = NULL;
-	 if (szObjectType && szObjectType != nullptr)
-       pCur =  m_mapEmbedManagers[szObjectType];
-     if(pCur != NULL)
-     {
-       UT_DEBUGMSG(("Found a plugin of type %s \n",pCur->getObjectType()));
-       return pCur->create(pG);
-     }
-     return new GR_EmbedManager(pG);
+	GR_EmbedManager * pCur = NULL;
+	if (szObjectType && szObjectType != nullptr) {
+		auto iter = m_mapEmbedManagers.find(szObjectType);
+		if (iter != m_mapEmbedManagers.end()) {
+			pCur = iter->second;
+		}
+	}
+	if(pCur != nullptr) {
+		UT_DEBUGMSG(("Found a plugin of type %s \n",pCur->getObjectType()));
+		return pCur->create(pG);
+	}
+	return new GR_EmbedManager(pG);
 }
- 
+
 bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
 	gsf_init();
@@ -540,9 +543,9 @@ EV_EditMethodContainer * XAP_App::getEditMethodContainer() const
 	return m_pEMC;
 }
 
-EV_EditBindingMap * XAP_App::getBindingMap(const char * szName)
+EV_EditBindingMap * XAP_App::getBindingMap(const char * szName) const
 {
-	UT_return_val_if_fail(m_pBindingSet,NULL);
+	UT_return_val_if_fail(m_pBindingSet, nullptr);
 	return m_pBindingSet->getMap(szName);
 }
 
@@ -841,7 +844,7 @@ const char * XAP_App::getAbiSuiteLibDir() const
 	return m_szAbiSuiteLibDir;
 }
 
-bool XAP_App::findAbiSuiteLibFile(std::string & path, const char * filename, const char * subdir)
+bool XAP_App::findAbiSuiteLibFile(std::string& path, const char* filename, const char* subdir) const
 {
 	if (!filename)
 	{ 
@@ -869,7 +872,7 @@ bool XAP_App::findAbiSuiteLibFile(std::string & path, const char * filename, con
 	return bFound;
 }
 
-bool XAP_App::findAbiSuiteAppFile(std::string & path, const char * filename, const char * subdir) 
+bool XAP_App::findAbiSuiteAppFile(std::string& path, const char* filename, const char* subdir) const
 {
 	if (!filename) 
 	{
@@ -1035,7 +1038,7 @@ void XAP_App::forgetModelessId( UT_sint32 id )
 	m_IdTable[i].pDialog = static_cast<XAP_Dialog_Modeless *>(NULL);
 }
 
-bool XAP_App::isModelessRunning(UT_sint32 id)
+bool XAP_App::isModelessRunning(UT_sint32 id) const
 {
 	// returns true if the modeless dialog given by id is running
 	
@@ -1051,7 +1054,7 @@ bool XAP_App::isModelessRunning(UT_sint32 id)
 	return true;
 }
         
-XAP_Dialog_Modeless * XAP_App::getModelessDialog( UT_sint32 i)
+XAP_Dialog_Modeless * XAP_App::getModelessDialog( UT_sint32 i) const
 {
 	// Retrieve pDialog from the table based on its location in the table
 	return m_IdTable[i].pDialog;
@@ -1099,13 +1102,13 @@ void XAP_App::notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame)
 }
 
 /* Window Geometry Preferences */
-bool XAP_App::setGeometry(UT_sint32 x, UT_sint32 y, UT_uint32 width, UT_uint32 height , UT_uint32 flags) 
+bool XAP_App::setGeometry(UT_sint32 x, UT_sint32 y, UT_uint32 width, UT_uint32 height , UT_uint32 flags)
 {
 	XAP_Prefs *prefs = getPrefs();
 	return prefs->setGeometry(x, y, width, height, flags);
 }
 
-bool XAP_App::getGeometry(UT_sint32 *x, UT_sint32 *y, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags) 
+bool XAP_App::getGeometry(UT_sint32* x, UT_sint32* y, UT_uint32* width, UT_uint32* height, UT_uint32* flags) const
 {
 	XAP_Prefs *prefs = getPrefs();
 	return prefs->getGeometry(x, y, width, height, flags);

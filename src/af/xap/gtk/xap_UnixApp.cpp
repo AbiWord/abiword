@@ -73,8 +73,8 @@ static CairoNull_Graphics * nullgraphics = NULL;
 
 XAP_UnixApp::XAP_UnixApp(const char * szAppName, const char* app_id)
 	: XAP_App(szAppName),
-	  m_dialogFactory(this),
-	  m_controlFactory(),
+	  m_dialogFactory(new AP_UnixDialogFactory(this)),
+	  m_controlFactory(new AP_UnixToolbar_ControlFactory()),
 	  m_szTmpFile(NULL),
 	  // XXX maybe we need better flags as we handle command line
 	  m_gtkApp(gtk_application_new(app_id, G_APPLICATION_FLAGS_NONE))
@@ -133,6 +133,8 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName, const char* app_id)
 
 XAP_UnixApp::~XAP_UnixApp()
 {
+	delete m_dialogFactory;
+	delete m_controlFactory;
 	removeTmpFile();
 //	FcFini();
 }
@@ -176,14 +178,14 @@ void XAP_UnixApp::reallyExit()
 	g_application_quit(G_APPLICATION(m_gtkApp));
 }
 
-XAP_DialogFactory * XAP_UnixApp::getDialogFactory()
+XAP_DialogFactory* XAP_UnixApp::getDialogFactory() const
 {
-	return &m_dialogFactory;
+	return m_dialogFactory;
 }
 
-XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory()
+XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory() const
 {
-	return &m_controlFactory;
+	return m_controlFactory;
 }
 
 void XAP_UnixApp::setWinGeometry(int x, int y, UT_uint32 width, UT_uint32 height,

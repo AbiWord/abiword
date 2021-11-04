@@ -809,7 +809,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 	}
 }
 
-bool AP_UnixApp::canPasteFromClipboard(void)
+bool AP_UnixApp::canPasteFromClipboard(void) const
 {
     return m_pClipboard->canPaste(XAP_UnixClipboard::TAG_ClipboardOnly);
 }

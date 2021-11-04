@@ -25,8 +25,7 @@
 ******************************************************************
 *****************************************************************/
 
-#ifndef AP_UNIXAPP_H
-#define AP_UNIXAPP_H
+#pragma once
 
 #include "ut_types.h"
 #include "ut_bytebuf.h"
@@ -71,7 +70,7 @@ public:
 
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) override;
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) override;
-	virtual bool					canPasteFromClipboard(void) override;
+	virtual bool canPasteFromClipboard(void) const override;
 	virtual void					addClipboardFmt (const char * szFormat) override {m_pClipboard->addFormat(szFormat);}
 	virtual void					deleteClipboardFmt (const char * szFormat) override {m_pClipboard->deleteFormat(szFormat);}
 
@@ -88,7 +87,7 @@ public:
 	  Gets the View Selection
 	  \return The View currently selected.
 	*/
-	inline virtual AV_View *                        getViewSelection(void) override
+	inline virtual AV_View* getViewSelection(void) const override
 	{ return m_pViewSelection; }
 	virtual void					clearSelection(void) override;
 	virtual bool					getCurrentSelection(const char** formatList,
@@ -139,5 +138,3 @@ private:
 // however, what the C++ FAQ reccommends.
 
 void signalWrapper(int);
-
-#endif /* AP_UNIXAPP_H */
