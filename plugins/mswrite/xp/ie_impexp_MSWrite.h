@@ -20,13 +20,9 @@
  * 02110-1301 USA.
  */
 
-#ifndef IE_IMPEXP_MSWRITE_H
-#define IE_IMPEXP_MSWRITE_H
+#pragma once
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gsf/gsf.h>
-ABI_W_POP
 
 #define CT_IGNORE 0
 #define CT_VALUE  1
@@ -73,5 +69,3 @@ void DEBUG_WRI_STRUCT(wri_struct *w, int spaces = 1);
 	p[2] = ((s) & 0xff0000) >> 16; \
 	p[3] = ((s) & 0xff000000) >> 24; \
 }
-
-#endif

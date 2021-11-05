@@ -22,12 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
-ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
-ABI_W_POP
-ABI_W_POP
 
 #include "ie_impexp_MSWrite.h"
 #include "ut_debugmsg.h"

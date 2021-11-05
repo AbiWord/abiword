@@ -18,24 +18,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
-#ifndef UT_GO_FILE_H
-#define UT_GO_FILE_H
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
+#pragma once
+
 #include "ut_types.h"
-#endif
 
 #include "ut_compiler.h"
-ABI_W_NO_DEPRECATED
-ABI_W_NO_CONST_QUAL
+
 #include <glib.h>
 #include <gsf/gsf.h>
-ABI_W_POP
-ABI_W_POP
+
 #include <time.h>
 
 G_BEGIN_DECLS
@@ -99,7 +91,3 @@ ABI_EXPORT gchar	*UT_go_get_mime_type	(gchar const *uri);
 ABI_EXPORT gint UT_go_utf8_collate_casefold (const char *a, const char *b);
 
 G_END_DECLS
-
-#endif /* UT_GO_FILE_H */
-//#endif
-

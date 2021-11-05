@@ -18,19 +18,13 @@
  * 02110-1301 USA.
  */
 
-#ifndef _ODI_CONTENTSTREAM_ANNOTATIONMATCHER_LISTENERSTATE_H_
-#define _ODI_CONTENTSTREAM_ANNOTATIONMATCHER_LISTENERSTATE_H_
+#pragma once
 
-#include "ut_compiler.h"
+#include <gsf/gsf.h>
 
 // Internal includes
 #include "ODi_ListenerState.h"
 #include "ODi_ElementStack.h"
-
-// External includes
-ABI_W_NO_CONST_QUAL
-#include <gsf/gsf.h>
-ABI_W_POP
 
 #include <set>
 
@@ -66,5 +60,3 @@ private:
 
 
 };
-
-#endif

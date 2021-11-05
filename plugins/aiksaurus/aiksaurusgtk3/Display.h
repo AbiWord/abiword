@@ -1,12 +1,9 @@
-#ifndef INCLUDED_DISPLAY_H
-#define INCLUDED_DISPLAY_H
-
-#include "ut_compiler.h"
+#pragma once
 
 #include <Aiksaurus.h>
-ABI_W_NO_CONST_QUAL
+
 #include <gtk/gtk.h>
-ABI_W_POP
+
 #include <vector>
 #include <string>
 #include <new>
@@ -58,5 +55,3 @@ namespace AiksaurusGTK_impl
     };
 
 }
-
-#endif // INCLUDED_DISPLAY_H

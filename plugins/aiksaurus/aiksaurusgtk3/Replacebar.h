@@ -18,13 +18,9 @@
  * 02111-1307, USA.
  */
 
-#ifndef INCLUDED_AIKSAURUS_GTK_REPLACEBAR_H
-#define INCLUDED_AIKSAURUS_GTK_REPLACEBAR_H
+#pragma once
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
-ABI_W_POP
 
 namespace AiksaurusGTK_impl
 {
@@ -67,5 +63,3 @@ namespace AiksaurusGTK_impl
     };
 
 }
-
-#endif // INCLUDED_AIKSAURUS_GTK_REPLACEBAR_H

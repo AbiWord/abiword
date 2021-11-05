@@ -30,9 +30,9 @@
 
 #include <set>
 #include <string>
-ABI_W_NO_CONST_QUAL
+
 #include <gtk/gtk.h>
-ABI_W_POP
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -834,6 +834,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
 	gtk_widget_set_can_focus(listStyles, true);
 	gtk_widget_set_can_focus(listSizes, true);
 
+#if 0 // Deprecated in 3.24
 	// Make the tab focus list more sensible
 	// font -> syle -> size -> other options ...
 	GList* focusList = NULL;
@@ -844,6 +845,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
 	focusList = g_list_append(focusList, grEffectRows);
 	gtk_container_set_focus_chain(GTK_CONTAINER(grid1), focusList);
 	g_list_free(focusList);
+#endif
 	gtk_widget_grab_focus(scrolledwindow1);
 
 	

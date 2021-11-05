@@ -17,21 +17,14 @@
  * 02110-1301 USA.
  */
 
-
-
-#ifndef UTUNIXCOLOR_H
-#define UTUNIXCOLOR_H
+#pragma once
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include "ut_compiler.h"
-
 #ifdef TOOLKIT_GTK_ALL
-ABI_W_NO_CONST_QUAL
 #include <gdk/gdk.h>
-ABI_W_POP
 
 #include <gtk/gtk.h>
 
@@ -43,5 +36,3 @@ UT_RGBColor* UT_UnixGdkRGBAToRGBColor(const GdkRGBA &color);
 GdkRGBA* UT_UnixRGBColorToGdkRGBA(const UT_RGBColor &rgb);
 
 #endif
-
-#endif /* UTUNIXCOLOR_H */

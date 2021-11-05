@@ -17,12 +17,7 @@
  * 02110-1301 USA.
  */
 
-#include "ut_compiler.h"
-ABI_W_NO_DEPRECATED
-ABI_W_NO_CONST_QUAL
 #include <gsf/gsf.h>
-ABI_W_POP
-ABI_W_POP
 
 #include <time.h> // for struct tm and asctime
 

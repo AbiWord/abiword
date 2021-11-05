@@ -19,18 +19,16 @@
  * 02110-1301 USA.
  */
 
-#ifndef IE_EXP_HTML_UTIL_H
-#define IE_EXP_HTML_UTIL_H
+
+#pragma once
 
 // External includes
 #include <vector>
 #include <string>
 #include <map>
 #include <algorithm>
-#include "ut_compiler.h"
-ABI_W_NO_DEPRECATED
+
 #include <gsf/gsf.h>
-ABI_W_POP
 
 // Abiword includes
 #include "ie_TOC.h"
@@ -208,7 +206,3 @@ private:
     bool m_bInComment;
     std::string m_buffer;
 };
-
-
-
-#endif

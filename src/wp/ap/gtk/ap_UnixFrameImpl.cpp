@@ -20,10 +20,7 @@
 #include "config.h"
 #endif
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
-ABI_W_POP
 
 #include "ut_std_string.h"
 #include "ap_UnixFrameImpl.h"

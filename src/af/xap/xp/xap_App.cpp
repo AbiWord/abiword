@@ -26,12 +26,8 @@
 #include <time.h>
 #include <memory>
 
-#include "ut_compiler.h"
-
 #include <glib.h>
-ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
-ABI_W_POP
 
 #include "ut_types.h"
 #include "ut_assert.h"

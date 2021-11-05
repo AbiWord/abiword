@@ -15,13 +15,9 @@
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __FV_TEXT_HANDLE_PRIVATE_H__
-#define __FV_TEXT_HANDLE_PRIVATE_H__
+#pragma once
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
-ABI_W_POP
 
 G_BEGIN_DECLS
 
@@ -91,5 +87,3 @@ gboolean        _fv_text_handle_get_is_dragged (FvTextHandle         *handle,
                                                 FvTextHandlePosition  pos);
 
 G_END_DECLS
-
-#endif /* __FV_TEXT_HANDLE_PRIVATE_H__ */

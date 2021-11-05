@@ -19,21 +19,15 @@
  * 02110-1301 USA.
  */
 
-#ifndef _ODI_STREAMLISTENER_H_
-#define _ODI_STREAMLISTENER_H_
+#pragma once
 
-#include "ut_compiler.h"
+#include <gsf/gsf.h>
 
 // Internal includes
 #include "ODi_ListenerStateAction.h"
 #include "ODi_ElementStack.h"
 #include "ODi_FontFaceDecls.h"
 #include "ODi_XMLRecorder.h"
-
-// External includes
-ABI_W_NO_CONST_QUAL
-#include <gsf/gsf.h>
-ABI_W_POP
 
 // AbiWord includes
 #include "ut_types.h"
@@ -154,5 +148,3 @@ private:
     UT_GenericVector <ODi_StreamListener::StackCell> m_stateStack;
     UT_GenericVector <ODi_Postpone_ListenerState*> m_postponedParsing;
 };
-
-#endif //_ODI_STREAMLISTENER_H_

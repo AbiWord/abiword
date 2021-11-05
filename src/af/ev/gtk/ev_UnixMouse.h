@@ -17,16 +17,9 @@
  * 02110-1301 USA.
  */
 
+#pragma once
 
-
-#ifndef EV_UNIXMOUSE_H
-#define EV_UNIXMOUSE_H
-
-#include "ut_compiler.h"
-
-ABI_W_NO_CONST_QUAL
 #include <gdk/gdk.h>
-ABI_W_POP
 
 #include "ut_types.h"
 #include "ev_Mouse.h"
@@ -46,5 +39,3 @@ public:
 
 protected:
 };
-
-#endif // EV_UNIXMOUSE_H

@@ -18,10 +18,8 @@
  * 02110-1301 USA.
  */
 
-#include "ut_compiler.h"
-ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
-ABI_W_POP
+
 #include "xap_Module.h"
 #include "ie_impexp_EPUB.h"
 #ifdef _WIN32

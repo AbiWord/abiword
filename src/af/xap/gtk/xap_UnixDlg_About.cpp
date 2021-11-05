@@ -21,10 +21,7 @@
 #include "config.h"
 #endif
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
-ABI_W_POP
 
 #include "ut_string.h"
 #include "ut_assert.h"

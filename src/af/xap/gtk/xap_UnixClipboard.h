@@ -19,18 +19,15 @@
  * 02110-1301 USA.
  */
 
-#ifndef XAP_UNIXCLIPBOARD_H
-#define XAP_UNIXCLIPBOARD_H
+#pragma once
 
 #include <vector>
 
 #include "ut_compiler.h"
 
 #include <glib.h>
-ABI_W_NO_CONST_QUAL
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-ABI_W_POP
 
 #include "ut_types.h"
 #include "ut_bytebuf.h"
@@ -148,5 +145,3 @@ protected:
 	GtkClipboard * m_clip;
 	GtkClipboard * m_primary;
 };
-
-#endif /* XAP_UNIXCLIPBOARD_H */

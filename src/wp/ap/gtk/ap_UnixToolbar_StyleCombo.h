@@ -19,16 +19,12 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_UNIXTOOLBAR_STYLECOMBO_H
-#define AP_UNIXTOOLBAR_STYLECOMBO_H
+#pragma once
 
 #include <map>
 #include <string>
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
-ABI_W_POP
 
 #include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
@@ -62,11 +58,3 @@ private:
 	std::map<std::string, PangoFontDescription*> 	m_mapStyles;
 	PangoFontDescription *m_pDefaultDesc;
 };
-
-#endif /* AP_UNIXTOOLBAR_STYLECOMBO_H */
-
-
-
-
-
-

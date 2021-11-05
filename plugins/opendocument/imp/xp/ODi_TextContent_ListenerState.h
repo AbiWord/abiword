@@ -22,14 +22,13 @@
  * 02110-1301 USA.
  */
 
-#ifndef _ODI_TEXTCONTENT_LISTENERSTATE_H_
-#define _ODI_TEXTCONTENT_LISTENERSTATE_H_
-
-#include "ut_compiler.h"
+#pragma once
 
 #include <string>
 #include <map>
 #include <set>
+
+#include <gsf/gsf.h>
 
 // Internal includes
 #include "../../common/xp/ODc_util.h"
@@ -39,10 +38,6 @@
 #include "ut_stack.h"
 #include "ut_vector.h"
 
-// External includes
-ABI_W_NO_CONST_QUAL
-#include <gsf/gsf.h>
-ABI_W_POP
 
 // Internal classes
 class ODi_Office_Styles;
@@ -222,5 +217,3 @@ private:
     UT_uint32 m_columnsCount;
     UT_uint32 m_columnIndex;
 };
-
-#endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_

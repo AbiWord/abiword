@@ -21,11 +21,8 @@
 
 #pragma once
 
-#include "ut_compiler.h"
-
-ABI_W_NO_CONST_QUAL
 #include <gdk/gdk.h>
-ABI_W_POP
+
 #include "gr_CairoGraphics.h"
 
 class ABI_EXPORT GR_UnixCairoAllocInfo : public GR_CairoAllocInfo

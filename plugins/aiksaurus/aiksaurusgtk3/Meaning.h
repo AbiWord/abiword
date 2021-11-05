@@ -1,10 +1,7 @@
-#ifndef INCLUDED_MEANING_H
-#define INCLUDED_MEANING_H
+#pragma once
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
-ABI_W_POP
+
 #include <vector>
 #include <string>
 using namespace std;
@@ -41,5 +38,3 @@ namespace AiksaurusGTK_impl
             void unselectListsExcept(GtkWidget* me) noexcept;
     };
 }
-
-#endif // INCLUDED_MEANING_H

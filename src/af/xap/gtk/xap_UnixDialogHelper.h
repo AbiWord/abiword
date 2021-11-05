@@ -19,11 +19,8 @@
 
 #pragma once
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
-ABI_W_POP
 
 #include <functional>
 

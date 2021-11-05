@@ -16,11 +16,10 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
-ABI_W_POP
+
 #include <string.h>
+
 #include "ut_assert.h"
 #include "ev_UnixFontCombo.h"
 

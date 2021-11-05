@@ -17,20 +17,13 @@
  * 02110-1301 USA.
  */
 
-#ifndef UTMISC_H
-#define UTMISC_H
+#pragma once
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
 
 #include <string>
 
@@ -241,14 +234,11 @@ UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);
 
 // Hack so we get AbiNativeWidget with an xp include
 #ifdef TOOLKIT_GTK_ALL
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
+
 #include <gtk/gtk.h>
-ABI_W_POP
+
 typedef GtkWidget AbiNativeWidget;
 #else
 // TODO maintainers please fix their platform
 typedef void AbiNativeWidget;
 #endif
-
-#endif /* UTMISC_H */

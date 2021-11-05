@@ -18,15 +18,13 @@
  * 02111-1307, USA.
  */
 
-#ifndef INCLUDED_AIKSAURUS_GTK_TOOLBAR_H
-#define INCLUDED_AIKSAURUS_GTK_TOOLBAR_H
+#pragma once
 
 #include "AiksaurusGTK_history.h"
 #include "AiksaurusGTK_histlist.h"
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
+
 #include <gtk/gtk.h>
-ABI_W_POP
+
 #include <new>
 
 class AiksaurusGTK_picbutton;
@@ -88,5 +86,3 @@ namespace AiksaurusGTK_impl
     };
 
 }
-
-#endif // INCLUDED_AIKSAURUS_GTK_TOOLBAR_H

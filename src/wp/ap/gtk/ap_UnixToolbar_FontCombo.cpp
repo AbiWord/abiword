@@ -18,12 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
  * 02110-1301 USA.
  */
+
 #include <glib.h>
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-ABI_W_POP
 
 #include "ap_Features.h"
 

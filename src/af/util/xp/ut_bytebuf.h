@@ -27,18 +27,9 @@
 #include <stdio.h>
 #include <memory>
 
-#include "ut_compiler.h"
-ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
-ABI_W_POP
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
 
 /* sigh... total hack here. Solaris does the following in unistd.h
  * #define truncate truncate64

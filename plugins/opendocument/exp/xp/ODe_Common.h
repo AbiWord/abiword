@@ -22,22 +22,15 @@
  * 02110-1301 USA.
  */
 
-#ifndef _ODE_COMMON_H_
-#define _ODE_COMMON_H_
-
-#include <string>
-
-#include "ut_compiler.h"
-ABI_W_NO_DEPRECATED
-#include <gsf/gsf.h>
-ABI_W_POP
-
-// AbiWord includes
-#include "ut_types.h"
-
 #include <stdio.h>
 
 #include <iosfwd>
+#include <string>
+
+#include <gsf/gsf.h>
+
+#include "ut_types.h"
+
 
 // Abiword classes
 class UT_UTF8String;
@@ -66,5 +59,3 @@ void ODe_writeAttribute(UT_UTF8String& rOutput,
 // The source file is rewinded before writing its contents into the destination
 // and after that it's left on its EOF state.
 void ODe_writeToFile(GsfOutput* pDestinationFile, GsfInput* pSourceFile);
-
-#endif //_ODE_COMMON_H_

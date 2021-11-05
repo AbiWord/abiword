@@ -18,15 +18,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
-#ifndef ABI_GTK_COMMON_H
-#define ABI_GTK_COMMON_H
+
+#pragma once
 
 #include <string>
 #include <list>
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
+
 #include <gtk/gtk.h>
-ABI_W_POP
+
 #include "ut_types.h"
 
 std::string tostr( long v );
@@ -103,6 +102,3 @@ public:
     std::string appendDefaultSuffixFunctor( std::string dialogFilename, UT_sint32 n );
 
 };
-
-
-#endif

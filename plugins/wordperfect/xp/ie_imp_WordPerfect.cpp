@@ -23,9 +23,9 @@
  */
 
 /* See bug 1764
- * "This product is not manufactured, approved, or supported by 
+ * "This product is not manufactured, approved, or supported by
  * Corel Corporation or Corel Corporation Limited."
- */ 
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,10 +34,7 @@
 #include <map>
 #include <string>
 
-#include "ut_compiler.h"
-ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
-ABI_W_POP
 
 #include "ut_types.h"
 #include "ut_std_string.h"

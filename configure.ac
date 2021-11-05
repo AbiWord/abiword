@@ -25,8 +25,8 @@ AM_MAINTAINER_MODE([enable])
 #
 # versions requested.
 #
-GTK_VERSION_REQ=3.22.0
-GTK_ENCODED_VERSION="GDK_VERSION_3_22"
+GTK_VERSION_REQ=3.24.0
+GTK_ENCODED_VERSION="GDK_VERSION_3_24"
 
 # This check MUST be done early.
 #

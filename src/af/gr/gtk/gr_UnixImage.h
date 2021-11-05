@@ -17,14 +17,9 @@
  * 02110-1301 USA.
  */
 
-#ifndef GR_UNIXGNOMEIMAGE_H
-#define GR_UNIXGNOMEIMAGE_H
+#pragma once
 
-#include "ut_compiler.h"
-
-ABI_W_NO_CONST_QUAL
 #include <gdk-pixbuf/gdk-pixbuf.h>
-ABI_W_POP
 
 #include "gr_CairoGraphics.h"
 
@@ -60,5 +55,3 @@ private:
 	GdkPixbuf * m_image;
     GR_Image::GRType m_ImageType;
 };
-
-#endif /* GR_UNIXGNOMEIMAGE_H */

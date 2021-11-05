@@ -28,16 +28,11 @@
 #include "config.h"
 #endif
 
-#include "ut_compiler.h"
-
 #include <glib.h>
-ABI_W_NO_CONST_QUAL
 #include <gtk/gtk.h>
-ABI_W_POP
+
 #include <glib/gstdio.h>
-ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
-ABI_W_POP
 #include <goffice/goffice.h>
 
 #include <stdlib.h>

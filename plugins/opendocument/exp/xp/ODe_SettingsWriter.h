@@ -22,13 +22,9 @@
  * 02110-1301 USA.
  */
 
-#ifndef _ODE_SETTINGSWRITER_H_
-#define _ODE_SETTINGSWRITER_H_
+#pragma once
 
-#include "ut_compiler.h"
-ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
-ABI_W_POP
 
 // Abiword classes
 class PD_Document;
@@ -47,5 +43,3 @@ public:
 private:
     ODe_SettingsWriter ();
 };
-
-#endif //_ODE_SETTINGSWRITER_H_

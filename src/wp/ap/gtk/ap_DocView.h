@@ -17,13 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
-#ifndef AP_DOCVIEW_H
-#define AP_DOCVIEW_H
 
-#include "ut_compiler.h"
-ABI_W_NO_CONST_QUAL
+#pragma once
+
 #include <gtk/gtk.h>
-ABI_W_POP
 
 G_BEGIN_DECLS
 
@@ -51,5 +48,3 @@ G_BEGIN_DECLS
   GType     ap_DocView_get_type	(void);
 
 G_END_DECLS
-
-#endif /* AP_DOCVIEW_H */

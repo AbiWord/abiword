@@ -19,13 +19,9 @@
  * 02110-1301 USA.
  */
 
-#ifndef IE_EXP_HTML_H
-#define IE_EXP_HTML_H
+#pragma once
 
-#include "ut_compiler.h"
-ABI_W_NO_DEPRECATED
 #include <gsf/gsf.h>
-ABI_W_POP
 
 class IE_Exp_HTML;
 
@@ -138,5 +134,3 @@ private:
 	std::map<std::string, bool> m_mathmlFlags;
 	IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
 };
-
-#endif /* IE_EXP_HTML_H */
