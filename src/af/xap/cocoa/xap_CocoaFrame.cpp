@@ -46,7 +46,7 @@
 #include "xad_Document.h"
 #include "gr_CocoaGraphics.h"
 #include "gr_Painter.h"
-
+#include "gr_CoreGraphicsUtils.h"
 
 
 @implementation XAP_CocoaNSView
@@ -61,6 +61,8 @@
 	m_pFrame = frame;
 	m_pGR = NULL;
 	m_drawable = nullptr;
+	m_layer = nullptr;
+	m_layer_needs_resize = false;
 	if (frame) {
 		[[NSNotificationCenter defaultCenter] addObserver:self
 						selector:@selector(hasBeenResized:)
@@ -74,6 +76,9 @@
 	[_eventDelegate release];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [m_name release];
+	if (m_layer) {
+		::CGLayerRelease(m_layer);
+	}
 	[super dealloc];
 }
 
@@ -109,13 +114,66 @@
 
 @synthesize in_draw_rect = _in_draw_rect;
 @synthesize drawable = m_drawable;
-/*!
-	Cocoa overridden method. Redraw the screen.
- */
+@synthesize drawingLayer = m_layer;
+
+- (CGLayerRef)makeDrawingLayer
+{
+	if (m_layer_needs_resize) {
+		CGLayerRelease(m_layer);
+		m_layer = nil;
+	}
+	if (m_layer == nil) {
+		NSGraphicsContext* context = nil;
+
+		context = [NSGraphicsContext graphicsContextWithWindow:self.window];
+		if (!context && _in_draw_rect) {
+			context = NSGraphicsContext.currentContext;
+		}
+		//UT_ASSERT(context);
+		if (!context) {
+			return nullptr;
+		}
+		m_layer = ::CGLayerCreateWithContext(context.CGContext, self.bounds.size, nullptr);
+		m_layer_needs_resize = false;
+	}
+	return m_layer;
+}
+
+/// Draw the layer in the current context.
+- (void)drawLayer
+{
+	if (m_layer) {
+		NSGraphicsContext* gc = [NSGraphicsContext currentContext];
+		if (gc) {
+			CGContextRef context = gc.CGContext;
+			CGSize layerSize = ::CGLayerGetSize(m_layer);
+			GR_CGStateSave state(context);
+			::CGContextScaleCTM(context, 1.0, -1.0);
+			::CGContextTranslateCTM(context, 0, -self.bounds.size.height);
+			NSLog(@"layer size W=%lf, H=%lf", layerSize.width, layerSize.height);
+			::CGContextDrawLayerAtPoint(context, CGPointMake(0, 0), m_layer);
+		}
+		if (m_layer_needs_resize) {
+			[self makeDrawingLayer];
+		} else {
+			CGContextRef context = ::CGLayerGetContext(m_layer);
+			GR_CGStateSave state(context);
+			CGColorRef white = ::CGColorGetConstantColor(kCGColorWhite);
+			::CGContextSetFillColorWithColor(context, white);
+			::CGContextFillRect(context, {{0.0, 0.0}, ::CGLayerGetSize(m_layer)});
+		}
+	}
+}
+
 - (void)drawRect:(NSRect)aRect
 {
 	_in_draw_rect = true;
+	if (!m_layer) {
+		[self makeDrawingLayer];
+	}
 	if (m_pGR) {
+		[self drawLayer];
+
 		UT_RGBColor clr;
 		GR_Painter painter(m_pGR);
 
@@ -134,7 +192,6 @@
 		if (m_drawable) {
 			m_drawable->drawImmediate();
 		} else {
-			// if (![self inLiveResize]) // this case handled in -hasBeenResized: below
 			m_pGR->_callUpdateCallback(&aRect);
 		}
 	}
@@ -152,11 +209,6 @@
 	return NO; //GR_CocoaGraphics::_isFlipped();
 }
 
-/*!
-	Cocoa overridden method.
-
-	\return NO. Not opaque.
- */
 - (BOOL)isOpaque
 {
 	return YES;
@@ -191,22 +243,22 @@
 - (void)setEventDelegate:(NSObject <XAP_MouseEventDelegate>*)delegate
 {
 	[_eventDelegate release];
-	_eventDelegate = delegate;
-	[delegate retain];
+	_eventDelegate = [delegate retain];
 }
 
 - (void)hasBeenResized:(NSNotification*)notif
 {
 	UT_UNUSED(notif);
 	if (m_pGR && m_pFrame) {
-		AV_View * pView = m_pFrame->getCurrentView();
-		NSRect rect = [self bounds];
-		if (pView && !pView->isLayoutFilling())
-		{
+		AV_View* pView = m_pFrame->getCurrentView();
+		NSRect rect = self.bounds;
+		if (pView && !pView->isLayoutFilling()) {
 			pView->setWindowSize((UT_sint32)rint(rect.size.width), (UT_sint32)rint(rect.size.height));
-			// m_pGR->_callUpdateCallback(&rect);
 			m_pFrame->quickZoom(); // was update zoom
 		}
+	}
+	if (m_layer) {
+		m_layer_needs_resize = true;
 	}
 }
 

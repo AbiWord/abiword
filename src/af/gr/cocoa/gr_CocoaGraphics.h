@@ -217,6 +217,8 @@ public:
     /* Cocoa Specific */
     static CGFloat _getScreenResolution(void);
 
+    CGLayerRef getCGLayer() const;
+
 protected:
     // all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
     GR_CocoaGraphics(XAP_CocoaNSView* view);
@@ -236,7 +238,7 @@ protected:
 private:
     void _setClipRectImpl(const UT_Rect* pRect);
 
-    void _resetContext(CGContextRef context); // reset m_CGContext to default values
+    void _resetContext(); // reset m_CGContext to default values
 
     gr_cocoa_graphics_update m_updateCallback;
     void* m_updateCBparam;
@@ -305,9 +307,9 @@ public: //HACK
 private:
     /* private implementations. Allow esasy selection accross various ways */
     CGFloat _measureUnRemappedCharCached(const UT_UCSChar c);
-    void _setCapStyle(CapStyle inCapStyle, CGContextRef* context = 0);
-    void _setJoinStyle(JoinStyle inJoinStyle, CGContextRef* context = 0);
-    void _setLineStyle(LineStyle inLineStyle, CGContextRef* context = 0);
+    void _setCapStyle(CapStyle inCapStyle);
+    void _setJoinStyle(JoinStyle inJoinStyle);
+    void _setLineStyle(LineStyle inLineStyle);
     //
     /// Draw the CTLine at x and y
     ///

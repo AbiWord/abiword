@@ -54,6 +54,8 @@ class XAP_Drawable;
 @interface XAP_CocoaNSView : NSView
 {
     NSString* m_name;
+	CGLayerRef m_layer;
+	bool m_layer_needs_resize;
 	NSCursor* _cursor;
 	bool _in_draw_rect;
 	XAP_Frame* m_pFrame;
@@ -63,6 +65,7 @@ class XAP_Drawable;
 }
 @property (readonly) bool in_draw_rect;
 @property XAP_Drawable* drawable;
+@property (readonly) CGLayerRef drawingLayer;
 
 - (id)initWith:(XAP_Frame*)frame andFrame:(NSRect)windowFrame andName:(NSString*)name;
 - (BOOL)acceptsFirstResponder;
