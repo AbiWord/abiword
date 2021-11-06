@@ -17,8 +17,7 @@
  * 02110-1301 USA.
  */
 
-#ifndef AP_RDFLOCATIONGTK_H
-#define AP_RDFLOCATIONGTK_H
+#pragma once
 
 #include "config.h"
 #include "GTKCommon.h"
@@ -26,6 +25,7 @@
 #include "ap_RDFSemanticItemGTKInjected.h"
 
 #ifdef WITH_CHAMPLAIN
+#include "ut_compiler.h"
 ABI_W_NO_DEPRECATED
 #include <champlain/champlain.h>
 #include <champlain-gtk/champlain-gtk.h>
@@ -54,5 +54,3 @@ class ABI_EXPORT AP_RDFLocationGTK
     void OnMouseClick( ClutterActor *actor, ClutterButtonEvent *event );
 #endif
 };
-
-#endif

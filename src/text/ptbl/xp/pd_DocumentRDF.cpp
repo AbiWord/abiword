@@ -1875,9 +1875,8 @@ PD_RDFContact::className() const
 }
 
 
-
-
 #ifdef WITH_EVOLUTION_DATA_SERVER
+#include "ut_compiler.h"
 ABI_W_NO_DEPRECATED
 #include <libebook/libebook.h>
 ABI_W_POP
