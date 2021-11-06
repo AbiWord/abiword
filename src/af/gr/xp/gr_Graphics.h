@@ -653,6 +653,7 @@ class ABI_EXPORT GR_Graphics
 	void              setPrevXOffset(UT_sint32 x) { m_iPrevXOffset = x;}
 
 	UT_sint32         _tduX(UT_sint32 layoutUnits) const;
+	double _tduXD(double layoutUnits) const;
 
 
 	///////////////////////////////////////////////////////////////////
@@ -756,6 +757,7 @@ class ABI_EXPORT GR_Graphics
 	virtual void _endPaint () {}
 
 	UT_sint32         _tduY(UT_sint32 layoutUnits) const;
+	double _tduYD(double layoutUnits) const;
 	UT_sint32         _tduR(UT_sint32 layoutUnits) const;
 
 	void _destroyFonts ();

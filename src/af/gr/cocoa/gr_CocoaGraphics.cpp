@@ -55,7 +55,7 @@
 #define UT_DEBUGMSG(x)
 #endif
 
-#define TDUX(x) (_tduX(x))
+#define TDUX(x) (_tduXD(x))
 // #define TDUX(x) (_tduX(x)+1.0)
 
 void GR_CGContextIsNull(NSString* format, ...)
@@ -592,28 +592,21 @@ void GR_CocoaGraphics::_drawSpacedTextLine(CTLineRef ctLine,
     CFArrayRef glyphRuns = ::CTLineGetGlyphRuns(ctLine);
     // NSLog(@"drawSpacedLine: glyphCount %ld, run count %lu, {%lf, %lf}", (long)::CTLineGetGlyphCount(ctLine), [(id)glyphRuns count], x, y);
     CFIndex runIndex = 0;
-    CTRunRef currentRun = nullptr;
-    CFIndex indexInRun = 0;
-    CFIndex runGlyphCount = 0;
-    const CGGlyph* glyphs = nullptr;
-    for (int i = 0; i < length; i++) {
-        if (currentRun == nullptr) {
-            currentRun = (CTRunRef)::CFArrayGetValueAtIndex(glyphRuns, runIndex);
-            UT_ASSERT(currentRun != nullptr);
-            runGlyphCount = ::CTRunGetGlyphCount(currentRun);
-            runIndex++;
-            indexInRun = 0;
-            glyphs = ::CTRunGetGlyphsPtr(currentRun);
-        }
+    for (int i = 0; i < length;) {
+        CTRunRef currentRun = (CTRunRef)::CFArrayGetValueAtIndex(glyphRuns, runIndex);
+        UT_ASSERT(currentRun != nullptr);
+        CFIndex runGlyphCount = ::CTRunGetGlyphCount(currentRun);
+        runIndex++;
+        CFIndex indexInRun = 0;
+        const CGGlyph* glyphs = ::CTRunGetGlyphsPtr(currentRun);
 
-        CGPoint point = ::NSMakePoint(x, y);
-        ::CTFontDrawGlyphs((CTFontRef)m_fontForGraphics, &glyphs[indexInRun], &point, 1, m_CGContext);
-        indexInRun++;
-        if (indexInRun >= runGlyphCount) {
-            currentRun = nullptr;
+        std::unique_ptr<CGPoint[]> points(new CGPoint[runGlyphCount]);
+        for (int inRun = 0; inRun < runGlyphCount; inRun++) {
+            points[inRun] = ::NSMakePoint(x, y);
+            x += TDUX(charWidths[i + inRun]);
         }
-
-        x += TDUX(charWidths[i]);
+        ::CTFontDrawGlyphs((CTFontRef)m_fontForGraphics, glyphs + indexInRun, points.get(), runGlyphCount, m_CGContext);
+        i += runGlyphCount;
     }
 }
 
@@ -624,7 +617,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCS4Char* pChars, int iCharOffset,
     UT_DEBUGMSG(("GR_CocoaGraphics::drawChars()\n"));
     _ASSERT_CG_CONTEXT;
 
-    UT_sint32 xoff = xoffLU; // layout Unit !
+    CGFloat xoff = xoffLU; // layout Unit !
 
     const UT_UCS4Char* begin = pChars + iCharOffset;
 
@@ -652,7 +645,8 @@ void GR_CocoaGraphics::drawChars(const UT_UCS4Char* pChars, int iCharOffset,
 
     ::CGContextTranslateCTM(m_CGContext, 0, m_view.bounds.size.height);
     ::CGContextScaleCTM(m_CGContext, 1.0, -1.0);
-    CGFloat y = m_view.bounds.size.height - ((CGFloat)_tduY(yoffLU) + [font ascender] + [font descender]);
+    // The position is on the baseline, while yoffLU is the top of the bounding box.
+    CGFloat y = m_view.bounds.size.height - (_tduYD(yoffLU) + [font ascender]);
 
     if (!pCharWidths) {
         /*

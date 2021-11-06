@@ -496,6 +496,11 @@ UT_sint32 GR_Graphics::_tduY(UT_sint32 layoutUnits) const
 	return tdu(layoutUnits+getPrevYOffset()) - tdu(getPrevYOffset());
 }
 
+double GR_Graphics::_tduYD(double layoutUnits) const
+{
+    return tduD(layoutUnits + static_cast<double>(getPrevYOffset())) - tduD(static_cast<double>(getPrevYOffset()));
+}
+
 /*!
  * This method converts rectangle widths and heights to device units while 
  * taking account rounding down errors.
@@ -519,6 +524,12 @@ UT_sint32 GR_Graphics::tlu(UT_sint32 deviceUnits) const
 double GR_Graphics::tduD(double layoutUnits) const
 {
 	return (layoutUnits * static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage())) / (100.0 * static_cast<double>(getResolution()));
+}
+
+double GR_Graphics::_tduXD(double layoutUnits) const
+{
+    return tduD(layoutUnits + static_cast<double>(getPrevXOffset()))
+        - tduD(static_cast<double>(getPrevXOffset()));
 }
 
 double GR_Graphics::tluD(double deviceUnits) const
