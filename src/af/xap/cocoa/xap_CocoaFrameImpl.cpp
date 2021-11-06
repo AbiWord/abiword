@@ -221,7 +221,7 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 	UT_uint32 width, height;
 	XAP_CocoaApp::windowGeometryFlags f;
 
-	dynamic_cast<XAP_CocoaApp*>(XAP_App::getApp())->getGeometry(&x, &y, &width, &height, &f);
+	dynamic_cast<XAP_CocoaApp*>(XAP_App::getApp())->getGeometryCocoa(&x, &y, &width, &height, &f);
 
 	// Set the size if requested
 	NSSize userSize;

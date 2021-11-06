@@ -67,8 +67,8 @@ XAP_CocoaApp::Priv::Priv()
 
 XAP_CocoaApp::XAP_CocoaApp(const char* szAppName, const char* /*app_id*/)
     : XAP_App(szAppName)
-    , m_dialogFactory(this)
-    , m_controlFactory()
+    , m_dialogFactory(new AP_CocoaDialogFactory(this))
+    , m_controlFactory(new AP_CocoaToolbar_ControlFactory)
     , m_pCocoaMenu(NULL)
     , m_szMenuLayoutName(NULL)
     , m_szMenuLabelSetName(NULL)
@@ -124,6 +124,8 @@ XAP_CocoaApp::~XAP_CocoaApp()
     FREEP(m_szMenuLayoutName);
     FREEP(m_szMenuLabelSetName);
 
+    delete m_controlFactory;
+    delete m_dialogFactory;
     [m_priv->nibObjects release];
     delete m_priv;
 }
@@ -175,17 +177,17 @@ XAP_App::BidiSupportType XAP_CocoaApp::theOSHasBidiSupport() const
     return BIDI_SUPPORT_FULL;
 }
 
-XAP_DialogFactory* XAP_CocoaApp::getDialogFactory()
+XAP_DialogFactory* XAP_CocoaApp::getDialogFactory() const
 {
-    return &m_dialogFactory;
+    return m_dialogFactory;
 }
 
-XAP_Toolbar_ControlFactory* XAP_CocoaApp::getControlFactory()
+XAP_Toolbar_ControlFactory* XAP_CocoaApp::getControlFactory() const
 {
-    return &m_controlFactory;
+    return m_controlFactory;
 }
 
-void XAP_CocoaApp::setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
+void XAP_CocoaApp::setGeometryCocoa(UT_sint32 x, UT_sint32 y, UT_uint32 width, UT_uint32 height,
     windowGeometryFlags flags)
 {
     // TODO : do some range checking?
@@ -196,8 +198,8 @@ void XAP_CocoaApp::setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
     m_geometry.flags = flags;
 }
 
-void XAP_CocoaApp::getGeometry(int* x, int* y, UT_uint32* width,
-    UT_uint32* height, windowGeometryFlags* flags)
+void XAP_CocoaApp::getGeometryCocoa(UT_sint32* x, UT_sint32* y, UT_uint32* width,
+    UT_uint32* height, windowGeometryFlags* flags) const
 {
     UT_ASSERT(x && y && width && height);
     *x = m_geometry.x;
@@ -232,7 +234,7 @@ const char* XAP_CocoaApp::getUserPrivateDirectory() const
     return upd_cache;
 }
 
-bool XAP_CocoaApp::findAbiSuiteBundleFile(std::string& path, const char* filename, const char* subdir) // checks only bundle
+bool XAP_CocoaApp::findAbiSuiteBundleFile(std::string& path, const char* filename, const char* subdir) const // checks only bundle
 {
     if (!filename) {
         return false;
@@ -256,7 +258,7 @@ bool XAP_CocoaApp::findAbiSuiteBundleFile(std::string& path, const char* filenam
     return bFound;
 }
 
-bool XAP_CocoaApp::findAbiSuiteLibFile(std::string& path, const char* filename, const char* subdir)
+bool XAP_CocoaApp::findAbiSuiteLibFile(std::string& path, const char* filename, const char* subdir) const
 {
     if (!filename) {
         return false;
@@ -267,7 +269,7 @@ bool XAP_CocoaApp::findAbiSuiteLibFile(std::string& path, const char* filename, 
     return findAbiSuiteBundleFile(path, filename, subdir);
 }
 
-bool XAP_CocoaApp::findAbiSuiteAppFile(std::string& path, const char* filename, const char* subdir)
+bool XAP_CocoaApp::findAbiSuiteAppFile(std::string& path, const char* filename, const char* subdir) const
 {
     if (!filename) {
         return false;

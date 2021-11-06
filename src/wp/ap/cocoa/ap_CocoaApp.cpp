@@ -648,7 +648,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
   This should determine if we can paste from the
   cliboard. 
 */
-bool AP_CocoaApp::canPasteFromClipboard(void)
+bool AP_CocoaApp::canPasteFromClipboard(void) const
 {
     // first, try to see if we can paste from the clipboard
     bool bFoundOne = m_pClipboard->hasFormats(aszFormatsAccepted);

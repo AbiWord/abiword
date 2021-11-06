@@ -57,17 +57,17 @@ public:
     virtual void reallyExit();
     virtual void notifyFrameCountChange();
 
-    virtual XAP_DialogFactory* getDialogFactory();
-    virtual XAP_Toolbar_ControlFactory* getControlFactory();
+    virtual XAP_DialogFactory* getDialogFactory() const;
+    virtual XAP_Toolbar_ControlFactory* getControlFactory() const;
     virtual const XAP_StringSet* getStringSet() const = 0;
     virtual const char* getAbiSuiteAppDir() const = 0;
     virtual void copyToClipboard(PD_DocumentRange* pDocRange, bool bUseClipboard = true) = 0;
     virtual void pasteFromClipboard(PD_DocumentRange* pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
-    virtual bool canPasteFromClipboard() = 0;
+    virtual bool canPasteFromClipboard() const = 0;
     virtual const char* getUserPrivateDirectory() const;
-    virtual bool findAbiSuiteBundleFile(std::string& path, const char* filename, const char* subdir = 0); // checks only bundle
-    virtual bool findAbiSuiteLibFile(std::string& path, const char* filename, const char* subdir = 0);
-    virtual bool findAbiSuiteAppFile(std::string& path, const char* filename, const char* subdir = 0); // doesn't check user-dir
+    virtual bool findAbiSuiteBundleFile(std::string& path, const char* filename, const char* subdir = nullptr) const; // checks only bundle
+    virtual bool findAbiSuiteLibFile(std::string& path, const char* filename, const char* subdir = nullptr) const;
+    virtual bool findAbiSuiteAppFile(std::string& path, const char* filename, const char* subdir = nullptr) const; // doesn't check user-dir
 
     virtual void setSelectionStatus(AV_View* pView) = 0;
     virtual void clearSelection() = 0;
@@ -88,10 +88,10 @@ public:
         XAP_CocoaApp::windowGeometryFlags flags;
     };
 
-    virtual void setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
+    virtual void setGeometryCocoa(UT_sint32 x, UT_sint32 y, UT_uint32 width, UT_uint32 height,
         windowGeometryFlags flags);
-    virtual void getGeometry(int* x, int* y, UT_uint32* width, UT_uint32* height,
-        windowGeometryFlags* flags);
+    virtual void getGeometryCocoa(UT_sint32* x, UT_sint32* y, UT_uint32* width, UT_uint32* height,
+        windowGeometryFlags* flags) const;
 
     void setTimeOfLastEvent(NSTimeInterval eventTime);
     NSTimeInterval getTimeOfLastEvent() const { return m_eventTime; };
@@ -113,8 +113,8 @@ protected:
 
 private:
     XAP_CocoaToolbar_Icons* m_pCocoaToolbarIcons;
-    AP_CocoaDialogFactory m_dialogFactory;
-    AP_CocoaToolbar_ControlFactory m_controlFactory;
+    AP_CocoaDialogFactory* m_dialogFactory;
+    AP_CocoaToolbar_ControlFactory* m_controlFactory;
 
     windowGeometry m_geometry;
     NSTimeInterval m_eventTime; // e->time field of a recent X event
