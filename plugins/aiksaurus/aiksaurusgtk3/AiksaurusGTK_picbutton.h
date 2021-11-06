@@ -113,5 +113,3 @@ class AiksaurusGTK_picbutton
         GtkWidget* getButton();
 		GtkWidget* getMenuButton();
 };
-
-#endif // INCLUDED_GPL_JARED_AIKSAURUSGTK_PICBUTTON_H
