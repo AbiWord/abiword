@@ -107,9 +107,7 @@
 	m_pGR = gr;
 }
 
-#if DEBUG
 @synthesize in_draw_rect = _in_draw_rect;
-#endif
 @synthesize drawable = m_drawable;
 /*!
 	Cocoa overridden method. Redraw the screen.

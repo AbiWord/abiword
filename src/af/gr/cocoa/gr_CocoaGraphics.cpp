@@ -383,7 +383,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(XAP_CocoaNSView* view)
     /* resolution does not change thru the life of the object */
     m_screenResolution = lrintf(_getScreenResolution());
 
-    m_currentColor = [[NSColor blackColor] copy];
+    m_currentColor = [[NSColor blackColor] retain];
 
     m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
     m_cursor = GR_CURSOR_INVALID;
@@ -391,12 +391,10 @@ GR_CocoaGraphics::GR_CocoaGraphics(XAP_CocoaNSView* view)
 }
 
 #ifndef RELEASEP
-#define RELEASEP(X)      \
-    do {                 \
-        if (X) {         \
-            [X release]; \
-            X = nil;     \
-        }                \
+#define RELEASEP(X)  \
+    do {             \
+        [X release]; \
+        X = nil;     \
     } while (0)
 #endif
 
@@ -428,12 +426,15 @@ void GR_CocoaGraphics::fillNSRect(NSRect& aRect, NSColor* color)
 
 void GR_CocoaGraphics::_beginPaint(void)
 {
-    UT_ASSERT([m_view in_draw_rect]);
+    UT_ASSERT(m_view.in_draw_rect);
+    if (!m_view.in_draw_rect) {
+        NSLog(@"Not in drawRect. BREAK HERE if you need.");
+    }
     NSGraphicsContext* gc = [NSGraphicsContext currentContext];
-    UT_ASSERT(gc != nil);
+    //UT_ASSERT(gc != nil);
 
     m_CGContext = gc.CGContext;
-    UT_ASSERT(m_CGContext);
+    //UT_ASSERT(m_CGContext);
     _resetContext(m_CGContext);
 
 #if 0
@@ -481,10 +482,12 @@ void GR_CocoaGraphics::setLineProperties(double inWidth,
     m_capStyle = inCapStyle;
     m_lineStyle = inLineStyle;
 
-    ::CGContextSetLineWidth(m_CGContext, m_fLineWidth);
-    _setCapStyle(m_capStyle);
-    _setJoinStyle(m_joinStyle);
-    _setLineStyle(m_lineStyle);
+    if (m_view.in_draw_rect) {
+        ::CGContextSetLineWidth(m_CGContext, m_fLineWidth);
+        _setCapStyle(m_capStyle);
+        _setJoinStyle(m_joinStyle);
+        _setLineStyle(m_lineStyle);
+    }
 }
 
 void GR_CocoaGraphics::_setCapStyle(CapStyle inCapStyle, CGContextRef* context)
@@ -754,11 +757,13 @@ void GR_CocoaGraphics::getColor(UT_RGBColor& clr)
 /* c will be copied */
 void GR_CocoaGraphics::_setColor(NSColor* c)
 {
-    UT_DEBUGMSG(("GR_CocoaGraphics::_setColor(NSColor *): setting NSColor\n"));
+    UT_DEBUGMSG(("GR_CocoaGraphics::_setColor(NSColor*): setting NSColor\n"));
     [m_currentColor release];
-    m_currentColor = [c copy];
+    m_currentColor = [c retain];
 
-    [m_currentColor set];
+    if (m_view.in_draw_rect) {
+        [m_currentColor set];
+    }
 }
 
 GR_Font* GR_CocoaGraphics::getGUIFont(void)
@@ -925,8 +930,10 @@ void GR_CocoaGraphics::setLineWidth(UT_sint32 iLineWidth)
     m_fLineWidth = ceil(tduD(iLineWidth) - 0.75);
     m_fLineWidth = (m_fLineWidth > 0) ? m_fLineWidth : 1.0f;
 
-    ::CGContextSetLineWidth(m_CGContext, m_fLineWidth);
-    _setLineStyle(m_lineStyle);
+    if (m_view.in_draw_rect) {
+        ::CGContextSetLineWidth(m_CGContext, m_fLineWidth);
+        _setLineStyle(m_lineStyle);
+    }
 }
 
 void GR_CocoaGraphics::polyLine(const UT_Point* pts, UT_uint32 nPoints)

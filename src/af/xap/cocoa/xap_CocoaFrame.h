@@ -61,9 +61,7 @@ class XAP_Drawable;
 	XAP_Drawable* m_drawable;
 	NSObject<XAP_MouseEventDelegate>	*_eventDelegate;
 }
-#if DEBUG
 @property (readonly) bool in_draw_rect;
-#endif
 @property XAP_Drawable* drawable;
 
 - (id)initWith:(XAP_Frame*)frame andFrame:(NSRect)windowFrame andName:(NSString*)name;
