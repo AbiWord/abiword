@@ -21,23 +21,14 @@
  * 02110-1301 USA.
  */
 
-#ifndef UT_HASH_H
-#define UT_HASH_H
+#pragma once
 
 #include <string.h>
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
 #include "ut_types.h"
-#endif
-
-#ifndef UTVECTOR_H
 #include "ut_vector.h"
-#endif
 
+#include "ut_null.h"
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
 
@@ -309,7 +300,7 @@ template <class T> class hash_slot
 {
 public:
 	hash_slot()
-		: m_value(static_cast<T>(0)) { }
+		: m_value(UT_null<T>::value) { }
 
 	void make_deleted()
 		{
@@ -318,7 +309,7 @@ public:
 			m_key.die();
 		}
 	void make_empty()
-		{ m_value = static_cast<T>(0); }
+		{ m_value = UT_null<T>::value; }
 
 	const T value() const
 		{ return m_value; }
@@ -337,7 +328,7 @@ public:
 		}
 
 	bool empty() const
-		{ return (m_value == static_cast<T>(0)); }
+		{ return (m_value == UT_null<T>::value); }
 
 	bool deleted() const
 		{
@@ -402,8 +393,8 @@ const gchar ** UT_GenericStringMap<T>::list()
 	if (!m_list)
 	{
 		m_list = reinterpret_cast<gchar **>(g_try_malloc (2 * (n_keys + 1) * sizeof (gchar *)));
-		if (m_list == 0)
-			return 0;
+		if (m_list == nullptr)
+			return nullptr;
 
 		UT_uint32 index = 0;
 
@@ -887,7 +878,7 @@ UT_GenericStringMap<T>::_first(UT_Cursor& c) const
 	}
 
 	c._set_index(-1);
-	return static_cast<T>(0);
+	return UT_null<T>::value;
 }
 
 template <class T>
@@ -937,7 +928,7 @@ UT_GenericStringMap<T>::_next(UT_Cursor& c) const
 	}
 
 	c._set_index(-1);
-	return static_cast<T>(0);
+	return UT_null<T>::value;
 }
 
 
@@ -960,8 +951,5 @@ UT_GenericStringMap<T>::_prev(UT_Cursor& c) const
 	}
 
 	c._set_index(-1);
-	return static_cast<T>(0);
+	return UT_null<T>::value;
 }
-
-
-#endif /* UT_HASH_H */

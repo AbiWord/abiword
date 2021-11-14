@@ -128,13 +128,15 @@ private:
 
     class StackCell {
     public:
-        StackCell() {m_pState=nullptr; m_deleteWhenPop=false;}
+        constexpr StackCell()
+          : m_pState(nullptr)
+          , m_deleteWhenPop(false)
+        {
+        }
         StackCell(ODi_ListenerState* pState, bool deleteWhenPop) {
             m_deleteWhenPop = deleteWhenPop;
             m_pState = pState;
         }
-        // Work around the "return 0" issue of the UT_GenericVector::getNhItem()
-        StackCell(UT_uint32 /*i*/) {m_pState=nullptr; m_deleteWhenPop=false;}
         StackCell(const StackCell&) = default;
 
         StackCell& operator=(const StackCell& sc) {

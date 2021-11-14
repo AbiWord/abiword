@@ -24,6 +24,8 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_null.h"
+
 // ----------------------------------------------------------------
 
 #define UT_VECTOR_CLEANUP(d, v, r) \
@@ -96,7 +98,7 @@ public:
 	    UT_ASSERT_HARMLESS(n<m_iCount);
 
 	    if(n >= m_iCount || !m_pEntries) {
-			return static_cast<T>(0);
+			return UT_null<T>::value;
 		}
 	    return m_pEntries[n];
 	}
@@ -341,7 +343,7 @@ UT_sint32 UT_GenericVector<T>::setNthItem(UT_sint32 ndx, T pNew, T* ppOld)
 
 	if (ppOld)
 	{
-		*ppOld = (ndx < old_iSpace) ? m_pEntries[ndx] : static_cast<T>(0);
+		*ppOld = (ndx < old_iSpace) ? m_pEntries[ndx] : UT_null<T>::value;
 	}
 
 	m_pEntries[ndx] = pNew;
@@ -380,7 +382,7 @@ void UT_GenericVector<T>::deleteNthItem(UT_sint32 n)
 
 	memmove(&m_pEntries[n], &m_pEntries[n+1], (m_iCount - (n + 1)) * sizeof(T));
 
-	m_pEntries[m_iCount-1] = static_cast<T>(0);
+	m_pEntries[m_iCount-1] = UT_null<T>::value;
 	m_iCount--;
 
 	return;
