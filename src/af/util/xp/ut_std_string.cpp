@@ -21,6 +21,7 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <list>

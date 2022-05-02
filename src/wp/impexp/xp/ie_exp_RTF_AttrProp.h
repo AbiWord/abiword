@@ -26,9 +26,8 @@ class PD_Document;
 class PD_Style;
 class PP_AttrProp;
 
-
+#include <functional>
 #include <list>
-#include <boost/function.hpp>
 
 /**
  * Collect a sequence of APFilter objects and apply them in turn when
@@ -76,12 +75,11 @@ class PP_AttrProp;
  * };
  */
 class APFilterList
-    :
-    public std::binary_function< const gchar *, const gchar *, const gchar * >
+    : public std::function<const gchar*(const gchar*, const gchar*)>
 {
 protected:
     mutable std::string m_cache;
-    typedef boost::function2< std::string, const gchar *, const std::string& > m_filter_t;
+    typedef std::function<std::string(const gchar*, const std::string&)> m_filter_t;
     typedef std::list< m_filter_t > m_filterlist_t;
     m_filterlist_t m_filterlist;
 

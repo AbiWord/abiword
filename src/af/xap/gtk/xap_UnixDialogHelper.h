@@ -65,7 +65,7 @@ GtkBuilder* newDialogBuilderFromResource(const char* name);
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame);
 void connectFocusModeless(GtkWidget *widget,const XAP_App *pApp);
 void connectFocusModelessOther(GtkWidget *widget, const XAP_App *pApp,
-	std::pointer_to_unary_function<int, gboolean> *other_function);
+                               std::function<gboolean(int)> *other_function);
 bool isTransientWindow(GtkWindow *window,GtkWindow *parent);
 
 // This is a very thin message box; only use it for startup errors

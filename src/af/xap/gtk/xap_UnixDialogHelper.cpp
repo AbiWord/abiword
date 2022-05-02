@@ -132,7 +132,7 @@ static gboolean focus_in_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gp
 
 
 static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event*/,
-	std::pointer_to_unary_function<int, gboolean> *other_function)
+                                             std::function<gboolean(int)> *other_function)
 {
       XAP_App *pApp = static_cast<XAP_App *>(g_object_get_data(G_OBJECT(widget), "pApp"));
       XAP_Frame *pFrame = pApp->getLastFocussedFrame();
@@ -192,8 +192,8 @@ void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
 					 G_CALLBACK(destroy_event), nullptr);
 }
 
-void connectFocusModelessOther(GtkWidget *widget,const XAP_App * pApp, 
-			       std::pointer_to_unary_function<int, gboolean> *other_function)
+void connectFocusModelessOther(GtkWidget *widget,const XAP_App * pApp,
+                               std::function<gboolean(int)> *other_function)
 {
       g_object_set_data(G_OBJECT(widget), "pApp",
 					  const_cast<void *>(static_cast<const void *>(pApp)));

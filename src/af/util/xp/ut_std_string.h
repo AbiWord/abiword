@@ -25,8 +25,6 @@
 
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <functional>
 #include <locale>
 
 #include "ut_types.h"

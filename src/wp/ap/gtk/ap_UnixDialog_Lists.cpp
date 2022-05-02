@@ -233,7 +233,7 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 
 void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 {
-	static std::pointer_to_unary_function<int, gboolean> s_update_fun = std::ptr_fun(s_update);
+	static std::function<int(gboolean)> s_update_fun(s_update);
 	_constructWindow ();
 	UT_ASSERT (m_windowMain);
 	clearDirty();

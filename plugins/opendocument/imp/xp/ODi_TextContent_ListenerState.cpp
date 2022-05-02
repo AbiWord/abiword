@@ -1320,8 +1320,9 @@ static UT_UCS4String ODi_textp_trim_whitespace_leading( const UT_UCS4String& s )
 
     const UT_UCS4Char* iter = std::find_if(
         s.begin(), s.end(),
-        std::bind2nd( std::not_equal_to<UT_UCS4Char>(),
-                      UCS_SPACE ));
+        [] (auto v) {
+            return v != UCS_SPACE;
+        });
 
     UT_UCS4String ret = s.substr( iter );
     return ret;
