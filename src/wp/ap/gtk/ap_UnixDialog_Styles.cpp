@@ -1307,7 +1307,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 {
 	PD_Style * pStyle = nullptr;
 	const char * szCurrentStyle = getCurrentStyle ();
-	m_sNewStyleName = szCurrentStyle;
+	m_sNewStyleName = szCurrentStyle ? szCurrentStyle : "";
 
 	if(szCurrentStyle)
 		getDoc()->getStyle(szCurrentStyle, &pStyle);
