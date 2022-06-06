@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <limits>
 #include <string.h>
 
 #include "fp_Column.h"

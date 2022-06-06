@@ -50,6 +50,7 @@
 //#define BENCHLAYOUT 1
 #include <stdlib.h>
 #include <math.h>
+#include <limits>
 #include <string.h>
 #include <vector>
 #include <algorithm>
