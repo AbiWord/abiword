@@ -1,13 +1,13 @@
 # Fulah translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Ibrahima SARR <ibrahima.sarr@pulaagu.com>, 2010, 2011, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-07 05:27+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: FULA LOCALIZATION\n"
@@ -494,9 +494,9 @@ msgstr "&Tiitoore:"
 msgid "&Height:"
 msgstr "&Tooweendi:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Ballal"
 
@@ -703,7 +703,8 @@ msgid "&Odd page"
 msgstr "&Hello teelngo"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Uddit"
 
@@ -1237,8 +1238,7 @@ msgstr ""
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
-"Aɗa waawi huutoraade topirde ndee kono palal kuutorɗe ngal ena waawi "
-"ŋakkude."
+"Aɗa waawi huutoraade topirde ndee kono palal kuutorɗe ngal ena waawi ŋakkude."
 
 #. WINDOWS_NEED_UNICOWS
 #: po/tmp/ap_String_Id.h
@@ -1248,16 +1248,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Baɗte Office G&NOME"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Baɗte eɓɓannde Office GNOME"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2107,10 +2097,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "Suɓo toɓɓol maa e senngo nano ngoo.\n"
-"So a yiɗii huutoraade ƴiire \"Yah to\", naatnu limoore njiɗ-ɗaa ndee e Gallel "
-"Limoore gnol.   Aɗa waawi huutoraade + e - ngam yahde dow walla artude les.\t"
-"Yeru, so a winndii \"+2\" kadi a suɓiima \"Gorol\", \"Yah To\" oo maa tello gori 2 "
-"les ɗo njahrataa ɗoo."
+"So a yiɗii huutoraade ƴiire \"Yah to\", naatnu limoore njiɗ-ɗaa ndee e "
+"Gallel Limoore gnol.   Aɗa waawi huutoraade + e - ngam yahde dow walla "
+"artude les.\tYeru, so a winndii \"+2\" kadi a suɓiima \"Gorol\", \"Yah To\" "
+"oo maa tello gori 2 les ɗo njahrataa ɗoo."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2591,6 +2581,11 @@ msgstr "Cirfe"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Ñalngu"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5644,7 +5639,8 @@ msgstr "Ɗaɓɓitannde SPARQL"
 # 80%
 # 100%
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Danndu"
 
@@ -6102,6 +6098,11 @@ msgstr "Mbeeluure"
 msgid "Shading color:"
 msgstr "Goobol mbeeluure:"
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6415,25 +6416,45 @@ msgstr "Feesto e Bannge Ñaamo"
 msgid "Split on Top Side"
 msgstr "Feesto e Bannge Dow"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Seendu kala keertorɗe haa heddoo boowe"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Seendu kala keertorɗe kelme ena jeyaa heen boowe"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Feesto binndol ngol e picce walla taaɓe"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Feesto binndol ngol e boowe, picce, walla taaɓe"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6818,8 +6839,7 @@ msgid ""
 msgstr ""
 "Cuɓol '--print' ittaama e AbiWord 2.8. Aɗa waawi siynude nguun neesu "
 "huutoraade kuutorɗe baklitirɗe dogginol AbiWord kisa ndewnaa jaltol ngol "
-"supuulde winnditol. Yeru: 'abiword --to=sw --to-name=df://1 fiilde.txt | "
-"lpr'"
+"supuulde winnditol. Yeru: 'abiword --to=sw --to-name=df://1 fiilde.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6846,8 +6866,7 @@ msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr ""
-"Binndol ngol jokkorde geese ndee joopii foti wonde ko e nde lelnannde "
-"ɓolore."
+"Binndol ngol jokkorde geese ndee joopii foti wonde ko e nde lelnannde ɓolore."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h
@@ -7014,6 +7033,11 @@ msgstr "Tappu innde jokkol RDF ngol:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Tappu innde maantorol ngol, walla labo woodnde iwde e doggol ngol:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8042,6 +8066,11 @@ msgstr "Wowlu ko ɗum XML (yamre 1.0)"
 msgid "Default language: "
 msgstr "Ɗemngal goowangal: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8138,6 +8167,11 @@ msgstr "Engeleere (Ostaraalii)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Engeleere (Kanadaa)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9560,7 +9594,8 @@ msgstr "Yiddiire"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "Alaa e sago danndaa bayle winndannde %s hade maa jokkude. Danndu jooni?"
+msgstr ""
+"Alaa e sago danndaa bayle winndannde %s hade maa jokkude. Danndu jooni?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
@@ -9645,3 +9680,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Hay huunde"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Baɗte Office G&NOME"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Baɗte eɓɓannde Office GNOME"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Seendu kala keertorɗe haa heddoo boowe"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Seendu kala keertorɗe kelme ena jeyaa heen boowe"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Feesto binndol ngol e picce walla taaɓe"

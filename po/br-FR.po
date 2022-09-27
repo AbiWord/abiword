@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-07-16 17:25+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Drouizig <drouizig@drouizig.org>\n"
@@ -493,9 +493,9 @@ msgstr "&Talbenn :"
 msgid "&Height:"
 msgstr "&Sav :"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Skoazell"
 
@@ -700,7 +700,8 @@ msgid "&Odd page"
 msgstr "Pajenn &ampar"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Digeriñ"
 
@@ -1126,8 +1127,8 @@ msgid ""
 "The current document has been saved to disc with a \".saved\" extension."
 msgstr ""
 "Degouezhet ez eus ur fazi dibare. Emañ o vont da guitaat AbiWord.\n"
-"Enrollet eo bet an teul bremanel koulskoude gant an askouezhadenn \".saved"
-"\" ."
+"Enrollet eo bet an teul bremanel koulskoude gant an askouezhadenn \"."
+"saved\" ."
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h
@@ -1250,16 +1251,6 @@ msgstr ""
 "Ar restr %s.dll ez eus ezhom gant Abiword\n"
 "Pellgargit ha staliit anezhi diouzh http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "A-zivout G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Diskouez keloù diwar-benn ar raktres GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -5641,7 +5632,8 @@ msgid "SPARQL Query"
 msgstr "Azgoulenn mod SPARQL"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Enrollañ"
 
@@ -9653,6 +9645,12 @@ msgstr "dizaveet"
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Tra ebet"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "A-zivout G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Diskouez keloù diwar-benn ar raktres GNOME Office"
 
 #~ msgid ""
 #~ "AbiWord needs the file %s.dll\n"

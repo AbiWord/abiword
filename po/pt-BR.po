@@ -1,13 +1,13 @@
 # Brazilian Portuguese translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Nelson Ferraz <nferraz@gnubis.com.br>, 2004.
 msgid ""
 msgstr ""
 "Project-Id-Version: pt-BR\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-08-16 03:15+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Português do Brasil <pt@li.org>\n"
@@ -100,8 +100,8 @@ msgid ""
 msgstr ""
 "%s não está implementado.\n"
 "\n"
-"Se é um programador, esteja à vontade para adcionar o código necessário em %"
-"s, na linha %d\n"
+"Se é um programador, esteja à vontade para adcionar o código necessário em "
+"%s, na linha %d\n"
 "e envie-nos os respectivos patches via e-mail para:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
@@ -492,9 +492,9 @@ msgstr "&Cabeçalhos:"
 msgid "&Height:"
 msgstr "&Altura:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Ajuda"
 
@@ -699,7 +699,8 @@ msgid "&Odd page"
 msgstr "Página &ímpar"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Abrir"
 
@@ -1198,8 +1199,7 @@ msgstr "AM/PM"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "%s é um arquivo danificado"
 
@@ -1237,7 +1237,8 @@ msgid ""
 msgstr ""
 "AbiWord foi projetado para uma versão do arquivo de sistema COMCTL32.DLL\n"
 "mais nova do que a que está instalada em seu sistema.\n"
-"(COMCTL versão 4.72 ou mais novo). Uma solução para este problema é descrita\n"
+"(COMCTL versão 4.72 ou mais novo). Uma solução para este problema é "
+"descrita\n"
 "no FAQ no site AbiSource:\n"
 "\n"
 "\thttp://www.abisource.com\n"
@@ -1249,22 +1250,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"O AbiWord precisa do arquivo %s.dll\n"
-"Por favor baixe o arquivo e o instale a partir de "
-"http://www.microsoft.com/msdonload/platformsdk/sdkupdate/psdkredist.htm"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Sobre o G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Saiba mais sobre o projecto GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2607,6 +2595,11 @@ msgstr ""
 msgid "Date"
 msgstr "Data"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -3143,15 +3136,13 @@ msgstr "Erro de importação do arquivo %s."
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
 msgstr "Impossível salvar o arquivo %s."
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Impossível salvar o arquivo %s."
 
@@ -3575,8 +3566,8 @@ msgstr "Formato:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "A partir do arquivo"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -4518,8 +4509,7 @@ msgstr "Juntar acima"
 #: po/tmp/ap_String_Id.h
 msgid "Merge another document into the active document using revision marks"
 msgstr ""
-"Reconciliar outro documento com o documento corrente usando marcas de "
-"revisão"
+"Reconciliar outro documento com o documento corrente usando marcas de revisão"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h
@@ -5672,7 +5662,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Salvar"
 
@@ -6140,6 +6131,11 @@ msgstr "Espaçamento"
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6456,25 +6452,45 @@ msgstr "Dividir pelo Lado Direito"
 msgid "Split on Top Side"
 msgstr "Dividir pelo Lado de Cima"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Dividir em todos os delimitadores com exceção dos espaços"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Dividir em todos os delimitadores de palavras, incluindo espaços"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Dividir texto em vírgulas ou tabulações"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Dividir texto em espaços, vírgulas ou tabulações"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6938,8 +6954,8 @@ msgid ""
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
 "Este parágrafo representa as palavras como podem aparecer no documento. Para "
-"ver um parágrafo do documento aqui, posicione o cursor no parágrafo e "
-"reabra este diálogo."
+"ver um parágrafo do documento aqui, posicione o cursor no parágrafo e reabra "
+"este diálogo."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -7046,6 +7062,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Escreva um nome para o bookmark, ou selecione um a partir da lista:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8082,6 +8103,11 @@ msgstr "Declarar como XML (versão 1.0)"
 msgid "Default language: "
 msgstr "Linguagem padrão: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8177,6 +8203,11 @@ msgstr "Inglês (AU)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Inglês (Canadá)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9684,3 +9715,30 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Nenhum"
 
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "O AbiWord precisa do arquivo %s.dll\n"
+#~ "Por favor baixe o arquivo e o instale a partir de http://www.microsoft."
+#~ "com/msdonload/platformsdk/sdkupdate/psdkredist.htm"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "Sobre o G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Saiba mais sobre o projecto GNOME Office"
+
+#~ msgid "From File"
+#~ msgstr "A partir do arquivo"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Dividir em todos os delimitadores com exceção dos espaços"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Dividir em todos os delimitadores de palavras, incluindo espaços"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Dividir texto em vírgulas ou tabulações"

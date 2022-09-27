@@ -1,13 +1,13 @@
 # Afrikaans translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # F Wolff <friedel@translate.org.za>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-25 06:37+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: translate-discuss-af@lists.sourceforge.net\n"
@@ -484,9 +484,9 @@ msgstr "&Kopstuk:"
 msgid "&Height:"
 msgstr "&Hoogte:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Hulp"
 
@@ -691,7 +691,8 @@ msgid "&Odd page"
 msgstr "&Onewe bladsy"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "Maak &Oop"
 
@@ -1235,16 +1236,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Aangaande G&NOME-kantoor"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Aangaandie die GNOME-kantoor-projek"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2586,6 +2577,11 @@ msgstr ""
 msgid "Date"
 msgstr "Datum"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -2882,7 +2878,8 @@ msgstr "Wil u die lys van geïgnoreerde woorde leegmaak in alle dokumente?"
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h
 msgid "Do you want to reset ignored words in the current document?"
-msgstr "Wil u die lys van geïgnoreerde woorde leegmaak in die huidige dokument?"
+msgstr ""
+"Wil u die lys van geïgnoreerde woorde leegmaak in die huidige dokument?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h
@@ -4867,7 +4864,7 @@ msgstr "Ander"
 
 #. MSG_IE_NoMemory
 #: po/tmp/ap_String_Id.h
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Out of memory attempting to open %s"
 msgstr "Geheue is opgebruik"
 
@@ -5554,8 +5551,7 @@ msgstr ""
 
 #. RightMarginStatus
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Right Margin [%s]"
 msgstr "Linkerkantlyn [%s]"
 
@@ -5640,7 +5636,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "S&toor"
 
@@ -6088,7 +6085,8 @@ msgstr "Instellings"
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
-msgstr "Stel die dokument se bladsyeienskappe op, bv. bladsygrootte en kantlyne"
+msgstr ""
+"Stel die dokument se bladsyeienskappe op, bv. bladsygrootte en kantlyne"
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
@@ -6100,6 +6098,11 @@ msgstr "Skakering"
 #, fuzzy
 msgid "Shading color:"
 msgstr "Kleur skakering:"
+
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
@@ -6421,25 +6424,45 @@ msgstr "Verdeel aan regterkant"
 msgid "Split on Top Side"
 msgstr "Verdeel aan bokant"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Verdeel op alle skeiers behalwe spasies"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Verdeel op alle woordskeiers insluitend spasies"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Verdeel teks by kommas of inkepings"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Verdeel teks by spasies, kommas of inkepings"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -7017,6 +7040,11 @@ msgstr ""
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Gee 'n naam vir die boekmerk, of kies 'n bestaande een uit die lys."
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8047,6 +8075,11 @@ msgstr "Verklaar as XML (weergawe 1.0)"
 msgid "Default language: "
 msgstr "Verstektaal: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8142,6 +8175,11 @@ msgstr "Engels (Australië)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Engels (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9644,3 +9682,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Geen"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Aangaande G&NOME-kantoor"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Aangaandie die GNOME-kantoor-projek"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Verdeel op alle skeiers behalwe spasies"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Verdeel op alle woordskeiers insluitend spasies"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Verdeel teks by kommas of inkepings"

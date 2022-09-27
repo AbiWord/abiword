@@ -1,13 +1,13 @@
 # be@latin translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Ihar Hrachyshka <ihar.hrachyshka@gmail.com>, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-01 02:51+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Belarusian Latin <i18n@mova.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2) ;\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2) ;\n"
 "X-Generator: Pootle 2.0.5\n"
 "X-Project-Style: default\n"
 
@@ -496,9 +496,9 @@ msgstr "&Šapka:"
 msgid "&Height:"
 msgstr "&Vyšynia:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Dapamoha"
 
@@ -703,7 +703,8 @@ msgid "&Odd page"
 msgstr "&Niacotnaja staronka"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Adčyni"
 
@@ -1200,8 +1201,7 @@ msgstr "AM/PM"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "AbiWord nia moža adčynić %s. Heta niapravilny dakument."
 
@@ -1250,16 +1250,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Ab Ofisie G&NOME"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Ab Ofisnym prajekcie GNOME"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2116,9 +2106,9 @@ msgid ""
 msgstr ""
 "Abiary źleva svaju metu.\n"
 "Kali chočaš užyć knopku \"Pierajdzi\", prosta zapoŭni Element numaracyi "
-"patrebnym numaram. Adnosny pierachod možna ažyćciaŭlać z dapamohaj + i -.\t"
-"Napr. kali ty napišaš \"+2\" dy abiareš \"Radok\", \"Pierajdzi\" pieraniasie "
-"ciabie na 2 radki nižej dziejnaha raźmiaščeńnia."
+"patrebnym numaram. Adnosny pierachod možna ažyćciaŭlać z dapamohaj + i -."
+"\tNapr. kali ty napišaš \"+2\" dy abiareš \"Radok\", \"Pierajdzi\" "
+"pieraniasie ciabie na 2 radki nižej dziejnaha raźmiaščeńnia."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2605,6 +2595,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Data"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5653,7 +5648,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Zapišy"
 
@@ -6106,6 +6102,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6425,25 +6426,45 @@ msgstr "Padziali na pravym baku"
 msgid "Split on Top Side"
 msgstr "Padziali na vierchnim baku"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Padziali na ŭsich padziełach, akramia prabiełaŭ"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Padziali tekst na ŭsich padziełach słovaŭ, u tym liku na prabiełach"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Padziali tekst na koskach ci tabulatarach"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Padziali tekst na prabiełach, koskach ci tabulatarach"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -7015,6 +7036,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Uviadzi nazvu zakładki albo abiary najaŭnuju sa śpisu:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7727,8 +7753,7 @@ msgstr "Bretonskaja"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Opcyi zborki: %s"
 
@@ -8041,6 +8066,11 @@ msgstr "Abvieść jak XML (versija 1.0)"
 msgid "Default language: "
 msgstr "Zmoŭčanaja mova: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8135,6 +8165,11 @@ msgstr "Anhielskaja (Aŭstralija)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Anhielskaja (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9631,3 +9666,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Niama"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Ab Ofisie G&NOME"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Ab Ofisnym prajekcie GNOME"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Padziali na ŭsich padziełach, akramia prabiełaŭ"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Padziali tekst na ŭsich padziełach słovaŭ, u tym liku na prabiełach"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Padziali tekst na koskach ci tabulatarach"

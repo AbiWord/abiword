@@ -1,6 +1,6 @@
 # English (Great Britain) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Simon Smith <smith.simon@gmail.com>, 2005.
 # Chris Leonard <cjl@laptop.org>, 2011.
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-04-04 10:07+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
@@ -494,9 +494,9 @@ msgstr "&Header:"
 msgid "&Height:"
 msgstr "&Height:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Help"
 
@@ -701,7 +701,8 @@ msgid "&Odd page"
 msgstr "&Odd page"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Open"
 
@@ -1211,8 +1212,7 @@ msgstr "AbiWord finished checking the selection."
 msgid ""
 "AbiWord has finished its search of the document and has made %d replacements."
 msgstr ""
-"AbiWord has finished its search of the document and has made %d "
-"replacements."
+"AbiWord has finished its search of the document and has made %d replacements."
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h
@@ -1233,7 +1233,8 @@ msgid ""
 msgstr ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
-"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
+"A solution to this problem is explained in the FAQ on the AbiSource web "
+"site\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
@@ -1248,18 +1249,8 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/en-"
-"us/download/details.aspx?id=4237"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "About G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "About the GNOME Office project"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -1411,7 +1402,8 @@ msgstr "Apply stylesheet to this Semantic Item"
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Apply the previously copied paragraph formatting onto the selected text"
+msgstr ""
+"Apply the previously copied paragraph formatting onto the selected text"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h
@@ -2111,8 +2103,8 @@ msgstr ""
 "Choose your target in the left side.\n"
 "If you want to use the \"Go To\" button, just fill the Number Entry with the "
 "desired number.  You can use + and - to perform relative movement.\tI.e., if "
-"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your "
-"current position."
+"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
+"below your current position."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -3635,8 +3627,8 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Headers and Footers can only be created and edited while in Print View Mode. "
-" To enter this mode choose View then Print Layout from the Menus. \n"
+"Headers and Footers can only be created and edited while in Print View "
+"Mode.  To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 
 #. DLG_Stylist_HeadingStyles
@@ -5627,7 +5619,8 @@ msgid "SPARQL Query"
 msgstr "SPARQL Query"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Sa&ve"
 
@@ -6025,8 +6018,7 @@ msgid ""
 msgstr ""
 "Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
-"the stylesheet for all existing Semantic Items to the new stylesheet as "
-"well."
+"the stylesheet for all existing Semantic Items to the new stylesheet as well."
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -7251,7 +7243,8 @@ msgstr "You have changed the direction mode."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "You must select a portion of the document before inserting a hyperlink."
+msgstr ""
+"You must select a portion of the document before inserting a hyperlink."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h
@@ -9633,6 +9626,12 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "None"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "About G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "About the GNOME Office project"
+
 #~ msgid "Split on all delimiters except spaces"
 #~ msgstr "Split on all delimiters except spaces"
 
@@ -9649,8 +9648,8 @@ msgstr "None"
 #~ "platformsdk/sdkupdate/psdkredist.htm"
 #~ msgstr ""
 #~ "AbiWord needs the file %s.dll\n"
-#~ "Please download and install it from "
-#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
 
 #~ msgid "From File"
 #~ msgstr "From File"

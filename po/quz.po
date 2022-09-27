@@ -1,6 +1,6 @@
 # Quechua (Cusco-Collao) lang-quz translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Amos Batto <amosbatt@yahoo.com>, 2010.
 # Irma Alvarez <sankaypillo@gmail.com>, 2011.
@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-08-19 03:07+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -102,8 +102,7 @@ msgstr "%s"
 #  [es] "En otro caso, tenga paciencia."
 #. MSG_DlgNotImp
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "%s not implemented yet.\n"
 "\n"
@@ -116,8 +115,8 @@ msgid ""
 msgstr ""
 "%s todavía no está implementado.\n"
 "\n"
-"Si usted es un programador, siéntase libre para añadir código en %s, línea %"
-"d\n"
+"Si usted es un programador, siéntase libre para añadir código en %s, línea "
+"%d\n"
 "y enviar parches a:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
@@ -572,9 +571,9 @@ msgid "&Height:"
 msgstr "&Pataniq:"
 
 # [es] "A&yuda"
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Yanapay"
 
@@ -819,7 +818,8 @@ msgstr "C&h'ulla laqhi"
 
 # [es] "&Abrir"
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Kichay"
 
@@ -1387,8 +1387,7 @@ msgstr "AM/PM"
 # [es] "AbiWord no puede abrir %s. Parece que es un documento inválido"
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr ""
 "Mana AbiWord «%s» khiputa kichayta atinchu. Ichapis mana allinchu.\n"
@@ -1450,32 +1449,14 @@ msgstr ""
 "\n"
 "Puede usar el programa, pero la barra de herramientas podría no aparecer."
 
-# [es] ""
-#  [es] "AbiWord necesita el archivo %s.dll\n"
-#  [es] "Por favor, descárguelo e instálelo desde http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 #. WINDOWS_NEED_UNICOWS
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord necesita el archivo %s.dll\n"
-"Por favor, descárguelo e instálelo desde "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
-
-# [es] "Acerca de G&NOME Office"
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "G&NOME Officemanta"
-
-# [es] "Acerca del proyecto GNOME Office"
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Proyecto GNOME Officemanta"
 
 # [es] "Aceptar el cambio sugerido"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
@@ -3057,6 +3038,11 @@ msgstr ""
 msgid "Date"
 msgstr "P'unchay"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 # [es] "Fecha y &hora"
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -4198,11 +4184,10 @@ msgstr "Formatear el documento usando estilos"
 msgid "Format:"
 msgstr "Ukhunpi kamachi:"
 
-# [es] "Desde el archivo"
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Khipumanta"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 # [es] "Desde LaTeX"
 #. MENU_LABEL_INSERT_EQUATION_LATEX
@@ -6658,7 +6643,8 @@ msgstr ""
 
 # [es] "&Guardar"
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Ja&llch'ay"
 
@@ -7182,6 +7168,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 # [es] "Combinación de teclas"
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
@@ -7549,29 +7540,46 @@ msgstr "Pañaniqpi rak'iy"
 msgid "Split on Top Side"
 msgstr "Pataniqpi rak'iy"
 
-# [es] "Dividir en todos los delimitadores excepto los espacios"
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Dividir en todos los delimitadores excepto los espacios"
+msgid "Split text at commas"
+msgstr ""
 
-# [es] "Dividir en todos los delimitadores de palabra incluyendo los espacios"
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Dividir en todos los delimitadores excepto los espacios"
-
-# [es] "Dividir el texto en las comas o tabuladores"
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Comaswanchu tabuladorkunawanchu textota t'aqay"
+msgid "Split text at spaces"
+msgstr ""
 
 # [es] "Dividir el texto en los espacios, comas o tabuladores"
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Puchuswanchu comaswanchu tabuladorkunawanchu textota t'aqay"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 # [es] "Dividir esta celda"
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -8234,6 +8242,11 @@ msgstr ""
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr ""
 "Markasqapaq sutita qhilqay, mana chayqa kasqaña sutita listamanta aqllay:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 # [es] "Tipo:"
 #. DLG_Lists_Type
@@ -9452,6 +9465,11 @@ msgstr "Declarar como XML (versión 1.0)"
 msgid "Default language: "
 msgstr "Mana aqllasqaraq simi: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 # [es] "¿Quiere quitar este icono de la barra de herramientas?"
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
@@ -9569,6 +9587,11 @@ msgstr "Inglés (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Inglés (Canadá)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 # [es] "Inglés (Irlanda)"
 #. LANG_EN_IE
@@ -11212,7 +11235,8 @@ msgstr "Yiddish"
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
-"Manaraq qhatishaspa «%s» khiputa jallch'anayki tiyan. ¿Kunitan jallch'aychu?\n"
+"Manaraq qhatishaspa «%s» khiputa jallch'anayki tiyan. ¿Kunitan "
+"jallch'aychu?\n"
 "\n"
 "Debe guardar los cambios al documento antes de continuar. ¿Quiere guardar "
 "ahora?"
@@ -11316,3 +11340,39 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ni mayqin"
 
+# [es] ""
+#  [es] "AbiWord necesita el archivo %s.dll\n"
+#  [es] "Por favor, descárguelo e instálelo desde http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord necesita el archivo %s.dll\n"
+#~ "Por favor, descárguelo e instálelo desde http://www.microsoft.com/"
+#~ "msdownload/platformsdk/sdkupdate/psdkredist.htm"
+
+# [es] "Acerca de G&NOME Office"
+#~ msgid "About G&NOME Office"
+#~ msgstr "G&NOME Officemanta"
+
+# [es] "Acerca del proyecto GNOME Office"
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Proyecto GNOME Officemanta"
+
+# [es] "Desde el archivo"
+#~ msgid "From File"
+#~ msgstr "Khipumanta"
+
+# [es] "Dividir en todos los delimitadores excepto los espacios"
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Dividir en todos los delimitadores excepto los espacios"
+
+# [es] "Dividir en todos los delimitadores de palabra incluyendo los espacios"
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Dividir en todos los delimitadores excepto los espacios"
+
+# [es] "Dividir el texto en las comas o tabuladores"
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Comaswanchu tabuladorkunawanchu textota t'aqay"

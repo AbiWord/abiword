@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 16:03+0200\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-09-06 16:03+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
@@ -499,9 +499,9 @@ msgstr "&Kopfzeile:"
 msgid "&Height:"
 msgstr "&Höhe:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Hilfe"
 
@@ -706,7 +706,8 @@ msgid "&Odd page"
 msgstr "&Ungerade Seite"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "Ö&ffnen"
 
@@ -1249,22 +1250,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord benötigt die Datei %s.dll\n"
-"Bitte laden und installieren Sie sie von http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Info zu &GNOME-Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Über das GNOME-Office-Projekt"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2600,6 +2588,11 @@ msgstr "Striche"
 msgid "Date"
 msgstr "Datum"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -3551,8 +3544,8 @@ msgstr "Format:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Aus Datei"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -5630,7 +5623,8 @@ msgid "SPARQL Query"
 msgstr "SPARQL-Abfrage"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "S&peichern"
 
@@ -6090,6 +6084,11 @@ msgstr "Schattierung"
 msgid "Shading color:"
 msgstr "Schattierungsfarbe:"
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6405,25 +6404,45 @@ msgstr "Rechts teilen"
 msgid "Split on Top Side"
 msgstr "Oben teilen"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Text an allen Trennzeichen splitten, außer Leerzeichen"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Text an allen Worttrennern inklusive Leerzeichen trennen"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Text an Komma oder Tabulator trennen"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Text an Leerzeichen, Komma oder Tabulator trennen"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -7008,6 +7027,11 @@ msgstr "Geben Sie dem RDF-Link einen Namen:"
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr ""
 "Geben Sie der Textmarke einen Namen oder wählen Sie eine aus der Liste:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8031,6 +8055,11 @@ msgstr "Als XML (Version 1.0) deklarieren"
 msgid "Default language: "
 msgstr "Standardsprache: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8125,6 +8154,11 @@ msgstr "Englisch (Australien)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Englisch (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9618,3 +9652,31 @@ msgstr "ohne Bezug"
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Keine"
+
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord benötigt die Datei %s.dll\n"
+#~ "Bitte laden und installieren Sie sie von http://www.microsoft.com/"
+#~ "msdownload/platformsdk/sdkupdate/psdkredist.htm"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "Info zu &GNOME-Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Über das GNOME-Office-Projekt"
+
+#~ msgid "From File"
+#~ msgstr "Aus Datei"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Text an allen Trennzeichen splitten, außer Leerzeichen"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Text an allen Worttrennern inklusive Leerzeichen trennen"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Text an Komma oder Tabulator trennen"

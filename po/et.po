@@ -1,13 +1,13 @@
 # Estonian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Marek Laane <bald@starman.ee>, 2003-2005.
 msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-12-28 06:34+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Estonian <et@li.org>\n"
@@ -496,9 +496,9 @@ msgstr "&Päis:"
 msgid "&Height:"
 msgstr "&Kõrgus:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Abi"
 
@@ -703,7 +703,8 @@ msgid "&Odd page"
 msgstr "Paarit&u lehekülg"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Ava"
 
@@ -1200,8 +1201,7 @@ msgstr "AM/PM"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "Abiword ei suuda avada %s. See paistab olevat vigane dokument."
 
@@ -1251,16 +1251,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "G&NOME Office'i info"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "GNOME Office'i projekti info"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2120,9 +2110,9 @@ msgid ""
 msgstr ""
 "Vali vasakul objekt.\n"
 "Kui soovid kasutada nuppu \"Liigu\", kirjuta numbriväljale vajalik number.  "
-"Märkidega + ja - saab sooritada suhtelise liikumise,\ts.t. kui kirjutad \"+2\" "
-"ja valid \"Rida\", siis käsk \"Liigu\" viib sind kaks rida praegusest asukohast "
-"edasi."
+"Märkidega + ja - saab sooritada suhtelise liikumise,\ts.t. kui kirjutad "
+"\"+2\" ja valid \"Rida\", siis käsk \"Liigu\" viib sind kaks rida praegusest "
+"asukohast edasi."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2612,6 +2602,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Kuupäev"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5687,7 +5682,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Salvesta"
 
@@ -6145,6 +6141,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6461,25 +6462,45 @@ msgstr "Lahuta paremalt"
 msgid "Split on Top Side"
 msgstr "Lahuta ülalt"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Eraldamine kõigi piirajate põhjal, välja arvatud tühikud"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Eraldamine kõigi piirajate põhjal, kaasa arvatud tühikud"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Teksti eraldamine komade või tabeldusmärkide juures"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Teksti eraldamine tühikute, komade või tabeldusmärkide juures"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6873,7 +6894,8 @@ msgstr "Valitud veerised on liiga laiad ega mahu leheküljele."
 msgid ""
 "The new user interface language will take effect the next time that you "
 "start the application"
-msgstr "Kasutajaliidese uut keelt rakendatakse rakenduse järgmisel käivitamisel"
+msgstr ""
+"Kasutajaliidese uut keelt rakendatakse rakenduse järgmisel käivitamisel"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h
@@ -7047,6 +7069,11 @@ msgstr ""
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Kirjuta järjehoidja nimi või vali nimekirjast mõni olemasolev"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7539,8 +7566,7 @@ msgid ""
 "AbiWord cannot restore version %d of the document because the version "
 "information is missing."
 msgstr ""
-"AbiWord ei suuda taastada dokumendi versiooni %d, sest versiooni info "
-"puudub."
+"AbiWord ei suuda taastada dokumendi versiooni %d, sest versiooni info puudub."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h
@@ -7769,8 +7795,7 @@ msgstr "Bretooni"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Ehitamise valikud: %s"
 
@@ -8083,6 +8108,11 @@ msgstr "Deklareerimine XML-ina (versioon 1.0)"
 msgid "Default language: "
 msgstr "Vaikekeel: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8179,6 +8209,11 @@ msgstr "Inglise (Austraalia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Inglise (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9682,3 +9717,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Puudub"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "G&NOME Office'i info"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "GNOME Office'i projekti info"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Eraldamine kõigi piirajate põhjal, välja arvatud tühikud"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Eraldamine kõigi piirajate põhjal, kaasa arvatud tühikud"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Teksti eraldamine komade või tabeldusmärkide juures"

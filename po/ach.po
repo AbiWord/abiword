@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-12-27 12:56-0400\n"
 "Last-Translator: Chris Leonard <cjlhomeaddress@gmail.com>\n"
 "Language-Team: Sugar Labs\n"
@@ -490,9 +490,9 @@ msgstr "&Lawie:"
 msgid "&Height:"
 msgstr "&Bor ne:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Kony"
 
@@ -697,7 +697,8 @@ msgid "&Odd page"
 msgstr "&Pot karatac mape poke ki aryo"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Yab"
 
@@ -1234,16 +1235,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Mamako G&NOME Opic"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Mamako GNOME purujek me Opic"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2586,6 +2577,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Nino dwe"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5622,7 +5618,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Gw&oki"
 
@@ -6079,6 +6076,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6396,25 +6398,45 @@ msgstr "Pok ki Tung Lacuc"
 msgid "Split on Top Side"
 msgstr "Pok ki Tung Wie"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Pok ki iyi lapok weng mapat ki lagoro"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Pok ki iyi lapok nyig coc weng medo ki lagoro"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Pok nyig coc iyi lakod nyo lanyut(tab)"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Pok nyig coc iyi lagoro,lakod, nyo lanyut(tab)"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6978,6 +7000,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Co nying pi alama buk, onyo yer en ma tye ki nying jami:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8000,6 +8027,11 @@ msgstr "Tit ka maleng macalo XML (Kit 1.0)"
 msgid "Default language: "
 msgstr "Ka ma leb oaa ki iye: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8094,6 +8126,11 @@ msgstr "Leb munu (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Leb munu (Canada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9587,3 +9624,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Peke"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Mamako G&NOME Opic"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Mamako GNOME purujek me Opic"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Pok ki iyi lapok weng mapat ki lagoro"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Pok ki iyi lapok nyig coc weng medo ki lagoro"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Pok nyig coc iyi lakod nyo lanyut(tab)"

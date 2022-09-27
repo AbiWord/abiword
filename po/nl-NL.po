@@ -1,6 +1,6 @@
 # Dutch translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Reinout van Schouwen <reinout@cs.vu.nl>, 2004-2005.
 # Benno Schulenberg <benno@vertaalt.nl>, 2007, 2008.
@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-04-09 17:44+0200\n"
 "Last-Translator: Pjotr <pjotrvertaalt@gmail.com>\n"
 "Language-Team: Dutch\n"
@@ -494,9 +494,9 @@ msgstr "&Koptekst:"
 msgid "&Height:"
 msgstr "&Hoogte:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Hulp"
 
@@ -701,7 +701,8 @@ msgid "&Odd page"
 msgstr "&Oneven pagina"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Openen"
 
@@ -1231,8 +1232,8 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"AbiWord is ontworpen voor nieuwere versies van het systeembestand "
-"COMCTL32.DLL\n"
+"AbiWord is ontworpen voor nieuwere versies van het systeembestand COMCTL32."
+"DLL\n"
 "dan de versie die nu op uw systeem staat (COMCTL32.DLL versie 4.72 of "
 "nieuwer)\n"
 "Een oplossing voor dit probleem is uitgelegd in de sectie FAQ op de "
@@ -1251,18 +1252,8 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 "Abiword heeft het bestand %s.dll nodig.\n"
-"Haal het a.u.b. binnen vanaf http://www.microsoft.com/en-"
-"us/download/details.aspx?id=4237 en installeer het"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Over G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Over het GNOME Office-project"
+"Haal het a.u.b. binnen vanaf http://www.microsoft.com/en-us/download/details."
+"aspx?id=4237 en installeer het"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -1438,8 +1429,7 @@ msgid ""
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
 "Weet u zeker dat u de volledige opgeslagen geschiedenis niet wilt behouden? "
-"Als u doorgaat, kunt u eerdere versies van dit document niet meer "
-"herstellen."
+"Als u doorgaat, kunt u eerdere versies van dit document niet meer herstellen."
 
 #. DLG_Lists_Arrowhead_List
 #. STYLE_ARROWHEADLIST
@@ -2117,8 +2107,8 @@ msgstr ""
 "Kies uw doel aan de linkerkant.\n"
 "Als u de \"Ga Naar\" knop wilt gebruiken, vul dan in het Nummerveld het "
 "gewenste nummer in.   U kunt + en - gebruiken om relatieve beweging uit te "
-"voeren.\tBijv., als u \"+2\" schrijft en \"Regel\" selecteert, dan zal \"Ga Naar\" "
-"2 regels verder naar onderen gaan dan uw huidige positie."
+"voeren.\tBijv., als u \"+2\" schrijft en \"Regel\" selecteert, dan zal \"Ga "
+"Naar\" 2 regels verder naar onderen gaan dan uw huidige positie."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -5639,7 +5629,8 @@ msgid "SPARQL Query"
 msgstr "SPARQL-zoekopdracht"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Op&slaan"
 
@@ -6085,8 +6076,7 @@ msgstr "Instellingen"
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
 msgstr ""
-"Pagina-eigenschappen van uw document aanpassen, zoals paginagrootte en "
-"marges"
+"Pagina-eigenschappen van uw document aanpassen, zoals paginagrootte en marges"
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
@@ -7033,7 +7023,8 @@ msgstr "Tik een naam in voor de RDF-koppeling:"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
-msgstr "Tik een naam in voor de bladwijzer, of kies een bestaande uit de lijst:"
+msgstr ""
+"Tik een naam in voor de bladwijzer, of kies een bestaande uit de lijst:"
 
 #. DLG_InsertHyperlink_TitleLabel
 #: po/tmp/ap_String_Id.h
@@ -9659,6 +9650,12 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Geen"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Over G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Over het GNOME Office-project"
+
 #~ msgid "Split on all delimiters except spaces"
 #~ msgstr "Splitsen op alle scheidingstekens behalve spaties"
 
@@ -9675,9 +9672,8 @@ msgstr "Geen"
 #~ "platformsdk/sdkupdate/psdkredist.htm"
 #~ msgstr ""
 #~ "AbiWord heeft het bestand %s.dll nodig\n"
-#~ "Haal dit bestand binnen van "
-#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm en "
-#~ "installeer het"
+#~ "Haal dit bestand binnen van http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm en installeer het"
 
 #~ msgid "From File"
 #~ msgstr "Uit bestand"

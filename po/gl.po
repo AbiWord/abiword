@@ -1,6 +1,6 @@
 # Galician translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Antón Méixome <meixome@certima.net>, 2010.
 # Miguel Anxo Bouzada <mbouzada@gmail.com>, 2011, 2012.
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-04-04 22:37+0200\n"
 "Last-Translator: Miguel Anxo <mbouzada@gmail.com>\n"
 "Language-Team: Proxecto Trasno proxecto@trasno.net\n"
@@ -494,9 +494,9 @@ msgstr "&Cabeceira:"
 msgid "&Height:"
 msgstr "A&ltura:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Axuda"
 
@@ -701,7 +701,8 @@ msgid "&Odd page"
 msgstr "Páxina &impar"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Abrir"
 
@@ -1248,18 +1249,8 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 "AbiWord precisa do ficheiro %s.dll\n"
-"Descárgueo e instáleo de http://www.microsoft.com/en-"
-"us/download/details.aspx?id=4237"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Sobre &GNOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Sobre o proxecto GNOME Office"
+"Descárgueo e instáleo de http://www.microsoft.com/en-us/download/details."
+"aspx?id=4237"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -5631,7 +5622,8 @@ msgid "SPARQL Query"
 msgstr "Consulta SPARQL"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Gardar"
 
@@ -6277,7 +6269,8 @@ msgstr "Ordenar columnas en orde descendente"
 #. MENU_STATUSLINE_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h
 msgid "Sort Columns in Descending Order based on Selected Row"
-msgstr "Ordenar as columnas en orde descendente baseándose na fila seleccionada"
+msgstr ""
+"Ordenar as columnas en orde descendente baseándose na fila seleccionada"
 
 #. MENU_LABEL_TABLE_SORTROWSASCEND
 #: po/tmp/ap_String_Id.h
@@ -6297,7 +6290,8 @@ msgstr "Ordenar filas en orde descendente"
 #. MENU_STATUSLINE_TABLE_SORTROWSDESCEND
 #: po/tmp/ap_String_Id.h
 msgid "Sort Rows in Descending Order based on Selected Column"
-msgstr "Ordenar as filas en orde descendente baseándose na columna seleccionada"
+msgstr ""
+"Ordenar as filas en orde descendente baseándose na columna seleccionada"
 
 #. MENU_STATUSLINE_TABLE_SORT
 #: po/tmp/ap_String_Id.h
@@ -6885,8 +6879,7 @@ msgid ""
 "This bookmark already exists. Would you like to replace the existing "
 "bookmark with this new one?"
 msgstr ""
-"Este marcador xa existe. Quere substituír o marcador existente con este "
-"novo?"
+"Este marcador xa existe. Quere substituír o marcador existente con este novo?"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h
@@ -6913,9 +6906,10 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Este parágrafo representa palabras tal como poden aparecer no seu documento. "
-" Para ver texto do seu documento usado nesta vista previa, posicione o "
-"cursor nun parágrafo do documento con algún texto nel e abra este diálogo."
+"Este parágrafo representa palabras tal como poden aparecer no seu "
+"documento.  Para ver texto do seu documento usado nesta vista previa, "
+"posicione o cursor nun parágrafo do documento con algún texto nel e abra "
+"este diálogo."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -9291,8 +9285,8 @@ msgid ""
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
 "A versión máis recente que se pode restaurar completamente é %d. Quere "
-"restaurar esta versión no seu lugar? Para restaurar parcialmente a versión %"
-"d prema Non."
+"restaurar esta versión no seu lugar? Para restaurar parcialmente a versión "
+"%d prema Non."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -9643,6 +9637,12 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ningún"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Sobre &GNOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Sobre o proxecto GNOME Office"
+
 #~ msgid "Split on all delimiters except spaces"
 #~ msgstr "Dividir en todos os delimitadores agás nos espazos"
 
@@ -9659,8 +9659,8 @@ msgstr "Ningún"
 #~ "platformsdk/sdkupdate/psdkredist.htm"
 #~ msgstr ""
 #~ "AbiWord necesita o ficheiro %s.dll\n"
-#~ "Por favor, descárgueo e instáleo desde "
-#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+#~ "Por favor, descárgueo e instáleo desde http://www.microsoft.com/"
+#~ "msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #~ msgid "From File"
 #~ msgstr "Desde o ficheiro"

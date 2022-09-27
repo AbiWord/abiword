@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.4.6 in aymara sureño (Oruro)\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-12-31 23:29+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
@@ -118,8 +118,8 @@ msgid ""
 msgstr ""
 "%s janirakiw uchantatajiti.\n"
 "\n"
-"Jumatix yatiyawi kamachiritaxa, kunjams muntaxa yapxatam chimpu qillqanaka %"
-"s, yatiyawina %d\n"
+"Jumatix yatiyawi kamachiritaxa, kunjams muntaxa yapxatam chimpu qillqanaka "
+"%s, yatiyawina %d\n"
 "ukhamaraka watayanak apayama:\n"
 "\tabiword-dev@abisource.com\n"
 "Jan kasu utjipan, suyt'am ampi.\n"
@@ -592,9 +592,9 @@ msgid "&Height:"
 msgstr "&Patja:"
 
 # [es-ES1] "A&yuda"
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Yanapiri"
 
@@ -838,7 +838,8 @@ msgstr "C&h'ulla laphi"
 
 # [es-ES1] "&Abrir"
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Sit'araña"
 
@@ -1491,18 +1492,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-# [es-ES1] "Acerca de G&NOME Office"
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "G&NOME Officta"
-
-# [es-ES1] "Acerca del proyecto GNOME Office"
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Uka proyictu GNOME Officeta"
 
 # [es-ES1] "Aceptar el cambio sugerido"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
@@ -3113,6 +3102,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Uru"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 # [es-ES1] "Fecha y &hora"
 #. MENU_LABEL_INSERT_DATETIME
@@ -6030,8 +6024,7 @@ msgstr "Laphi uñnaqanaka:"
 # ¿Por que "uñnaqa"?
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Page: %d/%d"
 msgstr "Laphi uñnaqa: %d/%d"
 
@@ -6803,7 +6796,8 @@ msgstr ""
 
 # [es-ES1] "&Guardar"
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Imaña"
 
@@ -7345,6 +7339,11 @@ msgstr "Ch'ijma 1"
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 # [es-ES1] "Combinación de teclas"
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
@@ -7732,23 +7731,15 @@ msgstr "Kupi tuqita jaljaña"
 msgid "Split on Top Side"
 msgstr "Patata jaljaña"
 
-# [es-ES1] "Dividir en todos los delimitadores excepto los espacios"
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Taqpach thiyarinakan jaljaña,jan ch'usawjanakampi"
+msgid "Split text at commas"
+msgstr ""
 
-# [es-ES1] "Dividir en todos los delimitadores de palabra incluyendo los espacios"
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Taqpach thiyarinakan jaljaña,chu'sawjanakampi"
-
-# [es-ES1] "Dividir el texto en las comas o tabuladores"
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Siqi amukt'awinakan ukhamaraki jittayirinak sawu jaljaña"
+msgid "Split text at spaces"
+msgstr ""
 
 # [es-ES1] "Dividir el texto en los espacios, comas o tabuladores"
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
@@ -7756,6 +7747,31 @@ msgstr "Siqi amukt'awinakan ukhamaraki jittayirinak sawu jaljaña"
 msgid "Split text at spaces, commas, or tabs"
 msgstr ""
 "Ch'usawjanakan, siqi amukt'awinakan ukhamaraki jittayirinakan sawu jaljaña"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 # [es-ES1] "Dividir esta celda"
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -8460,6 +8476,11 @@ msgstr ""
 "Chimputakix mä suti qillqt'am jan ukasti may tantat jajllt'am.\n"
 "Escriba un nombre para el marcador, o seleccione uno de la lista."
 
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
+
 # [es-ES1] "Tipo:"
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -9054,8 +9075,7 @@ msgstr ""
 #  [es-ES1] "información de versión."
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "AbiWord cannot restore version %d of the document because the version "
 "information is missing."
@@ -9326,8 +9346,7 @@ msgstr "Bretón"
 # [es-ES1] "Opciones de compilación"
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Jajlliñanaka mayacht'añata: %s"
 
@@ -9699,6 +9718,11 @@ msgstr "Declarar como XML (versión 1.0)"
 msgid "Default language: "
 msgstr "Aru kamachita: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 # [es-ES1] "¿Quiere quitar este icono de la barra de herramientas?"
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
@@ -9824,6 +9848,11 @@ msgstr "Inglés (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Inglés (Canadá)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 # [es-ES1] "Inglés (Irlanda)"
 #. LANG_EN_IE
@@ -11379,8 +11408,7 @@ msgstr "Uñjata:"
 # [es-ES1] "Versión:"
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Version: %s"
 msgstr "Uñjata: %s"
 
@@ -11502,8 +11530,7 @@ msgstr "Yiddish"
 #  [es-ES1] "ahora?"
 #. MSG_HistoryConfirmSave
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
 "Turkatanaka qillqa q'ipi «%s»ru imañapawa. Janir juk'ant qillt'kasa, jichhax "
@@ -11548,16 +11575,14 @@ msgstr "mayjt'ata"
 # divirgiendo después de posición %d del documento
 #. DLG_DocComparison_DivergingPos
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "diverging after document position %d"
 msgstr "uka muqur pirisinxa %d qillqi q'ipi mayjt'i"
 
 # divergiendo después de versión %d de %s
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "diverging after version %d of %s"
 msgstr "uka muqur pirisinxa %d \"%s\"ta mayjt'i"
 
@@ -11607,3 +11632,22 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ni kuna"
 
+# [es-ES1] "Acerca de G&NOME Office"
+#~ msgid "About G&NOME Office"
+#~ msgstr "G&NOME Officta"
+
+# [es-ES1] "Acerca del proyecto GNOME Office"
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Uka proyictu GNOME Officeta"
+
+# [es-ES1] "Dividir en todos los delimitadores excepto los espacios"
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Taqpach thiyarinakan jaljaña,jan ch'usawjanakampi"
+
+# [es-ES1] "Dividir en todos los delimitadores de palabra incluyendo los espacios"
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Taqpach thiyarinakan jaljaña,chu'sawjanakampi"
+
+# [es-ES1] "Dividir el texto en las comas o tabuladores"
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Siqi amukt'awinakan ukhamaraki jittayirinak sawu jaljaña"

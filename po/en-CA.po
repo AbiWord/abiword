@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2016-06-28 23:02-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2005-05-20 16:46-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
@@ -1247,16 +1247,6 @@ msgstr ""
 "AbiWord needs the file %s.dll\n"
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "About G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "About the GNOME Office project"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -9617,6 +9607,12 @@ msgstr "unrelated"
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "None"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "About G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "About the GNOME Office project"
 
 #~ msgid "&1 None"
 #~ msgstr "&1 None"

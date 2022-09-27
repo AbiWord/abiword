@@ -1,13 +1,13 @@
 # Swiss German translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2011-06-18 04:50+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
@@ -498,9 +498,9 @@ msgstr "&Kopfzeile:"
 msgid "&Height:"
 msgstr "&Höhe:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Hilfe"
 
@@ -707,7 +707,8 @@ msgid "&Odd page"
 msgstr "&Ungerade Seite"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "Ö&ffnen"
 
@@ -1245,19 +1246,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Info zu G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Über das GNOME Office-Projekt"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2619,6 +2610,11 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -2920,7 +2916,8 @@ msgstr "Möchten Sie die ignorierten Wörter von allen Dokumenten zurücksetzen?
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h
 msgid "Do you want to reset ignored words in the current document?"
-msgstr "Möchten Sie die ignorierten Wörter vom aktuellen Dokument zurücksetzen?"
+msgstr ""
+"Möchten Sie die ignorierten Wörter vom aktuellen Dokument zurücksetzen?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h
@@ -3606,9 +3603,8 @@ msgstr "Format:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "From File"
-msgstr "&Aus Datei"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -5737,7 +5733,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "S&peichern"
 
@@ -6207,6 +6204,11 @@ msgstr "Abstand"
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6529,24 +6531,44 @@ msgstr ""
 msgid "Split on Top Side"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -7131,6 +7153,11 @@ msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr ""
 "Bitte einen Namen für das Lesezeichen eingeben, oder einen aus der Liste "
 "wählen."
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8170,6 +8197,11 @@ msgstr "Als XML (Version 1.0) deklarieren"
 msgid "Default language: "
 msgstr ""
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8266,6 +8298,11 @@ msgstr "Englisch (Australien)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Englisch (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9581,8 +9618,7 @@ msgstr "Version:"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Version: %s"
 msgstr "Version: %s"
 
@@ -9772,3 +9808,12 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Keine"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Info zu G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Über das GNOME Office-Projekt"
+
+#, fuzzy
+#~ msgid "From File"
+#~ msgstr "&Aus Datei"

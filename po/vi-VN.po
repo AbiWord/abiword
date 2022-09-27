@@ -1,13 +1,13 @@
 # Vietnamese translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # pclouds <pclouds@gmx.net>, 2002.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-08-13 06:23+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: GnomeVI <gnomevi-list@lists.sourceforge.net>\n"
@@ -505,9 +505,9 @@ msgstr "&Header:"
 msgid "&Height:"
 msgstr "&Cao:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "Trợ &giúp"
 
@@ -716,7 +716,8 @@ msgid "&Odd page"
 msgstr "Trang &lẻ"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Mở"
 
@@ -1216,8 +1217,7 @@ msgstr "AM/PM"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "AbiWord không thể mở %s. Có lẽ đây là tài liệu không hợp lệ"
 
@@ -1250,7 +1250,8 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"AbiWord được thiết kế với phiên bản COMCTL32.DLL mới hơn phiên bản đang dùng\n"
+"AbiWord được thiết kế với phiên bản COMCTL32.DLL mới hơn phiên bản đang "
+"dùng\n"
 "trên hệ thống của bạn. (COMCTL32.DLL phiên bản 4.72 hoặc mới hơn) Giải pháp\n"
 "cho vấn đề này được giải thích trong FAQ trên trang Web của AbiSource\n"
 "\n"
@@ -1263,23 +1264,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord cần tập tin %s.dll\n"
-"Vui lòng tải nó về từ\n"
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm\n"
-"và cài đặt nó."
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Giới thiệu G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Giới thiệu về Dự án GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2147,8 +2134,8 @@ msgstr ""
 "Hãy chọn đích đến bên trái.\n"
 "Nếu bạn muốn dùng nút \"Đi tới\", hãy ghi con số mong muốn vào Mục nhập Số. "
 "Bạn có thể dùng + hoặc - để thực hiện di chuyển tương đối so với vị trí hiện "
-"thời.\tVí dụ, nếu bạn ghi \"+2\" và bạn chọn \"Dòng\", nút \"Đi tới\" sẽ đi tới "
-"dòng thứ hai so với dòng hiện thời."
+"thời.\tVí dụ, nếu bạn ghi \"+2\" và bạn chọn \"Dòng\", nút \"Đi tới\" sẽ đi "
+"tới dòng thứ hai so với dòng hiện thời."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2647,6 +2634,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Ngày"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3631,9 +3623,8 @@ msgstr "Dạng thức:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "From File"
-msgstr "Từ tập tin"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -5758,7 +5749,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Lưu"
 
@@ -6225,6 +6217,11 @@ msgstr "Đổ bóng"
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6544,24 +6541,44 @@ msgstr ""
 msgid "Split on Top Side"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -7130,6 +7147,11 @@ msgstr ""
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Nhập tên cho Đánh Dấu, hoặc chọn tên có sẵn từ danh sách."
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7852,8 +7874,7 @@ msgstr ""
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Tùy chọn build: %s"
 
@@ -8171,6 +8192,11 @@ msgstr "Khái báo là XML (phiên bản 1.0)"
 msgid "Default language: "
 msgstr ""
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8269,6 +8295,11 @@ msgstr "Tiếng Anh (Úc)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Tiếng Anh (Canada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9588,8 +9619,7 @@ msgstr "Phiên bản:"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Version: %s"
 msgstr "Quyền: %s"
 
@@ -9691,10 +9721,10 @@ msgstr ""
 
 #. MSG_HistoryConfirmSave
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "Bạn phải lưu lại các thay đổi trước khi tiếp tục. Lưu lại ngay bây giờ?"
+msgstr ""
+"Bạn phải lưu lại các thay đổi trước khi tiếp tục. Lưu lại ngay bây giờ?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
@@ -9780,3 +9810,23 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Không"
 
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord cần tập tin %s.dll\n"
+#~ "Vui lòng tải nó về từ\n"
+#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm\n"
+#~ "và cài đặt nó."
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "Giới thiệu G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Giới thiệu về Dự án GNOME Office"
+
+#, fuzzy
+#~ msgid "From File"
+#~ msgstr "Từ tập tin"

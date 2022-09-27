@@ -1,13 +1,13 @@
 # Bamanakan translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-12-31 23:48+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,8 +87,7 @@ msgstr "%s"
 
 #. MSG_DlgNotImp
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "%s not implemented yet.\n"
 "\n"
@@ -489,9 +488,9 @@ msgstr "Ten:"
 msgid "&Height:"
 msgstr "Jɔjan:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Лɛfɔ"
 
@@ -696,7 +695,8 @@ msgid "&Odd page"
 msgstr "Da yakalen"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "A &dayɛlɛn"
 
@@ -1231,16 +1231,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Min ye Gnome office ye"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Kunnafoniw jira porozɛ Gnome office kan"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2249,8 +2239,7 @@ msgstr "Kɔnɔkow katimu"
 
 #. DLG_MarkRevisions_Check1Label
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Continue previous revision (number %d)"
 msgstr "Taa ni labanna yɛlɛma ye"
 
@@ -2334,8 +2323,7 @@ msgstr "Sugandilen ni bilayɔrɔ sɛbɛn sɛbɛnbondon kɔnɔ"
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Could not open file %s for writing"
 msgstr "Bondon tɛ se ka dayɛlɛ sɛbɛnni na %s"
 
@@ -2347,15 +2335,13 @@ msgstr "Bondon %s tɛ se ka dayɛlɛ."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Could not write to file %s"
 msgstr "Sɛbɛnni tɛ se ka kɛ bondon %s kɔnɔ"
 
 #. MSG_SaveFailed
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Could not write to the file %s."
 msgstr "Sɛbɛnni tɛ se ka kɛ bondon %s kɔnɔ."
 
@@ -2588,6 +2574,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Don"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3249,8 +3240,7 @@ msgstr "Bondon %s ma kɛ a ka ɲinita ye"
 
 #. MSG_IE_UnknownType
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "File %s is of unknown type"
 msgstr "Ka yɛlɛmani laban ɲini"
 
@@ -3308,8 +3298,7 @@ msgstr "Masalabolo kofɔlen ɲini"
 
 #. FirstLineIndentStatus
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "First Line Indent [%s]"
 msgstr "Sira fɔlɔ %,s dɔnni [%s]"
 
@@ -4876,8 +4865,7 @@ msgstr "Dɔwɛrɛ"
 
 #. MSG_IE_NoMemory
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Out of memory attempting to open %s"
 msgstr "A fanga man bon walasa ka dɔ fara %s bonya kan"
 
@@ -5641,7 +5629,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "K’a lakana"
 
@@ -6095,6 +6084,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6409,25 +6403,45 @@ msgstr "Ka kininyanfan tila"
 msgid "Split on Top Side"
 msgstr "Ka sanfɛla tila"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Ka bɔɲɔgɔnnali kɛ k’a bɛn dansigilanw yɔrɔ ma"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "K’a bɔ ɲɔgɔn na danfarasigilanw hakɛ la"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Ka bɔɲɔgɔnnali kɛ nkɔriw ni digiliw yɔrɔ la"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Ka bɔɲɔgɔnnali kɛ furancɛw ni nkɔriw la walima digiliw la"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6991,6 +7005,11 @@ msgstr ""
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Taamasiyɛnkɛlan dɔ don walima a’ y’a ta sɛvɛnnatɔgɔ kɔnɔ"
 
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
+
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
 msgid "Type:"
@@ -7148,8 +7167,7 @@ msgstr "Bɛ ye"
 
 #. MSG_HyperlinkNoBookmark
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
 msgstr "Lasɔmini\\ ''%s\"\\ tɛ yen."
 
@@ -7450,8 +7468,7 @@ msgstr "Abiword kalanbolo ɲɛnabɔlan"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
 "Please download and install Aspell from http://aspell.net/win32/"
@@ -7702,8 +7719,7 @@ msgstr "Breton"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Sugandiliw: %s"
 
@@ -7936,8 +7952,7 @@ msgstr "Tɛ se ka kalanbolo dogo"
 
 #. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Could not load the dictionary for the %s language"
 msgstr "Tɛ se daɲɛkɔrɔfɔgafe lafa kan kama \"%s\"."
 
@@ -8015,6 +8030,11 @@ msgstr "kɛ XML\\1.0 ye k’a dantigɛ"
 #: po/tmp/xap_String_Id.h
 msgid "Default language: "
 msgstr "Kan : "
+
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
@@ -8112,6 +8132,11 @@ msgstr "Anglais (Australie)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Anglais (Canada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9247,8 +9272,7 @@ msgstr ""
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
@@ -9514,8 +9538,7 @@ msgstr "Yiddish"
 
 #. MSG_HistoryConfirmSave
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr "I ka kan ka sɛbɛn yɛlɛmaw lakan sanni I ka taa ɲɛ ?"
 
@@ -9557,8 +9580,7 @@ msgstr "Bɛnbali sɛbɛn sigicogo %d kɔfɛ"
 
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "diverging after version %d of %s"
 msgstr "Bɛnbali sɛbɛn sigicogo %d kɔfɛ ka tali kɛ %s kan"
 
@@ -9603,3 +9625,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Fosi"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Min ye Gnome office ye"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Kunnafoniw jira porozɛ Gnome office kan"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Ka bɔɲɔgɔnnali kɛ k’a bɛn dansigilanw yɔrɔ ma"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "K’a bɔ ɲɔgɔn na danfarasigilanw hakɛ la"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Ka bɔɲɔgɔnnali kɛ nkɔriw ni digiliw yɔrɔ la"

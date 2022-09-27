@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-04-04 21:43+0200\n"
 "Last-Translator: filmsi <miles@filmsi.net>\n"
 "Language-Team: Sugar Labs\n"
@@ -494,9 +494,9 @@ msgstr "&Glava:"
 msgid "&Height:"
 msgstr "&Višina:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Pomoč"
 
@@ -701,7 +701,8 @@ msgid "&Odd page"
 msgstr "&Soda stran"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Odpri"
 
@@ -1247,18 +1248,8 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 "AbiWord potrebuje datoteko %s.dll\n"
-"Prenesite in namestite jo z naslova http://www.microsoft.com/en-"
-"us/download/details.aspx?id=4237"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "O pisarni G&NOME"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "O projektu pisarne GNOME"
+"Prenesite in namestite jo z naslova http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2109,9 +2100,9 @@ msgid ""
 msgstr ""
 "Izberite cilj na levi strani.\n"
 "Če želite uporabiti gumb \"Pojdi na\" izpolnite vnos \"Številka\" z izbrano "
-"številko.  Lahko uporabite + in - za relativno premikanje.\tNpr.: če napišete "
-"\"+2\" in izberete \"Vrstico\", potem vas bo gumb \"Pojdi na\" postavil dve "
-"vrstici pod trenutnim položajem."
+"številko.  Lahko uporabite + in - za relativno premikanje.\tNpr.: če "
+"napišete \"+2\" in izberete \"Vrstico\", potem vas bo gumb \"Pojdi na\" "
+"postavil dve vrstici pod trenutnim položajem."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -5627,7 +5618,8 @@ msgid "SPARQL Query"
 msgstr "Poizvedba SPARQL"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Shrani"
 
@@ -6907,8 +6899,8 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Ta odstavek predstavlja besede, kot bi se lahko pojavile v vašem dokumentu. "
-" Če želite tu videti besedilo iz svojega dokumenta, postavite kazalko v "
+"Ta odstavek predstavlja besede, kot bi se lahko pojavile v vašem dokumentu.  "
+"Če želite tu videti besedilo iz svojega dokumenta, postavite kazalko v "
 "besedilo odstavka in odprite to pogovorno okno."
 
 #. DLG_Styles_ErrStyleNot
@@ -7256,8 +7248,7 @@ msgstr "Pred vstavitvijo hiperpovezave morate izbrati del dokumenta."
 #: po/tmp/ap_String_Id.h
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
 msgstr ""
-"Za pogostost samodejnega shranjevanja bi morali izbrati vrednost med 1 in "
-"120"
+"Za pogostost samodejnega shranjevanja bi morali izbrati vrednost med 1 in 120"
 
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h
@@ -9018,8 +9009,7 @@ msgid ""
 "Render MathML to PNG images (JavaScript will be used if option is not "
 "checked)"
 msgstr ""
-"Upodobi MathML v slike PNG (če možnost ni potrjena, bo uporabljen "
-"JavaScript)"
+"Upodobi MathML v slike PNG (če možnost ni potrjena, bo uporabljen JavaScript)"
 
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h
@@ -9295,7 +9285,8 @@ msgstr "Ukaz za tiskanje ni veljaven."
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr "Te operacije ni mogoče povrniti. Ste prepričani, da želite nadaljevati?"
+msgstr ""
+"Te operacije ni mogoče povrniti. Ste prepričani, da želite nadaljevati?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h
@@ -9635,6 +9626,12 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Brez"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "O pisarni G&NOME"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "O projektu pisarne GNOME"
+
 #~ msgid "Split on all delimiters except spaces"
 #~ msgstr "Razdeli ob vseh ločilih razen ob presledkih"
 
@@ -9651,8 +9648,8 @@ msgstr "Brez"
 #~ "platformsdk/sdkupdate/psdkredist.htm"
 #~ msgstr ""
 #~ "AbiWord za svoje delovanje potrebuje datoteko %s.dll\n"
-#~ "Prosimo, prenesite in namestite jo s spletne strani "
-#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+#~ "Prosimo, prenesite in namestite jo s spletne strani http://www.microsoft."
+#~ "com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #~ msgid "From File"
 #~ msgstr "Iz datoteke"

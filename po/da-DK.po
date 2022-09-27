@@ -1,6 +1,6 @@
 # Danish translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Kenneth Christiansen <kenneth@gnu.org>, 2000.
 # Aputsiaq Janussen <aj@isit.gl>, 2012.
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-12-19 05:56+0200\n"
 "Last-Translator: Aputsiaq Niels <aj@isit.gl>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -501,9 +501,9 @@ msgstr "Side&hoved:"
 msgid "&Height:"
 msgstr "&Højde:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Hjælp"
 
@@ -710,7 +710,8 @@ msgid "&Odd page"
 msgstr "&Ulige side"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "Å&bn"
 
@@ -1245,8 +1246,8 @@ msgid ""
 msgstr ""
 "Abiword er bygget til en nyere version af systemfilen COMCTL32.DLL\n"
 "end den, der er i dit system. (COMCTL32.DLL version 4.72 eller nyere)\n"
-"En løsning på dette problem er forklaret blandt de Ofte Stillede "
-"Spørgsmål/FAQ på Abisource-hjemmesiden\n"
+"En løsning på dette problem er forklaret blandt de Ofte Stillede Spørgsmål/"
+"FAQ på Abisource-hjemmesiden\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
@@ -1261,18 +1262,8 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 "AbiWord har brug for filen %s.dll\n"
-"Hent og installér den venligst fra http://www.microsoft.com/en-"
-"us/download/details.aspx?id=4237"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Om G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Om GNOME Office-projektet"
+"Hent og installér den venligst fra http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2128,9 +2119,9 @@ msgid ""
 msgstr ""
 "Vælg ønsket indstilling på venste side.\n"
 "Dersom du vil bruge \"Gå til\" knappen skal du indtaste ønsket nummer i "
-"\"Nummer\"-feltet.  Du kan bruge + og - til at udføre relativ forflytning.\t"
-"Hvis du eksempelvis skriver \"+2\" og vælger \"Linje\", vil \"Gå til\" flytte "
-"markøren to linjer nedenfor nuværende position."
+"\"Nummer\"-feltet.  Du kan bruge + og - til at udføre relativ forflytning."
+"\tHvis du eksempelvis skriver \"+2\" og vælger \"Linje\", vil \"Gå til\" "
+"flytte markøren to linjer nedenfor nuværende position."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2613,6 +2604,11 @@ msgstr "Streger"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Dato"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5651,7 +5647,8 @@ msgid "SPARQL Query"
 msgstr "SPARQL-forespørgsel"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Gem"
 
@@ -6111,6 +6108,11 @@ msgstr "Skærmning"
 msgid "Shading color:"
 msgstr "Farve på skærmning:"
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6425,25 +6427,45 @@ msgstr "Opslit i højre side"
 msgid "Split on Top Side"
 msgstr "Opsplit i toppen"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Opsplit ved alle adskillelsesmarkører pånær mellemrum"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Opsplit ved alle adskillelsesmarkører, inklusive mellemrum"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Opsplit tekst ved kommaer eller tabuleringer"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Opsplit tekst ved mellemrum, kommaer eller tabuleringer"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6826,8 +6848,8 @@ msgid ""
 msgstr ""
 "Funktionen '--print' er blevet fjernet i AbiWord 2.8. Du kan få den ønskede "
 "adfærd ved at anvende Abiwords værktøjer til konvertering i kommandolinjen "
-"og dernæst kanalisere uddata til en printkø. Eksempelvis: 'abiword --to=ps "
-"--til-navn=fd://1 minfil.txt | lpr'"
+"og dernæst kanalisere uddata til en printkø. Eksempelvis: 'abiword --to=ps --"
+"til-navn=fd://1 minfil.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -7018,6 +7040,11 @@ msgstr "Indtast et navn på RDF-henvisningen:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Indtast et navn til bogmærket, eller vælg et fra listen:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8042,6 +8069,11 @@ msgstr "Deklarér som XML (version 1.0)"
 msgid "Default language: "
 msgstr "Standarsprog: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8137,6 +8169,11 @@ msgstr "Engelsk (Australien)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Engelsk (Canada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9637,3 +9674,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ingen"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Om G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Om GNOME Office-projektet"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Opsplit ved alle adskillelsesmarkører pånær mellemrum"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Opsplit ved alle adskillelsesmarkører, inklusive mellemrum"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Opsplit tekst ved kommaer eller tabuleringer"

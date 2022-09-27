@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord trunk\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-12-28 06:30+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
@@ -491,9 +491,9 @@ msgstr "&Горен колонтитул:"
 msgid "&Height:"
 msgstr "&Височина:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "Помо&щ"
 
@@ -698,7 +698,8 @@ msgid "&Odd page"
 msgstr "&Нечетна страница"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Отваряне"
 
@@ -1244,16 +1245,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Информация за &Офиса на GNOME"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Информация за проекта Офис на GNOME"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2589,6 +2580,11 @@ msgstr "Тирета"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Дата"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -4483,8 +4479,7 @@ msgstr "Сливане нагоре"
 #: po/tmp/ap_String_Id.h
 msgid "Merge another document into the active document using revision marks"
 msgstr ""
-"Сливане на друг документ с текущия посредством вътрешно отбелязване на "
-"версии"
+"Сливане на друг документ с текущия посредством вътрешно отбелязване на версии"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h
@@ -5624,7 +5619,8 @@ msgid "SPARQL Query"
 msgstr "Търсене със SPARQL"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Запазване"
 
@@ -6080,6 +6076,11 @@ msgstr "Сянка"
 msgid "Shading color:"
 msgstr "Цвят на сянката:"
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6393,25 +6394,45 @@ msgstr "Разделяне в десния край"
 msgid "Split on Top Side"
 msgstr "Разделяне в горния край"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Разделяне на текста по всички разделители, освен интервалите"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Разделяне на текста по всички разделители, включително интервалите"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Разделяне на текста по запетаи или табулации"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Разделяне на текста по интервали, запетаи или табулации"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6794,8 +6815,8 @@ msgid ""
 msgstr ""
 "Опцията „--print“ е премахната още от AbiWord 2.8. Можете да получите "
 "желания ефект като използвате инструментите за командния ред на AbiWord и "
-"след това пренасочите изхода към опашката на принтер. Например: „abiword "
-"--to=ps --to-name=fd://1 myfile.txt | lpr“"
+"след това пренасочите изхода към опашката на принтер. Например: „abiword --"
+"to=ps --to-name=fd://1 myfile.txt | lpr“"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6822,8 +6843,7 @@ msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr ""
-"Текстът, към който се слага хипервръзка, трябва да е в рамките на един "
-"абзац."
+"Текстът, към който се слага хипервръзка, трябва да е в рамките на един абзац."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h
@@ -6841,7 +6861,8 @@ msgstr "Дебелина:"
 msgid ""
 "This RDF link already exists. Would you like to replace the existing RDF "
 "link with this new one?"
-msgstr "Такава връзка за RDF вече съществува. Искате ли да я замените с новата?"
+msgstr ""
+"Такава връзка за RDF вече съществува. Искате ли да я замените с новата?"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
@@ -6984,6 +7005,11 @@ msgstr "Въведете име за връзката по RDF:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Въведете име за отметката или изберете от списъка:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8004,6 +8030,11 @@ msgstr "Обявяване като XML (версия 1.0)"
 msgid "Default language: "
 msgstr "Стандартен език: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8098,6 +8129,11 @@ msgstr "Английски (Австралия)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Английски (Канада)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9591,3 +9627,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Без"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Информация за &Офиса на GNOME"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Информация за проекта Офис на GNOME"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Разделяне на текста по всички разделители, освен интервалите"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Разделяне на текста по всички разделители, включително интервалите"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Разделяне на текста по запетаи или табулации"

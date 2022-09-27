@@ -1,13 +1,13 @@
 # Sardinian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-08-15 02:30+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
@@ -495,9 +495,9 @@ msgstr "&Intestadura:"
 msgid "&Height:"
 msgstr "&Artúria:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Agiutóriu"
 
@@ -702,7 +702,8 @@ msgid "&Odd page"
 msgstr "Pàgine &ischècia"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Aperi"
 
@@ -1249,22 +1250,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"A AbiWord dhi serbit su file %s.dll\n"
-"Iscarrigadhu e ponidhu dea "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Iscedas apitzu de su progetu GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -1419,8 +1407,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Apply the previously copied paragraph formatting onto the selected text"
 msgstr ""
-"àplica sa formatadura de su paràgrafu copiau innantis de su testu "
-"seletzionau"
+"àplica sa formatadura de su paràgrafu copiau innantis de su testu seletzionau"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h
@@ -2123,10 +2110,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "A manu manca de s'inditu.\n"
-"Po impitare su butone \"Bae a\"bastat a pònnere in sa casella Númeru su númeru "
-"chi bolles. Si podet pònnere + e  po si mòere su matessi tantu. Esémpiu, "
-"iscriendho \"+2\" e inditandho \"arriga\", \"Bae a\" su cursore andhat 2 arrigas "
-"prus a bàsciu de inue est."
+"Po impitare su butone \"Bae a\"bastat a pònnere in sa casella Númeru su "
+"númeru chi bolles. Si podet pònnere + e  po si mòere su matessi tantu. "
+"Esémpiu, iscriendho \"+2\" e inditandho \"arriga\", \"Bae a\" su cursore "
+"andhat 2 arrigas prus a bàsciu de inue est."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2621,6 +2608,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Data"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3593,9 +3585,8 @@ msgstr "Formau:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "From File"
-msgstr "De File"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -5702,7 +5693,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Re&gistra"
 
@@ -6169,6 +6161,11 @@ msgstr "Ispatziadura"
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6488,24 +6485,44 @@ msgstr "Dividi a dereta"
 msgid "Split on Top Side"
 msgstr "Dividi in artu"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -7077,6 +7094,11 @@ msgstr ""
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Iscrie su númene de su trancafilu o inditamindhe unu de sa lista."
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7794,8 +7816,7 @@ msgstr "Brètone"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Iscèberos de sa cumpiladura: %s"
 
@@ -8112,6 +8133,11 @@ msgstr "Dichiara sa forma XML (versione 1.0)"
 msgid "Default language: "
 msgstr ""
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8207,6 +8233,11 @@ msgstr "Ingresu (Austràlia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Ingresu (Canadà)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9708,3 +9739,22 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Mancunu"
 
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "A AbiWord dhi serbit su file %s.dll\n"
+#~ "Iscarrigadhu e ponidhu dea http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Iscedas apitzu de su progetu GNOME Office"
+
+#, fuzzy
+#~ msgid "From File"
+#~ msgstr "De File"

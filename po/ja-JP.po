@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-11 04:10+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -491,9 +491,9 @@ msgstr "ヘッダ(&H):"
 msgid "&Height:"
 msgstr "縦(&H):"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "ヘルプ(&H)"
 
@@ -698,7 +698,8 @@ msgid "&Odd page"
 msgstr "奇数ページ(&O)"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "開く(&O)"
 
@@ -1226,9 +1227,12 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"AbiWord は、あなたのシステムにあるものよりもより新しいバージョンのシステムファイル\n"
-"COMCTL32.DLL を用いるよう設計されています。(COMCTL32.DLL バージョン 4.72 以降)\n"
-"この問題に対する対応策は、 AbiSource ウェブサイト内の FAQ にて説明しています。\n"
+"AbiWord は、あなたのシステムにあるものよりもより新しいバージョンのシステム"
+"ファイル\n"
+"COMCTL32.DLL を用いるよう設計されています。(COMCTL32.DLL バージョン 4.72 以"
+"降)\n"
+"この問題に対する対応策は、 AbiSource ウェブサイト内の FAQ にて説明していま"
+"す。\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
@@ -1242,16 +1246,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "GNOME オフィスについて(&N)"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "GNOME オフィスプロジェクトについて"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -1426,7 +1420,9 @@ msgstr "アラビア数字リスト"
 msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
-msgstr "本当に完全な履歴を保持する必要はありませんか？続行する場合は、この文書の以前のバージョンに復元することはできません。"
+msgstr ""
+"本当に完全な履歴を保持する必要はありませんか？続行する場合は、この文書の以前"
+"のバージョンに復元することはできません。"
 
 #. DLG_Lists_Arrowhead_List
 #. STYLE_ARROWHEADLIST
@@ -2100,8 +2096,9 @@ msgid ""
 "below your current position."
 msgstr ""
 "ターゲットを左から選択して下さい。\n"
-"\"移動\"ボタンを使うには、番号エントリに希望の番号を 入力して下さい。+ や - を使って相対的な移動を指定することもできます。 \t"
-"例えば、\"+2\"と入力して\"行\"を選択すると、\"ジャンプ\"で現在の位置の2行下に移動します。"
+"\"移動\"ボタンを使うには、番号エントリに希望の番号を 入力して下さい。+ や - "
+"を使って相対的な移動を指定することもできます。 \t例えば、\"+2\"と入力して\"行"
+"\"を選択すると、\"ジャンプ\"で現在の位置の2行下に移動します。"
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2586,6 +2583,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "日付"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3630,7 +3632,8 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "ヘッダとフッタは印刷ビューモードでのみ作成・編集 することができます。\n"
-" 印刷ビューモードに入るには、メニューから「ビュー」、「印刷レイアウト」を選択して下さい。\n"
+" 印刷ビューモードに入るには、メニューから「ビュー」、「印刷レイアウト」を選択"
+"して下さい。\n"
 " 今すぐ印刷レイアウトモードに入りますか?"
 
 #. DLG_Stylist_HeadingStyles
@@ -5633,7 +5636,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "保存(&V)"
 
@@ -6088,6 +6092,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6402,25 +6411,45 @@ msgstr "右側で分割"
 msgid "Split on Top Side"
 msgstr "先頭で分割"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "空白を除くすべての区切り文字で分割"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "空白を含んだすべての区切り文字で分割"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "カンマかタブでテキストを分割"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "空白、カンマ、タブでテキストを分割"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6803,9 +6832,9 @@ msgid ""
 "piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 "
 "myfile.txt | lpr'"
 msgstr ""
-"'--print'オプションは、AbiWord "
-"2.8で削除されました。AbiWordのコマンドラインの変換ツールを使用して、出力を印刷スプーラにパイプすることができます。例： 'abiword "
-"--to=ps --to-name=fd://1 myfile.txt | lpr'"
+"'--print'オプションは、AbiWord 2.8で削除されました。AbiWordのコマンドラインの"
+"変換ツールを使用して、出力を印刷スプーラにパイプすることができます。例： "
+"'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6817,7 +6846,9 @@ msgstr "選択された余白はページに収めるには大きすぎます。
 msgid ""
 "The new user interface language will take effect the next time that you "
 "start the application"
-msgstr "新しいユーザインタフェースの言語は、アプリケーションを開始する次回の時間に影響します"
+msgstr ""
+"新しいユーザインタフェースの言語は、アプリケーションを開始する次回の時間に影"
+"響します"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h
@@ -6829,7 +6860,8 @@ msgstr "スペルチェックが完了しました。"
 msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
-msgstr "ハイパーリンクが付けられるテキストは単一の段落に収まらなければなりません。"
+msgstr ""
+"ハイパーリンクが付けられるテキストは単一の段落に収まらなければなりません。"
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h
@@ -6848,28 +6880,35 @@ msgstr "厚さ:"
 msgid ""
 "This RDF link already exists. Would you like to replace the existing RDF "
 "link with this new one?"
-msgstr "このブックマークは既に存在しています。この新しいものと既存のブックマークを上書きしますか？"
+msgstr ""
+"このブックマークは既に存在しています。この新しいものと既存のブックマークを上"
+"書きしますか？"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
 msgid ""
 "This bookmark already exists. Would you like to replace the existing "
 "bookmark with this new one?"
-msgstr "このブックマークは既に存在しています。この新しいものと既存のブックマークを上書きしますか？"
+msgstr ""
+"このブックマークは既に存在しています。この新しいものと既存のブックマークを上"
+"書きしますか？"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h
 msgid ""
 "This change will only take effect when you restart AbiWord or create a new "
 "document."
-msgstr "この変更は、AbiWordを再起動するか新規文書を作成してはじめて有効になります。"
+msgstr ""
+"この変更は、AbiWordを再起動するか新規文書を作成してはじめて有効になります。"
 
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h
 msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
-msgstr "この文書では、現在の表示とは別に隠れた変更履歴を含んでいます。変更履歴に関する作業については、AbiWordの文書を参照してください。"
+msgstr ""
+"この文書では、現在の表示とは別に隠れた変更履歴を含んでいます。変更履歴に関す"
+"る作業については、AbiWordの文書を参照してください。"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
@@ -6878,8 +6917,9 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"この段落は、文書中で現れた通りに語を表示しています。このプレビューを使って 文書内にある文字列を見るには、カーソルを文字列を含む "
-"文書の段落に置いてこのダイアログを開いてください。"
+"この段落は、文書中で現れた通りに語を表示しています。このプレビューを使って 文"
+"書内にある文字列を見るには、カーソルを文字列を含む 文書の段落に置いてこのダイ"
+"アログを開いてください。"
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -6987,6 +7027,11 @@ msgstr ""
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "ブックマークの名前を入力するか、リストから既存のものを選んで下さい。"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7460,7 +7505,9 @@ msgstr ""
 msgid ""
 "AbiWord cannot fully restore version %d of the document because the version "
 "information is incomplete."
-msgstr "バージョン情報が不完全であるため、AbiWordは文書のバージョン %d を完全に復元することはできません。"
+msgstr ""
+"バージョン情報が不完全であるため、AbiWordは文書のバージョン %d を完全に復元す"
+"ることはできません。"
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h
@@ -7468,7 +7515,9 @@ msgstr "バージョン情報が不完全であるため、AbiWordは文書の�
 msgid ""
 "AbiWord cannot restore version %d of the document because the version "
 "information is missing."
-msgstr "バージョン情報が欠落しているので、AbiWordは文書のバージョン %d を復元することはできません。"
+msgstr ""
+"バージョン情報が欠落しているので、AbiWordは文書のバージョン %d を復元すること"
+"はできません。"
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h
@@ -8005,6 +8054,11 @@ msgstr "XML (バージョン 1.0)であると宣言"
 msgid "Default language: "
 msgstr "既定の言語: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8099,6 +8153,11 @@ msgstr "英語 (オーストラリア)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "英語 (カナダ)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9229,7 +9288,9 @@ msgstr "ディレクトリ '%s' は書き込み保護されています。"
 msgid ""
 "The given file extension does not match the chosen file type. Do you want to "
 "use this name anyway?"
-msgstr "このファイル拡張子は、選択したファイル形式と一致しません。とにかく、この名前を使用したいですか？"
+msgstr ""
+"このファイル拡張子は、選択したファイル形式と一致しません。とにかく、この名前"
+"を使用したいですか？"
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h
@@ -9238,7 +9299,8 @@ msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
-"完全に復元できる直近のバージョンは、%d です。代わりにこのバージョンを復元しますか？部分的にバージョン %d を復元するには、いいえを押してください。"
+"完全に復元できる直近のバージョンは、%d です。代わりにこのバージョンを復元しま"
+"すか？部分的にバージョン %d を復元するには、いいえを押してください。"
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -9502,7 +9564,8 @@ msgstr "イディッシュ語"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "先に進む前に、文書の %sへの変更を保存する必要があります。いま保存しますか？"
+msgstr ""
+"先に進む前に、文書の %sへの変更を保存する必要があります。いま保存しますか？"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
@@ -9587,3 +9650,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "なし"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "GNOME オフィスについて(&N)"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "GNOME オフィスプロジェクトについて"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "空白を除くすべての区切り文字で分割"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "空白を含んだすべての区切り文字で分割"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "カンマかタブでテキストを分割"

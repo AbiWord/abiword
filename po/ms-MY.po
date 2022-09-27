@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-02 00:40+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Malay <translation-team-ms@lists.sourceforge.net>\n"
@@ -496,9 +496,9 @@ msgstr "&Pengepala:"
 msgid "&Height:"
 msgstr "&Tinggi:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "B&antuan"
 
@@ -705,7 +705,8 @@ msgid "&Odd page"
 msgstr "&Halaman ganjil"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "B&uka"
 
@@ -1205,7 +1206,8 @@ msgstr "AM/PM"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
-msgstr "AbiWord tidak dapat membuka %s. Ia kelihatan seperti dokumen tidak sah."
+msgstr ""
+"AbiWord tidak dapat membuka %s. Ia kelihatan seperti dokumen tidak sah."
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h
@@ -1218,8 +1220,7 @@ msgstr "AbiWord telah selesai memeriksa pilihan."
 msgid ""
 "AbiWord has finished its search of the document and has made %d replacements."
 msgstr ""
-"Abiword telah selesai mencari dalam dokumen dan telah melakukan %d "
-"perubahan."
+"Abiword telah selesai mencari dalam dokumen dan telah melakukan %d perubahan."
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h
@@ -1256,16 +1257,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Perihal G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Perihal projek GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2125,8 +2116,8 @@ msgstr ""
 "Pilih sasaran anda di bahagian kiri.\n"
 "Jika anda hendak menggunakan butang \"Go To\", hanya isi Number Entry dengan "
 "nombor pilihan.  Anda boleh menggunakan + dan - untuk melakukan gerakan "
-"relatif.\tI.e., jika anda tulis \"+2\" dan anda pilih \"Baris\", \"Go To\" akan "
-"pergi ke 2 baris dibawah kedudukan semasa."
+"relatif.\tI.e., jika anda tulis \"+2\" dan anda pilih \"Baris\", \"Go To\" "
+"akan pergi ke 2 baris dibawah kedudukan semasa."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2611,6 +2602,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Tarikh"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3444,8 +3440,7 @@ msgstr "Ciri-ciri Footer"
 
 #. FooterStatus
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Footer [%s]"
 msgstr "Footer [%s]"
 
@@ -5671,7 +5666,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Simpan"
 
@@ -6124,6 +6120,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6440,25 +6441,45 @@ msgstr "Pisah pada Bahagian Kanan"
 msgid "Split on Top Side"
 msgstr "Pisah pada Bahagian Atas"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Pisah pada semua sempadan kecuali ruang"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Pisah pada semua sempadan perkataan termasuk ruang"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Pisah teks pada koma atau tab"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Pisah teks pada ruang, koma, atau tab"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -7031,6 +7052,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Taip nama untuk tandabuku, atau pilih sedia wujud dari senarai:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7755,8 +7781,7 @@ msgstr "Breton"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Pilihan Bina: %s"
 
@@ -8068,6 +8093,11 @@ msgstr "Isytihar sebagai XML (versi 1.0)"
 msgid "Default language: "
 msgstr "Bahasa default: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8162,6 +8192,11 @@ msgstr "English (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "English (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9674,3 +9709,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Tiada"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Perihal G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Perihal projek GNOME Office"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Pisah pada semua sempadan kecuali ruang"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Pisah pada semua sempadan perkataan termasuk ruang"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Pisah teks pada koma atau tab"

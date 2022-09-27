@@ -1,13 +1,13 @@
 # Yiddish translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Raphael Finkel <raphael@cs.uky.edu>, 2002.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-08-18 17:04+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Yiddish <raphael@cs.uky.edu>\n"
@@ -497,9 +497,9 @@ msgstr "(&K)קאָפּצעטל"
 msgid "&Height:"
 msgstr "(&H)הײך"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "(&G)געהילף"
 
@@ -704,7 +704,8 @@ msgid "&Odd page"
 msgstr "(&U)אומציפֿער־זײַט"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "(&E)עפֿן"
 
@@ -1202,8 +1203,7 @@ msgstr "פֿ“מ/נ“מ"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "‫איך קען ניט עפֿענען %s; װײַזט אױס װי אַן אומלעקסיקער דאָקומענט"
 
@@ -1238,8 +1238,7 @@ msgid ""
 msgstr ""
 "AbiWord האָט מען אױסגעאַרבעט פֿאַר אַ נײַערער װערסיע פֿון דעם סיסטעם־טעקע\n"
 "COMCTL32.DLL װי די װערסיע איצט אױף אײַער קאָמפּיוטער.  (COMCTL32.DLL\n"
-"װערסיע 4.72 אָדער שפּעטער.) אַ לײזונג צו דער פּראָבלעם לאָזט זיך דערקלערן "
-"אין דעם\n"
+"װערסיע 4.72 אָדער שפּעטער.) אַ לײזונג צו דער פּראָבלעם לאָזט זיך דערקלערן אין דעם\n"
 "FAQ װאָס אױף דעם AbiSource װעבסאָרט http://www.abisource.com\n"
 "\n"
 "איר קענט ניצן די פּראָגראַם, אָבער קען זײַן אַז די מכשיר־װירע װעט פֿעלן."
@@ -1249,22 +1248,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord דאַרף די טעקע %s.dll\n"
-"זײַט אַזױ גוט און אָפּלאָדיר און אינסטאַליר זי "
-"פֿוןhttp://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "‫(&N)װעגן GNOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "װעגן דעם GNOME Office פּראָיעקט"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -1296,8 +1282,7 @@ msgstr "לײג זײַל נאָך"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr ""
-"לײג־צו אָדער בײַט איבער קלעקן און נומערן אין די אױסגעקליבענע פּאַראַגראַפֿן"
+msgstr "לײג־צו אָדער בײַט איבער קלעקן און נומערן אין די אױסגעקליבענע פּאַראַגראַפֿן"
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h
@@ -1420,8 +1405,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Apply the previously copied paragraph formatting onto the selected text"
 msgstr ""
-"אַפּליקיר די פֿאָרמאַטירונג פֿון פֿריִער־קאָפּירטן פּאַראַגראַף צו דעם "
-"אױסגעקליבענעם טעקסט"
+"אַפּליקיר די פֿאָרמאַטירונג פֿון פֿריִער־קאָפּירטן פּאַראַגראַף צו דעם אױסגעקליבענעם טעקסט"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h
@@ -1444,9 +1428,9 @@ msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
-"איר זײַט גאָר זיכער אַז איר װילט ניט אױפֿפּאַסן די גאַנצע  רעקאָרדירונג פֿון "
-"דער געשיכטע?  אױב איר גײט װײַטער, װעט איר ניט קענען צוריקברענגען "
-"פֿריִערדיקע װערסיעס פֿון דעם דאָקומענט."
+"איר זײַט גאָר זיכער אַז איר װילט ניט אױפֿפּאַסן די גאַנצע  רעקאָרדירונג פֿון דער "
+"געשיכטע?  אױב איר גײט װײַטער, װעט איר ניט קענען צוריקברענגען פֿריִערדיקע "
+"װערסיעס פֿון דעם דאָקומענט."
 
 #. DLG_Lists_Arrowhead_List
 #. STYLE_ARROWHEADLIST
@@ -2129,10 +2113,10 @@ msgid ""
 "you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
 "below your current position."
 msgstr ""
-"קלײַב אײַער ציל אױף דער לינקער זײַט.  אױב איר װילט ניצן דעם ”צום אָרט“ "
-"קנעפּל, שרײַב דעם נומער אין דעם אַרײַנשרײַב אָרט.  איר מעגט ניצן + און ־ "
-"צוליב רעלאַטיװער באַװעגונגען.  ד“ה: אױב איר שרײַבט”+2“ און קלײַבסט ”שורה,“ "
-"װעט ”צום אָרט“ גײען 2 שורות אונטער דעם איצטיקן אָרט."
+"קלײַב אײַער ציל אױף דער לינקער זײַט.  אױב איר װילט ניצן דעם ”צום אָרט“ קנעפּל, "
+"שרײַב דעם נומער אין דעם אַרײַנשרײַב אָרט.  איר מעגט ניצן + און ־ צוליב רעלאַטיװער "
+"באַװעגונגען.  ד“ה: אױב איר שרײַבט”+2“ און קלײַבסט ”שורה,“ װעט ”צום אָרט“ גײען 2 "
+"שורות אונטער דעם איצטיקן אָרט."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2628,6 +2612,11 @@ msgstr ""
 msgid "Date"
 msgstr "טאָג"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -2920,8 +2909,7 @@ msgstr "‫װײַז סטיל:"
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr ""
-"‫װילסט איבערשטעלן אַלע איגנאָרירטע װערטער אין אַלע דאָקומענטן פֿון דאָס נײַ?"
+msgstr "‫װילסט איבערשטעלן אַלע איגנאָרירטע װערטער אין אַלע דאָקומענטן פֿון דאָס נײַ?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h
@@ -3400,9 +3388,8 @@ msgid ""
 "Following Paragraph Following Paragraph Following Paragraph Following "
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
 msgstr ""
-"קומעדיקער פּאַראַגראַף קומעדיקער פּאַראַגראַף קומעדיקער פּאַראַגראַף "
-"קומעדיקער פּאַראַגראַף קומעדיקער פּאַראַגראַף קומעדיקער פּאַראַגראַף "
-"קומעדיקער פּאַראַגראַף"
+"קומעדיקער פּאַראַגראַף קומעדיקער פּאַראַגראַף קומעדיקער פּאַראַגראַף קומעדיקער פּאַראַגראַף "
+"קומעדיקער פּאַראַגראַף קומעדיקער פּאַראַגראַף קומעדיקער פּאַראַגראַף"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -3604,9 +3591,8 @@ msgstr "‫פֿאָרמאַטירונג:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "From File"
-msgstr "(&F)פֿון טעקע"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3691,10 +3677,8 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"‫מען קען נאָר שאַפֿן און רעדאַגירן קאָפּ־ און פֿוסצעטלעך אין “דרוק־װײַז "
-"מאָדע.\n"
-" אָנצוהײבן די־אָ מאָדע: קלײַב ”אַרײַנקוק“, נאָכדעם ”דרוק אױסשטעל“פֿון די "
-"מעניוען.\n"
+"‫מען קען נאָר שאַפֿן און רעדאַגירן קאָפּ־ און פֿוסצעטלעך אין “דרוק־װײַז מאָדע.\n"
+" אָנצוהײבן די־אָ מאָדע: קלײַב ”אַרײַנקוק“, נאָכדעם ”דרוק אױסשטעל“פֿון די מעניוען.\n"
 " אַזױ װילסטו טאָן איצט?"
 
 #. DLG_Stylist_HeadingStyles
@@ -4561,8 +4545,7 @@ msgstr "קאָמביניר אױבן"
 #: po/tmp/ap_String_Id.h
 msgid "Merge another document into the active document using revision marks"
 msgstr ""
-"קאָמביניר נאָך אַ דאָקומענט אַרײַן אין דעם איצטיקן דאָקומענט לױט "
-"רעװיסיע־סימנים"
+"קאָמביניר נאָך אַ דאָקומענט אַרײַן אין דעם איצטיקן דאָקומענט לױט רעװיסיע־סימנים"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h
@@ -5242,9 +5225,8 @@ msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr ""
-"פֿריִערדיקער פּאַראַגראַף פֿריִערדיקער פּאַראַגראַף פֿריִערדיקער "
-"פּאַראַגראַף פֿריִערדיקער פּאַראַגראַף פֿריִערדיקער פּאַראַגראַף "
-"פֿריִערדיקער פּאַראַגראַף"
+"פֿריִערדיקער פּאַראַגראַף פֿריִערדיקער פּאַראַגראַף פֿריִערדיקער פּאַראַגראַף פֿריִערדיקער "
+"פּאַראַגראַף פֿריִערדיקער פּאַראַגראַף פֿריִערדיקער פּאַראַגראַף"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
@@ -5726,7 +5708,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "(&H)היט אױף"
 
@@ -6190,6 +6173,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6508,24 +6496,44 @@ msgstr "צעשפאלט אױף דער רעכטער זײַט"
 msgid "Split on Top Side"
 msgstr "צעשפאלט אױף דער אױבערשטער זײַט"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -6922,8 +6930,8 @@ msgid ""
 "The new user interface language will take effect the next time that you "
 "start the application"
 msgstr ""
-"די נײַע ניצער־צובינד שפּראַך װעט ערשט גילטן װען איר װעט אָנהײבן די־אָ "
-"אַפּליקאַציע אין צוקונפֿט"
+"די נײַע ניצער־צובינד שפּראַך װעט ערשט גילטן װען איר װעט אָנהײבן די־אָ אַפּליקאַציע "
+"אין צוקונפֿט"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h
@@ -6975,8 +6983,8 @@ msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
 msgstr ""
-"דער־אָ דאָקומענט איז כּולל רעװיזיעס װאָס ליגן באַהאַלטן. װענדט זיך צו דער "
-"AbiWord דאָקומענטאַציע נאָך אינפֿאָרמאַציע װעגן רעװיזיעס"
+"דער־אָ דאָקומענט איז כּולל רעװיזיעס װאָס ליגן באַהאַלטן. װענדט זיך צו דער AbiWord "
+"דאָקומענטאַציע נאָך אינפֿאָרמאַציע װעגן רעװיזיעס"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
@@ -6986,10 +6994,9 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"דער דאָזיקער פּאַראַגראַף װײַזט װערטער װי זײ קענען אױסזען אין אײַער "
-"דאָקומענט. כּדי צו זען טעקסט פֿון אײַער דאָקומענט אין דעם פֿאָרױסװײַז, שטעל "
-"דעם לױפֿער אין אַ דאָקומענט פּאַראַגראַף װאָס פֿאַרמאָגט טעקסט און עפֿן דעם "
-"דיִאַלאָג־פֿענצטער אױפֿסנײַ."
+"דער דאָזיקער פּאַראַגראַף װײַזט װערטער װי זײ קענען אױסזען אין אײַער דאָקומענט. כּדי "
+"צו זען טעקסט פֿון אײַער דאָקומענט אין דעם פֿאָרױסװײַז, שטעל דעם לױפֿער אין אַ "
+"דאָקומענט פּאַראַגראַף װאָס פֿאַרמאָגט טעקסט און עפֿן דעם דיִאַלאָג־פֿענצטער אױפֿסנײַ."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -7095,8 +7102,12 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr "טיפּיר אַרײַן אַ נאָמען פֿאַר דעם לײנצײכן, אָדער קלײַב אױס פֿון דער רשימה"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
 msgstr ""
-"טיפּיר אַרײַן אַ נאָמען פֿאַר דעם לײנצײכן, אָדער קלײַב אױס פֿון דער רשימה"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7336,8 +7347,8 @@ msgstr "איר מוזט אױסקלײַבן אַ שטיק דאָקומענט אײ
 #: po/tmp/ap_String_Id.h
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
 msgstr ""
-"איר דאַרפֿט אױסקלײַבן אין גאַמע פֿון 1 ביז 120 פֿאַר דעם אױטאָמאַטיש "
-"טעקע־אױפֿהיט אָפֿטהײט"
+"איר דאַרפֿט אױסקלײַבן אין גאַמע פֿון 1 ביז 120 פֿאַר דעם אױטאָמאַטיש טעקע־אױפֿהיט "
+"אָפֿטהײט"
 
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h
@@ -7573,8 +7584,7 @@ msgid ""
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
 "AbiWord קען ניט געפֿינען די אױסלײג־טעקע %s.dll\n"
-"זײַט אַזױ גוט און אָפּלאָדירט און אינסטאַלירט Aspell פֿון "
-"http://aspell.net/win32/"
+"זײַט אַזױ גוט און אָפּלאָדירט און אינסטאַלירט Aspell פֿון http://aspell.net/win32/"
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h
@@ -7583,8 +7593,8 @@ msgid ""
 "AbiWord cannot fully restore version %d of the document because the version "
 "information is incomplete."
 msgstr ""
-"מען קען ניט אומקערן װערסיע %d פֿון דעם דאָקומענט װײַל די "
-"װערסיע־אינפֿאָרמאַציע האָט אַ פֿעלער."
+"מען קען ניט אומקערן װערסיע %d פֿון דעם דאָקומענט װײַל די װערסיע־אינפֿאָרמאַציע האָט "
+"אַ פֿעלער."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h
@@ -7593,8 +7603,8 @@ msgid ""
 "AbiWord cannot restore version %d of the document because the version "
 "information is missing."
 msgstr ""
-"מען קען ניט אומקערן װערסיע %d פֿון דעם דאָקומענט װײַל די "
-"װערסיע־אינפֿאָרמאַציע איז ניט צו געפֿינען."
+"מען קען ניט אומקערן װערסיע %d פֿון דעם דאָקומענט װײַל די װערסיע־אינפֿאָרמאַציע איז "
+"ניט צו געפֿינען."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h
@@ -7824,8 +7834,7 @@ msgstr "ברעטאָן"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "שאַף אָפּציעס: %s"
 
@@ -8138,6 +8147,11 @@ msgstr "‫באַשטעטיק װי XML (װערסיע 1.0)"
 msgid "Default language: "
 msgstr "קלײַב אױס שפּראַך "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8234,6 +8248,11 @@ msgstr "‫ענגליש (אױסטראַליע)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "‫ענגליש (קאַנאַדע)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9556,8 +9575,7 @@ msgstr "װערסיע:"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Version: %s"
 msgstr "װערסיע: %s"
 
@@ -9747,3 +9765,22 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "קײנע"
 
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord דאַרף די טעקע %s.dll\n"
+#~ "זײַט אַזױ גוט און אָפּלאָדיר און אינסטאַליר זי פֿוןhttp://www.microsoft.com/"
+#~ "msdownload/platformsdk/sdkupdate/psdkredist.htm"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "‫(&N)װעגן GNOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "װעגן דעם GNOME Office פּראָיעקט"
+
+#, fuzzy
+#~ msgid "From File"
+#~ msgstr "(&F)פֿון טעקע"

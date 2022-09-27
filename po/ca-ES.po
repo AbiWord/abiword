@@ -1,6 +1,6 @@
 # Catalan translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:	
 # Quico Llach <qllach@softcatala.org>
 # Jesús Corrius <jesus@softcatala.org>
@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-06 22:43+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: <ca@li.org>\n"
@@ -494,9 +494,9 @@ msgstr "&Capçalera:"
 msgid "&Height:"
 msgstr "&Alçada:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "Aj&uda"
 
@@ -702,7 +702,8 @@ msgid "&Odd page"
 msgstr "Pàgina &senar"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Obre"
 
@@ -1249,16 +1250,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Quant al GNOME &Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Quant al projecte GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2114,8 +2105,8 @@ msgstr ""
 "Escolliu l'objectiu a la part esquerra.\n"
 "Si voleu utilitzar el botó \"Vés a\", només heu d'introduir el nombre "
 "desitjat.  Podeu utilitzar + i - per a realitzar moviments relatius.\tÉs a "
-"dir, si escriviu \"+2\" i seleccioneu \"Línia\", el botó \"Vés a\" anirà dues "
-"línies més avall de la posició actual."
+"dir, si escriviu \"+2\" i seleccioneu \"Línia\", el botó \"Vés a\" anirà "
+"dues línies més avall de la posició actual."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2601,6 +2592,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Data"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5657,7 +5653,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Desa"
 
@@ -6100,8 +6097,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
 msgstr ""
-"Estableix les propietats de pàgina del document, com ara la mida i els "
-"marges"
+"Estableix les propietats de pàgina del document, com ara la mida i els marges"
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
@@ -6111,6 +6107,11 @@ msgstr ""
 #. DLG_BorderShading_Shading_Color
 #: po/tmp/ap_String_Id.h
 msgid "Shading color:"
+msgstr ""
+
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
 msgstr ""
 
 #. DLG_Styles_ModifyShortCut
@@ -6431,25 +6432,45 @@ msgstr "Divideix a la banda dreta"
 msgid "Split on Top Side"
 msgstr "Divideix a la part superior"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Divideix a tots els delimitadors excepte els espais"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Divideix a tots els delimitadors de paraula incloent els espais"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Divideix el text a les comes o tabuladors"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Divideix el text als espais, comes, o tabuladors"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6907,8 +6928,8 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Aquest paràgraf representa les paraules tal i com apareixerien al document. "
-" Si voleu veure el text del document utilitzat en aquesta previsualització, "
+"Aquest paràgraf representa les paraules tal i com apareixerien al document.  "
+"Si voleu veure el text del document utilitzat en aquesta previsualització, "
 "situeu el cursor en un paràgraf amb text i obriu aquest quadre de diàleg."
 
 #. DLG_Styles_ErrStyleNot
@@ -7017,6 +7038,11 @@ msgstr ""
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Inseriu un nom de marcador o seleccioneu-lo de la llista."
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7495,8 +7521,8 @@ msgid ""
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
 "L'AbiWord no pot trobar el fitxer d'ortografia %s.dll\n"
-"Si us plau, baixeu-vos l'Aspell des de http://aspell.net/win32/ i instal"
-"·leu-lo."
+"Si us plau, baixeu-vos l'Aspell des de http://aspell.net/win32/ i instal·leu-"
+"lo."
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h
@@ -7743,8 +7769,7 @@ msgstr "Bretó"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Opcions del muntatge: %s"
 
@@ -8056,6 +8081,11 @@ msgstr "Declara com a XML (versió 1.0)"
 msgid "Default language: "
 msgstr "Idioma per defecte: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8152,6 +8182,11 @@ msgstr "Anglès (Austràlia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Anglès (Canadà)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9566,8 +9601,7 @@ msgstr "Jiddisch"
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
-"Heu de desar els canvis del document %s abans de continuar. Voleu fer-ho "
-"ara?"
+"Heu de desar els canvis del document %s abans de continuar. Voleu fer-ho ara?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
@@ -9653,3 +9687,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Cap"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Quant al GNOME &Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Quant al projecte GNOME Office"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Divideix a tots els delimitadors excepte els espais"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Divideix a tots els delimitadors de paraula incloent els espais"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Divideix el text a les comes o tabuladors"

@@ -1,6 +1,6 @@
 # Chinese (China) zh_CN translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # baidongyi <baidongyi@gmail.com>, 2006.
 # lite <litekok@gmail.com>, 2012.
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-04-04 11:51+0200\n"
 "Last-Translator: lite <litekok@gmail.com>\n"
 "Language-Team: unknown <email@address>\n"
@@ -493,9 +493,9 @@ msgstr "页眉(&H):"
 msgid "&Height:"
 msgstr "页高(&H):"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "帮助(&H)"
 
@@ -700,7 +700,8 @@ msgid "&Odd page"
 msgstr "自下个奇数页起(&O)"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "打开(&O)"
 
@@ -1229,7 +1230,8 @@ msgid ""
 "You can use the program, but the toolbar may be missing."
 msgstr ""
 "AbiWord 为COMCTL32.DLL\n"
-" 的新版本而设计。 而不是您系统正运行的 (COMCTL32.DLL version 4.72 或者以上版本)\n"
+" 的新版本而设计。 而不是您系统正运行的 (COMCTL32.DLL version 4.72 或者以上版"
+"本)\n"
 "想要解决的话，请在AbiSource的网站上报告这个问题。站点\n"
 "\n"
 "\thttp://www.abisource.com\n"
@@ -1246,16 +1248,6 @@ msgid ""
 msgstr ""
 "AbiWord需要文件 %s.dll\n"
 "请从http://www.microsoft.com/en-us/download/details.aspx?id=4237下载并安装"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "关于G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "关于GNOME Office项目"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -1429,7 +1421,9 @@ msgstr "阿拉伯列表"
 msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
-msgstr "你确认不想保存全部的历史记录吗？如果你这样执行，你就不能将这个文档还原至早期版本。"
+msgstr ""
+"你确认不想保存全部的历史记录吗？如果你这样执行，你就不能将这个文档还原至早期"
+"版本。"
 
 #. DLG_Lists_Arrowhead_List
 #. STYLE_ARROWHEADLIST
@@ -2101,8 +2095,9 @@ msgid ""
 "below your current position."
 msgstr ""
 "请在左边选择您的目标。\n"
-"如果您想使用 \"Go To\" 按钮，只需在 Number Entry 填上适当的数目。您也可以使用 + 和 - "
-"可移动至目前位置的相对位置。例如，如果您写 \"+2\" 并选择 \"行\"，会从您目前位置往前移动两行。"
+"如果您想使用 \"Go To\" 按钮，只需在 Number Entry 填上适当的数目。您也可以使"
+"用 + 和 - 可移动至目前位置的相对位置。例如，如果您写 \"+2\" 并选择 \"行\"，会"
+"从您目前位置往前移动两行。"
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -5613,7 +5608,8 @@ msgid "SPARQL Query"
 msgstr "SPARQL查询"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "保存(&S)"
 
@@ -6008,7 +6004,9 @@ msgid ""
 "Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
 "the stylesheet for all existing Semantic Items to the new stylesheet as well."
-msgstr "为本文档中的语义项设置当前样式表。新的RDF对象将自动使用这个样式。该按钮也可以为所有现有的语义项设置新的样式。"
+msgstr ""
+"为本文档中的语义项设置当前样式表。新的RDF对象将自动使用这个样式。该按钮也可以"
+"为所有现有的语义项设置新的样式。"
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -6803,9 +6801,9 @@ msgid ""
 "piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 "
 "myfile.txt | lpr'"
 msgstr ""
-"'--print'选项在AbiWord "
-"2.8时被删除。你可以使用AbiWord的命令行转换工具，然后通过管道输出到打印后台处理程序来实现同样的行为。例如：'abiword --to=ps "
-"--to-name=fd://1 myfile.txt | lpr'"
+"'--print'选项在AbiWord 2.8时被删除。你可以使用AbiWord的命令行转换工具，然后通"
+"过管道输出到打印后台处理程序来实现同样的行为。例如：'abiword --to=ps --to-"
+"name=fd://1 myfile.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6876,7 +6874,9 @@ msgid ""
 "This paragraph represents words as they might appear in your document.  To "
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
-msgstr "此段落展示了在文档内的显示文本。如果想在该预览中查看文档中文本, 请把光标放置在段落中, 并打开该对话框。"
+msgstr ""
+"此段落展示了在文档内的显示文本。如果想在该预览中查看文档中文本, 请把光标放置"
+"在段落中, 并打开该对话框。"
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -9241,7 +9241,8 @@ msgstr "给定的文件扩展名与文件类型不匹配。仍然使用这个文
 msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
-msgstr "能够完整保存的版本是 %d. 你要用这个版本保存吗？ 要部分保存版本 %d，选择不。"
+msgstr ""
+"能够完整保存的版本是 %d. 你要用这个版本保存吗？ 要部分保存版本 %d，选择不。"
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -9590,6 +9591,12 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "无"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "关于G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "关于GNOME Office项目"
+
 #~ msgid "Split on all delimiters except spaces"
 #~ msgstr "拆分所有的边界（除了空格）"
 
@@ -9606,8 +9613,8 @@ msgstr "无"
 #~ "platformsdk/sdkupdate/psdkredist.htm"
 #~ msgstr ""
 #~ "AbiWord需要文件 %s.dll\n"
-#~ "请从http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm下载"
-#~ "并安装它"
+#~ "请从http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist."
+#~ "htm下载并安装它"
 
 #~ msgid "From File"
 #~ msgstr "从文件"

@@ -1,6 +1,6 @@
 # Basque (Euskara) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Iurreta GLHB Institutuko SA3-1D ikasleek euskaratua.
 # 2002:
@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-01 01:07+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: eu-ES <eu@li.org>\n"
@@ -508,9 +508,9 @@ msgstr "&Goiburua:"
 msgid "&Height:"
 msgstr "&Altuera:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Laguntza"
 
@@ -715,7 +715,8 @@ msgid "&Odd page"
 msgstr "Orri bakoitia"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Ireki"
 
@@ -1261,16 +1262,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "G&NOME Office-ri buruz"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "GNOME Office proiektuari buruz"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2124,9 +2115,9 @@ msgid ""
 msgstr ""
 "Ezkerraldean hautatu ezazu zure helburua.\n"
 "\"Hona joan\" botoia erabiltzeko, nahi duzun zenbakia sartu ezazu gaineko "
-"Zenbakia eremuan. Mugimentu erlatiboak burutzeko, + eta - erabili.\tAdibidez, "
-"\"+2\" idatzi eta \"Lerroa\" hautatu, eta oraingo puntutik 2 lerro beherago "
-"joango zara."
+"Zenbakia eremuan. Mugimentu erlatiboak burutzeko, + eta - erabili."
+"\tAdibidez, \"+2\" idatzi eta \"Lerroa\" hautatu, eta oraingo puntutik 2 "
+"lerro beherago joango zara."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2612,6 +2603,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Data"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5656,7 +5652,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Gorde"
 
@@ -6110,6 +6107,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6423,25 +6425,45 @@ msgstr "Eskuinaldetik zatitu"
 msgid "Split on Top Side"
 msgstr "Goialdetik zatitu"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Bereizle guztietan zatitu, hutsuneetan izan ezik"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Hitz-bereizle guztietan zatitu, hutsuneak barne"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Koma edo tabulazioetan zatitu testua"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Hutsune, koma edo tabulazioetan zatitu testua"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -7012,6 +7034,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Liburu-markarentzako izen bat idatzi, edo zerrendako bat hautatu:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8035,6 +8062,11 @@ msgstr "XML (1.0 bertsioa) bezala deklaratu"
 msgid "Default language: "
 msgstr "Hizkuntza lehenetsia: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8129,6 +8161,11 @@ msgstr "Ingelesa (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Ingelesa (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9534,8 +9571,7 @@ msgstr "Yiddish"
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
-"%s dokumentuaren aldaketak gorde behar dituzu jarraitu aurretik. Orain "
-"gorde?"
+"%s dokumentuaren aldaketak gorde behar dituzu jarraitu aurretik. Orain gorde?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
@@ -9620,3 +9656,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Bat ere ez"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "G&NOME Office-ri buruz"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "GNOME Office proiektuari buruz"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Bereizle guztietan zatitu, hutsuneetan izan ezik"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Hitz-bereizle guztietan zatitu, hutsuneak barne"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Koma edo tabulazioetan zatitu testua"

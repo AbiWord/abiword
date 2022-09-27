@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-25 06:14+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Macedonian <mkde-l10n@list.sourceforge.net>\n"
@@ -495,9 +495,9 @@ msgstr "&Заглавие:"
 msgid "&Height:"
 msgstr "&Висина:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Помош"
 
@@ -702,7 +702,8 @@ msgid "&Odd page"
 msgstr "&Непарна страница"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Отвори"
 
@@ -1253,16 +1254,6 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "За G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "За проектот GNOME Office"
-
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Accept the suggested change"
@@ -1418,7 +1409,8 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Примени го форматирањето на претходно копираниот пасус врз целиот текст"
+msgstr ""
+"Примени го форматирањето на претходно копираниот пасус врз целиот текст"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h
@@ -2121,10 +2113,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "Изберете ја вашата цел на левата страна.\n"
-"Ако саката да го употребите копчето \"Оди на\", едноставно исполнете го полето "
-"за број со саканиот број. Може да користите + и - за да изведете релативно "
-"поместување.\tОдносно, ако напишете \"+2\" и изберете \"Линија\",  \"Оди на\" ќе "
-"оди 2 линии под вашата тековна позиција."
+"Ако саката да го употребите копчето \"Оди на\", едноставно исполнете го "
+"полето за број со саканиот број. Може да користите + и - за да изведете "
+"релативно поместување.\tОдносно, ако напишете \"+2\" и изберете \"Линија\",  "
+"\"Оди на\" ќе оди 2 линии под вашата тековна позиција."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2619,6 +2611,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Датум"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5532,7 +5529,8 @@ msgstr "Известете за бубачка и помогнете AbiWord д�
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
 msgid "Reset the current toolbar layout to its defaults"
-msgstr "Го враќа тековниот изглед на алатникот на неговите стандардни вредности"
+msgstr ""
+"Го враќа тековниот изглед на алатникот на неговите стандардни вредности"
 
 #. MENU_STATUSLINE_FMT_IMAGE
 #: po/tmp/ap_String_Id.h
@@ -5704,7 +5702,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Зачу&вај"
 
@@ -6169,6 +6168,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6487,24 +6491,44 @@ msgstr "Раздели од десна страна"
 msgid "Split on Top Side"
 msgstr "Раздели од горна страна"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -6914,8 +6938,7 @@ msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr ""
-"Текстот на кој треба да се прикачи хиперврската мора да биде во истиот "
-"пасус."
+"Текстот на кој треба да се прикачи хиперврската мора да биде во истиот пасус."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h
@@ -7078,6 +7101,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Напиши име за обележувачот или избери постоечко од листата:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7797,8 +7825,7 @@ msgstr "Бретонски"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Креирај опции: %s"
 
@@ -8112,6 +8139,11 @@ msgstr "Декларирај како XML (верзија 1.0)"
 msgid "Default language: "
 msgstr "Избери јазик: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8206,6 +8238,11 @@ msgstr "Англиски (Австралија)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Англиски (Канада)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9726,3 +9763,8 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Никој"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "За G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "За проектот GNOME Office"

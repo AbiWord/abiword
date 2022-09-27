@@ -1,13 +1,13 @@
 # Indonesian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-07 07:18+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -513,9 +513,9 @@ msgstr "Kepala surat:"
 msgid "&Height:"
 msgstr "Tingginya:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Bantuan"
 
@@ -732,7 +732,8 @@ msgid "&Odd page"
 msgstr "Halaman ganjil"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "B&uka"
 
@@ -1253,8 +1254,7 @@ msgstr "Pagi/Sore"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "Berkas %s adalah dokumen tidak berlaku"
 
@@ -1296,16 +1296,6 @@ msgid ""
 "AbiWord needs the file %s.dll\n"
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
-msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr ""
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
 msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
@@ -2198,8 +2188,8 @@ msgstr ""
 "Pilih di sebelah kiri.\n"
 "Kalau ingin gunakan tombol &quot;Pindah Ke&quot;, isi Nomor dengan nomor "
 "yang diinginkan.  Anda bisa gunakan + dan - untuk pindah relatif.  Misalnya, "
-"anda bisa ketik &quot;+2&quot; dan pilih &quot;Baris&quot;, untuk pindah "
-"dua baris di bawah posisi anda sekarang."
+"anda bisa ketik &quot;+2&quot; dan pilih &quot;Baris&quot;, untuk pindah dua "
+"baris di bawah posisi anda sekarang."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2276,8 +2266,7 @@ msgstr "Pemisah Kolom [%s]"
 
 #. ColumnStatus
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Column [%d]"
 msgstr "Pemisah Kolom [%d]"
 
@@ -2455,8 +2444,7 @@ msgstr "Tidak bisa membuka berkas %s untuk disimpan"
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Could not open file %s."
 msgstr "Tidak bisa simpan di berkas %s."
 
@@ -2710,6 +2698,11 @@ msgstr ""
 #, fuzzy
 msgid "Date"
 msgstr "Memperbarui"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3266,8 +3259,7 @@ msgstr ""
 
 #. SCRIPT_CANTRUN
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Error executing script %s"
 msgstr "Ada yg janggal pada saat menerima berkas %s."
 
@@ -5949,7 +5941,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Simpan"
 
@@ -5989,8 +5982,7 @@ msgstr ""
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Save changes to document %s before closing?"
 msgstr "Tunjukkan dulu bentuk cetakan dokumen ini"
 
@@ -6436,6 +6428,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6774,24 +6771,44 @@ msgstr ""
 msgid "Split on Top Side"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -7383,6 +7400,11 @@ msgstr ""
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr ""
 
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
+
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
 msgid "Type:"
@@ -7898,8 +7920,7 @@ msgstr "AbiWord: Tunjukkan Cetak Dulu"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "About %s"
 msgstr "&Mengenai %s"
 
@@ -8120,8 +8141,7 @@ msgstr ""
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Opsi Kompilasi: %s"
 
@@ -8451,6 +8471,11 @@ msgstr ""
 msgid "Default language: "
 msgstr "Pilih Bahasa: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 #, fuzzy
@@ -8554,6 +8579,11 @@ msgstr "Inggris (Australi)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Inggris (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9915,8 +9945,7 @@ msgstr "Versi:"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Version: %s"
 msgstr "Versi: %s"
 
@@ -10109,4 +10138,3 @@ msgstr ""
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Tidak ada"
-

@@ -1,6 +1,6 @@
 # Asturian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Xosé Carrero Alea, Esbardu
 # Coordination project: Softastur (http://wiki.altuxa.com/softastur/Portada)
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-25 07:38+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Softastur\n"
@@ -616,9 +616,9 @@ msgid "&Height:"
 msgstr "&Altor:"
 
 # MENU_LABEL_HELP
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Aida"
 
@@ -867,7 +867,8 @@ msgstr "&Páxina impar"
 
 # MENU_LABEL_FILE_OPEN
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Abrir"
 
@@ -1488,8 +1489,8 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"Abiword ta diseñáu pa una versión mas recién del ficheru de sistema "
-"COMCTL32.DLL\n"
+"Abiword ta diseñáu pa una versión mas recién del ficheru de sistema COMCTL32."
+"DLL\n"
 "que la qu'hai nel to sistema. (COMCTL32.DLL versión 4.72 ó mas recién)\n"
 "Una solución a esti problema desplícase nel FAQ nel sitiu web d'AbiSource\n"
 "\n"
@@ -1505,18 +1506,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-# MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Tocante a G&NOME Office"
-
-# MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Tocante al proyeutu GNOME Office"
 
 # MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
@@ -1696,7 +1685,8 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Aplica'l formatu del parágrafu previamente copiáu nel testu seleicionáu"
+msgstr ""
+"Aplica'l formatu del parágrafu previamente copiáu nel testu seleicionáu"
 
 # DLG_Lists_Apply_Current
 #. DLG_Lists_Apply_Current
@@ -2521,10 +2511,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "Escueyi'l to destín a manzorga.\n"
-"Si quies usar el botón \"Dir a\", rellena'l campu Númberu cola cifra deseada. "
-" Pues usar + y - pa facer movimientos relativos.\tEx: Si escribes \"+2\" y "
-"seleiciones \"Llinia\", el botón \"Dir a\" avanzará 2 llinies perbaxo del to "
-"allugamientu actual."
+"Si quies usar el botón \"Dir a\", rellena'l campu Númberu cola cifra "
+"deseada.  Pues usar + y - pa facer movimientos relativos.\tEx: Si escribes "
+"\"+2\" y seleiciones \"Llinia\", el botón \"Dir a\" avanzará 2 llinies "
+"perbaxo del to allugamientu actual."
 
 # MENU_LABEL_EDIT_CLEAR
 #. MENU_LABEL_EDIT_CLEAR
@@ -3091,6 +3081,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Data"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 # MENU_LABEL_INSERT_DATETIME
 #. MENU_LABEL_INSERT_DATETIME
@@ -6753,7 +6748,8 @@ msgstr ""
 
 # DLG_Options_Btn_Save
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "G&uadar"
 
@@ -7269,6 +7265,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 # DLG_Styles_ModifyShortCut
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
@@ -7476,7 +7477,8 @@ msgstr "Ordenar columnes n'orde ascendente"
 #. MENU_STATUSLINE_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h
 msgid "Sort Columns in Ascending Order based on Selected Row"
-msgstr "Ordenar les columnes n'orde ascendente basándose na filera seleicionada"
+msgstr ""
+"Ordenar les columnes n'orde ascendente basándose na filera seleicionada"
 
 #. MENU_LABEL_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h
@@ -7639,25 +7641,45 @@ msgstr "Dixebrar pela drecha"
 msgid "Split on Top Side"
 msgstr "Dixebrar penriba"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Dixebrar en tolos llendadores sacantes los espacios"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Dixebrar en tolos llendadores de pallabra incluyendo los espacios"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Dixebrar el testu nes comes o tabuladores"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Dixebrar el testu nos espacios, comes o tabuladores"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 # TOOLBAR_STATUSLINE_SPLIT_CELLS
 #  TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -8146,8 +8168,7 @@ msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr ""
-"El testu al que l'hiperenllaz va asociase ha tar dientro d'un solu "
-"parágrafu."
+"El testu al que l'hiperenllaz va asociase ha tar dientro d'un solu parágrafu."
 
 # FIELD_DateTime_Wkday
 #. FIELD_DateTime_Wkday
@@ -8205,8 +8226,8 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Esti parágrafu representa pallabres según podríen apaecer nel to documentu. "
-" Pa usar testu del to documentu nesta previsualización, alluga'l cursor nun "
+"Esti parágrafu representa pallabres según podríen apaecer nel to documentu.  "
+"Pa usar testu del to documentu nesta previsualización, alluga'l cursor nun "
 "parágrafu del documentu que tenga testu y abri esti diálogu."
 
 # DLG_Styles_ErrStyleNot
@@ -8340,6 +8361,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Escribi un nome pal marcador, o seleiciona ún esistente de la llista:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 # DLG_Lists_Type
 #. DLG_Lists_Type
@@ -9194,8 +9220,7 @@ msgstr "Bretón"
 # FIELD_Application_Options
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Opciones de compilación: %s"
 
@@ -9559,6 +9584,11 @@ msgstr "Declarar como XML (versión 1.0)"
 msgid "Default language: "
 msgstr "Llingua por defeutu: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 # DLG_Remove_Icon
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
@@ -9671,6 +9701,11 @@ msgstr "Inglés (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Inglés (Canadá)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 # LANG_EN_IE
 #. LANG_EN_IE
@@ -10978,8 +11013,7 @@ msgid ""
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
 "La versión más averada que pue restaurase completamente ye %d. ¿Quies "
-"restaurar esta versión? Pa restaurar parcialmente la versión %d calca en "
-"Non."
+"restaurar esta versión? Pa restaurar parcialmente la versión %d calca en Non."
 
 # DLG_UP_InvalidPrintString
 #. DLG_UP_InvalidPrintString
@@ -11377,3 +11411,19 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Nengún"
 
+# MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
+#~ msgid "About G&NOME Office"
+#~ msgstr "Tocante a G&NOME Office"
+
+# MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Tocante al proyeutu GNOME Office"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Dixebrar en tolos llendadores sacantes los espacios"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Dixebrar en tolos llendadores de pallabra incluyendo los espacios"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Dixebrar el testu nes comes o tabuladores"

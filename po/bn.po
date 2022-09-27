@@ -1,13 +1,13 @@
 # Bengali translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Chris Leonard <cjlhomeaddress@gmail.com>, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-01 19:39-0400\n"
 "Last-Translator: Chris Leonard <cjlhomeaddress@gmail.com>\n"
 "Language-Team: Sugar Labs\n"
@@ -522,9 +522,9 @@ msgstr "শীর্ষচরণ"
 msgid "&Height:"
 msgstr "উচ্চতা:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "সহায়তা (&H)"
 
@@ -754,7 +754,8 @@ msgstr "বেজোড় সংখ্যক পৃষ্ঠা (&O)"
 # #-#-#-#-#  office.po (PACKAGE VERSION)  #-#-#-#-#
 # 100%
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "&Open"
 msgstr "খুলুন"
@@ -1338,16 +1339,6 @@ msgid ""
 "AbiWord needs the file %s.dll\n"
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
-msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr ""
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
 msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
@@ -2456,7 +2447,7 @@ msgstr ""
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Could not open file %s."
 msgstr "মুদ্রণযন্ত্র %s চালু করা যায়নি।"
 
@@ -2707,6 +2698,11 @@ msgstr "ড্যাশযুক্ত"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "তারিখ"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3389,7 +3385,7 @@ msgstr ""
 
 #. MSG_IE_FileNotFound
 #: po/tmp/ap_String_Id.h
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "File %s not found"
 msgstr "ফাইল পাওয়া যায়নি।"
 
@@ -5831,7 +5827,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Sa&ve"
 msgstr "সংরক্ষণ"
@@ -6288,6 +6285,11 @@ msgstr "ছায়াকরণ"
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -6612,24 +6614,44 @@ msgstr ""
 msgid "Split on Top Side"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -7197,6 +7219,11 @@ msgstr ""
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr ""
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
 msgstr ""
 
 #. DLG_Lists_Type
@@ -8258,6 +8285,11 @@ msgstr ""
 msgid "Default language: "
 msgstr "পূর্বনির্ধারিত ভাষা"
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8357,6 +8389,11 @@ msgstr "ইংরেজী (অস্ট্রেলিয়া)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "ইংরেজী (কানাডা)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9658,7 +9695,7 @@ msgstr "ইউনিকোড (UTF-8)"
 
 #. UntitledDocument
 #: po/tmp/xap_String_Id.h
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Untitled%d"
 msgstr "শিরোনামহীন"
 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-11 04:53+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -490,9 +490,9 @@ msgstr "Үс&тінгі колонтитул:"
 msgid "&Height:"
 msgstr "&Биіктігі:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Көмек"
 
@@ -697,7 +697,8 @@ msgid "&Odd page"
 msgstr "&Тақ парақ"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "А&шу"
 
@@ -1242,16 +1243,6 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "GNOME Office т&уралы"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "GNOME Office жобасы туралы"
-
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Accept the suggested change"
@@ -1404,7 +1395,8 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Алдында көшірілген абзац пішімделуін таңдалып тұрған мәтінге іске асыру"
+msgstr ""
+"Алдында көшірілген абзац пішімделуін таңдалып тұрған мәтінге іске асыру"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h
@@ -2104,8 +2096,8 @@ msgstr ""
 "Сол жақтан мақсатыңызды таңдаңыз.\n"
 "\"Өту\" батырмасын қолданам десеңіз, керек нөмірді жазыңыз. Ағымдағы орынға "
 "салыстырмалы жылжуды қолдану үшін + және - қолдана аласыз.\tМыс., егер сіз "
-"\"+2\" жазып, \"Жол\" таңдасаңыз, онда \"Өту\" батырмасы сізді ағымдағы орыннан 2 "
-"жол төменге жылжытады."
+"\"+2\" жазып, \"Жол\" таңдасаңыз, онда \"Өту\" батырмасы сізді ағымдағы "
+"орыннан 2 жол төменге жылжытады."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2590,6 +2582,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Уақыты"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5632,7 +5629,8 @@ msgid "SPARQL Query"
 msgstr "SPARQL сұра&нымы"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Сақ&тау"
 
@@ -6087,6 +6085,11 @@ msgstr "Құю"
 msgid "Shading color:"
 msgstr "Құю түсі:"
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6400,25 +6403,45 @@ msgstr "Оң жағынан бөлу"
 msgid "Split on Top Side"
 msgstr "Үстінен бөлу"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Бос аралықтардан басқа, барлық сөздер арасында бөлу"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Бос аралықтарды қоса, барлық сөздер арасында бөлу"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Табуляция мен үтірлер негізінде"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Бос аралықтар, табуляция мен үтірлер негізінде"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6995,6 +7018,11 @@ msgstr "RDF сілтемесі атын көрсетіңіз:"
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Бетбелгі үшін атауды енгізіңіз, не керегін тізімнен таңдаңыз:"
 
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
+
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
 msgid "Type:"
@@ -7225,7 +7253,8 @@ msgstr "Сіз бағдар режимін өзгерттіңіз."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Гиперсілтемені кірістіру алдында мәтіннің бір бөлігін таңдауыңыз керек."
+msgstr ""
+"Гиперсілтемені кірістіру алдында мәтіннің бір бөлігін таңдауыңыз керек."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h
@@ -8016,6 +8045,11 @@ msgstr "XML (version 1.0) ретінде декларациялау"
 msgid "Default language: "
 msgstr "Бастапқы тіл: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8110,6 +8144,11 @@ msgstr "Ағылшын (Австралия)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Ағылшын (Канада)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9604,3 +9643,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ешнәрсе"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "GNOME Office т&уралы"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "GNOME Office жобасы туралы"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Бос аралықтардан басқа, барлық сөздер арасында бөлу"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Бос аралықтарды қоса, барлық сөздер арасында бөлу"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Табуляция мен үтірлер негізінде"

@@ -1,13 +1,13 @@
 # Hindi translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-08-20 02:19+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -102,8 +102,7 @@ msgstr ""
 #. MENU_LABEL_VIEW_TB_1
 #. MENU_LABEL_WINDOW_1
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&1 %s"
 msgstr "&1 %s"
 
@@ -111,8 +110,7 @@ msgstr "&1 %s"
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
 
@@ -120,8 +118,7 @@ msgstr "&2 %s"
 #. MENU_LABEL_VIEW_TB_3
 #. MENU_LABEL_WINDOW_3
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&3 %s"
 msgstr "&3 %s"
 
@@ -129,55 +126,48 @@ msgstr "&3 %s"
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&5 %s"
 msgstr "&5 %s"
 
 #. MENU_LABEL_FILE_RECENT_6
 #. MENU_LABEL_WINDOW_6
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&6 %s"
 msgstr "&6 %s"
 
 #. MENU_LABEL_FILE_RECENT_7
 #. MENU_LABEL_WINDOW_7
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&7 %s"
 msgstr "&7 %s"
 
 #. MENU_LABEL_FILE_RECENT_8
 #. MENU_LABEL_WINDOW_8
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&8 %s"
 msgstr "&8 %s"
 
 #. MENU_LABEL_FILE_RECENT_9
 #. MENU_LABEL_WINDOW_9
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&9 %s"
 msgstr "&9 %s"
 
 #. MENU_LABEL_HELP_ABOUT
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "&About %s"
 msgstr "&परिचय %s"
 
@@ -534,9 +524,9 @@ msgstr "&शीर्षिका:"
 msgid "&Height:"
 msgstr "&ऊंचाई:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "मदद (&H)"
 
@@ -763,7 +753,8 @@ msgid "&Odd page"
 msgstr ""
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "&Open"
 msgstr "&खोलें"
@@ -1339,18 +1330,8 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
-msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr ""
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
@@ -2469,8 +2450,7 @@ msgstr ""
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Could not open file %s."
 msgstr "%s मुद्रक नहीं खोल सका."
 
@@ -2723,6 +2703,11 @@ msgstr "डैश किया हुआ"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "तारीख़"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3405,8 +3390,7 @@ msgstr ""
 
 #. MSG_IE_FileNotFound
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "File %s not found"
 msgstr "फ़ाइल नहीं मिली."
 
@@ -3705,9 +3689,8 @@ msgstr "प्रारूप:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "From File"
-msgstr "फ़ाइल से (~F)"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -5852,7 +5835,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Sa&ve"
 msgstr "सहेजें"
@@ -6314,6 +6298,11 @@ msgstr "छायांकन"
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -6637,24 +6626,44 @@ msgstr ""
 msgid "Split on Top Side"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -7227,6 +7236,11 @@ msgstr ""
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr ""
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
 msgstr ""
 
 #. DLG_Lists_Type
@@ -8290,6 +8304,11 @@ msgstr ""
 msgid "Default language: "
 msgstr "तयशुदा भाषा: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8389,6 +8408,11 @@ msgstr "अंग्रेजी (आस्ट्रेलिया)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "अंग्रेजी (कनाडा)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9700,8 +9724,7 @@ msgstr "यूनीकोड (UTF-8)"
 
 #. UntitledDocument
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Untitled%d"
 msgstr "बेनाम %d"
 
@@ -9741,8 +9764,7 @@ msgstr "संस्करण:"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Version: %s"
 msgstr "संस्करण: %s"
 
@@ -9941,3 +9963,6 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "कुछ नहीं"
 
+#, fuzzy
+#~ msgid "From File"
+#~ msgstr "फ़ाइल से (~F)"

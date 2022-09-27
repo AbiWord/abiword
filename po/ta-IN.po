@@ -1,6 +1,6 @@
 # Tamil translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Vijay Durairaj <vijayd_81@hotmail.com>, 2005.
 # kousikkumar771 <kousikkumar771@gmail.com>, 2012.
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-08-18 19:50+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: ta-IN <ThamiZhaDeveloper@yahoogroups.com>\n"
@@ -486,9 +486,9 @@ msgstr "&தலைப்பி:"
 msgid "&Height:"
 msgstr "&உயரம்:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&உதவி"
 
@@ -693,7 +693,8 @@ msgid "&Odd page"
 msgstr "&ஒற்றைப்படை பக்கம்"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&திற"
 
@@ -1226,19 +1227,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "G&NOME ஆபிஸ் பற்றி"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "GNOME ஆபிஸ் திட்டம் பற்றி"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2598,6 +2589,11 @@ msgstr ""
 msgid "Date"
 msgstr "தேதி"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -2880,8 +2876,7 @@ msgstr "அச்சிடப்பபடாத வடிவங்களைக�
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h
 msgid "Display program information, version number, and copyright"
-msgstr ""
-"மென்பொருளின் தகவல், பதிப்பு இலக்கம், மற்றும் காப்புரிமை விவரங்களைத் திரையிடு"
+msgstr "மென்பொருளின் தகவல், பதிப்பு இலக்கம், மற்றும் காப்புரிமை விவரங்களைத் திரையிடு"
 
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h
@@ -3572,9 +3567,8 @@ msgstr "வடிவமைப்பு:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "From File"
-msgstr "&கோப்பிலிருந்து"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -5686,7 +5680,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Sa&ve"
 msgstr "சேமி"
@@ -6151,6 +6146,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6470,24 +6470,44 @@ msgstr ""
 msgid "Split on Top Side"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -7051,6 +7071,11 @@ msgstr ""
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr ""
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
 msgstr ""
 
 #. DLG_Lists_Type
@@ -7778,8 +7803,7 @@ msgstr "பிரெடான்"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "தேர்வுகளை உருவாக்கு: %s"
 
@@ -8094,6 +8118,11 @@ msgstr ""
 msgid "Default language: "
 msgstr ""
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8190,6 +8219,11 @@ msgstr "ஆங்கிலம் (ஆஸ்திரேலியா)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "ஆங்கிலம் (கனடா)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9512,8 +9546,7 @@ msgstr "பதிப்பெண்:"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Version: %s"
 msgstr "பதிப்பெண்: %s"
 
@@ -9702,3 +9735,12 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "வெற்று"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "G&NOME ஆபிஸ் பற்றி"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "GNOME ஆபிஸ் திட்டம் பற்றி"
+
+#, fuzzy
+#~ msgid "From File"
+#~ msgstr "&கோப்பிலிருந்து"

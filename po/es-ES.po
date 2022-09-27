@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-07-16 08:44+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: <es@li.org>\n"
@@ -103,8 +103,8 @@ msgid ""
 msgstr ""
 "%s todavía no está implementado.\n"
 "\n"
-"Si usted es un programador, siéntase libre para añadir código en %s, línea %"
-"d\n"
+"Si usted es un programador, siéntase libre para añadir código en %s, línea "
+"%d\n"
 "y enviar parches a:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
@@ -494,9 +494,9 @@ msgstr "&Cabecera:"
 msgid "&Height:"
 msgstr "&Altura:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "A&yuda"
 
@@ -701,7 +701,8 @@ msgid "&Odd page"
 msgstr "Página &impar"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Abrir"
 
@@ -1250,18 +1251,8 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 "AbiWord necesita el archivo %s.dll\n"
-"Por favor descargalo e instálalalo desde http://www.microsoft.com/en-"
-"us/download/details.aspx?id=4237"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Acerca de G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Acerca del proyecto GNOME Office"
+"Por favor descargalo e instálalalo desde http://www.microsoft.com/en-us/"
+"download/details.aspx?id=4237"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -4495,8 +4486,7 @@ msgstr "Combinar encima"
 #: po/tmp/ap_String_Id.h
 msgid "Merge another document into the active document using revision marks"
 msgstr ""
-"Combinar otro documento dentro del documento activo usando marcas de "
-"revisión"
+"Combinar otro documento dentro del documento activo usando marcas de revisión"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h
@@ -5634,7 +5624,8 @@ msgid "SPARQL Query"
 msgstr "Pregunta SPARQL"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Guardar"
 
@@ -5853,8 +5844,7 @@ msgstr "Seleccionar el documento completo"
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the next version..."
 msgstr ""
-"Seleccionar las partes del documento pertenecientes a la siguiente "
-"versión..."
+"Seleccionar las partes del documento pertenecientes a la siguiente versión..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
@@ -6839,8 +6829,8 @@ msgid ""
 msgstr ""
 "La opción '--print' se ha quitado de la versión Abiword 2.8. Puede obtener "
 "el comportamiento deseado utilizando las herramientas de conversión por "
-"línea de comandos y obtener el resultado a una impresora. Ej: 'abiword "
-"--to=ps --to-name=fd://1 myfile.txt | lpr'"
+"línea de comandos y obtener el resultado a una impresora. Ej: 'abiword --"
+"to=ps --to-name=fd://1 myfile.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -7272,8 +7262,7 @@ msgstr "Ha cambiado el modo de dirección."
 #: po/tmp/ap_String_Id.h
 msgid "You must select a portion of the document before inserting a hyperlink."
 msgstr ""
-"Debes seleccionar una porción del documento antes de insertar un "
-"hiperenlace."
+"Debes seleccionar una porción del documento antes de insertar un hiperenlace."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h
@@ -9658,11 +9647,18 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ninguno"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Acerca de G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Acerca del proyecto GNOME Office"
+
 #~ msgid "Split on all delimiters except spaces"
 #~ msgstr "Dividir en todos los delimitadores excepto los espacios"
 
 #~ msgid "Split on all word delimiters including spaces"
-#~ msgstr "Dividir en todos los delimitadores de palabra incluyendo los espacios"
+#~ msgstr ""
+#~ "Dividir en todos los delimitadores de palabra incluyendo los espacios"
 
 #~ msgid "Split text at commas or tabs"
 #~ msgstr "Dividir el texto en las comas o tabuladores"
@@ -9674,8 +9670,8 @@ msgstr "Ninguno"
 #~ "platformsdk/sdkupdate/psdkredist.htm"
 #~ msgstr ""
 #~ "AbiWord necesita el archivo %s.dll\n"
-#~ "Por favor, descárguelo e instálelo desde "
-#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+#~ "Por favor, descárguelo e instálelo desde http://www.microsoft.com/"
+#~ "msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #~ msgid "From File"
 #~ msgstr "Desde el archivo"

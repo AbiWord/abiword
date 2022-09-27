@@ -1,13 +1,13 @@
 # Ganda translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-07 05:59+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -482,9 +482,9 @@ msgstr "&Ebigambo wagulu wabuli muzingo:"
 msgid "&Height:"
 msgstr "&Obuwanvu:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Obuyambi"
 
@@ -689,7 +689,8 @@ msgid "&Odd page"
 msgstr "&Omukande omuko"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Gulawo"
 
@@ -1200,8 +1201,7 @@ msgstr "AbiWord Yamaze Okukebera Ebilondedwa."
 msgid ""
 "AbiWord has finished its search of the document and has made %d replacements."
 msgstr ""
-"AbiWord emazze okunonyereza Kwayo okwe ebiwandiko ate nekola okuzaawo kwa %"
-"d."
+"AbiWord emazze okunonyereza Kwayo okwe ebiwandiko ate nekola okuzaawo kwa %d."
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h
@@ -1229,16 +1229,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Ebifa ku G&NOME offisi"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Ebifa ku GNOME offisi project"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2094,8 +2084,8 @@ msgstr ""
 "Londa ekigendererwa kyo ku kkono.\n"
 "Bwoba oyagala okukoseza  epessa lya \"Ggenda Ku\", Juzaamu enamba eyingira "
 "nenamba gyosiimye.   Osoobola okukozesa + ne - okuokoola entambula "
-"entonotono.\tNga, Bwowandika \"+2\" ate nolondo \"Line\",\"Ggenda Ku\" ejagenda "
-"Emisitale 2 wansi wekifo kyoliko kati."
+"entonotono.\tNga, Bwowandika \"+2\" ate nolondo \"Line\",\"Ggenda Ku\" "
+"ejagenda Emisitale 2 wansi wekifo kyoliko kati."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2585,6 +2575,11 @@ msgstr ""
 msgid "Date"
 msgstr "Enaku zomwezi"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -2863,7 +2858,8 @@ msgstr "Laga ebitafulumibwa"
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h
 msgid "Display program information, version number, and copyright"
-msgstr "Laga ebikwata ku pulogulam,enamba yekika ekirala ne ebikwata kukukidamu"
+msgstr ""
+"Laga ebikwata ku pulogulam,enamba yekika ekirala ne ebikwata kukukidamu"
 
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h
@@ -5630,7 +5626,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Te&reka"
 
@@ -6072,8 +6069,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
 msgstr ""
-"Tegeka ebikwata ku muko gw`ekiwandiko kyo nga obunnene era njegooyego yo "
-"muko"
+"Tegeka ebikwata ku muko gw`ekiwandiko kyo nga obunnene era njegooyego yo muko"
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
@@ -6083,6 +6079,11 @@ msgstr ""
 #. DLG_BorderShading_Shading_Color
 #: po/tmp/ap_String_Id.h
 msgid "Shading color:"
+msgstr ""
+
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
 msgstr ""
 
 #. DLG_Styles_ModifyShortCut
@@ -6293,8 +6294,7 @@ msgstr "Londa Ebikumbo byewansi Mu Kukirira"
 #: po/tmp/ap_String_Id.h
 msgid "Sort Rows in Descending Order based on Selected Column"
 msgstr ""
-"Londa Ebikumbo byewansi Mu Kukirira nga Osizira ku Ekikumbo ekyabuka "
-"Ekilonde"
+"Londa Ebikumbo byewansi Mu Kukirira nga Osizira ku Ekikumbo ekyabuka Ekilonde"
 
 #. MENU_STATUSLINE_TABLE_SORT
 #: po/tmp/ap_String_Id.h
@@ -6404,25 +6404,45 @@ msgstr "Yawula mu Ludda lwa Lyo"
 msgid "Split on Top Side"
 msgstr "Yawula mu Ludda lwe Waggulu"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Yawula mu saliro zona okujako amabbanga"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Yawula mu saliro ye bigambo byona na mabbanga"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Yawula ekiwandiko ku koma oba awandirira"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Yawula ekiwandiko mu mabbanga, koma, oba awandirira"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6992,6 +7012,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Wandika elinya lya kalambe, oba londa elirimu mu ngaliwo:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8023,6 +8048,11 @@ msgstr "Tegeza nga XML (ekyika 1.0)"
 msgid "Default language: "
 msgstr "Olulimi olusooka: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8117,6 +8147,11 @@ msgstr "English (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "English (Canada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9610,3 +9645,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Tewali"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Ebifa ku G&NOME offisi"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Ebifa ku GNOME offisi project"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Yawula mu saliro zona okujako amabbanga"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Yawula mu saliro ye bigambo byona na mabbanga"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Yawula ekiwandiko ku koma oba awandirira"

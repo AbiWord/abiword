@@ -1,13 +1,13 @@
 # Pashto translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Simon Smith <smith.simon@gmail.com>, 2005.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-08-16 06:08+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Pathanisation.pakhtosoft.com <admin@pakhtosoft.com>\n"
@@ -67,8 +67,7 @@ msgstr ""
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "% of normal size"
 msgstr "له لېوې کچه %"
 
@@ -489,9 +488,9 @@ msgstr ":سرۍ&"
 msgid "&Height:"
 msgstr ":لوړوالی&"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "مرسته&"
 
@@ -696,7 +695,8 @@ msgid "&Odd page"
 msgstr "تاک مخ&"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "پرانيستل&"
 
@@ -1190,8 +1190,7 @@ msgstr "غ م/غ و"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "نه شي پرانيستلی. داسې ښکاري چې دا يو ناسم لاسوند وي %s ابيورډ"
 
@@ -1230,23 +1229,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"دوتنې ته اړتيا لري %s.dll ابيورډ\n"
-"څخه يې راولېښﺉ او ويې لګوﺉ "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm "
-"مهرباني وکړﺉ له"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "د ج&نومي افس په اړه"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "د جنومي افس پراجکټ په اړه"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2593,6 +2578,11 @@ msgstr ""
 msgid "Date"
 msgstr "نېټه"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -3563,8 +3553,8 @@ msgstr ":بڼول"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "له دوتنې"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -5667,7 +5657,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "سا&تل"
 
@@ -6123,6 +6114,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6442,25 +6438,45 @@ msgstr "ښي لورې کښې چول"
 msgid "Split on Top Side"
 msgstr "بره لورې کښې چول"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "بې له تشو ټولو راچاپېرلو کښې چول"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "سره له تشو ټولو ويېګانو راچاپېرلو کښې چول"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "ليکنه په ويرګولونو يا ټوپونو کښې چول"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "ليکنه په تشو، ويرګولونو، يا ټوپونو کښې چول"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -7030,6 +7046,11 @@ msgstr ""
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr ".د نښې لپاره يو نوم وليکﺉ، يا د لړ څخه يو شته وټاکﺉ"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7751,8 +7772,7 @@ msgstr "برېټن"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "جوړښت غوراوي: %s"
 
@@ -8082,6 +8102,11 @@ msgstr ""
 msgid "Default language: "
 msgstr ":تلواله ژبه "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8179,6 +8204,11 @@ msgstr "(انګريزي (اسټريليا"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "(انګريزي (کېنېډا"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9508,8 +9538,7 @@ msgstr ":نسخه"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Version: %s"
 msgstr "نسخه: %s"
 
@@ -9704,3 +9733,30 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "هېڅ"
 
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "دوتنې ته اړتيا لري %s.dll ابيورډ\n"
+#~ "څخه يې راولېښﺉ او ويې لګوﺉ http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm مهرباني وکړﺉ له"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "د ج&نومي افس په اړه"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "د جنومي افس پراجکټ په اړه"
+
+#~ msgid "From File"
+#~ msgstr "له دوتنې"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "بې له تشو ټولو راچاپېرلو کښې چول"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "سره له تشو ټولو ويېګانو راچاپېرلو کښې چول"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "ليکنه په ويرګولونو يا ټوپونو کښې چول"

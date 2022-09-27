@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the AbiWord package.
 # Copyright by:
 # YunSong Hwang <hys545@dreamwiz.com>, 2006.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-14 07:19+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Korean\n"
@@ -100,7 +100,8 @@ msgid ""
 msgstr ""
 "%s 아직 적용되지 않습니다.\n"
 "\n"
-"만약 당신이 프로그래머이면, %s, 줄 %d에 코드를 추가하는 것을 주저하지 말고 패치를 다음 주소로 메일을 보내 주십시요:\n"
+"만약 당신이 프로그래머이면, %s, 줄 %d에 코드를 추가하는 것을 주저하지 말고 패"
+"치를 다음 주소로 메일을 보내 주십시요:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
 "\n"
@@ -495,9 +496,9 @@ msgstr "머리글(&H):"
 msgid "&Height:"
 msgstr "높이(&H):"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "도움말(&H)"
 
@@ -703,7 +704,8 @@ msgid "&Odd page"
 msgstr "홀수 페이지(&O)"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "열기(&O)"
 
@@ -1244,16 +1246,6 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "그놈 오피스 정보(&N)"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "그놈 오피스 프로젝트 정보"
-
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Accept the suggested change"
@@ -1427,7 +1419,9 @@ msgstr "아랍어 목록"
 msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
-msgstr "전체 이력 자료를 유지하는 것을 원하지 않는 것이 확실 합니까? 만약 진행하면, 이 문서의 이전 버전들을 복구할 수 없습니다."
+msgstr ""
+"전체 이력 자료를 유지하는 것을 원하지 않는 것이 확실 합니까? 만약 진행하면, "
+"이 문서의 이전 버전들을 복구할 수 없습니다."
 
 #. DLG_Lists_Arrowhead_List
 #. STYLE_ARROWHEADLIST
@@ -2590,6 +2584,11 @@ msgstr ""
 msgid "Date"
 msgstr "날짜"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -3628,8 +3627,10 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"머리글과 바닥글은 인쇄 보기 모드에 있는 동안 만들어지고 편집할 수 있습니다. \n"
-" 이 모드로 들어가기 위해서는 메뉴에서 보기 그리고 인쇄 레이아웃을 선택 하십시요. \n"
+"머리글과 바닥글은 인쇄 보기 모드에 있는 동안 만들어지고 편집할 수 있습니"
+"다. \n"
+" 이 모드로 들어가기 위해서는 메뉴에서 보기 그리고 인쇄 레이아웃을 선택 하십시"
+"요. \n"
 " 인쇄 레이아웃 모드로 지금 들어가고 싶습니까?"
 
 #. DLG_Stylist_HeadingStyles
@@ -5535,8 +5536,7 @@ msgstr "오른쪽"
 
 #. RightIndentStatus
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Right Indent [%s]"
 msgstr "왼쪽 들여쓰기 [%s]"
 
@@ -5626,7 +5626,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "저장(&v)"
 
@@ -6081,6 +6082,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6396,24 +6402,44 @@ msgstr ""
 msgid "Split on Top Side"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -6808,7 +6834,8 @@ msgstr "선택된 여백은 페이지에 맞추기에 너무 큽니다."
 msgid ""
 "The new user interface language will take effect the next time that you "
 "start the application"
-msgstr "새 사용자 인터페이스 언어는 다음에 이 프로그램을 시작할 때 효과가 있습니다"
+msgstr ""
+"새 사용자 인터페이스 언어는 다음에 이 프로그램을 시작할 때 효과가 있습니다"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h
@@ -6974,6 +7001,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "책갈피의 이름을 입력하거나, 목록에서 있는 것을 선택 하십시요:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7447,7 +7479,9 @@ msgstr ""
 msgid ""
 "AbiWord cannot fully restore version %d of the document because the version "
 "information is incomplete."
-msgstr "AbiWord는 버전 정보가 완전하지 않은 그 문서의 버전 %d(을)를 완벽하게 복구할 수 없습니다."
+msgstr ""
+"AbiWord는 버전 정보가 완전하지 않은 그 문서의 버전 %d(을)를 완벽하게 복구할 "
+"수 없습니다."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h
@@ -7455,7 +7489,8 @@ msgstr "AbiWord는 버전 정보가 완전하지 않은 그 문서의 버전 %d(
 msgid ""
 "AbiWord cannot restore version %d of the document because the version "
 "information is missing."
-msgstr "AbiWord는 버전 정보가 없어서 그 문서의 버전 %d (을)를 복구할 수 없습니다."
+msgstr ""
+"AbiWord는 버전 정보가 없어서 그 문서의 버전 %d (을)를 복구할 수 없습니다."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h
@@ -7990,6 +8025,11 @@ msgstr "XML (버전 1.0) 으로 선언"
 msgid "Default language: "
 msgstr "기본 언어: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8084,6 +8124,11 @@ msgstr "영어 (호주)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "영어 (캐나다)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9489,7 +9534,8 @@ msgstr "이디시어"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "진행 전에 변경된 것을 문서 %s (으)로 저장하여야 합니다. 지금 저장 합니까?"
+msgstr ""
+"진행 전에 변경된 것을 문서 %s (으)로 저장하여야 합니다. 지금 저장 합니까?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
@@ -9580,3 +9626,8 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "없음"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "그놈 오피스 정보(&N)"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "그놈 오피스 프로젝트 정보"

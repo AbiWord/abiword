@@ -10,14 +10,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2015-08-10 05:15+0200\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-06 22:43+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: <ca@li.org>\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
@@ -1232,8 +1232,8 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"L'AbiWord està dissenyat per a una versió del fitxer de sistema COMCTL32.DLL  "
-"més recent\n"
+"L'AbiWord està dissenyat per a una versió del fitxer de sistema COMCTL32."
+"DLL  més recent\n"
 "que la que teniu al sistema. (COMCTL32.DLL versió 4.72 o més recent)\n"
 "Trobareu una solució a este problema a les PMF del lloc web d'AbiSource\n"
 "\n"
@@ -1250,16 +1250,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Quant al GNOME &Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Quant al projecte GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -6928,8 +6918,8 @@ msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
 msgstr ""
-"Este document conté revisions ocultes. Per favor, consulteu la "
-"documentació de l'AbiWord per a saber com treballar amb les revisions."
+"Este document conté revisions ocultes. Per favor, consulteu la documentació "
+"de l'AbiWord per a saber com treballar amb les revisions."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
@@ -6938,9 +6928,9 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Este paràgraf representa les paraules tal i com apareixerien al document. "
-"Si voleu veure el text del document utilitzat en esta previsualització, "
-"situeu el cursor en un paràgraf amb text i obriu este quadre de diàleg."
+"Este paràgraf representa les paraules tal i com apareixerien al document. Si "
+"voleu veure el text del document utilitzat en esta previsualització, situeu "
+"el cursor en un paràgraf amb text i obriu este quadre de diàleg."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -9344,8 +9334,8 @@ msgid ""
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
 "La versió més recent que es pot recuperar completament es %d. Voleu "
-"recuperar esta versió al seu lloc? Per a recuperar parcialment la versió %"
-"d, premeu No."
+"recuperar esta versió al seu lloc? Per a recuperar parcialment la versió %d, "
+"premeu No."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -9696,6 +9686,12 @@ msgstr "sense relació"
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Cap"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "Quant al GNOME &Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Quant al projecte GNOME Office"
 
 #~ msgid "Split on all delimiters except spaces"
 #~ msgstr "Divideix a tots els delimitadors excepte els espais"

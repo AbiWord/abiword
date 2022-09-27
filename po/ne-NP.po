@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-09-24 14:57-0400\n"
 "Last-Translator: Chris Leonard <cjlhomeaddress@gmail.com>\n"
 "Language-Team: Sugar Labs\n"
@@ -106,8 +106,7 @@ msgid ""
 msgstr ""
 "%s हाल सम्म कार्यन्वयन भएको छैन ।\n"
 "\n"
-"यदि तपाईँ कार्यक्रम सञ्चालक हुनुहुन्छ भने, %s, रेखा %d मा कोड थप्न "
-"स्तन्त्रता छोड्नुहोस् \n"
+"यदि तपाईँ कार्यक्रम सञ्चालक हुनुहुन्छ भने, %s, रेखा %d मा कोड थप्न स्तन्त्रता छोड्नुहोस् \n"
 "र निम्नमा मेल पठाउनुहोस्:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
@@ -122,11 +121,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 कुनै पनि होइन"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -134,11 +128,6 @@ msgstr "&1 कुनै पनि होइन"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -148,11 +137,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -160,11 +144,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -518,9 +497,9 @@ msgstr "हेडर:"
 msgid "&Height:"
 msgstr "उचाई:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "मद्दत गर्नुहोस्"
 
@@ -725,7 +704,8 @@ msgid "&Odd page"
 msgstr "बिजोडा पृष्ठ"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "खोल्नुहोस्"
 
@@ -1097,6 +1077,31 @@ msgstr "१.५ लाइनहरू"
 msgid "1.5 spacing"
 msgstr "१.५ खाली ठाऊँ"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1134,6 +1139,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "सधै सुधारहरू सुझाव दिनुहोस्"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1175,8 +1235,8 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"एबिवर्ड तपाईँको प्रणालीमा एउटा हालको फाइल भन्दा प्रणाली फाइल COMCTL32.DLL को "
-"नयाँ पुनरावलोकनको लागि डिजाइन गरिएको हो ।\n"
+"एबिवर्ड तपाईँको प्रणालीमा एउटा हालको फाइल भन्दा प्रणाली फाइल COMCTL32.DLL को नयाँ "
+"पुनरावलोकनको लागि डिजाइन गरिएको हो ।\n"
 " (COMCTL32.DLL version 4.72 or newer)\n"
 "यो समस्याको समाधान एबिस्रोत वेभ साइटमा व्याख्या गरेको छ\n"
 "\n"
@@ -1189,23 +1249,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord लाई फाइल %s.dll को आवश्यक छ\n"
-"कृपया "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm बाट "
-"डाउनलोड र स्थापना गर्नुहोस्"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "G&NOME कार्यालयको बारेमा"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "GNOME कार्यालय परियोजनाको बारेमा"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -1238,8 +1284,7 @@ msgstr "स्तम्भ पछि थप्नुहोस्"
 #: po/tmp/ap_String_Id.h
 msgid "Add or modify bullets and numbering for selected paragraphs"
 msgstr ""
-"चयन गरिएको अनुच्छेदहरुको लागि गोली चिन्हहरू र क्रमाङ्कनथप्नुहोस् वा "
-"परिमार्जन गर्नुहोस्"
+"चयन गरिएको अनुच्छेदहरुको लागि गोली चिन्हहरू र क्रमाङ्कनथप्नुहोस् वा परिमार्जन गर्नुहोस्"
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h
@@ -1278,12 +1323,12 @@ msgstr "पछि:"
 msgid "Ali&gnment:"
 msgstr "पंक्तिबद्धता:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "पंक्तिबद्धता"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1297,8 +1342,8 @@ msgstr "सबै"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
-msgstr "शैलीहरु मात्र प्रयोग गरेर ढाँचाबद्ध गर्न अनुमती दिनुहोस्"
+msgid "Allow formatting not using styles only"
+msgstr ""
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -1362,8 +1407,7 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr ""
-"चयन गरिएको पाठमा प्रतिलिपी गरिएको अघिल्लो अनुच्छेद ढाँचाबद्ध लागू गर्नुहोस्"
+msgstr "चयन गरिएको पाठमा प्रतिलिपी गरिएको अघिल्लो अनुच्छेद ढाँचाबद्ध लागू गर्नुहोस्"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h
@@ -1386,9 +1430,14 @@ msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
-"के तपाईँ निश्चिन्त हुनुहुन्छ कि तपाईँ पूरै इतिहास रेकर्ड संभार गर्न "
-"चाहनुहुन्न ? यदि तपाईँले प्रक्रिया गर्नु भयो भने, तपाईँले यो कागजातको "
-"अघिल्लो संस्करण भण्डारण गर्न सक्नुहुन्न ।"
+"के तपाईँ निश्चिन्त हुनुहुन्छ कि तपाईँ पूरै इतिहास रेकर्ड संभार गर्न चाहनुहुन्न ? यदि तपाईँले "
+"प्रक्रिया गर्नु भयो भने, तपाईँले यो कागजातको अघिल्लो संस्करण भण्डारण गर्न सक्नुहुन्न ।"
+
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1400,6 +1449,7 @@ msgstr "कम्तिमा"
 msgid "Attach to Previous List"
 msgstr "अघिल्लो सूचीमा संलग्न गर्नुहोस्"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1474,8 +1524,8 @@ msgstr "स्वत: गाभ्नुहोस्"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "उपलब्ध फाँटहरू"
+msgid "Available Fields:"
+msgstr ""
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -1484,13 +1534,68 @@ msgstr "उपलब्ध ढाँचाहरू:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "उपलब्ध शैलीहरू"
+msgid "Available Styles:"
+msgstr ""
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
 msgid "B&y:"
 msgstr "द्वारा:"
+
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1639,6 +1744,11 @@ msgstr "गोली चिन्हहरू"
 msgid "Bullets and &Numbering"
 msgstr "गोली चिन्हहरू र क्रमाङ्कन"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr ""
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1658,6 +1768,66 @@ msgstr "हाइपरलिङ्क स्थान प्रतिलिप�
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "श्रेयहरू"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -1683,6 +1853,11 @@ msgstr "एउटा ब्युल्ट इन शैली परिमा�
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "मुद्रण कार्य सुरू गर्न सकिएन"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr ""
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -1931,10 +2106,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "बाँयापट्टी तपाईँको लक्षय चयन गर्नुहोस् ।\n"
-"यदि तपाईँ \"Go To\" वटन प्रयोग गर्न चाहनुहुन्छ भने, इच्छयाएको संख्या संगै "
-"संख्या प्रविष्टि भर्नुहोस् ।  सम्बन्धित चाल सम्पादन गर्न तपाईँ + र - प्रयोग "
-"गर्नु सक्नुहुन्छ ।\tयसको मतलब, यदि तपाईँले \"+2\" लेख्नु भयो र \"Line\" चयन गर्नु "
-"भयो भने, \"Go To\" तपाईँको हालको स्थिति भन्दा २ लाइनहरू ल जान्छ ।"
+"यदि तपाईँ \"Go To\" वटन प्रयोग गर्न चाहनुहुन्छ भने, इच्छयाएको संख्या संगै संख्या प्रविष्टि "
+"भर्नुहोस् ।  सम्बन्धित चाल सम्पादन गर्न तपाईँ + र - प्रयोग गर्नु सक्नुहुन्छ ।\tयसको मतलब, "
+"यदि तपाईँले \"+2\" लेख्नु भयो र \"Line\" चयन गर्नु भयो भने, \"Go To\" तपाईँको हालको "
+"स्थिति भन्दा २ लाइनहरू ल जान्छ ।"
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -1993,6 +2168,11 @@ msgstr "रंग:"
 #: po/tmp/ap_String_Id.h
 msgid "Column"
 msgstr "स्तम्भ"
+
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr ""
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
@@ -2063,11 +2243,15 @@ msgid "Contact from File"
 msgstr "फाइलबात सम्रपक"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Contacts"
 msgstr "सामग्रीहरू १"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts:"
+msgstr ""
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2083,8 +2267,8 @@ msgstr "अघिल्लो पुनरावलोकनमा निरन�
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "योगदानकर्ता"
+msgid "Contributor(s)"
+msgstr ""
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2252,6 +2436,11 @@ msgstr "टेम्प्लेट प्रयोग गरेर नयाँ
 msgid "Create an empty document"
 msgstr "एउटा खाली कागजात सिर्जना गर्नुहोस्"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+msgid "Create and Modify Styles"
+msgstr ""
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2277,17 +2466,12 @@ msgstr ""
 msgid "Create new Semantic Item"
 msgstr ""
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "सिर्जनाकर्ता"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "काट्नुहोस्"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "हालको मिति"
@@ -2326,6 +2510,11 @@ msgstr "हालको समय"
 #: po/tmp/ap_String_Id.h
 msgid "Cursor &blink"
 msgstr "कर्सर र लिङ्क"
+
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
@@ -2379,6 +2568,11 @@ msgstr "चयन काट्नुहोस् र यसलाई क्ल�
 msgid "D&irectional"
 msgstr "निशानिर्देश"
 
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
+
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
@@ -2391,11 +2585,22 @@ msgstr "ड्यास गरिएको सूची"
 msgid "Dashed line"
 msgstr "ड्यास दिइएको रेखा"
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr ""
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "मिति"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -2434,11 +2639,6 @@ msgstr "दशमलब ट्याब"
 msgid "Decrease indent"
 msgstr "इन्डेण्ट घटाउनुहोस्"
 
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "पूर्वनिर्धारित मिति (w/o समय)"
-
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
@@ -2469,6 +2669,12 @@ msgstr "मुख्य गुणहरू परिभाषा गर्नु
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "चयन गर्नको लागि शैली लागू वा परिभाषा गर्नुहोस्"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2573,8 +2779,6 @@ msgstr "यसको तालिकाबाट यो स्तम्भ म�
 msgid "Delete this row from its table"
 msgstr "यसको तालिकाबाट यो पङ्क्ति मेट्नुहोस्"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2587,6 +2791,11 @@ msgstr "वर्णन"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "वर्णन:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2683,14 +2892,12 @@ msgstr "शैली प्रदर्शन गर्नुहोस्:"
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr ""
-"के तपाईँ सबै कागजातहरुमा उपेक्षा गरिएको शब्दहरू पुन: सेट गर्न चाहनुहुन्छ ?"
+msgstr "के तपाईँ सबै कागजातहरुमा उपेक्षा गरिएको शब्दहरू पुन: सेट गर्न चाहनुहुन्छ ?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h
 msgid "Do you want to reset ignored words in the current document?"
-msgstr ""
-"के तपाईँ हालको कागजातहरुमा उपेक्षा गरिएको शब्दहरू पुन: सेट गर्न चाहनुहुन्छ ?"
+msgstr "के तपाईँ हालको कागजातहरुमा उपेक्षा गरिएको शब्दहरू पुन: सेट गर्न चाहनुहुन्छ ?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h
@@ -2712,6 +2919,12 @@ msgstr "कागजातहरू"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "पुन: सुरू नगर्नुहोस्"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2892,6 +3105,16 @@ msgstr "अन्त्य टिप्पणी शैली:"
 msgid "Endnotes"
 msgstr "समाप्ति द्रष्टब्य"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -2928,9 +3151,8 @@ msgstr "%s बचत गर्ने प्रयास गर्दा त्�
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Events"
-msgstr "घटनाहरू"
+msgid "Events:"
+msgstr ""
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3134,14 +3356,18 @@ msgstr "३ तह मुनि फोल्ड गर्नुहोस्"
 msgid "Fold below level 4"
 msgstr "४ तह मुनि फोल्ड गर्नुहोस्"
 
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
+
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
 msgid ""
 "Following Paragraph Following Paragraph Following Paragraph Following "
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
 msgstr ""
-"निम्न अनुच्छेद निम्न अनुच्छेद निम्न अनुच्छेद निम्न अनुच्छेद निम्न अनुच्छेद "
-"निम्न अनुच्छेद निम्न अनुच्छेद"
+"निम्न अनुच्छेद निम्न अनुच्छेद निम्न अनुच्छेद निम्न अनुच्छेद निम्न अनुच्छेद निम्न अनुच्छेद निम्न अनुच्छेद"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -3338,8 +3564,8 @@ msgstr "ढाँचा:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "फाइलबाट"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3356,7 +3582,8 @@ msgstr "पूरा पर्दा"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "साधारण"
 
@@ -3421,8 +3648,7 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "मुद्रण दृश्य मोड हुँदा मात्र हेडरहरू र फुटरहरू सिर्जना र सम्पादन हुन्छन् । \n"
-"यो मोड प्रविष्ट गर्न दृश्य रोज्नुहोस् त्यसपछि मेनुहरुबाट सजावट मुद्रण "
-"गर्नुहोस् ।\n"
+"यो मोड प्रविष्ट गर्न दृश्य रोज्नुहोस् त्यसपछि मेनुहरुबाट सजावट मुद्रण गर्नुहोस् ।\n"
 "के तपाईँ अहिले मुद्रण सजावट मोड प्रविष्ट गर्न चाहनुहुन्छ ?"
 
 #. DLG_Stylist_HeadingStyles
@@ -3599,7 +3825,7 @@ msgstr "सुरुको पादटिप्पणी मान"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
+msgid "Inner (single) quote style:"
 msgstr ""
 
 #. InsertModeFieldINS
@@ -3988,7 +4214,6 @@ msgstr "लेबुल परिभाषाहरू"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "भाषा"
@@ -3997,6 +4222,11 @@ msgstr "भाषा"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "भाषा सेटिङ्ग"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr ""
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4008,15 +4238,10 @@ msgstr "भाषा (हरू):"
 msgid "Layout"
 msgstr "सजावट"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "सजावट विवरणहरू"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "नेता"
+msgid "Leader:"
+msgstr ""
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4060,6 +4285,16 @@ msgstr "बायाँ पंक्तिबद्धता"
 msgid "Left-align the paragraph"
 msgstr "अनुच्छेद बायाँ-पंक्तिबद्ध गर्नुहोस्"
 
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
+
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
 msgid "Level 1"
@@ -4095,11 +4330,6 @@ msgstr "स्तर:"
 msgid "Li&ne spacing:"
 msgstr "रेखा खाली ठाऊँ:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "रेखा"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4125,15 +4355,15 @@ msgstr "चयन (टगल) तल रेखा कोर्नुहोस्
 msgid "Line between"
 msgstr "बीच रेखा"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr ""
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "रेखाहरू:"
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "सूची"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4150,16 +4380,10 @@ msgstr "सूची गुणहरू"
 msgid "List Styles"
 msgstr "सूची शैलीहरू"
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "का लागि सूचीहरू "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Locations"
-msgstr "स्थानहरू"
+msgid "Locations:"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4237,8 +4461,8 @@ msgstr "मार्टिनको परिक्षण"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "अधिक स्तम्भ साइज"
+msgid "Max Column size:"
+msgstr ""
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4282,8 +4506,7 @@ msgstr "माथि गाभ्नुहोस्"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h
 msgid "Merge another document into the active document using revision marks"
-msgstr ""
-"पुनरावलोकन चिन्हहरू प्रयोग गरेर सक्रिय कागजातमा अर्को कागजात गाँभ्नुहोस्"
+msgstr "पुनरावलोकन चिन्हहरू प्रयोग गरेर सक्रिय कागजातमा अर्को कागजात गाँभ्नुहोस्"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h
@@ -4348,8 +4571,8 @@ msgstr "विविध शैलीहरू"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
-msgstr "शैलीहरू परिमार्जन गर्नुहोस्"
+msgid "Modify Style"
+msgstr ""
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h
@@ -4507,11 +4730,8 @@ msgstr ""
 msgid "No scripts found"
 msgstr "कुनै स्क्रिप्टहरू फेला परेन"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "कुनै पनि होइन"
@@ -4538,8 +4758,8 @@ msgstr "द्रष्टव्य शैलीहरू"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "स्तम्भहरुको संख्या"
+msgid "Number of Columns:"
+msgstr ""
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4675,7 +4895,7 @@ msgstr "%s खोल्नको लागि स्मृति बाहिर
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+msgid "Outer (double) quote style:"
 msgstr ""
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
@@ -4711,7 +4931,6 @@ msgstr "पुनरावलोकन निर्मल गर्नुहो�
 msgid "Pa&ste Unformatted"
 msgstr "ढाँचाबद्ध नगरिएको टाँस्नुहोस्"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4726,6 +4945,11 @@ msgstr "अगाडि पृष्ठ विच्छेदन गर्नु
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "पृष्ठ पृष्ठभूमि"
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr ""
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4759,8 +4983,8 @@ msgstr "पृष्ठ सङ्ख्याहरू"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "पृष्ठ सन्दर्भ"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4771,6 +4995,11 @@ msgstr "पृष्ठ सेट अप"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "पृष्ठ सेटअप"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr ""
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -4872,7 +5101,6 @@ msgstr "रखाई:"
 msgid "Playing with RDF during development"
 msgstr ""
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -4894,6 +5122,7 @@ msgstr "पृष्ठमा अवस्थित"
 msgid "Position to Paragraph"
 msgstr "अनुच्छेदमा अवस्थित"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -4953,8 +5182,8 @@ msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr ""
-"अघिल्लो अनुच्छेद अघिल्लो अनुच्छेद अघिल्लो अनुच्छेद अघिल्लो अनुच्छेद अघिल्लो "
-"अनुच्छेद अघिल्लो अनुच्छेद अघिल्लो अनुच्छेद"
+"अघिल्लो अनुच्छेद अघिल्लो अनुच्छेद अघिल्लो अनुच्छेद अघिल्लो अनुच्छेद अघिल्लो अनुच्छेद अघिल्लो "
+"अनुच्छेद अघिल्लो अनुच्छेद"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
@@ -5157,8 +5386,8 @@ msgstr "हेडर हटाउनुहोस्"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "शैलीबाट गुण हटाउनुहोस्"
+msgid "Remove Property from Style:"
+msgstr ""
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5250,8 +5479,7 @@ msgstr "बग प्रतिवेदन गर्नुहोस्"
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h
 msgid "Report a bug and help AbiWord become a better product"
-msgstr ""
-"बग प्रतिवेदन गर्नुहोस् र उत्तम वस्तु बन्नको लागि एविवर्डलाई मद्दत गर्नुहोस्"
+msgstr "बग प्रतिवेदन गर्नुहोस् र उत्तम वस्तु बन्नको लागि एविवर्डलाई मद्दत गर्नुहोस्"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -5427,7 +5655,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "बचत गर्नुहोस्"
 
@@ -5586,8 +5815,8 @@ msgstr "पाठ बाकस चयन गर्नुहोस्"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
-msgstr "सूचीबाट लक्ष्य पुस्तकचिनो चयन गर्नुहोस्"
+msgid "Select a target bookmark from the list:"
+msgstr ""
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -5869,8 +6098,7 @@ msgstr ""
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
-msgstr ""
-"पृष्ठ साइज र सीमान्तहरू जस्तै तपाईँको कागजातको पृष्ठ गुणहरू सेटअप गर्नुहोस्"
+msgstr "पृष्ठ साइज र सीमान्तहरू जस्तै तपाईँको कागजातको पृष्ठ गुणहरू सेटअप गर्नुहोस्"
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
@@ -5880,6 +6108,11 @@ msgstr ""
 #. DLG_BorderShading_Shading_Color
 #: po/tmp/ap_String_Id.h
 msgid "Shading color:"
+msgstr ""
+
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
 msgstr ""
 
 #. DLG_Styles_ModifyShortCut
@@ -6102,8 +6335,8 @@ msgstr "स्रोत:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "स्तम्भ पछि खाली स्थान"
+msgid "Space after Column:"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6197,25 +6430,45 @@ msgstr "दायाँ पट्टी विभाजन गर्नुहो
 msgid "Split on Top Side"
 msgstr "माथि पट्टी विभाजन गर्नुहोस्"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "खाली ठाऊँ बाहेक सबै डेलिमिटरहरुमा विभाजन गर्नुहोस्"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "खाली ठाँउ समावेश गरेर सबै शब्द डेलिमिटरहरुमा विभाजन गर्नुहोस्"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "अल्पविरामहरू वा ट्याबहरूमा पाठ विभाजन गर्नुहोस्"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "खाली ठाउँहरुमा, अल्पविरामहरुमा, वा ट्याबहरूमा पाठ विभाजन गर्नुहोस्"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6333,13 +6586,13 @@ msgstr "शैली नाम:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "शैली प्रकार"
+msgid "Style Type:"
+msgstr ""
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "निम्न अनुच्छेदको लागि शैली"
+msgid "Style for following paragraph:"
+msgstr ""
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6353,7 +6606,6 @@ msgstr "शैली नाम खाली छोडिनु हुदैन"
 msgid "Style:"
 msgstr "शैली:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6609,8 +6861,8 @@ msgid ""
 "The new user interface language will take effect the next time that you "
 "start the application"
 msgstr ""
-"नयाँ प्रयोगकर्ता इन्टरफेस भाषाले अर्को समय तपाईँले सुरू गर्न लाग्नु भएको "
-"अनुप्रयोगमा प्रभाव पार्नेछ"
+"नयाँ प्रयोगकर्ता इन्टरफेस भाषाले अर्को समय तपाईँले सुरू गर्न लाग्नु भएको अनुप्रयोगमा प्रभाव "
+"पार्नेछ"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h
@@ -6655,8 +6907,8 @@ msgid ""
 "This change will only take effect when you restart AbiWord or create a new "
 "document."
 msgstr ""
-"यो परिवर्तनले तब मात्र प्रभाव पार्नेछ जब तपाईँ एउटा नयाँ कागजात सिर्जना "
-"गर्नहुन्छ वा एविवर्ड पुन:सुरू गर्नु हुन्छ ।"
+"यो परिवर्तनले तब मात्र प्रभाव पार्नेछ जब तपाईँ एउटा नयाँ कागजात सिर्जना गर्नहुन्छ वा "
+"एविवर्ड पुन:सुरू गर्नु हुन्छ ।"
 
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h
@@ -6664,8 +6916,8 @@ msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
 msgstr ""
-"यो कागजातले पुनरावलोकनहरू समाविष्ट गर्दछ जुन हालै दृश्यबाट लुकाईएको छ । "
-"कृपया पुनरावलोकनहरू संगै काम गर्न सूचनाको लागि एविवर्ड हेर्नुहोस् ।"
+"यो कागजातले पुनरावलोकनहरू समाविष्ट गर्दछ जुन हालै दृश्यबाट लुकाईएको छ । कृपया "
+"पुनरावलोकनहरू संगै काम गर्न सूचनाको लागि एविवर्ड हेर्नुहोस् ।"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
@@ -6674,9 +6926,9 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"यो अनुच्छेदले तपाईँको कागजातमा देखापर्ने जस्तै शब्दहरू प्रतिनिधित्व गर्दछ । "
-"यो पूर्ववलोकनमा प्रयोग भएका तपाईँको कागजातबाट पाठ हेर्न, यसमा केही पाठ संगै "
-"कागजात अनुच्छेदमा तपाईँको कर्सर अवस्थित गर्नुहोस् र यो संवाद खोल्नुहोस् ।"
+"यो अनुच्छेदले तपाईँको कागजातमा देखापर्ने जस्तै शब्दहरू प्रतिनिधित्व गर्दछ । यो पूर्ववलोकनमा "
+"प्रयोग भएका तपाईँको कागजातबाट पाठ हेर्न, यसमा केही पाठ संगै कागजात अनुच्छेदमा तपाईँको "
+"कर्सर अवस्थित गर्नुहोस् र यो संवाद खोल्नुहोस् ।"
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -6768,22 +7020,25 @@ msgstr "त्रिकोण सूची"
 msgid "Two"
 msgstr "दुई"
 
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "प्रकार"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
 msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr ""
-"पुस्तकचिनोको लागि एउटा नाम टाइप गर्नुहोस्, वा सूचीबाट एउटा अवस्थित चयन "
-"गर्नुहोस् ।"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6807,6 +7062,12 @@ msgstr "कच"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "चयन (टगल) कच गर्नुहोस्"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+msgid "Underlines"
+msgstr ""
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -6943,6 +7204,11 @@ msgstr "चेतावनी: तपाईँले उपलब्ध गर�
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "वेभ सजावट"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7104,11 +7370,41 @@ msgstr "mm/dd/yy"
 msgid "tOGGLE cASE"
 msgstr "टगल केस"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr ""
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr ""
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr ""
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "विषय"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr ""
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr ""
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7147,11 +7443,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "&वर्णन"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7212,8 +7503,7 @@ msgid ""
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
 "एविवर्डले हिज्जे फाइल फेला पार्न सकिएन %s.dll\n"
-"कृपया http://aspell.net/win32/ बाट डाउनलोड गर्नुहोस् र हिज्जे स्थापना "
-"गर्नुहोस्"
+"कृपया http://aspell.net/win32/ बाट डाउनलोड गर्नुहोस् र हिज्जे स्थापना गर्नुहोस्"
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h
@@ -7221,9 +7511,7 @@ msgstr ""
 msgid ""
 "AbiWord cannot fully restore version %d of the document because the version "
 "information is incomplete."
-msgstr ""
-"एविवर्डले कागजातको पूरै संस्करण %d पुन:भण्डारण गर्न सकेन किन भने सूचना पूरा "
-"थिएन ।"
+msgstr "एविवर्डले कागजातको पूरै संस्करण %d पुन:भण्डारण गर्न सकेन किन भने सूचना पूरा थिएन ।"
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h
@@ -7232,8 +7520,7 @@ msgid ""
 "AbiWord cannot restore version %d of the document because the version "
 "information is missing."
 msgstr ""
-"एविवर्डले कागजातको पूरै संस्करण %d पुन:भण्डारण गर्न सकेन किन भने सूचना "
-"हराएको थियो ।"
+"एविवर्डले कागजातको पूरै संस्करण %d पुन:भण्डारण गर्न सकेन किन भने सूचना हराएको थियो ।"
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h
@@ -7245,6 +7532,11 @@ msgstr "एविवर्ड: मुद्रण पूर्वावलोक
 #, c-format
 msgid "About %s"
 msgstr "%s को बारेमा"
+
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7397,6 +7689,11 @@ msgstr "बाल्टिक, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "बाल्टिक, सञ्झ्यालहरू कोड पृष्ठ १२५७"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr ""
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7437,6 +7734,11 @@ msgstr "नर्वेजियन बोकमाल"
 #: po/tmp/xap_String_Id.h
 msgid "Bold Italic"
 msgstr "बाक्लो छड्के"
+
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
@@ -7489,10 +7791,20 @@ msgstr "केन्द्रीय युरेरपियन, सञ्झ्
 msgid "Change Language when changing keyboard"
 msgstr "कुञ्जीपाटी परिवर्तन गर्दा भाषा परिवर्तन गर्नुहोस्"
 
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
+
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "अध्याय शीर्षक"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7564,6 +7876,11 @@ msgstr "सूचीबाट कागजात रोज्नुहोस्:
 msgid "Clear Background"
 msgstr "पृष्ठभूमि सफा गर्नुहोस्"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+msgid "Clear Foreground"
+msgstr ""
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7571,8 +7888,8 @@ msgstr "क्लिप कला"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "क्लिप कला लोड गर्न सकिएन"
+msgid "Clip Art could not be loaded."
+msgstr ""
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7715,6 +8032,11 @@ msgstr "चेक भाषा"
 msgid "Danish"
 msgstr "डेनिस"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -7734,6 +8056,11 @@ msgstr "XML को रुपमा घोषणा गर्नुहोस् (
 #: po/tmp/xap_String_Id.h
 msgid "Default language: "
 msgstr "पूर्वनिर्धारित भाषा: "
+
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
@@ -7777,8 +8104,8 @@ msgstr "समय सम्पादन गरिँदै:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "असरहरू"
+msgid "Effects:"
+msgstr ""
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -7830,6 +8157,11 @@ msgstr "अंग्रेजी (अष्ट्रेलिया)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "अंग्रेजी (क्यानाडा)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -7917,6 +8249,11 @@ msgstr "फाइल देखि रेकर्ड सम्पादनसम
 msgid "File to replay editing:"
 msgstr "फाइल देखि रिप्ले सम्पादनसम्म:"
 
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr ""
+
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
 msgid "Finnish"
@@ -7986,6 +8323,11 @@ msgstr ""
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
 msgid "Galician"
+msgstr ""
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
 msgstr ""
 
 #. LANG_KA_GE
@@ -8378,8 +8720,13 @@ msgstr "लिथुवानियन"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "क्लिप कला लोड गरिदै"
+msgid "Loading Clip Art..."
+msgstr ""
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8395,6 +8742,11 @@ msgstr "म्यासिडोनियन"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "कागजातको लागि पूर्वनिर्धारण बनाउनुहोस्"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr ""
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8648,6 +9000,11 @@ msgstr "पञ्जावी (पाकिस्तान)"
 msgid "Quechua"
 msgstr "क्वेचुवा"
 
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr ""
+
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
@@ -8691,6 +9048,7 @@ msgid "Replay Editing from File"
 msgstr "फाइलबाट सम्पादन गरेको रिप्ले गर्नुहोस्"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "पुन:भण्डारण गर्नुहोस्"
@@ -8756,6 +9114,11 @@ msgstr "&प्रकारको रुपमा फाइल सेभ गर�
 msgid "Script:"
 msgstr "स्क्रिप्ट:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+msgid "Section"
+msgstr ""
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -8815,6 +9178,11 @@ msgstr "स्लोभेनिया"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "सानेा क्यपितल"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr ""
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -8936,9 +9304,8 @@ msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
-"नजिकको पूर्ण रुपले पुन:भण्डारण हुने संस्करण %d हो । तपाईँ सट्टामा के यो "
-"संस्करण पुन:भण्डारण गर्न चाहनुहुन्छ ?संस्करण %d लाई आंशिक रुपमा पुन:भण्डारण "
-"गर्न नम्बर थिच्नुहोस् ।"
+"नजिकको पूर्ण रुपले पुन:भण्डारण हुने संस्करण %d हो । तपाईँ सट्टामा के यो संस्करण पुन:भण्डारण "
+"गर्न चाहनुहुन्छ ?संस्करण %d लाई आंशिक रुपमा पुन:भण्डारण गर्न नम्बर थिच्नुहोस् ।"
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -9203,13 +9570,17 @@ msgstr "यिड्‌डिस"
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
-"प्रक्रिया गर्नु अघि तपाईँले कागजात %s मा परिवर्तनहरू बचत गर्नुहोस् । अहिले "
-"बचत गर्नुहुन्छ ?"
+"प्रक्रिया गर्नु अघि तपाईँले कागजात %s मा परिवर्तनहरू बचत गर्नुहोस् । अहिले बचत गर्नुहुन्छ ?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "मा जूम गर्नुहोस्"
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr ""
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9277,6 +9648,136 @@ msgstr "सिब्लिङ्कहरू"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "असम्बन्धित"
+
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr ""
+
+#~ msgid "&1 None"
+#~ msgstr "&1 कुनै पनि होइन"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord लाई फाइल %s.dll को आवश्यक छ\n"
+#~ "कृपया http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist."
+#~ "htm बाट डाउनलोड र स्थापना गर्नुहोस्"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "G&NOME कार्यालयको बारेमा"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "GNOME कार्यालय परियोजनाको बारेमा"
+
+#~ msgid "Allow formatting using styles only"
+#~ msgstr "शैलीहरु मात्र प्रयोग गरेर ढाँचाबद्ध गर्न अनुमती दिनुहोस्"
+
+#~ msgid "Available Fields"
+#~ msgstr "उपलब्ध फाँटहरू"
+
+#~ msgid "Available Styles"
+#~ msgstr "उपलब्ध शैलीहरू"
+
+#~ msgid "Contributor"
+#~ msgstr "योगदानकर्ता"
+
+#~ msgid "Creator"
+#~ msgstr "सिर्जनाकर्ता"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "पूर्वनिर्धारित मिति (w/o समय)"
+
+#, fuzzy
+#~ msgid "Events"
+#~ msgstr "घटनाहरू"
+
+#~ msgid "From File"
+#~ msgstr "फाइलबाट"
+
+#~ msgid "Layout Details"
+#~ msgstr "सजावट विवरणहरू"
+
+#~ msgid "Leader"
+#~ msgstr "नेता"
+
+#~ msgid "Line"
+#~ msgstr "रेखा"
+
+#~ msgid "List"
+#~ msgstr "सूची"
+
+#~ msgid "Lists for "
+#~ msgstr "का लागि सूचीहरू "
+
+#, fuzzy
+#~ msgid "Locations"
+#~ msgstr "स्थानहरू"
+
+#~ msgid "Max Column size"
+#~ msgstr "अधिक स्तम्भ साइज"
+
+#~ msgid "Modify Styles"
+#~ msgstr "शैलीहरू परिमार्जन गर्नुहोस्"
+
+#~ msgid "Number of Columns"
+#~ msgstr "स्तम्भहरुको संख्या"
+
+#~ msgid "Page Reference"
+#~ msgstr "पृष्ठ सन्दर्भ"
+
+#~ msgid "Remove Property from Style"
+#~ msgstr "शैलीबाट गुण हटाउनुहोस्"
+
+#~ msgid "Select a target bookmark from the list."
+#~ msgstr "सूचीबाट लक्ष्य पुस्तकचिनो चयन गर्नुहोस्"
+
+#~ msgid "Space after Column"
+#~ msgstr "स्तम्भ पछि खाली स्थान"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "खाली ठाऊँ बाहेक सबै डेलिमिटरहरुमा विभाजन गर्नुहोस्"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "खाली ठाँउ समावेश गरेर सबै शब्द डेलिमिटरहरुमा विभाजन गर्नुहोस्"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "अल्पविरामहरू वा ट्याबहरूमा पाठ विभाजन गर्नुहोस्"
+
+#~ msgid "Style Type"
+#~ msgstr "शैली प्रकार"
+
+#~ msgid "Style for following paragraph"
+#~ msgstr "निम्न अनुच्छेदको लागि शैली"
+
+#~ msgid "Type a name for the bookmark, or select an existing from the list."
+#~ msgstr ""
+#~ "पुस्तकचिनोको लागि एउटा नाम टाइप गर्नुहोस्, वा सूचीबाट एउटा अवस्थित चयन गर्नुहोस् ।"
+
+#~ msgid "&Description"
+#~ msgstr "&वर्णन"
+
+#~ msgid "Clip Art could not be loaded"
+#~ msgstr "क्लिप कला लोड गर्न सकिएन"
+
+#~ msgid "Effects"
+#~ msgstr "असरहरू"
+
+#~ msgid "Loading Clip Art"
+#~ msgstr "क्लिप कला लोड गरिदै"
 
 #~ msgid "Amharic (Ethiopia)"
 #~ msgstr "अम्हारिक (इथियोपिया)"

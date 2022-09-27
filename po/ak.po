@@ -1,13 +1,13 @@
 # Akan (Twi:Asante) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-25 06:52+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -485,9 +485,9 @@ msgstr "&Ɛsoro ntwerɛyɛ:"
 msgid "&Height:"
 msgstr "&Ne tenten so:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "& Mmoa"
 
@@ -692,7 +692,8 @@ msgid "&Odd page"
 msgstr "&Nkae peeg"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Bue"
 
@@ -1229,16 +1230,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Ɛfa G&NOME Ɔfise yo"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Ɛfa GNOME Ɔfise yo"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2097,9 +2088,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "Paw wo tirimpɔ wɔ benkum so.\n"
-"Sɛ wopɛsɛ wode \"Go To\" baten no yɛ adwuma a, hyehyɛ aba nhyɛmu de aba wopɛ. "
-"Wobɛtumi de + ne - di ayɛ adwuma a ɛfa akɔneaba die ho. I.e., sɛ wo twerɛ "
-"\"+2\" na wo paw \"kwan tea\" a, \"Go To\" no bɛkɔ anim bea aseɛ kwan tea 2."
+"Sɛ wopɛsɛ wode \"Go To\" baten no yɛ adwuma a, hyehyɛ aba nhyɛmu de aba "
+"wopɛ. Wobɛtumi de + ne - di ayɛ adwuma a ɛfa akɔneaba die ho. I.e., sɛ wo "
+"twerɛ \"+2\" na wo paw \"kwan tea\" a, \"Go To\" no bɛkɔ anim bea aseɛ kwan "
+"tea 2."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2587,6 +2579,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Bre"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5643,7 +5640,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Si&e"
 
@@ -6097,6 +6095,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6411,25 +6414,45 @@ msgstr "Kyɛ mu wɔ Nifa afa"
 msgid "Split on Top Side"
 msgstr "Kyɛ mu wɔ Soro afa"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Kyɛ delimita gyesɛ tamkwan no nyinara mu"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Kyɛ asɛmfua delimita ne tamkwan no nyinara mu"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Kyɛ nkyerɛwee no mu wɔ kɔma anaa tab so"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Kyɛ nkyerɛwee no mu wɔ tamkwan, kɔma, anaa tab so"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -7002,6 +7025,11 @@ msgstr ""
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Twerɛ din ma buukmake no, anaa paw nea ɛwɔ liste mu dedaw."
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8033,6 +8061,11 @@ msgstr "Yɛ no sɛ XML (vɛɛhyen 1.0)"
 msgid "Default language: "
 msgstr "Kasa dadaw: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8128,6 +8161,11 @@ msgstr "English (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "English (Canada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9623,3 +9661,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Koraa"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Ɛfa G&NOME Ɔfise yo"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Ɛfa GNOME Ɔfise yo"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Kyɛ delimita gyesɛ tamkwan no nyinara mu"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Kyɛ asɛmfua delimita ne tamkwan no nyinara mu"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Kyɛ nkyerɛwee no mu wɔ kɔma anaa tab so"

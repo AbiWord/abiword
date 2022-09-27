@@ -1,13 +1,13 @@
 # Turkish translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Görkem Çetin, <gorkem@gelecek.com.tr>, 2001
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-08-14 22:24+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
@@ -65,8 +65,7 @@ msgstr ""
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "% of normal size"
 msgstr "olsun"
 
@@ -489,9 +488,9 @@ msgstr "Üst &Bilgi:"
 msgid "&Height:"
 msgstr "&Yüksekliði:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Yardým"
 
@@ -696,7 +695,8 @@ msgid "&Odd page"
 msgstr "Te&k no.lu sayfa"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Aç"
 
@@ -1226,8 +1226,8 @@ msgid ""
 "You can use the program, but the toolbar may be missing."
 msgstr ""
 "Güncel COMCTL32.DLL dosyasý lazým (sürüm 4.72 ve daha sonrasý).x0a;Bu durum "
-"için açýklama AbiSource sitesindeki FAQ sayfasýnda mevcuttur.x0a;x0a;\t"
-"http://www.abisource.comx0a;x0a;Programý kullanabilirsiniz, ancak araç "
+"için açýklama AbiSource sitesindeki FAQ sayfasýnda mevcuttur.x0a;x0a;"
+"\thttp://www.abisource.comx0a;x0a;Programý kullanabilirsiniz, ancak araç "
 "çubuðu devredýþý olabilir."
 
 #. WINDOWS_NEED_UNICOWS
@@ -1235,22 +1235,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"%s.dll dosyasý gerekmektedir.x0a;Lütfen "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm "
-"adresinden yükleyip kurunuz."
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "GNO&ME Ofis hakkýnda"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "GNOME Ofis Projesi hakkýnda"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2108,9 +2095,9 @@ msgid ""
 "you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
 "below your current position."
 msgstr ""
-"Soldan bir öðe seçin.\"Git\" düðmesini kullanmak isterseniz, numarayý giriniz. "
-" + ve - yazarak ileri-geri gidebilirsiniz.  Yani \"+2\" yazar ve \"Satýr\" "
-"seçip \"Git\" düðmesine basýnca 2 satýr ileri gidersiniz."
+"Soldan bir öðe seçin.\"Git\" düðmesini kullanmak isterseniz, numarayý "
+"giriniz.  + ve - yazarak ileri-geri gidebilirsiniz.  Yani \"+2\" yazar ve "
+"\"Satýr\" seçip \"Git\" düðmesine basýnca 2 satýr ileri gidersiniz."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2604,6 +2591,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Tarih"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3579,9 +3571,8 @@ msgstr "Biçim:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "From File"
-msgstr "&Resim"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -5683,7 +5674,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Ka&ydet"
 
@@ -6147,6 +6139,11 @@ msgstr "Aralýk"
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6466,24 +6463,44 @@ msgstr ""
 msgid "Split on Top Side"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -7051,6 +7068,11 @@ msgstr ""
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Bir yer imi adý girin, veya listeden seçin."
 
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
+
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
 msgid "Type:"
@@ -7526,8 +7548,7 @@ msgstr "AbiWord Uyumlu-ek Yöneticisi"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
 "Please download and install Aspell from http://aspell.net/win32/"
@@ -8096,6 +8117,11 @@ msgstr "XML (Sürüm 1.0) olarak bildir"
 msgid "Default language: "
 msgstr ""
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8192,6 +8218,11 @@ msgstr "Ýngilizce (Avustralya)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Ýngilizce (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9697,3 +9728,22 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Hiçbiri"
 
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "%s.dll dosyasý gerekmektedir.x0a;Lütfen http://www.microsoft.com/"
+#~ "msdownload/platformsdk/sdkupdate/psdkredist.htm adresinden yükleyip "
+#~ "kurunuz."
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "GNO&ME Ofis hakkýnda"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "GNOME Ofis Projesi hakkýnda"
+
+#, fuzzy
+#~ msgid "From File"
+#~ msgstr "&Resim"

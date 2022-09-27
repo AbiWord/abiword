@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-04-04 18:34+0200\n"
 "Last-Translator: Per <tucker@algonet.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -492,9 +492,9 @@ msgstr "&Sidhuvud:"
 msgid "&Height:"
 msgstr "&Höjd:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Hjälp"
 
@@ -699,7 +699,8 @@ msgid "&Odd page"
 msgstr "&Udda sida"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Öppna"
 
@@ -1232,8 +1233,8 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"AbiWord är avsett att användas med en nyare version av systemfilen "
-"COMCTL32.DLL\n"
+"AbiWord är avsett att användas med en nyare version av systemfilen COMCTL32."
+"DLL\n"
 "än vad som finns i ditt system. (COMCTL32.DLL version 4.72 eller nyare)\n"
 "Lösningen på detta problem finns beskrivet i FAQ:n på AbiSource webbsida\n"
 "\n"
@@ -1250,18 +1251,8 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 "AbiWord behöver filen %s.dll\n"
-"Hämta och installera den från http://www.microsoft.com/en-"
-"us/download/details.aspx?id=4237"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Om G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Visar information om GNOME Office-projektet"
+"Hämta och installera den från http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2111,10 +2102,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "Välj ditt mål till vänster.\n"
-"Om du vill använda \"Gå till\"knappen fyller du bara i nummerfältet med önskat "
-"värde. Du kan använda + och - för att utföra relativ förflyttning.\tOm du "
-"exempelvis skriver \"+2\" och du väljer \"Rad\" kommer \"Gå till\" att gå två "
-"rader nedanför din nuvarande position."
+"Om du vill använda \"Gå till\"knappen fyller du bara i nummerfältet med "
+"önskat värde. Du kan använda + och - för att utföra relativ förflyttning."
+"\tOm du exempelvis skriver \"+2\" och du väljer \"Rad\" kommer \"Gå till\" "
+"att gå två rader nedanför din nuvarande position."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -3638,8 +3629,8 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "Sidhuvuden och sidfötter kan bara skapas och ändras i utskriftslayoutläge. \n"
-" För att gå till detta läge välj Visa och sedan Utskriftslayoutläge i menyn. "
-" Vill du ändra till utskriftslayoutläge nu?"
+" För att gå till detta läge välj Visa och sedan Utskriftslayoutläge i "
+"menyn.  Vill du ändra till utskriftslayoutläge nu?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -5627,7 +5618,8 @@ msgid "SPARQL Query"
 msgstr "SPARQL-förfrågan"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Spara"
 
@@ -7251,7 +7243,8 @@ msgstr "Du har ändrat läs/skrivriktning."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Du måste markera en bit av dokumentet innan du kan infoga en hyperlänk."
+msgstr ""
+"Du måste markera en bit av dokumentet innan du kan infoga en hyperlänk."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h
@@ -9634,6 +9627,12 @@ msgstr "var orelaterade"
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ingen"
+
+#~ msgid "About G&NOME Office"
+#~ msgstr "Om G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Visar information om GNOME Office-projektet"
 
 #~ msgid "Split on all delimiters except spaces"
 #~ msgstr "Dela vid alla skiljetecken utom mellanslag"

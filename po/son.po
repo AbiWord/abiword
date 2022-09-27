@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-09-01 20:35+0200\n"
 "Last-Translator: songhay <mh@bollag-areal.ch>\n"
 "Language-Team: Sugar Labs\n"
@@ -493,9 +493,9 @@ msgstr "&Boŋdeke:"
 msgid "&Height:"
 msgstr "&Kayyan:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Faaba"
 
@@ -700,7 +700,8 @@ msgid "&Odd page"
 msgstr "Moo j&oholante"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Feeri"
 
@@ -1248,18 +1249,8 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 "AbiWord ga too %s.dll tukoo ga\n"
-"A zumandi ka hun http://www.microsoft.com/en-"
-"us/download/details.aspx?id=4237 ga k'a sinji"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "G&NOME Office ga"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "GNOME Office porožewoo ga"
+"A zumandi ka hun http://www.microsoft.com/en-us/download/details.aspx?"
+"id=4237 ga k'a sinji"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2111,9 +2102,9 @@ msgid ""
 msgstr ""
 "War toodogoo suuba (kanbe) wowa ga.\n"
 "Nda war ga baa ka goy nda \"Koy ne\" butoŋoo, wa Hinna hantumi toonandi nda "
-"hinna boonantaa.  War ga hin ka + nda - ka goy ka diray hangantaa tee.\tSanda "
-"nda war na \"+2\" hantum nda \"Žeeri\" suuba, \"Koy ne\" ga koy war sohõ kaydogoo "
-"cire nda žeeri 2."
+"hinna boonantaa.  War ga hin ka + nda - ka goy ka diray hangantaa tee."
+"\tSanda nda war na \"+2\" hantum nda \"Žeeri\" suuba, \"Koy ne\" ga koy war "
+"sohõ kaydogoo cire nda žeeri 2."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -5630,7 +5621,8 @@ msgid "SPARQL Query"
 msgstr "SPARQL hãayan"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Gaa&bu"
 
@@ -9637,6 +9629,12 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Baffoo"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "G&NOME Office ga"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "GNOME Office porožewoo ga"
+
 #~ msgid "Split on all delimiters except spaces"
 #~ msgstr "Fece hirri damkey kul ga nda manti farrey"
 
@@ -9653,9 +9651,8 @@ msgstr "Baffoo"
 #~ "platformsdk/sdkupdate/psdkredist.htm"
 #~ msgstr ""
 #~ "AbiWord ga boona %s.dll tukoo\n"
-#~ "Taare w'a zumandi ka hun "
-#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm ga "
-#~ "k'a sinji"
+#~ "Taare w'a zumandi ka hun http://www.microsoft.com/msdownload/platformsdk/"
+#~ "sdkupdate/psdkredist.htm ga k'a sinji"
 
 #~ msgid "From File"
 #~ msgstr "Ga hun tuku ra"

@@ -1,6 +1,6 @@
 # Chinese (Taiwan) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Chih-Wei Huang <cwhuang@linux.org.tw>, 2000.
 # Armani <armani@cle.linux.org.tw>
@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2012-12-28 06:48+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Traditional Chinese <zh-l10n@linux.org.tw>\n"
@@ -499,9 +499,9 @@ msgstr "頁首(&H):"
 msgid "&Height:"
 msgstr "高度(&H):"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "說明(&H)"
 
@@ -706,7 +706,8 @@ msgid "&Odd page"
 msgstr "奇數頁(&O)"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "開啟(&O)"
 
@@ -1252,17 +1253,8 @@ msgid ""
 "details.aspx?id=4237"
 msgstr ""
 "AbiWord 要有 %s.dll 檔案才可正常運作。\n"
-"請在 http://www.microsoft.com/en-us/download/details.aspx?id=4237 下載並安裝之"
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "關於 G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "關於 GNOME Office 計劃"
+"請在 http://www.microsoft.com/en-us/download/details.aspx?id=4237 下載並安裝"
+"之"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2109,7 +2101,8 @@ msgid ""
 "below your current position."
 msgstr ""
 "請在左邊選擇您的目標。\n"
-"如果想使用「到」按鈕，只需在編號欄填上適當數目。也可以用 + 和 - 移動至目前位置的相對位置。例如寫「+2」並選擇「行」，會前往距離目前位置兩行之處。"
+"如果想使用「到」按鈕，只需在編號欄填上適當數目。也可以用 + 和 - 移動至目前位"
+"置的相對位置。例如寫「+2」並選擇「行」，會前往距離目前位置兩行之處。"
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2590,6 +2583,11 @@ msgstr "連接線"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "日期"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3348,8 +3346,8 @@ msgid ""
 "Following Paragraph Following Paragraph Following Paragraph Following "
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
 msgstr ""
-"下一段 Following Paragraph 下一段 Following Paragraph 下一段 Following Paragraph 下一段 "
-"Following Paragraph 下一段 Following Paragraph"
+"下一段 Following Paragraph 下一段 Following Paragraph 下一段 Following "
+"Paragraph 下一段 Following Paragraph 下一段 Following Paragraph"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -5151,8 +5149,8 @@ msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr ""
-"上一段 Previous Paragraph 上一段 Previous Paragraph 上一段 Previous Paragraph 上一段 "
-"Previous Paragraph 上一段 Previous Paragraph"
+"上一段 Previous Paragraph 上一段 Previous Paragraph 上一段 Previous "
+"Paragraph 上一段 Previous Paragraph 上一段 Previous Paragraph"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
@@ -5620,7 +5618,8 @@ msgid "SPARQL Query"
 msgstr "SPARQL 查詢"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "儲存(&V)"
 
@@ -6015,7 +6014,9 @@ msgid ""
 "Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
 "the stylesheet for all existing Semantic Items to the new stylesheet as well."
-msgstr "將目前的式樣表套用到本文件的語意項目。新的 RDF 物件將自動使用本樣式。您也可以使用按鈕設定新的樣式給目前的語意項目。"
+msgstr ""
+"將目前的式樣表套用到本文件的語意項目。新的 RDF 物件將自動使用本樣式。您也可以"
+"使用按鈕設定新的樣式給目前的語意項目。"
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -6072,6 +6073,11 @@ msgstr "陰影"
 #: po/tmp/ap_String_Id.h
 msgid "Shading color:"
 msgstr "陰影色彩:"
+
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
@@ -6387,25 +6393,45 @@ msgstr "於右邊分拆"
 msgid "Split on Top Side"
 msgstr "於頂部分拆"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "根據空格以外的分隔符號分拆"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "根據包括空格在內的分隔符號分拆"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "於逗號或定位點分拆文字"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "於空格、逗號或定位點分拆文字"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6786,9 +6812,9 @@ msgid ""
 "piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 "
 "myfile.txt | lpr'"
 msgstr ""
-"選項「--print」已於 AbiWord 2.8 移除。相同功能可以 AbiWord "
-"的指令列轉換工具將之輸出以管線(pipe)至列印多工緩衝處理器(print spooler)。例如：「abiword --to=ps --to-"
-"name=fd://1 myfile.txt | lpr」"
+"選項「--print」已於 AbiWord 2.8 移除。相同功能可以 AbiWord 的指令列轉換工具將"
+"之輸出以管線(pipe)至列印多工緩衝處理器(print spooler)。例如：「abiword --"
+"to=ps --to-name=fd://1 myfile.txt | lpr」"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6851,7 +6877,9 @@ msgstr "這項變更要等到您重新啟動 AbiWord 或開啟新文件後才會
 msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
-msgstr "此文件包含當前檢視隱藏了的修訂。請參閱 AbiWord 說明文件了解如何處理修訂版本資訊。"
+msgstr ""
+"此文件包含當前檢視隱藏了的修訂。請參閱 AbiWord 說明文件了解如何處理修訂版本資"
+"訊。"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
@@ -6859,7 +6887,9 @@ msgid ""
 "This paragraph represents words as they might appear in your document.  To "
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
-msgstr "此段落代表文字將會以什麼形式在文件內顯示。 如果想使用您的文件原有的文字作為預覽, 請把游標放置在一段有文字的段落, 再開啟這個對話框。"
+msgstr ""
+"此段落代表文字將會以什麼形式在文件內顯示。 如果想使用您的文件原有的文字作為預"
+"覽, 請把游標放置在一段有文字的段落, 再開啟這個對話框。"
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -6963,6 +6993,11 @@ msgstr "為 RDF 連結提供名稱:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "鍵入書籤名稱，或從清單選取:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7979,6 +8014,11 @@ msgstr "宣告為 XML (版本 1.0)"
 msgid "Default language: "
 msgstr "預設語言: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8073,6 +8113,11 @@ msgstr "英文 (澳洲)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "英文 (加拿大)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9213,7 +9258,8 @@ msgstr "提供之延伸檔名與選擇之檔案類型不符，肯定要用此名
 msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
-msgstr "能回復的最新版本為 %d。要改為回復這個版本嗎？要部份回復版本 %d，按「否」。"
+msgstr ""
+"能回復的最新版本為 %d。要改為回復這個版本嗎？要部份回復版本 %d，按「否」。"
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -9562,3 +9608,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "無"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "關於 G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "關於 GNOME Office 計劃"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "根據空格以外的分隔符號分拆"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "根據包括空格在內的分隔符號分拆"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "於逗號或定位點分拆文字"

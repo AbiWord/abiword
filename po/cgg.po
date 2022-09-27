@@ -1,6 +1,6 @@
 # Chiga translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Florence <tushabe@cit.mak.ac.ug>, 2010.
 # TRANSLATOR <EMAIL@ADDRESS>, YEAR.
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2022-09-26 20:20-0400\n"
 "PO-Revision-Date: 2013-01-07 01:12+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -486,9 +486,9 @@ msgstr "&Akahamutwe:"
 msgid "&Height:"
 msgstr "&Obureingwa:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Obuyambi"
 
@@ -693,7 +693,8 @@ msgid "&Odd page"
 msgstr "&Orupapura orutara"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Igura"
 
@@ -1189,8 +1190,7 @@ msgstr "Akasheshe/ Eihangwe"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "AbiWord teyabaasa kwigura %s. Nikireebeka n'ekihandiko ekitakyakora."
 
@@ -1233,16 +1233,6 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
-
-#. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About G&NOME Office"
-msgstr "Ebya G&NOME Office"
-
-#. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h
-msgid "About the GNOME Office project"
-msgstr "Ahabikwatireine na GNOME Office project"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2098,8 +2088,8 @@ msgstr ""
 "Torana ekyorenda ahaburyo. \n"
 "Waba orikwenda kukozesa eipesha lya \"Gyenda ahari\", otemu enyuguta "
 "eyorikwenda.  Noobasa kukozesa + and - kutambura nkokuorenda. \t. "
-"ekyokureberaho., wahandika \"+2\" kandi okatorana \"Orunyiriri\", eipesha lya "
-"\"Gyenda ahari\" lilaza kukutwara enyiriri 2 aheife ryomwanya ogwoliho."
+"ekyokureberaho., wahandika \"+2\" kandi okatorana \"Orunyiriri\", eipesha "
+"lya \"Gyenda ahari\" lilaza kukutwara enyiriri 2 aheife ryomwanya ogwoliho."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2585,6 +2575,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Ekiro"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5633,7 +5628,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Bibiikye"
 
@@ -6088,6 +6084,11 @@ msgstr ""
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6410,25 +6411,45 @@ msgstr "Baganisamu aharubaju rwaburyo"
 msgid "Split on Top Side"
 msgstr "Baganisamu aharubaju rwahamutwe"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Baganisamu omuri byona kwihaho hamyanya"
+msgid "Split text at commas"
+msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Baganisamu omuri byona hariho ne'myanya"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Cwamu ekihandiiko aha buhuumuzo nari aha bishumuruzo"
+msgid "Split text at spaces"
+msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Cwamu ekihandiiko aha myanya, buhuumuzo, nari aha bishumuruzo"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6991,6 +7012,11 @@ msgstr ""
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr ""
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
 msgstr ""
 
 #. DLG_Lists_Type
@@ -8022,6 +8048,11 @@ msgstr "Yanjura nka XML (eshuura 1.0)"
 msgid "Default language: "
 msgstr "Orurimi oruteirwemu: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8116,6 +8147,11 @@ msgstr "Orungyereza [Austureriya]"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Orungyereza [Kanada]"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9607,3 +9643,17 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Hakyo"
 
+#~ msgid "About G&NOME Office"
+#~ msgstr "Ebya G&NOME Office"
+
+#~ msgid "About the GNOME Office project"
+#~ msgstr "Ahabikwatireine na GNOME Office project"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Baganisamu omuri byona kwihaho hamyanya"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Baganisamu omuri byona hariho ne'myanya"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Cwamu ekihandiiko aha buhuumuzo nari aha bishumuruzo"
