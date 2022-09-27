@@ -367,7 +367,6 @@ menuitem(HELP_INTRO)
 menuitem(HELP_CHECKVER)
 menuitem(HELP_SEARCH)
 menuitem(HELP_ABOUT)
-menuitem(HELP_ABOUT_GNOMEOFFICE)
 menuitem(HELP_REPORT_BUG)
 
 menuitem(SPELL_SUGGEST_1)		// _suggest_1 thru _suggest_9 must be contiguous

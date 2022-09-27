@@ -622,7 +622,6 @@ public:
 	static EV_EditMethod_Fn helpIntro;
 	static EV_EditMethod_Fn helpSearch;
 	static EV_EditMethod_Fn helpCheckVer;
-	static EV_EditMethod_Fn helpAboutGnomeOffice;
 	static EV_EditMethod_Fn helpCredits;
 	static EV_EditMethod_Fn helpReportBug;
 
@@ -999,7 +998,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(go),					0,	""),
 
 	// h
-	EV_EditMethod(NF(helpAboutGnomeOffice), _A_, ""),
 	EV_EditMethod(NF(helpCheckVer), 		_A_,		""),
 	EV_EditMethod(NF(helpContents), 		_A_,		""),
 	EV_EditMethod(NF(helpCredits), _A_, ""),
@@ -3622,11 +3620,6 @@ Defun0(helpSearch)
 Defun0(helpCredits)
 {
 	return helpLocalizeAndOpenURL("help", "credits", "http://www.abisource.com/help/");
-}
-
-Defun0(helpAboutGnomeOffice)
-{
-	return _openURL("http://live.gnome.org/GnomeOffice/");
 }
 
 Defun1(cycleWindows)

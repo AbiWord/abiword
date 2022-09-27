@@ -413,7 +413,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_HELP_CHECKVER,		0,0,0,0,	"helpCheckVer",			nullptr,					ap_GetLabel_Checkver);
 	_s(AP_MENU_ID_HELP_SEARCH,		0,0,0,0,	"helpSearch",			nullptr,					ap_GetLabel_Search);
 	_s(AP_MENU_ID_HELP_ABOUT,		0,1,0,0,	"dlgAbout",			nullptr,					ap_GetLabel_About);
-	_s(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE, 0,0,0,0, "helpAboutGnomeOffice", nullptr, nullptr);
 	_s(AP_MENU_ID_HELP_CREDITS, 0,0,0,0, "helpCredits", nullptr, nullptr);
 	_s(AP_MENU_ID_HELP_REPORT_BUG, 0,0,0,0, "helpReportBug", nullptr, nullptr);
 
