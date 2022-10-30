@@ -204,7 +204,7 @@ AbiCommand::AbiCommand (void) :
 	m_sErrorFile ("")
 {
 	m_pApp = XAP_App::getApp ();
-	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_nullptr,true);
+	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_NULL,true);
     m_pApp->setNoGUI(true); 
 
 }
@@ -224,7 +224,7 @@ AbiCommand::AbiCommand (bool bAbiCollab) :
 	m_sErrorFile ("")
 {
 	m_pApp = XAP_App::getApp ();
-	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_nullptr,true);
+	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_NULL,true);
     m_pApp->setDisableDoubleBuffering(true); 
 }
 
@@ -486,8 +486,8 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
             return -1;
         }
     }
-    
-    
+
+
 	//
 	// New document
 	//
@@ -585,9 +585,9 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
             return 0;
         }
     }
-    
 
-    
+
+
 	//
 	// delete
 	//
@@ -703,18 +703,18 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
         {
             gtk_main ();
         }
-        
+
         return 0;
     }
     else if (strcmp (pCom0->utf8_str (), "paste") == 0)
     {
         bool bHonorFormatting = true;
-        
+
         if( pToks->getItemCount () > 1 )
 		{
             bHonorFormatting = isTrue(pToks->getNthItem (1)->utf8_str());
         }
-        
+
         if (m_pCurView)
 		{
 			m_pCurView->cmdPaste( bHonorFormatting );
@@ -722,7 +722,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		}
         return -1;
     }
-    
+
 	//
 	// findnext
 	//
@@ -1541,7 +1541,7 @@ AbiCommand::invoke (const char *pszCommand)
 bool
 AbiCommand::viewDoc (void)
 {
-	m_bViewDoc = true;	
+	m_bViewDoc = true;
 	invoke ("newWindow");
 
 	while (m_pCurFrame && m_pCurFrame->getViewNumber () > 0)
