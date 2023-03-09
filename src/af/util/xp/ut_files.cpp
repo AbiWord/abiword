@@ -79,7 +79,13 @@ bool UT_createDirectoryIfNecessary(const char * szDir, bool publicdir)
 
 	bool success = true;
     mode_t old_mask = umask (0);
+#ifdef _WIN32
+    // glib almost certainly has a better way to do this
+    // but let's put out the fires first, no?
+    if (mkdir (szDir))
+#else
     if (mkdir (szDir, publicdir ? 0775 : 0700))
+#endif
 	{
 		UT_DEBUGMSG(("Could not create Directory [%s].\n", szDir));
 		success = false;

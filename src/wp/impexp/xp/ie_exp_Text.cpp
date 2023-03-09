@@ -229,6 +229,8 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 	if (!(!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding.c_str())))
 		return UT_SAVE_CANCELLED;
 
+	// on modern OSes, even Windows, this is a terrible idea anyway. for one, this code goes *after* we requested an encoding from the user!
+#if 0
 	// TODO If we're going to the clipboard and the OS supports unicode, set encoding.
 	// TODO Only supports Windows so far.
 	// TODO Should use a finer-grain technique than IsWinNT() since Win98 supports unicode clipboard.
@@ -239,6 +241,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 			_setEncoding(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
 #endif
 	}
+#endif
 
 	m_pListener = _constructListener();
 	if (!m_pListener)

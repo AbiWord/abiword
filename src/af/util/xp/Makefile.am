@@ -31,6 +31,8 @@ libxp_la_SOURCES = \
 	ut_endian.h \
 	ut_exception.h \
 	ut_export.h \
+	ut_files.cpp \
+	ut_files.h \
 	ut_go_file.cpp \
 	ut_go_file.h \
 	ut_growbuf.cpp \
@@ -96,6 +98,8 @@ libxp_la_SOURCES = \
 	ut_unicode.h \
 	ut_units.cpp \
 	ut_units.h \
+	ut_unixColor.cpp \
+	ut_unixColor.h \
 	ut_uuid.cpp \
 	ut_uuid.h \
 	ut_vector.h \

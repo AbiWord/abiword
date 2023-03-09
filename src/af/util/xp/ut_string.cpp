@@ -1692,8 +1692,6 @@ const char* std_size_string(float f)
   return string;
 }
 
-#ifndef TOOLKIT_WIN
-
 UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c)
 {
 #ifndef NO_BIDI_SUPPORT
@@ -1798,5 +1796,3 @@ bool UT_bidiGetMirrorChar(UT_UCS4Char c, UT_UCS4Char &mc)
 #endif
 }
 
-
-#endif

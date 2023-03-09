@@ -43,7 +43,6 @@
 #include "ut_string.h"
 #include "ut_types.h"
 #include "ut_assert.h"
-#include "ut_files.h"
 #include "ut_misc.h"
 #include "ut_sleep.h"
 #include "xap_ViewListener.h"

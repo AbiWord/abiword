@@ -26,6 +26,10 @@
 
 #include "ut_debugmsg.h"
 
+void UT_Debug_Init()
+{
+}
+
 // TODO This is Win32-specific, and should not be.
 
 void _UT_OutputMessage(const char *s, ...)

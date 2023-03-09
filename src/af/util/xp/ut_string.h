@@ -174,6 +174,8 @@ ABI_EXPORT char *UT_strptime (const char *buf, const char *format, struct tm *tm
 #endif
 
 
+#if 0
+/* This code breaks boost */
 #ifdef _WIN32
 #define snprintf _snprintf
 
@@ -181,6 +183,7 @@ ABI_EXPORT char *UT_strptime (const char *buf, const char *format, struct tm *tm
 #define N_(String) (String)
 
 #endif /* WIN32 */
+#endif
 
 #if defined (SNPRINTF_MISSING)
   extern int snprintf(char *str, size_t size, const  char  *format, ...);
