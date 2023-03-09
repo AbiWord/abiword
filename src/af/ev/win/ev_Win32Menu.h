@@ -22,6 +22,7 @@
 
 #include <windows.h>
 #include "ut_types.h"
+#include "ut_vector.h"
 #include "xap_Types.h"
 #include "ev_Menu.h"
 #include "ut_color.h"

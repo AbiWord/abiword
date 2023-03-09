@@ -108,7 +108,7 @@ opt_pkgs=''
 # gtk deps
 cairo_req='cairo-pdf cairo-ps pangocairo'
 #
-gtk_req="gtk+-3.0 >= $GTK_VERSION_REQ gtk+-unix-print-3.0 librsvg-2.0 >= 2.32.0"
+gtk_req="gtk+-3.0 >= $GTK_VERSION_REQ librsvg-2.0 >= 2.32.0"
 dnl cairo-fc is needed but only available on cairo > 1.10
 dnl http://bugzilla.abisource.com/show_bug.cgi?id=13265
 PKG_CHECK_EXISTS(cairo >= 1.10, [gtk_req="$gtk_req cairo-fc"],[])
@@ -157,7 +157,7 @@ case ${host_os} in
     ;;
   *mingw*)
     PLATFORM="win"
-    TOOLKIT="win"
+    TOOLKIT="gtk"
     ;;
   *)
     PLATFORM="unix"
@@ -689,7 +689,7 @@ elif test "$TOOLKIT" = "qt"; then
 else
 	SYSTEM_CFLAGS=$PNG_CFLAGS
 	SYSTEM_LIBS="$PNG_LIBS -ljpeg"
-	deps_pkgs="$deps_pkgs $gtk_pkgs x11"
+	deps_pkgs="$deps_pkgs $gtk_pkgs"
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])

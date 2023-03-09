@@ -24,6 +24,8 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_misc.h"
+#include "ut_assert.h"
 #include "xap_Types.h"
 #include "ev_Toolbar.h"
 #include "xav_Listener.h"

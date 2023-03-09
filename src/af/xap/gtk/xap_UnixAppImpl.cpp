@@ -24,7 +24,9 @@
 
 #include "xap_UnixAppImpl.h"
 #include "ut_string_class.h"
+#ifndef _WIN32
 #include "ut_files.h"
+#endif
 #include "ut_go_file.h"
 
 std::string XAP_UnixAppImpl::localizeHelpUrl(const char * pathBefore,
@@ -42,7 +44,9 @@ bool XAP_UnixAppImpl::openHelpURL(const char * url)
 bool XAP_UnixAppImpl::openURL(const char * url)
 {
 	// Need this to make AbiGimp Load!!!!!
+#ifndef _WIN32
 	if (progExists("foo")) {}
+#endif
 
 	GError * err = nullptr;
 	err = UT_go_url_show (url);

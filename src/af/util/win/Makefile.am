@@ -17,7 +17,6 @@ libwin_la_SOURCES = \
 	ut_Win32Misc.cpp \
 	ut_Win32OS.cpp \
 	ut_Win32OS.h \
-	ut_Win32String.cpp \
 	ut_Win32Timer.cpp \
 	ut_Win32Timer.h \
 	ut_Win32Uuid.cpp \

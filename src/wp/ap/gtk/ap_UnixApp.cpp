@@ -42,7 +42,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
+#ifndef _WIN32
 #include <X11/Xlib.h>
+#endif
 #include <glib.h>
 
 #include "ut_compiler.h"
@@ -1301,22 +1303,26 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	
 		// Setup signal handlers, primarily for segfault
 		// If we segfaulted before here, we *really* blew it
-		struct sigaction sa;
-		sa.sa_handler = &XAP_App::signalWrapper;
-    
-		sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
-		sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
+#ifndef _WIN32
+		{
+			struct sigaction sa;
+			sa.sa_handler = &XAP_App::signalWrapper;
+		
+			sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
+			sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
 #if defined (SA_NODEFER) && defined (SA_RESETHAND)
-		sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
+			sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
 #else
-		sa.sa_flags = 0;
+			sa.sa_flags = 0;
 #endif
-    
-		sigaction(SIGSEGV, &sa, nullptr);
-		sigaction(SIGBUS, &sa, nullptr);
-		sigaction(SIGILL, &sa, nullptr);
-		sigaction(SIGQUIT, &sa, nullptr);
-		sigaction(SIGFPE, &sa, nullptr);
+		
+			sigaction(SIGSEGV, &sa, nullptr);
+			sigaction(SIGBUS, &sa, nullptr);
+			sigaction(SIGILL, &sa, nullptr);
+			sigaction(SIGQUIT, &sa, nullptr);
+			sigaction(SIGFPE, &sa, nullptr);
+		}
+#endif
 
 		// TODO: handle SIGABRT
 	
@@ -1377,6 +1383,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 
 	if (Args->m_sGeometry)
     {
+#ifndef _WIN32
 		// [--geometry <X geometry string>]
       
 		// TODO : does X have a dummy geometry value reserved for this?
@@ -1402,6 +1409,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		
 		// set the xap-level geometry for future frame use
 		Args->getApp()->setGeometry(x, y, width, height, f);
+#endif
 	}
 
 	if (Args->m_sPrintTo) 
