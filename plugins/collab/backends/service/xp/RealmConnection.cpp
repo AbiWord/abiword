@@ -16,6 +16,7 @@
  * 02110-1301 USA.
  */
 
+#include <boost/array.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
